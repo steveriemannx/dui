@@ -10,7 +10,7 @@ include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_common.cmake")
 
 # Mode 2 (XML-to-code generation): convert main.xml to pure C++ code at build time.
 # Note: app_item.xml is an item template and is NOT generated — AppItemUi is built in code.
-set(GEN_XML_FILES main.xml)
+set(GEN_XML_FILES move_control/main.xml)
 set(GEN_FUNC_NAME Init)
 include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_gen_code.cmake")
 

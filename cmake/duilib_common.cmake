@@ -133,9 +133,9 @@ if(DUILIB_ENABLE_CEF)
         endif()
     elseif(DUILIB_OS_LINUX)
         # Linux platform
-        set(DUILIB_CEF_SRC_ROOT_DIR "${DUILIB_ROOT}/third_party/libcef/libcef_linux")
-        set(DUILIB_CEF_LIB_PATH "${DUILIB_ROOT}/bin/libcef_linux")
-        set(DUILIB_CEF_WRAPPER_LIB_NAME cef_dll_wrapper)
+        set(DUILIB_CEF_SRC_ROOT_DIR "${DUILIB_ROOT}/third_party/libcef/cef_binary")
+        set(DUILIB_CEF_LIB_PATH "${DUILIB_ROOT}/third_party/libcef/cef_binary/Release")
+        set(DUILIB_CEF_WRAPPER_LIB_NAME libcef_dll_wrapper)
     elseif(DUILIB_OS_MACOS)
         # macOS platform
         set(DUILIB_CEF_SRC_ROOT_DIR "${DUILIB_ROOT}/third_party/libcef/libcef_macos")
