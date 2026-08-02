@@ -359,6 +359,10 @@ healthchecksdb
 # Build output
 /build
 
+# The generic [Aa][Rr][Mm]/ pattern above (VS build outputs) also matches
+# libpng's real arm/ NEON source directory - keep it tracked:
+!third_party/libpng/arm/
+
 # Prebuilt example binaries (build outputs; theme resources are assets and stay tracked)
 /bin/*
 !/bin/resources/
