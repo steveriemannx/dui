@@ -164,16 +164,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="MainForm.h" />
-    <ClInclude Include="MainThread.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainForm.cpp" />
-    <ClCompile Include="MainThread.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="TestApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="basic.rc" />

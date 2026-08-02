@@ -162,19 +162,15 @@
     <ClInclude Include="AboutForm.h" />
     <ClInclude Include="AnimationForm.h" />
     <ClInclude Include="ControlForm.h" />
-    <ClInclude Include="MainThread.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestApplication.h" />
     <ClInclude Include="TestForm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AboutForm.cpp" />
     <ClCompile Include="AnimationForm.cpp" />
     <ClCompile Include="ControlForm.cpp" />
-    <ClCompile Include="MainThread.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="TestApplication.cpp" />
     <ClCompile Include="TestForm.cpp" />
   </ItemGroup>
   <ItemGroup>

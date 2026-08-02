@@ -1,8 +1,7 @@
 #include "MainForm.h"
-#include "MainThread.h"
 #include "generated_ui.inc"  // Build-time generated pure C++ UI code (from threads.xml)
 
-MainForm::MainForm(MainThread* pMainThread):
+MainForm::MainForm(IMainThread* pMainThread):
     m_pMainThread(pMainThread),
     m_pLogEdit(nullptr),
     m_pRunningTimeLabel(nullptr),

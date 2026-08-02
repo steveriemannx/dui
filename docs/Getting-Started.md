@@ -69,99 +69,54 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 After adding them, you can see the successfully referenced projects:    
 <img src="./Images/vs04.png"/>  
 
-## Adding the thread library
+## Writing the app entry (main.cpp)
 
-Add a custom thread class MainThread (a main thread and a worker thread) to the created project    
-Create two files (`MainThread.h` and `MainThread.cpp`) and add them to the VS project. The contents of the two files are as follows:
+Every example has a single entry file `main.cpp` that defines the application class `App` (a `ui::FrameworkThread` subclass) and invokes the `DUILIB_APP_ENTRY` macro. The platform entry function (`wWinMain`/`WinMain`/`main`) is generated automatically by the macro — you never write `wWinMain` yourself.
 
-MainThread.h    
+Create the file `main.cpp` with the following content (create the `MainForm` class first, see the next section):
+
 ```cpp
-#ifndef EXAMPLES_MAIN_THREAD_H_
-#define EXAMPLES_MAIN_THREAD_H_
-
-// duilib
 #include "duilib/duilib.h"
+#include "MainForm.h"
+#include "duilib/Utils/AppEntry.h"
 
-/** Main thread
-*/
-class MainThread : public ui::FrameworkThread
+/** App: FrameworkThread subclass that serves as the DUILIB_APP_ENTRY target.
+ *  RunMessageLoop() calls OnInit() -> message loop -> OnCleanup().
+ */
+class App : public ui::FrameworkThread
 {
 public:
-    MainThread();
-    virtual ~MainThread() override;
+    App() : FrameworkThread(_T("App"), ui::kThreadUI) {}
+
+    void Run() { RunMessageLoop(); }
 
 private:
-    /** Initialization before running; called before entering the message loop
-    */
-    virtual void OnInit() override;
+    virtual void OnInit() override
+    {
+        // initialize global resources, using a local folder as the resource
+        ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
+        resourcePath += _T("resources\\");
+        ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
-    /** Cleanup on exit; called after leaving the message loop
-    */
-    virtual void OnCleanup() override;
+        // create a default centered window with a shadow
+        MainForm* window = new MainForm();
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("MyDuilibApp"), true));
+        window->PostQuitMsgWhenClosed(true);
+        window->ShowWindow(ui::kSW_SHOW_NORMAL);
+    }
+
+    virtual void OnCleanup() override
+    {
+        ui::GlobalManager::Instance().Shutdown();
+    }
 };
 
-#endif // EXAMPLES_MAIN_THREAD_H_
+DUILIB_APP_ENTRY(App)
 ```
 
-MainThread.cpp    
-```cpp
-#include "MainThread.h"
-#include "MainForm.h"
-
-MainThread::MainThread() :
-    FrameworkThread(_T("MainThread"), ui::kThreadUI)
-{
-}
-
-MainThread::~MainThread()
-{
-}
-
-void MainThread::OnInit()
-{
-    // initialize global resources, using a local folder as the resource
-    ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-    resourcePath += _T("resources\\");
-    ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
-
-    // add the window startup code below
-    //
-    // create a default centered window with a shadow
-    MainForm* window = new MainForm();
-    window->CreateWnd(nullptr, ui::WindowCreateParam(_T("MyDuilibApp"), true));
-    window->PostQuitMsgWhenClosed(true);
-    window->ShowWindow(ui::kSW_SHOW_NORMAL);
-}
-
-void MainThread::OnCleanup()
-{
-    ui::GlobalManager::Instance().Shutdown();
-}
-```
-
-In wWinMain, instantiate the main thread object and run the main thread message loop through it. After the addition, the wWinMain function is modified as follows:
-
-```cpp
-#include "MainThread.h"
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
-{
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-
-    // create the main thread
-    MainThread thread;
-
-    // run the main thread message loop
-    thread.RunMessageLoop();
-
-    // exit the program normally
-    return 0;
-}
-```
+Notes:
+- Invoke the `DUILIB_APP_ENTRY(App)` macro exactly once per executable, at global scope, in one `.cpp` file (never in a header).
+- `App` must provide a default constructor and a `void Run()` method. If the entry needs `argc`/`argv` (for example a CEF application), use `DUILIB_APP_ENTRY_ARGS(App)` instead, and `App` must provide `static App& Instance()` and `int Run(int argc, char** argv)`.
 
 ## Creating a simple window
 
@@ -270,26 +225,7 @@ Note: the encoding format of the XML file is UTF-8.
 
 ## Showing the window
 
-In the MainThread::Init method of the main thread, create the window and show it centered. Include the header file of the window before creating it. The modified code is as follows:    
-(First include the header file in the source file: `#include "MainForm.h"`)
-
-```cpp
-void MainThread::OnInit()
-{
-    // initialize global resources, using a local folder as the resource
-    ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-    resourcePath += _T("resources\\");
-    ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
-
-    // add the window startup code below
-    //
-    // create a default centered window with a shadow
-    MainForm* window = new MainForm();
-    window->CreateWnd(nullptr, ui::WindowCreateParam(_T("MyDuilibApp"), true));
-    window->PostQuitMsgWhenClosed(true);
-    window->ShowWindow(ui::kSW_SHOW_NORMAL);
-}
-```
+The window is created in `App::OnInit()` in `main.cpp` (see the "Writing the app entry" section above): initialize the global resources first, then create the window and show it centered. The window destruction is managed by the framework — create with `new`, no manual `delete` needed.
 
 In this way, a simple window with minimize, maximize, restore, close and fullscreen buttons, a shadow effect and a line of text is created. You can compile and run the code to see the window effect.
    

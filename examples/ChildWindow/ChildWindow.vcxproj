@@ -127,11 +127,9 @@
     <ClInclude Include="ChildWindowPaintScheduler.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainForm.h" />
-    <ClInclude Include="MainThread.h" />
     <ClInclude Include="MyChildWindowEvents.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ChildWindow.rc" />
@@ -149,10 +147,8 @@
     <ClCompile Include="ChildWindowPaint_SDL.cpp" />
     <ClCompile Include="ChildWindowPaint_Win.cpp" />
     <ClCompile Include="MainForm.cpp" />
-    <ClCompile Include="MainThread.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyChildWindowEvents.cpp" />
-    <ClCompile Include="TestApplication.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -131,10 +131,8 @@
     <Manifest />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="MainThread.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ColorPicker.rc" />
@@ -143,9 +141,7 @@
     <Image Include="ColorPicker.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MainThread.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="TestApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\duilib\duilib.vcxproj">

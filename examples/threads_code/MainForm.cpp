@@ -1,7 +1,6 @@
 #include "MainForm.h"
-#include "MainThread.h"
 
-MainForm::MainForm(MainThread* pMainThread):
+MainForm::MainForm(IMainThread* pMainThread):
     m_pMainThread(pMainThread),
     m_pLogEdit(nullptr),
     m_pRunningTimeLabel(nullptr),
