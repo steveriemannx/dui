@@ -1,0 +1,488 @@
+#include "duilib/Core/FrameworkThread.h"
+#include "duilib/Core/GlobalManager.h"
+#include "duilib/Core/WindowMessage.h"
+#include "duilib/Core/ScopedLock.h"
+
+#if defined (DUILIB_BUILD_FOR_SDL)
+    #include "duilib/Core/MessageLoop_SDL.h"
+    #include <SDL3/SDL.h>
+#elif defined (DUILIB_BUILD_FOR_WAYLAND)
+    #include "duilib/Core/MessageLoop_Wayland.h"
+#elif defined (DUILIB_BUILD_FOR_WIN)
+    #include "duilib/Core/MessageLoop_Windows.h"
+#endif
+
+#include <sstream>
+
+/** User-defined message
+*/
+#if defined (DUILIB_BUILD_FOR_SDL)
+    #define WM_USER_DEFINED_MSG     (SDL_EVENT_USER + 1)
+#elif defined (DUILIB_BUILD_FOR_WAYLAND)
+    #define WM_USER_DEFINED_MSG     (kWM_USER + 1)
+#else
+    #define WM_USER_DEFINED_MSG     (kWM_USER + 568)
+#endif
+
+namespace ui 
+{
+FrameworkThread::FrameworkThread(const DString& threadName, int32_t nThreadIdentifier):
+    m_bThreadUI(false),
+    m_bRunning(false),
+    m_bSupportIdle(false),
+    m_threadName(threadName),
+    m_nThreadIdentifier(nThreadIdentifier)
+{
+    if (m_nThreadIdentifier == kThreadUI) {
+        //The main thread completes the necessary initialization during construction
+        GlobalManager::Instance().Thread().RegisterThread(m_nThreadIdentifier, this);
+        m_nThisThreadId = std::this_thread::get_id();
+        m_bThreadUI = true;
+
+#ifdef DUILIB_BUILD_FOR_SDL
+        MessageLoop_SDL::CheckInitSDL();
+#elif defined(DUILIB_BUILD_FOR_WAYLAND)
+        MessageLoop_Wayland::CheckInitWayland();
+#endif
+        //Initialize the mechanism for communicating with the main thread
+        m_threadMsg.Initialize(GlobalManager::Instance().GetPlatformData());
+        m_threadMsg.SetMessageCallback(WM_USER_DEFINED_MSG, UiBind(&FrameworkThread::OnTaskMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    }
+}
+
+FrameworkThread::~FrameworkThread()
+{
+    if (m_nThreadIdentifier != kThreadNone) {
+        GlobalManager::Instance().Thread().UnregisterThread(m_nThreadIdentifier);
+    }
+    m_threadMsg.Clear();
+    ASSERT(!m_bRunning);
+    if (m_bRunning) {
+        Stop();
+    }
+}
+
+bool FrameworkThread::RunMessageLoop(bool bSupportIdle)
+{
+    ASSERT(m_nThreadIdentifier == kThreadUI);
+    ASSERT(!m_bRunning);
+    if (m_bRunning) {
+        return false;
+    }
+    m_bRunning = true;
+    m_bSupportIdle = bSupportIdle;
+    OnInit();
+    OnRunMessageLoop();
+    OnCleanup();
+    if (m_nThreadIdentifier != kThreadNone) {
+        GlobalManager::Instance().Thread().UnregisterThread(m_nThreadIdentifier);
+        m_nThreadIdentifier = kThreadNone;
+    }
+    m_bThreadUI = false;
+    m_threadMsg.Clear();
+    m_bRunning = false;
+    return true;
+}
+
+void FrameworkThread::OnMainThreadInited()
+{
+}
+
+void FrameworkThread::OnMainThreadExit()
+{
+    GlobalManager::Instance().Thread().SetMainThreadExit();
+}
+
+bool FrameworkThread::Start()
+{
+    ASSERT(!m_bRunning);
+    if (m_bRunning) {
+        return false;
+    }
+    if (m_nThreadIdentifier != kThreadNone) {
+        GlobalManager::Instance().Thread().RegisterThread(m_nThreadIdentifier, this);
+    }
+    m_bRunning = true;
+    m_bThreadUI = false;
+    m_pWorkerThread = std::make_unique<std::thread>(&FrameworkThread::WorkerThreadProc, this);
+    m_nThisThreadId = m_pWorkerThread->get_id();
+    return true;
+}
+
+bool FrameworkThread::Stop()
+{
+    if (m_nThreadIdentifier != kThreadNone) {
+        GlobalManager::Instance().Thread().UnregisterThread(m_nThreadIdentifier);
+    }
+    ASSERT(!IsUIThread());
+    if (m_pWorkerThread != nullptr) {
+        //Stop the thread
+        m_bRunning = false;
+        m_cv.notify_all();
+        m_pWorkerThread->join();
+        m_pWorkerThread.reset();
+    }
+    else {
+        m_bRunning = false;
+    }
+    return true;
+}
+
+bool FrameworkThread::IsRunning() const
+{
+    return m_bRunning;
+}
+
+bool FrameworkThread::IsUIThread() const
+{
+    return m_bThreadUI;
+}
+
+std::thread::id FrameworkThread::GetThreadId() const
+{
+    return m_nThisThreadId;
+}
+
+DString FrameworkThread::ThreadIdToString(const std::thread::id& threadId)
+{
+    // Convert to a string
+#ifdef DUILIB_UNICODE    
+    std::wstringstream ss;
+    ss << threadId;
+    std::wstring thread_id_str = ss.str();
+    return thread_id_str;
+#else
+    std::stringstream ss;
+    ss << threadId;
+    std::string thread_id_str = ss.str();
+    return thread_id_str;
+#endif
+}
+
+int32_t FrameworkThread::GetThreadIdentifier() const
+{
+    return m_nThreadIdentifier;
+}
+
+const DString& FrameworkThread::GetThreadName() const
+{
+    return m_threadName;
+}
+
+size_t FrameworkThread::GetNextTaskId() const
+{
+    //Use the global task ID to ensure the task ID is unique within the process
+    return GlobalManager::Instance().Thread().GetNextTaskId();
+}
+
+size_t FrameworkThread::PostTask(const StdClosure& task, const StdClosure& unlockClosure)
+{
+    ASSERT(task != nullptr);
+    if (task == nullptr) {
+        return 0;
+    }
+    ScopedLock threadGuard(m_taskMutex);
+    size_t nTaskId = GetNextTaskId();
+    TaskInfo& taskInfo = m_taskMap[nTaskId];
+    taskInfo.m_taskType = TaskType::kTask;
+    taskInfo.m_task = task;
+    taskInfo.m_nIntervalMs = 0;
+    taskInfo.m_nTimes = 1;
+    taskInfo.m_nTaskId = nTaskId;
+    taskInfo.m_startTime = std::chrono::steady_clock::now();
+    taskInfo.m_nTotalExecTimes = 0;
+
+    StdClosure unlockClosure1 = [&threadGuard]() {
+            threadGuard.Unlock();
+        };
+    bool bAdded = NotifyExecTask(nTaskId, unlockClosure1, unlockClosure);
+    ASSERT_UNUSED_VARIABLE(bAdded);
+    return nTaskId;
+}
+
+size_t FrameworkThread::PostDelayedTask(const StdClosure& task, int32_t nDelayMs)
+{
+    ASSERT(task != nullptr);
+    if (task == nullptr) {
+        return 0;
+    }
+    ScopedLock threadGuard(m_taskMutex);
+    size_t nTaskId = GetNextTaskId();
+    TaskInfo& taskInfo = m_taskMap[nTaskId];
+    taskInfo.m_taskType = TaskType::kDelayedTask;
+    taskInfo.m_task = task;
+    taskInfo.m_nIntervalMs = nDelayMs;
+    taskInfo.m_nTimes = 1;
+    taskInfo.m_nTaskId = nTaskId;
+    taskInfo.m_startTime = std::chrono::steady_clock::now();
+    taskInfo.m_nTotalExecTimes = 0;
+
+    if (nDelayMs < 1) {
+        nDelayMs = 1;
+    }
+    //Create a timer to trigger the task execution (executed only once)
+    auto timerCallback = UiBind(&FrameworkThread::NotifyExecTask, this, nTaskId, nullptr, nullptr);
+    bool bAdded = GlobalManager::Instance().Timer().AddTimer(GetWeakFlag(), timerCallback, nDelayMs, 1);
+    ASSERT_UNUSED_VARIABLE(bAdded);
+    return nTaskId;
+}
+
+size_t FrameworkThread::PostRepeatedTask(const StdClosure& task, int32_t nIntervalMs, int32_t nTimes)
+{
+    ASSERT((task != nullptr) && (nIntervalMs > 0) && (nTimes != 0));
+    if ((task == nullptr) || (nIntervalMs <= 0) || (nTimes == 0)) {
+        return 0;
+    }
+    ScopedLock threadGuard(m_taskMutex);
+    size_t nTaskId = GetNextTaskId();
+    TaskInfo& taskInfo = m_taskMap[nTaskId];
+    taskInfo.m_taskType = TaskType::kRepeatedTask;
+    taskInfo.m_task = task;
+    taskInfo.m_nIntervalMs = nIntervalMs;
+    taskInfo.m_nTimes = nTimes;
+    taskInfo.m_nTaskId = nTaskId;
+    taskInfo.m_startTime = std::chrono::steady_clock::now();
+    taskInfo.m_nTotalExecTimes = 0;
+
+    if (nTimes < 0) {
+        nTimes = -1;
+    }
+    //Create a timer to trigger the task execution (executed only once)
+    auto timerCallback = UiBind(&FrameworkThread::NotifyExecTask, this, nTaskId, nullptr, nullptr);
+    size_t nTimerId = GlobalManager::Instance().Timer().AddTimer(GetWeakFlag(), timerCallback, nIntervalMs, nTimes);
+    ASSERT_UNUSED_VARIABLE(nTimerId > 0);
+    return nTaskId;
+}
+
+bool FrameworkThread::CancelTask(size_t nTaskId)
+{
+    bool bDeleted = false;
+    ScopedLock threadGuard(m_taskMutex);
+    if (!m_taskMap.empty()) {
+        auto iter = m_taskMap.find(nTaskId);
+        if (iter != m_taskMap.end()) {
+            m_taskMap.erase(nTaskId);
+            bDeleted = true;
+        }
+    }
+    return bDeleted;
+}
+
+bool FrameworkThread::NotifyExecTask(size_t nTaskId,
+                                     const StdClosure& unlockClosure1,
+                                     const StdClosure& unlockClosure2)
+{
+    if (IsUIThread()) {
+        //UI thread: execute asynchronously
+#ifdef DUILIB_BUILD_FOR_SDL
+        //Release the outer lock, to avoid deadlock caused by reverse calls of the SDL underlying locks
+        if (unlockClosure1) {
+            unlockClosure1();
+        }
+        if (unlockClosure2) {            
+            unlockClosure2();
+        }
+#else
+        UNUSED_VARIABLE(unlockClosure1);
+        UNUSED_VARIABLE(unlockClosure2);
+#endif
+
+#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+        //Process the delayed messages first
+        std::vector<size_t> winTaskIds;
+        {
+            ScopedLock threadGuard(m_winTaskMutex);
+            winTaskIds.swap(m_winTaskIds);
+        }
+        if (!winTaskIds.empty()) {
+            auto iter = winTaskIds.begin();
+            while (iter != winTaskIds.end()) {
+                bool bRet = m_threadMsg.PostMsg(WM_USER_DEFINED_MSG, *iter, 0, nullptr);
+                if (bRet) {
+                    iter = winTaskIds.erase(iter);
+                }
+                else {
+                    ++iter;
+                }
+            }
+        }
+#endif
+
+        uint32_t nErrorCode = 0;
+        bool bRet = m_threadMsg.PostMsg(WM_USER_DEFINED_MSG, nTaskId, 0, &nErrorCode);
+#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+        if (!bRet) {
+            if (nErrorCode == ERROR_NOT_ENOUGH_QUOTA) {
+                if (!GlobalManager::Instance().IsInUIThread()) { //Executed in a worker thread
+                    //Release the outer lock, to avoid deadlock caused by reverse calls of the SDL underlying locks
+                    if (unlockClosure1) {
+                        unlockClosure1();
+                    }
+                    if (unlockClosure2) {
+                        unlockClosure2();
+                    }
+                    //This error can occur at program startup when a worker thread posts a message to the main thread
+                    for (int32_t i = 0; i < 200; ++i) {
+                        ::Sleep(50);
+                        if (!IsRunning()) {
+                            break;
+                        }
+                        bRet = m_threadMsg.PostMsg(WM_USER_DEFINED_MSG, nTaskId, 0, &nErrorCode);
+                        if (bRet || (nErrorCode != ERROR_NOT_ENOUGH_QUOTA)) {
+                            break;
+                        }
+                    }
+                }
+
+                if (!bRet) { //When sending fails, the message can only be sent with a delay
+                    winTaskIds.push_back(nTaskId);
+                    bRet = true;
+                }
+                if (!winTaskIds.empty()) {
+                    ScopedLock threadGuard(m_winTaskMutex);
+                    for (size_t nPenddingTaskId : winTaskIds) {
+                        m_winTaskIds.push_back(nPenddingTaskId);
+                    }                    
+                }
+            }
+            ASSERT_UNUSED_VARIABLE(bRet);
+        }
+#else
+        ASSERT_UNUSED_VARIABLE(bRet);
+#endif
+        return bRet;
+    }
+    else {
+        //The worker thread
+        ScopedLock threadGuard(m_penddingTaskMutex);
+        m_penddingTaskIds.push_back(nTaskId);
+        m_cv.notify_all();
+        return true;
+    }    
+}
+
+void FrameworkThread::ExecTask(size_t nTaskId)
+{
+    ASSERT(std::this_thread::get_id() == m_nThisThreadId);
+    StdClosure task;
+    {
+        ScopedLock threadGuard(m_taskMutex);
+        auto iter = m_taskMap.find(nTaskId);
+        if (iter != m_taskMap.end()) {
+            TaskInfo& taskInfo = iter->second;
+            if (taskInfo.m_task != nullptr) {
+                if (taskInfo.m_taskType == TaskType::kTask) {
+                    //Execute only once
+                    task = taskInfo.m_task;
+                    m_taskMap.erase(iter);
+                }
+                else if (taskInfo.m_taskType == TaskType::kDelayedTask) {
+                    //Execute only once
+                    task = taskInfo.m_task;
+                    m_taskMap.erase(iter);
+                }
+                else if (taskInfo.m_taskType == TaskType::kRepeatedTask) {
+                    //Execute at intervals
+                    task = taskInfo.m_task;
+                    taskInfo.m_nTotalExecTimes++;
+                    taskInfo.m_lastExecTime = std::chrono::steady_clock::now();
+                    if ((taskInfo.m_nTimes >= 0) && (taskInfo.m_nTotalExecTimes >= taskInfo.m_nTimes)) {
+                        //Already executed the required number of times
+                        m_taskMap.erase(iter);
+                    }
+                }
+            }
+        }
+    }
+    if (task != nullptr) {
+        //Execute the task without holding the lock, to avoid deadlock
+        task();
+    }
+}
+
+void FrameworkThread::OnTaskMessage(uint32_t msgId, WPARAM wParam, LPARAM /*lParam*/)
+{
+    ASSERT(msgId == WM_USER_DEFINED_MSG);
+    if (msgId == WM_USER_DEFINED_MSG) {
+        ExecTask((size_t)wParam);
+    }
+}
+
+void FrameworkThread::WorkerThreadProc()
+{
+    m_nThisThreadId = std::this_thread::get_id();
+    OnInit();
+    while (m_bRunning) {        
+        std::unique_lock lk(m_penddingTaskMutex);
+        std::vector<size_t> penddingTaskIds;
+        if (m_penddingTaskIds.empty()) {
+            m_cv.wait(lk);
+        }              
+        if (!m_penddingTaskIds.empty()) {
+            penddingTaskIds.swap(m_penddingTaskIds);
+        }
+        lk.unlock();
+
+        for (size_t nTaskId : penddingTaskIds) {
+            if (!m_bRunning) {
+                break;
+            }
+            ExecTask(nTaskId);
+        }
+    }
+    m_bRunning = false;
+    OnCleanup();
+}
+
+void FrameworkThread::OnInit()
+{
+}
+
+void FrameworkThread::OnRunMessageLoop()
+{
+#if defined (DUILIB_BUILD_FOR_SDL)
+    MessageLoop_SDL msgLoop;
+    MessageLoop_SDL::CheckInitSDL();
+#elif defined (DUILIB_BUILD_FOR_WAYLAND)
+    MessageLoop_Wayland msgLoop;
+    MessageLoop_Wayland::CheckInitWayland();
+#elif defined (DUILIB_BUILD_FOR_WIN)
+    MessageLoop_Windows msgLoop;
+#else
+    ASSERT(0);
+    return;
+#endif
+
+    OnMainThreadInited();
+    if (m_bSupportIdle) {
+        //Support the Idle function
+        msgLoop.Run([this]() {
+            return OnMessageLoopIdle();
+            });
+    }
+    else {
+#if defined (DUILIB_BUILD_FOR_WAYLAND)
+        // Wayland backend always needs idle for painting
+        msgLoop.Run([this]() {
+            return OnMessageLoopIdle();
+            });
+#else
+        //The Idle function is not supported
+        msgLoop.Run(nullptr);
+#endif
+    }
+    OnMainThreadExit();
+}
+
+void FrameworkThread::OnCleanup()
+{
+}
+
+void FrameworkThread::OnMessageLoopIdle()
+{
+}
+
+}//namespace ui 
+
+
+

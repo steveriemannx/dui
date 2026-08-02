@@ -1,0 +1,18 @@
+// icon.png embedded (767 bytes) - used directly by Item, not via XML class
+// Reuses ImgToMemFd from generated_ui.inc
+static const char kIconPngB64[] =
+    "iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAACxklEQVRoQ+1aTWgTQRh9IzGN"
+    "2Jgq1aRoYylItc3RRUsU7KFSPVRQQdSLBy2FarFQvJpcRVCqhVIVvFQRqaAHrXrQg6HCCl6S"
+    "VhBCaZWsEtFgkewmZGR3o0lIJJmlMTMlAwsLO3/ve3l5j50lELwRwfeP1QVgUKY+G9DMwoo0"
+    "99btjUU9pcY0NK6zb+7Y7tWfpVVNVcLRpfx+iy3tity59wvLemkgPiGR8J8xBgMjEbop9Qsh"
+    "ADtZJtP7Hgo9weHQ49LD2lqBKwHz2cIScCl7n+391H8Ez/z9rEuCAvPIYP/4HvLNADAk04sE"
+    "uMY8U40A6PukwMi4RK4bAM7LVC/N5RUBUKbq+WtYZSA7R/CmRAJ1AEUacDQA7W1mkZpcwMED"
+    "5r3yFZi4W0Aynwzkb7FKIq7uT6hpA9DbUyynHwng5WsBGBBexJ4twOAZs9J61V9kq55UgeiC"
+    "AAwIrwHhAQivgVoA+BwJjLpI4rSVKLF2Jumxz6q5NMpgZFp3g5LqcyhW1k1Q19TWrsBVI0rQ"
+    "+QHLWQivMjCuUq0cGz1rAP2y1oJk16SZhVYUAIORGZvnDkC5qudXm0sADEbGJwMMPlAHUBUR"
+    "C68B4QEwGFldA1XRQN3IKs4VuSixGBke3UjSlsKcfSbtsc+mc2GOwci0bpui9dkshbnv1Dbl"
+    "7Rozw9wp+VYAxNqLraNvPuFYqOCVZ66EZf6Rpv2teLRvW8UlL+hIEbwnnTPDXB1APgMMPsAn"
+    "A8IDYDAyPhlgSKN8AmAwMj4BCK8BBiPjkwHhNVALACffTV4gIGNWPL0oSvwnDVDQ4fu7B24Y"
+    "UaL/wx3n+uXMNAF6WUHUCMDzlEM7/tA3tFxwUn9Cvu0joEwH3f65uHtH7OffNOpodNrdHT7j"
+    "cFtTk2os/P4fSQ/42OJUQp3NTAfdFCT+QDpbeNDNWnWe+q+ubyV4qmyle/kNSAOfTwVZ1/oA"
+    "AAAASUVORK5CYII=";

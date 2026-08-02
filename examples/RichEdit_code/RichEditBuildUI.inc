@@ -1,0 +1,1074 @@
+//纯代码构建 UI（对应 rich_edit.xml 布局，从 XML 转录的源码级定义，不依赖 XML/生成器）
+static void BuildRichEditUI(ui::Window* pWindow)
+{
+    { ui::UiFont f; f.m_fontName = _T("Elephant");
+      f.m_fontSize = 14; f.m_bBold = true;
+      ui::GlobalManager::Instance().Font().AddFont(_T("btn_font_bold_14"), f, false); }
+    { ui::UiFont f; f.m_fontName = _T("Elephant");
+      f.m_fontSize = 14; f.m_bBold = true; f.m_bItalic = true;
+      ui::GlobalManager::Instance().Font().AddFont(_T("btn_font_italic_14"), f, false); }
+    pWindow->AddClass(_T("checkbox_font_class"), _T(" font=\"system_14\" normal_text_color=\"black\" disabled_text_color=\"gray\" text_align=\"hcenter,vcenter\" border_size=\"1\" hot_border_color=\"#FFB3D0EE\" pushed_border_color=\"#FF82B4E8\" selected_normal_color=\"#FFC9E0F7\" hot_color=\"#FFE8EFF7\" selected_hot_color=\"#FFE8EFF7\" pushed_color=\"#FFC9E0F7\" selected_pushed_color=\"#FFC9E0F7\""));
+    pWindow->AddClass(_T("btn_font_class"), _T(" font=\"system_14\" normal_text_color=\"black\" disabled_text_color=\"gray\" text_align=\"hcenter,vcenter\" border_size=\"1\" hot_border_color=\"#FFB3D0EE\" pushed_border_color=\"#FF82B4E8\" hot_color=\"#FFE8EFF7\" pushed_color=\"#FFC9E0F7\""));
+    ui::VBox* p0 = new ui::VBox(pWindow);
+        p0->SetAttribute(_T("bkcolor"), _T("bk_wnd_darkcolor"));
+    ui::HBox* p1 = new ui::HBox(pWindow);
+        p1->SetAttribute(_T("name"), _T("window_caption_bar"));
+        p1->SetAttribute(_T("width"), _T("stretch"));
+        p1->SetAttribute(_T("height"), _T("36"));
+        p1->SetAttribute(_T("bkcolor"), _T("bk_wnd_lightcolor"));
+    ui::HBox* p2 = new ui::HBox(pWindow);
+        p2->SetAttribute(_T("margin"), _T("0,0,30,0"));
+        p2->SetAttribute(_T("valign"), _T("center"));
+        p2->SetAttribute(_T("width"), _T("auto"));
+        p2->SetAttribute(_T("height"), _T("auto"));
+        p2->SetAttribute(_T("mouse_enabled"), _T("false"));
+    ui::Control* p3 = new ui::Control(pWindow);
+        p3->SetAttribute(_T("width"), _T("18"));
+        p3->SetAttribute(_T("height"), _T("18"));
+        p3->SetAttribute(_T("bkimage"), _T("public/caption/logo.svg"));
+        p3->SetAttribute(_T("valign"), _T("center"));
+        p3->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p2->AddItem(p3);
+
+    ui::Label* p4 = new ui::Label(pWindow);
+        p4->SetAttribute(_T("text"), _T("RichEdit控件测试程序"));
+        p4->SetAttribute(_T("valign"), _T("center"));
+        p4->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p4->SetAttribute(_T("mouse_enabled"), _T("false"));
+        p2->AddItem(p4);
+
+        p1->AddItem(p2);
+
+    ui::Control* p5 = new ui::Control(pWindow);
+        p5->SetAttribute(_T("mouse_enabled"), _T("false"));
+        p1->AddItem(p5);
+
+    ui::HBox* p6 = new ui::HBox(pWindow);
+        p6->SetAttribute(_T("margin"), _T("0,0,0,0"));
+        p6->SetAttribute(_T("valign"), _T("center"));
+        p6->SetAttribute(_T("width"), _T("auto"));
+        p6->SetAttribute(_T("height"), _T("36"));
+    ui::Button* p7 = new ui::Button(pWindow);
+        p7->SetAttribute(_T("class"), _T("btn_wnd_min_11"));
+        p7->SetAttribute(_T("height"), _T("32"));
+        p7->SetAttribute(_T("width"), _T("40"));
+        p7->SetAttribute(_T("name"), _T("minbtn"));
+        p7->SetAttribute(_T("margin"), _T("0,2,0,2"));
+        p7->SetAttribute(_T("tooltip_text"), _T("最小化"));
+        p6->AddItem(p7);
+
+    ui::Box* p8 = new ui::Box(pWindow);
+        p8->SetAttribute(_T("height"), _T("stretch"));
+        p8->SetAttribute(_T("width"), _T("40"));
+        p8->SetAttribute(_T("margin"), _T("0,2,0,2"));
+    ui::Button* p9 = new ui::Button(pWindow);
+        p9->SetAttribute(_T("class"), _T("btn_wnd_max_11"));
+        p9->SetAttribute(_T("height"), _T("32"));
+        p9->SetAttribute(_T("width"), _T("stretch"));
+        p9->SetAttribute(_T("name"), _T("maxbtn"));
+        p9->SetAttribute(_T("tooltip_text"), _T("最大化"));
+        p8->AddItem(p9);
+
+    ui::Button* p10 = new ui::Button(pWindow);
+        p10->SetAttribute(_T("class"), _T("btn_wnd_restore_11"));
+        p10->SetAttribute(_T("height"), _T("32"));
+        p10->SetAttribute(_T("width"), _T("stretch"));
+        p10->SetAttribute(_T("name"), _T("restorebtn"));
+        p10->SetAttribute(_T("visible"), _T("false"));
+        p10->SetAttribute(_T("tooltip_text"), _T("还原"));
+        p8->AddItem(p10);
+
+        p6->AddItem(p8);
+
+    ui::Button* p11 = new ui::Button(pWindow);
+        p11->SetAttribute(_T("class"), _T("btn_wnd_close_11"));
+        p11->SetAttribute(_T("height"), _T("stretch"));
+        p11->SetAttribute(_T("width"), _T("40"));
+        p11->SetAttribute(_T("name"), _T("closebtn"));
+        p11->SetAttribute(_T("margin"), _T("0,0,0,2"));
+        p11->SetAttribute(_T("tooltip_text"), _T("关闭"));
+        p6->AddItem(p11);
+
+        p1->AddItem(p6);
+
+        p0->AddItem(p1);
+
+    ui::HBox* p12 = new ui::HBox(pWindow);
+    ui::VScrollBox* p13 = new ui::VScrollBox(pWindow);
+        p13->SetAttribute(_T("width"), _T("360"));
+        p13->SetAttribute(_T("vscrollbar"), _T("true"));
+        p13->SetAttribute(_T("minwidth"), _T("60"));
+        p13->SetAttribute(_T("bkcolor"), _T("SeaShell"));
+        p13->SetAttribute(_T("border_size"), _T("1,1,0,1"));
+        p13->SetAttribute(_T("border_color"), _T("blue"));
+    ui::GroupVBox* p14 = new ui::GroupVBox(pWindow);
+        p14->SetAttribute(_T("margin"), _T("6,6,6,6"));
+        p14->SetAttribute(_T("text"), _T("密码相关功能"));
+        p14->SetAttribute(_T("height"), _T("auto"));
+        p14->SetAttribute(_T("corner_size"), _T("4,4"));
+    ui::HBox* p15 = new ui::HBox(pWindow);
+        p15->SetAttribute(_T("height"), _T("36"));
+        p15->SetAttribute(_T("margin"), _T("8,16,8,0"));
+    ui::Label* p16 = new ui::Label(pWindow);
+        p16->SetAttribute(_T("text"), _T("密码输入:  "));
+        p16->SetAttribute(_T("valign"), _T("center"));
+        p15->AddItem(p16);
+
+    ui::RichEdit* p17 = new ui::RichEdit(pWindow);
+        p17->SetAttribute(_T("class"), _T("simple"));
+        p17->SetAttribute(_T("text"), _T("This is password!"));
+        p17->SetAttribute(_T("password"), _T("true"));
+        p17->SetAttribute(_T("valign"), _T("center"));
+        p17->SetAttribute(_T("text_align"), _T("vcenter"));
+        p17->SetAttribute(_T("bkcolor"), _T("white"));
+        p17->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p15->AddItem(p17);
+
+        p14->AddItem(p15);
+
+    ui::HBox* p18 = new ui::HBox(pWindow);
+        p18->SetAttribute(_T("height"), _T("36"));
+        p18->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p19 = new ui::Label(pWindow);
+        p19->SetAttribute(_T("text"), _T("显示密码:  "));
+        p19->SetAttribute(_T("valign"), _T("center"));
+        p18->AddItem(p19);
+
+    ui::RichEdit* p20 = new ui::RichEdit(pWindow);
+        p20->SetAttribute(_T("class"), _T("simple"));
+        p20->SetAttribute(_T("text"), _T("This is password!"));
+        p20->SetAttribute(_T("password"), _T("true"));
+        p20->SetAttribute(_T("show_password"), _T("true"));
+        p20->SetAttribute(_T("valign"), _T("center"));
+        p20->SetAttribute(_T("text_align"), _T("vcenter"));
+        p20->SetAttribute(_T("bkcolor"), _T("white"));
+        p20->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p18->AddItem(p20);
+
+        p14->AddItem(p18);
+
+    ui::HBox* p21 = new ui::HBox(pWindow);
+        p21->SetAttribute(_T("height"), _T("36"));
+        p21->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p22 = new ui::Label(pWindow);
+        p22->SetAttribute(_T("text"), _T("闪现密码字符:  "));
+        p22->SetAttribute(_T("valign"), _T("center"));
+        p21->AddItem(p22);
+
+    ui::RichEdit* p23 = new ui::RichEdit(pWindow);
+        p23->SetAttribute(_T("class"), _T("simple"));
+        p23->SetAttribute(_T("text"), _T("This is password!"));
+        p23->SetAttribute(_T("password"), _T("true"));
+        p23->SetAttribute(_T("flash_password_char"), _T("true"));
+        p23->SetAttribute(_T("show_password"), _T("false"));
+        p23->SetAttribute(_T("valign"), _T("center"));
+        p23->SetAttribute(_T("text_align"), _T("vcenter"));
+        p23->SetAttribute(_T("bkcolor"), _T("white"));
+        p23->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p21->AddItem(p23);
+
+        p14->AddItem(p21);
+
+    ui::HBox* p24 = new ui::HBox(pWindow);
+        p24->SetAttribute(_T("height"), _T("36"));
+        p24->SetAttribute(_T("margin"), _T("8,0,8,8"));
+    ui::Label* p25 = new ui::Label(pWindow);
+        p25->SetAttribute(_T("text"), _T("密码字符为#:  "));
+        p25->SetAttribute(_T("valign"), _T("center"));
+        p24->AddItem(p25);
+
+    ui::RichEdit* p26 = new ui::RichEdit(pWindow);
+        p26->SetAttribute(_T("class"), _T("simple"));
+        p26->SetAttribute(_T("text"), _T("This is password!"));
+        p26->SetAttribute(_T("password"), _T("true"));
+        p26->SetAttribute(_T("password_char"), _T("#"));
+        p26->SetAttribute(_T("valign"), _T("center"));
+        p26->SetAttribute(_T("text_align"), _T("vcenter"));
+        p26->SetAttribute(_T("bkcolor"), _T("white"));
+        p26->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p24->AddItem(p26);
+
+        p14->AddItem(p24);
+
+        p13->AddItem(p14);
+
+    ui::GroupVBox* p27 = new ui::GroupVBox(pWindow);
+        p27->SetAttribute(_T("margin"), _T("6,6,6,6"));
+        p27->SetAttribute(_T("text"), _T("基本功能"));
+        p27->SetAttribute(_T("height"), _T("auto"));
+        p27->SetAttribute(_T("corner_size"), _T("4,4"));
+    ui::HBox* p28 = new ui::HBox(pWindow);
+        p28->SetAttribute(_T("height"), _T("36"));
+        p28->SetAttribute(_T("margin"), _T("8,16,8,0"));
+    ui::Label* p29 = new ui::Label(pWindow);
+        p29->SetAttribute(_T("text"), _T("单行编辑:  "));
+        p29->SetAttribute(_T("valign"), _T("center"));
+        p28->AddItem(p29);
+
+    ui::RichEdit* p30 = new ui::RichEdit(pWindow);
+        p30->SetAttribute(_T("class"), _T("simple simple_border"));
+        p30->SetAttribute(_T("text"), _T("RichEdit: simple"));
+        p30->SetAttribute(_T("default_context_menu"), _T("true"));
+        p30->SetAttribute(_T("valign"), _T("center"));
+        p30->SetAttribute(_T("text_align"), _T("vcenter"));
+        p30->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
+        p30->SetAttribute(_T("bkcolor"), _T("white"));
+        p30->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p28->AddItem(p30);
+
+        p27->AddItem(p28);
+
+    ui::HBox* p31 = new ui::HBox(pWindow);
+        p31->SetAttribute(_T("height"), _T("44"));
+        p31->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p32 = new ui::Label(pWindow);
+        p32->SetAttribute(_T("text"), _T("单行编辑:  "));
+        p32->SetAttribute(_T("valign"), _T("center"));
+        p31->AddItem(p32);
+
+    ui::RichEdit* p33 = new ui::RichEdit(pWindow);
+        p33->SetAttribute(_T("class"), _T("simple simple_border"));
+        p33->SetAttribute(_T("text"), _T("RichEdit: edit"));
+        p33->SetAttribute(_T("valign"), _T("center"));
+        p33->SetAttribute(_T("text_align"), _T("vcenter"));
+        p33->SetAttribute(_T("text_padding"), _T("4,4,4,4"));
+        p33->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p31->AddItem(p33);
+
+        p27->AddItem(p31);
+
+    ui::HBox* p34 = new ui::HBox(pWindow);
+        p34->SetAttribute(_T("height"), _T("36"));
+        p34->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p35 = new ui::Label(pWindow);
+        p35->SetAttribute(_T("text"), _T("提示模式:  "));
+        p35->SetAttribute(_T("valign"), _T("center"));
+        p34->AddItem(p35);
+
+    ui::RichEdit* p36 = new ui::RichEdit(pWindow);
+        p36->SetAttribute(_T("class"), _T("prompt simple simple_border_bottom"));
+        p36->SetAttribute(_T("prompttext"), _T("在这里可以输入文字"));
+        p36->SetAttribute(_T("valign"), _T("center"));
+        p36->SetAttribute(_T("text_align"), _T("vcenter"));
+        p36->SetAttribute(_T("bkcolor"), _T("white"));
+        p36->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p34->AddItem(p36);
+
+        p27->AddItem(p34);
+
+    ui::HBox* p37 = new ui::HBox(pWindow);
+        p37->SetAttribute(_T("height"), _T("36"));
+        p37->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p38 = new ui::Label(pWindow);
+        p38->SetAttribute(_T("text"), _T("数字模式:  "));
+        p38->SetAttribute(_T("valign"), _T("center"));
+        p37->AddItem(p38);
+
+    ui::RichEdit* p39 = new ui::RichEdit(pWindow);
+        p39->SetAttribute(_T("class"), _T("simple"));
+        p39->SetAttribute(_T("text"), _T("0123456789"));
+        p39->SetAttribute(_T("number"), _T("true"));
+        p39->SetAttribute(_T("valign"), _T("center"));
+        p39->SetAttribute(_T("text_align"), _T("vcenter"));
+        p39->SetAttribute(_T("bkcolor"), _T("white"));
+        p39->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p37->AddItem(p39);
+
+        p27->AddItem(p37);
+
+    ui::HBox* p40 = new ui::HBox(pWindow);
+        p40->SetAttribute(_T("height"), _T("36"));
+        p40->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p41 = new ui::Label(pWindow);
+        p41->SetAttribute(_T("text"), _T("只读模式:  "));
+        p41->SetAttribute(_T("valign"), _T("center"));
+        p40->AddItem(p41);
+
+    ui::RichEdit* p42 = new ui::RichEdit(pWindow);
+        p42->SetAttribute(_T("class"), _T("simple"));
+        p42->SetAttribute(_T("text"), _T("RichEdit: readonly"));
+        p42->SetAttribute(_T("readonly"), _T("true"));
+        p42->SetAttribute(_T("no_caret_readonly"), _T("true"));
+        p42->SetAttribute(_T("valign"), _T("center"));
+        p42->SetAttribute(_T("text_align"), _T("vcenter"));
+        p42->SetAttribute(_T("bkcolor"), _T("white"));
+        p42->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p40->AddItem(p42);
+
+        p27->AddItem(p40);
+
+    ui::HBox* p43 = new ui::HBox(pWindow);
+        p43->SetAttribute(_T("height"), _T("36"));
+        p43->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p44 = new ui::Label(pWindow);
+        p44->SetAttribute(_T("text"), _T("禁用模式:  "));
+        p44->SetAttribute(_T("valign"), _T("center"));
+        p43->AddItem(p44);
+
+    ui::RichEdit* p45 = new ui::RichEdit(pWindow);
+        p45->SetAttribute(_T("class"), _T("simple"));
+        p45->SetAttribute(_T("enabled"), _T("false"));
+        p45->SetAttribute(_T("text"), _T("RichEdit: disabled"));
+        p45->SetAttribute(_T("valign"), _T("center"));
+        p45->SetAttribute(_T("text_align"), _T("vcenter"));
+        p45->SetAttribute(_T("bkcolor"), _T("white"));
+        p45->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p43->AddItem(p45);
+
+        p27->AddItem(p43);
+
+    ui::HBox* p46 = new ui::HBox(pWindow);
+        p46->SetAttribute(_T("height"), _T("36"));
+        p46->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p47 = new ui::Label(pWindow);
+        p47->SetAttribute(_T("text"), _T("超级链接:  "));
+        p47->SetAttribute(_T("valign"), _T("center"));
+        p46->AddItem(p47);
+
+    ui::RichEdit* p48 = new ui::RichEdit(pWindow);
+        p48->SetAttribute(_T("name"), _T("test_url"));
+        p48->SetAttribute(_T("auto_detect_url"), _T("true"));
+        p48->SetAttribute(_T("text"), _T("访问网址：http://www.baidu.com"));
+        p48->SetAttribute(_T("readonly"), _T("true"));
+        p48->SetAttribute(_T("no_caret_readonly"), _T("true"));
+        p48->SetAttribute(_T("valign"), _T("center"));
+        p48->SetAttribute(_T("text_align"), _T("vcenter"));
+        p48->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
+        p48->SetAttribute(_T("bkcolor"), _T("white"));
+        p48->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p46->AddItem(p48);
+
+        p27->AddItem(p46);
+
+    ui::HBox* p49 = new ui::HBox(pWindow);
+        p49->SetAttribute(_T("height"), _T("36"));
+        p49->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p50 = new ui::Label(pWindow);
+        p50->SetAttribute(_T("text"), _T("文本颜色:  "));
+        p50->SetAttribute(_T("valign"), _T("center"));
+        p49->AddItem(p50);
+
+    ui::RichEdit* p51 = new ui::RichEdit(pWindow);
+        p51->SetAttribute(_T("class"), _T("simple"));
+        p51->SetAttribute(_T("text"), _T("RichEdit: 文本颜色为红色"));
+        p51->SetAttribute(_T("normal_text_color"), _T("red"));
+        p51->SetAttribute(_T("valign"), _T("center"));
+        p51->SetAttribute(_T("text_align"), _T("vcenter"));
+        p51->SetAttribute(_T("bkcolor"), _T("white"));
+        p51->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p49->AddItem(p51);
+
+        p27->AddItem(p49);
+
+    ui::HBox* p52 = new ui::HBox(pWindow);
+        p52->SetAttribute(_T("height"), _T("36"));
+        p52->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p53 = new ui::Label(pWindow);
+        p53->SetAttribute(_T("text"), _T("光标颜色:  "));
+        p53->SetAttribute(_T("valign"), _T("center"));
+        p52->AddItem(p53);
+
+    ui::RichEdit* p54 = new ui::RichEdit(pWindow);
+        p54->SetAttribute(_T("class"), _T("simple"));
+        p54->SetAttribute(_T("text"), _T("RichEdit: 光标颜色为红色"));
+        p54->SetAttribute(_T("caret_color"), _T("red"));
+        p54->SetAttribute(_T("valign"), _T("center"));
+        p54->SetAttribute(_T("text_align"), _T("vcenter"));
+        p54->SetAttribute(_T("bkcolor"), _T("white"));
+        p54->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p52->AddItem(p54);
+
+        p27->AddItem(p52);
+
+    ui::HBox* p55 = new ui::HBox(pWindow);
+        p55->SetAttribute(_T("height"), _T("48"));
+        p55->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p56 = new ui::Label(pWindow);
+        p56->SetAttribute(_T("text"), _T("文本对齐:  "));
+        p56->SetAttribute(_T("valign"), _T("center"));
+        p55->AddItem(p56);
+
+    ui::RichEdit* p57 = new ui::RichEdit(pWindow);
+        p57->SetAttribute(_T("class"), _T("simple"));
+        p57->SetAttribute(_T("text"), _T("text_align={left/hcenter/right,top/vcenter/bottom}"));
+        p57->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
+        p57->SetAttribute(_T("valign"), _T("center"));
+        p57->SetAttribute(_T("text_align"), _T("vcenter"));
+        p57->SetAttribute(_T("bkcolor"), _T("white"));
+        p57->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p55->AddItem(p57);
+
+        p27->AddItem(p55);
+
+    ui::HBox* p58 = new ui::HBox(pWindow);
+        p58->SetAttribute(_T("height"), _T("36"));
+        p58->SetAttribute(_T("margin"), _T("8,0,8,8"));
+    ui::Label* p59 = new ui::Label(pWindow);
+        p59->SetAttribute(_T("text"), _T("最大字符数为8:  "));
+        p59->SetAttribute(_T("valign"), _T("center"));
+        p58->AddItem(p59);
+
+    ui::RichEdit* p60 = new ui::RichEdit(pWindow);
+        p60->SetAttribute(_T("class"), _T("simple"));
+        p60->SetAttribute(_T("text"), _T("最大字符数为8"));
+        p60->SetAttribute(_T("max_char"), _T("8"));
+        p60->SetAttribute(_T("valign"), _T("center"));
+        p60->SetAttribute(_T("text_align"), _T("vcenter"));
+        p60->SetAttribute(_T("bkcolor"), _T("white"));
+        p60->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p58->AddItem(p60);
+
+        p27->AddItem(p58);
+
+        p13->AddItem(p27);
+
+    ui::GroupVBox* p61 = new ui::GroupVBox(pWindow);
+        p61->SetAttribute(_T("margin"), _T("6,6,6,6"));
+        p61->SetAttribute(_T("text"), _T("常用功能"));
+        p61->SetAttribute(_T("height"), _T("auto"));
+        p61->SetAttribute(_T("corner_size"), _T("4,4"));
+    ui::HBox* p62 = new ui::HBox(pWindow);
+        p62->SetAttribute(_T("height"), _T("36"));
+        p62->SetAttribute(_T("margin"), _T("8,16,8,0"));
+    ui::Label* p63 = new ui::Label(pWindow);
+        p63->SetAttribute(_T("text"), _T("Spin功能:  "));
+        p63->SetAttribute(_T("valign"), _T("center"));
+        p62->AddItem(p63);
+
+    ui::RichEdit* p64 = new ui::RichEdit(pWindow);
+        p64->SetAttribute(_T("class"), _T("simple simple_border rich_edit_spin"));
+        p64->SetAttribute(_T("min_number"), _T("-64"));
+        p64->SetAttribute(_T("max_number"), _T("64"));
+        p64->SetAttribute(_T("limit_text"), _T("3"));
+        p64->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p62->AddItem(p64);
+
+    ui::Label* p65 = new ui::Label(pWindow);
+        p65->SetAttribute(_T("text"), _T("(数字范围: -64 - 64)"));
+        p65->SetAttribute(_T("valign"), _T("center"));
+        p62->AddItem(p65);
+
+        p61->AddItem(p62);
+
+    ui::HBox* p66 = new ui::HBox(pWindow);
+        p66->SetAttribute(_T("height"), _T("36"));
+        p66->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p67 = new ui::Label(pWindow);
+        p67->SetAttribute(_T("text"), _T("清除文本:  "));
+        p67->SetAttribute(_T("valign"), _T("center"));
+        p66->AddItem(p67);
+
+    ui::RichEdit* p68 = new ui::RichEdit(pWindow);
+        p68->SetAttribute(_T("class"), _T("simple simple_border rich_edit_clear_btn"));
+        p68->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p66->AddItem(p68);
+
+        p61->AddItem(p66);
+
+    ui::HBox* p69 = new ui::HBox(pWindow);
+        p69->SetAttribute(_T("height"), _T("36"));
+        p69->SetAttribute(_T("margin"), _T("8,0,8,8"));
+    ui::Label* p70 = new ui::Label(pWindow);
+        p70->SetAttribute(_T("text"), _T("显示密码:  "));
+        p70->SetAttribute(_T("valign"), _T("center"));
+        p69->AddItem(p70);
+
+    ui::RichEdit* p71 = new ui::RichEdit(pWindow);
+        p71->SetAttribute(_T("class"), _T("simple simple_border rich_edit_show_password_btn"));
+        p71->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p69->AddItem(p71);
+
+        p61->AddItem(p69);
+
+        p13->AddItem(p61);
+
+    ui::GroupVBox* p72 = new ui::GroupVBox(pWindow);
+        p72->SetAttribute(_T("margin"), _T("6,6,6,6"));
+        p72->SetAttribute(_T("text"), _T("滚动条相关"));
+        p72->SetAttribute(_T("height"), _T("auto"));
+        p72->SetAttribute(_T("corner_size"), _T("4,4"));
+    ui::HBox* p73 = new ui::HBox(pWindow);
+        p73->SetAttribute(_T("height"), _T("48"));
+        p73->SetAttribute(_T("margin"), _T("8,16,8,0"));
+    ui::Label* p74 = new ui::Label(pWindow);
+        p74->SetAttribute(_T("text"), _T("横向滚动条:  "));
+        p74->SetAttribute(_T("valign"), _T("center"));
+        p73->AddItem(p74);
+
+    ui::RichEdit* p75 = new ui::RichEdit(pWindow);
+        p75->SetAttribute(_T("text"), _T("横向测试0横向测试1横向测试2横向测试3横向测试4横向测试5横向测试6横向测试7横向测试8"));
+        p75->SetAttribute(_T("multi_line"), _T("true"));
+        p75->SetAttribute(_T("word_wrap"), _T("false"));
+        p75->SetAttribute(_T("hscrollbar"), _T("true"));
+        p75->SetAttribute(_T("bkcolor"), _T("white"));
+        p75->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p73->AddItem(p75);
+
+        p72->AddItem(p73);
+
+    ui::HBox* p76 = new ui::HBox(pWindow);
+        p76->SetAttribute(_T("height"), _T("48"));
+        p76->SetAttribute(_T("margin"), _T("8,0,8,0"));
+    ui::Label* p77 = new ui::Label(pWindow);
+        p77->SetAttribute(_T("text"), _T("纵向滚动条:  "));
+        p77->SetAttribute(_T("valign"), _T("center"));
+        p76->AddItem(p77);
+
+    ui::RichEdit* p78 = new ui::RichEdit(pWindow);
+        p78->SetAttribute(_T("text"), _T("纵向测试0纵向测试1纵向测试2纵向测试3纵向测试4纵向测试5纵向测试6纵向测试7纵向测试8纵向测试9纵向测试10纵向测试11纵向测试12纵向测试13纵向测试14"));
+        p78->SetAttribute(_T("multi_line"), _T("true"));
+        p78->SetAttribute(_T("want_return"), _T("true"));
+        p78->SetAttribute(_T("word_wrap"), _T("true"));
+        p78->SetAttribute(_T("vscrollbar"), _T("true"));
+        p78->SetAttribute(_T("bkcolor"), _T("white"));
+        p78->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p76->AddItem(p78);
+
+        p72->AddItem(p76);
+
+    ui::HBox* p79 = new ui::HBox(pWindow);
+        p79->SetAttribute(_T("height"), _T("48"));
+        p79->SetAttribute(_T("margin"), _T("8,0,8,8"));
+    ui::Label* p80 = new ui::Label(pWindow);
+        p80->SetAttribute(_T("text"), _T("同时横向与纵向滚动条:  "));
+        p80->SetAttribute(_T("valign"), _T("center"));
+        p79->AddItem(p80);
+
+    ui::RichEdit* p81 = new ui::RichEdit(pWindow);
+        p81->SetAttribute(_T("text"), _T("纵向测试0纵向测试1纵向测试2纵向测试3纵向测试4纵向测试5纵向测试6纵向测试7纵向测试8纵向测试9纵向测试10纵向测试11纵向测试12纵向测试13纵向测试14"));
+        p81->SetAttribute(_T("multi_line"), _T("true"));
+        p81->SetAttribute(_T("want_return"), _T("true"));
+        p81->SetAttribute(_T("word_wrap"), _T("false"));
+        p81->SetAttribute(_T("vscrollbar"), _T("true"));
+        p81->SetAttribute(_T("hscrollbar"), _T("true"));
+        p81->SetAttribute(_T("bkcolor"), _T("white"));
+        p81->SetAttribute(_T("margin"), _T("4,6,4,4"));
+        p79->AddItem(p81);
+
+        p72->AddItem(p79);
+
+        p13->AddItem(p72);
+
+        p12->AddItem(p13);
+
+    ui::Split* p82 = new ui::Split(pWindow);
+        p82->SetAttribute(_T("bkcolor"), _T("splitline_level1"));
+        p82->SetAttribute(_T("width"), _T("2"));
+        p12->AddItem(p82);
+
+    ui::VBox* p83 = new ui::VBox(pWindow);
+    ui::VBox* p84 = new ui::VBox(pWindow);
+        p84->SetAttribute(_T("bkcolor"), _T("bk_wnd_darkcolor"));
+        p84->SetAttribute(_T("height"), _T("auto"));
+        p84->SetAttribute(_T("minheight"), _T("40"));
+    ui::HBox* p85 = new ui::HBox(pWindow);
+        p85->SetAttribute(_T("height"), _T("auto"));
+        p85->SetAttribute(_T("margin"), _T("0,2,2,0"));
+    ui::Label* p86 = new ui::Label(pWindow);
+        p86->SetAttribute(_T("text"), _T("文件："));
+        p86->SetAttribute(_T("valign"), _T("center"));
+        p86->SetAttribute(_T("margin"), _T("8,0,8,0"));
+        p85->AddItem(p86);
+
+    ui::Button* p87 = new ui::Button(pWindow);
+        p87->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p87->SetAttribute(_T("name"), _T("open_file"));
+        p87->SetAttribute(_T("width"), _T("100"));
+        p87->SetAttribute(_T("height"), _T("28"));
+        p87->SetAttribute(_T("text"), _T("打开(Ctrl+O)"));
+        p87->SetAttribute(_T("borderround"), _T("2,2"));
+        p87->SetAttribute(_T("valign"), _T("center"));
+        p87->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p85->AddItem(p87);
+
+    ui::Button* p88 = new ui::Button(pWindow);
+        p88->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p88->SetAttribute(_T("name"), _T("save_file"));
+        p88->SetAttribute(_T("width"), _T("100"));
+        p88->SetAttribute(_T("height"), _T("28"));
+        p88->SetAttribute(_T("text"), _T("保存(Ctrl+S)"));
+        p88->SetAttribute(_T("borderround"), _T("2,2"));
+        p88->SetAttribute(_T("valign"), _T("center"));
+        p88->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p85->AddItem(p88);
+
+    ui::Button* p89 = new ui::Button(pWindow);
+        p89->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p89->SetAttribute(_T("name"), _T("save_as_file"));
+        p89->SetAttribute(_T("width"), _T("160"));
+        p89->SetAttribute(_T("height"), _T("28"));
+        p89->SetAttribute(_T("text"), _T("另存为(Ctrl+Shift+S)"));
+        p89->SetAttribute(_T("borderround"), _T("2,2"));
+        p89->SetAttribute(_T("valign"), _T("center"));
+        p89->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p85->AddItem(p89);
+
+        p84->AddItem(p85);
+
+    ui::HBox* p90 = new ui::HBox(pWindow);
+        p90->SetAttribute(_T("height"), _T("auto"));
+        p90->SetAttribute(_T("margin"), _T("0,2,2,0"));
+    ui::Label* p91 = new ui::Label(pWindow);
+        p91->SetAttribute(_T("text"), _T("编辑："));
+        p91->SetAttribute(_T("valign"), _T("center"));
+        p91->SetAttribute(_T("margin"), _T("8,0,8,0"));
+        p90->AddItem(p91);
+
+    ui::Button* p92 = new ui::Button(pWindow);
+        p92->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p92->SetAttribute(_T("name"), _T("btn_copy"));
+        p92->SetAttribute(_T("width"), _T("100"));
+        p92->SetAttribute(_T("height"), _T("28"));
+        p92->SetAttribute(_T("text"), _T("复制(Ctrl+C)"));
+        p92->SetAttribute(_T("borderround"), _T("2,2"));
+        p92->SetAttribute(_T("valign"), _T("center"));
+        p92->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p90->AddItem(p92);
+
+    ui::Button* p93 = new ui::Button(pWindow);
+        p93->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p93->SetAttribute(_T("name"), _T("btn_cut"));
+        p93->SetAttribute(_T("width"), _T("100"));
+        p93->SetAttribute(_T("height"), _T("28"));
+        p93->SetAttribute(_T("text"), _T("剪切(Ctrl+X)"));
+        p93->SetAttribute(_T("borderround"), _T("2,2"));
+        p93->SetAttribute(_T("valign"), _T("center"));
+        p93->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p90->AddItem(p93);
+
+    ui::Button* p94 = new ui::Button(pWindow);
+        p94->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p94->SetAttribute(_T("name"), _T("btn_paste"));
+        p94->SetAttribute(_T("width"), _T("100"));
+        p94->SetAttribute(_T("height"), _T("28"));
+        p94->SetAttribute(_T("text"), _T("粘贴(Ctrl+V)"));
+        p94->SetAttribute(_T("borderround"), _T("2,2"));
+        p94->SetAttribute(_T("valign"), _T("center"));
+        p94->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p90->AddItem(p94);
+
+    ui::Button* p95 = new ui::Button(pWindow);
+        p95->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p95->SetAttribute(_T("name"), _T("btn_delete"));
+        p95->SetAttribute(_T("width"), _T("100"));
+        p95->SetAttribute(_T("height"), _T("28"));
+        p95->SetAttribute(_T("text"), _T("删除(Del)"));
+        p95->SetAttribute(_T("borderround"), _T("2,2"));
+        p95->SetAttribute(_T("valign"), _T("center"));
+        p95->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p90->AddItem(p95);
+
+    ui::Button* p96 = new ui::Button(pWindow);
+        p96->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p96->SetAttribute(_T("name"), _T("btn_sel_all"));
+        p96->SetAttribute(_T("width"), _T("100"));
+        p96->SetAttribute(_T("height"), _T("28"));
+        p96->SetAttribute(_T("text"), _T("全选(Ctrl+A)"));
+        p96->SetAttribute(_T("borderround"), _T("2,2"));
+        p96->SetAttribute(_T("valign"), _T("center"));
+        p96->SetAttribute(_T("margin"), _T("4,0,8,0"));
+        p90->AddItem(p96);
+
+    ui::Button* p97 = new ui::Button(pWindow);
+        p97->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p97->SetAttribute(_T("name"), _T("btn_sel_none"));
+        p97->SetAttribute(_T("width"), _T("100"));
+        p97->SetAttribute(_T("height"), _T("28"));
+        p97->SetAttribute(_T("text"), _T("取消选择"));
+        p97->SetAttribute(_T("borderround"), _T("2,2"));
+        p97->SetAttribute(_T("valign"), _T("center"));
+        p97->SetAttribute(_T("margin"), _T("4,0,8,0"));
+        p90->AddItem(p97);
+
+    ui::Button* p98 = new ui::Button(pWindow);
+        p98->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p98->SetAttribute(_T("name"), _T("btn_undo"));
+        p98->SetAttribute(_T("width"), _T("100"));
+        p98->SetAttribute(_T("height"), _T("28"));
+        p98->SetAttribute(_T("text"), _T("撤销(Ctrl+Z)"));
+        p98->SetAttribute(_T("borderround"), _T("2,2"));
+        p98->SetAttribute(_T("valign"), _T("center"));
+        p98->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p90->AddItem(p98);
+
+    ui::Button* p99 = new ui::Button(pWindow);
+        p99->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p99->SetAttribute(_T("name"), _T("btn_redo"));
+        p99->SetAttribute(_T("width"), _T("100"));
+        p99->SetAttribute(_T("height"), _T("28"));
+        p99->SetAttribute(_T("text"), _T("重做(Ctrl+Y)"));
+        p99->SetAttribute(_T("borderround"), _T("2,2"));
+        p99->SetAttribute(_T("valign"), _T("center"));
+        p99->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p90->AddItem(p99);
+
+        p84->AddItem(p90);
+
+    ui::HBox* p100 = new ui::HBox(pWindow);
+        p100->SetAttribute(_T("height"), _T("auto"));
+        p100->SetAttribute(_T("margin"), _T("0,2,2,0"));
+    ui::Label* p101 = new ui::Label(pWindow);
+        p101->SetAttribute(_T("text"), _T("查找："));
+        p101->SetAttribute(_T("valign"), _T("center"));
+        p101->SetAttribute(_T("margin"), _T("8,0,8,0"));
+        p100->AddItem(p101);
+
+    ui::Button* p102 = new ui::Button(pWindow);
+        p102->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p102->SetAttribute(_T("name"), _T("btn_find_text"));
+        p102->SetAttribute(_T("width"), _T("100"));
+        p102->SetAttribute(_T("height"), _T("28"));
+        p102->SetAttribute(_T("text"), _T("查找(Ctrl+F)"));
+        p102->SetAttribute(_T("borderround"), _T("2,2"));
+        p102->SetAttribute(_T("valign"), _T("center"));
+        p102->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p100->AddItem(p102);
+
+    ui::Button* p103 = new ui::Button(pWindow);
+        p103->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p103->SetAttribute(_T("name"), _T("btn_find_next"));
+        p103->SetAttribute(_T("width"), _T("100"));
+        p103->SetAttribute(_T("height"), _T("28"));
+        p103->SetAttribute(_T("text"), _T("查找下一个(F3)"));
+        p103->SetAttribute(_T("borderround"), _T("2,2"));
+        p103->SetAttribute(_T("valign"), _T("center"));
+        p103->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p100->AddItem(p103);
+
+    ui::Button* p104 = new ui::Button(pWindow);
+        p104->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p104->SetAttribute(_T("name"), _T("btn_replace_text"));
+        p104->SetAttribute(_T("width"), _T("100"));
+        p104->SetAttribute(_T("height"), _T("28"));
+        p104->SetAttribute(_T("text"), _T("替换(Ctrl+H)"));
+        p104->SetAttribute(_T("borderround"), _T("2,2"));
+        p104->SetAttribute(_T("valign"), _T("center"));
+        p104->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        p100->AddItem(p104);
+
+        p84->AddItem(p100);
+
+    ui::HBox* p105 = new ui::HBox(pWindow);
+        p105->SetAttribute(_T("height"), _T("auto"));
+        p105->SetAttribute(_T("margin"), _T("0,2,2,0"));
+    ui::Label* p106 = new ui::Label(pWindow);
+        p106->SetAttribute(_T("text"), _T("字体："));
+        p106->SetAttribute(_T("valign"), _T("center"));
+        p106->SetAttribute(_T("margin"), _T("8,0,8,0"));
+        p105->AddItem(p106);
+
+    ui::Button* p107 = new ui::Button(pWindow);
+        p107->SetAttribute(_T("class"), _T("btn_global_gray_80x30"));
+        p107->SetAttribute(_T("name"), _T("set_font"));
+        p107->SetAttribute(_T("width"), _T("100"));
+        p107->SetAttribute(_T("height"), _T("28"));
+        p107->SetAttribute(_T("text"), _T("设置字体"));
+        p107->SetAttribute(_T("borderround"), _T("2,2"));
+        p107->SetAttribute(_T("valign"), _T("center"));
+        p107->SetAttribute(_T("margin"), _T("4,0,4,2"));
+        p105->AddItem(p107);
+
+    ui::Combo* p108 = new ui::Combo(pWindow);
+        p108->SetAttribute(_T("class"), _T("combo"));
+        p108->SetAttribute(_T("name"), _T("combo_font_name"));
+        p108->SetAttribute(_T("combo_type"), _T("drop_down"));
+        p108->SetAttribute(_T("dropbox_size"), _T("0,300"));
+        p108->SetAttribute(_T("height"), _T("28"));
+        p108->SetAttribute(_T("width"), _T("160"));
+        p108->SetAttribute(_T("tooltiptext"), _T("选择字体"));
+        p108->SetAttribute(_T("margin"), _T("2,0,2,2"));
+        p105->AddItem(p108);
+
+    ui::Combo* p109 = new ui::Combo(pWindow);
+        p109->SetAttribute(_T("class"), _T("combo"));
+        p109->SetAttribute(_T("name"), _T("combo_font_size"));
+        p109->SetAttribute(_T("combo_type"), _T("drop_down"));
+        p109->SetAttribute(_T("dropbox_size"), _T("0,300"));
+        p109->SetAttribute(_T("height"), _T("28"));
+        p109->SetAttribute(_T("width"), _T("60"));
+        p109->SetAttribute(_T("margin"), _T("2,0,2,0"));
+        p109->SetAttribute(_T("tooltiptext"), _T("选择字体"));
+        p105->AddItem(p109);
+
+    ui::CheckBox* p110 = new ui::CheckBox(pWindow);
+        p110->SetAttribute(_T("class"), _T("checkbox_font_class"));
+        p110->SetAttribute(_T("name"), _T("btn_font_bold"));
+        p110->SetAttribute(_T("width"), _T("28"));
+        p110->SetAttribute(_T("height"), _T("26"));
+        p110->SetAttribute(_T("text"), _T("B"));
+        p110->SetAttribute(_T("font"), _T("btn_font_bold_14"));
+        p110->SetAttribute(_T("valign"), _T("center"));
+        p110->SetAttribute(_T("margin"), _T("2,1,1,3"));
+        p110->SetAttribute(_T("tooltiptext"), _T("粗体：改为较粗的字体"));
+        p105->AddItem(p110);
+
+    ui::CheckBox* p111 = new ui::CheckBox(pWindow);
+        p111->SetAttribute(_T("class"), _T("checkbox_font_class"));
+        p111->SetAttribute(_T("name"), _T("btn_font_italic"));
+        p111->SetAttribute(_T("width"), _T("28"));
+        p111->SetAttribute(_T("height"), _T("26"));
+        p111->SetAttribute(_T("text"), _T("I"));
+        p111->SetAttribute(_T("font"), _T("btn_font_italic_14"));
+        p111->SetAttribute(_T("valign"), _T("center"));
+        p111->SetAttribute(_T("margin"), _T("1,1,1,3"));
+        p111->SetAttribute(_T("tooltiptext"), _T("斜体：改为倾斜的字体"));
+        p105->AddItem(p111);
+
+    ui::CheckBox* p112 = new ui::CheckBox(pWindow);
+        p112->SetAttribute(_T("class"), _T("checkbox_font_class"));
+        p112->SetAttribute(_T("name"), _T("btn_font_underline"));
+        p112->SetAttribute(_T("width"), _T("28"));
+        p112->SetAttribute(_T("height"), _T("26"));
+        p112->SetAttribute(_T("text"), _T("U"));
+        p112->SetAttribute(_T("font"), _T("system_underline_14"));
+        p112->SetAttribute(_T("valign"), _T("center"));
+        p112->SetAttribute(_T("margin"), _T("1,1,1,3"));
+        p112->SetAttribute(_T("tooltiptext"), _T("下划线：在文本下面画一条线"));
+        p105->AddItem(p112);
+
+    ui::CheckBox* p113 = new ui::CheckBox(pWindow);
+        p113->SetAttribute(_T("class"), _T("checkbox_font_class"));
+        p113->SetAttribute(_T("name"), _T("btn_font_strikeout"));
+        p113->SetAttribute(_T("width"), _T("28"));
+        p113->SetAttribute(_T("height"), _T("26"));
+        p113->SetAttribute(_T("text"), _T("abc"));
+        p113->SetAttribute(_T("font"), _T("system_strikeout_14"));
+        p113->SetAttribute(_T("valign"), _T("center"));
+        p113->SetAttribute(_T("margin"), _T("1,1,1,3"));
+        p113->SetAttribute(_T("tooltiptext"), _T("删除线：在文本上画一条线"));
+        p105->AddItem(p113);
+
+    ui::Button* p114 = new ui::Button(pWindow);
+        p114->SetAttribute(_T("class"), _T("btn_font_class"));
+        p114->SetAttribute(_T("name"), _T("btn_font_size_increase"));
+        p114->SetAttribute(_T("width"), _T("32"));
+        p114->SetAttribute(_T("height"), _T("26"));
+        p114->SetAttribute(_T("text"), _T("A+"));
+        p114->SetAttribute(_T("font"), _T("btn_font_bold_14"));
+        p114->SetAttribute(_T("valign"), _T("center"));
+        p114->SetAttribute(_T("margin"), _T("1,1,1,3"));
+        p114->SetAttribute(_T("tooltiptext"), _T("增加字体的大小"));
+        p105->AddItem(p114);
+
+    ui::Button* p115 = new ui::Button(pWindow);
+        p115->SetAttribute(_T("class"), _T("btn_font_class"));
+        p115->SetAttribute(_T("name"), _T("btn_font_size_decrease"));
+        p115->SetAttribute(_T("width"), _T("32"));
+        p115->SetAttribute(_T("height"), _T("26"));
+        p115->SetAttribute(_T("text"), _T("A-"));
+        p115->SetAttribute(_T("font"), _T("btn_font_bold_14"));
+        p115->SetAttribute(_T("valign"), _T("center"));
+        p115->SetAttribute(_T("margin"), _T("1,1,1,3"));
+        p115->SetAttribute(_T("tooltiptext"), _T("减小字体的大小"));
+        p105->AddItem(p115);
+
+    ui::ComboButton* p116 = new ui::ComboButton(pWindow);
+        p116->SetAttribute(_T("class"), _T("combo_button"));
+        p116->SetAttribute(_T("name"), _T("color_combo_button"));
+        p116->SetAttribute(_T("height"), _T("28"));
+        p116->SetAttribute(_T("width"), _T("48"));
+        p116->SetAttribute(_T("dropbox_size"), _T("240,300"));
+        p116->SetAttribute(_T("left_button_top_label_text"), _T("A"));
+        p116->SetAttribute(_T("left_button_bottom_label_bkcolor"), _T("skyblue"));
+        p105->AddItem(p116);
+
+    ui::Label* p117 = new ui::Label(pWindow);
+        p117->SetAttribute(_T("text"), _T("(富文本模式为设置当前选择文本的格式)"));
+        p117->SetAttribute(_T("font"), _T("system_12"));
+        p117->SetAttribute(_T("valign"), _T("center"));
+        p117->SetAttribute(_T("margin"), _T("2,0,2,0"));
+        p117->SetAttribute(_T("tooltiptext"), _T("富文本模式为设置当前选择文本的格式;纯文本模式为设置所有文本的格式。"));
+        p105->AddItem(p117);
+
+        p84->AddItem(p105);
+
+    ui::HBox* p118 = new ui::HBox(pWindow);
+        p118->SetAttribute(_T("height"), _T("auto"));
+        p118->SetAttribute(_T("margin"), _T("0,2,2,0"));
+    ui::Label* p119 = new ui::Label(pWindow);
+        p119->SetAttribute(_T("text"), _T("缩放："));
+        p119->SetAttribute(_T("valign"), _T("center"));
+        p119->SetAttribute(_T("margin"), _T("8,0,8,0"));
+        p118->AddItem(p119);
+
+    ui::Label* p120 = new ui::Label(pWindow);
+        p120->SetAttribute(_T("text"), _T("当前缩放比例："));
+        p120->SetAttribute(_T("valign"), _T("center"));
+        p118->AddItem(p120);
+
+    ui::Label* p121 = new ui::Label(pWindow);
+        p121->SetAttribute(_T("name"), _T("lavel_zoom_value"));
+        p121->SetAttribute(_T("text"), _T("100.0%"));
+        p121->SetAttribute(_T("font"), _T("system_bold_14"));
+        p121->SetAttribute(_T("valign"), _T("center"));
+        p121->SetAttribute(_T("margin"), _T("0,0,12,0"));
+        p118->AddItem(p121);
+
+    ui::Button* p122 = new ui::Button(pWindow);
+        p122->SetAttribute(_T("class"), _T("btn_font_class"));
+        p122->SetAttribute(_T("name"), _T("btn_zoom_in"));
+        p122->SetAttribute(_T("width"), _T("64"));
+        p122->SetAttribute(_T("height"), _T("26"));
+        p122->SetAttribute(_T("text"), _T("放大+"));
+        p122->SetAttribute(_T("font"), _T("system_14"));
+        p122->SetAttribute(_T("valign"), _T("center"));
+        p122->SetAttribute(_T("margin"), _T("1,1,1,3"));
+        p122->SetAttribute(_T("tooltiptext"), _T("增加字体的大小"));
+        p118->AddItem(p122);
+
+    ui::Button* p123 = new ui::Button(pWindow);
+        p123->SetAttribute(_T("class"), _T("btn_font_class"));
+        p123->SetAttribute(_T("name"), _T("btn_zoom_out"));
+        p123->SetAttribute(_T("width"), _T("64"));
+        p123->SetAttribute(_T("height"), _T("26"));
+        p123->SetAttribute(_T("text"), _T("缩小-"));
+        p123->SetAttribute(_T("font"), _T("system_14"));
+        p123->SetAttribute(_T("valign"), _T("center"));
+        p123->SetAttribute(_T("margin"), _T("1,1,1,3"));
+        p123->SetAttribute(_T("tooltiptext"), _T("减小字体的大小"));
+        p118->AddItem(p123);
+
+    ui::Button* p124 = new ui::Button(pWindow);
+        p124->SetAttribute(_T("class"), _T("btn_font_class"));
+        p124->SetAttribute(_T("name"), _T("btn_zoom_off"));
+        p124->SetAttribute(_T("width"), _T("120"));
+        p124->SetAttribute(_T("height"), _T("26"));
+        p124->SetAttribute(_T("text"), _T("复原到100%"));
+        p124->SetAttribute(_T("font"), _T("system_14"));
+        p124->SetAttribute(_T("valign"), _T("center"));
+        p124->SetAttribute(_T("margin"), _T("1,1,1,3"));
+        p124->SetAttribute(_T("tooltiptext"), _T("字体大小复原到100%"));
+        p118->AddItem(p124);
+
+        p84->AddItem(p118);
+
+    ui::HBox* p125 = new ui::HBox(pWindow);
+        p125->SetAttribute(_T("height"), _T("auto"));
+        p125->SetAttribute(_T("margin"), _T("0,2,2,2"));
+    ui::Label* p126 = new ui::Label(pWindow);
+        p126->SetAttribute(_T("text"), _T("其他："));
+        p126->SetAttribute(_T("valign"), _T("center"));
+        p126->SetAttribute(_T("margin"), _T("8,0,8,0"));
+        p125->AddItem(p126);
+
+    ui::CheckBox* p127 = new ui::CheckBox(pWindow);
+        p127->SetAttribute(_T("class"), _T("checkbox_1"));
+        p127->SetAttribute(_T("name"), _T("btn_word_wrap"));
+        p127->SetAttribute(_T("text"), _T("自动换行"));
+        p127->SetAttribute(_T("margin"), _T("4,0,0,0"));
+        p127->SetAttribute(_T("selected"), _T("true"));
+        p127->SetAttribute(_T("tooltiptext"), _T("是否自动换行"));
+        p125->AddItem(p127);
+
+    ui::CheckBox* p128 = new ui::CheckBox(pWindow);
+        p128->SetAttribute(_T("class"), _T("checkbox_1"));
+        p128->SetAttribute(_T("name"), _T("btn_rich_text"));
+        p128->SetAttribute(_T("text"), _T("富文本模式"));
+        p128->SetAttribute(_T("margin"), _T("12,0,0,0"));
+        p128->SetAttribute(_T("selected"), _T("true"));
+        p128->SetAttribute(_T("tooltiptext"), _T("是否支持富文本格式"));
+        p125->AddItem(p128);
+
+    ui::Label* p129 = new ui::Label(pWindow);
+        p129->SetAttribute(_T("text"), _T("行间距："));
+        p129->SetAttribute(_T("valign"), _T("center"));
+        p129->SetAttribute(_T("margin"), _T("12,0,0,0"));
+        p125->AddItem(p129);
+
+    ui::Option* p130 = new ui::Option(pWindow);
+        p130->SetAttribute(_T("class"), _T("option_1"));
+        p130->SetAttribute(_T("group"), _T("richedit_row_spacing_group"));
+        p130->SetAttribute(_T("text"), _T("1.0"));
+        p130->SetAttribute(_T("margin"), _T("6,0,0,0"));
+        p130->SetAttribute(_T("text_align"), _T("vcenter"));
+        p130->SetAttribute(_T("selected"), _T("true"));
+        p125->AddItem(p130);
+
+    ui::Option* p131 = new ui::Option(pWindow);
+        p131->SetAttribute(_T("class"), _T("option_1"));
+        p131->SetAttribute(_T("group"), _T("richedit_row_spacing_group"));
+        p131->SetAttribute(_T("text"), _T("1.15"));
+        p131->SetAttribute(_T("margin"), _T("6,0,0,0"));
+        p131->SetAttribute(_T("text_align"), _T("vcenter"));
+        p125->AddItem(p131);
+
+    ui::Option* p132 = new ui::Option(pWindow);
+        p132->SetAttribute(_T("class"), _T("option_1"));
+        p132->SetAttribute(_T("group"), _T("richedit_row_spacing_group"));
+        p132->SetAttribute(_T("text"), _T("1.5"));
+        p132->SetAttribute(_T("margin"), _T("6,0,0,0"));
+        p132->SetAttribute(_T("text_align"), _T("vcenter"));
+        p125->AddItem(p132);
+
+    ui::Option* p133 = new ui::Option(pWindow);
+        p133->SetAttribute(_T("class"), _T("option_1"));
+        p133->SetAttribute(_T("group"), _T("richedit_row_spacing_group"));
+        p133->SetAttribute(_T("text"), _T("2.0"));
+        p133->SetAttribute(_T("margin"), _T("6,0,0,0"));
+        p133->SetAttribute(_T("text_align"), _T("vcenter"));
+        p125->AddItem(p133);
+
+    ui::Option* p134 = new ui::Option(pWindow);
+        p134->SetAttribute(_T("class"), _T("option_1"));
+        p134->SetAttribute(_T("group"), _T("richedit_row_spacing_group"));
+        p134->SetAttribute(_T("text"), _T("2.5"));
+        p134->SetAttribute(_T("margin"), _T("6,0,0,0"));
+        p134->SetAttribute(_T("text_align"), _T("vcenter"));
+        p125->AddItem(p134);
+
+    ui::Option* p135 = new ui::Option(pWindow);
+        p135->SetAttribute(_T("class"), _T("option_1"));
+        p135->SetAttribute(_T("group"), _T("richedit_row_spacing_group"));
+        p135->SetAttribute(_T("text"), _T("3.0"));
+        p135->SetAttribute(_T("margin"), _T("6,0,0,0"));
+        p135->SetAttribute(_T("text_align"), _T("vcenter"));
+        p125->AddItem(p135);
+
+    ui::Label* p136 = new ui::Label(pWindow);
+        p136->SetAttribute(_T("name"), _T("row_spacing_tips"));
+        p136->SetAttribute(_T("text"), _T("（行间距：仅在富文本模式下有效）"));
+        p136->SetAttribute(_T("valign"), _T("center"));
+        p136->SetAttribute(_T("margin"), _T("4,0,0,0"));
+        p125->AddItem(p136);
+
+        p84->AddItem(p125);
+
+        p83->AddItem(p84);
+
+    ui::Split* p137 = new ui::Split(pWindow);
+        p137->SetAttribute(_T("bkcolor"), _T("splitline_level1"));
+        p137->SetAttribute(_T("height"), _T("2"));
+        p83->AddItem(p137);
+
+    ui::HBox* p138 = new ui::HBox(pWindow);
+        p138->SetAttribute(_T("bkcolor"), _T("Pink"));
+        p138->SetAttribute(_T("border_size"), _T("1"));
+        p138->SetAttribute(_T("border_color"), _T("blue"));
+        p138->SetAttribute(_T("minwidth"), _T("60"));
+    ui::RichEdit* p139 = new ui::RichEdit(pWindow);
+        p139->SetAttribute(_T("name"), _T("rich_edit"));
+        p139->SetAttribute(_T("enable_drag_drop"), _T("true"));
+        p139->SetAttribute(_T("zoom"), _T("0,0"));
+        p139->SetAttribute(_T("wheel_zoom"), _T("true"));
+        p139->SetAttribute(_T("multi_line"), _T("true"));
+        p139->SetAttribute(_T("want_return"), _T("true"));
+        p139->SetAttribute(_T("word_wrap"), _T("true"));
+        p139->SetAttribute(_T("rich_text"), _T("false"));
+        p139->SetAttribute(_T("default_context_menu"), _T("true"));
+        p139->SetAttribute(_T("save_selection"), _T("true"));
+        p139->SetAttribute(_T("hide_selection"), _T("false"));
+        p139->SetAttribute(_T("word_wrap"), _T("true"));
+        p139->SetAttribute(_T("vscrollbar"), _T("true"));
+        p139->SetAttribute(_T("auto_vscroll"), _T("true"));
+        p139->SetAttribute(_T("bkcolor"), _T("white"));
+        p138->AddItem(p139);
+
+        p83->AddItem(p138);
+
+        p12->AddItem(p83);
+
+        p0->AddItem(p12);
+
+
+    pWindow->AttachBox(p0);
+}

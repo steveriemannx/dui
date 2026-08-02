@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window>
+    <Label text="TabBox Test: TabBox contains an embedded TabBox control"/>
+    <TabCtrl class="tab_ctrl" tab_box_name="main_view_tab_test" selected_id="0">
+        <TabCtrlItem class="tab_ctrl_item" title="Label 1" close_button_class="" tab_box_item_index="0"/>
+        <TabCtrlItem class="tab_ctrl_item" title="Label 2" close_button_class="" tab_box_item_index="1"/>
+        <TabCtrlItem class="tab_ctrl_item" title="Label 3" close_button_class="" tab_box_item_index="2"/>
+    </TabCtrl>
+    <TabBox name="main_view_tab_test" bkcolor="white" selected_id="0">
+        <VBox bkcolor="white">
+            <Label text="Page 1: This is page 1"/>
+            <Label text="Window Shadow Function Test:" valign="center" margin="12,30,10,0"/>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: default, default shadow" selected="true" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={default}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: big, large shadow, square corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={big}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: big_round, large shadow, rounded corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={big_round}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: small, small shadow, square corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={small}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: small_round, small shadow, rounded corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={small_round}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: menu, small shadow, square corners (suitable for popup windows such as menus)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={menu}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: menu_round, small shadow, rounded corners (suitable for popup windows such as menus)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={menu_round}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: none, no shadow, with border, square corners" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={none}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: none_round, no shadow, with border, rounded corners" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={none_round}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Disable Shadow" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_attached={false}" />
+            </Option>
+        </VBox>
+        <VBox bkcolor="blue">
+            <Label text="Page 2: This is page 2"/>
+        </VBox>
+        <VBox bkcolor="green">
+            <Label text="Page 3: This is page 3"/>
+            <TabBox name="sub_view_tab" selected_id="2" bkcolor="Cornsilk">
+                <VBox name="sub_view_tab_page1" height="200" bkcolor="LightBlue">
+                    <Label text="Embedded Page 1: This is embedded page 1"/>                    
+                </VBox>
+                <VBox name="sub_view_tab_page2" height="400" bkcolor="LightCoral">
+                    <Label text="Embedded Page 2: This is embedded page 2"/>
+                    <Label text="Embedded Page 2: This is embedded page 2"/>
+                </VBox>
+                <VBox name="sub_view_tab_page3" height="600" bkcolor="LightCyan">
+                    <Label text="Embedded Page 3: This is embedded page 3"/>
+                    <Label text="Embedded Page 3: This is embedded page 3"/>
+                    <Label text="Embedded Page 3: This is embedded page 3"/>
+                </VBox>
+            </TabBox>
+        </VBox>
+    </TabBox>
+</Window>

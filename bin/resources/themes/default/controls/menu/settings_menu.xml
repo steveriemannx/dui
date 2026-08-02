@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window shadow_type="menu_round" shadow_attached="true" layered_window="true" shadow_border_size="2" shadow_border_color="#FFEDEDED">
+    <MenuListBox class="menu" name="main_menu" padding="0,4,0,4">
+        <!-- Top-level menu -->
+        <MenuItem class="menu_element" name="first" width="180">
+          <Button name="button_01" width="auto" height="auto" bkimage="file='menu_settings.svg'valign='center' halign='center'" valign="center" mouse_enabled="false" keyboard_enabled="false"/>
+          <Label class="menu_text" text="Menu Item 1 (Level 1)" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+        </MenuItem>
+    
+        <MenuItem class="menu_element" name="second" width="180">
+          <Label class="menu_text" text="Menu Item 2 (Level 1)" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+        </MenuItem>
+        
+        <!-- Insert ordinary controls into the menu to implement specific functions -->
+        <HBox class="menu_split_box" height="36">
+            <Label class="menu_text" text="Volume" textpadding="0,0,6,0" mouse_enabled="false" keyboard_enabled="false"/>
+            <Control width="auto" height="auto" bkimage="file='menu_speaker.svg' valign='center' halign='center'" valign="center" mouse_enabled="false" keyboard_enabled="false"/>
+            <Slider class="slider_horizontal_green" value="70" tooltip_text="ui::Slider"/>
+        </HBox>
+        
+        <!-- Separator line between menu items -->
+        <Box class="menu_split_box">
+            <Control class="menu_split_line" />
+        </Box>
+        
+        <MenuItem class="menu_element" name="third" width="180">
+            <Label class="menu_text" text="Menu Item 3 (Level 1)" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+        </MenuItem>
+        
+        <MenuItem class="menu_element" name="fourth" width="180">
+            <Button name="button_04" width="auto" height="auto" bkimage="sub_menu.svg" valign="center" mouse_enabled="false" keyboard_enabled="false"/>
+            <Label class="menu_text" text="Sub Menu" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+            <!-- Submenu: the first supported form (keeps compatibility with older versions) -->
+            <MenuItem class="menu_element" name="sub_menu0" width="180">
+                <Button name="button_44" width="auto" height="auto" bkimage="menu_item.svg" valign="center" mouse_enabled="false" keyboard_enabled="false"/>
+                <Label class="menu_text" text="Menu Item 0 (Level 2)" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+            </MenuItem>
+            <!-- Submenu: the second supported form (new format, convenient for adding common controls to submenus) -->
+            <SubMenu>
+                <MenuItem class="menu_element" name="sub_menu1" width="180">
+                    <Label class="menu_text" text="Menu Item 1 (Level 2)" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+                </MenuItem>
+                <MenuItem class="menu_element" name="sub_menu2" width="180">
+                    <Label class="menu_text" text="Menu Item 2 (Level 2)" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+                </MenuItem>
+                <MenuItem class="menu_element" name="sub_menu3" width="180">
+                    <Label class="menu_text" text="Menu Item 3 (Level 2)" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+                </MenuItem>
+                <MenuItem class="menu_element" name="sub_menu4" width="180">
+                    <Button name="button_05" width="auto" height="auto" bkimage="sub_menu.svg" valign="center" mouse_enabled="false" keyboard_enabled="false"/>
+                    <Label class="menu_text" text="Sub Menu" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+                    <!-- Third-level menu -->
+                    <MenuItem class="menu_element" name="sub_sub_menu1" width="180">
+                        <Label class="menu_text" text="Menu Item 1 (Level 3)" mouse_enabled="false" keyboard_enabled="false"/>
+                    </MenuItem>
+                    <MenuItem class="menu_element" name="sub_sub_menu2" width="180">
+                        <Label class="menu_text" text="Menu Item 2 (Level 3)" mouse_enabled="false" keyboard_enabled="false"/>
+                    </MenuItem>
+                </MenuItem>
+            </SubMenu>
+        </MenuItem>
+        
+        <!-- Separator line between menu items -->
+        <Box class="menu_split_box">
+            <Control class="menu_split_line" mouse_enabled="false" keyboard_enabled="false"/>
+        </Box>
+        
+        <!-- Menu item with a check option -->
+        <MenuItem class="menu_element" name="menu_check_01" width="180">
+            <CheckBox class="menu_checkbox" name="menu_checkbox_01" text="Sort: Ascending" margin="0,5,0,10" selected="true" tooltiptext="ui::Checkbox" mouse_enabled="false" keyboard_enabled="false"/>
+        </MenuItem>
+        <MenuItem class="menu_element" name="menu_check_02" width="180">
+            <CheckBox class="menu_checkbox" name="menu_checkbox_02" text="Sort: Descending" margin="0,5,0,10" selected="false" tooltiptext="ui::Checkbox" mouse_enabled="false" keyboard_enabled="false"/>
+        </MenuItem>
+        
+        <!-- Separator line between menu items -->
+        <Box class="menu_split_box">
+            <Control class="menu_split_line" mouse_enabled="false" keyboard_enabled="false"/>
+        </Box>
+    
+        <MenuItem class="menu_element" name="about" width="auto">
+            <Button name="button_06" width="auto" height="auto" bkimage="menu_about.svg" valign="center" mouse_enabled="false" keyboard_enabled="false"/>
+            <Label class="menu_text" text="About" margin="30,0,0,0" mouse_enabled="false" keyboard_enabled="false"/>
+        </MenuItem>
+  </MenuListBox>
+</Window>

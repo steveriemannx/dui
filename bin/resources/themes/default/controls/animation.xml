@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="600,500" min_size="80,50" text="Animation Test"
+        caption="0,0,0,36" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" 
+        shadow_type="default" shadow_attached="true" shadow_snap="true" layered_window="true" 
+        alpha="255" size_box="4,4,4,4" icon="public/caption/logo.ico">
+    <VBox bkcolor="bk_wnd_darkcolor" visible="true">    
+        <!-- Title bar area -->
+        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+            <Control mouse_enabled="false"/>
+            <Button class="btn_wnd_fullscreen_11" height="32" width="40" name="fullscreenbtn" margin="0,2,0,2" tooltip_text="Fullscreen, press ESC to exit fullscreen"/>
+            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+            <Box height="stretch" width="40" margin="0,2,0,2">
+                <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
+                <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
+            </Box>
+            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+        </HBox>
+        
+        <!-- Work area: everything outside the title bar goes into this large Box area -->
+        <VBox child_halign="center" child_valign="center">
+            <HBox height="40" margin="8,0,0,0">
+                <Button class="btn_global_color_gray" name="animation_btn" text="Play/Pause" width="96" height="30" border_round="3,3" margin="8,0,0,0" valign="center"/>
+                <Label text="Current Frame/Total:" valign="center" margin="8,0,0,0"/>
+                <Label name="animation_frame" text="[000/100]" width="120" valign="center" margin="8,0,0,0"/>
+                <Button class="btn_global_color_gray" name="goto_frame_btn" text="Go to" width="56" height="30" border_round="3,3" margin="8,0,0,0" valign="center"/>
+                <Label text="No." valign="center" margin="8,0,0,0"/>
+                <RichEdit class="simple simple_border rich_edit_spin" name="goto_frame_number" number="true" width="80" min_number="0" max_number="10000" valign="center" text_align="vcenter" bkcolor="white" margin="8,0,0,0"/>
+                <Label text="Frame" valign="center" margin="8,0,0,0"/>
+            </HBox>
+            <Control name="animation_test" halign="center" valign="center" bkimage="file='render/apng_test.png' name='bk_animation_test' auto_play='true' icon_as_animation='true' icon_frame_delay='2000' valign='center' halign='center'"/>
+        </VBox>
+    </VBox>
+</Window>

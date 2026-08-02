@@ -1,0 +1,313 @@
+#include "duilib/Image/ImagePlayer.h"
+#include "duilib/Core/Control.h"
+#include "duilib/Core/GlobalManager.h"
+#include "duilib/Image/Image.h"
+#include "duilib/Render/AutoClip.h"
+#include "duilib/Render/IRender.h"
+
+namespace ui 
+{
+ImagePlayer::ImagePlayer():
+    m_pControl(nullptr),
+    m_pImage(nullptr),
+    m_bAnimationPlaying(false),
+    m_bAutoPlay(true),
+    m_nCycledCount(0),
+    m_nMaxPlayCount(-1)
+{
+}
+
+ImagePlayer::~ImagePlayer()
+{
+}
+
+void ImagePlayer::SetControl(Control* pControl)
+{
+    m_pControl = pControl;
+}
+
+void ImagePlayer::SetImage(Image* pImage)
+{
+    m_pImage = pImage;
+    if (m_pImage != nullptr) {
+        ASSERT(m_pImage->IsMultiFrameImage());
+        //Initialize the number of playback loops
+        m_nMaxPlayCount = m_pImage->GetImageAttribute().m_nPlayCount;
+        if (m_nMaxPlayCount == 0) {
+            m_nMaxPlayCount = m_pImage->GetLoopCount();
+        }
+        if (m_nMaxPlayCount <= 0) {
+            m_nMaxPlayCount = -1;
+        }
+
+        //Initialize whether to auto-play
+        m_bAutoPlay = m_pImage->GetImageAttribute().m_bAutoPlay;
+    }
+}
+
+void ImagePlayer::SetImageAnimationRect(const UiRect& rcImageRect)
+{
+    m_rcImageAnimationRect = rcImageRect;
+}
+
+void ImagePlayer::GetImageAnimationStatus(ImageAnimationStatus& animStatus)
+{
+    if ((m_pImage != nullptr) && (m_pControl != nullptr) && (m_pImage->GetImageInfo() != nullptr)) {
+        animStatus.m_name = m_pImage->GetImageAttribute().m_sImageName.c_str();
+        animStatus.m_bBkImage = m_pControl->GetBkImage() == m_pImage->GetImageString();
+        animStatus.m_nFrameCount = m_pImage->GetFrameCount();
+        animStatus.m_nFrameIndex = m_pImage->GetCurrentFrameIndex();
+        animStatus.m_nFrameDelayMs = m_pImage->GetImageInfo()->GetFrameDelayMs(animStatus.m_nFrameIndex);
+        animStatus.m_nLoopCount = m_pImage->GetImageInfo()->GetLoopCount();
+    }
+    else {
+        animStatus.m_name.clear();
+        animStatus.m_bBkImage = false;
+        animStatus.m_nFrameCount = 0;
+        animStatus.m_nFrameIndex = 0;
+        animStatus.m_nFrameDelayMs = 0;
+        animStatus.m_nLoopCount = 0;
+    }
+}
+
+void ImagePlayer::CheckStartImageAnimation()
+{
+    if (!m_bAutoPlay) {
+        return;
+    }
+    if (IsMultiFrameImage()) {
+        if (IsAnimationPlaying()) {
+            return;
+        }
+        else {
+            int32_t nPlayCount = m_pImage->GetImageAttribute().m_nPlayCount;
+            bool bRet = StartImageAnimation(AnimationImagePos::kFrameCurrent, nPlayCount);
+            ASSERT_UNUSED_VARIABLE(bRet);
+        }
+    }
+    else {
+        m_bAnimationPlaying = false;
+        m_animWeakFlag.Cancel();
+        return;
+    }
+}
+
+bool ImagePlayer::StartImageAnimation(AnimationImagePos nStartFrame, int32_t nPlayCount)
+{
+    m_animWeakFlag.Cancel();
+    if (!IsMultiFrameImage()) {
+        m_bAnimationPlaying = false;
+        return false;
+    }
+    if (nPlayCount != 0) {
+        m_nMaxPlayCount = nPlayCount;
+    }
+    if (m_nMaxPlayCount <= 0) {
+        //Play in an infinite loop
+        m_nMaxPlayCount = -1;
+    }
+    ASSERT((m_pImage != nullptr) && (m_pControl != nullptr) && (m_pImage->GetImageInfo() != nullptr));
+    if ((m_pImage == nullptr) || (m_pControl == nullptr) || (m_pImage->GetImageInfo() == nullptr)) {
+        m_bAnimationPlaying = false;
+        return false;
+    }
+
+    //Determine which frame to start playing from
+    uint32_t nFrameIndex = GetImageFrameIndex(nStartFrame);
+    m_pImage->SetCurrentFrameIndex(nFrameIndex);
+    nFrameIndex = m_pImage->GetCurrentFrameIndex();
+    int32_t nTimerInterval = m_pImage->GetImageInfo()->GetFrameDelayMs(nFrameIndex);
+    ASSERT(nTimerInterval > 0);
+    if (nTimerInterval <= 0) {
+        m_bAnimationPlaying = false;
+        return false;
+    }
+    m_nCycledCount = 0;
+    m_bAnimationPlaying = true;
+    RedrawImage();
+    auto animationPlayCallback = UiBind(&ImagePlayer::PlayingImageAnimation, this);
+    bool bRet = GlobalManager::Instance().Timer().AddTimer(m_animWeakFlag.GetWeakFlag(),
+                                                           animationPlayCallback,
+                                                           nTimerInterval) != 0;
+    if ((m_pControl != nullptr) && (m_pImage != nullptr)) {
+        if (m_pControl->HasEventCallback(kEventImageAnimationStart)) {
+            //Trigger an animation start event
+            ImageAnimationStatus animStatus;
+            GetImageAnimationStatus(animStatus);
+            m_pControl->SendEvent(kEventImageAnimationStart, (WPARAM)&animStatus);
+        }
+    }
+    return bRet;
+}
+
+void ImagePlayer::PlayingImageAnimation()
+{
+    //Triggered by the timer, play the next frame
+    if (!IsAnimationPlaying() || !IsMultiFrameImage()) {
+        m_animWeakFlag.Cancel();
+        m_bAnimationPlaying = false;
+        return;
+    }
+    if ((m_pImage == nullptr) || (m_pControl == nullptr)) {
+        m_animWeakFlag.Cancel();
+        m_bAnimationPlaying = false;
+        return;
+    }
+    std::shared_ptr<ImageInfo> pImageInfo = m_pImage->GetImageInfo();
+    if (pImageInfo == nullptr) {
+        m_animWeakFlag.Cancel();
+        m_bAnimationPlaying = false;
+        return;
+    }
+    uint32_t nFrameIndex = m_pImage->GetCurrentFrameIndex();
+    if (!pImageInfo->IsFrameDataReady(nFrameIndex)) {
+        //The data of the current frame has not been decoded yet; if the decoding has not been finished, it should not have been drawn: skip the duration of one frame
+        //TODO: (optimization pending: show immediately after the next frame is decoded)
+        return;
+    }    
+    else {
+        //Check whether the next frame of the image has been decoded: the next frame
+        uint32_t nNextFrameIndex = nFrameIndex + 1;
+        if (nNextFrameIndex >= pImageInfo->GetFrameCount()) {
+            nNextFrameIndex = 0;
+        }
+        if (!pImageInfo->IsFrameDataReady(nNextFrameIndex)) {
+            //The data of the next frame has not been decoded yet: do not switch to the next frame
+            return;
+        }
+    }
+
+    //Play the next frame
+    int32_t nPreTimerInterval = pImageInfo->GetFrameDelayMs(nFrameIndex);
+    ASSERT(nPreTimerInterval > 0);
+    nFrameIndex++;
+    if (nFrameIndex >= pImageInfo->GetFrameCount()) {
+        //One play completed
+        nFrameIndex = 0;
+        m_nCycledCount += 1;
+        if ((m_nMaxPlayCount > 0) && (m_nCycledCount >= m_nMaxPlayCount)) {
+            //The maximum play count has been reached, stop playing
+            StopImageAnimation(AnimationImagePos::kFrameLast, true);
+            return;
+        }
+    }
+    int32_t nNowTimerInterval = pImageInfo->GetFrameDelayMs(nFrameIndex);
+    ASSERT(nNowTimerInterval > 0);
+    bool bRet = true;
+    if (nPreTimerInterval != nNowTimerInterval) {
+        //The playback time between frames has changed; restart the timer with the new playback time interval
+        m_animWeakFlag.Cancel();
+        auto animationPlayCallback = UiBind(&ImagePlayer::PlayingImageAnimation, this);
+        bRet = GlobalManager::Instance().Timer().AddTimer(m_animWeakFlag.GetWeakFlag(),
+                                                          animationPlayCallback,
+                                                          nNowTimerInterval) != 0;
+        ASSERT(bRet);
+    }
+    if (bRet) {
+        //Switch to the next frame and redraw the image
+        m_pImage->SetCurrentFrameIndex(nFrameIndex);
+        RedrawImage();
+
+        //Trigger the playback progress
+        if (m_pControl->HasEventCallback(kEventImageAnimationPlayFrame)) {
+            //Trigger an animation start event
+            ImageAnimationStatus animStatus;
+            GetImageAnimationStatus(animStatus);
+            m_pControl->SendEvent(kEventImageAnimationPlayFrame, (WPARAM)&animStatus);
+        }
+    }
+    else {
+        //Failed to start the timer
+        StopImageAnimation(AnimationImagePos::kFrameCurrent, true);
+    }
+}
+
+void ImagePlayer::StopImageAnimation(AnimationImagePos nStopFrame, bool bTriggerEvent)
+{
+    m_bAnimationPlaying = false;
+    m_animWeakFlag.Cancel();
+    if (IsMultiFrameImage() && (m_pImage != nullptr)) {
+        uint32_t index = GetImageFrameIndex(nStopFrame);
+        m_pImage->SetCurrentFrameIndex(index);
+        RedrawImage();
+    }
+    //Once stopped, mark it as manually stopped, and the animation will no longer auto-play
+    m_bAutoPlay = false;
+    if (bTriggerEvent && (m_pControl != nullptr) && (m_pImage != nullptr)) {
+        if (m_pControl->HasEventCallback(kEventImageAnimationStop)) {
+            //Trigger an animation stop event
+            ImageAnimationStatus animStatus;
+            GetImageAnimationStatus(animStatus);
+            m_pControl->SendEvent(kEventImageAnimationStop, (WPARAM)&animStatus);
+        }
+    }
+}
+
+bool ImagePlayer::IsAnimationPlaying() const
+{
+    return m_bAnimationPlaying;
+}
+
+void ImagePlayer::SetAutoPlay(bool bAutoPlay)
+{
+    m_bAutoPlay = bAutoPlay;
+}
+
+bool ImagePlayer::IsAutoPlay() const
+{
+    return m_bAutoPlay;
+}
+
+uint32_t ImagePlayer::GetImageFrameIndex(AnimationImagePos frame) const
+{
+    if (!IsMultiFrameImage()) {
+        return 0;
+    }
+    uint32_t ret = 0;
+    switch (frame)
+    {
+    case AnimationImagePos::kFrameCurrent:
+        ret = m_pImage->GetCurrentFrameIndex();
+        break;
+    case AnimationImagePos::kFrameFirst:
+        ret = 0;
+        break;
+    case AnimationImagePos::kFrameLast:
+        if (m_pImage->GetImageInfo() != nullptr) {
+            uint32_t nFrameCount = m_pImage->GetImageInfo()->GetFrameCount();
+            ret = nFrameCount > 0 ? nFrameCount - 1 : 0;
+        }
+        break;
+    default:
+        break;
+    }
+    return ret;
+}
+
+void ImagePlayer::RedrawImage()
+{
+    if (m_pControl != nullptr) {
+        //Redraw the image
+        if (m_rcImageAnimationRect.IsEmpty()) {
+            //First play, the area is empty, redraw the whole control
+            m_pControl->Invalidate();
+        }
+        else {
+            m_pControl->InvalidateRect(m_rcImageAnimationRect);
+        }
+    }
+}
+
+bool ImagePlayer::IsMultiFrameImage() const
+{
+    if ((m_pControl != nullptr) && 
+        (m_pImage != nullptr) &&
+        (m_pImage->IsImagePaintEnabled()) &&
+        (m_pImage->GetImageInfo() != nullptr) &&
+        (m_pImage->GetImageInfo()->IsMultiFrameImage())) {
+        return true;
+    }
+    return false;
+}
+
+}

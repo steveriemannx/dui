@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Global>
+    <!--Default font names, in list form, matched in order until the first valid font is found as the default font name; multiple font names are separated by commas-->
+    <!-- Font note: "Microsoft YaHei", "SimSun" are used on Windows -->
+    <!-- Font note: "PingFang SC" is used on macOS -->
+    <!-- Font note: "Noto Sans CJK SC" is used on Zhongke Fangde systems -->
+    <DefaultFontFamilyNames value="Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC"/>
+    
+    <!--All fonts: default font size is No. 5-->
+    <Font id="system_12" name="system" size="12"/>
+    <Font id="system_14" name="system" size="14" default="true"/>
+    <Font id="system_16" name="system" size="16"/>
+    <Font id="system_18" name="system" size="18"/>
+    <Font id="system_20" name="system" size="20"/>
+    <Font id="system_22" name="system" size="22"/>
+    <Font id="system_bold_12" name="system" size="12" bold="true"/>
+    <Font id="system_bold_14" name="system" size="14" bold="true"/>
+    <Font id="system_bold_16" name="system" size="16" bold="true"/>
+    <Font id="system_bold_18" name="system" size="18" bold="true"/>
+    <Font id="system_bold_20" name="system" size="20" bold="true"/>
+    <Font id="system_bold_22" name="system" size="22" bold="true"/>
+    <Font id="system_underline_12" name="system" size="12" underline="true"/>
+    <Font id="system_underline_14" name="system" size="14" underline="true"/>
+    <Font id="system_underline_16" name="system" size="16" underline="true"/>
+    <Font id="system_underline_18" name="system" size="18" underline="true"/>
+    <Font id="system_underline_20" name="system" size="20" underline="true"/>
+    <Font id="system_underline_22" name="system" size="22" underline="true"/>
+    <Font id="system_italic_12" name="system" size="12" italic="true"/>
+    <Font id="system_italic_14" name="system" size="14" italic="true"/>
+    <Font id="system_italic_16" name="system" size="16" italic="true"/>
+    <Font id="system_italic_18" name="system" size="18" italic="true"/>
+    <Font id="system_italic_20" name="system" size="20" italic="true"/>
+    <Font id="system_italic_22" name="system" size="22" italic="true"/>
+    <Font id="system_strikeout_12" name="system" size="12" strikeout="true"/>
+    <Font id="system_strikeout_14" name="system" size="14" strikeout="true"/>
+    <Font id="system_strikeout_16" name="system" size="16" strikeout="true"/>
+    <Font id="system_strikeout_18" name="system" size="18" strikeout="true"/>
+    <Font id="system_strikeout_20" name="system" size="20" strikeout="true"/>
+    <Font id="system_strikeout_22" name="system" size="22" strikeout="true"/>
+    <Font id="system_fullstyle_12" name="system" size="12" italic="true" strikeout="true" underline="true" bold="true"/>
+    <Font id="system_fullstyle_14" name="system" size="14" italic="true" strikeout="true" underline="true" bold="true"/>
+    <Font id="system_fullstyle_16" name="system" size="16" italic="true" strikeout="true" underline="true" bold="true"/>
+    <Font id="system_fullstyle_18" name="system" size="18" italic="true" strikeout="true" underline="true" bold="true"/>
+    <Font id="system_fullstyle_20" name="system" size="20" italic="true" strikeout="true" underline="true" bold="true"/>
+    <Font id="system_fullstyle_22" name="system" size="22" italic="true" strikeout="true" underline="true" bold="true"/>
+    <Font id="arial_12" name="arial" size="12"/>
+    <Font id="arial_14" name="arial" size="14"/>
+    <Font id="arial_16" name="arial" size="16"/>
+    <Font id="arial_18" name="arial" size="18"/>
+    <Font id="arial_20" name="arial" size="20"/>
+    <Font id="arial_22" name="arial" size="22"/>
+    <Font id="arial_bold_12" name="arial" size="12" bold="true"/>
+    <Font id="arial_bold_14" name="arial" size="14" bold="true"/>
+    <Font id="arial_bold_16" name="arial" size="16" bold="true"/>
+    <Font id="arial_bold_18" name="arial" size="18" bold="true"/>
+    <Font id="arial_bold_20" name="arial" size="20" bold="true"/>
+    <Font id="arial_bold_22" name="arial" size="22" bold="true"/>
+    
+    <!-- Font files (placed in the fonts directory at the resource root) are loaded at program startup; after loading, they can be used in the same way as system fonts -->
+    <!-- Note: the RobotoMono font can only display English letters; it does not support Chinese characters -->
+    <FontFile file="RobotoMono-Regular.ttf" desc="Font: Roboto Mono, Regular"/>
+    <FontFile file="RobotoMono-Bold.ttf" desc="Font: Roboto Mono, Bold"/>
+    <FontFile file="RobotoMono-Italic.ttf" desc="Font: Roboto Mono, Italic"/>
+    <FontFile file="RobotoMono-BoldItalic.ttf" desc="Font: Roboto Mono, Bold Italic"/>
+    
+    <!-- Default text color value: normal state -->
+    <TextColor name="default_font_color" value="#FF000000"/>
+    <!-- Default text color value: disabled state -->
+    <TextColor name="disabled_font_color" value="#FFA1AEBC"/>
+    
+    <!-- Hyperlink: normal text color value -->
+    <TextColor name="default_link_font_color" value="#FF0000FF"/>
+    <!-- Hyperlink: text color value in hover state -->
+    <TextColor name="hover_link_font_color" value="#FFD3215F"/>
+    <!-- Hyperlink: text color value in pressed state -->
+    <TextColor name="mouse_down_link_font_color" value="#FFFF0000"/>
+    
+    <!--Some common fixed colors-->
+    <TextColor name="white" value="#ffffffff"/>
+    <TextColor name="black" value="#ff000000"/>
+    <TextColor name="darkcolor" value="#ff333333"/>
+    <TextColor name="lightcolor" value="#ff888888"/>
+    <TextColor name="gray" value="#ff8e99a6"/>
+    <TextColor name="light_gray" value="#ffa8a8a8"/>
+    <TextColor name="dark_gray" value="#ff72797f"/>
+    <TextColor name="green" value="#ff00bb96"/>
+    <TextColor name="light_green" value="#ff21c7a6"/>
+    <TextColor name="blue" value="#ff006DD9"/>
+    <TextColor name="red" value="#ffC63535"/>
+    
+    <!--Common window background colors-->
+    <TextColor name="bk_main_wnd_title" value="#ff238efa"/>
+    <TextColor name="bk_main_wnd_search" value="#ff1e7ad7"/>
+    <TextColor name="bk_wnd_darkcolor" value="#fff0f2f5"/>
+    <TextColor name="bk_wnd_lightcolor" value="#ffffffff"/>
+    <TextColor name="bk_menuitem_hovered" value="#ffe1e6eb"/>
+    <TextColor name="bk_menuitem_selected" value="#ffced4db"/>
+    <TextColor name="bk_listitem_hovered" value="#fff0f2f5"/>
+    <TextColor name="bk_listitem_selected" value="#ffe4e7eb"/>
+    <!--For progress bars-->
+    <TextColor name="bk_progress_progress" value="#ff2aceae"/>    
+    <!--First-level separator line, darker-->
+    <TextColor name="splitline_level1" value="#ffd2d4d6"/>
+    <!--Second-level separator line, lighter-->
+    <TextColor name="splitline_level2" value="#ffebedf0"/>
+    <!--For edit boxes-->
+    <TextColor name="richedit_border_color" value="#AAA8A8A8"/>
+    <TextColor name="richedit_hot_border_color" value="CornflowerBlue"/>
+    <TextColor name="richedit_focus_border_color" value="#FF8591A2"/>
+    <TextColor name="richedit_focus_bottom_border_color" value="#FF1D6978"/>
+    <!--Scroll bar: minimalist style, the default scroll bar style, do not delete-->
+    <Class name="vscrollbar" width="12" fade_alpha="true" 
+                             thumb_normal_image="file='public/scrollbar01/vscrollbar/thumb_normal.svg' width='12' corner='0,8,0,8'" 
+                             thumb_hot_image="file='public/scrollbar01/vscrollbar/thumb_hovered.svg' width='12' corner='0,8,0,8'" 
+                             bk_hot_image="file='public/scrollbar01/vscrollbar/bk_hovered.svg' width='12' corner='0,8,0,8'" 
+                             show_button1="false" 
+                             show_button2="false" />
+    <Class name="hscrollbar" height="12" fade_alpha="true" 
+                             thumb_normal_image="file='public/scrollbar01/hscrollbar/thumb_normal.svg' height='12' corner='8,0,8,0'" 
+                             thumb_hot_image="file='public/scrollbar01/hscrollbar/thumb_hovered.svg' height='12' corner='8,0,8,0'" 
+                             bk_hot_image="file='public/scrollbar01/hscrollbar/bk_hovered.svg' height='12' corner='8,0,8,0'" 
+                             show_button1="false" 
+                             show_button2="false"/>
+    <!--Scroll bar: standard style-->
+    <Class name="vscrollbar2" width="12" fade_alpha="true"
+                             thumb_normal_image="file='public/scrollbar02/vscrollbar/thumb_normal.svg' width='12' corner='0,8,0,8'" 
+                             thumb_hot_image="file='public/scrollbar02/vscrollbar/thumb_hovered.svg' width='12' corner='0,8,0,8'" 
+                             bk_normal_image="file='public/scrollbar02/vscrollbar/bk_normal.svg' width='12' corner='0,8,0,8'" 
+                             bk_hot_image="file='public/scrollbar02/vscrollbar/bk_hovered.svg' width='12' corner='0,8,0,8'"                              
+                             show_button1="true" 
+                             button1_normal_image="file='public/scrollbar02/vscrollbar/btn_top_normal.svg' width='12' "
+                             button1_hot_image="file='public/scrollbar02/vscrollbar/btn_top_hover.svg' width='12' "
+                             button1_pushed_image="file='public/scrollbar02/vscrollbar/btn_top_pushed.svg' width='12' "
+                             button1_disabled_image="file='public/scrollbar02/vscrollbar/btn_top_disabled.svg' width='12' "
+                             show_button2="true"
+                             button2_normal_image="file='public/scrollbar02/vscrollbar/btn_bottom_normal.svg' width='12' "
+                             button2_hot_image="file='public/scrollbar02/vscrollbar/btn_bottom_hover.svg' width='12' "
+                             button2_pushed_image="file='public/scrollbar02/vscrollbar/btn_bottom_pushed.svg' width='12' "
+                             button2_disabled_image="file='public/scrollbar02/vscrollbar/btn_bottom_disabled.svg' width='12' " />
+    <Class name="hscrollbar2" height="12" fade_alpha="true" 
+                             thumb_normal_image="file='public/scrollbar02/hscrollbar/thumb_normal.svg' height='12' corner='8,0,8,0'" 
+                             thumb_hot_image="file='public/scrollbar02/hscrollbar/thumb_hovered.svg' height='12' corner='8,0,8,0'" 
+                             bk_normal_image="file='public/scrollbar02/hscrollbar/bk_normal.svg' height='12' corner='8,0,8,0'" 
+                             bk_hot_image="file='public/scrollbar02/hscrollbar/bk_hovered.svg' height='12' corner='8,0,8,0'" 
+                             show_button1="true" 
+                             button1_normal_image="file='public/scrollbar02/hscrollbar/btn_left_normal.svg' height='12' "
+                             button1_hot_image="file='public/scrollbar02/hscrollbar/btn_left_hover.svg' height='12' "
+                             button1_pushed_image="file='public/scrollbar02/hscrollbar/btn_left_pushed.svg' height='12' "
+                             button1_disabled_image="file='public/scrollbar02/hscrollbar/btn_left_disabled.svg' height='12' "
+                             show_button2="true"
+                             button2_normal_image="file='public/scrollbar02/hscrollbar/btn_right_normal.svg' height='12' "
+                             button2_hot_image="file='public/scrollbar02/hscrollbar/btn_right_hover.svg' height='12' "
+                             button2_pushed_image="file='public/scrollbar02/hscrollbar/btn_right_pushed.svg' height='12' "
+                             button2_disabled_image="file='public/scrollbar02/hscrollbar/btn_right_disabled.svg' height='12' " />
+    <!--Radio box-->
+    <Class name="option_1" height="20" text_padding="22,0,0,0" text_align="vcenter" valign="center"
+                           normal_image="file='public/option/radio-circle-unchecked.svg' width='20' height='20' valign='center'" 
+                           selected_normal_image="file='public/option/radio-circle-checked.svg' width='20' height='20' valign='center'"/>
+    <Class name="option_2" height="18" text_padding="20,0,0,0" text_align="vcenter" valign="center"
+                           normal_image="file='public/option/radio-unchecked.svg' width='16' height='16' valign='center'" 
+                           selected_normal_image="file='public/option/radio-checked.svg' width='16' height='16' valign='center'"/>
+    <!--Check box-->
+    <Class name="checkbox_toggle_1" height="28" valign="center"
+                                    normal_image="file='public/checkbox/checkbox-toggle-off.svg' width='26' height='26' valign='center'" 
+                                    selected_normal_image="file='public/checkbox/checkbox-toggle-on.svg' width='26' height='26' valign='center'"/>
+    <Class name="checkbox_toggle_2" height="18" width="38" valign="center"
+                                    normal_image="file='public/checkbox/checkbox-toggle.svg' width='64' height='64' src='0,0,64,30'" 
+                                    selected_normal_image="file='public/checkbox/checkbox-toggle.svg' width='64' height='64' src='0,34,64,64'"/>
+    <Class name="checkbox_1" height="20" text_padding="20,0,0,0" text_align="vcenter" valign="center"
+                             normal_image="file='public/checkbox/checkbox-fill-unchecked.svg' width='16' height='16' valign='center'" 
+                             disabled_image="file='public/checkbox/checkbox-fill-unchecked.svg' width='16' height='16' valign='center' fade='80'" 
+                             selected_normal_image="file='public/checkbox/checkbox-fill-checked.svg' width='16' height='16' valign='center'" 
+                             selected_disabled_image="file='public/checkbox/checkbox-fill-checked.svg' width='16' height='16' valign='center' fade='80'"/>
+    <Class name="checkbox_2" height="20" text_padding="20,0,0,0"  text_align="vcenter" valign="center"
+                             normal_image="file='public/checkbox/checkbox-outline-unchecked.svg' width='18' height='18' valign='center'" 
+                             disabled_image="file='public/checkbox/checkbox-outline-unchecked.svg' width='18' height='18' valign='center' fade='80'" 
+                             selected_normal_image="file='public/checkbox/checkbox-outline-checked.svg' width='18' height='18' valign='center'" 
+                             selected_disabled_image="file='public/checkbox/checkbox-outline-checked.svg' width='18' height='18' valign='center' fade='80'"/>
+    <!--Drop-down box-->
+    <Class name="combo" bkcolor="white" padding="1,1,1,1" border_size="1" border_color="light_gray" hot_border_color="blue" 
+                        combo_tree_view_class="padding='0,0,0,0' border_size='0,0,0,0' bkcolor='white' border_color='gray' indent='20' class='tree_view'"
+                        combo_tree_node_class="tree_node" 
+                        combo_icon_class="bkimage='public/caption/logo.svg' width='18' height='18' valign='center' margin='2,0,2,0'" 
+                        combo_edit_class="bkcolor='white' text_align='vcenter' text_padding='2,0,2,0' single_line='true' word_wrap='false' auto_hscroll='true'"
+                        combo_button_class="height={stretch} width={auto} margin={1,0,0,0} padding={1,0,0,0} border_size={1,0,0,0} valign={center} 
+                                            hot_border_color={blue} 
+                                            pushed_border_color={blue}                                             
+                                            hot_color={#FFE5F3FF} 
+                                            pushed_color={#FFCCE8FF} 
+                                            normal_image={file='public/combo/arrow_normal.svg' valign='center'} 
+                                            hot_image={file='public/combo/arrow_hot.svg' valign='center'}"/>
+    <Class name="filter_combo" bkcolor="white" padding="1,1,1,1" border_size="1" border_color="light_gray" hot_border_color="blue" 
+                               combo_tree_view_class="padding='0,0,0,0' border_size='0,0,0,0' bkcolor='white' border_color='gray' indent='20' class='tree_view'"
+                               combo_tree_node_class="tree_node" 
+                               combo_icon_class="bkimage='public/caption/logo.svg' width='18' height='18' valign='center' margin='2,0,2,0'" 
+                               combo_edit_class="bkcolor='white' text_align='vcenter' text_padding='2,0,2,0' single_line='true' word_wrap='false' auto_hscroll='true'"/>
+    <Class name="check_combo" bordersize="1" bordercolor="splitline_level1" 
+                              dropbox="padding='0,0,0,0' bkcolor='bk_wnd_lightcolor' border_color='splitline_level1' border_size='0,0,0,0' vscrollbar='true'"
+                              dropbox_item_class="width={stretch} height={24} text_padding={20,0,2,1} text_align={left,vcenter} 
+                                                  normal_image={file='public/checkbox/checkbox-outline-unchecked.svg' valign='center'} 
+                                                  selected_normal_image={file='public/checkbox/checkbox-outline-checked.svg' valign='center'}" 
+                              selected_item_class="width={auto} height={22} margin={4,2,4,2} bkcolor={bk_menuitem_selected} text_padding={2,1,2,1}"/>
+    <Class name="combo_button" padding="1,1,1,1" border_size="1" hot_border_color="blue" hot_color="#FFE5F3FF" pushed_color="#FFCCE8FF"
+                               combo_box_class="padding='0,0,0,0' border_size='0,0,0,0' bkcolor='white' border_color='gray'" 
+                               left_button_class="height={stretch} width={stretch} padding={0,0,1,0} border_size={0,0,1,0} valign={center} 
+                                                  hot_border_color={blue} 
+                                                  pushed_border_color={blue}                                                   
+                                                  hot_color={#FFE5F3FF} 
+                                                  pushed_color={#FFCCE8FF} " 
+                               left_button_top_label_class="width={stretch} height={20} margin={1,0,1,0} font={system_bold_14} text_align={bottom,hcenter}" 
+                               left_button_bottom_label_class="width={stretch} height={stretch} margin={6,0,6,2} bkcolor={black}" 
+                               right_button_class="height={stretch} width={auto} padding={1,0,0,0} border_size={1,0,0,0} valign={center} 
+                                                   hot_border_color={blue} 
+                                                   pushed_border_color={blue}                                                    
+                                                   hot_color={#FFE5F3FF} 
+                                                   pushed_color={#FFCCE8FF} 
+                                                   normal_image={file='public/combo/arrow_normal.svg' valign='center'} 
+                                                   hot_image={file='public/combo/arrow_hot.svg' valign='center'}"/>
+
+    <!--Button: image button-->
+    <Class name="btn_global_blue_80x30" font="system_14" normal_text_color="white" 
+                                        normal_image="file='public/button/btn_global_blue_80x30_normal.svg'" 
+                                        hot_image="file='public/button/btn_global_blue_80x30_hovered.svg'" 
+                                        pushed_image="file='public/button/btn_global_blue_80x30_pushed.svg'" 
+                                        disabled_image="file='public/button/btn_global_blue_80x30_normal.svg' fade='80'"/>
+    <Class name="btn_global_white_80x30" font="system_14" normal_text_color="black" 
+                                         normal_image="file='public/button/btn_global_white_80x30_normal.svg'" 
+                                         hot_image="file='public/button/btn_global_white_80x30_hovered.svg'" 
+                                         pushed_image="file='public/button/btn_global_white_80x30_pushed.svg'" 
+                                         disabled_image="file='public/button/btn_global_white_80x30_normal.svg' fade='128'"/>
+    <Class name="btn_global_red_80x30" font="system_14" normal_text_color="white" 
+                                       normal_image="file='public/button/btn_global_red_80x30_normal.svg'" 
+                                       hot_image="file='public/button/btn_global_red_80x30_hovered.svg'" 
+                                       pushed_image="file='public/button/btn_global_red_80x30_pushed.svg'" 
+                                       disabled_image="file='public/button/btn_global_red_80x30_normal.svg' fade='80'"/>
+    <Class name="btn_global_gray_80x30" font="system_14" normal_text_color="black" 
+                                         normal_image="file='public/button/btn_global_gray_80x30_normal.svg'" 
+                                         hot_image="file='public/button/btn_global_gray_80x30_hovered.svg'" 
+                                         pushed_image="file='public/button/btn_global_gray_80x30_pushed.svg'" 
+                                         disabled_image="file='public/button/btn_global_gray_80x30_normal.svg' fade='128'"/>
+    <!--Button: solid color button-->
+    <Class name="btn_global_color_gray" font="system_14" text_align="hcenter,vcenter" 
+                                        normal_text_color="black" 
+                                        disabled_text_color="gray" 
+                                        normal_color="#D7DCE0" 
+                                        hot_color="#D0D0D0" 
+                                        pushed_color="#BFBFBF"/>                                        
+    <Class name="btn_global_color_white" font="system_14" text_align="hcenter,vcenter" 
+                                        normal_text_color="black" 
+                                        disabled_text_color="gray" 
+                                        normal_color="#F3F2F1" 
+                                        hot_color="#E5E5E5" 
+                                        pushed_color="#D3D2D1"/>
+    <Class name="btn_global_color_blue" font="system_14" text_align="hcenter,vcenter" 
+                                        normal_text_color="white" 
+                                        disabled_text_color="gray" 
+                                        normal_color="#0078D4" 
+                                        hot_color="#1089E0" 
+                                        pushed_color="#005A9E"/>
+    <Class name="btn_global_color_red" font="system_14" text_align="hcenter,vcenter" 
+                                        normal_text_color="white" 
+                                        disabled_text_color="gray" 
+                                        normal_color="#D12329" 
+                                        hot_color="#E0393E" 
+                                        pushed_color="#B71D22"/>
+    <!--Window top-right corner button -->
+    <Class name="btn_wnd_min_11" normal_image="file='public/button/window-minimize.svg' 
+                                 width='24' height='24' valign='center' halign='center'" hot_color="AliceBlue" pushed_color="Lavender" fade_hot="true"/>
+    <Class name="btn_wnd_close_11" normal_image="file='public/button/window-close.svg' 
+                                 width='24' height='24' valign='center' halign='center'" hot_color="red" pushed_color="OrangeRed" fade_hot="true"/>
+    <Class name="btn_wnd_max_11" normal_image="file='public/button/window-maximize.svg' 
+                                 width='24' height='24' valign='center' halign='center'" hot_color="AliceBlue" pushed_color="Lavender" fade_hot="true"/>
+    <Class name="btn_wnd_restore_11" normal_image="file='public/button/window-restore.svg' 
+                                 width='24' height='24' valign='center' halign='center'" hot_color="AliceBlue" pushed_color="Lavender" fade_hot="true"/>
+    <Class name="btn_wnd_fullscreen_11" normal_image="file='public/button/window-fullscreen.svg'
+                                 width='24' height='24' valign='center' halign='center' margin='0,4,0,0'" hot_color="AliceBlue" pushed_color="Lavender" fade_hot="true"/>
+    <Class name="btn_view_fullscreen_11" normal_image="file='public/button/view-fullscreen.svg'
+                                 width='20' height='20' valign='center' halign='center'" hot_color="AliceBlue" pushed_color="Lavender" fade_hot="true"/>
+    <Class name="btn_wnd_settings_11" normal_image="file='public/button/btn_setting.svg' 
+                                 width='20' height='20' valign='center' halign='center'" hot_color="AliceBlue" pushed_color="Lavender" fade_hot="true"/>
+     
+    <!-- Exit fullscreen button: floating above the window when a control is displayed fullscreen -->
+    <Class name="btn_exit_fullscreen" width="180" height="30" border_round="3,3" valign="top" halign="center" 
+           bkcolor="black" normal_text_color="white" font="system_bold_14" text_align="vcenter,hcenter" 
+           text_id="STRID_EXIT_FULLSCREEN" tooltip_text_id="TIPID_EXIT_FULLSCREEN" 
+           float="true" keyboard_enabled="false" no_focus="true" 
+           alpha="0" fade_alpha="128" fade_in_out_y_from_top="true"/>
+        
+    <!--Delete button common style-->
+    <Class name="btn_recycle" width="auto" height="auto" 
+                              normal_image="file='public/button/btn_recycle_normal.svg'" 
+                              hot_image="file='public/button/btn_recycle_hovered.svg'" 
+                              pushed_image="file='public/button/btn_recycle_pushed.svg'" 
+                              disabled_image="file='public/button/btn_recycle_normal.svg' fade='80'"/>
+    <!--ListBox common style-->
+    <Class name="list" bkcolor="bk_wnd_lightcolor" vscrollbar="true"/>
+    <Class name="listitem" hot_color="bk_listitem_hovered" 
+                           pushed_color="bk_listitem_selected" 
+                           selected_normal_color="bk_listitem_selected"
+                           fade_hot="false"/>
+    <!--TreeView common style-->
+    <Class name="tree_view" bkcolor="bk_wnd_lightcolor" vscrollbar="true"/>
+    <Class name="tree_node" height="28" hot_color="bk_listitem_hovered" 
+                                        pushed_color="bk_listitem_selected" 
+                                        selected_normal_color="bk_listitem_selected" 
+                                        icon_image_right_space="4" 
+                                        fade_hot="false"/>
+    <Class name="tree_node_checkbox" normal_image="file='public/checkbox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'" 
+                                     disabled_image="file='public/checkbox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'" 
+                                     selected_normal_image="file='public/checkbox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'" 
+                                     selected_disabled_image="file='public/checkbox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'" 
+                                     part_selected_normal_image="file='public/checkbox/checkbox-outline-mixed.svg' margin='2,0,0,0' valign='center'" 
+                                     part_selected_disabled_image="file='public/checkbox/checkbox-outline-mixed.svg' margin='2,0,0,0' valign='center' fade='80'"
+                                     check_box_image_right_space="6"/>
+    <Class name="tree_node_expand" expand_normal_image="file='public/tree/expand_normal.svg' margin='2,0,0,0' valign='center'" 
+                                   expand_hot_image="file='public/tree/expand_hot.svg' margin='2,0,0,0' valign='center'" 
+                                   expand_disabled_image="file='public/tree/expand_normal.svg' margin='2,0,0,0' valign='center' fade='80'" 
+                                   collapse_normal_image="file='public/tree/collapse_normal.svg' margin='2,0,0,0' valign='center'" 
+                                   collapse_hot_image="file='public/tree/collapse_hot.svg' margin='2,0,0,0' valign='center'" 
+                                   collapse_disabled_image="file='public/tree/collapse_normal.svg' margin='2,0,0,0' valign='center' fade='80'"
+                                   icon_image_right_space="4"/>
+    <!--Progress bar common style-->
+    <Class name="progress_horizontal_blue" valign="center" horizontal="true" height="3" width="stretch" value="0" max="100" min="0" 
+                                           bkimage="public/progress/progress_blue_bg.png" 
+                                           progress_image="public/progress/progress_blue_fg.png"/>
+    <Class name="progress_vertical_blue" valign="center" horizontal="false" width="3" height="stretch" value="0" max="100" min="0" 
+                                         bkimage="public/progress/progress_blue_bg_ver.png" 
+                                         progress_image="public/progress/progress_blue_fg_ver.png"/>
+    <Class name="slider_horizontal_green" width="stretch" height="14" margin="4,0,0,0" valign="center" thumb_size="14,14" min="0" max="255" 
+                                          progress_bar_padding="0,6,0,6" 
+                                          progress_color="bk_progress_progress" 
+                                          bkimage="file='public/slider/slider_hor_bk.png' valign='center' height='3' width='1200'" 
+                                          thumb_normal_image="file='public/slider/slider_thumb.svg' width='14' height='14'"/>
+    <Class name="slider_vertical_green"   width="stretch" height="14" margin="4,0,0,0" valign="center" thumb_size="14,14" min="0" max="255" 
+                                          progress_bar_padding="0,6,0,6" 
+                                          progress_color="bk_progress_progress" 
+                                          bkimage="file='public/slider/slider_ver_bk.png' halign='center' width='3' height='1200'" 
+                                          thumb_normal_image="file='public/slider/slider_thumb.svg' width='14' height='14'"/>
+    <!--Menu common style-->
+    <Class name="menu" width="auto" height="auto" bkcolor="white"/>
+    <Class name="menu_element" height="32" padding="20,0,20,0" margin="1,1,1,1" 
+                               hot_color="bk_menuitem_hovered" hot_color_margin="3,0,3,0" hot_color_round="4,4"
+                               pushed_color="bk_menuitem_selected" pushed_color_margin="3,0,3,0" pushed_color_round="4,4"
+                               selected_normal_color="bk_menuitem_selected" selected_normal_color_margin="3,0,3,0" selected_normal_color_round="4,4"/>
+    <Class name="menu_text" font="system_14" valign="center"/>
+    <Class name="menu_text_shortcut" font="system_14" valign="center"/>
+    <Class name="menu_split_box" height="auto" padding="16,0,16,0" margin="0,4,0,4"/>
+    <Class name="menu_split_line" bkcolor="splitline_level1" height="1" />
+    <Class name="menu_checkbox" height="auto" valign="center" text_padding="20,0,0,0" font="system_14" 
+                                normal_image="" 
+                                disabled_image="" 
+                                selected_normal_image="file='public/checkbox/checkbox-outline-checked.svg' valign='center'" 
+                                selected_disabled_image="file='public/checkbox/checkbox-outline-checked.svg' valign='center' fade='80'"/>
+    <!--Menu bar common style-->
+    <Class name="menu_bar_button" width="auto" height="auto" border_round="4,4" valign="center" text_align="vcenter" text_padding="8,4,8,4" 
+                                  normal_color="" 
+                                  hot_color="#FFB0B4B8" 
+                                  pushed_color="#FFB0B4B8"/>
+    
+    <!--Separator line common style-->
+    <Class name="splitline_hor_level1" bkcolor="splitline_level1" height="1"/>
+    <Class name="splitline_hor_level2" bkcolor="splitline_level2" height="1"/>
+    <Class name="splitline_ver_level1" bkcolor="splitline_level1" width="1"/>
+    
+    <!--RichEdit rich text control common style-->
+    <Class name="simple" bkcolor="white" multi_line="false" auto_hscroll="true" rich_text="false"
+                         want_return="false" want_ctrl_return="false" want_tab="false" 
+                         text_align="left,vcenter" disabled_text_color="disabled_font_color"/>
+    <Class name="simple_border" padding="1,1,1,1" border_size="1" 
+                                border_color="richedit_border_color" 
+                                hot_border_color="richedit_hot_border_color" 
+                                focus_border_color="richedit_focus_border_color"/>
+    <Class name="simple_border_bottom" padding="1,1,1,1" border_size="1,1,1,1" 
+                                       border_color="richedit_border_color" 
+                                       hot_border_color="richedit_hot_border_color" 
+                                       focus_border_color="richedit_focus_border_color"
+                                       focus_bottom_border_size="2"
+                                       focus_bottom_border_color="richedit_focus_bottom_border_color"/>
+    <Class name="prompt" prompt_mode="true" prompt_color="light_gray"/>
+    
+    <!--Spin button style on RichEdit: with borders on the left and bottom sides-->
+    <Class name="rich_edit_spin" spin_class="rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down" 
+                                 bkcolor="white" number_only="true" height="28" width="64" text_padding="0, 0, 18, 0" text_align="vcenter,hcenter"/>
+    <Class name="rich_edit_spin_box" width="18" halign="right" nofocus="true"/>
+    <Class name="rich_edit_spin_btn_up" height="50%" width="100%" nofocus="true" padding="1,0,0,0" border_size="1,0,0,0" 
+                                 border_color="light_gray" 
+                                 normal_image="file='public/button/arrow-up.svg' width='10' height='10' valign='center' halign='center'" 
+                                 normal_color="bk_wnd_darkcolor" hot_color="#FFE5F3FF" 
+                                 pushed_color="#FFCCE8FF"/>
+    <Class name="rich_edit_spin_btn_down" height="50%" width="100%" nofocus="true" padding="1,1,0,0" border_size="1,1,0,0" 
+                                 border_color="light_gray"
+                                 normal_image="file='public/button/arrow-down.svg' width='10' height='10' valign='center' halign='center'" 
+                                 normal_color="bk_wnd_darkcolor" hot_color="#FFE5F3FF" 
+                                 pushed_color="#FFCCE8FF"/>
+    
+    <!--Spin button style on RichEdit: with borders on all sides-->
+    <Class name="rich_edit_spin2" spin_class="rich_edit_spin_box,rich_edit_spin_btn_up2,rich_edit_spin_btn_down2" 
+                                  bkcolor="white" number_only="true" height="28" width="64" text_padding="0, 0, 18, 0" text_align="vcenter,hcenter"/>
+    <Class name="rich_edit_spin_btn_up2" height="50%" width="100%" nofocus="true" padding="1,1,1,1" border_size="1,1,1,1" 
+                                  border_color="light_gray" 
+                                  normal_image="file='public/button/arrow-up.svg' width='10' height='10' valign='center' halign='center'" 
+                                  normal_color="bk_wnd_darkcolor" 
+                                  hot_color="#FFE5F3FF" 
+                                  pushed_color="#FFCCE8FF"/>
+    <Class name="rich_edit_spin_btn_down2" height="50%" width="100%" nofocus="true" padding="1,0,1,1" border_size="1,0,1,1" 
+                                  border_color="light_gray" 
+                                  normal_image="file='public/button/arrow-down.svg' width='10' height='10' valign='center' halign='center'" 
+                                  normal_color="bk_wnd_darkcolor" 
+                                  hot_color="#FFE5F3FF" 
+                                  pushed_color="#FFCCE8FF"/>
+    
+    <!--Clear button style on RichEdit-->
+    <Class name="rich_edit_clear_btn" clear_btn_class="rich_edit_clear_btn_class" text_align="vcenter"/>
+    <Class name="rich_edit_clear_btn_class" height="22" width="24" border_round="4,4" margin="0,0,2,0" halign="right" valign="center" 
+                                            normal_image="file='public/button/window-close.svg' width='18' height='18' valign='center' halign='center'" 
+                                            normal_color="bk_wnd_darkcolor" 
+                                            hot_color="#FFE5F3FF" 
+                                            pushed_color="#FFCCE8FF"/>
+
+    <!--Show password button style on RichEdit-->
+    <Class name="rich_edit_show_password_btn" password="true" show_password="false" show_passowrd_btn_class="rich_edit_show_password_btn_class" text_align="vcenter"/>
+    <Class name="rich_edit_show_password_btn_class" height="22" width="24" border_round="4,4" margin="0,0,2,0" halign="right" valign="center" 
+                                                    normal_image="file='public/button/icon_visibility.svg' width='14' height='14' valign='center' halign='center'" 
+                                                    normal_color="bk_wnd_darkcolor" 
+                                                    hot_color="#FFE5F3FF" 
+                                                    pushed_color="#FFCCE8FF"/>    
+    
+    <!--Basic properties of RichText-->
+    <Class name="rich_text" text_color="default_font_color" 
+                            default_link_font_color="default_link_font_color" 
+                            hover_link_font_color="hover_link_font_color" 
+                            mouse_down_link_font_color="mouse_down_link_font_color" 
+                            link_font_underline="true"/>
+    
+    <!--IP address control common style-->
+    <Class name="ip_address" width="140" height="28" bkcolor="white" border_size="1" border_color="light_gray"/>
+    
+    <!--HotKey control common style-->
+    <Class name="hot_key" width="216" height="28" bkcolor="white" border_size="1" border_color="light_gray"/>
+    
+    <!--HyperLink control common style-->
+    <Class name="hyper_link" cursor_type="hand" font="system_underline_14" 
+                             normal_text_color="default_link_font_color"
+                             hot_text_color="hover_link_font_color" 
+                             pushed_text_color="mouse_down_link_font_color"/>
+    
+    <!--ListCtrl list item common style-->
+    <!--ListCtrlHeader style-->
+    <Class name="list_ctrl_header" icon_spacing="4" bkcolor="Cornsilk" width="100%"/>
+    <Class name="list_ctrl_header_item" height="100%" text_align="vcenter,hcenter" text_padding="2,0,2,0" hot_color="#FFE5F3FF" pushed_color="#FFD9EEFF"            
+                                        show_icon_at_top="true" icon_spacing="6"
+                                        sorted_up_image="file='public/listctrl/arrow-sorted-up.svg' width='10' height='10' valign='center' halign='left'" 
+                                        sorted_down_image="file='public/listctrl/arrow-sorted-down.svg' width='10' height='10' valign='center' halign='left'"/>
+    <Class name="list_ctrl_header_split_box" width="3" height="100%" enable_split_single="true"/>
+    <Class name="list_ctrl_header_split_control" width="1" height="100%" margin="0,4,0,2" bkcolor="splitline_level1" halign="right"/>
+    <!--CheckBox style in ListCtrl, applied to the Header and ListCtrl data-->
+    <Class name="list_ctrl_checkbox" valign="center" halign="left"
+                                     normal_image="file='public/checkbox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'" 
+                                     disabled_image="file='public/checkbox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'" 
+                                     selected_normal_image="file='public/checkbox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'" 
+                                     selected_disabled_image="file='public/checkbox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'" 
+                                     part_selected_normal_image="file='public/checkbox/checkbox-outline-mixed.svg' margin='2,0,0,0' valign='center'" 
+                                     part_selected_disabled_image="file='public/checkbox/checkbox-outline-mixed.svg' margin='2,0,0,0' valign='center' fade='80'"/>
+    <!--ReportView style in ListCtrl-->
+    <Class name="list_ctrl_report_view" bkcolor="white" vscrollbar="true" hscrollbar="true" width="100%" padding="0,0,0,0"
+                                      child_margin_y="0" paint_selected_colors="true"
+                                      frame_selection="true" 
+                                      frame_selection_color="#FFAACCEE" frame_selection_alpha="128" 
+                                      frame_selection_border_size="1" frame_selection_border_color="#FF0078D7"/>
+    <Class name="list_ctrl_item" icon_spacing="4" hot_color="Wheat" pushed_color="#FFD9EEFF" selected_normal_color="#FFCCE8FF"/>
+    <Class name="list_ctrl_sub_item" icon_spacing="2" text_align="vcenter,left" text_padding="2,0,2,0" auto_tooltip="true" single_line="true"/>    
+    <!--IconView style in ListCtrl-->
+    <Class name="list_ctrl_icon_view" bkcolor="white" vscrollbar="true" hscrollbar="true" width="100%" padding="0,0,0,0" paint_selected_colors="true"
+                                      horizontal_layout="false" item_size="112,112" columns="auto" child_margin_x="8" child_margin_y="8" child_halign="left"
+                                      frame_selection="true" 
+                                      frame_selection_color="#FFAACCEE" frame_selection_alpha="128" 
+                                      frame_selection_border_size="1" frame_selection_border_color="#FF0078D7"/>
+    <Class name="list_ctrl_icon_view_item" hot_color="Wheat" pushed_color="#FFD9EEFF" selected_normal_color="#FFCCE8FF"/>
+    <Class name="list_ctrl_icon_view_item_image" halign="center" margin="2,2,2,2"/>
+    <Class name="list_ctrl_icon_view_item_label" width="100%" height="40" text_padding="2,0,2,0" text_align="hcenter,top" single_line="false" auto_tooltip="true"/>
+    <!--ListView style in ListCtrl-->
+    <Class name="list_ctrl_list_view" bkcolor="white" vscrollbar="true" hscrollbar="true" height="100%" padding="0,0,0,0" paint_selected_colors="true"
+                                      horizontal_layout="false" item_size="240,36" rows="auto" child_margin_x="8" child_margin_y="8" child_halign="left"
+                                      frame_selection="true" 
+                                      frame_selection_color="#FFAACCEE" frame_selection_alpha="128" 
+                                      frame_selection_border_size="1" frame_selection_border_color="#FF0078D7"/>
+    <Class name="list_ctrl_list_view_item" hot_color="Wheat" pushed_color="#FFD9EEFF" selected_normal_color="#FFCCE8FF"/>
+    <Class name="list_ctrl_list_view_item_image" valign="center" margin="8,2,2,2"/>
+    <Class name="list_ctrl_list_view_item_label" width="100%" height="100%" text_padding="2,0,2,0" text_align="vcenter,left" single_line="true" auto_tooltip="true"/>
+    <!--Item edit box style in ListCtrl-->
+    <Class name="list_ctrl_richedit" text_align="left,vcenter" min_height="28" multi_line="false" word_wrap="true" auto_hscroll="true" 
+                                     want_return="true" want_tab="false" rich_text="false" 
+                                     text_padding="2,2,2,2" padding="1,1,1,1" border_size="1" 
+                                     bkcolor="white" 
+                                     border_color="light_gray" 
+                                     hot_border_color="blue" 
+                                     focus_border_color="CornflowerBlue"/>
+    
+    <!--TabCtrl control common style-->
+    <Class name="tab_ctrl" width="stretch" height="36" border_round="4,4" bkcolor="#FFD3E3FD" vscrollbar="true"/>
+    <Class name="tab_ctrl_item" margin="0,4,0,0" height="32"  padding="10,0,0,0"
+                                hot_color="#FFA8C7FA" pushed_color="#FFA8C7FA" fade_hot_total_ms="150"
+                                selected_normal_color="white" selected_round_corner="12,12"
+                                hot_round_corner="5,5" hot_padding="3,0,3,3"
+                                auto_hide_close_button="true"
+                                icon_class="tab_ctrl_item_icon"
+                                title_class="tab_ctrl_item_title"
+                                close_button_class="tab_ctrl_item_close"
+                                line_class="tab_ctrl_item_line"/>
+    <Class name="tab_ctrl_item_icon" width="16" height="16" valign="center" mouse_enabled="false"/>
+    <Class name="tab_ctrl_item_title" width="stretch" height="24" margin="2,0,12,0" valign="center" font="system_12" auto_tooltip="true" mouse_enabled="false"/>
+    <Class name="tab_ctrl_item_close" width="16" height="16" margin="0,2,10,8"
+                float="true" halign="right" valign="center" visible="false" 
+                normal_image="file='public/button/btn_close.svg' height='16' width='16' halign='center' valign='center'"
+                hot_color="#FFDCDCDD" pushed_color="#FFC2C2C3" border_round="4,4" alpha="192" fade_alpha="true"/>
+    <Class name="tab_ctrl_item_line" bkcolor="#FFA8C7FA" width="1" height="22" float="true" halign="right" valign="center" mouse_enabled="false"/>
+    
+    <!--AddressBar control common style-->
+    <Class name="address_bar" width="stretch" height="36" border_round="4,4" bkcolor="white"
+                              path_tooltip="true" return_update_ui="true" esc_update_ui="true" kill_focus_update_ui="true"
+                              rich_edit_class="address_bar_edit" 
+                              rich_edit_clear_btn_class="rich_edit_clear_btn"
+                              sub_path_hbox_class="address_bar_sub_path_hbox"
+                              sub_path_button_class="address_bar_sub_path_button"
+                              sub_path_root_class="address_bar_sub_path_root"
+                              path_separator_class="address_bar_path_separator"/>
+    <Class name="address_bar_edit" multi_line="false" auto_hscroll="true" rich_text="false" 
+                                   default_context_menu="true" select_all_on_focus="true"
+                                   want_return="false" want_ctrl_return="false" want_tab="false"
+                                   normal_text_color="default_font_color" 
+                                   disabled_text_color="disabled_font_color"
+                                   text_align="left,vcenter" text_padding="4,2,4,2"/>
+    <Class name="address_bar_sub_path_hbox" width="auto" height="100%"/>
+    <Class name="address_bar_sub_path_button" width="auto" height="100%" 
+                                              text_align="hcenter,vcenter" text_padding="4,2,4,2"
+                                              normal_text_color="default_font_color" 
+                                              disabled_text_color="disabled_font_color"
+                                              hot_color="#FFD7DCE0" 
+                                              pushed_color="#FFB0B4B8"/>
+    <Class name="address_bar_sub_path_root" padding="2,0,2,0" 
+                                            bkimage="file='public/address_bar/folder-root.svg' width='22' height='22' halign='center' valign='center'"/>
+    <Class name="address_bar_path_separator" width="auto" height="100%" margin="0,0,0,0"
+                                             bkimage="file='public/address_bar/filename-slash.svg' width='22' height='22' halign='center' valign='center'"/>
+</Global>

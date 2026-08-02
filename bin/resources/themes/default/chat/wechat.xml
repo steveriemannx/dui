@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="1024,768" caption="0,0,0,35" use_system_caption="false" shadow_attached="true" layered_window="true">
+  <HBox>
+    <!-- Left menu bar -->
+    <VBox width="60" bkcolor="darkcolor">
+      <Control bkimage="head.png" width="40" height="40" margin="10,10"/>
+    </VBox>
+    <!-- Friend list -->
+    <VBox width="270" bkcolor="light_gray">
+      <Box padding="10,8,10,8" height="auto">
+        <RichEdit class="simple simple_border prompt" name="nickname" width="stretch" height="35" font="system_14" text_align="vcenter" text_padding="25,8,8,8" borderround="5,5" prompttext="Search"/>
+        <Control width="auto" height="auto" margin="6,9" bkimage="search_icon.png"/>
+      </Box>
+      <VBox>
+        <!-- Firends -->
+      </VBox>
+    </VBox>
+    <!-- Chat area -->
+    <VBox>
+      <HBox height="80" bkcolor="bk_wnd_darkcolor">
+      </HBox>
+      <Control class="splitline_hor_level1"/>
+      <VBox bkcolor="bk_wnd_darkcolor">
+      </VBox>
+      <VBox height="150" bkcolor="bk_wnd_lightcolor">
+      </VBox>
+    </VBox>
+  </HBox>
+</Window>

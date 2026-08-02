@@ -1,0 +1,931 @@
+#include "duilib/Control/ListCtrlHeaderItem.h"
+#include "duilib/Control/ListCtrl.h"
+#include "duilib/Core/GlobalManager.h"
+#include "duilib/Render/IRender.h"
+
+namespace ui
+{
+ListCtrlHeaderItem::ListCtrlHeaderItem(Window* pWindow) :
+    ControlDragableT<CheckBoxHBox>(pWindow),
+    m_pSortedDownImage(nullptr),
+    m_pSortedUpImage(nullptr),
+    m_sortMode(SortMode::kDown),
+    m_pSplitBox(nullptr),
+    m_bColumnResizeable(true),
+    m_nColumnWidth(0),
+    m_bShowIconAtTop(true),
+    m_bColumnVisible(true),
+    m_imageId(-1),
+    m_pHeaderCtrl(nullptr),
+    m_nIconSpacing(0),
+    m_bShowSortImage(false)
+{
+    SetIconSpacing(6, true);
+}
+
+ListCtrlHeaderItem::~ListCtrlHeaderItem()
+{
+    if (m_pSortedDownImage != nullptr) {
+        delete m_pSortedDownImage;
+        m_pSortedDownImage = nullptr;
+    }
+    if (m_pSortedUpImage != nullptr) {
+        delete m_pSortedUpImage;
+        m_pSortedUpImage = nullptr;
+    }
+}
+ 
+DString ListCtrlHeaderItem::GetType() const { return _T("ListCtrlHeaderItem"); }
+
+void ListCtrlHeaderItem::SetAttribute(const DString& strName, const DString& strValue)
+{
+    if (strName == _T("sorted_up_image")) {
+        SetSortedUpImage(strValue);
+    }
+    else if (strName == _T("sorted_down_image")) {
+        SetSortedDownImage(strValue);
+    }
+    else if (strName == _T("icon_spacing")) {
+        SetIconSpacing(StringUtil::StringToInt32(strValue), true);
+    }
+    else if (strName == _T("show_icon_at_top")) {
+        SetShowIconAtTop(strValue == _T("true"));
+    }
+    else {
+        BaseClass::SetAttribute(strName, strValue);
+    }
+}
+
+void ListCtrlHeaderItem::ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale)
+{
+    if (!Dpi().CheckDisplayScaleFactor(nNewDpiScale)) {
+        return;
+    }
+    int32_t iValue = GetIconSpacing();
+    iValue = Dpi().GetScaleInt(iValue, nOldDpiScale);
+    SetIconSpacing(iValue, false);
+
+    int32_t nColumnWidth = GetColumnWidth();
+    if (nColumnWidth > 0) {
+        nColumnWidth = Dpi().GetScaleInt(nColumnWidth, nOldDpiScale);
+        SetColumnWidth(nColumnWidth, false);
+    }
+    BaseClass::ChangeDpiScale(nOldDpiScale, nNewDpiScale);
+}
+
+void ListCtrlHeaderItem::PaintText(IRender* pRender)
+{
+    //The content to draw includes: icon, text, sort icon
+    if (pRender == nullptr) {
+        return;
+    }
+    //The icon before the text
+    ImagePtr pItemImage;
+    UiSize itemImageSize;
+    if ((m_imageId >= 0) && (m_pHeaderCtrl != nullptr)) {
+        ListCtrl* pListCtrl = m_pHeaderCtrl->GetListCtrl();
+        if (pListCtrl != nullptr) {
+            ImageListPtr pImageList = pListCtrl->GetImageList(ListCtrlType::Report);
+            if (pImageList != nullptr) {
+                itemImageSize = pImageList->GetImageSize();
+                pItemImage = pImageList->GetImageData(m_imageId);
+                ASSERT(pItemImage != nullptr);
+            }
+        }
+    }
+    std::shared_ptr<ImageInfo> pItemImageCache;
+    if (pItemImage != nullptr) {
+        LoadImageInfo(*pItemImage);
+        pItemImageCache = pItemImage->GetImageInfo();
+        if (pItemImageCache == nullptr) {
+            pItemImage = nullptr;
+            pItemImageCache.reset();
+        }
+        else {
+            if ((pItemImageCache->GetWidth() <= 0) ||
+                (pItemImageCache->GetHeight() <= 0)) {
+                pItemImage = nullptr;
+                pItemImageCache.reset();
+            }
+        }
+    }
+
+    //The sort icon
+    Image* pSortImage = nullptr;
+    if (IsShowSortImage()) {
+        if (m_sortMode == SortMode::kUp) {
+            //Ascending order
+            pSortImage = m_pSortedUpImage;
+        }
+        else if (m_sortMode == SortMode::kDown) {
+            //Descending order
+            pSortImage = m_pSortedDownImage;
+        }
+    }
+
+    std::shared_ptr<ImageInfo> pSortImageCache;
+    if (pSortImage != nullptr) {
+        LoadImageInfo(*pSortImage);
+        pSortImageCache = pSortImage->GetImageInfo();
+        if (pSortImageCache == nullptr) {
+            pSortImage = nullptr;
+            pSortImageCache.reset();
+        }
+        else {
+            if ((pSortImageCache->GetWidth() <= 0) ||
+                (pSortImageCache->GetHeight() <= 0)) {
+                pSortImage = nullptr;
+                pSortImageCache.reset();
+            }
+        }
+    }
+
+    if ((pSortImageCache != nullptr) && IsShowIconAtTop()) {
+        //The icon is displayed above the text, centered
+        UiRect rc = GetRect();
+        rc.Deflate(GetControlPadding());
+        int32_t nImageWidth = pSortImageCache->GetWidth();
+        int32_t nImageHeight = pSortImageCache->GetHeight();
+        rc.left = rc.CenterX() - nImageWidth / 2;
+        rc.right = rc.left + nImageWidth;
+        if (!(GetTextStyle() & TEXT_VCENTER) && !(GetTextStyle() & TEXT_BOTTOM)) {
+            rc.top = rc.bottom - nImageHeight;
+        }
+        else {
+            rc.bottom = rc.top + nImageHeight;
+        }
+
+        //Draw the sort icon
+        PaintImage(pRender, pSortImage, _T(""), -1, nullptr, &rc, nullptr);
+        pSortImage = nullptr;
+    }
+
+    if ((pSortImage == nullptr) && (pItemImage == nullptr)) {
+        BaseClass::PaintText(pRender);
+        return;
+    }
+
+    if (pItemImageCache != nullptr) {
+        if (itemImageSize.cx <= 0) {
+            itemImageSize.cx = pItemImageCache->GetWidth();
+        }
+        if (itemImageSize.cy <= 0) {
+            itemImageSize.cy = pItemImageCache->GetHeight();
+        }
+    }
+
+    UiSize sortImageSize;
+    if (pSortImageCache != nullptr) {
+        sortImageSize.cx = pSortImageCache->GetWidth();
+        sortImageSize.cy = pSortImageCache->GetHeight();
+    }
+
+    int32_t nIconTextSpacing = GetIconSpacing();
+    //Reserve the width of the CheckBox
+    int32_t nCheckBoxWidth = 0;
+    if (IsShowCheckBox()) {
+        nCheckBoxWidth += GetCheckBoxImageWidth();
+        nCheckBoxWidth += nIconTextSpacing;
+    }
+
+    uint32_t textStyle = GetTextStyle();
+    MeasureStringParam measureParam;
+    measureParam.pFont = GetIFontById(GetFontId());
+    measureParam.uFormat = textStyle;
+    UiRect measureRect = pRender->MeasureString(GetText(), measureParam);
+    UiRect rcItemRect = GetRect();
+    rcItemRect.Deflate(GetControlPadding());
+    if (nCheckBoxWidth > 0) {
+        rcItemRect.left += nCheckBoxWidth;
+        rcItemRect.Validate();
+    }
+    
+    if ((sortImageSize.cx + itemImageSize.cx + measureRect.Width()) > rcItemRect.Width()) {
+        //Not enough horizontal space, draw left-aligned
+        nIconTextSpacing = 0;
+        textStyle = TEXT_LEFT;
+    }
+    
+    UiRect rc = GetRect();
+    rc.Deflate(GetControlPadding());
+    if (nCheckBoxWidth > 0) {
+        rc.left += nCheckBoxWidth;
+        rc.Validate();
+    }
+    if (textStyle & TEXT_HCENTER) {
+        //Center aligned
+        UiRect textRect = GetRect();
+        textRect.Deflate(GetControlPadding());
+        textRect.Deflate(GetTextPadding());
+        if (pItemImage != nullptr) {
+            UiRect itemRect = rc;
+            itemRect.left = textRect.CenterX() - measureRect.Width() / 2;
+            itemRect.left -= nIconTextSpacing;
+            itemRect.left -= itemImageSize.cx;
+            itemRect.left = std::max(itemRect.left, rc.left);
+            itemRect.Validate();
+            itemRect.right = itemRect.left + itemImageSize.cx;
+            VAlignRect(itemRect, GetTextStyle(), itemImageSize.cy);
+            PaintImage(pRender, pItemImage.get(), _T(""), -1, nullptr, &itemRect, nullptr);
+        }
+        if (pSortImage != nullptr) {
+            UiRect sortRect = rc;
+            sortRect.left = textRect.CenterX() + measureRect.Width() / 2;
+            sortRect.left += nIconTextSpacing;
+            sortRect.right = sortRect.left + sortImageSize.cx;
+            sortRect.Validate();
+            VAlignRect(sortRect, GetTextStyle(), sortImageSize.cy);
+            PaintImage(pRender, pSortImage, _T(""), -1, nullptr, &sortRect, nullptr);
+        }
+
+        DoPaintText(textRect, pRender);
+    }
+    else if (textStyle & TEXT_RIGHT) {
+        //Right aligned
+        if (pSortImage != nullptr) {
+            UiRect sortRect = rc;
+            sortRect.left = sortRect.right - sortImageSize.cx;
+            sortRect.Validate();
+            VAlignRect(sortRect, GetTextStyle(), sortImageSize.cy);
+            PaintImage(pRender, pSortImage, _T(""), -1, nullptr, &sortRect, nullptr);
+            rc.right = sortRect.left;
+            rc.right -= nIconTextSpacing;
+            rc.Validate();
+        }
+
+        UiRect textRect = GetRect();
+        textRect.Deflate(GetControlPadding());
+        textRect.Deflate(GetTextPadding());
+        textRect.right = std::min(rc.right, textRect.right);
+        if (textRect.Width() > measureRect.Width()) {
+            textRect.left = textRect.right - measureRect.Width();
+        }
+        DoPaintText(textRect, pRender);
+
+        if (pItemImage != nullptr) {
+            rc.right = textRect.left;
+            rc.right -= nIconTextSpacing;
+            rc.Validate();
+
+            if (rc.Width() > itemImageSize.cx) {
+                rc.left = rc.right - itemImageSize.cx;
+                rc.Validate();
+            }
+            UiRect itemRect = rc;
+            VAlignRect(itemRect, GetTextStyle(), itemImageSize.cy);
+            PaintImage(pRender, pItemImage.get(), _T(""), -1, nullptr, &itemRect, nullptr);
+        }
+    }
+    else {
+        //Left aligned: draw the icon, text, and sort icon in order
+        if (pItemImage != nullptr) {
+            UiRect itemRect = rc;
+            itemRect.right = itemRect.left + itemImageSize.cx;
+            VAlignRect(itemRect, GetTextStyle(), itemImageSize.cy);
+            PaintImage(pRender, pItemImage.get(), _T(""), -1, nullptr, &itemRect, nullptr);
+            rc.left += itemImageSize.cx;
+            rc.left += nIconTextSpacing;
+        }
+
+        UiRect textRect = GetRect();
+        textRect.Deflate(GetControlPadding());
+        textRect.Deflate(GetTextPadding());
+        if (pItemImage != nullptr) {
+            textRect.left = std::max(textRect.left, rc.left);
+        }
+        DoPaintText(textRect, pRender);
+
+        rc.left = textRect.left;
+        rc.left += measureRect.Width();
+        rc.left += nIconTextSpacing;
+
+        if (pSortImage != nullptr) {
+            UiRect sortRect = rc;
+            VAlignRect(sortRect, GetTextStyle(), sortImageSize.cy);
+            PaintImage(pRender, pSortImage, _T(""), -1, nullptr, &sortRect, nullptr);
+        }
+    }
+}
+
+void ListCtrlHeaderItem::VAlignRect(UiRect& rc, uint32_t textStyle, int32_t nImageHeight)
+{
+    if ((nImageHeight <= 0) || (nImageHeight >= rc.Height())){
+        return;
+    }
+    if (textStyle & TEXT_VCENTER) {
+        //Center aligned
+        rc.top = rc.CenterY() - nImageHeight / 2;
+        rc.bottom = rc.top + nImageHeight;
+    }
+    else if (textStyle & TEXT_BOTTOM) {
+        //Bottom aligned
+        rc.top = rc.bottom - nImageHeight;
+    }
+    else {
+        //Top aligned
+        rc.bottom = rc.top + nImageHeight;
+    }
+}
+
+void ListCtrlHeaderItem::Activate(const EventArgs* pMsg)
+{
+    if (IsInDraggingOrder() || IsInDraggingOut()) {
+        //In the state of dragging to change the column order
+        return;
+    }
+    if (!this->IsActivatable() || this->IsCheckBoxImageClicked()) {
+        //If the click is on the CheckBox, the sort function is not triggered
+        return;
+    }
+    bool bSortChanged = false;
+    if (m_sortMode == SortMode::kUp) {
+        m_sortMode = SortMode::kDown;
+        bSortChanged = true;
+        Invalidate();
+    }
+    else if (m_sortMode == SortMode::kDown) {
+        m_sortMode = SortMode::kUp;
+        bSortChanged = true;
+        Invalidate();        
+    }
+
+    if (bSortChanged) {
+        ListCtrlHeader* pHeader = GetHeaderCtrl();
+        if (pHeader != nullptr) {
+            pHeader->OnHeaderColumnSorted(this);
+        }
+    }
+    BaseClass::Activate(pMsg);
+}
+
+void ListCtrlHeaderItem::SetFadeVisible(bool bVisible)
+{
+    BaseClass::SetFadeVisible(bVisible);
+}
+
+void ListCtrlHeaderItem::SetVisible(bool bVisible)
+{
+    BaseClass::SetVisible(bVisible);
+}
+
+void ListCtrlHeaderItem::SetSortMode(SortMode sortMode, bool bTriggerEvent)
+{
+    if (m_sortMode != sortMode) {
+        m_sortMode = sortMode;
+        Invalidate();
+        if (bTriggerEvent && (m_sortMode != SortMode::kNone)) {
+            ListCtrlHeader* pHeader = GetHeaderCtrl();
+            if (pHeader != nullptr) {
+                pHeader->OnHeaderColumnSorted(this);
+            }
+        } 
+    }
+}
+
+ListCtrlHeaderItem::SortMode ListCtrlHeaderItem::GetSortMode() const
+{
+    return m_sortMode;
+}
+
+void ListCtrlHeaderItem::SetSortedDownImage(const DString& sImageString)
+{
+    if (m_pSortedDownImage == nullptr) {
+        m_pSortedDownImage = new Image;
+    }
+    m_pSortedDownImage->SetImageString(sImageString, Dpi());
+    Invalidate();
+}
+
+void ListCtrlHeaderItem::SetSortedUpImage(const DString& sImageString)
+{
+    if (m_pSortedUpImage == nullptr) {
+        m_pSortedUpImage = new Image;
+    }
+    m_pSortedUpImage->SetImageString(sImageString, Dpi());
+    Invalidate();
+}
+
+void ListCtrlHeaderItem::SetShowSortImage(bool bShowSortImage)
+{
+    if (m_bShowSortImage != bShowSortImage) {
+        m_bShowSortImage = bShowSortImage;
+        Invalidate();
+    }
+}
+
+bool ListCtrlHeaderItem::IsShowSortImage() const
+{
+    return m_bShowSortImage;
+}
+
+size_t ListCtrlHeaderItem::GetColumnId() const
+{
+    return (size_t)this;
+}
+
+void ListCtrlHeaderItem::SetSplitBox(SplitBox* pSplitBox)
+{
+    m_pSplitBox = pSplitBox;
+    if (pSplitBox != nullptr) {
+        ASSERT(pSplitBox->GetFixedWidth().IsInt32());
+        pSplitBox->SetEnabled(IsColumnResizeable() ? true : false);
+    }
+    if (GetColumnWidth() > 0) {
+        CheckColumnWidth();
+    }
+}
+
+SplitBox* ListCtrlHeaderItem::GetSplitBox() const
+{
+    return m_pSplitBox;
+}
+
+void ListCtrlHeaderItem::SetColumnResizeable(bool bResizeable)
+{
+    m_bColumnResizeable = bResizeable;
+    if (m_pSplitBox != nullptr) {
+        m_pSplitBox->SetEnabled(IsColumnResizeable() ? true : false);
+    }
+}
+
+bool ListCtrlHeaderItem::IsColumnResizeable() const
+{
+    return m_bColumnResizeable;
+}
+
+void ListCtrlHeaderItem::SetColumnWidth(int32_t nWidth, bool bNeedDpiScale)
+{
+    if (nWidth < 0) {
+        nWidth = 0;
+    }
+    if (bNeedDpiScale) {
+        Dpi().ScaleInt(nWidth);
+    }
+    m_nColumnWidth = nWidth;
+    CheckColumnWidth();
+}
+
+int32_t ListCtrlHeaderItem::GetColumnWidth() const
+{
+    return m_nColumnWidth;
+}
+
+void ListCtrlHeaderItem::CheckColumnWidth()
+{
+    int32_t nSplitWidth = 0;
+    if (m_pSplitBox != nullptr) {
+        ASSERT(m_pSplitBox->GetFixedWidth().IsInt32());
+        nSplitWidth = m_pSplitBox->GetFixedWidth().GetInt32();
+    }
+    int32_t nWidth = GetFixedWidth().GetInt32();
+    if ((nWidth + nSplitWidth) != GetColumnWidth()) {
+        nWidth = GetColumnWidth() - nSplitWidth;
+        if (nWidth < 0) {
+            nWidth = 0;
+        }
+        SetFixedWidth(UiFixedInt(nWidth), true, false);
+    }
+}
+
+void ListCtrlHeaderItem::SetIconSpacing(int32_t nIconSpacing, bool bNeedDpiScale)
+{
+    if (bNeedDpiScale) {
+        Dpi().ScaleInt(nIconSpacing);
+    }
+    if (m_nIconSpacing != nIconSpacing) {
+        m_nIconSpacing = ui::TruncateToInt16(nIconSpacing);
+        if (m_nIconSpacing < 0) {
+            m_nIconSpacing = 0;
+        }
+        Invalidate();
+    }    
+}
+
+int32_t ListCtrlHeaderItem::GetIconSpacing() const
+{
+    return m_nIconSpacing;
+}
+
+void ListCtrlHeaderItem::SetShowIconAtTop(bool bShowIconAtTop)
+{
+    if (m_bShowIconAtTop != bShowIconAtTop) {
+        m_bShowIconAtTop = bShowIconAtTop;
+        Invalidate();
+    }    
+}
+
+bool ListCtrlHeaderItem::IsShowIconAtTop() const
+{
+    return m_bShowIconAtTop;
+}
+
+void ListCtrlHeaderItem::SetTextHorAlign(HorAlignType alignType)
+{
+    uint32_t textStyle = GetTextStyle();
+    if (alignType == HorAlignType::kAlignCenter) {
+        //Text: center aligned
+        textStyle &= ~TEXT_HALIGN_ALL;
+        textStyle |= TEXT_HCENTER;
+    }
+    else if (alignType == HorAlignType::kAlignRight) {
+        //Text: right aligned
+        textStyle &= ~TEXT_HALIGN_ALL;
+        textStyle |= TEXT_RIGHT;
+    }
+    else {
+        //Text: left aligned
+        textStyle &= ~TEXT_HALIGN_ALL;
+        textStyle |= TEXT_LEFT;
+    }
+    SetTextStyle(textStyle, true);
+}
+
+HorAlignType ListCtrlHeaderItem::GetTextHorAlign() const
+{
+    HorAlignType alignType = HorAlignType::kAlignLeft;//Text: left aligned
+    uint32_t textStyle = GetTextStyle();
+    if (textStyle & TEXT_HCENTER) {
+        //Text: center aligned
+        alignType = HorAlignType::kAlignCenter;
+    }
+    else if (textStyle & TEXT_RIGHT) {
+        //Text: right aligned
+        alignType = HorAlignType::kAlignRight;
+    }
+    return alignType;
+}
+
+void ListCtrlHeaderItem::SetImageId(int32_t imageId)
+{
+    if (m_imageId != imageId) {
+        m_imageId = imageId;
+        Invalidate();
+    }    
+}
+
+int32_t ListCtrlHeaderItem::GetImageId() const
+{
+    return m_imageId;
+}
+
+bool ListCtrlHeaderItem::IsEnableDragOrder() const
+{
+    ListCtrlHeader* pHeader = GetHeaderCtrl();
+    if (pHeader != nullptr) {
+        if (!pHeader->IsEnableHeaderDragOrder()) {
+            //Dragging to adjust the order is not supported
+            return false;
+        }
+    }
+    return BaseClass::IsEnableDragOrder();
+}
+
+bool ListCtrlHeaderItem::SetShowCheckBox(bool bShow)
+{
+    ListCtrlHeader* pHeader = GetHeaderCtrl();
+    if (pHeader == nullptr) {
+        return false;
+    }
+    bool bRet = false;
+    if (bShow) {
+        if (IsShowCheckBox()) {
+            return true;
+        }
+        ListCtrl* pListCtrl = pHeader->GetListCtrl();
+        if (pListCtrl != nullptr) {
+            DString checkBoxClass = pListCtrl->GetCheckBoxClass();
+            if (!checkBoxClass.empty()) {
+                SetClass(checkBoxClass);
+                bRet = IsShowCheckBox();
+                if (bRet) {
+                    //Set the padding to avoid overlapping with the text
+                    UiPadding textPadding = GetTextPadding();
+                    int32_t nCheckBoxWidth = this->GetCheckBoxImageWidth();
+                    if ((nCheckBoxWidth > 0) && (textPadding.left < nCheckBoxWidth)) {
+                        textPadding.left += nCheckBoxWidth;
+                        SetTextPadding(textPadding, false);
+                    }
+
+                    //Attach the event handling of the CheckBox
+                    this->DetachEvent(kEventCheck);
+                    this->DetachEvent(kEventUnCheck);
+                    //Synchronize data
+                    if (pListCtrl != nullptr) {
+                        pListCtrl->UpdateHeaderColumnCheckBox(GetColumnId());
+                    }
+                    this->AttachCheck([this, pHeader](const EventArgs& /*args*/) {
+                        pHeader->OnHeaderColumnCheckStateChanged(this, true);
+                        return true;
+                        });
+                    this->AttachUnCheck([this, pHeader](const EventArgs& /*args*/) {
+                        pHeader->OnHeaderColumnCheckStateChanged(this, false);
+                        return true;
+                        });
+                }
+            }
+        }
+    }
+    else {
+        if (!IsShowCheckBox()) {
+            return true;
+        }
+        //Clear the CheckBox image resources, so it is no longer shown
+        ClearStateImages();
+        ASSERT(!IsShowCheckBox());
+        UiPadding textPadding = GetTextPadding();
+        int32_t nCheckBoxWidth = this->GetCheckBoxImageWidth();
+        if ((nCheckBoxWidth > 0) && (textPadding.left >= nCheckBoxWidth)) {
+            textPadding.left -= nCheckBoxWidth;
+            SetTextPadding(textPadding, false);
+        }
+        //Detach the event handling of the CheckBox
+        this->DetachEvent(kEventCheck);
+        this->DetachEvent(kEventUnCheck);
+        bRet = true;
+    }
+    return bRet;
+}
+
+bool ListCtrlHeaderItem::IsShowCheckBox() const
+{
+    //If there are CheckBox image resources, the CheckBox is considered shown
+    return !GetStateImage(kControlStateNormal).empty() && !GetSelectedStateImage(kControlStateNormal).empty();
+}
+
+int32_t ListCtrlHeaderItem::GetCheckBoxImageWidth()
+{
+    if (GetWindow() == nullptr) {
+        return 0;
+    }
+    UiSize sz = GetStateImageSize(kStateImageBk, kControlStateNormal);
+    return sz.cx;
+}
+
+bool ListCtrlHeaderItem::SetCheckBoxCheck(bool bChecked, bool bPartChecked)
+{
+    bool bChanged = this->IsChecked() != bChecked;
+    this->SetChecked(bChecked);
+    if (bChecked) {
+        if (this->IsPartChecked() != bPartChecked) {
+            this->SetPartChecked(bPartChecked);
+            bChanged = true;
+        }
+    }
+    if (bChanged) {
+        this->Invalidate();
+    }            
+    return true;
+}
+
+bool ListCtrlHeaderItem::GetCheckBoxCheck(bool& bChecked, bool& bPartChecked) const
+{
+    bChecked = false;
+    bPartChecked = false;
+    bChecked = this->IsChecked();
+    if (bChecked) {
+        bPartChecked = this->IsPartChecked();
+    }
+    return true;
+}
+
+bool ListCtrlHeaderItem::SupportCheckMode() const
+{
+    return true;
+}
+
+void ListCtrlHeaderItem::SetColumnVisible(bool bColumnVisible)
+{
+    m_bColumnVisible = bColumnVisible;
+    SetVisible(bColumnVisible);
+    if (m_pSplitBox != nullptr) {
+        m_pSplitBox->SetVisible(bColumnVisible);
+    }
+    ListCtrlHeader* pHeader = GetHeaderCtrl();
+    if (pHeader != nullptr) {
+        pHeader->OnHeaderColumnVisibleChanged();
+    }
+}
+
+bool ListCtrlHeaderItem::IsColumnVisible() const
+{
+    //Different from IsVisible(): when the header is hidden, IsVisible() also returns false
+    return m_bColumnVisible;
+}
+
+void ListCtrlHeaderItem::SetHeaderCtrl(ListCtrlHeader* pHeaderCtrl)
+{
+    m_pHeaderCtrl = pHeaderCtrl;
+}
+
+ListCtrlHeader* ListCtrlHeaderItem::GetHeaderCtrl() const
+{
+    ASSERT(m_pHeaderCtrl != nullptr);
+    return m_pHeaderCtrl;
+}
+
+void ListCtrlHeaderItem::AdjustItemPos(const UiPoint& pt, const UiPoint& ptMouseDown,
+                                       const std::vector<ItemStatus>& rcItemList) const
+{
+    Control* pMouseItem = nullptr;
+    size_t nMouseItemIndex = Box::InvalidIndex;
+    size_t nMouseDownItemIndex = Box::InvalidIndex;
+    for (const ItemStatus& itemStatus : rcItemList) {
+        if (itemStatus.m_rcPos.ContainsPt(pt)) {
+            pMouseItem = itemStatus.m_pItem;
+            nMouseItemIndex = itemStatus.m_index;
+        }
+        if (itemStatus.m_pItem == this) {
+            nMouseDownItemIndex = itemStatus.m_index;
+        }
+    }
+    if ((pMouseItem == nullptr) ||
+        (nMouseItemIndex == Box::InvalidIndex) ||
+        (nMouseDownItemIndex == Box::InvalidIndex)) {
+        return;
+    }
+    ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(pMouseItem);
+    if (pHeaderItem == nullptr) {
+        //The mouse is not on the header control
+        return;
+    }
+    if (!pHeaderItem->IsEnableDragOrder()) {
+        //The current column is a fixed column, reordering is not allowed
+        return;
+    }
+
+    const size_t itemCount = rcItemList.size();
+    int32_t xOffset = pt.x - ptMouseDown.x;
+    if (pMouseItem == this) {
+        //Current mouse position: over itself, restore the actual position of each control
+        for (const ItemStatus& item : rcItemList) {
+            if (item.m_pItem == this) {
+                continue;
+            }
+            if (item.m_pItem->GetRect() != item.m_rcPos) {
+                item.m_pItem->SetPos(item.m_rcPos);
+            }
+        }
+    }
+    else if (xOffset < 0) {
+        //Current mouse position: on the left side of the press point, move the controls to the right
+        for (size_t index = 0; index < itemCount; ++index) {
+            const ItemStatus& item = rcItemList[index];
+            if (item.m_pItem == this) {
+                //Restore the position of the associated Split control
+                if ((index + 1) < itemCount) {
+                    const ItemStatus& nextItem = rcItemList[index + 1];
+                    if ((nextItem.m_pItem->GetRect() != nextItem.m_rcPos)) {
+                        nextItem.m_pItem->SetPos(nextItem.m_rcPos);
+                    }
+                }
+                continue;
+            }
+            else if ((item.m_index >= nMouseItemIndex) && (item.m_index < nMouseDownItemIndex)) {
+                //Move to the right
+                if ((index + 2) < itemCount) {
+                    const ItemStatus& nextItem = rcItemList[index + 2];
+                    item.m_pItem->SetPos(nextItem.m_rcPos);
+                }
+                else {
+                    if (item.m_pItem->GetRect() != item.m_rcPos) {
+                        item.m_pItem->SetPos(item.m_rcPos);
+                    }
+                }
+            }
+            else {
+                //Restore the original position
+                if (item.m_pItem->GetRect() != item.m_rcPos) {
+                    item.m_pItem->SetPos(item.m_rcPos);
+                }
+            }
+        }
+    }
+    else {
+        //Current mouse position: on the right side of the press point, move the controls to the left
+        for (size_t index = 0; index < itemCount; ++index) {
+            const ItemStatus& item = rcItemList[index];
+            if (item.m_pItem == this) {
+                //Restore the position of the associated Split control
+                if ((index + 1) < itemCount) {
+                    const ItemStatus& nextItem = rcItemList[index + 1];
+                    if ((nextItem.m_pItem->GetRect() != nextItem.m_rcPos)) {
+                        nextItem.m_pItem->SetPos(nextItem.m_rcPos);
+                    }
+                }
+                continue;
+            }
+            else if ((item.m_index > nMouseDownItemIndex) && (item.m_index <= nMouseItemIndex)) {
+                //Move to the left
+                if ((index - 2) < itemCount) {
+                    const ItemStatus& nextItem = rcItemList[index - 2];
+                    item.m_pItem->SetPos(nextItem.m_rcPos);
+                }
+                else {
+                    if (item.m_pItem->GetRect() != item.m_rcPos) {
+                        item.m_pItem->SetPos(item.m_rcPos);
+                    }
+                }
+            }
+            else {
+                //Restore the original position
+                if (item.m_pItem->GetRect() != item.m_rcPos) {
+                    item.m_pItem->SetPos(item.m_rcPos);
+                }
+            }
+        }
+    }
+}
+
+bool ListCtrlHeaderItem::AdjustItemOrders(const UiPoint& pt,
+                                          const std::vector<ItemStatus>& rcItemList,
+                                          size_t& nOldItemIndex,
+                                          size_t& nNewItemIndex)
+{
+    nOldItemIndex = Box::InvalidIndex;
+    nNewItemIndex = Box::InvalidIndex;
+    Box* pHeader = GetParent();
+    if (pHeader == nullptr) {
+        return false;
+    }
+    bool bOrderChanged = false;
+    const size_t itemCount = pHeader->GetItemCount();
+    size_t nMouseItemIndex = Box::InvalidIndex;
+    size_t nCurrentItemIndex = Box::InvalidIndex;
+    for (const ItemStatus& itemStatus : rcItemList) {
+        if (itemStatus.m_rcPos.ContainsPt(pt)) {
+            nMouseItemIndex = itemStatus.m_index;
+            ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(itemStatus.m_pItem);
+            if ((pHeaderItem != nullptr) && !pHeaderItem->IsEnableDragOrder()) {
+                //The current column is a fixed column, reordering is not allowed
+                nMouseItemIndex = Box::InvalidIndex;
+            }
+        }
+        if ((itemStatus.m_pItem == this) && !itemStatus.m_rcPos.ContainsPt(pt)) {
+            nCurrentItemIndex = itemStatus.m_index;
+        }
+    }
+    if ((nMouseItemIndex != Box::InvalidIndex) &&
+        (nCurrentItemIndex != Box::InvalidIndex) &&
+        (nMouseItemIndex < itemCount) &&
+        (nCurrentItemIndex < itemCount)) {
+        //Swap the positions of the controls
+        if (nMouseItemIndex < nCurrentItemIndex) {
+            //Swap to the left
+            pHeader->SetItemIndex(this, nMouseItemIndex);
+            if (m_pSplitBox != nullptr) {
+                size_t nNewIndex = pHeader->GetItemIndex(this);
+                ASSERT(nNewIndex < itemCount);
+                ASSERT((nNewIndex + 1) < itemCount);
+                if ((nNewIndex + 1) < itemCount) {
+                    pHeader->SetItemIndex(m_pSplitBox, nNewIndex + 1);
+                }
+            }
+        }
+        else {
+            //Swap to the right
+            nMouseItemIndex += 1;
+            if (nMouseItemIndex >= itemCount) {
+                //Already at the last column, put it at the end
+                nMouseItemIndex = itemCount - 1;
+            }
+            ASSERT(nMouseItemIndex < itemCount);
+            if (nMouseItemIndex < itemCount) {
+                pHeader->SetItemIndex(this, nMouseItemIndex);
+                if (m_pSplitBox != nullptr) {
+                    size_t nNewIndex = pHeader->GetItemIndex(this);
+                    ASSERT(nNewIndex < itemCount);
+                    pHeader->SetItemIndex(m_pSplitBox, nNewIndex);
+                }
+            }
+        }
+        nOldItemIndex = nCurrentItemIndex;
+        nNewItemIndex = nMouseItemIndex;
+        bOrderChanged = true;
+        ASSERT(pHeader->GetItemIndex(this) == (pHeader->GetItemIndex(m_pSplitBox) - 1));
+
+        //After the swap, validate all the items
+        for (size_t index = 0; index < itemCount; index += 2) {
+            ASSERT(dynamic_cast<ListCtrlHeaderItem*>(pHeader->GetItemAt(index)) != nullptr);
+            ASSERT((index + 1) < itemCount);
+            if ((index + 1) >= itemCount) {
+                break;
+            }
+            ASSERT(dynamic_cast<SplitBox*>(pHeader->GetItemAt(index + 1)) != nullptr);
+            ASSERT(dynamic_cast<SplitBox*>(pHeader->GetItemAt(index + 1)) ==
+                   dynamic_cast<ListCtrlHeaderItem*>(pHeader->GetItemAt(index))->m_pSplitBox);
+        }
+    }
+
+    return bOrderChanged;
+}
+
+void ListCtrlHeaderItem::OnItemOrdersChanged(size_t /*nOldItemIndex*/, size_t /*nNewItemIndex*/)
+{
+    ListCtrlHeader* pHeader = GetHeaderCtrl();
+    if (pHeader != nullptr) {
+        pHeader->OnHeaderColumnOrderChanged();
+    }
+}
+
+}//namespace ui
+
