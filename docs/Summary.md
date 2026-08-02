@@ -3,6 +3,7 @@
 * [Project Overview](../README.md)
 * [Quick Start](Getting-Started.md)
 * [Example Programs](Examples.md)
+* [Three Development Modes](ThreeModes.md)
 * [Global Styles: Fonts, Colors, Images and Other Resources](Global.md)
 * [Window Styles](Window.md)
 * [Box Styles](Box.md)
@@ -12,7 +13,11 @@
 * [XML Node Names of Controls](XmlNode.md)
 * [Responding to Control Events Directly in XML](XmlEvents.md)
 * [CEF Control](CEF.md)
+* [Build Process per Platform](Build.md)
 * [Build-related Documents and Scripts](../scripts/build.md)
+* [Third-party Libraries Used](ThirdParty.md)
+* [History: Modifications Based on NIM_Duilib_Framework](History.md)
+* [AI-Assisted Development (Claude Code)](ClaudeCode.md)
 
 ## Summary table of the main classes in the project
 For detailed interface descriptions of each class, please refer to the associated header files, which contain detailed comments.    
