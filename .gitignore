@@ -359,6 +359,10 @@ healthchecksdb
 # Build output
 /build
 
+# Prebuilt example binaries (build outputs; theme resources are assets and stay tracked)
+/bin/*
+!/bin/resources/
+
 # CEF binary distribution (downloaded/extracted automatically by cmake/duilib_deps.cmake)
 /third_party/libcef/cef_binary/
 /third_party/libcef/.download/
