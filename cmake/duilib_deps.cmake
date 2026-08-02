@@ -218,9 +218,14 @@ function(duilib_deps_download_cef)
     set(_cef_archive "${_cef_dl_dir}/cef_binary_${_cef_ver}_${_cef_suffix}.tar.bz2")
     set(_cef_extracted "${DUILIB_ROOT}/third_party/libcef/cef_binary_${_cef_ver}_${_cef_suffix}")
 
-    message(STATUS "Downloading CEF binary distribution: ${_cef_url}")
     file(MAKE_DIRECTORY "${_cef_dl_dir}")
-    file(DOWNLOAD "${_cef_url}" "${_cef_archive}" STATUS _cef_status LIST_DIRECTORIES OFF)
+    if(NOT EXISTS "${_cef_archive}")
+        message(STATUS "Downloading CEF binary distribution: ${_cef_url}")
+        file(DOWNLOAD "${_cef_url}" "${_cef_archive}" STATUS _cef_status)
+    else()
+        message(STATUS "CEF archive already downloaded: ${_cef_archive}")
+        set(_cef_status 0)
+    endif()
     list(GET _cef_status 0 _cef_code)
     if(NOT _cef_code EQUAL 0)
         file(REMOVE_RECURSE "${_cef_dl_dir}")
@@ -228,16 +233,15 @@ function(duilib_deps_download_cef)
     endif()
 
     message(STATUS "Extracting CEF binary distribution...")
-    file(ARCHIVE_EXTRACT INPUT "${_cef_archive}" DESTINATION "${DUILIB_ROOT}/third_party/libcef"
-         RESULT_VARIABLE _cef_extract_result)
-    if(NOT _cef_extract_result EQUAL 0)
+    file(ARCHIVE_EXTRACT INPUT "${_cef_archive}" DESTINATION "${DUILIB_ROOT}/third_party/libcef")
+    if(NOT EXISTS "${_cef_extracted}")
         # Fallback: system tar (e.g. CMake built without bzip2 support)
         execute_process(
             COMMAND tar -xjf "${_cef_archive}"
             WORKING_DIRECTORY "${DUILIB_ROOT}/third_party/libcef"
             RESULT_VARIABLE _cef_tar_result
         )
-        if(NOT _cef_tar_result EQUAL 0)
+        if(NOT _cef_tar_result EQUAL 0 OR NOT EXISTS "${_cef_extracted}")
             file(REMOVE_RECURSE "${_cef_dl_dir}")
             message(FATAL_ERROR "CEF archive extraction failed: ${_cef_archive}")
         endif()
