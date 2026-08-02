@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="600,400" min_size="240,100"
+        caption="0,0,0,36" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36"
+        shadow_type="default" shadow_attached="true" shadow_snap="true" layered_window="true"
+        alpha="255" size_box="4,4,4,4" icon="public/caption/logo.ico">
+    <VBox bkcolor="bk_wnd_darkcolor" visible="true">
+        <!-- Title bar area -->
+        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+            <Control mouse_enabled="false"/>
+            <Button class="btn_wnd_fullscreen_11" height="32" width="40" name="fullscreenbtn" margin="0,2,0,2" tooltip_text="Fullscreen, press ESC to exit fullscreen"/>
+            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+            <Box height="stretch" width="40" margin="0,2,0,2">
+                <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
+                <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
+            </Box>
+            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+        </HBox>
+
+        <!-- Work area: everything outside the title bar goes into this large Box area -->
+        <Box>
+            <VBox valign="center" halign="center" height="100">
+                <Label name="hello_label" text="Hello, nim_duilib!" height="40" width="100%" text_align="hcenter,vcenter" margin="0,0,0,16"/>
+                <Button name="hello_btn" class="btn_global_blue_80x30" text="Click Me" halign="center" width="90" height="32"/>
+            </VBox>
+        </Box>
+    </VBox>
+</Window>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="85%,85%" min_size="80,50" use_system_caption="true" caption="0,0,0,36" shadow_attached="true" layered_window="true" size_box="4,4,4,4">
+    <VBox bkcolor="bk_wnd_darkcolor" visible="true">    
+        <!-- Title bar area -->
+        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+            <Control mouse_enabled="false"/>
+            <Button class="btn_wnd_fullscreen_11" height="32" width="40" name="fullscreenbtn" margin="0,2,0,2" tooltip_text="Fullscreen, press ESC to exit fullscreen"/>
+            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+            <Box height="stretch" width="40" margin="0,2,0,2">
+                <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
+                <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
+            </Box>
+            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+        </HBox>
+        
+        <!-- Work area: everything outside the title bar goes into this large Box area -->
+        <VBox>
+            <HBox height="auto">
+                <Label text="Table Type:" valign="center" margin="2,0,2,0"/>
+                <Combo class="combo" name="list_ctrl_type_combo" combo_type="drop_list" dropbox_size="0,300" combo_icon_class="" height="26" width="80" margin="0,0,0,1" valign="center">
+                    <TreeNode class="tree_node" padding="4" text="Report" user_dataid="0"/>
+                    <TreeNode class="tree_node" padding="4" text="Icon" user_dataid="1"/>
+                    <TreeNode class="tree_node" padding="4" text="List" user_dataid="2"/>
+                </Combo>
+                <CheckBox class="checkbox_1" name="checkbox_multi_select" text="Multi-select" margin="4,0,0,0" valign="center">
+                    <Event type="select" receiver="list_ctrl" applyattribute="multi_select={true}" />
+                    <Event type="unselect" receiver="list_ctrl" applyattribute="multi_select={false}" />
+                </CheckBox>
+            </HBox>
+            <HBox height="auto">                
+                <GroupVBox name="report_group" height="auto" width="770" text="Report Type">
+                    <HBox minheight="18" bkcolor="bk_wnd_darkcolor" height="auto" margin="4,18,4,0">
+                        <Label text="Header Controls:" valign="center" margin="2,0,2,0"/>
+                        <Option class="option_2" group="show" selected="false" width="64" height="32" text="Hide" padding="2,2,2,2" borderround="2,2" valign="center">
+                            <Event type="select" receiver="list_ctrl" applyattribute="show_header={false}" />
+                        </Option>
+                        <Option class="option_2" group="show" selected="true" width="64" height="32" text="Show" padding="2,2,2,2" borderround="2,2" valign="center">
+                            <Event type="select" receiver="list_ctrl" applyattribute="show_header={true}" />
+                        </Option>
+                        <Line vertical="true" margin="0,8,4,8" width="2"/>
+                        <Label text="Drag Header to Reorder:" valign="center" margin="2,0,2,0"/>
+                        <Option class="option_2" group="drag_order" selected="false" width="64" height="32" text="Forbidden" padding="2,2,2,2" borderround="2,2" valign="center">
+                            <Event type="select" receiver="list_ctrl" applyattribute="enable_header_drag_order={false}" />
+                        </Option>
+                        <Option class="option_2" group="drag_order" selected="true" width="64" height="32" text="Allowed" padding="2,2,2,2" borderround="2,2" valign="center">
+                            <Event type="select" receiver="list_ctrl" applyattribute="enable_header_drag_order={true}" />
+                        </Option>
+                        <Line vertical="true" margin="0,8,4,8" width="2"/>
+                        <Label text="Header Height:" valign="center" margin="2,0,2,0"/>
+                        <RichEdit class="simple simple_border rich_edit_spin" name="header_height_edit" min_number="0" max_number="512" limit_text="3" text="0" margin="0,2,0,0"/>
+                        <Button class="btn_global_color_gray" name="set_column_stretch" text="Set Column Widths Proportionally" width="auto" height="30" border_round="3,3" text_padding="8,0,8,0" margin="4,0,0,0"/>
+                    </HBox>
+                    
+                    <HBox minheight="18" bkcolor="bk_wnd_darkcolor" height="auto" margin="4,0,4,0">
+                        <Label text="Column Controls:" valign="center" margin="2,0,2,0"/>                
+                        <Combo class="combo" name="column_combo" combo_type="drop_list" dropbox_size="0,300" combo_icon_class="" height="26" width="80" margin="0,0,0,1" valign="center"/>              
+                        <Line vertical="true" margin="8,4,4,4" width="2"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_show" text="Show This Column" margin="4,0,0,0" valign="center"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_width" text="Resizable Width" margin="4,0,0,0" valign="center"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_sort" text="Sortable" margin="4,0,0,0" valign="center"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_icon_at_top" text="Sort Icon on Top" margin="4,0,0,0" valign="center"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_drag_order" text="Drag to Reorder" margin="4,0,0,0" valign="center"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_editable" text="Editable Text" margin="4,0,0,0" valign="center"/>
+                    </HBox>
+                    <HBox minheight="18" bkcolor="bk_wnd_darkcolor" height="auto" margin="4,0,4,0">
+                        <Control width="153"/>
+                        <Line vertical="true" margin="8,2,4,2" width="2"/>
+                        <Label text="Column CheckBox:" valign="center" margin="2,0,2,0" tooltip_text="Each column header and cell can show a CheckBox"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_show_header_checkbox" text="Show in Header" margin="4,0,0,0" valign="center"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_show_checkbox" text="Show in Each Column" margin="4,0,0,0" valign="center"/>
+                        <Line vertical="true" margin="8,2,4,2" width="2"/>
+                        <Label text="Column Icons:" valign="center" margin="2,0,2,0" tooltip_text="Each column header and cell can show an icon"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_show_header_icon" text="Show in Header" margin="4,0,0,0" valign="center"/>
+                        <CheckBox class="checkbox_1" name="checkbox_column_show_icon" text="Show in Each Column" margin="4,0,0,0" valign="center"/>
+                    </HBox>
+                    <HBox minheight="18" bkcolor="bk_wnd_darkcolor" height="auto" margin="4,0,4,0">
+                        <Control width="153"/>
+                        <Line vertical="true" margin="8,8,4,8" width="2"/>
+                        <Label text="Header Text:" valign="center" margin="6,0,2,0"/>
+                        <Option class="option_2" name="header_text_align_left" group="header_text_align" selected="false" width="64" height="32" text="Left" padding="2,2,2,2" borderround="2,2" valign="center"/>
+                        <Option class="option_2" name="header_text_align_center" group="header_text_align" selected="true" width="64" height="32" text="Center" padding="2,2,2,2" borderround="2,2" valign="center"/>
+                        <Option class="option_2" name="header_text_align_right" group="header_text_align" selected="false" width="64" height="32" text="Right" padding="2,2,2,2" borderround="2,2" valign="center"/>
+                        <Line vertical="true" margin="8,8,4,8" width="2"/>
+                        <Label text="Cell Text:" valign="center" margin="6,0,2,0"/>
+                        <Option class="option_2" name="column_text_align_left" group="column_text_align" selected="true" width="64" height="32" text="Left" padding="2,2,2,2" borderround="2,2" valign="center"/>
+                        <Option class="option_2" name="column_text_align_center" group="column_text_align" selected="false" width="64" height="32" text="Center" padding="2,2,2,2" borderround="2,2" valign="center"/>
+                        <Option class="option_2" name="column_text_align_right" group="column_text_align" selected="false" width="64" height="32" text="Right" padding="2,2,2,2" borderround="2,2" valign="center"/>
+                    </HBox>
+                                
+                    <HBox minheight="18" bkcolor="bk_wnd_darkcolor" height="auto" margin="4,0,4,0">
+                        <Label text="Table Properties:" valign="center" margin="2,0,2,0"/>
+                        <Label text="Horizontal Grid:" valign="center" margin="2,0,2,0"/>
+                        <Option class="option_2" group="grid_line_row" selected="false" width="64" height="32" text="Hide" padding="2,2,2,2" borderround="2,2" valign="center">
+                            <Event type="select" receiver="list_ctrl" applyattribute="row_grid_line_width={0}" />
+                        </Option>
+                        <Option class="option_2" group="grid_line_row" selected="true" width="64" height="32" text="Show" padding="2,2,2,2" borderround="2,2" valign="center">
+                            <Event type="select" receiver="list_ctrl" applyattribute="row_grid_line_width={1}" />
+                        </Option>
+                        <Line vertical="true" margin="0,8,4,8" width="2"/>
+                        <Label text="Vertical Grid:" valign="center" margin="2,0,2,0"/>
+                        <Option class="option_2" group="grid_line_column" selected="false" width="64" height="32" text="Hide" padding="2,2,2,2" borderround="2,2" valign="center">
+                            <Event type="select" receiver="list_ctrl" applyattribute="column_grid_line_width={0}" />
+                        </Option>
+                        <Option class="option_2" group="grid_line_column" selected="true" width="64" height="32" text="Show" padding="2,2,2,2" borderround="2,2" valign="center">
+                            <Event type="select" receiver="list_ctrl" applyattribute="column_grid_line_width={1}" />
+                        </Option>
+                        <Line vertical="true" margin="0,8,4,8" width="2"/>
+                        <Label text="Row Height:" valign="center" margin="2,0,2,0"/>
+                        <RichEdit class="simple simple_border rich_edit_spin" name="list_item_height_edit" min_number="0" max_number="512" limit_text="3" text="0" margin="0,2,0,0"/>
+                    </HBox>
+                    <HBox minheight="18" bkcolor="bk_wnd_darkcolor" height="auto" margin="4,0,4,8">
+                        <Control width="153"/>
+                        <Line vertical="true" margin="8,2,4,2" width="2"/>
+                        <Label text="Row CheckBox:" valign="center" margin="2,0,2,0" tooltip_text="Each row header and row start can show a CheckBox"/>
+                        <CheckBox class="checkbox_1" name="checkbox_show_header_checkbox" text="Show in Header" margin="4,0,0,0" valign="center"/>
+                        <CheckBox class="checkbox_1" name="checkbox_show_checkbox" text="Show at Row Start" margin="4,0,0,0" valign="center"/>
+                        <Line vertical="true" margin="8,2,4,2" width="2"/>
+                        <Label text="Row Icons:" valign="center" margin="2,0,2,0" tooltip_text="Each row header and row start can show an icon"/>
+                        <CheckBox class="checkbox_1" name="checkbox_show_icon" text="Show at Row Start" margin="4,0,0,0" valign="center"/>
+                    </HBox>
+                </GroupVBox>
+                <HBox>
+                    <GroupVBox text="Other Tests">
+                        <Button class="btn_global_color_gray" name="loading_progress_btn1" text="Loading Function Test (Progress Bar 1)" width="200" height="30" border_round="3,3" margin="20,25,10,0"/>
+                        <Button class="btn_global_color_gray" name="loading_progress_btn2" text="Loading Function Test (Progress Bar 2)" width="200" height="30" border_round="3,3" margin="20,4,10,0"/>
+                        <Button class="btn_global_color_gray" name="loading_btn1" text="Loading Function Test 1" width="200" height="30" border_round="3,3" margin="20,4,10,0"/>
+                        <Button class="btn_global_color_gray" name="loading_btn2" text="Loading Function Test 2" width="200" height="30" border_round="3,3" margin="20,4,10,0"/>
+                   </GroupVBox>
+                    <GroupVBox text="Other Tests">
+                        <Button class="btn_global_color_gray" name="loading_btn3" text="Loading Function Test 3" width="200" height="30" border_round="3,3" margin="20,25,10,0"/>
+                        <Button class="btn_global_color_gray" name="loading_btn4" text="Loading Function Test 4" width="200" height="30" border_round="3,3" margin="20,4,10,0"/>
+                        <Button class="btn_global_color_gray" name="loading_btn5" text="Loading Function Test 5" width="200" height="30" border_round="3,3" margin="20,4,10,0"/>
+                        <Button class="btn_global_color_gray" name="loading_btn6" text="Loading Function Test 6" width="200" height="30" border_round="3,3" margin="20,4,10,0"/>
+                    </GroupVBox>
+                </HBox>
+            </HBox>
+            <!-- Horizontal splitter bar, used to adjust the sizes of the upper and lower areas -->
+            <Split bkcolor="splitline_level1" height="2"/>
+            <VBox margin="0,0,0,0" valign="center" halign="center">
+                <ListCtrl name="list_ctrl" bkcolor="YellowGreen"
+                          type="report"
+                          show_header="true"
+                          header_class="list_ctrl_header" 
+                          header_item_class="list_ctrl_header_item"
+                          header_split_box_class="list_ctrl_header_split_box"
+                          header_split_control_class="list_ctrl_header_split_control"
+                          header_height="32"                          
+                          enable_header_drag_order="true" 
+                          check_box_class="list_ctrl_checkbox"
+                          data_item_class="list_ctrl_item"
+                          data_sub_item_class="list_ctrl_sub_item"
+                          report_view_class="list_ctrl_report_view"
+                          data_item_height="46"
+                          row_grid_line_width="1"
+                          row_grid_line_color="lightgray"
+                          column_grid_line_width="1"
+                          column_grid_line_color="lightgray"
+                          multi_select="true"
+                          auto_check_select="false" show_header_checkbox="true" show_data_item_checkbox="true"
+                          icon_view_class="list_ctrl_icon_view"
+                          icon_view_item_class="list_ctrl_icon_view_item"
+                          icon_view_item_image_class="list_ctrl_icon_view_item_image"
+                          icon_view_item_label_class="list_ctrl_icon_view_item_label"
+                          list_view_class="list_ctrl_list_view"
+                          list_view_item_class="list_ctrl_list_view_item"
+                          list_view_item_image_class="list_ctrl_list_view_item_image"
+                          list_view_item_label_class="list_ctrl_list_view_item_label"
+                          enable_item_edit="true" list_ctrl_richedit_class="list_ctrl_richedit"
+                          loading="file='loading_progress1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"/>
+            </VBox>
+        </VBox>
+    </VBox>
+</Window>

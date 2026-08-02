@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Code UI Demo
+Comment=Pure C++ UI - no external resources needed
+Exec=./nim_duilib/bin/codeui
+Path=/home/bsdbsd/projects-main/dui
+Terminal=false
+Categories=Development;

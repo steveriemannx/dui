@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Window size="800,600" min_size="300,200" caption="0,0,0,36" size_box="4,4,4,4" textid="STRID_CEF_BROWSER_MULTI_TAB" shadow_attached="true" layered_window="true" icon="public/caption/logo.ico">
+<!--New tab button: solid color button-->
+<Class name="tab_item_new_add_btn" font="system_18" text_align="hcenter,vcenter" valign="center" 
+                                   normal_text_color="black" 
+                                   disabled_text_color="gray" 
+                                   normal_color="#FFD3E3FD" 
+                                   hot_color="#FFA8C7FA" 
+                                   pushed_color="#FF9DB9E8"/>
+<Class name="tab_ctrl_left_line" bkcolor="#FFA8C7FA" width="1" height="22" halign="center" valign="center" mouse_enabled="false"/>
+
+<VBox bkcolor="bk_wnd_lightcolor">
+    <HBox name="title_bar" width="stretch" height="36" bkcolor="#FFD3E3FD">
+        <!-- Icon area -->
+        <Control width="36" height="36" bkimage="file='public/caption/logo.ico' width='22' height='22' halign='center' valign='center'"/>
+        
+        <!-- Vertical line area -->
+        <Control class="tab_ctrl_left_line" padding="0,6,0,6" margin="0,0,2,0"/>
+        
+        <!-- Top tab list -->
+        <TabCtrl class="tab_ctrl" name="tab_ctrl"/>
+        
+        <!-- A new tab button placed after the top tab list -->
+        <Button class="tab_item_new_add_btn" name="btn_add" text="+" tooltip_text="New Tab" width="24" height="24" border_round="8,8" text_padding="0,0,0,2"/>
+		
+        <!-- Title bar area -->
+        <HBox name="window_caption_bar" width="auto" height="36" bkcolor="">
+            <Control mouse_enabled="false"/>
+            <Control width="36" mouse_enabled="false"/>
+            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+            <Box height="stretch" width="40" margin="0,2,0,2">
+                <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
+                <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
+            </Box>
+            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+        </HBox>
+    </HBox>
+    <!-- Back/forward/refresh buttons, address bar, tab bar area -->
+    <HBox height="30" margin="10,2,10,2" child_margin="3">
+        <Button class="btn_global_blue_80x30" name="btn_back" width="50" height="30" textid="STRID_CEF_BROWSER_BACKWARD" valign="center" font="system_12" />
+        <Button class="btn_global_blue_80x30" name="btn_forward" width="50" height="30" textid="STRID_CEF_BROWSER_FORWARD" valign="center" font="system_12" />
+        <Box width="50" height="30" valign="center">
+            <Button class="btn_global_blue_80x30" name="btn_refresh" width="50" height="30" textid="STRID_CEF_BROWSER_REFRESH" valign="center" font="system_12" />
+            <Button class="btn_global_blue_80x30" name="btn_stop" width="50" height="30" textid="STRID_CEF_BROWSER_STOP" valign="center" font="system_12" />
+        </Box>
+        <!-- Address bar -->
+        <RichEdit class="simple prompt" name="edit_url" width="stretch" height="30" 
+                                        text_padding="5,2,5,0" 
+                                        text_align="vcenter" 
+                                        valign="center" 
+                                        border_color="gray" 
+                                        border_size="1" 
+                                        font="system_14"
+                                        prompt_textid="STRID_CEF_BROWSER_INPUT_ADDRESS" 
+                                        default_context_menu="true" 
+                                        vscrollbar="false" 
+                                        auto_vscroll="false" 
+                                        hscrollbar="false" 
+                                        auto_hscroll="true"/>		
+    </HBox>
+    
+    <!-- A separator line -->
+    <Control class="splitline_hor_level1" margin="0,0,0,0" />
+    
+	<!-- Web page display area: browser box list -->
+	<TabBox name="browser_box_tab" bkcolor="white" padding="2,2,2,2"/>
+</VBox>
+</Window>

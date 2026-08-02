@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="85%,95%" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" shadow_attached="true" layered_window="true" size_box="4,4,4,4" text="Render Engine Test Program">
+    <!-- All controls in the entire window are placed in this VBox container -->  
+    <VBox bkcolor="bk_wnd_darkcolor">
+        <!-- Title bar area -->  
+        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+            <!-- Title bar: display area at the top-left of the window -->  
+            <HBox margin="0,0,30,0" valign="center" width="auto" height="auto" mouse_enabled="false">
+                <Control width="18" height="18" bkimage="public/caption/logo.svg" valign="center" margin="8,0,0,0"/>
+                <Label text="Render Engine Test" valign="center" margin="8,0,0,0" mouse_enabled="false"/>
+            </HBox>
+            <Control mouse_enabled="false"/>            
+            <!-- Title bar: window control area on the right; minimize, maximize, restore, and close buttons -->
+            <HBox margin="0,0,0,0" valign="center" width="auto" height="36">
+                <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+                <Box height="stretch" width="40" margin="0,2,0,2">
+                    <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
+                    <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
+                </Box>
+                <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+            </HBox>
+        </HBox> <!-- End of title bar area --> 
+        
+        <!-- Display area --> 
+        <VBox>
+            <TabCtrl class="tab_ctrl" tab_box_name="main_view_tab" selected_id="0">                
+                <TabCtrlItem class="tab_ctrl_item" title="Image 1" close_button_class="" tab_box_item_index="0"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Image 2" close_button_class="" tab_box_item_index="1"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Image 3" close_button_class="" tab_box_item_index="2"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Text - Horizontal" close_button_class="" tab_box_item_index="3"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Text - Vertical" close_button_class="" tab_box_item_index="4"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Draw" close_button_class="" tab_box_item_index="5"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Draw" close_button_class="" tab_box_item_index="6"/>
+                <TabCtrlItem class="tab_ctrl_item" title="BoxShadow" close_button_class="" tab_box_item_index="7"/>                
+                <TabCtrlItem class="tab_ctrl_item" title="Property and Tab Pages" close_button_class="" tab_box_item_index="8"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Window Shadow" close_button_class="" tab_box_item_index="9"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Bitmap Control" close_button_class="" tab_box_item_index="10"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Control Test" close_button_class="" tab_box_item_index="11"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Control Animation" close_button_class="" tab_box_item_index="12"/>
+            </TabCtrl>
+            <TabBox name="main_view_tab" bkcolor="white" selected_id="0"
+                    fade_switch_type="FadeInOut" 
+                    fade_switch_frame_interval_ms="16" 
+                    fade_switch_total_ms="180"
+                    fade_switch_easing_function="EaseOutCubic">
+                <VBox name="main_view_page_00">
+                    <Label text="Page 1: Test all supported image formats with standard controls"/>
+                    <Include src="page_image1.xml"/>
+                </VBox>
+                <VBox name="main_view_page_01">
+                    <Label text="Page 2: Test supported image properties with standard controls (SVG supports vector scaling)"/>
+                    <Include src="page_image2.xml"/>
+                </VBox>
+                <VBox name="main_view_page_02">
+                    <Label text="Page 3: Test supported image properties with standard controls (non-SVG formats do not support vector scaling)"/>
+                    <Include src="page_image3.xml"/>
+                </VBox>
+                <VBox name="main_view_page_03">
+                    <Label text="Page 4: Text Drawing - Horizontal Text"/>
+                    <Include src="page_text1.xml"/>
+                </VBox>
+                <VBox name="main_view_page_04">
+                    <Label text="Page 5: Text Drawing - Vertical Text"/>
+                    <Include src="page_text2.xml"/>
+                </VBox>
+                <VBox name="main_view_page_05">
+                    <Label text="Page 6: IRender image drawing test (DrawImage, BitBlt, StretchBlt, AlphaBlend, nine-patch, tiling, etc.)"/>
+                    <RenderTest1 />
+                </VBox>
+                <VBox name="main_view_page_06">
+                    <Label text="Page 7: IRender basic drawing test (lines, rectangles, filled rectangles)"/>
+                    <RenderTest2 />
+                </VBox>
+                <VBox name="main_view_page_07">
+                    <Label text="Page 8: DrawBoxShadow Test"/>
+                    <Include src="page_boxshadow.xml"/>
+                </VBox>
+                <VBox name="main_view_page_08">
+                    <Include src="page_property_grid.xml"/>
+                </VBox>
+                <VBox name="main_view_page_09">
+                    <Label text="Page 10: Window Shadow Test"/>
+                    <Include src="page_window_shadow.xml"/>
+                </VBox>
+                <VBox name="main_view_page_10">
+                    <Label text="Page 11: Bitmap Control Test"/>
+                    <Include src="page_bitmap_control.xml"/>
+                </VBox> 
+                <VBox name="main_view_page_11">
+                    <Label text="Page 12: Control Comprehensive Test"/>
+                    <Include src="page_control_test.xml"/>
+                </VBox>
+                <VBox name="main_view_page_12">
+                    <Label text="Page 13: Control Animation Test"/>
+                    <Include src="page_control_animation.xml"/>
+                </VBox>
+            </TabBox>
+        </VBox>
+    </VBox>
+</Window>

@@ -1,0 +1,445 @@
+#include "duilib/Image/Image.h"
+#include "duilib/Image/ImageUtil.h"
+#include "duilib/Image/ImagePlayer.h"
+#include "duilib/Core/Control.h"
+#include "duilib/Core/DpiManager.h"
+#include "duilib/Utils/PerformanceUtil.h"
+
+namespace ui 
+{
+Image::Image() :
+    m_pControl(nullptr),
+    m_pImagePlayer(nullptr),
+    m_nCurrentFrame(0),
+    m_bImageError(false),
+    m_bDecodeEventFired(false)
+{
+}
+
+Image::~Image()
+{
+    if ((m_pImagePlayer != nullptr) && m_pImagePlayer->IsAnimationPlaying()) {
+        m_pImagePlayer->StopImageAnimation(AnimationImagePos::kFrameCurrent, false);
+    }
+}
+
+void Image::InitImageAttribute()
+{
+    m_imageAttribute.Init();
+}
+
+void Image::SetImageString(const DString& strImageString, const DpiManager& dpi)
+{
+    SetImageError(false);
+    SetDecodeEventFired(false);
+    ClearImageCache();
+    m_imageAttribute.InitByImageString(strImageString, dpi);
+}
+
+void Image::UpdateImageAttribute(const DString& strImageString, const DpiManager& dpi)
+{
+    //Only modify the attributes, not the image resource path
+    DString sImagePath = m_imageAttribute.m_sImagePath.c_str();
+    m_imageAttribute.ModifyAttribute(strImageString, dpi);
+    m_imageAttribute.m_sImagePath = sImagePath;
+}
+
+DString Image::GetImageString() const
+{
+    return m_imageAttribute.m_sImageString.c_str();
+}
+
+bool Image::EqualToImageString(const DString& imageString) const
+{
+    return m_imageAttribute.m_sImageString == imageString;
+}
+
+DString Image::GetImagePath() const
+{
+    return m_imageAttribute.m_sImagePath.c_str();
+}
+
+void Image::SetImageMargin(const UiMargin& newMargin, bool bNeedDpiScale, const DpiManager& dpi)
+{
+    m_imageAttribute.SetImageMargin(newMargin, bNeedDpiScale, dpi);
+}
+
+UiMargin Image::GetImageMargin(const DpiManager& dpi) const
+{
+    return m_imageAttribute.GetImageMargin(dpi);
+}
+
+bool Image::IsImagePaintEnabled() const
+{
+    return m_imageAttribute.m_bPaintEnabled;
+}
+
+void Image::SetImagePaintEnabled(bool bEnable)
+{
+    m_imageAttribute.m_bPaintEnabled = bEnable;
+}
+
+void Image::SetImagePlayCount(int32_t nPlayCount)
+{
+    m_imageAttribute.m_nPlayCount = nPlayCount;
+}
+
+void Image::SetImageFade(uint8_t nFade)
+{
+    m_imageAttribute.m_bFade = nFade;
+}
+
+const ImageAttribute& Image::GetImageAttribute() const
+{
+    return m_imageAttribute;
+}
+
+ImageLoadParam Image::GetImageLoadParam() const
+{
+    uint32_t nLoadDpiScale = (m_pControl != nullptr) ? m_pControl->Dpi().GetDisplayScaleFactor() : 100;
+    bool bAsyncDecode = m_imageAttribute.m_bAsyncLoad;
+    bool bIconAsAnimation = m_imageAttribute.m_bIconAsAnimation;
+    uint32_t nIconSize = m_imageAttribute.m_nIconSize;
+    int32_t nIconFrameDelayMs = m_imageAttribute.m_nIconFrameDelayMs;
+    float fPagMaxFrameRate = m_imageAttribute.m_fPagMaxFrameRate;
+    return ImageLoadParam(m_imageAttribute.m_srcWidth.c_str(),
+                          m_imageAttribute.m_srcHeight.c_str(),
+                          m_imageAttribute.m_bImageDpiScaleEnabled,
+                          nLoadDpiScale,
+                          bAsyncDecode,
+                          bIconAsAnimation,
+                          nIconFrameDelayMs,
+                          nIconSize,
+                          fPagMaxFrameRate,
+                          m_imageAttribute.IsAssertEnabled());
+}
+
+const std::shared_ptr<ImageInfo>& Image::GetImageInfo() const
+{
+    return m_imageInfo;
+}
+
+void Image::SetImageInfo(const std::shared_ptr<ImageInfo>& imageInfo)
+{
+    m_imageInfo = imageInfo;
+}
+
+void Image::ClearImageCache()
+{
+    //Stop the animation playback
+    if (m_pImagePlayer != nullptr) {
+        bool bAutoPlay = m_pImagePlayer->IsAutoPlay();
+        m_pImagePlayer->StopImageAnimation(AnimationImagePos::kFrameCurrent, false);
+        //The original auto-play attribute needs to be kept, otherwise after changing the skin, the newly loaded animation will not auto-play
+        m_pImagePlayer->SetAutoPlay(bAutoPlay);
+    }
+    m_nCurrentFrame = 0;
+    m_imageInfo.reset();
+    m_rcDrawDestRect.Clear();
+}
+
+void Image::SetCurrentFrameIndex(uint32_t nCurrentFrame)
+{
+    m_nCurrentFrame = nCurrentFrame;
+    const uint32_t nFrameCount = GetFrameCount();
+    if ((m_nCurrentFrame >= nFrameCount) && (nFrameCount > 0)) {
+        m_nCurrentFrame = m_nCurrentFrame % nFrameCount;
+    }
+}
+
+uint32_t Image::GetCurrentFrameIndex() const
+{
+    return m_nCurrentFrame;
+}
+
+uint32_t Image::GetFrameCount() const
+{
+    if (!m_imageInfo) {
+        return 0;
+    }
+    return m_imageInfo->GetFrameCount();
+}
+
+int32_t Image::GetLoopCount() const
+{
+    if (!m_imageInfo) {
+        return -1;
+    }
+    return m_imageInfo->GetLoopCount();
+}
+
+bool Image::IsMultiFrameImage() const
+{
+    if (!m_imageInfo) {
+        return false;
+    }
+    return m_imageInfo->IsMultiFrameImage();
+}
+
+AnimationFramePtr Image::GetCurrentFrame(const UiRect& rcDest, UiRect& rcSource, UiRect& rcSourceCorners) const
+{
+    PerformanceStat statPerformance(_T("Image::GetCurrentFrame"));
+    ASSERT((m_imageInfo != nullptr) && m_imageInfo->IsMultiFrameImage());
+    if (!m_imageInfo || !m_imageInfo->IsMultiFrameImage()) {
+        return nullptr;
+    }
+    //Multi-frame image
+    AnimationFramePtr pAnimationFrame;
+    if (m_nCurrentFrame < m_imageInfo->GetFrameCount()) {
+        pAnimationFrame = m_imageInfo->GetFrame(m_nCurrentFrame, UiSize(rcDest.Width(), rcDest.Height()));
+    }
+    else {
+        uint32_t nCurrentFrame = 0;
+        if (m_imageInfo->GetFrameCount() > 0) {
+            nCurrentFrame = m_nCurrentFrame % m_imageInfo->GetFrameCount();
+        }
+        pAnimationFrame = m_imageInfo->GetFrame(nCurrentFrame, UiSize(rcDest.Width(), rcDest.Height()));
+    }
+    if (pAnimationFrame != nullptr) {
+        AdjustImageSourceRect(pAnimationFrame->m_pBitmap, rcSource, rcSourceCorners);
+    }
+    return pAnimationFrame;
+}
+
+std::shared_ptr<IBitmap> Image::GetBitmapData(UiRect& rcSource, UiRect& rcSourceCorners, bool* bDecodeError) const
+{
+    PerformanceStat statPerformance(_T("Image::GetBitmapData"));
+    ASSERT((m_imageInfo != nullptr) && !m_imageInfo->IsMultiFrameImage());
+    if (!m_imageInfo || m_imageInfo->IsMultiFrameImage()) {
+        return nullptr;
+    }
+    //Single-frame image
+    std::shared_ptr<IBitmap> pBitmap = m_imageInfo->GetBitmap(bDecodeError);
+    AdjustImageSourceRect(pBitmap, rcSource, rcSourceCorners);
+    return pBitmap;
+}
+
+void Image::AdjustImageSourceRect(const std::shared_ptr<IBitmap>& pBitmap, UiRect& rcSource, UiRect& rcSourceCorners) const
+{
+    if (pBitmap == nullptr) {
+        return;
+    }
+    ASSERT((pBitmap->GetWidth() > 0) && (pBitmap->GetHeight() > 0));
+    if ((pBitmap->GetWidth() <= 0) || (pBitmap->GetHeight() <= 0)) {
+        return;
+    }
+    ASSERT((m_imageInfo->GetWidth() > 0) && (m_imageInfo->GetHeight() > 0));
+    if ((m_imageInfo->GetWidth() <= 0) || (m_imageInfo->GetHeight() <= 0)) {
+        return;
+    }
+    //Check whether the bitmap size is consistent with the ImageInfo size; if not, the drawing area parameters need to be adjusted
+    if ((m_imageInfo->GetWidth() == (int32_t)pBitmap->GetWidth()) &&
+        (m_imageInfo->GetHeight() == (int32_t)pBitmap->GetHeight())) {
+        return;
+    }
+    float fSizeScaleX = static_cast<float>(pBitmap->GetWidth()) / m_imageInfo->GetWidth();
+    float fSizeScaleY = static_cast<float>(pBitmap->GetHeight()) / m_imageInfo->GetHeight();
+    const bool bFullImage = (rcSource.left == 0) &&
+                            (rcSource.top == 0) &&
+                            (rcSource.right == m_imageInfo->GetWidth()) &&
+                            (rcSource.bottom == m_imageInfo->GetHeight());
+    if (bFullImage) {
+        //Full image
+        rcSource.right = pBitmap->GetWidth();
+        rcSource.bottom = pBitmap->GetHeight();
+
+        if (ImageUtil::NeedResizeImage(fSizeScaleX)) {
+            rcSourceCorners.left = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSourceCorners.left, fSizeScaleX);
+            rcSourceCorners.right = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSourceCorners.right, fSizeScaleX);
+        }
+        if (ImageUtil::NeedResizeImage(fSizeScaleY)) {
+            rcSourceCorners.top = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSourceCorners.top, fSizeScaleY);
+            rcSourceCorners.bottom = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSourceCorners.bottom, fSizeScaleY);
+        }
+    }
+    else {
+        if (ImageUtil::NeedResizeImage(fSizeScaleX)) {
+            //rcSource needs to be modified
+            rcSource.left = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSource.left, fSizeScaleX);
+            rcSource.right = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSource.right, fSizeScaleX);
+            ASSERT(rcSource.right > rcSource.left);
+            ASSERT(rcSource.left >= 0);
+            ASSERT(rcSource.right <= (int32_t)pBitmap->GetWidth());
+
+            rcSourceCorners.left = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSourceCorners.left, fSizeScaleX);
+            rcSourceCorners.right = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSourceCorners.right, fSizeScaleX);
+        }
+        if (ImageUtil::NeedResizeImage(fSizeScaleY)) {
+            //rcSource needs to be modified
+            rcSource.top = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSource.top, fSizeScaleY);
+            rcSource.bottom = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSource.bottom, fSizeScaleY);
+            ASSERT(rcSource.bottom > rcSource.top);
+            ASSERT(rcSource.top >= 0);
+            ASSERT(rcSource.bottom <= (int32_t)pBitmap->GetHeight());
+
+            rcSourceCorners.top = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSourceCorners.top, fSizeScaleY);
+            rcSourceCorners.bottom = (int32_t)ImageUtil::GetScaledImageSize((uint32_t)rcSourceCorners.bottom, fSizeScaleY);
+        }
+    }
+}
+
+std::shared_ptr<IBitmap> Image::GetCurrentBitmap(bool bImageStretch,
+                                                 const UiRect& rcDest,
+                                                 UiRect& rcSource,
+                                                 UiRect& rcSourceCorners,
+                                                 bool* bDecodeError) const
+{
+    ASSERT((m_imageInfo != nullptr) && !m_imageInfo->IsMultiFrameImage());
+    if (!m_imageInfo || m_imageInfo->IsMultiFrameImage()) {
+        return nullptr;
+    }
+    ASSERT(!rcDest.IsEmpty() && !rcSource.IsEmpty());
+    if (rcDest.IsEmpty() || rcSource.IsEmpty()) {
+        return nullptr;
+    }
+
+    if (!bImageStretch) {
+        //Stretching is not supported when drawing
+        return GetBitmapData(rcSource, rcSourceCorners, bDecodeError);
+    }
+    else if (!m_imageInfo->IsSvgImage()) {
+        //Not an SVG image, vector scaling is not supported
+        return GetBitmapData(rcSource, rcSourceCorners, bDecodeError);
+    }
+    else if (!rcSourceCorners.IsZero()) {
+        //If nine-patch drawing is set, treat it as non-stretched (if the image is stretched, the four corners will be distorted)
+        return GetBitmapData(rcSource, rcSourceCorners, bDecodeError);
+    }
+    else if ((rcDest.Width() == rcSource.Width()) ||
+             (rcDest.Height() == rcSource.Height())) {
+        //If the drawing destination area and the image source area have the same size, no stretching is needed
+        return GetBitmapData(rcSource, rcSourceCorners, bDecodeError);
+    }
+    else {
+        //SVG image: supports vector scaling
+        std::shared_ptr<IBitmap> pBitmap = m_imageInfo->GetSvgBitmap(rcDest, rcSource);
+        if (pBitmap == nullptr) {
+            pBitmap = GetBitmapData(rcSource, rcSourceCorners, bDecodeError);
+            if ((pBitmap == nullptr) && (bDecodeError != nullptr)) {
+                *bDecodeError = true;
+            }
+        }
+        else {
+            AdjustImageSourceRect(pBitmap, rcSource, rcSourceCorners);
+        }
+        return pBitmap;
+    }    
+}
+
+void Image::SetControl(Control* pControl)
+{
+    if (m_pControl != pControl) {
+        m_pControl = pControl;
+        if (m_pImagePlayer != nullptr) {
+            m_pImagePlayer->SetControl(pControl);
+        }
+    }
+}
+
+ImagePlayer* Image::InitImagePlayer()
+{
+    if (!IsMultiFrameImage() || (m_pControl == nullptr)) {
+        return nullptr;
+    }
+    if (m_pImagePlayer == nullptr) {
+        m_pImagePlayer = std::make_unique<ImagePlayer>();
+        m_pImagePlayer->SetImage(this);
+        m_pImagePlayer->SetControl(m_pControl);
+    }
+    return m_pImagePlayer.get();
+}
+
+void Image::SetDrawDestRect(const UiRect& rcImageRect)
+{
+    m_rcDrawDestRect = rcImageRect;
+    if (IsMultiFrameImage()) {
+        ImagePlayer* pImagePlayer = InitImagePlayer();
+        ASSERT(pImagePlayer != nullptr);
+        if (pImagePlayer != nullptr) {
+            pImagePlayer->SetImageAnimationRect(rcImageRect);
+        }
+    }
+}
+
+const UiRect& Image::GetDrawDestRect() const
+{
+    return m_rcDrawDestRect;
+}
+
+void Image::RedrawImage()
+{
+    if (m_pControl != nullptr) {
+        if (m_rcDrawDestRect.IsEmpty()) {
+            m_pControl->Invalidate();
+        }
+        else {
+            m_pControl->InvalidateRect(m_rcDrawDestRect);
+        }        
+    }
+}
+
+void Image::CheckStartImageAnimation()
+{
+    ImagePlayer* pImagePlayer = InitImagePlayer();
+    if (pImagePlayer != nullptr) {
+        pImagePlayer->CheckStartImageAnimation();
+    }
+}
+
+void Image::PauseImageAnimation()
+{
+    if ((m_pImagePlayer != nullptr) && m_pImagePlayer->IsAnimationPlaying()) {
+        bool bAutoPlay = m_pImagePlayer->IsAutoPlay();
+        m_pImagePlayer->StopImageAnimation(AnimationImagePos::kFrameCurrent, true);
+        m_pImagePlayer->SetAutoPlay(bAutoPlay);
+    }
+}
+
+bool Image::StartImageAnimation(AnimationImagePos nStartFrame, int32_t nPlayCount)
+{
+    bool bRet = false;
+    ImagePlayer* pImagePlayer = InitImagePlayer();
+    if (pImagePlayer != nullptr) {
+        if (pImagePlayer->IsAnimationPlaying()) {
+            bool bAutoPlay = pImagePlayer->IsAutoPlay();
+            pImagePlayer->StopImageAnimation(AnimationImagePos::kFrameCurrent, false);
+            pImagePlayer->SetAutoPlay(bAutoPlay);
+        }
+        bRet = pImagePlayer->StartImageAnimation(nStartFrame, nPlayCount);
+    }
+    return bRet;
+}
+
+void Image::StopImageAnimation(AnimationImagePos nStopFrame, bool bTriggerEvent)
+{
+    if (m_pImagePlayer != nullptr) {
+        m_pImagePlayer->StopImageAnimation(nStopFrame, bTriggerEvent);
+    }
+}
+
+DString Image::GetImageName() const
+{
+    return GetImageAttribute().GetImageName();
+}
+
+void Image::SetImageError(bool bImageError)
+{
+    m_bImageError = bImageError;
+}
+
+bool Image::HasImageError() const
+{
+    return m_bImageError;
+}
+
+void Image::SetDecodeEventFired(bool bFired)
+{
+    m_bDecodeEventFired = bFired;
+}
+
+bool Image::IsDecodeEventFired() const
+{
+    return m_bDecodeEventFired;
+}
+
+}

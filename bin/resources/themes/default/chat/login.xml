@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window caption="0,0,0,160" use_system_caption="false" shadow_attached="false" layered_window="true" shadow_corner="20,70,20,20">
+  <Box width="304" height="auto">
+    <Box width="130" height="130" margin="0,10,0,0" halign="center">
+      <Control width="auto" height="auto" halign="center" valign="center" bkimage="head_shadow.png" mouse_enabled="false"/>
+    </Box>
+    <Box height="auto" margin="0,50,0,0" padding="14,14,14,14" bkimage="file='bk_shadow.png' corner='30,30,30,30'">
+      <VBox height="auto" bkcolor="bk_wnd_lightcolor" borderround="3,3,3,3">
+        <VBox height="auto">
+          <HBox height="40" margin="0,6,5,40">
+            <Control />
+            <Button class="btn_wnd_min_11" name="minbtn" height="32" width="32" margin="4,0,4,0"/>
+            <Button class="btn_wnd_close_11" height="32" width="32" name="closebtn"/>
+          </HBox>
+          <HBox height="auto">
+            <Control />
+            <Button name="register_account" margin="0,5,15,10" halign="right" text="Register" cursortype="hand" font="system_underline_12" normaltextcolor="light_green"/>
+            <Button name="enter_login" margin="0,5,15,10" halign="right" text="Login Directly" cursortype="hand" font="system_underline_12" normaltextcolor="light_green" visible="false"/>
+          </HBox>
+          <!--Account and password-->
+          <VBox name="enter_panel" width="240" height="auto" margin="20,0,20,0" bkimage="user_password.png">
+            <HBox height="41" padding="14,1,10,0">
+              <Control name="usericon" width="16" height="16" valign="center" normalimage="user_1.png" disabledimage="user_2.png"/>
+              <RichEdit class="simple prompt" name="username" width="stretch" height="auto" margin="10,0,10,0" valign="center" font="system_14" prompttext="Account"/>
+            </HBox>
+            <HBox name="nick_name_panel" height="40" padding="14,1,0,0" visible="false" margin="0,0,0,0">
+              <Control name="nick_name_icon" width="16" height="16" valign="center" normalimage="nickname.png" disabledimage="nickname.png"/>
+              <RichEdit class="simple prompt" name="nickname" width="stretch" height="auto" margin="10,0,10,0" valign="center" font="system_14" prompttext="Nickname"/>
+            </HBox>
+            <HBox height="41" padding="14,0,10,1" margin="0,2,0,0">
+              <Control name="passwordicon" width="16" height="16" valign="center" normalimage="password_1.png" disabledimage="password_2.png"/>
+              <RichEdit class="simple prompt" name="password" width="stretch" height="auto" margin="10,0,10,0" valign="center" font="system_14" password="true" prompttext="Password"/>
+            </HBox>
+          </VBox>
+        </VBox>
+        <!--Login prompt-->
+        <Label name="login_ing_tip" margin="20,20,20,0" font="system_12" text="Logging in..." visible="false"/>
+        <Label name="login_error_tip" margin="20,20,20,0" font="system_12" normaltextcolor="obvious_tip" visible="false"/>
+        <!--Login and cancel buttons-->
+        <Box width="240" height="40" margin="20,20,20,20">
+          <Button class="btn_global_blue_80x30" name="btn_login" width="240" height="40" font="system_bold_16" text="Login"/>
+          <Button class="btn_global_blue_80x30" name="btn_register" width="240" height="40" font="system_bold_16" text="Register" visible="false"/>
+          <Button class="btn_global_red_80x30" name="btn_cancel" width="240" height="40" font="system_bold_16" text="Cancel Login" visible="false"/>
+        </Box>
+      </VBox>
+    </Box>
+    <!--Avatar-->
+    <Box margin="0,10,0,0" mouse_enabled="false" width="130" height="130" halign="center">
+      <Control width="auto" height="auto" halign="center" valign="center" bkimage="logo.png"/>
+      <Button name="headicon" width="106" height="106" border_round="106,106,106,106" halign="center" valign="center" mouse_enabled="false" fade_alpha="true"/>
+      <Control width="auto" height="auto" bkimage="mask.png" halign="center" valign="center" mouse_enabled="false"/>
+    </Box>
+  </Box>
+</Window>

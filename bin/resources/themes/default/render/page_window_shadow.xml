@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window>
+    <Class name="page_window_shadow_vbox"     width="180" height="200"/>
+    <Class name="page_window_shadow_control"  width="180" height="100%"/>
+    <Class name="page_window_shadow_label"    width="100%" height="20" text_align="hcenter" margin="8"/>
+    <VBox>
+        <HBox width="auto" height="auto">           
+            <VBox class="page_window_shadow_vbox">
+                <Control class="page_window_shadow_control" bkimage="file='public/shadow/shadow_big.svg' width='180' valign='center' halign='center'"/>
+                <Label class="page_window_shadow_label" text="Window Shadow: big"/>
+            </VBox>
+            <VBox class="page_window_shadow_vbox">
+                <Control class="page_window_shadow_control" bkimage="file='public/shadow/shadow_big_round.svg' width='180' valign='center' halign='center'"/>
+                <Label class="page_window_shadow_label" text="Window Shadow: big_round"/>
+            </VBox>
+            <VBox class="page_window_shadow_vbox">
+                <Control class="page_window_shadow_control" bkimage="file='public/shadow/shadow_small.svg' width='180' valign='center' halign='center'"/>
+                <Label class="page_window_shadow_label" text="Window Shadow: small"/>
+            </VBox>
+            <VBox class="page_window_shadow_vbox">
+                <Control class="page_window_shadow_control" bkimage="file='public/shadow/shadow_small_round.svg' width='180' valign='center' halign='center'"/>
+                <Label class="page_window_shadow_label" text="Window Shadow: small_round"/>
+            </VBox>
+            <VBox class="page_window_shadow_vbox">
+                <Control class="page_window_shadow_control" bkimage="file='public/shadow/shadow_menu.svg' width='180' valign='center' halign='center'"/>
+                <Label class="page_window_shadow_label" text="Window Shadow: menu"/>
+            </VBox>
+            <VBox class="page_window_shadow_vbox">
+                <Control class="page_window_shadow_control" bkimage="file='public/shadow/shadow_menu_round.svg' width='180' valign='center' halign='center'"/>
+                <Label class="page_window_shadow_label" text="Window Shadow: menu_round"/>
+            </VBox>
+        </HBox>
+        <VBox>
+            <Label text="Window Shadow Function Test:" valign="center" margin="12,30,10,0"/>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: default, default shadow" selected="true" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={default}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: big, large shadow, square corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={big}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: big_round, large shadow, rounded corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={big_round}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: small, small shadow, square corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={small}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: small_round, small shadow, rounded corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={small_round}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: menu, small shadow, square corners (suitable for popup windows such as menus)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={menu}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: menu_round, small shadow, rounded corners (suitable for popup windows such as menus)" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={menu_round}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: none, no shadow, with border, square corners" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={none}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Shadow type: none_round, no shadow, with border, rounded corners" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={none_round}" />
+            </Option>
+            <Option class="checkbox_2" group="shadow_type" text="Disable Shadow" selected="false" valign="center" margin="30,4,0,2">
+                <Event type="select" receiver="#window#" apply_attribute="shadow_attached={false}" />
+            </Option>
+        </VBox>
+    </VBox>
+</Window>

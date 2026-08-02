@@ -1,0 +1,607 @@
+#include "duilib/Control/ListCtrlHeader.h"
+#include "duilib/Control/ListCtrl.h"
+
+namespace ui
+{
+
+ListCtrlHeader::ListCtrlHeader(Window* pWindow) :
+    ListBoxItemH(pWindow),
+    m_pListCtrl(nullptr),
+    m_nPaddingLeftValue(0),
+    m_bEnableCheckChangeEvent(true),
+    m_nIconSpacing(0)
+{
+    SetIconSpacing(4, true);
+}
+
+ListCtrlHeader::~ListCtrlHeader()
+{
+}
+
+DString ListCtrlHeader::GetType() const { return _T("ListCtrlHeader"); }
+
+void ListCtrlHeader::SetAttribute(const DString& strName, const DString& strValue)
+{
+    if (strName == _T("icon_spacing")) {
+        SetIconSpacing(StringUtil::StringToInt32(strValue), true);
+    }
+    else {
+        BaseClass::SetAttribute(strName, strValue);
+    }
+}
+
+void ListCtrlHeader::ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale)
+{
+    if (!Dpi().CheckDisplayScaleFactor(nNewDpiScale)) {
+        return;
+    }
+    if (m_nPaddingLeftValue > 0) {
+        m_nPaddingLeftValue = Dpi().GetScaleInt(m_nPaddingLeftValue, nOldDpiScale);
+    }
+
+    int32_t iValue = GetIconSpacing();
+    iValue = Dpi().GetScaleInt(iValue, nOldDpiScale);
+    SetIconSpacing(iValue, false);
+    BaseClass::ChangeDpiScale(nOldDpiScale, nNewDpiScale);
+}
+
+void ListCtrlHeader::SetIconSpacing(int32_t nIconSpacing, bool bNeedDpiScale)
+{
+    if (bNeedDpiScale) {
+        Dpi().ScaleInt(nIconSpacing);
+    }
+    if (m_nIconSpacing != nIconSpacing) {
+        m_nIconSpacing = ui::TruncateToInt16(nIconSpacing);
+        if (m_nIconSpacing < 0) {
+            m_nIconSpacing = 0;
+        }
+        Invalidate();
+    }
+}
+
+int32_t ListCtrlHeader::GetIconSpacing() const
+{
+    return m_nIconSpacing;
+}
+
+bool ListCtrlHeader::IsSelectableType() const
+{
+    return false;
+}
+
+ListCtrlHeaderItem* ListCtrlHeader::InsertColumn(int32_t columnIndex, const ListCtrlColumn& columnInfo)
+{
+    int32_t nColumnWidth = columnInfo.nColumnWidth;
+    ASSERT(m_pListCtrl != nullptr);
+    if (m_pListCtrl == nullptr) {
+        return nullptr;
+    }
+    if (columnInfo.bNeedDpiScale) {
+        Dpi().ScaleInt(nColumnWidth);
+    }
+    if (nColumnWidth < 0) {
+        nColumnWidth = 0;
+    }
+
+    ListCtrlHeaderItem* pHeaderItem = new ListCtrlHeaderItem(GetWindow());
+    pHeaderItem->SetHeaderCtrl(this);
+    SplitBox* pHeaderSplit = new SplitBox(GetWindow());
+    size_t nColumnCount = GetColumnCount();
+    if ((size_t)columnIndex >= nColumnCount) {
+        //Append at the end
+        AddItem(pHeaderItem);
+        AddItem(pHeaderSplit);
+    }
+    else {
+        //Insert in the middle position
+        AddItemAt(pHeaderSplit, columnIndex);
+        AddItemAt(pHeaderItem, columnIndex);
+    }
+
+    //Set attributes
+    if (!m_pListCtrl->GetHeaderSplitBoxClass().empty()) {
+        pHeaderSplit->SetClass(m_pListCtrl->GetHeaderSplitBoxClass());
+    }
+
+    //SplitBox is used to implement the dragging function, and the Control inside is used to determine its displayed shape
+    Control* pSplitCtrl = new Control(GetWindow());
+    pSplitCtrl->SetMouseEnabled(false);
+    pSplitCtrl->SetMouseFocused(false);
+    pSplitCtrl->SetNoFocus();
+    if (!m_pListCtrl->GetHeaderSplitControlClass().empty()) {
+        pSplitCtrl->SetClass(m_pListCtrl->GetHeaderSplitControlClass());
+    }
+    pHeaderSplit->AddItem(pSplitCtrl);
+
+    if (!m_pListCtrl->GetHeaderItemClass().empty()) {
+        pHeaderItem->SetClass(m_pListCtrl->GetHeaderItemClass());
+    }
+    pHeaderItem->SetText(columnInfo.text);
+
+    //Save the interface of the associated Split control
+    pHeaderItem->SetSplitBox(pHeaderSplit);
+    pHeaderItem->SetColumnWidth(nColumnWidth, false);
+    if (columnInfo.nColumnWidthMin > 0) {
+        //Minimum column width
+        pHeaderItem->SetMinWidth(columnInfo.nColumnWidthMin, columnInfo.bNeedDpiScale);
+    }
+    if (columnInfo.nColumnWidthMax > 0) {
+        //Maximum column width
+        pHeaderItem->SetMaxWidth(columnInfo.nColumnWidthMax, columnInfo.bNeedDpiScale);
+    }
+
+    if (columnInfo.bSortable) {
+        pHeaderItem->SetSortMode(ListCtrlHeaderItem::SortMode::kUp);
+    }
+    else {
+        pHeaderItem->SetSortMode(ListCtrlHeaderItem::SortMode::kNone);
+    }
+    pHeaderItem->SetColumnResizeable(columnInfo.bResizeable);
+
+    if (columnInfo.nTextFormat >= 0) {
+        uint32_t textStyle = Label::GetValidTextStyle((uint32_t)columnInfo.nTextFormat);
+        pHeaderItem->SetTextStyle(textStyle, true);
+    }
+
+    //Associate the icon
+    pHeaderItem->SetImageId(columnInfo.nImageId);
+
+    //CheckBox attributes
+    pHeaderItem->SetShowCheckBox(columnInfo.bShowCheckBox);
+
+    //Attach the drag response event
+    pHeaderSplit->AttachSplitDraged([this](const EventArgs& args) {
+        OnHeaderColumnResized((Control*)args.wParam, (Control*)args.lParam);
+        return true;
+        });
+
+    //Attach the right-click event for forwarding
+    pHeaderItem->AttachRClick([this, pHeaderItem](const EventArgs& args) {
+        EventArgs msg(args);
+        msg.SetSender(this);
+        msg.wParam = (WPARAM)pHeaderItem;
+        SendEventMsg(msg);
+        return true;
+        });
+    pHeaderSplit->AttachRClick([this, pHeaderItem](const EventArgs& args) {
+        EventArgs msg(args);
+        msg.SetSender(this);
+        msg.wParam = (WPARAM)pHeaderItem;
+        SendEventMsg(msg);
+        return true;
+        });
+
+    //Attach the mouse double-click event
+    pHeaderSplit->AttachDoubleClick([this, pHeaderItem](const EventArgs& /*args*/) {
+        OnHeaderColumnSplitDoubleClick(pHeaderItem);
+        return true;
+        });
+
+    m_pListCtrl->OnHeaderColumnAdded(pHeaderItem->GetColumnId());
+    return pHeaderItem;
+}
+
+size_t ListCtrlHeader::GetColumnCount() const
+{
+    size_t nItemCount = GetItemCount();
+    if (nItemCount == 0) {
+        return 0;
+    }
+    ASSERT((nItemCount % 2) == 0);
+    if ((nItemCount % 2) != 0) {
+        return 0;
+    }
+    const size_t nColumnCount = nItemCount / 2;
+#ifdef _DEBUG
+    //Validate that the structure meets the expectations
+    for (size_t index = 0; index < nColumnCount; ++index) {
+        ASSERT(dynamic_cast<ListCtrlHeaderItem*>(GetItemAt(index * 2)) != nullptr);
+        ASSERT(dynamic_cast<SplitBox*>(GetItemAt(index * 2 + 1)) != nullptr);
+    }
+#endif // _DEBUG  
+    
+    return nColumnCount;
+}
+
+int32_t ListCtrlHeader::GetColumnWidth(size_t columnIndex) const
+{
+    int32_t nColumnWidth = 0;
+    size_t nColumnCount = GetColumnCount();
+    ASSERT(columnIndex < nColumnCount);
+    if (columnIndex >= nColumnCount) {
+        return nColumnWidth;
+    }
+    ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(GetItemAt(columnIndex * 2));
+    ASSERT(pHeaderItem != nullptr);
+    if (pHeaderItem != nullptr) {
+        nColumnWidth = pHeaderItem->GetColumnWidth();
+    }
+    return nColumnWidth;
+}
+
+bool ListCtrlHeader::SetColumnWidth(size_t columnIndex, int32_t nWidth, bool bNeedDpiScale)
+{
+    bool bRet = false;
+    ListCtrlHeaderItem* pHeaderItem = GetColumn(columnIndex);
+    ASSERT(pHeaderItem != nullptr);
+    if (pHeaderItem != nullptr) {
+        pHeaderItem->SetColumnWidth(nWidth, bNeedDpiScale);
+        bRet = true;
+    }
+    return bRet;
+}
+
+ListCtrlHeaderItem* ListCtrlHeader::GetColumn(size_t columnIndex) const
+{
+    size_t nColumnCount = GetColumnCount();
+    ASSERT(columnIndex < nColumnCount);
+    if (columnIndex >= nColumnCount) {
+        return nullptr;
+    }
+    ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(GetItemAt(columnIndex * 2));
+    ASSERT(pHeaderItem != nullptr);
+    return pHeaderItem;
+}
+
+ListCtrlHeaderItem* ListCtrlHeader::GetColumnById(size_t columnId) const
+{
+    ListCtrlHeaderItem* pFoundHeaderItem = nullptr;
+    size_t nColumnCount = GetColumnCount();
+    for (size_t index = 0; index < nColumnCount; ++index) {
+        ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(GetItemAt(index * 2));
+        ASSERT(pHeaderItem != nullptr);
+        if (pHeaderItem != nullptr) {
+            if (pHeaderItem->GetColumnId() == columnId) {
+                pFoundHeaderItem = pHeaderItem;
+                break;
+            }
+        }
+    }
+    return pFoundHeaderItem;
+}
+
+bool ListCtrlHeader::GetColumnInfo(size_t columnId, size_t& columnIndex, int32_t& nColumnWidth) const
+{
+    bool bRet = false;
+    columnIndex = Box::InvalidIndex;
+    nColumnWidth = -1;
+    size_t nColumnCount = GetColumnCount();
+    for (size_t index = 0; index < nColumnCount; ++index) {
+        ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(GetItemAt(index * 2));
+        ASSERT(pHeaderItem != nullptr);
+        if (pHeaderItem != nullptr) {
+            if (pHeaderItem->GetColumnId() == columnId) {
+                nColumnWidth = pHeaderItem->GetColumnWidth();
+                columnIndex = index;
+                bRet = true;
+                break;
+            }
+        }
+    }
+    return bRet;
+}
+
+bool ListCtrlHeader::IsValidColumnId(size_t columnId) const
+{
+    return GetColumnIndex(columnId) != Box::InvalidIndex;
+}
+
+size_t ListCtrlHeader::GetColumnIndex(size_t columnId) const
+{
+    size_t columnIndex = Box::InvalidIndex;
+    int32_t nColumnWidth = -1;
+    GetColumnInfo(columnId, columnIndex, nColumnWidth);
+    return columnIndex;
+}
+
+bool ListCtrlHeader::IsValidColumnIndex(size_t columnIndex) const
+{
+    return GetColumnId(columnIndex) != Box::InvalidIndex;
+}
+
+size_t ListCtrlHeader::GetColumnId(size_t columnIndex) const
+{
+    size_t columnId = Box::InvalidIndex;
+    ListCtrlHeaderItem* pHeaderItem = GetColumn(columnIndex);
+    if (pHeaderItem != nullptr) {
+        columnId = pHeaderItem->GetColumnId();
+    }
+    return columnId;
+}
+
+bool ListCtrlHeader::DeleteColumn(size_t columnIndex)
+{
+    bool bRet = false;
+    size_t columnId = Box::InvalidIndex;
+    size_t nColumnCount = GetColumnCount();
+    if (columnIndex < nColumnCount) {
+        ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(GetItemAt(columnIndex * 2));
+        ASSERT(pHeaderItem != nullptr);
+        if (pHeaderItem != nullptr) {
+            columnId = pHeaderItem->GetColumnId();
+            if (pHeaderItem->GetSplitBox() != nullptr) {
+                ASSERT(dynamic_cast<SplitBox*>(GetItemAt(columnIndex * 2 + 1)) == pHeaderItem->GetSplitBox());
+                RemoveItem(pHeaderItem->GetSplitBox());
+            }
+            RemoveItem(pHeaderItem);
+            bRet = true;
+        }
+    }
+    if (bRet && (m_pListCtrl != nullptr)) {
+        m_pListCtrl->OnHeaderColumnRemoved(columnId);
+    }
+    return bRet;
+}
+
+bool ListCtrlHeader::DeleteColumnById(size_t columnId)
+{
+    size_t columnIndex = GetColumnIndex(columnId);
+    if (Box::IsValidItemIndex(columnIndex)) {
+        return DeleteColumn(columnIndex);
+    }
+    return false;
+}
+
+void ListCtrlHeader::SetListCtrl(ListCtrl* pListCtrl)
+{
+    m_pListCtrl = pListCtrl;
+}
+
+ListCtrl* ListCtrlHeader::GetListCtrl() const
+{
+    ASSERT(m_pListCtrl != nullptr);
+    return m_pListCtrl;
+}
+
+bool ListCtrlHeader::IsEnableHeaderDragOrder() const
+{
+    if (m_pListCtrl != nullptr) {
+        return m_pListCtrl->IsEnableHeaderDragOrder();
+    }
+    return false;
+}
+
+void ListCtrlHeader::OnHeaderColumnResized(Control* pLeftHeaderItem, Control* pRightHeaderItem)
+{
+    size_t nColumnId1 = Box::InvalidIndex;
+    size_t nColumnId2 = Box::InvalidIndex;
+    ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(pLeftHeaderItem);
+    if (pHeaderItem != nullptr) {
+        int32_t nSplitWidth = 0;
+        if (pHeaderItem->GetSplitBox() != nullptr) {
+            nSplitWidth = pHeaderItem->GetSplitBox()->GetFixedWidth().GetInt32();
+        }
+        int32_t nItemWidth = pHeaderItem->GetFixedWidth().GetInt32();
+        int32_t nColumnWidth = nItemWidth + nSplitWidth;
+        pHeaderItem->SetColumnWidth(nColumnWidth, false);
+        nColumnId1 = pHeaderItem->GetColumnId();
+    }
+    pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(pRightHeaderItem);
+    if (pHeaderItem != nullptr) {
+        int32_t nSplitWidth = 0;
+        if (pHeaderItem->GetSplitBox() != nullptr) {
+            nSplitWidth = pHeaderItem->GetSplitBox()->GetFixedWidth().GetInt32();
+        }
+        int32_t nItemWidth = pHeaderItem->GetFixedWidth().GetInt32();
+        int32_t nColumnWidth = nItemWidth + nSplitWidth;
+        pHeaderItem->SetColumnWidth(nColumnWidth, false);
+        nColumnId2 = pHeaderItem->GetColumnId();
+    } 
+
+    if ((nColumnId1 != Box::InvalidIndex) || (nColumnId2 != Box::InvalidIndex)) {
+        if (m_pListCtrl != nullptr) {
+            m_pListCtrl->OnColumnWidthChanged(nColumnId1, nColumnId2);
+        }
+    }
+}
+
+void ListCtrlHeader::OnHeaderColumnSorted(ListCtrlHeaderItem* pHeaderItem)
+{
+    if (pHeaderItem == nullptr) {
+        return;
+    }
+    size_t nColumnId = pHeaderItem->GetColumnId();
+    ListCtrlHeaderItem::SortMode sortMode = pHeaderItem->GetSortMode();
+    ASSERT(sortMode != ListCtrlHeaderItem::SortMode::kNone);
+    if (sortMode == ListCtrlHeaderItem::SortMode::kNone) {
+        return;
+    }
+    //Control the display of the sort icon: only the sorted column shows it, other columns do not show the sort icon
+    size_t nColumnCount = GetColumnCount();
+    for (size_t columnIndex = 0; columnIndex < nColumnCount; ++columnIndex) {
+        ListCtrlHeaderItem* pItem = GetColumn(columnIndex);
+        if (pItem == pHeaderItem) {
+            pItem->SetShowSortImage(true);
+        }
+        else {
+            pItem->SetShowSortImage(false);
+        }
+    }
+
+    if (m_pListCtrl != nullptr) {
+        bool bSortedUp = (sortMode == ListCtrlHeaderItem::SortMode::kUp) ? true : false;
+        m_pListCtrl->OnColumnSorted(nColumnId, bSortedUp);
+    }
+}
+
+void ListCtrlHeader::OnHeaderColumnOrderChanged()
+{
+    if (m_pListCtrl != nullptr) {
+        m_pListCtrl->OnHeaderColumnOrderChanged();
+    }
+}
+
+void ListCtrlHeader::OnHeaderColumnCheckStateChanged(ListCtrlHeaderItem* pHeaderItem, bool bChecked)
+{
+    if (pHeaderItem == nullptr) {
+        return;
+    }
+    size_t nColumnId = pHeaderItem->GetColumnId();
+    if (m_pListCtrl != nullptr) {
+        m_pListCtrl->OnHeaderColumnCheckStateChanged(nColumnId, bChecked);
+    }
+}
+
+void ListCtrlHeader::OnHeaderColumnVisibleChanged()
+{
+    if (m_pListCtrl != nullptr) {
+        m_pListCtrl->OnHeaderColumnVisibleChanged();
+    }
+}
+
+void ListCtrlHeader::OnHeaderColumnSplitDoubleClick(ListCtrlHeaderItem* pHeaderItem)
+{
+    if (m_pListCtrl != nullptr) {
+        m_pListCtrl->OnHeaderColumnSplitDoubleClick(pHeaderItem);
+    }
+}
+
+bool ListCtrlHeader::SupportCheckMode() const
+{
+    return true;
+}
+
+void ListCtrlHeader::OnPrivateSetChecked()
+{
+    if (!m_bEnableCheckChangeEvent) {
+        return;
+    }
+    bool bChecked = IsChecked();
+    if (m_pListCtrl != nullptr) {
+        m_pListCtrl->OnHeaderCheckStateChanged(bChecked);
+    }
+}
+
+bool ListCtrlHeader::SetShowCheckBox(bool bShow)
+{
+    bool bOldShow = IsShowCheckBox();
+    if (bOldShow == bShow) {
+        return true;
+    }
+    bool bRet = false;
+    if (bShow) {
+        ListCtrl* pListCtrl = GetListCtrl();
+        if (pListCtrl != nullptr) {
+            DString checkBoxClass = pListCtrl->GetCheckBoxClass();
+            if (!checkBoxClass.empty()) {
+                SetClass(checkBoxClass);
+                bRet = IsShowCheckBox();
+            }
+        }
+    }
+    else {
+        //Clear the CheckBox image resource so that it is not displayed
+        ClearStateImages();
+        ASSERT(!IsShowCheckBox());
+        bRet = true;
+    }
+    if (IsShowCheckBox() != bOldShow) {
+        UpdatePaddingLeft();
+    }    
+    return bRet;
+}
+
+
+void ListCtrlHeader::SetPaddingLeftValue(int32_t nPaddingLeft)
+{
+    if (nPaddingLeft < 0) {
+        nPaddingLeft = 0;
+    }
+    if (m_nPaddingLeftValue != nPaddingLeft) {
+        m_nPaddingLeftValue = nPaddingLeft;
+        UpdatePaddingLeft();
+    }    
+}
+
+void ListCtrlHeader::UpdatePaddingLeft()
+{
+    UiPadding rcPadding = GetPadding();
+    UiPadding rcOldPadding = rcPadding;
+    int32_t nCheckBoxWidth = GetCheckBoxImageWidth();
+    if (nCheckBoxWidth > 0) {
+        nCheckBoxWidth += GetIconSpacing();
+    }
+    rcPadding.left = std::max(nCheckBoxWidth, m_nPaddingLeftValue);
+    if (rcPadding.left != rcOldPadding.left) {
+        SetPadding(rcPadding, false);
+        //Disable its own Padding so that the Padding only applies to child controls; no need to restore it
+        SetEnableControlPadding(false);
+    }
+}
+
+bool ListCtrlHeader::IsShowCheckBox() const
+{
+    //If there is a CheckBox image resource, the CheckBox is considered shown
+    return !GetStateImage(kControlStateNormal).empty() && !GetSelectedStateImage(kControlStateNormal).empty();
+}
+
+int32_t ListCtrlHeader::GetCheckBoxImageWidth()
+{
+    if (GetWindow() == nullptr) {
+        return 0;
+    }
+    UiSize sz = GetStateImageSize(kStateImageBk, kControlStateNormal);
+    return sz.cx;
+}
+
+bool ListCtrlHeader::SetEnableCheckChangeEvent(bool bEnable)
+{
+    bool bOldValue = m_bEnableCheckChangeEvent;
+    m_bEnableCheckChangeEvent = bEnable;
+    return bOldValue;
+}
+
+void ListCtrlHeader::SetSortColumnIndex(size_t columnIndex, bool bSortUp, bool bTriggerEvent)
+{
+    SetSortColumnId(GetColumnId(columnIndex), bSortUp, bTriggerEvent);
+}
+
+void ListCtrlHeader::SetSortColumnId(size_t columnId, bool bSortUp, bool bTriggerEvent)
+{
+    size_t nColumnCount = GetColumnCount();
+    for (size_t nColumn = 0; nColumn < nColumnCount; ++nColumn) {
+        ListCtrlHeaderItem* pHeaderItem = GetColumn(nColumn);
+        if (pHeaderItem != nullptr) {
+            if (pHeaderItem->GetColumnId() == columnId) {
+                pHeaderItem->SetShowSortImage(true);
+                pHeaderItem->SetSortMode(bSortUp ? ListCtrlHeaderItem::SortMode::kUp : ListCtrlHeaderItem::SortMode::kDown, bTriggerEvent);
+            }
+            else {
+                pHeaderItem->SetShowSortImage(false);
+            }
+        }
+    }
+}
+
+void ListCtrlHeader::GetHeaderSplitControlRect(std::vector<UiRect>& rcSplitControls) const
+{
+    rcSplitControls.clear();
+    size_t nItemCount = GetItemCount();
+    if (nItemCount == 0) {
+        return;
+    }
+    ASSERT((nItemCount % 2) == 0);
+    if ((nItemCount % 2) != 0) {
+        return;
+    }
+    const size_t nColumnCount = nItemCount / 2;   
+    for (size_t index = 0; index < nColumnCount; ++index) {
+        ASSERT(dynamic_cast<ListCtrlHeaderItem*>(GetItemAt(index * 2)) != nullptr);
+        SplitBox* pSplitBox = dynamic_cast<SplitBox*>(GetItemAt(index * 2 + 1));
+        ASSERT(pSplitBox != nullptr);
+        if ((pSplitBox != nullptr) && pSplitBox->IsVisible()){
+            ASSERT(pSplitBox->GetItemCount() == 1);
+            if (pSplitBox->GetItemCount() > 0) {
+                Control* pSplitControl = pSplitBox->GetItemAt(0);
+                if (pSplitControl != nullptr) {
+                    UiPoint scrollBoxOffset = pSplitControl->GetScrollOffsetInScrollBox();
+                    UiRect rcSplit = pSplitControl->GetRect();
+                    rcSplit.Offset(-scrollBoxOffset.x, -scrollBoxOffset.y);
+                    rcSplitControls.push_back(rcSplit);
+                }
+            }
+        }
+    }
+}
+
+}//namespace ui
