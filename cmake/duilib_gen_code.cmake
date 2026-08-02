@@ -21,8 +21,8 @@ if(NOT DEFINED GEN_FUNC_NAME)
 endif()
 
 set(TOOL_SRC "${DUILIB_SRC_ROOT_DIR}/cmake/xml_to_code.cpp")
-set(PUGIXML_SRC "${DUILIB_SRC_ROOT_DIR}/duilib/third_party/xml/pugixml.cpp")
-set(PUGIXML_DIR "${DUILIB_SRC_ROOT_DIR}/duilib/third_party/xml")
+set(PUGIXML_SRC "${DUILIB_SRC_ROOT_DIR}/third_party/xml/pugixml.cpp")
+set(PUGIXML_DIR "${DUILIB_SRC_ROOT_DIR}/third_party/xml")
 set(TOOL_BIN "${CMAKE_CURRENT_BINARY_DIR}/xml_to_code")
 # Output to source dir as .inc (not .cpp) to avoid duplicate compilation
 set(GENERATED_SRC "${CMAKE_CURRENT_SOURCE_DIR}/generated_ui.inc")
@@ -89,4 +89,4 @@ add_custom_target("${PROJECT_NAME}_gen_xml_code" DEPENDS "${GENERATED_SRC}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Stash for duilib_bin.cmake to add dependency
-set(DUILIB_GEN_CODE_SRC "${GENERATED_SRC}" CACHE INTERNAL "")
+set(DUILIB_GEN_CODE_SRC "${GENERATED_SRC}")
