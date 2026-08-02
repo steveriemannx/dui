@@ -1,5 +1,5 @@
 ## Control Events (EventArgs) Documentation
-The event-related content of controls is defined in the files [`duilib/Core/EventArgs.h`](../duilib/Core/EventArgs.h) and [`duilib/duilib_defs.h`](../duilib/duilib_defs.h).
+The event-related content of controls is defined in the files [`include/duilib/Core/EventArgs.h`](../include/duilib/Core/EventArgs.h) and [`include/duilib/duilib_defs.h`](../include/duilib/duilib_defs.h).
 
 | Event (eventType)           | Parameter (wParam)  | Parameter (lParam) | Parameter (ptMouse) | Parameter (vkCode) | Parameter (modifierKey) |Parameter (eventData) | Remarks     |
 | :---                      | :---          | :---         |:---           |:---          |:---               |:---            |:---      |
@@ -36,7 +36,7 @@ The event-related content of controls is defined in the files [`duilib/Core/Even
 |kEventWindowClose          |0: Normal close <br> 1: Cancel close|     |     |     |       |     |     |
 |kEventSelect               |ListBox/Combo: <br>Newly selected index | ListBox/Combo: <br>Previously selected index|     |     |       |     | No parameters for other classes |
 |kEventUnSelect             |ListBox: <br>Newly selected index | ListBox: <br>Previously selected index|     |     |       |     |  No parameters for other classes   |
-|kEventChecked              |     |     |     |     |       |     | No parameters |
+|kEventCheck              |     |     |     |     |       |     | No parameters |
 |kEventUnCheck              |     |     |     |     |       |     | No parameters |
 |kEventTabSelect            |Newly selected index | Previously selected index|     |     |    |     |    |
 |kEventExpand               |     |     |     |     |       |     | No parameters |
@@ -46,16 +46,16 @@ The event-related content of controls is defined in the files [`duilib/Core/Even
 | Event (eventType)           | Parameter (wParam)  | Parameter (lParam) | Parameter (ptMouse) | Parameter (vkCode) | Parameter (modifierKey) |Parameter (eventData) | Remarks     |
 | :---                      | :---          | :---         |:---           |:---          |:---               |:---            |:---      |
 |kEventZoom                 | Zoom ratio numerator [0,64] | Zoom ratio denominator (0,64] |     |     |       |     | RichEdit: Ctrl + mouse wheel: zoom feature |
-|kEventTextChange           |     |     |     |     |       |     | No parameters |
-|kEventSelChange            |     |     |     |     |       |     | No parameters |
+|kEventTextChanged           |     |     |     |     |       |     | No parameters |
+|kEventSelChanged            |     |     |     |     |       |     | No parameters |
 |kEventReturn               |     |     |     |     |       |     | No parameters    |
 |kEventTab                  |     |     |     |     |       |     | No parameters   |
 |kEventLinkClick            | DString.c_str()<br> URL string    |     |     |     |       |     |     |
-|kEventScrollChange         | 0: cy unchanged<br> 1: cy changed   | 0: cx unchanged<br> 1: cx changed    |     |     |       |     |     |
-|kEventValueChange          |     |     |     |     |       |     | No parameters |
-|kEventResize               |     |     |     |     |       |     | No parameters |
-|kEventVisibleChange        |     |     |     |     |       |     | No parameters |
-|kEventStateChange          | New state | Old state   |     |     |       |     | ControlStateType |
+|kEventScrollPosChanged         | 0: cy unchanged<br> 1: cy changed   | 0: cx unchanged<br> 1: cx changed    |     |     |       |     |     |
+|kEventValueChanged          |     |     |     |     |       |     | No parameters |
+|kEventSizeChanged               |     |     |     |     |       |     | No parameters |
+|kEventVisibleChanged        |     |     |     |     |       |     | No parameters |
+|kEventStateChanged          | New state | Old state   |     |     |       |     | ControlStateType |
 |kEventSelectColor          | Selected color |     |     |     |       |     | newColor.GetARGB() |
 |kEventSplitDraged          | Control*: <br>the first control interface| Control*:<br>the second control interface|     |     |       |     |  May be nullptr  |
 |kEventEnterEdit            | ListCtrlEditParam*:<br>the data entering the editing state  |     |     |     |       |     |     |

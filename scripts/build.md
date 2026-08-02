@@ -14,7 +14,7 @@ This directory contains the build documentation and the dependency build scripts
 | `msvc_build.bat`          | Windows | cmake/MSVC                 | Must be downloaded and built in advance | Supported | Supported | Command-line build script; builds with cmake using the MSVC compiler|
 | `gcc-mingw-w64_build.bat` | Windows | MinGW-w64 gcc/g++          | Must be downloaded and built in advance | Not supported | Supported | MinGW-w64 build script; compiler is gcc/g++|
 | `llvm-mingw-w64_build.bat`| Windows | MinGW-w64 clang/clang++    | Must be downloaded and built in advance | Not supported | Supported | MinGW-w64 build script; compiler is clang/clang++|
-| `build_duilib_all_in_one.sh` | Windows | MSYS2 gcc/g++ <br>MSYS2 clang/clang++ | Must be downloaded and built in advance | Not supported | Supported | One-click build script; downloads and builds all sources (including dependencies such as skia); compiler is gcc/g++ or clang/clang++|
+| `build_duilib_all_in_one.sh` | Windows | MSYS2 gcc/g++ <br>MSYS2 clang/clang++ | Downloaded and built automatically | Not supported | Supported | One-click build script; downloads and builds all sources (including dependencies such as skia); compiler is gcc/g++ or clang/clang++|
 | `msys2_build.sh`          | Windows | MSYS2 gcc/g++ <br>MSYS2 clang/clang++ | Must be downloaded and built in advance | Not supported | Supported | Build script for MSYS2; compiler is gcc/g++ or clang/clang++|
 | `build_duilib_all_in_one.sh` | Linux | gcc/g++ <br> clang/clang++  | Downloaded and built automatically | Supported, auto-downloaded | Not supported | One-click build script; downloads and builds all sources (including dependencies such as skia); compiler is gcc/g++ or clang/clang++|
 | `linux_build.sh`          | Linux | gcc/g++ <br> clang/clang++  | Must be downloaded and built in advance | Supported | Not supported | Build script for Linux; compiler is gcc/g++ or clang/clang++|
@@ -40,7 +40,7 @@ This directory contains the build documentation and the dependency build scripts
 （2）`${DUILIB_ROOT}/bin/resources/lang`: multi-language text files; if multi-language support is not used, this directory can be deleted.    
 （3）`${DUILIB_ROOT}/bin/resources/themes/default`: the theme resource directory; only the `public` directory and the `global.xml` file need to be kept, the other directories can be deleted.    
 2. On Windows, to pack the resources into a zip and embed it in the exe:    
-   Pack the `bin/resources` directory prepared in step 1 into a `resources.zip` file, replace the current `bin/resources.zip`, then rebuild the exe.    
+   Pack the `bin/resources` directory prepared in step 1 into a `resources.zip` file and place it in the `bin` directory, then rebuild the exe.    
    For how to use `resources.zip`, refer to the `examples/basic` example program.    
 3. If the CEF module is used: copy the files in CEF's Release and Resources directories to the `bin\libcef_win` or `bin\libcef_win_109` directory.    
    For details, see the CEF usage documentation: [docs/CEF.md](../docs/CEF.md).
