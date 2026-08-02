@@ -157,3 +157,6 @@ pngprefix.h
 /pngunknown
 /pngvalid
 /timepng
+
+# nim_duilib: cximage includes libpng headers from the source tree, so keep the prebuilt config header tracked
+!pnglibconf.h
