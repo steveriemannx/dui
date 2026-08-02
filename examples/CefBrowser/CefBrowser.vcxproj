@@ -138,15 +138,15 @@
     <Link />
   </ItemDefinitionGroup>
   <ItemGroup>
+
+    <ClInclude Include="App.h" />
     <ClInclude Include="browser\BrowserBox.h" />
     <ClInclude Include="browser\BrowserForm.h" />
     <ClInclude Include="browser\BrowserManager.h" />
     <ClInclude Include="browser\DragDropManager.h" />
     <ClInclude Include="browser\DragForm.h" />
-    <ClInclude Include="MainThread.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestApplication.h" />
     <ClInclude Include="Windows\BrowserBox_Windows.h" />
     <ClInclude Include="Windows\BrowserForm_Windows.h" />
     <ClInclude Include="Windows\taskbar\DwmUtil.h" />
@@ -158,10 +158,8 @@
     <ClCompile Include="browser\BrowserManager.cpp" />
     <ClCompile Include="browser\DragDropManager.cpp" />
     <ClCompile Include="browser\DragForm.cpp" />
-    <ClCompile Include="MainThread.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="TestApplication.cpp" />
     <ClCompile Include="Windows\BrowserBox_Windows.cpp" />
     <ClCompile Include="Windows\BrowserForm_Windows.cpp" />
     <ClCompile Include="Windows\taskbar\DwmUtil.cpp" />

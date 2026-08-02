@@ -21,12 +21,6 @@
     <ClInclude Include="RenderTest2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MainThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestApplication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
@@ -45,12 +39,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RenderForm.cpp">

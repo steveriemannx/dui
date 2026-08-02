@@ -8,7 +8,7 @@
 #if TARGET_OS_MAC               // 明确排除iOS等其他Apple平台
 
 #include "duilib/duilib_config_macos.h"  // macOS专用配置头文件
-#include "TestApplication.h"
+#include "App.h"
 #include <CoreFoundation/CoreFoundation.h>  // macOS核心服务头文件
 
 #include "include/cef_application_mac.h"
@@ -103,7 +103,7 @@
 }
 
 - (void)tryToTerminateApplication:(NSApplication*)app {
-    TestApplication::Instance().CloseMainWindow();
+    App::Instance().CloseMainWindow();
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:
@@ -115,7 +115,7 @@
 // already running.
 - (BOOL)applicationShouldHandleReopen:(NSApplication*)theApplication
                     hasVisibleWindows:(BOOL)flag {
-    TestApplication::Instance().ActiveMainWindow();
+    App::Instance().ActiveMainWindow();
     return NO;
 }
 
@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
                                withObject:nil
                             waitUntilDone:NO];
 
-    TestApplication::Instance().Run(argc, argv);
+    App::Instance().Run(argc, argv);
 
     // Release the delegate.
 #if !__has_feature(objc_arc)

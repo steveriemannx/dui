@@ -134,11 +134,9 @@
     <ClInclude Include="ComputerView.h" />
     <ClInclude Include="ExplorerView.h" />
     <ClInclude Include="MainForm.h" />
-    <ClInclude Include="MainThread.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SimpleFileView.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TreeView.rc" />
@@ -150,10 +148,8 @@
     <ClCompile Include="ComputerView.cpp" />
     <ClCompile Include="ExplorerView.cpp" />
     <ClCompile Include="MainForm.cpp" />
-    <ClCompile Include="MainThread.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SimpleFileView.cpp" />
-    <ClCompile Include="TestApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\duilib\duilib.vcxproj">

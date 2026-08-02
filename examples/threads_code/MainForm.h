@@ -5,12 +5,32 @@
 #include "duilib/duilib.h"
 #include <chrono>
 
-class MainThread;
+/** Application interface: the worker-thread pool is owned by the App class
+ *  (defined in main.cpp); the form controls it through this interface.
+ */
+class IMainThread
+{
+public:
+    virtual ~IMainThread() = default;
+
+    /** Start the worker thread
+    */
+    virtual void StartThreads() = 0;
+
+    /** Stop the worker thread
+    */
+    virtual void StopThreads() = 0;
+
+    /** Get the number of worker threads in the thread pool
+    */
+    virtual int32_t GetPoolThreadCount() const = 0;
+};
+
 class MainForm : public ui::WindowImplBase
 {
     typedef ui::WindowImplBase BaseClass;
 public:
-    explicit MainForm(MainThread* pMainThread);
+    explicit MainForm(IMainThread* pMainThread);
     virtual ~MainForm() override;
 
     /** Resource-related interfaces
@@ -70,7 +90,7 @@ private:
 
     /** Thread management interface
     */
-    MainThread* m_pMainThread;
+    IMainThread* m_pMainThread;
 };
 
 #endif //EXAMPLES_THREADS_CODE_MAIN_FORM_H_

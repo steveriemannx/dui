@@ -1,6 +1,6 @@
 #include "BrowserManager.h"
 #include "BrowserForm.h"
-#include "TestApplication.h"
+#include "App.h"
 
 BrowserManager::BrowserManager()
 {
@@ -83,7 +83,7 @@ void BrowserManager::RemoveBorwserBox(const std::string& browserId, const Browse
 
     if (m_boxMap.empty()) {
         //Exit
-        TestApplication::Instance().PostQuitMessage();
+        App::Instance().PostQuitMessage();
     }
 }
 

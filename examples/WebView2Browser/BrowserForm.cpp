@@ -1,5 +1,5 @@
 #include "BrowserForm.h"
-#include "TestApplication.h"
+#include "App.h"
 #include "BrowserBox.h"
 #include "BrowserManager.h"
 #include "DragDropManager.h"
@@ -162,9 +162,9 @@ public:
 
 void BrowserForm::OnInitWindow()
 {
-    TestApplication::Instance().AddMainWindow(this);
+    App::Instance().AddMainWindow(this);
     AttachWindowSetFocusMsg([this](const ui::EventArgs&) {
-        TestApplication::Instance().SetActiveMainWindow(this);
+        App::Instance().SetActiveMainWindow(this);
         return true;
         });
 
@@ -218,7 +218,7 @@ void BrowserForm::OnInitWindow()
 
 void BrowserForm::OnCloseWindow()
 {
-    TestApplication::Instance().RemoveMainWindow(this);
+    App::Instance().RemoveMainWindow(this);
     // Use m_pTabCtrl to determine the total number of browser boxes; the total obtained by browser_box_tab_ is inaccurate
     int browser_box_count = GetBoxCount();
     for (int i = 0; i < browser_box_count; i++) {
