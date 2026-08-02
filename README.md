@@ -23,15 +23,14 @@
 ## Directory Structure
 | Directory          | Description |
 | :---          | :--- |
-| duilib        | The project source code|
+| src / include | Library source code / public header files|
 | docs          | Project documentation, including feature introductions and property list documentation for each control|
 | bin           | Output directory for example programs, containing preset skins, language files, and CEF dependencies|
 | licenses      | License files corresponding to the referenced open-source code|
 | cmake         | Common settings used by cmake at build time|
-| build         | Build scripts and build projects for each platform (including VC build projects)|
 | msvc          | Windows platform application manifest files and common VC project configuration|
 | examples      | Source code of the example programs, covering basic usage of every control|
-| duilib/third_party| Third-party libraries the project depends on; see later documentation for details|
+| third_party   | Vendored third-party libraries the project depends on; see later documentation for details|
 
 ## Main Modifications Based on NIM_Duilib_Framework Source
 <table>
@@ -141,25 +140,25 @@
 ## Third-Party Libraries Used
 | Name     |Code subdirectory                 | Purpose                                 | License file        | License category          |
 | :---     | :---                      |:---                                  |:---               |:---               |
-|apng      |duilib/third_party/libpng  | APNG image format support                     |zlib/libpng License|zlib/libpng license, a permissive open-source license|
-|libpng    |duilib/third_party/libpng  | PNG image format support                      |[libpng.LICENSE.txt](licenses/libpng.LICENSE.txt)|Custom BSD-style permissive license|
-|zlib      |duilib/third_party/zlib    | PNG/APNG image format support<br>Zip file decompression  |[zlib.LICENSE.txt](licenses/zlib.LICENSE.txt)|zlib license, a permissive open-source license|
-|cximage   |duilib/third_party/cximage | ICO image format support                      |[cximage.LICENSE.txt](licenses/cximage.LICENSE.txt)|MIT-style license (non-standard MIT)|
-|giflib    |duilib/third_party/giflib  | GIF image format support                      |[giflib.LICENSE.txt](licenses/giflib.LICENSE.txt)|MIT license|
-|libwebp   |duilib/third_party/libwebp | WebP image format support                     |[libWebP.LICENSE.txt](licenses/libwebp.LICENSE.txt)|BSD 3-clause license|
-|stb_image |duilib/third_party/stb_image| BMP image format support<br>Image resizing     |[stb_image.LICENSE.txt](licenses/stb_image.LICENSE.txt)|MIT license/public domain|
-|libjpeg-turbo|duilib/third_party/libjpeg-turbo| JPEG image format support             |[libjpeg-turbo.LICENSE.md](licenses/libjpeg-turbo.LICENSE.md)|IJG license and modified BSD 3-clause license|
-|nanosvg   |duilib/third_party/svg      | SVG image format support                     |[nanosvg.LICENSE.txt](licenses/nanosvg.LICENSE.txt)|zlib license|
-|pugixml   |duilib/third_party/xml      | Parsing resource-description XML               |[pugixml.LICENSE.txt](licenses/pugixml.LICENSE.txt)|MIT license|
-|ConvertUTF|duilib/third_party/convert_utf| UTF-8/UTF-16 encoding conversion         |[llvm.LICENSE.txt](licenses/llvm.LICENSE.txt)|Apache License Version 2.0 primarily,<br>supplemented by the LLVM exception terms,<br>with legacy license compatibility for historical versions|
-|skia      |Skia source not included in the project          | UI library rendering engine<br>SVG image format support<br>Lottie JSON animation support|[skia.LICENSE.txt](licenses/skia.LICENSE.txt)|BSD 3-clause license|
-|SDL       |SDL source not included in the project           | Cross-platform window management                     |[SDL.LICENSE.txt](licenses/SDL.LICENSE.txt)|zlib license|
+|apng      |third_party/libpng  | APNG image format support                     |zlib/libpng License|zlib/libpng license, a permissive open-source license|
+|libpng    |third_party/libpng  | PNG image format support                      |[libpng.LICENSE.txt](licenses/libpng.LICENSE.txt)|Custom BSD-style permissive license|
+|zlib      |third_party/zlib    | PNG/APNG image format support<br>Zip file decompression  |[zlib.LICENSE.txt](licenses/zlib.LICENSE.txt)|zlib license, a permissive open-source license|
+|cximage   |third_party/cximage | ICO image format support                      |[cximage.LICENSE.txt](licenses/cximage.LICENSE.txt)|MIT-style license (non-standard MIT)|
+|giflib    |third_party/giflib  | GIF image format support                      |[giflib.LICENSE.txt](licenses/giflib.LICENSE.txt)|MIT license|
+|libwebp   |third_party/libwebp | WebP image format support                     |[libWebP.LICENSE.txt](licenses/libwebp.LICENSE.txt)|BSD 3-clause license|
+|stb_image |third_party/stb_image| BMP image format support<br>Image resizing     |[stb_image.LICENSE.txt](licenses/stb_image.LICENSE.txt)|MIT license/public domain|
+|libjpeg-turbo|third_party/libjpeg-turbo| JPEG image format support             |[libjpeg-turbo.LICENSE.md](licenses/libjpeg-turbo.LICENSE.md)|IJG license and modified BSD 3-clause license|
+|nanosvg   |third_party/svg      | SVG image format support                     |[nanosvg.LICENSE.txt](licenses/nanosvg.LICENSE.txt)|zlib license|
+|pugixml   |third_party/xml      | Parsing resource-description XML               |[pugixml.LICENSE.txt](licenses/pugixml.LICENSE.txt)|MIT license|
+|ConvertUTF|third_party/convert_utf| UTF-8/UTF-16 encoding conversion         |[llvm.LICENSE.txt](licenses/llvm.LICENSE.txt)|Apache License Version 2.0 primarily,<br>supplemented by the LLVM exception terms,<br>with legacy license compatibility for historical versions|
+|skia      |third_party/skia (vendored, built automatically) | UI library rendering engine<br>SVG image format support<br>Lottie JSON animation support|[skia.LICENSE.txt](licenses/skia.LICENSE.txt)|BSD 3-clause license|
+|SDL       |third_party/SDL3 (vendored, built automatically) | Cross-platform window management                     |[SDL.LICENSE.txt](licenses/SDL.LICENSE.txt)|zlib license|
 |duilib    |                            | NIM_Duilib_Framework<br>is developed based on duilib  |[duilib.LICENSE.txt](licenses/duilib.LICENSE.txt)|BSD 2-clause license|
 |NIM_Duilib<br>Framework|               | This project is developed based on<br>NIM_Duilib_Framework   |[NIM_Duilib_Framework.LICENSE.txt](licenses/NIM_Duilib_Framework.LICENSE.txt)|MIT license|
-|libcef    |duilib/third_party/libcef   | Loads the CEF module|[libcef.LICENSE.txt](licenses/libcef.LICENSE.txt)|BSD 3-clause license|
-|udis86    |duilib/third_party/libudis86| Computes the shortest instruction length for complete disassembly         |[udis86.LICENSE.txt](licenses/udis86.LICENSE.txt)|BSD 2-clause license|
-|WebView2  |duilib/third_party/<br>Microsoft.Web.WebView2| WebView2 control support |[Microsoft.Web.WebView2.LICENSE.txt](licenses/Microsoft.Web.WebView2.LICENSE.txt)|BSD 3-clause license|
-|libpag    |duilib/third_party/libpag   | PAG animation file support<br>(disabled by default; see later documentation) |[libpag.LICENSE.txt](licenses/libpag.LICENSE.txt)|Apache License Version 2.0 (primary)<br>libpag depends on many third-party components with<br>various licenses; see the files in the<br>`duilib/third_party/libpag/licenses`<br>directory. If libpag's licensing<br>(including the primary license and third-party component licenses)<br>is a concern, libpag can be left disabled.|
+|libcef    |third_party/libcef   | Loads the CEF module|[libcef.LICENSE.txt](licenses/libcef.LICENSE.txt)|BSD 3-clause license|
+|udis86    |third_party/libudis86| Computes the shortest instruction length for complete disassembly         |[udis86.LICENSE.txt](licenses/udis86.LICENSE.txt)|BSD 2-clause license|
+|WebView2  |third_party/<br>Microsoft.Web.WebView2| WebView2 control support |[Microsoft.Web.WebView2.LICENSE.txt](licenses/Microsoft.Web.WebView2.LICENSE.txt)|BSD 3-clause license|
+|libpag    |third_party/libpag   | PAG animation file support<br>(disabled by default; see later documentation) |[libpag.LICENSE.txt](licenses/libpag.LICENSE.txt)|Apache License Version 2.0 (primary)<br>libpag depends on many third-party components with<br>various licenses; see the files in the<br>`third_party/libpag/licenses`<br>directory. If libpag's licensing<br>(including the primary license and third-party component licenses)<br>is a concern, libpag can be left disabled.|
 
 ## UI Preview
 Example programs written with this UI library; this document shows the display effects of each control: [docs/Examples.md](docs/Examples.md) 
@@ -169,13 +168,11 @@ Example programs written with this UI library; this document shows the display e
 * PAG animation file format support is disabled by default (because libpag.lib and libpag.dll must be compiled yourself and placed in the project for it to build and run normally)
 * How to enable PAG animation format support:    
 (1) Open the [`msvc/PropertySheets/LibPagSettings.props`](msvc/PropertySheets/LibPagSettings.props) file with a text editor and change the `LibPagEnabled` variable's value to `1`    
-(2) Compile the libpag library following the documentation: [`duilib/third_party/libpag/windows/libpag-build.md`](duilib/third_party/libpag/windows/libpag-build.md)     
-* When building nim_duilib, use `scripts/duilib.sln` or `scripts/examples.sln`; builds by other means are not supported.
-* The primary license of the libpag library is Apache License Version 2.0, and the third-party components it depends on have many licenses,<br>see the files in the `duilib/third_party/libpag/licenses` directory.<br>If libpag's licensing (including the primary license and third-party component licenses) is a concern, libpag can be left disabled.
+(2) Compile the libpag library following the documentation: [`third_party/libpag/windows/libpag-build.md`](third_party/libpag/windows/libpag-build.md)     
+* The primary license of the libpag library is Apache License Version 2.0, and the third-party components it depends on have many licenses,<br>see the files in the `third_party/libpag/licenses` directory.<br>If libpag's licensing (including the primary license and third-party component licenses) is a concern, libpag can be left disabled.
 
 ## Programming Languages
-- C/C++: compilers must support C++20 (`main` branch)
-- C/C++: compilers must support C++17 (`develop-cpp17` branch; this branch is only for the VS2017/VS2019 compilers on Windows; use the main branch in other environments)
+- C/C++: compilers must support C++20
 
 ## Supported Operating Systems
 - Windows: 7/10/11 and above
@@ -185,7 +182,6 @@ Example programs written with this UI library; this document shows the display e
 
 ## Supported Compilers
 - Visual Studio 2022/2026 (Windows)
-- Visual Studio 2017/2019 (Windows; these two compiler versions are supported only on the `develop-cpp17` branch; CEF module not supported with VS2017)
 - LLVM (Windows)
 - MinGW-W64: gcc/g++, clang/clang++ (Windows)
 - gcc/g++ (Linux)
@@ -237,67 +233,20 @@ The script above builds with static runtime libraries (MT and MTd) by default. T
 Note 1: if nim_duilib is ultimately built as a DLL, the dynamic runtime libraries must be used.    
 Note 2: if nim_duilib uses dynamic runtime libraries, the Skia library must also use dynamic runtime libraries; see the skia_compile library documentation for the build method.    
     
-* For Visual Studio 2017/2019 (the develop-cpp17 branch code is required), the script content is as follows:    
-```
-REM For Visual Studio 2017/2019
-echo OFF
-set retry_delay=10
-
-:retry_clone_duilib
-if not exist ".\nim_duilib\.git" (
-    git clone https://github.com/rhett-lee/nim_duilib
-) else (  
-    git -C ./nim_duilib pull
-)
-if %errorlevel% neq 0 (
-    timeout /t %retry_delay% >nul
-    goto retry_clone_duilib
-)
-if not exist ".\nim_duilib\.git" (
-    echo clone duilib failed!
-    exit /b 1
-)
-
-:retry_pull_duilib
-git -C ./nim_duilib checkout develop-cpp17
-git -C ./nim_duilib pull
-if %errorlevel% neq 0 (
-    timeout /t %retry_delay% >nul
-    goto retry_pull_duilib
-)
-.\nim_duilib\scripts\build_duilib_all_in_one.bat
-```
-The script above builds with static runtime libraries (MT and MTd) by default. To use dynamic runtime libraries (MD and MDd), append the `/MD` parameter to the last line, changing it to:    
-`.\nim_duilib\scripts\build_duilib_all_in_one.bat /MD`    
-Note 1: if nim_duilib is ultimately built as a DLL, the dynamic runtime libraries must be used.    
-Note 2: if nim_duilib uses dynamic runtime libraries, the Skia library must also use dynamic runtime libraries; see the skia_compile library documentation for the build method.    
-    
 * Once the script file is ready, open a command prompt and run the script: 
 ```
 .\build.bat
 ```
 The compiled example programs are in the bin directory.
 
-### III. Manual build process (Windows platform)
-1. Set the working directory: `D:\develop`    
-2. Fetch the relevant code    
-(1) `git clone https://github.com/rhett-lee/nim_duilib`      
-(2) `git clone https://github.com/rhett-lee/skia_compile`    
-(3) `git clone https://github.com/google/skia.git`  
-3. Build the Skia source    
-(1) nim_duilib uses Skia internally as its UI drawing engine, so build skia first; prefer compiling with LLVM for smoother runtime performance    
-(2) Follow the method in the [Compiling skia on Windows](https://github.com/rhett-lee/skia_compile/blob/main/Windows%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) document in the skia_compile directory to build the skia .lib files      
-4. If using Visual Studio 2017/2019, the develop-cpp17 branch code is required; run the following command:    
-   `git -C ./nim_duilib checkout develop-cpp17`
-5. Build nim_duilib: enter the `build` directory and open `examples.sln` (if using Visual Studio 2017, open `examples_vs2017.sln`), then build; the compiled example programs are in the bin directory.
-6. CEF module notes:    
+### III. Notes for Visual Studio (sln) builds
+1. CEF module notes:    
 (1) The CEF module depends on the Windows 11 SDK; a lower SDK version will cause build errors.    
-(2) The CEF module supports only Visual Studio 2019/2022/2026, not Visual Studio 2017.    
-(3) The CEF module can be disabled if not needed: edit the `msvc\PropertySheets\CEFSettings.props` file and change the value of `LibCefEnabled` to `0`.    
-(4) After disabling the CEF module, use the `duilib_no_cef.sln` or `examples_no_cef.sln` projects to build, reducing the compilation of libCEF code.    
-7. WebView2 module notes:    
+(2) The CEF module can be disabled if not needed: edit the `msvc\PropertySheets\CEFSettings.props` file and change the value of `LibCefEnabled` to `0`.    
+(3) After disabling the CEF module, use the `duilib_no_cef.sln` or `examples_no_cef.sln` projects to build, reducing the compilation of libCEF code.    
+2. WebView2 module notes:    
 (1) The WebView2 module can be disabled if not needed: edit the `msvc\PropertySheets\WebView2Settings.props` file and change the value of `WebView2Enabled` to `0`.    
-8. The nim_duilib library uses static runtime libraries by default (/MT and /MTd), and also supports dynamic runtime libraries (/MD and /MDd); to switch:    
+3. The nim_duilib library uses static runtime libraries by default (/MT and /MTd), and also supports dynamic runtime libraries (/MD and /MDd); to switch:    
 (1) The runtime library used when building the Skia library must be the same as the one used by the nim_duilib library. See the skia_compile library documentation for how to build Skia.    
 (2) To switch the nim_duilib library to dynamic runtime libraries, run the following script:    
     `.\nim_duilib\msvc\PropertySheets\DuilibUseDynamicRuntime.bat`    
@@ -351,46 +300,6 @@ chmod +x ./nim_duilib/scripts/build_duilib_all_in_one.sh
 ```
 The compiled example programs are in the bin directory.    
 Note: on UOS systems, install the required development environment first, then install; see the document: [Compiling skia on UnionTech UOS](https://github.com/rhett-lee/skia_compile/blob/main/%E7%BB%9F%E4%BF%A1UOS%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)。
-
-### III. Manual build process (Linux platform)
-1. Set the working directory: `~/develop`    
-2. Fetch the relevant code    
-(1) `git clone https://github.com/rhett-lee/nim_duilib`      
-(2) `git clone https://github.com/rhett-lee/skia_compile`    
-(3) `git clone https://github.com/google/skia.git`  
-(4) `git clone https://github.com/libsdl-org/SDL.git`    
-3. Build the Skia library    
-
-| Operating system platform            |Reference document (online link)    |  Reference document (local file) |
-| :---                    | :---       |:---   |
-|OpenEuler                |[Compiling skia on OpenEuler](https://github.com/rhett-lee/skia_compile/blob/main/OpenEuler%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)|[Compiling skia on OpenEuler](../skia_compile/OpenEuler%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)|
-|OpenKylin    |[Compiling skia on OpenKylin](https://github.com/rhett-lee/skia_compile/blob/main/OpenKylin%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)|[Compiling skia on OpenKylin](../skia_compile/OpenKylin%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)|
-|UbuntuKylin    |[Compiling skia on UbuntuKylin](https://github.com/rhett-lee/skia_compile/blob/main/UbuntuKylin%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)  |[Compiling skia on UbuntuKylin](../skia_compile/UbuntuKylin%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)|
-|Zhongke Fangde                 |[Compiling skia on Zhongke Fangde](https://github.com/rhett-lee/skia_compile/blob/main/%E4%B8%AD%E7%A7%91%E6%96%B9%E5%BE%B7%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)  |[Compiling skia on Zhongke Fangde](../skia_compile/%E4%B8%AD%E7%A7%91%E6%96%B9%E5%BE%B7%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) |
-|UnionTech UOS                  |[Compiling skia on UnionTech UOS](https://github.com/rhett-lee/skia_compile/blob/main/%E7%BB%9F%E4%BF%A1UOS%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)|[Compiling skia on UnionTech UOS](../skia_compile/%E7%BB%9F%E4%BF%A1UOS%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)|
-|Ubuntu                   |[Compiling skia on Ubuntu](https://github.com/rhett-lee/skia_compile/blob/main/Ubuntu%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) | [Compiling skia on Ubuntu](../skia_compile/Ubuntu%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) |
-|Debian                   |[Compiling skia on Debian](https://github.com/rhett-lee/skia_compile/blob/main/Debian%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)  |[Compiling skia on Debian](../skia_compile/Debian%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) |
-|Fedora                   |[Compiling skia on Fedora](https://github.com/rhett-lee/skia_compile/blob/main/Fedora%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)  |[Compiling skia on Fedora](../skia_compile/Fedora%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)|
-|OpenSuse                 |[Compiling skia on OpenSuse](https://github.com/rhett-lee/skia_compile/blob/main/OpenSuse%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) | [Compiling skia on OpenSuse](../skia_compile/OpenSuse%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) |
-
-    Note: when compiling the skia source, use LLVM to compile; the program runs more smoothly this way.
-4. Build the SDL library 
-```
-#!/bin/bash
-cd ~/develop
-cmake -S "./SDL/" -B "./SDL.build" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
-cmake --build ./SDL.build
-cmake --install ./SDL.build
-```
-5. Build nim_duilib
-```
-#!/bin/bash
-cd ~/develop/nim_duilib/
-chmod +x linux_build.sh
-./linux_build.sh
-```
-After the build, executable files are generated in the bin directory.    
-To enable CEF support, see the relevant documentation [docs/CEF.md](docs/CEF.md).
 
 ## C. Build Process (macOS platform)
 ### I. Prerequisites: Install the required software
@@ -467,38 +376,6 @@ chmod +x ./nim_duilib/scripts/build_duilib_all_in_one.sh
 ```
 The compiled example programs are in the bin directory.    
 
-### III. Manual build process (macOS platform)
-1. Set the working directory: `~/develop`    
-2. Fetch the relevant code    
-(1) `git clone https://github.com/rhett-lee/nim_duilib`      
-(2) `git clone https://github.com/rhett-lee/skia_compile`    
-(3) `git clone https://github.com/google/skia.git`  
-(4) `git clone https://github.com/libsdl-org/SDL.git`  
-3. Build the Skia library    
-
-| Operating system platform |Reference document (online link) |  Reference document (local file) |
-| :---         | :---                |:---                   |
-|macOS         |[Compiling skia on macOS](https://github.com/rhett-lee/skia_compile/blob/main/macOS%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) | [Compiling skia on macOS](../skia_compile/macOS%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) |
-
-    Note: when compiling the skia source, use LLVM to compile; the program runs more smoothly this way.
-4. Build the SDL library 
-```
-#!/bin/bash
-cd ~/develop
-cmake -S "./SDL/" -B "./SDL.build" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
-cmake --build ./SDL.build
-cmake --install ./SDL.build
-```
-5. Build nim_duilib
-```
-#!/bin/bash
-cd ~/develop/nim_duilib/
-chmod +x macos_build.sh
-./macos_build.sh
-```
-After the build, executable files are generated in the bin directory.    
-To enable CEF support, see the relevant documentation [docs/CEF.md](docs/CEF.md).
-
 ## D. Build Process (FreeBSD platform)
 ### I. Prerequisites: Install the required software
 ```
@@ -537,37 +414,6 @@ chmod +x ./nim_duilib/scripts/build_duilib_all_in_one.sh
 The compiled example programs are in the bin directory.
 
 Note: CEF (Chromium Embedded Framework) is not supported on the FreeBSD platform.
-### III. Manual build process (FreeBSD platform)
-1. Set the working directory: `~/develop`    
-2. Fetch the relevant code    
-(1) `git clone https://github.com/rhett-lee/nim_duilib`      
-(2) `git clone https://github.com/rhett-lee/skia_compile`    
-(3) `git clone https://github.com/google/skia.git`  
-(4) `git clone https://github.com/libsdl-org/SDL.git`  
-3. Build the Skia library    
-
-| Operating system platform |Reference document (online link) |  Reference document (local file) |
-| :---         | :---                |:---                   |
-|FreeBSD         |[Compiling skia on FreeBSD](https://github.com/rhett-lee/skia_compile/blob/main/FreeBSD下编译skia.md) | [Compiling skia on FreeBSD](../skia_compile/FreeBSD下编译skia.md) |
-
-    Note: when compiling the skia source, only LLVM compilation is supported.
-4. Build the SDL library 
-```
-#!/usr/bin/env bash
-cd ~/develop
-cmake -S "./SDL/" -B "./SDL.build" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
-cmake --build ./SDL.build
-cmake --install ./SDL.build
-```
-5. Build nim_duilib
-```
-#!/usr/bin/env bash
-cd ~/develop/nim_duilib/
-chmod +x ./scripts/freebsd_build.sh
-./scripts/freebsd_build.sh
-```
-After the build, executable files are generated in the bin directory.    
-
 ## Development Plans
  - Continue enriching the UI library's controls and improving its features
  - Continuous testing and refinement of the cross-platform (Windows/Linux/macOS/FreeBSD) window engine based on [SDL3.0](https://www.libsdl.org/) (currently stable under X11/XWayland desktop environments, but with more problems under pure Wayland)
@@ -582,7 +428,6 @@ After registration, Claude Code can use the following nim_duilib-specific skills
 
 | Command / Skill | Description |
 | :--- | :--- |
-| `/nim-init` | Initializes the nim_duilib development environment for the current project (copies the LLM reference documentation, updates CLAUDE.md) |
 | `/nim-duilib-create-window` | Creates a new window (auto-generates the C++ class + XML layout file) |
 | `/nim-duilib-xml-layout` | Designs XML UI layouts (forms, split columns, toolbars, card grids, and other templates) |
 | `/nim-duilib-add-control` | Adds controls (XML snippets and C++ event binding code for 15+ controls) |
@@ -608,11 +453,7 @@ The registration script installs all skills to `~/.claude/skills/`, taking effec
 
 **Step 2: Use in your application project**
 
-Open Claude Code in any project that needs nim_duilib and type:
-```
-/nim-init
-```
-The AI automatically configures the LLM reference documentation and CLAUDE.md for that project. After that, you can directly instruct Claude in natural language to complete UI development, for example:
+Open Claude Code in any project that needs nim_duilib and invoke the nim_duilib skills directly (for example `/nim-duilib-create-window`), then instruct Claude in natural language to complete UI development, for example:
 - "Create a settings window with a username input box and a save button"
 - "Design a layout with a left navigation bar and a right content area"
 - "Add a click event to this button"

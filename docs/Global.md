@@ -105,7 +105,7 @@ Then, when you need to use this color to set the text color of a Label, you can 
 A valid color value is defined as follows:
 1. In the form "#FFFFFFFF": starts with "#" and consists of 8 hexadecimal characters, an ARGB-format color value (from left to right: the 1st and 2nd characters represent A (alpha), the 3rd and 4th represent R (red), the 5th and 6th represent G (green), and the 7th and 8th represent B (blue));
 2. In the form "#FFFFFF": starts with "#" and consists of 6 hexadecimal characters, an RGB-format color value (from left to right: the 1st and 2nd characters represent R (red), the 3rd and 4th represent G (green), and the 5th and 6th represent B (blue)). Colors in this format contain no alpha channel and are treated as opaque;
-3. Directly specify a predefined color alias: for example, "Blue" means blue, "Aqua" means light green, etc. These color aliases are defined in [duilib/Core/UiColors.cpp](../duilib/Core/UiColors.cpp), and the color values are defined in [duilib/Core/UiColors.h](../duilib/Core/UiColors.h). These color aliases can be used directly without defining colors in `global.xml`.    
+3. Directly specify a predefined color alias: for example, "Blue" means blue, "Aqua" means light green, etc. These color aliases are defined in [src/Core/UiColors.cpp](../src/Core/UiColors.cpp), and the color values are defined in [include/duilib/Core/UiColors.h](../include/duilib/Core/UiColors.h). These color aliases can be used directly without defining colors in `global.xml`.    
 For example, all of the following XML configurations are valid:
 ```xml
 <Label text="Hello Label" normal_text_color="Aqua"/>
@@ -202,15 +202,15 @@ Or a common style button with a width of 80 and a height of 30, and so on. All o
 
 ```xml
 <!-- name is the name of the common style; the rest are the attributes of that common style -->
-<Class name="btn_global_blue_80x30" font="system_bold_14" normal_text_color="white" 
-       normal_image="file='public/button/btn_global_blue_80x30_normal.png'" 
-       hot_image="file='public/button/btn_global_blue_80x30_hovered.png'" 
-       pushed_image="file='public/button/btn_global_blue_80x30_pushed.png'" 
-       disabled_image="file='public/button/btn_global_blue_80x30_normal.png' 
+<Class name="btn_global_blue_80x30" font="system_14" normal_text_color="white" 
+       normal_image="file='public/button/btn_global_blue_80x30_normal.svg'" 
+       hot_image="file='public/button/btn_global_blue_80x30_hovered.svg'" 
+       pushed_image="file='public/button/btn_global_blue_80x30_pushed.svg'" 
+       disabled_image="file='public/button/btn_global_blue_80x30_normal.svg' 
        fade='80'"/>
 ```
 
-The code above defines a button common style named `btn_global_blue_80x30`, using the font ID system_bold_14, with the font color `white` in the normal state,
+The code above defines a button common style named `btn_global_blue_80x30`, using the font ID system_14, with the font color `white` in the normal state,
 and sets different background images for the normal, hot and pushed states respectively, and finally enables a fade effect. When we need to apply this common style to a button, we can write:
 
 ```xml
@@ -229,9 +229,9 @@ When defining a common style, if an attribute value is enclosed in double quotes
 <Class name="combo" bkcolor="white" padding="1,1,1,1" border_size="1" border_color="light_gray" hot_border_color="blue" 
                     combo_tree_view_class="padding='0,0,0,0' border_size='0,0,0,0' bkcolor='white' border_color='gray' indent='20' class='tree_view'"
                     combo_tree_node_class="tree_node" 
-                    combo_icon_class="bkimage='public/caption/logo_18x18.png' width='auto' height='auto' valign='center' margin='2,0,2,0'" 
+                    combo_icon_class="bkimage='public/caption/logo.svg' width='auto' height='auto' valign='center' margin='2,0,2,0'" 
                     combo_edit_class="bkcolor='white' text_align='vcenter' text_padding='2,0,2,0' single_line='true' word_wrap='false' auto_hscroll='true'"
-                    combo_button_class="height={stretch} width={auto} margin={1,0,0,0} padding={1,0,0,0} border_size={1,0,0,0} hot_border_color={blue} pushed_border_color={blue} valign={center} hot_color={#FFE5F3FF} pushed_color={#FFCCE8FF} normal_image={file='../public/combo/arrow_normal.svg' valign='center'} hot_image={file='../public/combo/arrow_hot.svg' valign='center'}"/>
+                    combo_button_class="height={stretch} width={auto} margin={1,0,0,0} padding={1,0,0,0} border_size={1,0,0,0} hot_border_color={blue} pushed_border_color={blue} valign={center} hot_color={#FFE5F3FF} pushed_color={#FFCCE8FF} normal_image={file='public/combo/arrow_normal.svg' valign='center'} hot_image={file='public/combo/arrow_hot.svg' valign='center'}"/>
 ```
 
 ### All available attributes of Class
@@ -245,17 +245,17 @@ When defining a common style, if an attribute value is enclosed in double quotes
 
 | Class Name | Associated Header File| Purpose |
 | :--- | :--- | :--- |
-| GlobalManager | [duilib/Core/GlobalManager.h](../duilib/Core/GlobalManager.h) | Global attribute management utility class, used to manage various global attributes, including global styles (global.xml) and language settings |
-| IRenderFactory | [duilib/Render/IRender.h](../duilib/Render/IRender.h) | Management class of the rendering interface, used to create rendering implementation objects such as Font, Pen, Brush, Path, Matrix, Bitmap and Render |
-| FontManager | [duilib/Core/FontManager.h](../duilib/Core/FontManager.h) | Management class of fonts |
-| ColorManager | [duilib/Core/ColorManager.h](../duilib/Core/ColorManager.h) | Management class of colors |
-| IconManager | [duilib/Core/IconManager.h](../duilib/Core/IconManager.h) | HICON handle manager |
-| ZipManager | [duilib/Core/ZipManager.h](../duilib/Core/ZipManager.h) | ZIP archive manager |
-| DpiManager | [duilib/Core/DpiManager.h](../duilib/Core/DpiManager.h) | DPI manager, used to support features such as DPI adaptation |
-| TimerManager | [duilib/Core/TimerManager.h](../duilib/Core/TimerManager.h) | Timer manager |
-| LangManager | [duilib/Core/LangManager.h](../duilib/Core/LangManager.h) | Multi-language support manager |
-| ImageManager | [duilib/Core/ImageManager.h](../duilib/Core/ImageManager.h) | Management class of images |
-| ImageDecoderFactory | [duilib/Image/ImageDecoderFactory.h](../duilib/Image/ImageDecoderFactory.h) | Management class of image decoders, supporting extensible image formats |
-| ThreadManager | [duilib/Core/ThreadManager.h](../duilib/Core/ThreadManager.h) | Thread manager, used to support inter-thread communication |
-| CursorManager | [duilib/Core/CursorManager.h](../duilib/Core/CursorManager.h) | Cursor management class |
-| WindowManager | [duilib/Core/WindowManager.h](../duilib/Core/WindowManager.h) | Window management class |
+| GlobalManager | [include/duilib/Core/GlobalManager.h](../include/duilib/Core/GlobalManager.h) | Global attribute management utility class, used to manage various global attributes, including global styles (global.xml) and language settings |
+| IRenderFactory | [include/duilib/Render/IRender.h](../include/duilib/Render/IRender.h) | Management class of the rendering interface, used to create rendering implementation objects such as Font, Pen, Brush, Path, Matrix, Bitmap and Render |
+| FontManager | [include/duilib/Core/FontManager.h](../include/duilib/Core/FontManager.h) | Management class of fonts |
+| ColorManager | [include/duilib/Core/ColorManager.h](../include/duilib/Core/ColorManager.h) | Management class of colors |
+| IconManager | [include/duilib/Core/IconManager.h](../include/duilib/Core/IconManager.h) | HICON handle manager |
+| ZipManager | [include/duilib/Core/ZipManager.h](../include/duilib/Core/ZipManager.h) | ZIP archive manager |
+| DpiManager | [include/duilib/Core/DpiManager.h](../include/duilib/Core/DpiManager.h) | DPI manager, used to support features such as DPI adaptation |
+| TimerManager | [include/duilib/Core/TimerManager.h](../include/duilib/Core/TimerManager.h) | Timer manager |
+| LangManager | [include/duilib/Core/LangManager.h](../include/duilib/Core/LangManager.h) | Multi-language support manager |
+| ImageManager | [include/duilib/Core/ImageManager.h](../include/duilib/Core/ImageManager.h) | Management class of images |
+| ImageDecoderFactory | [include/duilib/Image/ImageDecoderFactory.h](../include/duilib/Image/ImageDecoderFactory.h) | Management class of image decoders, supporting extensible image formats |
+| ThreadManager | [include/duilib/Core/ThreadManager.h](../include/duilib/Core/ThreadManager.h) | Thread manager, used to support inter-thread communication |
+| CursorManager | [include/duilib/Core/CursorManager.h](../include/duilib/Core/CursorManager.h) | Cursor management class |
+| WindowManager | [include/duilib/Core/WindowManager.h](../include/duilib/Core/WindowManager.h) | Window management class |

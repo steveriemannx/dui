@@ -28,36 +28,36 @@
    Depending on the layout scheme, the Box classes are categorized as follows:    
 | Class Name (Container) | Base Class | Related Header File | Default Layout Scheme | Description |
 | :---     | :---   |:--- | :--- | :--- |
-| Box      | Control|[duilib/Core/Box.h](../duilib/Core/Box.h) | Floating Layout (Layout) | Container base class; child controls are arranged with the floating layout |
-| HBox     | Box|[duilib/Box/HBox.h](../duilib/Box/HBox.h) | Horizontal Layout (HLayout) | Child controls are arranged sequentially in the horizontal direction without wrapping |
-| VBox     | Box|[duilib/Box/VBox.h](../duilib/Box/VBox.h) | Vertical Layout (VLayout) | Child controls are arranged sequentially in the vertical direction without wrapping |
-| HFlowBox | Box|[duilib/Box/HBox.h](../duilib/Box/HBox.h) | Horizontal Flow Layout (HFlowLayout) | Child controls are arranged sequentially in the horizontal direction, wrapping automatically |
-| VFlowBox | Box|[duilib/Box/VBox.h](../duilib/Box/VBox.h) | Vertical Flow Layout (VFlowLayout) | Child controls are arranged sequentially in the vertical direction, wrapping automatically |
-| HTileBox | Box|[duilib/Box/TileBox.h](../duilib/Box/TileBox.h) | Horizontal Tile Layout (HTileLayout) | Container for the horizontal tile layout; supports setting the number of rows |
-| VTileBox | Box|[duilib/Box/TileBox.h](../duilib/Box/TileBox.h) | Vertical Tile Layout (VTileLayout) | Container for the vertical tile layout; supports setting the number of columns |
-| ScrollBox | Box|[duilib/Box/ScrollBox.h](../duilib/Box/ScrollBox.h) | Floating Layout (Layout)     | Box container with vertical or horizontal scroll bars |
-| HScrollBox | Box|[duilib/Box/ScrollBox.h](../duilib/Box/ScrollBox.h) | Horizontal Layout (HLayout)   | HBox container with vertical or horizontal scroll bars |
-| VScrollBox | Box|[duilib/Box/ScrollBox.h](../duilib/Box/ScrollBox.h) | Vertical Layout (VLayout)   | VBox container with vertical or horizontal scroll bars |
-| HFlowScrollBox | Box|[duilib/Box/ScrollBox.h](../duilib/Box/ScrollBox.h) | Horizontal Flow Layout (HFlowLayout)| HFlowBox container with vertical or horizontal scroll bars |
-| VFlowScrollBox | Box|[duilib/Box/ScrollBox.h](../duilib/Box/ScrollBox.h) | Vertical Flow Layout (VFlowLayout)| VFlowBox container with vertical or horizontal scroll bars |
-| HTileScrollBox | Box|[duilib/Box/ScrollBox.h](../duilib/Box/ScrollBox.h) | Horizontal Tile Layout (HTileLayout)| HTileBox container with vertical or horizontal scroll bars |
-| VTileScrollBox | Box|[duilib/Box/ScrollBox.h](../duilib/Box/ScrollBox.h) | Vertical Tile Layout (VTileLayout)| VTileBox container with vertical or horizontal scroll bars |
-| ListBox | ScrollBox|[duilib/Box/ListBox.h](../duilib/Box/ListBox.h) | Floating Layout (Layout)     | List container with vertical or horizontal scroll bars |
-| HListBox | ScrollBox|[duilib/Box/ListBox.h](../duilib/Box/ListBox.h) | Horizontal Layout (HLayout)   | List container with vertical or horizontal scroll bars |
-| VListBox | ScrollBox|[duilib/Box/ListBox.h](../duilib/Box/ListBox.h) | Vertical Layout (VLayout)   | List container with vertical or horizontal scroll bars |
-| HTileListBox | ScrollBox|[duilib/Box/ListBox.h](../duilib/Box/ListBox.h) | Horizontal Tile Layout (HTileLayout)| List container with vertical or horizontal scroll bars |
-| VTileListBox | ScrollBox|[duilib/Box/ListBox.h](../duilib/Box/ListBox.h) | Vertical Tile Layout (VTileLayout)| List container with vertical or horizontal scroll bars |
-| VirtualListBox | ListBox|[duilib/Box/VirtualListBox.h](../duilib/Box/VirtualListBox.h) | Floating Layout (Layout)     | ListBox implemented with a virtual table; supports large data volumes and scroll bars |
-| VirtualHListBox | ListBox|[duilib/Box/VirtualListBox.h](../duilib/Box/VirtualListBox.h) | Horizontal Layout (HLayout)   | ListBox implemented with a virtual table; supports large data volumes and scroll bars |
-| VirtualVListBox | ListBox|[duilib/Box/VirtualListBox.h](../duilib/Box/VirtualListBox.h) | Vertical Layout (VLayout)   | ListBox implemented with a virtual table; supports large data volumes and scroll bars |
-| VirtualHTileListBox | ListBox|[duilib/Box/VirtualListBox.h](../duilib/Box/VirtualListBox.h) | Horizontal Tile Layout (HTileLayout)| ListBox implemented with a virtual table; supports large data volumes and scroll bars |
-| VirtualVTileListBox | ListBox|[duilib/Box/VirtualListBox.h](../duilib/Box/VirtualListBox.h) | Vertical Tile Layout (VTileLayout)| ListBox implemented with a virtual table; supports large data volumes and scroll bars |
-| TabBox | Box|[duilib/Box/TabBox.h](../duilib/Box/TabBox.h) | Floating Layout (Layout) | Page management container; among the multiple child controls inside, only one is visible and the others are hidden; they can be switched dynamically |
-| GridBox | Box|[duilib/Box/GridBox.h](../duilib/Box/GridBox.h) | Grid Layout (GridLayout) | Grid layout container; supports cell merging |
-| GridScrollBox | ScrollBox|[duilib/Box/GridBox.h](../duilib/Box/GridBox.h) | Grid Layout (GridLayout) | Grid layout container; supports cell merging and scroll bars |
-| BoxDragable | Box|[duilib/Core/ControlDragable.h](../duilib/Core/ControlDragable.h) | Floating Layout (Layout)    | Container that supports dragging child controls in/out |
-| HBoxDragable | HBox|[duilib/Core/ControlDragable.h](../duilib/Core/ControlDragable.h) | Horizontal Layout (HLayout) | Container that supports dragging child controls in/out |
-| VBoxDragable | VBox|[duilib/Core/ControlDragable.h](../duilib/Core/ControlDragable.h) | Vertical Layout (VLayout) | Container that supports dragging child controls in/out |
+| Box      | Control|[include/duilib/Core/Box.h](../include/duilib/Core/Box.h) | Floating Layout (Layout) | Container base class; child controls are arranged with the floating layout |
+| HBox     | Box|[include/duilib/Box/HBox.h](../include/duilib/Box/HBox.h) | Horizontal Layout (HLayout) | Child controls are arranged sequentially in the horizontal direction without wrapping |
+| VBox     | Box|[include/duilib/Box/VBox.h](../include/duilib/Box/VBox.h) | Vertical Layout (VLayout) | Child controls are arranged sequentially in the vertical direction without wrapping |
+| HFlowBox | Box|[include/duilib/Box/HBox.h](../include/duilib/Box/HBox.h) | Horizontal Flow Layout (HFlowLayout) | Child controls are arranged sequentially in the horizontal direction, wrapping automatically |
+| VFlowBox | Box|[include/duilib/Box/VBox.h](../include/duilib/Box/VBox.h) | Vertical Flow Layout (VFlowLayout) | Child controls are arranged sequentially in the vertical direction, wrapping automatically |
+| HTileBox | Box|[include/duilib/Box/TileBox.h](../include/duilib/Box/TileBox.h) | Horizontal Tile Layout (HTileLayout) | Container for the horizontal tile layout; supports setting the number of rows |
+| VTileBox | Box|[include/duilib/Box/TileBox.h](../include/duilib/Box/TileBox.h) | Vertical Tile Layout (VTileLayout) | Container for the vertical tile layout; supports setting the number of columns |
+| ScrollBox | Box|[include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | Floating Layout (Layout)     | Box container with vertical or horizontal scroll bars |
+| HScrollBox | Box|[include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | Horizontal Layout (HLayout)   | HBox container with vertical or horizontal scroll bars |
+| VScrollBox | Box|[include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | Vertical Layout (VLayout)   | VBox container with vertical or horizontal scroll bars |
+| HFlowScrollBox | Box|[include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | Horizontal Flow Layout (HFlowLayout)| HFlowBox container with vertical or horizontal scroll bars |
+| VFlowScrollBox | Box|[include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | Vertical Flow Layout (VFlowLayout)| VFlowBox container with vertical or horizontal scroll bars |
+| HTileScrollBox | Box|[include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | Horizontal Tile Layout (HTileLayout)| HTileBox container with vertical or horizontal scroll bars |
+| VTileScrollBox | Box|[include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | Vertical Tile Layout (VTileLayout)| VTileBox container with vertical or horizontal scroll bars |
+| ListBox | ScrollBox|[include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | Floating Layout (Layout)     | List container with vertical or horizontal scroll bars |
+| HListBox | ScrollBox|[include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | Horizontal Layout (HLayout)   | List container with vertical or horizontal scroll bars |
+| VListBox | ScrollBox|[include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | Vertical Layout (VLayout)   | List container with vertical or horizontal scroll bars |
+| HTileListBox | ScrollBox|[include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | Horizontal Tile Layout (HTileLayout)| List container with vertical or horizontal scroll bars |
+| VTileListBox | ScrollBox|[include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | Vertical Tile Layout (VTileLayout)| List container with vertical or horizontal scroll bars |
+| VirtualListBox | ListBox|[include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | Floating Layout (Layout)     | ListBox implemented with a virtual table; supports large data volumes and scroll bars |
+| VirtualHListBox | ListBox|[include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | Horizontal Layout (HLayout)   | ListBox implemented with a virtual table; supports large data volumes and scroll bars |
+| VirtualVListBox | ListBox|[include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | Vertical Layout (VLayout)   | ListBox implemented with a virtual table; supports large data volumes and scroll bars |
+| VirtualHTileListBox | ListBox|[include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | Horizontal Tile Layout (HTileLayout)| ListBox implemented with a virtual table; supports large data volumes and scroll bars |
+| VirtualVTileListBox | ListBox|[include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | Vertical Tile Layout (VTileLayout)| ListBox implemented with a virtual table; supports large data volumes and scroll bars |
+| TabBox | Box|[include/duilib/Box/TabBox.h](../include/duilib/Box/TabBox.h) | Floating Layout (Layout) | Page management container; among the multiple child controls inside, only one is visible and the others are hidden; they can be switched dynamically |
+| GridBox | Box|[include/duilib/Box/GridBox.h](../include/duilib/Box/GridBox.h) | Grid Layout (GridLayout) | Grid layout container; supports cell merging |
+| GridScrollBox | ScrollBox|[include/duilib/Box/GridBox.h](../include/duilib/Box/GridBox.h) | Grid Layout (GridLayout) | Grid layout container; supports cell merging and scroll bars |
+| BoxDragable | Box|[include/duilib/Core/ControlDragable.h](../include/duilib/Core/ControlDragable.h) | Floating Layout (Layout)    | Container that supports dragging child controls in/out |
+| HBoxDragable | HBox|[include/duilib/Core/ControlDragable.h](../include/duilib/Core/ControlDragable.h) | Horizontal Layout (HLayout) | Container that supports dragging child controls in/out |
+| VBoxDragable | VBox|[include/duilib/Core/ControlDragable.h](../include/duilib/Core/ControlDragable.h) | Vertical Layout (VLayout) | Container that supports dragging child controls in/out |
 
 Box includes the following basic attributes:    
 * The spacing between child controls (X and Y directions): child_margin_x/child_margin_y
@@ -75,18 +75,18 @@ Box includes the following basic attributes:
    Depending on the layout scheme, the Layout classes are categorized as follows:    
 | Class Name (Layout) | Base Class | Related Header File | Layout Scheme Description |
 | :--- | :--- |:--- | :--- |
-| Layout | |[duilib/Layout/Layout.h](../duilib/Layout/Layout.h) | Floating layout: child controls are not related to each other; each uses its own attributes to set its position and size |
-| HLayout |Layout |[duilib/Layout/HLayout.h](../duilib/Layout/HLayout.h) | Horizontal layout: child controls are arranged sequentially in the horizontal direction without wrapping |
-| VLayout |Layout |[duilib/Layout/VLayout.h](../duilib/Layout/VLayout.h) | Vertical layout: child controls are arranged sequentially in the vertical direction without wrapping |
-| HFlowLayout |Layout |[duilib/Layout/HFlowLayout.h](../duilib/Layout/HFlowLayout.h) | Horizontal flow layout: child controls are arranged sequentially in the horizontal direction, wrapping automatically |
-| VFlowLayout |Layout |[duilib/Layout/VFlowLayout.h](../duilib/Layout/VFlowLayout.h) | Vertical flow layout: child controls are arranged sequentially in the vertical direction, wrapping automatically |
-| HTileLayout |Layout| [duilib/Layout/HTileLayout.h](../duilib/Layout/HTileLayout.h) | Horizontal tile layout; supports setting the number of rows |
-| VTileLayout |Layout| [duilib/Layout/VTileLayout.h](../duilib/Layout/VTileLayout.h) | Vertical tile layout; supports setting the number of columns |
-| GridLayout  |Layout |[duilib/Layout/GridLayout.h](../duilib/Layout/GridLayout.h) | Grid layout |
-| VirtualHLayout |HLayout| [duilib/Layout/VirtualHLayout.h](../duilib/Layout/VirtualHLayout.h) | Virtual horizontal layout, single row |
-| VirtualVLayout |VLayout| [duilib/Layout/VirtualVLayout.h](../duilib/Layout/VirtualVLayout.h) | Virtual vertical layout, single column |
-| VirtualHTileLayout |HTileLayout| [duilib/Layout/VirtualHTileLayout.h](../duilib/Layout/VirtualHTileLayout.h) | Virtual horizontal tile layout; supports setting the number of rows |
-| VirtualVTileLayout |VTileLayout| [duilib/Layout/VirtualVTileLayout.h](../duilib/Layout/VirtualVTileLayout.h) | Virtual vertical tile layout; supports setting the number of columns |
+| Layout | |[include/duilib/Layout/Layout.h](../include/duilib/Layout/Layout.h) | Floating layout: child controls are not related to each other; each uses its own attributes to set its position and size |
+| HLayout |Layout |[include/duilib/Layout/HLayout.h](../include/duilib/Layout/HLayout.h) | Horizontal layout: child controls are arranged sequentially in the horizontal direction without wrapping |
+| VLayout |Layout |[include/duilib/Layout/VLayout.h](../include/duilib/Layout/VLayout.h) | Vertical layout: child controls are arranged sequentially in the vertical direction without wrapping |
+| HFlowLayout |Layout |[include/duilib/Layout/HFlowLayout.h](../include/duilib/Layout/HFlowLayout.h) | Horizontal flow layout: child controls are arranged sequentially in the horizontal direction, wrapping automatically |
+| VFlowLayout |Layout |[include/duilib/Layout/VFlowLayout.h](../include/duilib/Layout/VFlowLayout.h) | Vertical flow layout: child controls are arranged sequentially in the vertical direction, wrapping automatically |
+| HTileLayout |Layout| [include/duilib/Layout/HTileLayout.h](../include/duilib/Layout/HTileLayout.h) | Horizontal tile layout; supports setting the number of rows |
+| VTileLayout |Layout| [include/duilib/Layout/VTileLayout.h](../include/duilib/Layout/VTileLayout.h) | Vertical tile layout; supports setting the number of columns |
+| GridLayout  |Layout |[include/duilib/Layout/GridLayout.h](../include/duilib/Layout/GridLayout.h) | Grid layout |
+| VirtualHLayout |HLayout| [include/duilib/Layout/VirtualHLayout.h](../include/duilib/Layout/VirtualHLayout.h) | Virtual horizontal layout, single row |
+| VirtualVLayout |VLayout| [include/duilib/Layout/VirtualVLayout.h](../include/duilib/Layout/VirtualVLayout.h) | Virtual vertical layout, single column |
+| VirtualHTileLayout |HTileLayout| [include/duilib/Layout/VirtualHTileLayout.h](../include/duilib/Layout/VirtualHTileLayout.h) | Virtual horizontal tile layout; supports setting the number of rows |
+| VirtualVTileLayout |VTileLayout| [include/duilib/Layout/VirtualVTileLayout.h](../include/duilib/Layout/VirtualVTileLayout.h) | Virtual vertical tile layout; supports setting the number of columns |
 
 When a container lays out its child controls, the related attributes of the child controls (which can be a Control, a Box, or their subclasses) mainly include:    
 * The container's padding: padding

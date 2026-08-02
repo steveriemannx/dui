@@ -1,6 +1,6 @@
 # Quick Start (Windows, VS 2022)
 
-This example will guide you through quickly deploying a basic application based on nim_duilib. It is similar to the `basic` project in `examples`; if you prefer to look at the code, you can open the `examples.sln` solution and refer to the example code without spending extra time.
+This example will guide you through quickly deploying a basic application based on nim_duilib. It is similar to the `basic` project in `examples`; if you prefer to look at the code, you can open the `scripts/examples.sln` solution and refer to the example code without spending extra time.
 
 ## Getting the project code and compiling
 
@@ -10,48 +10,23 @@ This example will guide you through quickly deploying a basic application based 
 git clone https://github.com/rhett-lee/nim_duilib
 ```
 
-2. Get the skia compilation instructions and the modified code (nim_duilib uses skia as its drawing engine, so skia must be compiled first)
-
-```bash
-git clone https://github.com/rhett-lee/skia_compile
-```
-
-3. Compile the skia source code: follow the method in the skia_compile project document [Compile skia on Windows.md](https://github.com/rhett-lee/skia_compile/blob/main/Windows%E4%B8%8B%E7%BC%96%E8%AF%91skia.md) to compile the skia-related lib files    
-   Note: the skia source code should be located in the same directory as the nim_duilib source code.    
-   Note: when compiling the skia source code, use LLVM to compile, and the program will run smoothly; if you compile with VS, the running speed is very slow and the UI is laggy.    
-   How to verify: after a successful build, lib files such as skia.lib are generated in the subdirectories of skia/out.
-4. In the working directory, the basic directory structure of the source code of the projects is as follows    
+2. Note on dependencies: the dependencies (Skia rendering engine, SDL3, etc.) are vendored in the `third_party` directory and are downloaded/built automatically by the build scripts — no separate manual preparation is needed.
+3. In the working directory, the basic directory structure of the source code of the projects is as follows    
 
 <img src="./Images/vs00.png"/>
 
-5. Compile nim_duilib: enter the `nim_duilib` directory, open `examples.sln` with the Visual Studio 2022 IDE, select Debug|x64 or Release|x64 as the build configuration, and press F7 to compile all the example programs (the compiled example programs are located in the bin directory).
+4. Compile nim_duilib: enter the `nim_duilib` directory, open `scripts/examples.sln` with the Visual Studio 2022 IDE, select Debug|x64 or Release|x64 as the build configuration, and press F7 to compile all the example programs (the compiled example programs are located in the bin directory).
 
 ## Creating a basic project
 
-Open the `examples.sln` solution in the project directory with Visual Studio and create a new Windows desktop application to complete your first program based on the duilib UI library step by step.
+Open the `scripts/examples.sln` solution with Visual Studio and create a new Windows desktop application to complete your first program based on the duilib UI library step by step.
 
-1. Create a new Windows desktop program in the `examples.sln` solution (VS2022, program type: Windows Desktop Application).
+1. Create a new Windows desktop program in the `scripts/examples.sln` solution (VS2022, program type: Windows Desktop Application).
 Assume the program is named: `MyDuilibApp`, and its source code is placed in the `examples` subdirectory.    
 
 <img src="./Images/vs01.png"/>
 
-2. Clean up the generated code, keeping only the essential wWinMain function:
-```cpp
-#include "MainThread.h"
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
-{
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-
-
-    // exit the program normally
-    return 0;
-}
-```
+2. Clean up the generated code. You never write `wWinMain` yourself: the platform entry function (`wWinMain`/`WinMain`/`main`) is generated automatically by the `DUILIB_APP_ENTRY` macro. Create the `main.cpp` file with the `App` class as described in the "Writing the app entry (main.cpp)" section below.
 
 ## Configuring project properties
 - Use the common configuration provided by nim_duilib (`msvc\PropertySheets\BinCommonSettings.props`)    

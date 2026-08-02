@@ -77,7 +77,7 @@ Example 3: in the `examples/render` example program, the following XML snippet d
 Each child tag responds to one event.    
 The `<Event />` tag corresponds to the `Control::AttachXmlEvent` function of the control    
 The `<BubbledEvent />` tag corresponds to the `Control::AttachXmlBubbledEvent` function of the control    
-For the related parsing logic, refer to the `WindowBuilder::AttachXmlEvent` function; the code is in the file `duilib/Core/WindowBuilder.cpp`.    
+For the related parsing logic, refer to the `WindowBuilder::AttachXmlEvent` function; the code is in the file `src/Core/WindowBuilder.cpp`.    
 
 The code logic implemented by the examples above is shown in the following pseudo-code:    
 ```
@@ -99,7 +99,7 @@ if (msg.eventType == eventType) {
    `receiver="./name"`: looks up a child control within the current container (looked up via the `Box::FindSubControl(const DString& name)` function)    
    `receiver=""`: receiver is the control itself; no lookup by name is needed       
    `receiver="#window#"`: the window associated with the receiver control; the `Window::SetAttribute` supports relatively few attributes, so the achievable functionality is limited        
-   For the related parsing code, refer to the following function: `Control::OnApplyAttributeList`, located in the file `duilib/Core/Control.cpp`.    
+   For the related parsing code, refer to the following function: `Control::OnApplyAttributeList`, located in the file `src/Core/Control.cpp`.    
    If receiver refers to multiple target controls, their names must be separated by spaces.    
    
  - Applied attribute parameters (apply_attribute)    
@@ -110,7 +110,7 @@ if (msg.eventType == eventType) {
     If apply_attribute contains multiple attributes, the different attributes must be separated by spaces.    
    
 ### 3. List of available events    
-The list of available events is defined in the `InitEventStringMap` function in the file `duilib/Core/EventArgs.cpp`. The details are as follows:    
+The list of available events is defined in the `InitEventStringMap` function in the file `src/Core/EventArgs.cpp`. The details are as follows:    
 | Event Type | Event XML Name 1 | Event XML Name 2|
 | :---     | :---           |:---           |
 |kEventAll|"All"|"all"|

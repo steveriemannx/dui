@@ -8,7 +8,7 @@ The `Control` control is the base class of all available controls and contains t
 <Control width="stretch"/>
 ```
 
-| Attribute Name | Default Value | Parameter Type | Function in [Control.h](../duilib/Core/Control.h) | Purpose |
+| Attribute Name | Default Value | Parameter Type | Function in [Control.h](../include/duilib/Core/Control.h) | Purpose |
 | :--- | :--- | :--- | :---| :--- |
 | class |  | string | SetClass|Control style; sets this control's attributes using the attribute values from the style, e.g. (btn_default). Multiple styles can be specified at the same time, separated by spaces; it must be written in the first attribute position |
 | name |  | string | SetName|Control name; it is recommended to keep it unique within the same window, otherwise query efficiency is affected and the correct result may not be found |
@@ -64,7 +64,7 @@ The `Control` control is the base class of all available controls and contains t
 | user_data_id |  | size_t | SetUserDataID|Custom integer data, provided for user use |
 | enabled | true | bool | SetEnabled|Whether it can respond to user operations, e.g. "true" |
 | mouse_enabled | true | bool | SetMouseEnabled|Whether this control can respond to mouse operations, e.g. "true" |
-| keyboard_enabled | true | bool | SetKeyboardEnabled|Ignored by non-CButtonUI classes; when false, TAB_STOP is not supported and the object does not process keyboard messages |
+| keyboard_enabled | true | bool | SetKeyboardEnabled|Whether this control can respond to keyboard messages; when false, the control does not process keyboard messages |
 | visible | true | bool | SetVisible|Whether it is visible, e.g. "true" |
 | fade_visible | true | bool | SetFadeVisible|Whether it is visible, e.g. (true); this attribute triggers the control's animation effect |
 | menu | false | bool | |Whether a right-click menu is needed, e.g. "true" |
@@ -453,7 +453,7 @@ The CircleProgress control inherits the `Progress` attributes; for more availabl
 | default_context_menu | false | bool | Whether to use the default right-click menu |
 | spin_class | | string | Sets the Class name of the Spin function; if not empty, the Spin button is displayed; see the example programs for detailed usage |
 | clear_btn_class | | string | Sets the Class name of the clear button function; if not empty, the clear button is displayed; see the example programs for detailed usage |
-| show_passowd_btn_class | | string | Sets the Class name of the show-password button function; if not empty, the show-password button is displayed; see the example programs for detailed usage |
+| show_passowrd_btn_class | | string | Sets the Class name of the show-password button function; if not empty, the show-password button is displayed; see the example programs for detailed usage |
 | selection_bkcolor | "CornflowerBlue" | string | The background color of the selected text (focused state); if set to empty, it is not displayed |
 | inactive_selection_bkcolor | "DarkGray" | string | The background color of the selected text (non-focused state); if set to empty, it is not displayed |
 | current_row_bkcolor | "" | string | The background color of the current row (focused state); if set to empty, the current row background color is not displayed in the focused state |

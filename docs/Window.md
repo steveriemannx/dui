@@ -1,5 +1,5 @@
 ## Window Attributes
-| Attribute Name | Attribute Category | Default Value | Parameter Type | Function in [Window.h](../duilib/Core/Window.h) | Purpose |
+| Attribute Name | Attribute Category | Default Value | Parameter Type | Function in [Window.h](../include/duilib/Core/Window.h) | Purpose |
 | :---              | :---    | :---    | :---   |:---                     |:--- |
 | caption           | Title bar  | 0,0,0,0 | rect   | SetCaptionRect          |The margin of the draggable caption (title bar) area of the window; the last parameter is the distance from the top border, e.g. (0,0,0,36) |
 | use_system_caption| Title bar  | false   | bool   | SetUseSystemCaption     |Sets whether to use the system title bar |
@@ -30,7 +30,7 @@
 | opacity           | Window drawing| 255     | int    | SetLayeredWindowOpacity |Sets the opacity value [0, 255]; when opacity is 0, the window is completely transparent; when opacity is 255, the window is opaque.<br>Only valid when IsLayeredWindow() is true; so if the current window is not a layered window, it is automatically set as a layered window internally <br>This parameter is used as an argument in the SetLayeredWindowAttributes function (bAlpha) |
 | render_backend_type| Window drawing| "CPU"   | string |SetRenderBackendType     | "CPU": CPU drawing <br> "GL": OpenGL drawing <br> Notes: <br> (1) Within one thread, only one window is allowed to use OpenGL drawing; otherwise the program may crash <br> (2) Windows drawn with OpenGL cannot be layered windows (i.e. windows with the WS_EX_LAYERED attribute)<br> (3) For windows using OpenGL, each draw paints the entire window; partial drawing is not supported, so performance is not necessarily better than drawing with the CPU |
 
-Note: for the parsing function of the window attributes, see: [WindowBuilder::ParseWindowAttributes function](../duilib/Core/WindowBuilder.cpp)    
+Note: for the parsing function of the window attributes, see: [WindowBuilder::ParseWindowAttributes function](../src/Core/WindowBuilder.cpp)    
 Note: the tag name of the window in the XML is "Window"     
 Usage example:    
 ```xml
