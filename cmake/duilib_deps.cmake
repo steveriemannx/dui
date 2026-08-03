@@ -297,7 +297,11 @@ function(duilib_deps_download_cef)
             set(_cef_suffix "windows32")
         endif()
     else()
-        message(FATAL_ERROR "CEF auto-download is not supported on this platform; provide the CEF distribution manually.")
+        # Unsupported platform (e.g. FreeBSD): there is no official CEF binary
+        # distribution. Skip the download instead of failing; the CEF module
+        # stays disabled on such platforms.
+        message(STATUS "CEF auto-download is not supported on this platform; the CEF module is disabled")
+        return()
     endif()
 
     set(_cef_url "https://cef-builds.spotifycdn.com/cef_binary_${_cef_ver_enc}_${_cef_suffix}.tar.bz2")
