@@ -15,7 +15,7 @@ if(DEFINED DUILIB_EMBED_RES_SRC AND TARGET "${PROJECT_NAME}_embed_res")
 endif()
 
 # Generate C++ code from XML dependency
-if(DEFINED DUILIB_GEN_CODE_SRC)
+if(TARGET "${PROJECT_NAME}_gen_xml_code")
     add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_gen_xml_code")
 endif()
 
