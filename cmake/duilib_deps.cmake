@@ -62,6 +62,10 @@ function(duilib_deps_configure)
 skia_enable_fontmgr_fontconfig = true
 skia_use_freetype = true
 extra_ldflags = [ \"-L/usr/local/lib\" ]
+extra_cflags = [ \"-I/usr/local/include\", \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\" ]
+")
+        else()
+            set(_gn_extra "extra_cflags = [ \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\" ]
 ")
         endif()
 
@@ -88,7 +92,7 @@ skia_use_wuffs = false
 skia_enable_svg = true
 skia_use_expat = true
 skia_use_system_expat = false
-${_gn_extra}extra_cflags = [ \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\" ]
+${_gn_extra}
 ")
 
         if(DUILIB_MULTI_CONFIG)
