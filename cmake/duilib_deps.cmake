@@ -61,6 +61,7 @@ function(duilib_deps_configure)
             set(_gn_extra "ar = \"llvm-ar\"
 skia_enable_fontmgr_fontconfig = true
 skia_use_freetype = true
+skia_system_freetype2_include_path = \"/usr/local/include/freetype2\"
 extra_ldflags = [ \"-L/usr/local/lib\" ]
 extra_cflags = [ \"-I/usr/local/include\", \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\" ]
 ")
