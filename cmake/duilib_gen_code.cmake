@@ -62,7 +62,7 @@ if(DUILIB_OS_WINDOWS)
         message(STATUS "Rebuilding xml_to_code.exe (source changed)")
         execute_process(
             COMMAND "${CMAKE_CXX_COMPILER}" /nologo /std:c++17 /O2 /EHsc
-                    -I"${PUGIXML_DIR}"
+                    "-I${PUGIXML_DIR}"
                     "${TOOL_SRC}" "${PUGIXML_SRC}" /Fe:"${TOOL_EXE}"
             WORKING_DIRECTORY "${DUILIB_SRC_ROOT_DIR}"
             RESULT_VARIABLE _build_result
@@ -83,19 +83,33 @@ if(DUILIB_OS_WINDOWS)
         COMMENT "Generating C++ UI code from XML: ${GENERATED_SRC}"
     )
 else()
-    # macOS / Linux: compile from source at build time (no Device Guard)
+    # macOS / Linux / FreeBSD: build the tool once at CONFIGURE time into the
+    # source tree and share it across all *_gen examples (the same approach as
+    # the pre-compiled xml_to_code.exe on Windows, avoiding rebuilding the tool
+    # once per example at build time).
     set(TOOL_SRC "${DUILIB_SRC_ROOT_DIR}/cmake/xml_to_code.cpp")
     set(PUGIXML_SRC "${DUILIB_SRC_ROOT_DIR}/third_party/xml/pugixml.cpp")
     set(PUGIXML_DIR "${DUILIB_SRC_ROOT_DIR}/third_party/xml")
-    set(TOOL_EXE "${CMAKE_CURRENT_BINARY_DIR}/xml_to_code")
+    set(TOOL_EXE "${DUILIB_SRC_ROOT_DIR}/cmake/xml_to_code")
 
-    add_custom_command(
-        OUTPUT "${TOOL_EXE}"
-        COMMAND ${CMAKE_CXX_COMPILER} -std=c++17 -O2 -I"${PUGIXML_DIR}"
-                "${TOOL_SRC}" "${PUGIXML_SRC}" -o "${TOOL_EXE}"
-        DEPENDS "${TOOL_SRC}" "${PUGIXML_SRC}"
-        COMMENT "Building xml_to_code tool"
-    )
+    # Rebuild at configure time if source is newer (idempotent across examples)
+    if("${TOOL_SRC}" IS_NEWER_THAN "${TOOL_EXE}" OR "${PUGIXML_SRC}" IS_NEWER_THAN "${TOOL_EXE}")
+        message(STATUS "Rebuilding xml_to_code tool (source changed)")
+        execute_process(
+            COMMAND "${CMAKE_CXX_COMPILER}" -std=c++17 -O2 "-I${PUGIXML_DIR}"
+                    "${TOOL_SRC}" "${PUGIXML_SRC}" -o "${TOOL_EXE}"
+            WORKING_DIRECTORY "${DUILIB_SRC_ROOT_DIR}"
+            RESULT_VARIABLE _build_result
+            ERROR_VARIABLE _tool_err
+        )
+        if(NOT _build_result EQUAL 0)
+            message(FATAL_ERROR "Failed to build xml_to_code tool: ${_tool_err}")
+        endif()
+    endif()
+
+    if(NOT EXISTS "${TOOL_EXE}")
+        message(FATAL_ERROR "xml_to_code tool not found at ${TOOL_EXE}")
+    endif()
 
     add_custom_command(
         OUTPUT "${GENERATED_SRC}"
