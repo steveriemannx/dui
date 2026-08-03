@@ -64,6 +64,14 @@ else()
         add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_embed_res")
     endif()
 
+    # Generate C++ code from XML dependency
+    if(DEFINED DUILIB_GEN_CODE_SRC)
+        add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_gen_xml_code")
+    endif()
+
+    # Per-config Skia link directories (multi-config generators: VS, Xcode)
+    duilib_target_skia_link_dirs(${PROJECT_NAME})
+
     # Set the compiler arguments
     target_compile_options(${PROJECT_NAME} PRIVATE ${DUILIB_COMPILER_FLAGS} ${DUILIB_CXX_COMPILER_FLAGS})
     

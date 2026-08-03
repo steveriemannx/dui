@@ -84,7 +84,6 @@ Control* ControlFinder::FindSubControlByPoint(Control* pParent, const UiPoint& p
     if (pParent == nullptr) {
         pParent = m_pRoot;
     }
-    ASSERT(pParent);
     if (pParent != nullptr) {
         UiPoint ptLocal = pt;
         return pParent->FindControl(FindControlFromPoint, &ptLocal, UIFIND_VISIBLE | UIFIND_HITTEST | UIFIND_TOP_FIRST, pt);
@@ -119,7 +118,6 @@ Control* ControlFinder::FindSubControlByName(Control* pParent, const DString& st
     if (pParent == nullptr) {
         pParent = m_pRoot;
     }
-    ASSERT(pParent != nullptr);
     if (pParent != nullptr) {
         pFindControl = pParent->FindControl(FindControlFromName, (void*)strName.c_str(), UIFIND_ALL);
         if (pFindControl != nullptr) {

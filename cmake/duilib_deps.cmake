@@ -12,6 +12,11 @@
 
 # ---- Configure-time: source guards, skia args.gn, CEF download ----
 function(duilib_deps_configure)
+    # WebView2 SDK download (idempotent, Windows only)
+    if(DUILIB_WEBVIEW2_EXE AND DUILIB_OS_WINDOWS)
+        duilib_deps_download_webview2()
+    endif()
+
     # CEF download is idempotent (existence check) and must run per-scope:
     # DUILIB_ENABLE_CEF is turned ON by the cef/CefBrowser examples in their own scope.
     if(DUILIB_ENABLE_CEF)
@@ -44,11 +49,6 @@ function(duilib_deps_configure)
     # Write Skia's args.gn now (gn gen reads it at make time; DEPENDS on it re-triggers gn gen
     # when the build type or compiler changes).
     if(DUILIB_BUILD_SKIA_FROM_SOURCE)
-        set(_is_debug false)
-        if(DUILIB_BUILD_TYPE STREQUAL "debug")
-            set(_is_debug true)
-        endif()
-
         # Standalone example builds declare project(... CXX) only, so CMAKE_C_COMPILER is empty there.
         set(_skia_cc "${CMAKE_C_COMPILER}")
         if(NOT _skia_cc)
@@ -65,7 +65,8 @@ extra_ldflags = [ \"-L/usr/local/lib\" ]
 ")
         endif()
 
-        set(GN_ARGS_CONTENT "
+        # Common gn args (everything except is_debug, which differs per config)
+        set(GN_ARGS_COMMON "
 target_cpu = \"${DUILIB_SYSTEM_PROCESSOR}\"
 cc = \"${_skia_cc}\"
 cxx = \"${CMAKE_CXX_COMPILER}\"
@@ -87,11 +88,26 @@ skia_use_wuffs = false
 skia_enable_svg = true
 skia_use_expat = true
 skia_use_system_expat = false
-is_debug = ${_is_debug}
 ${_gn_extra}extra_cflags = [ \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\" ]
 ")
-        file(MAKE_DIRECTORY "${DUILIB_SKIA_LIB_PATH}")
-        file(WRITE "${DUILIB_SKIA_LIB_PATH}/args.gn" "${GN_ARGS_CONTENT}")
+
+        if(DUILIB_MULTI_CONFIG)
+            # Debug: same release-grade build, but with debug CRT so it links against
+            # Debug-configuration projects without _ITERATOR_DEBUG_LEVEL / RuntimeLibrary
+            # mismatches. We keep is_debug=false + is_official_build=true to avoid pulling
+            # in third_party/externals that the shallow submodule checkout doesn't have.
+            file(MAKE_DIRECTORY "${DUILIB_SKIA_LIB_PATH_DEBUG}")
+            file(WRITE "${DUILIB_SKIA_LIB_PATH_DEBUG}/args.gn" "${GN_ARGS_COMMON}is_debug = false\nextra_cflags += [ \"/MTd\", \"-D_ITERATOR_DEBUG_LEVEL=2\" ]\n")
+            file(MAKE_DIRECTORY "${DUILIB_SKIA_LIB_PATH_RELEASE}")
+            file(WRITE "${DUILIB_SKIA_LIB_PATH_RELEASE}/args.gn" "${GN_ARGS_COMMON}is_debug = false\n")
+        else()
+            set(_is_debug false)
+            if(DUILIB_BUILD_TYPE STREQUAL "debug")
+                set(_is_debug true)
+            endif()
+            file(MAKE_DIRECTORY "${DUILIB_SKIA_LIB_PATH}")
+            file(WRITE "${DUILIB_SKIA_LIB_PATH}/args.gn" "${GN_ARGS_COMMON}is_debug = ${_is_debug}\n")
+        endif()
     endif()
 endfunction()
 
@@ -106,27 +122,98 @@ function(duilib_deps_add_targets)
     # ---- Skia: gn gen + ninja (ninja is incremental: interrupted builds self-heal,
     # ---- args.gn changes re-trigger gn gen; no stamp file needed).
     if(DUILIB_BUILD_SKIA_FROM_SOURCE)
-        if(NOT EXISTS "${DUILIB_SKIA_LIB_PATH}/libskia.a")
-            find_program(GN_EXECUTABLE gn REQUIRED)
-            find_program(NINJA_EXECUTABLE ninja REQUIRED)
-
-            add_custom_command(
-                OUTPUT "${DUILIB_SKIA_LIB_PATH}/libskia.a"
-                COMMAND ${GN_EXECUTABLE} gen "${DUILIB_SKIA_LIB_PATH}"
-                COMMAND ${NINJA_EXECUTABLE} -C "${DUILIB_SKIA_LIB_PATH}"
-                WORKING_DIRECTORY "${DUILIB_SKIA_SRC_ROOT_DIR}"
-                DEPENDS "${DUILIB_SKIA_LIB_PATH}/args.gn" "${DUILIB_SKIA_SRC_ROOT_DIR}/BUILD.gn"
-                BYPRODUCTS "${DUILIB_SKIA_LIB_PATH}/libsvg.a"
-                           "${DUILIB_SKIA_LIB_PATH}/libskshaper.a"
-                           "${DUILIB_SKIA_LIB_PATH}/libskottie.a"
-                           "${DUILIB_SKIA_LIB_PATH}/libsksg.a"
-                           "${DUILIB_SKIA_LIB_PATH}/libjsonreader.a"
-                COMMENT "Building Skia (gn gen + ninja)..."
-                USES_TERMINAL VERBATIM
-            )
-            add_custom_target(duilib_skia DEPENDS "${DUILIB_SKIA_LIB_PATH}/libskia.a")
+        # Main Skia output filename differs by platform (MSVC: skia.lib, others: libskia.a)
+        if(MSVC)
+            set(_skia_main_lib "skia.lib")
         else()
-            message(STATUS "Using prebuilt Skia: ${DUILIB_SKIA_LIB_PATH}")
+            set(_skia_main_lib "libskia.a")
+        endif()
+
+        if(DUILIB_MULTI_CONFIG)
+            # ---- Debug Skia ----
+            if(NOT EXISTS "${DUILIB_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}")
+                find_program(GN_EXECUTABLE_DEBUG
+                    NAMES gn
+                    HINTS "${DUILIB_SKIA_SRC_ROOT_DIR}/bin"
+                    REQUIRED)
+                find_program(NINJA_EXECUTABLE_DEBUG
+                    NAMES ninja
+                    HINTS "${DUILIB_SKIA_SRC_ROOT_DIR}/bin"
+                    REQUIRED)
+                add_custom_command(
+                    OUTPUT "${DUILIB_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}"
+                    COMMAND ${GN_EXECUTABLE_DEBUG} gen "${DUILIB_SKIA_LIB_PATH_DEBUG}"
+                    COMMAND ${NINJA_EXECUTABLE_DEBUG} -C "${DUILIB_SKIA_LIB_PATH_DEBUG}"
+                    WORKING_DIRECTORY "${DUILIB_SKIA_SRC_ROOT_DIR}"
+                    DEPENDS "${DUILIB_SKIA_LIB_PATH_DEBUG}/args.gn" "${DUILIB_SKIA_SRC_ROOT_DIR}/BUILD.gn"
+                    COMMENT "Building Skia (debug, gn gen + ninja)..."
+                    USES_TERMINAL VERBATIM
+                )
+                add_custom_target(duilib_skia_debug DEPENDS "${DUILIB_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}")
+            else()
+                message(STATUS "Using prebuilt Skia (debug): ${DUILIB_SKIA_LIB_PATH_DEBUG}")
+            endif()
+
+            # ---- Release Skia ----
+            if(NOT EXISTS "${DUILIB_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}")
+                find_program(GN_EXECUTABLE_RELEASE
+                    NAMES gn
+                    HINTS "${DUILIB_SKIA_SRC_ROOT_DIR}/bin"
+                    REQUIRED)
+                find_program(NINJA_EXECUTABLE_RELEASE
+                    NAMES ninja
+                    HINTS "${DUILIB_SKIA_SRC_ROOT_DIR}/bin"
+                    REQUIRED)
+                add_custom_command(
+                    OUTPUT "${DUILIB_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}"
+                    COMMAND ${GN_EXECUTABLE_RELEASE} gen "${DUILIB_SKIA_LIB_PATH_RELEASE}"
+                    COMMAND ${NINJA_EXECUTABLE_RELEASE} -C "${DUILIB_SKIA_LIB_PATH_RELEASE}"
+                    WORKING_DIRECTORY "${DUILIB_SKIA_SRC_ROOT_DIR}"
+                    DEPENDS "${DUILIB_SKIA_LIB_PATH_RELEASE}/args.gn" "${DUILIB_SKIA_SRC_ROOT_DIR}/BUILD.gn"
+                    COMMENT "Building Skia (release, gn gen + ninja)..."
+                    USES_TERMINAL VERBATIM
+                )
+                add_custom_target(duilib_skia_release DEPENDS "${DUILIB_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}")
+            else()
+                message(STATUS "Using prebuilt Skia (release): ${DUILIB_SKIA_LIB_PATH_RELEASE}")
+            endif()
+
+            # Combined target so that `add_dependencies(${PROJECT_NAME} duilib_skia)` builds both
+            if(TARGET duilib_skia_debug AND TARGET duilib_skia_release)
+                add_custom_target(duilib_skia DEPENDS duilib_skia_debug duilib_skia_release)
+            elseif(TARGET duilib_skia_debug)
+                add_custom_target(duilib_skia DEPENDS duilib_skia_debug)
+            elseif(TARGET duilib_skia_release)
+                add_custom_target(duilib_skia DEPENDS duilib_skia_release)
+            endif()
+        else()
+            # ---- Single-config Skia ----
+            if(NOT EXISTS "${DUILIB_SKIA_LIB_PATH}/${_skia_main_lib}")
+                # Look for gn/ninja inside the Skia checkout's bin/ first (the convention used by
+                # scripts/build_duilib_all_in_one.bat: the skia_compile bundle drops gn.exe/ninja.exe
+                # there), then fall back to PATH.
+                find_program(GN_EXECUTABLE
+                    NAMES gn
+                    HINTS "${DUILIB_SKIA_SRC_ROOT_DIR}/bin"
+                    REQUIRED)
+                find_program(NINJA_EXECUTABLE
+                    NAMES ninja
+                    HINTS "${DUILIB_SKIA_SRC_ROOT_DIR}/bin"
+                    REQUIRED)
+
+                add_custom_command(
+                    OUTPUT "${DUILIB_SKIA_LIB_PATH}/${_skia_main_lib}"
+                    COMMAND ${GN_EXECUTABLE} gen "${DUILIB_SKIA_LIB_PATH}"
+                    COMMAND ${NINJA_EXECUTABLE} -C "${DUILIB_SKIA_LIB_PATH}"
+                    WORKING_DIRECTORY "${DUILIB_SKIA_SRC_ROOT_DIR}"
+                    DEPENDS "${DUILIB_SKIA_LIB_PATH}/args.gn" "${DUILIB_SKIA_SRC_ROOT_DIR}/BUILD.gn"
+                    COMMENT "Building Skia (gn gen + ninja)..."
+                    USES_TERMINAL VERBATIM
+                )
+                add_custom_target(duilib_skia DEPENDS "${DUILIB_SKIA_LIB_PATH}/${_skia_main_lib}")
+            else()
+                message(STATUS "Using prebuilt Skia: ${DUILIB_SKIA_LIB_PATH}")
+            endif()
         endif()
     endif()
 
@@ -253,4 +340,49 @@ function(duilib_deps_download_cef)
     file(RENAME "${_cef_extracted}" "${_cef_dest}")
     file(REMOVE_RECURSE "${_cef_dl_dir}")
     message(STATUS "CEF binary distribution ready: ${_cef_dest}")
+endfunction()
+
+# ---- WebView2 SDK NuGet package download (only when missing) ----
+function(duilib_deps_download_webview2)
+    set(_wv2_dest "${DUILIB_ROOT}/third_party/Microsoft.Web.WebView2")
+    if(EXISTS "${_wv2_dest}/build/native/${DUILIB_SYSTEM_PROCESSOR}/WebView2Loader.dll.lib")
+        return()  # already installed
+    endif()
+
+    set(_wv2_ver "1.0.2903.40")
+    set(_wv2_url "https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/${_wv2_ver}")
+    set(_wv2_dl_dir "${DUILIB_ROOT}/third_party/.download")
+    set(_wv2_archive "${_wv2_dl_dir}/Microsoft.Web.WebView2.${_wv2_ver}.nupkg")
+
+    file(MAKE_DIRECTORY "${_wv2_dl_dir}")
+    if(NOT EXISTS "${_wv2_archive}")
+        message(STATUS "Downloading WebView2 SDK ${_wv2_ver}: ${_wv2_url}")
+        file(DOWNLOAD "${_wv2_url}" "${_wv2_archive}" STATUS _wv2_status)
+        list(GET _wv2_status 0 _wv2_code)
+        if(NOT _wv2_code EQUAL 0)
+            file(REMOVE_RECURSE "${_wv2_dl_dir}")
+            message(FATAL_ERROR "WebView2 SDK download failed (HTTP ${_wv2_code})")
+        endif()
+    else()
+        message(STATUS "WebView2 SDK already downloaded: ${_wv2_archive}")
+    endif()
+
+    message(STATUS "Extracting WebView2 SDK...")
+    file(MAKE_DIRECTORY "${_wv2_dest}")
+    file(ARCHIVE_EXTRACT INPUT "${_wv2_archive}" DESTINATION "${_wv2_dest}")
+    if(NOT EXISTS "${_wv2_dest}/build/native/${DUILIB_SYSTEM_PROCESSOR}/WebView2Loader.dll.lib")
+        # Fallback: .nupkg is a zip; try tar (in case CMake lacks zip support)
+        execute_process(
+            COMMAND tar -xf "${_wv2_archive}"
+            WORKING_DIRECTORY "${_wv2_dest}"
+            RESULT_VARIABLE _wv2_tar_result
+        )
+        if(NOT _wv2_tar_result EQUAL 0 OR NOT EXISTS "${_wv2_dest}/build/native/${DUILIB_SYSTEM_PROCESSOR}/WebView2Loader.dll.lib")
+            file(REMOVE_RECURSE "${_wv2_dl_dir}")
+            file(REMOVE_RECURSE "${_wv2_dest}")
+            message(FATAL_ERROR "WebView2 SDK extraction failed: ${_wv2_archive}")
+        endif()
+    endif()
+    file(REMOVE_RECURSE "${_wv2_dl_dir}")
+    message(STATUS "WebView2 SDK ready: ${_wv2_dest}")
 endfunction()

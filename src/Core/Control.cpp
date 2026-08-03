@@ -795,7 +795,6 @@ void Control::SetClass(const DString& strClass)
             pDefaultAttributes = pWindow->GetClassAttributes(*it);
         }
 
-        ASSERT(!pDefaultAttributes.empty());
         if (!pDefaultAttributes.empty()) {
             ApplyAttributeList(pDefaultAttributes);
         }

@@ -1188,14 +1188,20 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
 
         pControl->SetWindow(pWindow);
         
-        // Process attributes
-        if(!node.attributes().empty()) {
-            //Read the attributes of the node and set the attributes of the control
-            int i = 0;
+        // Process attributes — class must be handled first because other
+        // attributes may depend on the control type (e.g. a Button's "icon"
+        // attribute is only valid after the class has been set to Button).
+        if (!node.attributes().empty()) {
+            // Pass 1: process the "class" attribute first regardless of its position
+            pugi::xml_attribute classAttr = node.attribute(_T("class"));
+            if (!classAttr.empty()) {
+                pControl->SetAttribute(classAttr.name(), classAttr.value());
+            }
+            // Pass 2: process all other attributes
             for (pugi::xml_attribute attr : node.attributes()) {
-                ASSERT_UNUSED_VARIABLE(i == 0 || StringUtil::StringCompare(attr.name(), _T("class")) != 0);    //The class attribute must be the first attribute
-                ++i;
-                pControl->SetAttribute(attr.name(), attr.value());
+                if (StringUtil::StringCompare(attr.name(), _T("class")) != 0) {
+                    pControl->SetAttribute(attr.name(), attr.value());
+                }
             }
         }
 
