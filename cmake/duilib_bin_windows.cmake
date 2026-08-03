@@ -46,9 +46,13 @@ endif()
 if(DUILIB_ENABLE_CEF)
     # Using the CEF module: add the CEF source root to the include path
     include_directories(${DUILIB_CEF_SRC_ROOT_DIR})
-    
-    # Path to the cef library (.lib path)
-    link_directories("${DUILIB_CEF_LIB_PATH}") 
+
+    if(DUILIB_MULTI_CONFIG)
+        # Per-config CEF paths via duilib_target_cef_link_dirs (called after target creation below)
+    else()
+        # Path to the cef library (.lib path)
+        link_directories("${DUILIB_CEF_LIB_PATH}")
+    endif()
 endif()
 
 if(DUILIB_WEBVIEW2_EXE)    
@@ -65,6 +69,17 @@ add_executable(${PROJECT_NAME} ${SRC_FILES})
 # Embedded resources dependency
 if(DEFINED DUILIB_EMBED_RES_SRC AND TARGET "${PROJECT_NAME}_embed_res")
     add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_embed_res")
+endif()
+
+# Generate C++ code from XML dependency
+if(DEFINED DUILIB_GEN_CODE_SRC)
+    add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_gen_xml_code")
+endif()
+
+# Per-config Skia / CEF link directories (multi-config generators: VS, Xcode)
+duilib_target_skia_link_dirs(${PROJECT_NAME})
+if(DUILIB_ENABLE_CEF)
+    duilib_target_cef_link_dirs(${PROJECT_NAME})
 endif()
 
 # The manifest file path must be embedded

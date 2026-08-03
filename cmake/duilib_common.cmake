@@ -102,6 +102,16 @@ else()
     set(DUILIB_BUILD_TYPE "release")
 endif()
 
+# Multi-config generator detection (Visual Studio, Xcode).
+# These generators do NOT set CMAKE_BUILD_TYPE at configure time — the user picks
+# Debug/Release at build time. We must build both Skia variants so that the chosen
+# configuration links against a CRT-compatible library.
+if(CMAKE_CONFIGURATION_TYPES)
+    set(DUILIB_MULTI_CONFIG TRUE)
+else()
+    set(DUILIB_MULTI_CONFIG FALSE)
+endif()
+
 # duilib source root, library directory, and bin directory
 get_filename_component(DUILIB_ROOT "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
 set(DUILIB_LIB_PATH "${DUILIB_ROOT}/lib")
@@ -111,24 +121,16 @@ set(DUILIB_LIBS duilib duilib-cximage duilib-webp duilib-png duilib-zlib)
 # CEF module source root (the CEF module is optional)
 if(DUILIB_ENABLE_CEF)
     if(DUILIB_OS_WINDOWS)
-        # Windows platform
+        # Windows platform (same layout as Linux: the binary distribution lands in cef_binary/)
+        set(DUILIB_CEF_SRC_ROOT_DIR "${DUILIB_ROOT}/third_party/libcef/cef_binary")
+        set(DUILIB_CEF_LIB_PATH "${DUILIB_ROOT}/third_party/libcef/cef_binary/Release")
+        if(DUILIB_MULTI_CONFIG)
+            set(DUILIB_CEF_LIB_PATH_DEBUG   "${DUILIB_ROOT}/third_party/libcef/cef_binary/Debug")
+            set(DUILIB_CEF_LIB_PATH_RELEASE "${DUILIB_ROOT}/third_party/libcef/cef_binary/Release")
+        endif()
         if (DUILIB_CEF_109)
-            # Use CEF 109
-            set(DUILIB_CEF_SRC_ROOT_DIR "${DUILIB_ROOT}/third_party/libcef/libcef_win_109")
-            if(DUILIB_BITS_64)
-                set(DUILIB_CEF_LIB_PATH "${DUILIB_ROOT}/third_party/libcef/libcef_win_109/lib/x64")
-            else()
-                set(DUILIB_CEF_LIB_PATH "${DUILIB_ROOT}/third_party/libcef/libcef_win_109/lib/Win32")
-            endif()
             set(DUILIB_CEF_WRAPPER_LIB_NAME libcef_dll_wrapper_109)
         else()
-            # Use the latest CEF version
-            set(DUILIB_CEF_SRC_ROOT_DIR "${DUILIB_ROOT}/third_party/libcef/libcef_win")
-            if(DUILIB_BITS_64)
-                set(DUILIB_CEF_LIB_PATH "${DUILIB_ROOT}/third_party/libcef/libcef_win/lib/x64")
-            else()
-                set(DUILIB_CEF_LIB_PATH "${DUILIB_ROOT}/third_party/libcef/libcef_win/lib/Win32")
-            endif()
             set(DUILIB_CEF_WRAPPER_LIB_NAME libcef_dll_wrapper)
         endif()
     elseif(DUILIB_OS_LINUX)
@@ -155,10 +157,19 @@ endif()
 # Skia source root and library directories (Skia is required)
 get_filename_component(DUILIB_SKIA_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/skia/" ABSOLUTE)
 if(DUILIB_SKIA_LIB_SUBPATH STREQUAL "" OR DUILIB_SKIA_LIB_SUBPATH STREQUAL "OFF")
-    # Assemble the path by rules
-    set(DUILIB_SKIA_LIB_PATH "${DUILIB_SKIA_SRC_ROOT_DIR}/out/${DUILIB_COMPILER_NAME}.${DUILIB_SYSTEM_PROCESSOR}.${DUILIB_BUILD_TYPE}")
+    if(DUILIB_MULTI_CONFIG)
+        # Multi-config generator (VS / Xcode): build both debug and release Skia.
+        # Generator expressions in the platform files select the right path per configuration.
+        set(DUILIB_SKIA_LIB_PATH_DEBUG   "${DUILIB_SKIA_SRC_ROOT_DIR}/out/${DUILIB_COMPILER_NAME}.${DUILIB_SYSTEM_PROCESSOR}.debug")
+        set(DUILIB_SKIA_LIB_PATH_RELEASE "${DUILIB_SKIA_SRC_ROOT_DIR}/out/${DUILIB_COMPILER_NAME}.${DUILIB_SYSTEM_PROCESSOR}.release")
+        # Default for global link_directories / add_custom_target dependencies
+        set(DUILIB_SKIA_LIB_PATH "${DUILIB_SKIA_LIB_PATH_RELEASE}")
+    else()
+        # Single-config generator: path reflects the build type
+        set(DUILIB_SKIA_LIB_PATH "${DUILIB_SKIA_SRC_ROOT_DIR}/out/${DUILIB_COMPILER_NAME}.${DUILIB_SYSTEM_PROCESSOR}.${DUILIB_BUILD_TYPE}")
+    endif()
 else()
-    # Externally specified subdirectory name
+    # Externally specified subdirectory name (user manages build variants themselves)
     set(DUILIB_SKIA_LIB_PATH "${DUILIB_SKIA_SRC_ROOT_DIR}/out/${DUILIB_SKIA_LIB_SUBPATH}")
 endif()
 set(DUILIB_SKIA_LIBS svg skshaper skottie sksg jsonreader skia)

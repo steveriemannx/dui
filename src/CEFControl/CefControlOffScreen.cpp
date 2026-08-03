@@ -893,20 +893,20 @@ static CefRect LogicalToDevice(const CefRect& value, float device_scale_factor)
     return CefRect(LogicalToDevice(value.x, device_scale_factor),
                    LogicalToDevice(value.y, device_scale_factor),
                    LogicalToDevice(value.width, device_scale_factor),
-                   LogicalToDevice(value.height, device_scale_factor);
+                   LogicalToDevice(value.height, device_scale_factor));
 }
 #endif
 
 void CefControlOffScreen::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> /*browser*/, const CefRange& selected_range, const std::vector<CefRect>& character_bounds)
 {
 #if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
-    CefCurrentlyOn(TID_UI));
+    CefCurrentlyOn(TID_UI);
     if (m_imeHandler != nullptr) {
         float device_scale_factor = Dpi().GetDisplayScale();
         // Convert from view coordinates to device coordinates.
         CefRenderHandler::RectList device_bounds;
         CefRenderHandler::RectList::const_iterator it = character_bounds.begin();
-        for (; it != character_bounds.end()); ++it) {
+        for (; it != character_bounds.end(); ++it) {
             CefRect value = LogicalToDevice(*it, device_scale_factor);
             value.x += GetRect().left;
             value.y += GetRect().top;
@@ -1075,7 +1075,7 @@ if (m_imeHandler->GetResult(lParam, cTextStr) ){
             // Send the text to the browser. The |replacement_range| and
             // |relative_cursor_pos| params are not used on Windows, so provide
             // default invalid values.
-            browser->GetHost()->ImeCommitText(cTextStr, CefRange((std::numeric_limits<uint32_t>::max)(), (std::numeric_limits<uint32_t>::max)(), 0));
+            browser->GetHost()->ImeCommitText(cTextStr, CefRange((std::numeric_limits<uint32_t>::max)(), (std::numeric_limits<uint32_t>::max)()), 0);
             m_imeHandler->ResetComposition();
             // Continue reading the composition string - Japanese IMEs send both
             // GCS_RESULTSTR and GCS_COMPSTR.
@@ -1085,13 +1085,12 @@ if (m_imeHandler->GetResult(lParam, cTextStr) ){
         int composition_start = 0;
 
         if (m_imeHandler->GetComposition(lParam, cTextStr, underlines,
-            composition_start) {
+            composition_start)) {
             // Send the composition string to the browser. The |replacement_range|
             // param is not used on Windows, so provide a default invalid value.
             browser->GetHost()->ImeSetComposition(
-                cTextStr, underlines, CefRange((std::numeric_limits<uint32_t>::max)(), (std::numeric_limits<uint32_t>::max)(),
-                CefRange(composition_start,
-                    static_cast<int>(composition_start + cTextStr.length());
+                cTextStr, underlines, CefRange((std::numeric_limits<uint32_t>::max)(), (std::numeric_limits<uint32_t>::max)()),
+                CefRange(composition_start, static_cast<int>(composition_start + cTextStr.length())));   // TEST-C
 
             // Update the Candidate Window position. The cursor is at the end so
             // subtract 1. This is safe because IMM32 does not support non-zero-width

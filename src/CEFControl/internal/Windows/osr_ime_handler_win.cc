@@ -4,7 +4,7 @@
 
 // Implementation based on ui/base/ime/win/imm32_manager.cc from Chromium.
 
-#include "osr_ime_handler_win.h"
+#include "duilib/CEFControl/internal/Windows/osr_ime_handler_win.h"
 
 #ifdef DUILIB_BUILD_FOR_CEF
 
@@ -13,7 +13,7 @@
 
 #include "include/base/cef_build.h"
 #include "include/cef_version.h"
-#include "util_win.h"
+#include "duilib/CEFControl/internal/Windows/util_win.h"
 
 #define ColorUNDERLINE \
   0xFF000000  // Black SkColor value for underline,

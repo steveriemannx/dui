@@ -22,7 +22,33 @@ include_directories(${DUILIB_PROJECT_SRC_DIR})
 
 # Set the project link directories
 link_directories("${DUILIB_LIB_PATH}")          # path to the duilib library
-link_directories("${DUILIB_SKIA_LIB_PATH}")     # path to the skia library
+
+if(DUILIB_MULTI_CONFIG)
+    # Per-config Skia paths are added via duilib_target_skia_link_dirs() in the platform
+    # files (generator expressions can't be used with global link_directories).
+else()
+    link_directories("${DUILIB_SKIA_LIB_PATH}") # path to the skia library (single-config)
+endif()
+
+# ---- Helper: add per-config Skia link directories to a target (multi-config generators) ----
+macro(duilib_target_skia_link_dirs _target)
+    if(DUILIB_MULTI_CONFIG)
+        target_link_directories(${_target} PRIVATE
+            "$<$<CONFIG:Debug>:${DUILIB_SKIA_LIB_PATH_DEBUG}>"
+            "$<$<NOT:$<CONFIG:Debug>>:${DUILIB_SKIA_LIB_PATH_RELEASE}>"
+        )
+    endif()
+endmacro()
+
+# ---- Helper: add per-config CEF link directories (Windows multi-config only) ----
+macro(duilib_target_cef_link_dirs _target)
+    if(DUILIB_MULTI_CONFIG AND DUILIB_ENABLE_CEF AND DUILIB_OS_WINDOWS)
+        target_link_directories(${_target} PRIVATE
+            "$<$<CONFIG:Debug>:${DUILIB_CEF_LIB_PATH_DEBUG}>"
+            "$<$<NOT:$<CONFIG:Debug>>:${DUILIB_CEF_LIB_PATH_RELEASE}>"
+        )
+    endif()
+endmacro()
 
 if(DUILIB_ENABLE_SDL)
     link_directories("${DUILIB_SDL_LIB_PATH}")  # path to the SDL library

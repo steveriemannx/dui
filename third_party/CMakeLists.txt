@@ -13,6 +13,7 @@ if(NOT TARGET ZLIB::ZLIB)
     set_target_properties(ZLIB::ZLIB PROPERTIES
         INTERFACE_LINK_LIBRARIES duilib-zlib
         INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/zlib")
+    set(ZLIB_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/zlib")
 endif()
 
 add_subdirectory(cximage)   # target: duilib-cximage
