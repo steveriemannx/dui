@@ -7,7 +7,20 @@ elseif(APPLE)
     set(DUILIB_OS_MACOS 1)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     set(DUILIB_OS_FREEBSD 1)
-    message(STATUS "Building for FreeBSD")
+    # FreeBSD pkg/ports install headers and libs under /usr/local. Neither the
+    # compiler nor CMake's find_* modules reliably search that prefix by default
+    # (e.g. FindX11 looks under /usr/X11R6/include and /usr/include), so add it
+    # explicitly: this covers <X11/Xlib.h>, <fontconfig/fontconfig.h>, ... for the
+    # library and every example, regardless of the compiler's default search path.
+    set(CMAKE_INCLUDE_PATH "/usr/local/include" ${CMAKE_INCLUDE_PATH})
+    include_directories(/usr/local/include)
+    # duilib_common.cmake is included once per example scope (each example configures
+    # its own project()), so announce the platform only once instead of every time.
+    get_property(_duilib_os_announced GLOBAL PROPERTY DUILIB_OS_ANNOUNCED)
+    if(NOT _duilib_os_announced)
+        set_property(GLOBAL PROPERTY DUILIB_OS_ANNOUNCED TRUE)
+        message(STATUS "Building for FreeBSD")
+    endif()
 else()
     message(WARNING "Unknown OS: ${CMAKE_SYSTEM_NAME}")
 endif()
