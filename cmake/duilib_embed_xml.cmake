@@ -14,7 +14,7 @@
 # Tool:
 #   - Windows : pre-compiled cmake/xml_to_header.exe (rebuilt at configure time
 #               when the source changes; avoids Device Guard)
-#   - Others  : compiled from cmake/xml_to_header.cpp at build time.
+#   - Others  : compiled from cmake/xml_to_header.cpp at build time (Linux / macOS / FreeBSD).
 
 if(NOT DEFINED EMBED_XML_FILES)
     message(FATAL_ERROR "EMBED_XML_FILES must be set before including duilib_embed_xml.cmake")
@@ -49,7 +49,7 @@ if(DUILIB_OS_WINDOWS)
                             "cl /std:c++17 /O2 /EHsc cmake/xml_to_header.cpp /Fe:cmake/xml_to_header.exe")
     endif()
 else()
-    # macOS / Linux: compile from source at build time
+    # macOS / Linux / FreeBSD: compile from source at build time
     set(TOOL_EXE "${TOOL_BIN}")
     add_custom_command(
         OUTPUT "${TOOL_EXE}"

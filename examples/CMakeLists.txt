@@ -45,10 +45,10 @@ endif()
 add_subdirectory(XmlPreview)
 endif()
 
-# ---- Added from the code-backend branch (Linux-only examples) ----
+# ---- Added from the code-backend branch (Unix examples: the generation/embedding
+# tools are portable C++, supported on Linux and FreeBSD) ----
 # codeui follows the pure-code direction (built with CODE); embedxml/genlist/genui follow the build-time generation/embedding direction (built with GEN)
-# Guard with DUILIB_OS_LINUX, not `UNIX`, so FreeBSD (which also sets the UNIX variable) is skipped
-if(DUILIB_OS_LINUX)
+if(UNIX AND NOT APPLE)
     if(DUILIB_EXAMPLES_MODE STREQUAL "ALL" OR DUILIB_EXAMPLES_MODE STREQUAL "GEN")
         add_subdirectory(embedxml)
         add_subdirectory(genlist)
