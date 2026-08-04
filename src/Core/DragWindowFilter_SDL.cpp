@@ -1,7 +1,7 @@
-#include "duilib/Core/DragWindowFilter_SDL.h"
-#include "duilib/Core/Control.h"
+#include "dui/Core/DragWindowFilter_SDL.h"
+#include "dui/Core/Control.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 #include <SDL3/SDL.h>
 
 namespace ui
@@ -51,4 +51,4 @@ LRESULT DragWindowFilter::FilterMessage(UINT uMsg, WPARAM wParam, LPARAM /*lPara
 
 }
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL

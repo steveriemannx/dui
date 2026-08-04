@@ -1,8 +1,8 @@
-#include "duilib/Utils/MonitorUtil.h"
-#include "duilib/Core/WindowBase.h"
+#include "dui/Utils/MonitorUtil.h"
+#include "dui/Core/WindowBase.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
-#include "duilib/Core/MessageLoop_SDL.h"
+#ifdef DUI_BUILD_FOR_SDL
+#include "dui/Core/MessageLoop_SDL.h"
 #include <SDL3/SDL.h>
 
 namespace ui
@@ -34,4 +34,4 @@ float MonitorUtil::GetPrimaryMonitorDisplayScale()
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL

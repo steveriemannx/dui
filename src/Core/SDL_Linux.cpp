@@ -1,6 +1,6 @@
-#include "duilib/Core/SDL_Linux.h"
+#include "dui/Core/SDL_Linux.h"
 
-#if (defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)) && !defined(DUILIB_BUILD_FOR_WAYLAND)
+#if (defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)) && !defined(DUI_BUILD_FOR_WAYLAND)
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -45,4 +45,4 @@ bool SetFocus_Linux(uint64_t x11WindowNumber)
 
 }
 
-#endif //DUILIB_BUILD_FOR_LINUX
+#endif //DUI_BUILD_FOR_LINUX

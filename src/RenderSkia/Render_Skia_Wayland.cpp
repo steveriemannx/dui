@@ -1,15 +1,15 @@
-#include "duilib/RenderSkia/Render_Skia_Wayland.h"
-#include "duilib/RenderSkia/SkRasterWindowContext_Wayland.h"
+#include "dui/RenderSkia/Render_Skia_Wayland.h"
+#include "dui/RenderSkia/SkRasterWindowContext_Wayland.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 
 #include "include/core/SkCanvas.h"
 #include "include/core/SkSurface.h"
 #include "include/core/SkRegion.h"
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui {
 
@@ -124,4 +124,4 @@ void Render_Skia_Wayland::ClearWindowRgn(bool bRedraw)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

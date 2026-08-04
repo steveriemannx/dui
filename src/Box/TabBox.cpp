@@ -1,7 +1,7 @@
-#include "duilib/Box/TabBox.h"
-#include "duilib/Animation/AnimationPlayer.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Box/TabBox.h"
+#include "dui/Animation/AnimationPlayer.h"
+#include "dui/Core/Window.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui
 {

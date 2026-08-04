@@ -9,10 +9,10 @@
     <!-- libCEF: 需要添加include路径, lib路径, lib列表 -->
     <Import Project="CEFSettings.props" />
 
-    <!-- libCEF: 添加DUILIB_CEF宏定义, include路径, lib路径, lib列表，libcef.dll延迟加载属性 -->
+    <!-- libCEF: 添加DUI_CEF宏定义, include路径, lib路径, lib列表，libcef.dll延迟加载属性 -->
     <ItemDefinitionGroup>
         <ClCompile>
-            <PreprocessorDefinitions>DUILIB_CEF=$(LibCefEnabled);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <PreprocessorDefinitions>DUI_CEF=$(LibCefEnabled);%(PreprocessorDefinitions)</PreprocessorDefinitions>
             <AdditionalIncludeDirectories>$(LibCefIncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
         </ClCompile>
         <Link Condition="'$(LibCefEnabled)' != '0'">

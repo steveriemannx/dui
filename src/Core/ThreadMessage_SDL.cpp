@@ -1,8 +1,8 @@
-#include "duilib/Core/ThreadMessage.h"
+#include "dui/Core/ThreadMessage.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
-#include "duilib/Core/MessageLoop_SDL.h"
+#include "dui/Core/MessageLoop_SDL.h"
 
 namespace ui
 {
@@ -88,4 +88,4 @@ void ThreadMessage::OnUserMessage(uint32_t /*msgId*/, WPARAM /*wParam*/, LPARAM 
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_SDL
+#endif // DUI_BUILD_FOR_SDL

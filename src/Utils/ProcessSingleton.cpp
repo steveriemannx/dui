@@ -1,14 +1,14 @@
-#include "duilib/Utils/ProcessSingleton.h"
+#include "dui/Utils/ProcessSingleton.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN)
-    #include "duilib/Utils/ProcessSingleton_Windows.h"
-#elif defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
-    #include "duilib/Utils/ProcessSingleton_Linux.h"
-#elif defined (DUILIB_BUILD_FOR_MACOS)
-    #include "duilib/Utils/ProcessSingleton_MacOS.h"
+#if defined (DUI_BUILD_FOR_WIN)
+    #include "dui/Utils/ProcessSingleton_Windows.h"
+#elif defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)
+    #include "dui/Utils/ProcessSingleton_Linux.h"
+#elif defined (DUI_BUILD_FOR_MACOS)
+    #include "dui/Utils/ProcessSingleton_MacOS.h"
 #endif
 
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Utils/StringConvert.h"
 
 namespace ui
 {

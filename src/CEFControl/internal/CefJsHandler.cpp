@@ -1,10 +1,10 @@
-#include "duilib/CEFControl/internal/CefJsHandler.h"
+#include "dui/CEFControl/internal/CefJsHandler.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/CEFControl/internal/CefIPCStringDefs.h"
-#include "duilib/CEFControl/internal/CefJSBridge.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/CEFControl/internal/CefIPCStringDefs.h"
+#include "dui/CEFControl/internal/CefJSBridge.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui
 {
@@ -95,4 +95,4 @@ bool CefJSHandler::Execute(const CefString& name, CefRefPtr<CefV8Value> /*object
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

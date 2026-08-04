@@ -1,7 +1,7 @@
-#include "duilib/CEFControl/CefWindowUtils.h"
-#include "duilib/Core/Window.h"
+#include "dui/CEFControl/CefWindowUtils.h"
+#include "dui/Core/Window.h"
 
-#if (defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)) && defined (DUILIB_BUILD_FOR_CEF)
+#if (defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)) && defined (DUI_BUILD_FOR_CEF)
 //Linux/FreeBSD OS
 
 #include "include/cef_task.h"
@@ -295,4 +295,4 @@ void RemoveCefWindowFromParent(CefWindowHandle cefWindow)
 
 } //namespace ui
 
-#endif // (defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)) && defined (DUILIB_BUILD_FOR_CEF)
+#endif // (defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)) && defined (DUI_BUILD_FOR_CEF)

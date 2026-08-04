@@ -1,6 +1,6 @@
-#include "duilib/Control/Slider.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Control/Slider.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {

@@ -1,62 +1,62 @@
-#include "duilib/Core/WindowBuilder.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/ControlDragable.h"
-#include "duilib/Core/ControlMovable.h"
-#include "duilib/Core/ControlResizable.h"
-#include "duilib/Core/ScrollBar.h"
-#include "duilib/Core/WindowCreateAttributes.h"
+#include "dui/Core/WindowBuilder.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/ControlDragable.h"
+#include "dui/Core/ControlMovable.h"
+#include "dui/Core/ControlResizable.h"
+#include "dui/Core/ScrollBar.h"
+#include "dui/Core/WindowCreateAttributes.h"
 
-#include "duilib/Control/TreeView.h"
-#include "duilib/Control/DirectoryTree.h"
-#include "duilib/Control/Combo.h"
-#include "duilib/Control/ComboButton.h"
-#include "duilib/Control/FilterCombo.h"
-#include "duilib/Control/CheckCombo.h"
-#include "duilib/Control/Slider.h"
-#include "duilib/Control/Progress.h"
-#include "duilib/Control/CircleProgress.h"
-#include "duilib/Control/RichEdit.h"
-#include "duilib/Control/RichText.h"
-#include "duilib/Control/DateTime.h"
-#include "duilib/Control/Split.h"
-#include "duilib/Control/GroupBox.h"
+#include "dui/Control/TreeView.h"
+#include "dui/Control/DirectoryTree.h"
+#include "dui/Control/Combo.h"
+#include "dui/Control/ComboButton.h"
+#include "dui/Control/FilterCombo.h"
+#include "dui/Control/CheckCombo.h"
+#include "dui/Control/Slider.h"
+#include "dui/Control/Progress.h"
+#include "dui/Control/CircleProgress.h"
+#include "dui/Control/RichEdit.h"
+#include "dui/Control/RichText.h"
+#include "dui/Control/DateTime.h"
+#include "dui/Control/Split.h"
+#include "dui/Control/GroupBox.h"
 
-#include "duilib/Control/ColorControl.h"
-#include "duilib/Control/ColorSlider.h"
-#include "duilib/Control/ColorPickerRegular.h"
-#include "duilib/Control/ColorPickerStatard.h"
-#include "duilib/Control/ColorPickerStatardGray.h"
-#include "duilib/Control/ColorPickerCustom.h"
-#include "duilib/Control/Line.h"
-#include "duilib/Control/IPAddress.h"
-#include "duilib/Control/HotKey.h"
-#include "duilib/Control/HyperLink.h"
-#include "duilib/Control/ListCtrl.h"
-#include "duilib/Control/PropertyGrid.h"
-#include "duilib/Control/TabCtrl.h"
-#include "duilib/Control/IconControl.h"
-#include "duilib/Control/BitmapControl.h"
-#include "duilib/Control/AddressBar.h"
-#include "duilib/Control/MenuBar.h"
-#include "duilib/Control/ChildWindow.h"
+#include "dui/Control/ColorControl.h"
+#include "dui/Control/ColorSlider.h"
+#include "dui/Control/ColorPickerRegular.h"
+#include "dui/Control/ColorPickerStatard.h"
+#include "dui/Control/ColorPickerStatardGray.h"
+#include "dui/Control/ColorPickerCustom.h"
+#include "dui/Control/Line.h"
+#include "dui/Control/IPAddress.h"
+#include "dui/Control/HotKey.h"
+#include "dui/Control/HyperLink.h"
+#include "dui/Control/ListCtrl.h"
+#include "dui/Control/PropertyGrid.h"
+#include "dui/Control/TabCtrl.h"
+#include "dui/Control/IconControl.h"
+#include "dui/Control/BitmapControl.h"
+#include "dui/Control/AddressBar.h"
+#include "dui/Control/MenuBar.h"
+#include "dui/Control/ChildWindow.h"
 
-#include "duilib/Box/HBox.h"
-#include "duilib/Box/VBox.h"
-#include "duilib/Box/XmlBox.h"
-#include "duilib/Box/TabBox.h"
-#include "duilib/Box/GridBox.h"
-#include "duilib/Box/TileBox.h"
-#include "duilib/Box/ScrollBox.h"
-#include "duilib/Box/ListBox.h"
-#include "duilib/Box/VirtualListBox.h"
+#include "dui/Box/HBox.h"
+#include "dui/Box/VBox.h"
+#include "dui/Box/XmlBox.h"
+#include "dui/Box/TabBox.h"
+#include "dui/Box/GridBox.h"
+#include "dui/Box/TileBox.h"
+#include "dui/Box/ScrollBox.h"
+#include "dui/Box/ListBox.h"
+#include "dui/Box/VirtualListBox.h"
 
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/FilePathUtil.h"
 
 #include "third_party/xml/pugixml.hpp"
 #include <set>
@@ -223,7 +223,7 @@ bool WindowBuilder::ParseXmlData(const DString& xmlFileData, const FilePath& xml
     //If the string starts with '<', it is treated as an XML string; otherwise it is treated as an XML file
     //If a zip archive is used, read from memory
     if (xmlFileData.front() == _T('<')) {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
         pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf16;
 #else
         pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf8;
@@ -555,7 +555,7 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
         createAttributes.m_szInitSize.cx = cx;
         createAttributes.m_szInitSize.cy = cy;
     }
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     if (backendType == RenderBackendType::kNativeGL_BackendType) {
         //When using OpenGL, layered windows cannot be used
         if (!createAttributes.m_bLayeredWindowOpacityDefined || (createAttributes.m_nLayeredWindowOpacity == 255)) {
@@ -835,7 +835,7 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         }
     }
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     if (pWindow->GetRenderBackendType() == RenderBackendType::kNativeGL_BackendType) {
         //When using OpenGL, layered windows cannot be used
         if (!bLayeredWindowOpacityDefined || (pWindow->GetLayeredWindowOpacity() == 255)) {
@@ -1242,7 +1242,7 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
 
 bool WindowBuilder::ParseRichTextXmlText(const DString& xmlText, Control* pControl)
 {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf16;
 #else
     pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf8;
@@ -1320,7 +1320,7 @@ bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, RichText
         bool bParseChildren = true;
         if (nodeName.empty()) {            
             //No node name; only read the text content, no need to recursively traverse child nodes
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
             textSlice.m_text = pRichTextImpl->TrimText(node.value());
 #else
             textSlice.m_text = StringConvert::UTF8ToWString(pRichTextImpl->TrimText(node.value()));
@@ -1328,7 +1328,7 @@ bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, RichText
             bParseChildren = false;
         }        
         else if (nodeName == _T("a")) {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
             textSlice.m_text = pRichTextImpl->TrimText(node.first_child().value());
 #else
             textSlice.m_text = StringConvert::UTF8ToWString(pRichTextImpl->TrimText(node.first_child().value()));

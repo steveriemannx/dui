@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_DRAG_FROM_H_
 #define EXAMPLES_DRAG_FROM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 /** The small window displayed while a tab is being dragged out
 */

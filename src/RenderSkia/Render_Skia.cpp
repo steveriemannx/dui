@@ -1,22 +1,22 @@
-#include "duilib/RenderSkia/Render_Skia.h"
-#include "duilib/RenderSkia/VerticalDrawText.h"
-#include "duilib/RenderSkia/HorizontalDrawText.h"
-#include "duilib/RenderSkia/DrawRichText.h"
+#include "dui/RenderSkia/Render_Skia.h"
+#include "dui/RenderSkia/VerticalDrawText.h"
+#include "dui/RenderSkia/HorizontalDrawText.h"
+#include "dui/RenderSkia/DrawRichText.h"
 
-#include "duilib/RenderSkia/SkUtils.h"
-#include "duilib/RenderSkia/Bitmap_Skia.h"
-#include "duilib/RenderSkia/Path_Skia.h"
-#include "duilib/RenderSkia/Matrix_Skia.h"
-#include "duilib/RenderSkia/Font_Skia.h"
-#include "duilib/RenderSkia/SkTextBox.h"
-#include "duilib/RenderSkia/DrawSkiaImage.h"
-#include "duilib/Render/BitmapAlpha.h"
+#include "dui/RenderSkia/SkUtils.h"
+#include "dui/RenderSkia/Bitmap_Skia.h"
+#include "dui/RenderSkia/Path_Skia.h"
+#include "dui/RenderSkia/Matrix_Skia.h"
+#include "dui/RenderSkia/Font_Skia.h"
+#include "dui/RenderSkia/SkTextBox.h"
+#include "dui/RenderSkia/DrawSkiaImage.h"
+#include "dui/Render/BitmapAlpha.h"
 
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/PerformanceUtil.h"
-#include "duilib/Core/SharePtr.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/PerformanceUtil.h"
+#include "dui/Core/SharePtr.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 
 #include "include/core/SkMatrix.h"
 #include "include/core/SkBitmap.h"
@@ -37,7 +37,7 @@
 #include "include/effects/SkGradient.h"
 #include "include/effects/SkImageFilters.h"
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 #include <unordered_set>
 #include <unordered_map>
@@ -2138,7 +2138,7 @@ SkTextEncoding Render_Skia::GetTextEncoding() const
         return SkTextEncoding::kUTF32;
     }
     else {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
         return SkTextEncoding::kUTF16;
 #else
         return SkTextEncoding::kUTF8;

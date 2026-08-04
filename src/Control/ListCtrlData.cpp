@@ -1,6 +1,6 @@
-#include "duilib/Control/ListCtrlData.h"
-#include "duilib/Control/ListCtrl.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Control/ListCtrlData.h"
+#include "dui/Control/ListCtrl.h"
+#include "dui/Core/GlobalManager.h"
 #include <set>
 #include <algorithm>
 

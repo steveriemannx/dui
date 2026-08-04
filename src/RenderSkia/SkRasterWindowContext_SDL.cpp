@@ -1,8 +1,8 @@
-#include "duilib/RenderSkia/SkRasterWindowContext_SDL.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/RenderSkia/SkRasterWindowContext_SDL.h"
+#include "dui/Render/IRender.h"
+#include "dui/Utils/PerformanceUtil.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
 #include <SDL3/SDL.h>
 
@@ -204,7 +204,7 @@ bool SkRasterWindowContext_SDL::SwapPaintBuffers(const UiRect& rcPaint, uint8_t 
 
     if (m_sdlTextrue == nullptr) {
         // Render to the window (IRender -> draw to the SDL Render -> update to the SDL window)
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         SDL_PixelFormat format = SDL_PIXELFORMAT_BGRA32;
 #else
         SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32;
@@ -481,7 +481,7 @@ void SkRasterWindowContext_SDL::ValidateRect(UiRect& rcPaint) const
     if ((m_sdlWindow == nullptr) || rcPaint.IsEmpty()) {
         return;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     SDL_PropertiesID propID = SDL_GetWindowProperties(m_sdlWindow);
     HWND hWnd = (HWND)SDL_GetPointerProperty(propID, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
     if ((hWnd != nullptr) && ::IsWindow(hWnd)) {
@@ -497,4 +497,4 @@ void SkRasterWindowContext_SDL::ValidateRect(UiRect& rcPaint) const
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL

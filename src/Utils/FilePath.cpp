@@ -1,6 +1,6 @@
-#include "duilib/Utils/FilePath.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Utils/FilePath.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/StringUtil.h"
 #include <algorithm>
 
 namespace ui
@@ -8,7 +8,7 @@ namespace ui
 FilePath::FilePath() = default;
 
 FilePath::FilePath(const std::string& filePath) :
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     m_filePath(StringConvert::UTF8ToWString(filePath)),
 #else
     m_filePath(filePath),
@@ -24,7 +24,7 @@ FilePath& FilePath::operator=(const FilePath&) = default;
 FilePath& FilePath::operator=(FilePath&&) noexcept = default;
 
 FilePath::FilePath(const std::wstring& filePath) :
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     m_filePath(filePath),
 #else
     m_filePath(StringConvert::WStringToUTF8(filePath)),
@@ -34,7 +34,7 @@ FilePath::FilePath(const std::wstring& filePath) :
 }
 
 FilePath::FilePath(const std::string& filePath, bool bLexicallyNormal):
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     m_filePath(StringConvert::UTF8ToWString(filePath)),
 #else
     m_filePath(filePath),
@@ -44,7 +44,7 @@ FilePath::FilePath(const std::string& filePath, bool bLexicallyNormal):
 }
 
 FilePath::FilePath(const std::wstring& filePath, bool bLexicallyNormal) :
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     m_filePath(filePath),
 #else
     m_filePath(StringConvert::WStringToUTF8(filePath)),
@@ -116,7 +116,7 @@ uint64_t FilePath::GetFileSize() const noexcept
 
 DString::value_type FilePath::GetPathSeparator()
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return _T('\\');
 #else
     return _T('/');
@@ -125,14 +125,14 @@ DString::value_type FilePath::GetPathSeparator()
 
 DString FilePath::GetPathSeparatorStr()
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return _T("\\");
 #else
     return _T("/");
 #endif
 }
 
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     //Unicode version
     const DStringW& FilePath::NativePath() const
     {
@@ -145,7 +145,7 @@ DString FilePath::GetPathSeparatorStr()
         if (m_filePath.empty()) {
             return DStringA();
         }
-        #ifdef DUILIB_BUILD_FOR_WIN
+        #ifdef DUI_BUILD_FOR_WIN
             //Convert to a string in the native encoding
             return StringConvert::UnicodeToMBCS(m_filePath.native());
         #else
@@ -159,7 +159,7 @@ DStringA FilePath::NativePathA() const
     if (m_filePath.empty()) {
         return DStringA();
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Convert to a string in the native encoding
     return StringConvert::UnicodeToMBCS(m_filePath.native());
 #else
@@ -167,13 +167,13 @@ DStringA FilePath::NativePathA() const
 #endif
 }
 
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
 const DString& FilePath::ToString() const
 {
     return m_filePath.native();
 }
 #else
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 DString FilePath::ToString() const
 {
     if (m_filePath.empty()) {
@@ -191,7 +191,7 @@ const DString& FilePath::ToString() const
 
 DStringW FilePath::ToStringW() const
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return m_filePath.native();
 #else
     return StringConvert::UTF8ToWString(m_filePath.native());
@@ -203,7 +203,7 @@ DStringA FilePath::ToStringA() const
     if (m_filePath.empty()) {
         return DStringA();
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return StringConvert::WStringToUTF8(m_filePath.native());
 #else
     return m_filePath.native();
@@ -215,10 +215,10 @@ DString FilePath::GetFileName() const
     if (m_filePath.empty()) {
         return DString();
     }
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return m_filePath.filename().native();
 #else
-    #ifdef DUILIB_BUILD_FOR_WIN
+    #ifdef DUI_BUILD_FOR_WIN
         return StringConvert::WStringToUTF8(m_filePath.filename().native());
     #else
         return m_filePath.filename().native();
@@ -231,10 +231,10 @@ DString FilePath::GetFileExtension() const
     if (m_filePath.empty()) {
         return DString();
     }
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return m_filePath.extension().native();
 #else
-    #ifdef DUILIB_BUILD_FOR_WIN
+    #ifdef DUI_BUILD_FOR_WIN
         return StringConvert::WStringToUTF8(m_filePath.extension().native());
     #else
         return m_filePath.extension().native();
@@ -271,7 +271,7 @@ void FilePath::TrimRightPathSeparator()
         return;
     }
     const std::filesystem::path::string_type& str = m_filePath.native();
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     if (str == L"/") {
 #else
     if (str == _T("/")) {
@@ -300,7 +300,7 @@ void FilePath::NormalizeFilePath()
     try {
         //Only normalize absolute paths; normalizing relative paths can produce incorrect results
         if (m_filePath.is_absolute()) {
-#ifndef DUILIB_BUILD_FOR_WIN
+#ifndef DUI_BUILD_FOR_WIN
             if (m_filePath.native().find(_T('\\')) != std::filesystem::path::string_type::npos) {
                 std::filesystem::path::string_type oldValue = m_filePath.native();
                 StringUtil::ReplaceAll(_T("\\"), _T("/"), oldValue);
@@ -341,7 +341,7 @@ bool FilePath::IsSubDirectory(const FilePath& parentPath) const
     if (childStr.size() <= parentStr.size()) {
         return false;
     }
-#if !defined (DUILIB_BUILD_FOR_LINUX) && !defined (DUILIB_BUILD_FOR_FREEBSD)
+#if !defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_FREEBSD)
     //Windows/MacOS file names are case-insensitive, Linux/FreeBSD are case-sensitive
     parentStr = StringUtil::MakeLowerString(parentStr);
     childStr = StringUtil::MakeLowerString(childStr);
@@ -379,10 +379,10 @@ void FilePath::GetParentPathList(std::vector<FilePath>& parentPathList) const
 
 FilePath& FilePath::operator = (const DString& rightPath)
 {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     m_filePath = rightPath;
 #else
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     DStringW rightPathW = StringConvert::UTF8ToWString(rightPath);
     m_filePath = rightPathW;
 #else
@@ -422,10 +422,10 @@ FilePath& FilePath::operator += (const FilePath& rightPath)
 
 FilePath& FilePath::operator += (const DString& rightPath)
 {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     m_filePath += rightPath;
 #else
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     DStringW rightPathW = StringConvert::UTF8ToWString(rightPath);
     m_filePath += rightPathW;
 #else

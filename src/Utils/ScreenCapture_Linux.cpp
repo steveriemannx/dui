@@ -1,19 +1,19 @@
-#include "duilib/Utils/ScreenCapture.h"
-#include "duilib/Utils/ScreenCapture_Wayland.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Utils/ScreenCapture.h"
+#include "dui/Utils/ScreenCapture_Wayland.h"
+#include "dui/Core/GlobalManager.h"
 
-#if !defined(DUILIB_BUILD_FOR_WAYLAND)
-#include "duilib/Utils/ScreenCapture_X11.h"
+#if !defined(DUI_BUILD_FOR_WAYLAND)
+#include "dui/Utils/ScreenCapture_X11.h"
 #endif
 
-#if defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
+#if defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)
 //Linux/FreeBSD OS
 
 namespace ui
 {
 std::shared_ptr<IBitmap> ScreenCapture::CaptureBitmap(const ui::Window* pWindow)
 {
-#if defined(DUILIB_BUILD_FOR_WAYLAND)
+#if defined(DUI_BUILD_FOR_WAYLAND)
     // Wayland-only build
     return ScreenCapture_Wayland::CaptureBitmap(pWindow);
 #else
@@ -30,4 +30,4 @@ std::shared_ptr<IBitmap> ScreenCapture::CaptureBitmap(const ui::Window* pWindow)
 
 } // namespace ui
 
-#endif //defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
+#endif //defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)

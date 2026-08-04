@@ -1,5 +1,5 @@
-#include "duilib/Render/AutoClip.h"
-#include "duilib/Render/IRender.h"
+#include "dui/Render/AutoClip.h"
+#include "dui/Render/IRender.h"
 
 namespace ui 
 {

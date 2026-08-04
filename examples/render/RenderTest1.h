@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_RENDER_TEST1_H_
 #define EXAMPLES_RENDER_TEST1_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 namespace ui {
 

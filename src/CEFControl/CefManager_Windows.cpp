@@ -1,13 +1,13 @@
-#include "duilib/CEFControl/CefManager_Windows.h"
+#include "dui/CEFControl/CefManager_Windows.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && defined (DUILIB_BUILD_FOR_CEF)
+#if defined (DUI_BUILD_FOR_WIN) && defined (DUI_BUILD_FOR_CEF)
 
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/ProcessSingleton.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/CEFControl/internal/CefClientApp.h"
-#include "duilib/CEFControl/internal/CefBrowserHandler.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/ProcessSingleton.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/CEFControl/internal/CefClientApp.h"
+#include "dui/CEFControl/internal/CefBrowserHandler.h"
 
 #pragma warning (push)
 #pragma warning (disable:4100)
@@ -217,4 +217,4 @@ void CefManager_Windows::OnBrowserAlreadyRunningAppRelaunch(const std::vector<DS
 
 } //namespace ui
 
-#endif //defined (DUILIB_BUILD_FOR_WIN/DUILIB_BUILD_FOR_CEF)
+#endif //defined (DUI_BUILD_FOR_WIN/DUI_BUILD_FOR_CEF)

@@ -1,7 +1,7 @@
-#include "duilib/Core/StateColorMap.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Animation/AnimationManager.h"
+#include "dui/Core/StateColorMap.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Animation/AnimationManager.h"
 
 namespace ui 
 {

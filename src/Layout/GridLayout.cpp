@@ -1,6 +1,6 @@
-#include "duilib/Layout/GridLayout.h"
-#include "duilib/Box/ScrollBox.h"
-#include "duilib/Core/DpiManager.h"
+#include "dui/Layout/GridLayout.h"
+#include "dui/Box/ScrollBox.h"
+#include "dui/Core/DpiManager.h"
 
 namespace ui 
 {

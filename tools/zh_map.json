@@ -276,7 +276,7 @@
  "dpi_scale='false' halign='center' valign='center' \\n无拉伸": "dpi_scale='false' halign='center' valign='center' \nno stretch",
  "dpi_scale='true' \\nhalign='center' valign='center'\\n无拉伸": "dpi_scale='true' \nhalign='center' valign='center'\nno stretch",
  "dpi_scale='true' \\n原图(拉伸)": "dpi_scale='true' \noriginal (stretch)",
- "duilib 多线程使用示例程序": "duilib Multithreading Example",
+ "dui 多线程使用示例程序": "dui Multithreading Example",
  "fade='64' \\n透明度为64": "fade='64' \nopacity 64",
  "src='12,10,36,34' \\nadaptive_dest_rect='true' \\n自适应": "src='12,10,36,34' \nadaptive_dest_rect='true' \nadaptive",
  "src='12,10,36,34' \\ndest='12,12,48,48' \\ndest_scale='false' \\n拉伸": "src='12,10,36,34' \ndest='12,12,48,48' \ndest_scale='false' \nstretch",

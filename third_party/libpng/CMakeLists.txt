@@ -16,17 +16,17 @@
 
 cmake_minimum_required(VERSION 3.18)
 
-# duilib
+# dui
 # MSVC runtime library flags are selected by an abstraction.
 set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
-if("${DUILIB_MD}" STREQUAL "ON")
+if("${DUI_MD}" STREQUAL "ON")
     # MD/MDd
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
 else()
     # MT/MTd
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
-# duilib end
+# dui end
 
 set(PNGLIB_MAJOR 1)
 set(PNGLIB_MINOR 6)
@@ -136,13 +136,13 @@ else()
 endif()
 message(STATUS "Building for target architecture: ${PNG_TARGET_ARCHITECTURE}")
 
-# duilib: please build zlib first
-get_filename_component(DUILIB_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
-set(ZLIB_ROOT "${DUILIB_SRC_ROOT_DIR}/duilib/third_party/zlib/")
-set(ZLIB_LIBRARY "${DUILIB_SRC_ROOT_DIR}/duilib/lib/libduilib-zlib.a")
+# dui: please build zlib first
+get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+set(ZLIB_ROOT "${DUI_SRC_ROOT_DIR}/dui/third_party/zlib/")
+set(ZLIB_LIBRARY "${DUI_SRC_ROOT_DIR}/dui/lib/libdui-zlib.a")
 message(STATUS "ZLIB_ROOT: ${ZLIB_ROOT}")
 message(STATUS "ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
-# duilib end
+# dui end
 
 # Allow the users to specify a custom location of zlib.
 # With CMake 3.12 and newer, this option is no longer necessary.
@@ -158,7 +158,7 @@ if(PNG_BUILD_ZLIB)
 endif()
 
 # Find the zlib library.
-# 顶层构建时 ZLIB::ZLIB 已由 duilib/third_party/CMakeLists.txt 提供（指向 duilib-zlib），
+# 顶层构建时 ZLIB::ZLIB 已由 dui/third_party/CMakeLists.txt 提供（指向 dui-zlib），
 # 独立构建时仍通过 find_package 查找
 if(NOT TARGET ZLIB::ZLIB)
     find_package(ZLIB REQUIRED)
@@ -726,8 +726,8 @@ if(PNG_SHARED)
                         PUBLIC ${PNG_LINK_LIBRARIES})
 endif()
 
-#duilib
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUILIB_SRC_ROOT_DIR}/lib/")
+#dui
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
 
 if(PNG_STATIC)
   add_library(png_static STATIC ${libpng_sources})
@@ -745,8 +745,8 @@ if(PNG_STATIC)
                              INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/libpng${PNGLIB_ABI_VERSION}>")
   target_link_libraries(png_static
                         PUBLIC ${PNG_LINK_LIBRARIES})
-  #duilib
-  set_target_properties(png_static PROPERTIES OUTPUT_NAME "duilib-png")
+  #dui
+  set_target_properties(png_static PROPERTIES OUTPUT_NAME "dui-png")
 endif()
 
 if(PNG_FRAMEWORK AND NOT APPLE)

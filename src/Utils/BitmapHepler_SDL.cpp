@@ -1,7 +1,7 @@
-#include "duilib/Utils/BitmapHelper_SDL.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Utils/BitmapHelper_SDL.h"
+#include "dui/Core/GlobalManager.h"
 
-#if (defined(DUILIB_BUILD_FOR_SDL) || defined(DUILIB_BUILD_FOR_WAYLAND)) && !defined(DUILIB_BUILD_FOR_WIN)
+#if (defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)) && !defined(DUI_BUILD_FOR_WIN)
 
 namespace ui {
 namespace BitmapHelper {

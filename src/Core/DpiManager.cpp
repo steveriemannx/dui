@@ -1,6 +1,6 @@
-#include "duilib/Core/DpiManager.h"
-#include "duilib/Utils/MonitorUtil.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Core/DpiManager.h"
+#include "dui/Utils/MonitorUtil.h"
+#include "dui/Core/GlobalManager.h"
 #include <cmath>
 
 namespace ui
@@ -13,7 +13,7 @@ DpiManager::DpiManager():
     m_nScaleFactor(100),
     m_fPixelDensity(1.0f)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows systems: this option is not supported
     m_bEnablePixelDensity = false;
 #endif
@@ -38,7 +38,7 @@ void DpiManager::InitDpiAwareness(const DpiInitParam& dpiInitParam)
     m_dpiAwarenessMode = dpiAwareness.GetDpiAwareness();    
     m_fPixelDensity = 1.0f;
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows systems: this option is not supported
     m_bEnablePixelDensity = false;
 #else
@@ -46,7 +46,7 @@ void DpiManager::InitDpiAwareness(const DpiInitParam& dpiInitParam)
 #endif
 
     float fDisplayScale = dpiInitParam.m_fDisplayScale;
-    if (fDisplayScale < DUILIB_DISPLAY_SCALE_MIN) {
+    if (fDisplayScale < DUI_DISPLAY_SCALE_MIN) {
         fDisplayScale = 1.0f;
     }
 
@@ -129,9 +129,9 @@ void DpiManager::SetDisplayScale(float fDisplayScale, float fPixelDensity)
         //Invalid UI pixel density, or UI pixel density is not supported
         fPixelDensity = 1.0f;
     }
-#ifdef DUILIB_HDPI_TEST_PIXEL_DENSITY
+#ifdef DUI_HDPI_TEST_PIXEL_DENSITY
     //TEST ONLY
-    fPixelDensity = DUILIB_HDPI_TEST_PIXEL_DENSITY;
+    fPixelDensity = DUI_HDPI_TEST_PIXEL_DENSITY;
     m_bEnablePixelDensity = true;
 
     //Simulation, test environment

@@ -1,4 +1,4 @@
-#include "duilib/Image/APngDecoder.h"
+#include "dui/Image/APngDecoder.h"
 
 #include <stdio.h>
 #include <stdlib.h>

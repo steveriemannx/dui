@@ -1,10 +1,10 @@
-#include "duilib/Image/ImageDecoderUtil.h"
-#include "duilib/Image/Image.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/FileUtil.h"
-#include "duilib/Utils/PerformanceUtil.h"
-#include "duilib/Image/ImageUtil.h"
+#include "dui/Image/ImageDecoderUtil.h"
+#include "dui/Image/Image.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/FileUtil.h"
+#include "dui/Utils/PerformanceUtil.h"
+#include "dui/Image/ImageUtil.h"
 
 #pragma warning (push)
 #pragma warning (disable: 4244 4505)
@@ -15,7 +15,7 @@
 #define STBI_NO_PNM
 #define STBI_NO_GIF
 #define STBI_NO_PNG
-#if DUILIB_IMAGE_SUPPORT_JPEG_TURBO
+#if DUI_IMAGE_SUPPORT_JPEG_TURBO
     #define STBI_NO_JPEG
 #endif
 #include "third_party/stb_image/stb_image.h"
@@ -44,7 +44,7 @@ namespace STBImageLoader
     */
     static bool LoadImageFromMemoryOrFile(const std::vector<uint8_t>& fileData, const FilePath& filePath, UiImageData& imageData)
     {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         imageData.m_imageDataType = UiImageDataType::kBGRA;
 #else
         imageData.m_imageDataType = UiImageDataType::kRGBA;
@@ -89,7 +89,7 @@ namespace STBImageLoader
                 else {
                     argbData[colorIndex + 3] = 255; //A, alpha
                 }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
                 //Data format: BGRA on Windows, RGBA on other platforms
                 argbData[colorIndex + 0] = rgbaData[colorIndex + 2]; //B, blue
                 argbData[colorIndex + 1] = rgbaData[colorIndex + 1]; //G, green
@@ -248,7 +248,7 @@ namespace CxImageLoader
                             pBit->rgbBlue = pBit->rgbBlue * a / 255;
                         }
                     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
                     //Data format: BGRA on Windows, RGBA on other platforms
                     bitmapData.m_imageDataType = UiImageDataType::kBGRA;
 #else

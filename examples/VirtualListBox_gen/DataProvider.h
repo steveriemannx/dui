@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_DATA_PROVIDER_H_
 #define EXAMPLES_DATA_PROVIDER_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 #include <map>
 #include <mutex>

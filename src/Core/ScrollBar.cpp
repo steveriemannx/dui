@@ -1,9 +1,9 @@
-#include "duilib/Core/ScrollBar.h"
-#include "duilib/Box/ScrollBox.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Image/Image.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Core/ScrollBar.h"
+#include "dui/Box/ScrollBox.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Image/Image.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui
 {

@@ -1,11 +1,11 @@
 #ifndef EXAMPLES_BROWSER_BOX_H_
 #define EXAMPLES_BROWSER_BOX_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 // CEF
-#include "duilib/duilib_cef.h"
+#include "dui/dui_cef.h"
 
 /** Tab box
 * @copyright (c) 2016, NetEase Inc. All rights reserved

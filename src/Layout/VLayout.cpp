@@ -1,5 +1,5 @@
-#include "duilib/Layout/VLayout.h"
-#include "duilib/Core/Box.h"
+#include "dui/Layout/VLayout.h"
+#include "dui/Core/Box.h"
 #include <unordered_map>
 
 namespace ui 

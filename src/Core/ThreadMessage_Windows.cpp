@@ -1,8 +1,8 @@
-#include "duilib/Core/ThreadMessage.h"
+#include "dui/Core/ThreadMessage.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {
@@ -58,7 +58,7 @@ ThreadMessage::~ThreadMessage()
 }
 
 // Name of the window class
-#define DUILIB_MESSAGING_WINDOW_CLASS L"duilib_messaging_window"
+#define DUI_MESSAGING_WINDOW_CLASS L"dui_messaging_window"
 
 void ThreadMessage::Initialize(void* platformData)
 {
@@ -71,7 +71,7 @@ void ThreadMessage::Initialize(void* platformData)
     wc.cbSize = sizeof(wc);
     wc.lpfnWndProc = ThreadMessage::TImpl::WndProcThunk;
     wc.hInstance = hInstance;
-    wc.lpszClassName = DUILIB_MESSAGING_WINDOW_CLASS;
+    wc.lpszClassName = DUI_MESSAGING_WINDOW_CLASS;
     ATOM ret = ::RegisterClassExW(&wc);
     ASSERT_UNUSED_VARIABLE(ret != 0 || ::GetLastError() == ERROR_CLASS_ALREADY_EXISTS);
     m_impl->m_hMessageWnd = ::CreateWindowW(wc.lpszClassName, 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, hInstance, 0);
@@ -81,7 +81,7 @@ void ThreadMessage::Initialize(void* platformData)
 
     // When the module exits, unregister the ATOM
     GlobalManager::Instance().AddAtExitFunction([hInstance]() {
-            ::UnregisterClassW(DUILIB_MESSAGING_WINDOW_CLASS, hInstance);
+            ::UnregisterClassW(DUI_MESSAGING_WINDOW_CLASS, hInstance);
         });
 }
 
@@ -155,4 +155,4 @@ void ThreadMessage::OnUserMessage(uint32_t msgId, WPARAM wParam, LPARAM lParam)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WIN
+#endif // DUI_BUILD_FOR_WIN

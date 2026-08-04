@@ -1,7 +1,7 @@
-#include "duilib/Utils/ScreenCapture_Wayland.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Utils/ScreenCapture_Wayland.h"
+#include "dui/Core/GlobalManager.h"
 
-#if defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
+#if defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)
 //Linux/FreeBSD OS
 
 #include <cstdlib> // For getenv
@@ -40,4 +40,4 @@ std::shared_ptr<IBitmap> ScreenCapture_Wayland::CaptureBitmap(const ui::Window* 
 
 } // namespace ui
 
-#endif //defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
+#endif //defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)

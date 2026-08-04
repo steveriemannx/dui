@@ -1,5 +1,5 @@
 ## Window Attributes
-| Attribute Name | Attribute Category | Default Value | Parameter Type | Function in [Window.h](../include/duilib/Core/Window.h) | Purpose |
+| Attribute Name | Attribute Category | Default Value | Parameter Type | Function in [Window.h](../include/dui/Core/Window.h) | Purpose |
 | :---              | :---    | :---    | :---   |:---                     |:--- |
 | caption           | Title bar  | 0,0,0,0 | rect   | SetCaptionRect          |The margin of the draggable caption (title bar) area of the window; the last parameter is the distance from the top border, e.g. (0,0,0,36) |
 | use_system_caption| Title bar  | false   | bool   | SetUseSystemCaption     |Sets whether to use the system title bar |

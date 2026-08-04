@@ -18,7 +18,7 @@
     <tr><td align="left">7. Removed the dependency on the base library; the message loop and thread communication functionality are now implemented in-house</td></tr>
     <tr><td align="left">8. Integrated the Skia engine as the default rendering engine</td></tr>
     <tr><td align="left">9. SDL3 support for cross-platform use (Windows, Linux, macOS, and FreeBSD platforms adapted)</td></tr>
-    <tr><td align="left">10. Moved the CEF component into the duilib project and upgraded the CEF version (supports libcef 109 for Win7 compatibility; supports libcef 142 for Win10 and above)</td></tr>
+    <tr><td align="left">10. Moved the CEF component into the dui project and upgraded the CEF version (supports libcef 109 for Win7 compatibility; supports libcef 142 for Win10 and above)</td></tr>
     <tr><td align="left">11. Redesigned the image management interfaces and loading flow (Image directory), supporting multi-threaded image loading for better extensibility of other image formats</td></tr>
     <tr>
         <td rowspan="22">Feature improvements</td>
@@ -38,7 +38,7 @@
     <tr><td align="left">13. Control background colors support gradients; foreground color functionality was added</td></tr>
     <tr><td align="left">14. Improved multi-language functionality for better dynamic language switching, with the example program examples/MultiLang</td></tr>
     <tr><td align="left">15. Improved DPI awareness: supports four modes — Unaware, SystemAware, PerMonitorAware, PerMonitorAware_V2 — with independent DPI settings and high-DPI adaptation, with the example program examples/DpiAware</td></tr>
-    <tr><td align="left">16. Removed the ui_components project; the CEF component code was reorganized and merged into the duilib project; other content was deleted</td></tr>
+    <tr><td align="left">16. Removed the ui_components project; the CEF component code was reorganized and merged into the dui project; other content was deleted</td></tr>
     <tr><td align="left">17. Optimized the window shadow feature: shadows use SVG images, with a new shadow type property (shadow_type) whose values are: <br> "default", default shadow <br> "big", large shadow, right-angle corners (suitable for normal windows) <br> "big_round", large shadow, rounded corners (suitable for normal windows) <br> "small", small shadow, right-angle corners (suitable for normal windows) <br> "small_round", small shadow, rounded corners (suitable for normal windows) <br> "menu", small shadow, right-angle corners (suitable for popup windows such as menus) <br> "menu_round", small shadow, rounded corners (suitable for popup windows such as menus) <br> "none", no shadow</td></tr>
     <tr><td align="left">18. Added support for APNG/SVG/WEBP/ICO/LOTTIE/PAG image formats</td></tr>
     <tr><td align="left">19. Redesigned the control loading functionality: Box containers display the loading UI, configured through XML files (including animated images), with interaction with the animated images supported</td></tr>

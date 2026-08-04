@@ -1,9 +1,9 @@
-#include "duilib/Image/ImageDecoder_LOTTIE.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Image/Image_Bitmap.h"
-#include "duilib/Image/Image_LOTTIE.h"
-#include "duilib/Image/Image_Animation.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Image/ImageDecoder_LOTTIE.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Image/Image_Bitmap.h"
+#include "dui/Image/Image_LOTTIE.h"
+#include "dui/Image/Image_Animation.h"
+#include "dui/Utils/FilePathUtil.h"
 
 namespace ui
 {

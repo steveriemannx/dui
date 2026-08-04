@@ -1,8 +1,8 @@
-#include "duilib/Control/ComboButton.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Keyboard.h"
-#include "duilib/Core/WindowCreateParam.h"
-#include "duilib/Box/HBox.h"
+#include "dui/Control/ComboButton.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Keyboard.h"
+#include "dui/Core/WindowCreateParam.h"
+#include "dui/Box/HBox.h"
 
 namespace ui
 {

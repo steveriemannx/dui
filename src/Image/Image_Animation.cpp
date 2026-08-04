@@ -1,4 +1,4 @@
-#include "duilib/Image/Image_Animation.h"
+#include "dui/Image/Image_Animation.h"
 
 namespace ui
 {

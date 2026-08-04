@@ -1,6 +1,6 @@
 #include "CefForm.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     #include <iostream>
 #endif
 
@@ -24,7 +24,7 @@ DString CefForm::GetSkinFile()
 
 void CefForm::OnInitWindow()
 {
-#if !defined (DUILIB_BUILD_FOR_WIN)
+#if !defined (DUI_BUILD_FOR_WIN)
     //Linux platform: in non-off-screen rendering mode, use the system caption bar
     if (!kEnableOffScreenRendering) {
         SetUseSystemCaption(true);
@@ -91,7 +91,7 @@ void CefForm::OnInitWindow()
     ui::CefManager::GetInstance()->SetAlreadyRunningAppRelaunch(UiBind(&CefForm::OnAlreadyRunningAppRelaunch, this, std::placeholders::_1));
 
     if (!ui::CefManager::GetInstance()->IsEnableOffScreenRendering()) {
-        //Handle the multi-focus problem of controls (since the cef control is in child window mode, duilib cannot do this by itself)
+        //Handle the multi-focus problem of controls (since the cef control is in child window mode, dui cannot do this by itself)
         AttachWindowKillFocusMsg([this](const ui::EventArgs& args) {
             //When the window loses focus, let the controls in the interface lose focus too, to avoid the problem of the web page and interface controls being focused at the same time
             KillFocusControl();
@@ -111,7 +111,7 @@ void CefForm::OnInitWindow()
             });
     }
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     //Show basic SDL information
     DString driverName = GetVideoDriverName();
     DString renderName = GetWindowRenderName();

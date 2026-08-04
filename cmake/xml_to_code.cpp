@@ -9,7 +9,7 @@
  *    void <function_name>(ui::Window* pWindow)
  *
  *  Build: clang++ -std=c++17 -O2 xml_to_code.cpp -lstdc++ -o xml_to_code
- *         (pugixml is header-only, include path must point to duilib/third_party/xml)
+ *         (pugixml is header-only, include path must point to third_party/xml)
  *
  *  Supported XML features:
  *    - All control class names that WindowBuilder::CreateControlByClass supports
@@ -30,7 +30,7 @@
 #include <cstring>
 #include <sys/stat.h>
 
-// ---- Minimal pugixml (header-only, included from duilib) ----
+// ---- Minimal pugixml (header-only, included from dui) ----
 #include "pugixml.hpp"
 
 static std::string attr(const pugi::xml_node& node, const char* name,
@@ -154,7 +154,7 @@ static void expandIncludes(pugi::xml_node node, const std::string& currentDir, i
 }
 
 // Map XML class names to C++ control class names.
-// Source of truth: WindowBuilder::CreateControlByClass (duilib/Core/WindowBuilder.cpp)
+// Source of truth: WindowBuilder::CreateControlByClass (src/Core/WindowBuilder.cpp)
 static std::string cppClass(const std::string& xmlClass) {
     // Structural nodes that are never turned into controls
     if (xmlClass == "Window" || xmlClass == "Global") return "";
@@ -485,7 +485,7 @@ int main(int argc, char** argv) {
     out << "//   Other functions (templates, items) do NOT call AttachBox - the\n";
     out << "//   caller must add the root control to a parent container.\n";
     out << "///////////////////////////////////////////////////////////////////////////\n\n";
-    out << "#include \"duilib/duilib.h\"\n\n";
+    out << "#include \"dui/dui.h\"\n\n";
 
     bool hasWindowFunc = false;
     for (const auto& xmlFile : xmlFiles) {
@@ -565,7 +565,7 @@ int main(int argc, char** argv) {
         out << "#else\n";
         out << "    // macOS / FreeBSD: memfd_create and /proc/self/fd are Linux-only;\n";
         out << "    // fall back to an anonymous temporary file\n";
-        out << "    char tmpl[]=\"/tmp/duilib_embedded_XXXXXX\";\n";
+        out << "    char tmpl[]=\"/tmp/dui_embedded_XXXXXX\";\n";
         out << "    int fd=mkstemp(tmpl); if(fd<0)return _T(\"\");\n";
         out << "#endif\n";
         out << "    unsigned char buf[8192];\n";

@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_APP_ITEM_UI_H_
 #define EXAMPLES_APP_ITEM_UI_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 #define APP_HEIGHT 90
 #define APP_WIDTH  90

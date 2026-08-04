@@ -1,6 +1,6 @@
-#include "duilib/Control/ListCtrlReportView.h" 
-#include "duilib/Control/ListCtrl.h"
-#include "duilib/Render/AutoClip.h"
+#include "dui/Control/ListCtrlReportView.h" 
+#include "dui/Control/ListCtrl.h"
+#include "dui/Render/AutoClip.h"
 
 //Contains classes: ListCtrlReportView / ListCtrlReportLayout
 

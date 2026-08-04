@@ -1,5 +1,5 @@
-#include "duilib/Layout/VFlowLayout.h"
-#include "duilib/Box/ScrollBox.h"
+#include "dui/Layout/VFlowLayout.h"
+#include "dui/Box/ScrollBox.h"
 #include <unordered_map>
 
 namespace ui 

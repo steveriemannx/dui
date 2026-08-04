@@ -1,5 +1,5 @@
-#include "duilib/Utils/StringCharset.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Utils/StringCharset.h"
+#include "dui/Utils/StringConvert.h"
 
 namespace ui
 {
@@ -140,7 +140,7 @@ bool StringCharset::GetDataAsString(const char* data, uint32_t length, CharsetTy
     uint32_t realLen = length - bomSize;
 
     if (outCharsetType == CharsetType::ANSI) {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         result = StringConvert::MBCSToUnicode2(realData, realLen);
 #else
         result = StringConvert::UTF8ToWString(std::string(realData, realLen));

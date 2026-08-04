@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "duilib/Image/FrameSequence_gif.h"
+#include "dui/Image/FrameSequence_gif.h"
 #include <string.h>
 #include <algorithm>
 

@@ -1,11 +1,11 @@
-#include "duilib/Box/ScrollBox.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Render/AutoClip.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Keyboard.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Box/ScrollBox.h"
+#include "dui/Render/IRender.h"
+#include "dui/Render/AutoClip.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Keyboard.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui
 {

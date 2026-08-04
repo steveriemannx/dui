@@ -1,10 +1,10 @@
-#include "duilib/Image/Image_JPEG.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/FileUtil.h"
+#include "dui/Image/Image_JPEG.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/FileUtil.h"
 
-#ifdef DUILIB_IMAGE_SUPPORT_JPEG_TURBO
+#ifdef DUI_IMAGE_SUPPORT_JPEG_TURBO
 
-#include "duilib/Image/turbojpeg.h"
+#include "dui/Image/turbojpeg.h"
 
 namespace ui
 {
@@ -385,7 +385,7 @@ std::shared_ptr<IBitmap> Image_JPEG::DecodeBitmap() const
             return nullptr;
         }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         int pixelFormat = TJPF_BGRA;
 #else
         int pixelFormat = TJPF_RGBA;
@@ -483,4 +483,4 @@ bool Image_JPEG::MergeDelayDecodeData()
 
 } //namespace ui
 
-#endif //DUILIB_IMAGE_SUPPORT_JPEG_TURBO
+#endif //DUI_IMAGE_SUPPORT_JPEG_TURBO

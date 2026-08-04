@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_TEST_FORM_H_
 #define EXAMPLES_TEST_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 class TestForm : public ui::WindowImplBase
 {

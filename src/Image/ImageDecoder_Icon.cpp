@@ -1,6 +1,6 @@
-#include "duilib/Image/ImageDecoder_Icon.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Image/Image_Bitmap.h"
+#include "dui/Image/ImageDecoder_Icon.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Image/Image_Bitmap.h"
 
 namespace ui
 {

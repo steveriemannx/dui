@@ -1,5 +1,5 @@
-#include "duilib/Control/Progress.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Control/Progress.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {

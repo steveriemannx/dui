@@ -3,7 +3,7 @@
 #include "ReplaceForm.h"
 #include <fstream>
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 #include <ShellApi.h>
 #include <commdlg.h>
 #endif
@@ -42,7 +42,7 @@ void MainForm::OnInitWindow()
                 if (args.GetSender() == pRichEdit) {
                     const DString::value_type* pUrl = (const DString::value_type*)args.wParam;
                     if (pUrl != nullptr) {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
                         ::ShellExecuteW(NativeWnd()->GetHWND(), L"open", ui::StringConvert::TToWString(pUrl).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 #endif
                     }
@@ -215,7 +215,7 @@ void MainForm::OnInitWindow()
     // Set font
     pButton = dynamic_cast<ui::Button*>(FindControl(_T("set_font")));
     if (pButton != nullptr) {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
                 OnSetFont();
@@ -431,7 +431,7 @@ void MainForm::OnInitWindow()
     pCheckBox = dynamic_cast<ui::CheckBox*>(FindControl(_T("btn_rich_text")));
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
         pCheckBox->SetSelected(m_pRichEdit->IsRichText());
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
         pCheckBox->AttachSelect([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
                 m_pRichEdit->SetRichText(true);
@@ -450,7 +450,7 @@ void MainForm::OnInitWindow()
 #endif
     }
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     ui::Control* pRowSpacingTips = FindControl(_T("row_spacing_tips"));
     if (pRowSpacingTips != nullptr) {
         pRowSpacingTips->SetVisible(false);
@@ -465,7 +465,7 @@ void MainForm::OnInitWindow()
         m_pRichEdit->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
                 ::MessageBoxW(NativeWnd()->GetHWND(), ui::StringConvert::TToWString(url).c_str(), L"RichEdit Click HyperLink", MB_OK);
 #endif
             }
@@ -621,7 +621,7 @@ void MainForm::ShowColorPicker()
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
     createParam.m_windowTitle = _T("ColorPicker");
     createParam.m_bCenterWindow = true;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     pColorPicker->CreateWnd(nullptr, createParam);
     pColorPicker->ShowModalFake();
 #else
@@ -1121,13 +1121,13 @@ void MainForm::OnOpenFile()
     std::vector<ui::FileDialog::FileType> fileTypes;
     fileTypes.push_back({ _T("All Files (*.*)"), _T("*.*")});
     fileTypes.push_back({ _T("Text Files (*.txt)"), _T("*.txt") });
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     fileTypes.push_back({ _T("RTF Files (*.rtf)"), _T("*.rtf") });
 #endif
 
     DString defaultExt;
     int32_t nFileTypeIndex = 1;
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     if ((m_pRichEdit != nullptr) && m_pRichEdit->IsRichText()) {
         nFileTypeIndex = 2;
     }
@@ -1164,13 +1164,13 @@ void MainForm::OnSaveAsFile()
     std::vector<ui::FileDialog::FileType> fileTypes;
     fileTypes.push_back({ _T("All Files (*.*)"), _T("*.*") });
     fileTypes.push_back({ _T("Text Files (*.txt)"), _T("*.txt") });
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     fileTypes.push_back({ _T("RTF Files (*.rtf)"), _T("*.rtf") });
 #endif
 
     DString defaultExt;
     int32_t nFileTypeIndex = 1;
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     if ((m_pRichEdit != nullptr) && m_pRichEdit->IsRichText()) {
         nFileTypeIndex = 2;
     }
@@ -1190,7 +1190,7 @@ void MainForm::OnSaveAsFile()
     }
 }
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 bool MainForm::LoadFile(const ui::FilePath& filePath)
 {
@@ -1469,7 +1469,7 @@ void MainForm::SetCharFormat(CHARFORMAT2W& charFormat)
     }
 }
 
-#else //defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#else //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 bool MainForm::LoadFile(const ui::FilePath& filePath)
 {
@@ -1517,7 +1517,7 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
         bRet = ui::FileUtil::WriteFileData(filePath, text);
     }
     else if (charsetType == ui::CharsetType::ANSI) {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         DStringA textA = ui::StringConvert::UnicodeToMBCS(text);
         bRet = ui::FileUtil::WriteFileData(filePath, textA);
 #else
@@ -1534,4 +1534,4 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
     return bRet;
 }
 
-#endif //defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)

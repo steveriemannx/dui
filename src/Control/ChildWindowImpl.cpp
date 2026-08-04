@@ -1,7 +1,7 @@
-#include "duilib/Control/ChildWindowImpl.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
+#include "dui/Control/ChildWindowImpl.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
 
 namespace ui
 {

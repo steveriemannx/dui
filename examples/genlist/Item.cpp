@@ -36,7 +36,7 @@ inline DString DecodeIcon() {
     // macOS / FreeBSD: memfd_create and /proc/self/fd are Linux-only; fall back
     // to an anonymous temporary file (the example process is short-lived, so the
     // temp file is not worth unlinking)
-    char tmpl[] = "/tmp/duilib_icon_png_XXXXXX";
+    char tmpl[] = "/tmp/dui_icon_png_XXXXXX";
     int fd = mkstemp(tmpl);
     if (fd < 0) return _T("");
 #endif

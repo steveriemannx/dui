@@ -1,11 +1,11 @@
-#include "duilib/Image/ImageDecoder_ICO.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Image/Image_Bitmap.h"
-#include "duilib/Image/ImageDecoderUtil.h"
-#include "duilib/Image/ImageUtil.h"
-#include "duilib/Image/Image_ICO.h"
-#include "duilib/Image/Image_Animation.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Image/ImageDecoder_ICO.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Image/Image_Bitmap.h"
+#include "dui/Image/ImageDecoderUtil.h"
+#include "dui/Image/ImageUtil.h"
+#include "dui/Image/Image_ICO.h"
+#include "dui/Image/Image_Animation.h"
+#include "dui/Utils/FilePathUtil.h"
 
 namespace ui
 {

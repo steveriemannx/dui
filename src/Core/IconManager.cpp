@@ -1,6 +1,6 @@
-#include "duilib/Core/IconManager.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Core/IconManager.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui 
 {
@@ -181,7 +181,7 @@ void IconManager::DetachRemoveIconEvent(uint32_t callbackID)
     }
 }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
 /** The bitmap handle of the icon resource is released automatically
 */
@@ -331,7 +331,7 @@ uint32_t IconManager::AddIcon(HICON hIcon)
     return AddIconBitmapData(bitmapData);
 }
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN
 
 }
 

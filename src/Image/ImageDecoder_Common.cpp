@@ -1,9 +1,9 @@
-#include "duilib/Image/ImageDecoder_Common.h"
-#include "duilib/Image/ImageDecoderUtil.h"
-#include "duilib/Image/Image_Bitmap.h"
-#include "duilib/Image/ImageUtil.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Image/ImageDecoder_Common.h"
+#include "dui/Image/ImageDecoderUtil.h"
+#include "dui/Image/Image_Bitmap.h"
+#include "dui/Image/ImageUtil.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui
 {

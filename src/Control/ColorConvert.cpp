@@ -1,4 +1,4 @@
-#include "duilib/Control/ColorConvert.h"
+#include "dui/Control/ColorConvert.h"
 #include <cassert>
 #include <algorithm>
 

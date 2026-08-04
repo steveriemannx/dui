@@ -1,4 +1,4 @@
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Utils/StringConvert.h"
 #include "third_party/convert_utf/ConvertUTF.h"
 #include <vector>
 
@@ -241,7 +241,7 @@ const std::string& StringConvert::TToUTF8(const std::string& str)
 
 DString StringConvert::UTF8ToT(const DUTF8Char* utf8, size_t length)
 {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return StringConvert::UTF8ToUTF16(utf8, length);
 #else
     return std::string(utf8, length);
@@ -250,7 +250,7 @@ DString StringConvert::UTF8ToT(const DUTF8Char* utf8, size_t length)
 
 DString StringConvert::UTF8ToT(const std::string& utf8)
 {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return StringConvert::UTF8ToWString(utf8);
 #else
     return utf8;
@@ -267,7 +267,7 @@ DStringW StringConvert::TToWString(const std::string& str)
     return StringConvert::UTF8ToWString(str);
 }
 
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
 const DString& StringConvert::WStringToT(const std::wstring& wstr)
 {
     return wstr;
@@ -289,7 +289,7 @@ std::string StringConvert::UTF32ToUTF8(const std::basic_string<DUTF32Char>& utf3
     return UTF32ToUTF8(utf32.c_str(), utf32.length());
 }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 std::wstring StringConvert::MBCSToUnicode(const std::string& input, int32_t code_page)
 {
     return MBCSToUnicode2(input.c_str(), input.size(), code_page);
@@ -317,7 +317,7 @@ std::wstring StringConvert::MBCSToUnicode2(const char* input, size_t inputSize, 
 DString StringConvert::MBCSToT(const std::string& input)
 {
     DString output;
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     output = MBCSToUnicode(input);
 #else
     std::wstring temp = MBCSToUnicode(input);
@@ -345,7 +345,7 @@ std::string StringConvert::UnicodeToMBCS(const std::wstring& input, int32_t code
 std::string StringConvert::TToMBCS(const DString& input)
 {
     std::string output;
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     output = UnicodeToMBCS(input);
 #else
     std::wstring temp = UTF8ToWString(input);
@@ -354,9 +354,9 @@ std::string StringConvert::TToMBCS(const DString& input)
     return output;
 }
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_UNICODE)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_UNICODE)
 DString StringConvert::TToLocal(const DString& input)
 {
     DString output;
@@ -371,7 +371,7 @@ const DString& StringConvert::TToLocal(const DString& input)
 }
 #endif
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_UNICODE)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_UNICODE)
 DString StringConvert::LocalToT(const DString& input)
 {
     DStringW output = MBCSToUnicode(input);

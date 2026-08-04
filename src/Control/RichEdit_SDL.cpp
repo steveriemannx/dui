@@ -1,23 +1,23 @@
-#include "duilib/Control/RichEdit_SDL.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/WindowMessage.h"
-#include "duilib/Core/ScrollBar.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Utils/PerformanceUtil.h"
-#include "duilib/Utils/Clipboard.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Render/AutoClip.h"
-#include "duilib/Animation/AnimationManager.h"
-#include "duilib/Animation/AnimationPlayer.h"
-#include "duilib/Control/Menu.h"
-#include "duilib/Control/Button.h"
-#include "duilib/Box/VBox.h"
+#include "dui/Control/RichEdit_SDL.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/WindowMessage.h"
+#include "dui/Core/ScrollBar.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/PerformanceUtil.h"
+#include "dui/Utils/Clipboard.h"
+#include "dui/Render/IRender.h"
+#include "dui/Render/AutoClip.h"
+#include "dui/Animation/AnimationManager.h"
+#include "dui/Animation/AnimationPlayer.h"
+#include "dui/Control/Menu.h"
+#include "dui/Control/Button.h"
+#include "dui/Box/VBox.h"
 
-#if defined(DUILIB_BUILD_FOR_SDL) || defined(DUILIB_BUILD_FOR_WAYLAND)
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
+#if defined(DUI_BUILD_FOR_SDL)
 #include <SDL3/SDL.h>
 #endif
 
@@ -37,7 +37,7 @@ RichEdit::RichEdit(Window* pWindow) :
     m_bSelAllOnFocus(false),    
     m_bNoCaretReadonly(false),
     m_bIsCaretVisiable(false),
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     m_bIsComposition(false),
 #endif
     m_iCaretPosX(0),
@@ -601,7 +601,7 @@ int32_t RichEdit::GetMinNumber() const
 void RichEdit::SetNumberFormat64(const DString& numberFormat)
 {
     DString format = numberFormat;
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     StringUtil::ReplaceAll(_T("lld"), _T("I64d"), format);
 #else
     StringUtil::ReplaceAll(_T("I64d"), _T("lld"), format);
@@ -1009,7 +1009,7 @@ bool RichEdit::IsEmpty() const
 DString RichEdit::GetText() const
 {
     
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return m_pTextData->GetText();
 #else
     return StringConvert::WStringToUTF8(m_pTextData->GetText());
@@ -1304,7 +1304,7 @@ DString RichEdit::GetSelText() const
     int32_t nEndChar = -1;
     GetSel(nStartChar, nEndChar);
     DStringW text = m_pTextData->GetTextRange(nStartChar, nEndChar);
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return text;
 #else
     return StringConvert::WStringToUTF8(text);
@@ -1590,7 +1590,7 @@ void RichEdit::SetUndoLimit(uint32_t nLimit)
     m_pTextData->SetUndoLimit(nLimit);
 }
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 HWND RichEdit::GetWindowHWND() const
 {
     auto window = GetWindow();
@@ -1882,7 +1882,7 @@ void RichEdit::Paint(IRender* pRender, const UiRect& rcPaint)
             drawParam.textRect = rcDrawRect;
             drawParam.dwTextColor = dwClrColor;
 
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
             pRender->DrawString(passwordText, drawParam);
 #else
             pRender->DrawString(StringConvert::WStringToUTF8(passwordText), drawParam);
@@ -2143,7 +2143,7 @@ void RichEdit::PaintCaret(IRender* pRender, const UiRect& /*rcPaint*/)
     if (IsReadOnly() && m_bNoCaretReadonly) {
         return;
     }
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     if (m_bIsCaretVisiable && !m_bIsComposition) {
 #else
     if (m_bIsCaretVisiable) {
@@ -3418,7 +3418,7 @@ void RichEdit::CheckSelAllOnFocus()
 
 bool RichEdit::OnImeStartComposition(const EventArgs& /*msg*/)
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     HWND hWnd = GetWindowHWND();
     if (hWnd == nullptr) {
         return true;
@@ -3458,7 +3458,7 @@ bool RichEdit::OnImeStartComposition(const EventArgs& /*msg*/)
 
 bool RichEdit::OnImeEndComposition(const EventArgs& /*msg*/)
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     m_bIsComposition = false;
 #endif
     return true;
@@ -4527,12 +4527,12 @@ void RichEdit::OnInputChar(const EventArgs& msg)
     DStringW text;
     if ((msg.vkCode == kVK_RETURN) || (msg.vkCode == kVK_TAB) || (msg.vkCode == kVK_DELETE) || (msg.vkCode == kVK_BACK)) {
         //The handling of the Enter key, TAB key, Delete key, and Backspace key, no input text
-        #if defined(DUILIB_BUILD_FOR_SDL)
+        #if defined(DUI_BUILD_FOR_SDL)
         ASSERT(msg.eventData != SDL_EVENT_TEXT_INPUT);
 #endif
         if (msg.vkCode == kVK_RETURN) {
             //Enter: convert to a newline: "\r\n" or "\n"
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
             text = L"\r\n";
 #else
             text = L"\n";
@@ -4544,11 +4544,11 @@ void RichEdit::OnInputChar(const EventArgs& msg)
         }
     }
     else {
-        #if defined(DUILIB_BUILD_FOR_SDL)
+        #if defined(DUI_BUILD_FOR_SDL)
         ASSERT(msg.eventData == SDL_EVENT_TEXT_INPUT);
 #endif
         ASSERT(msg.vkCode == kVK_None);
-        #if defined(DUILIB_BUILD_FOR_SDL)
+        #if defined(DUI_BUILD_FOR_SDL)
         if ((msg.eventData == SDL_EVENT_TEXT_INPUT) && (msg.wParam != 0) && (msg.lParam > 0)) {
 #else
         if ((msg.wParam != 0) && (msg.lParam > 0)) {
@@ -4718,5 +4718,5 @@ void RichEdit::OnInputChar(const EventArgs& msg)
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL
 

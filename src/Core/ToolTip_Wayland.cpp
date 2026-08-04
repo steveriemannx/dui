@@ -1,12 +1,12 @@
-#include "duilib/Core/ToolTip.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/ControlPtrT.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/WindowBuilder.h"
-#include "duilib/Core/NativeWindow_SDL.h"
-#include "duilib/Control/Label.h"
+#include "dui/Core/ToolTip.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/ControlPtrT.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/WindowBuilder.h"
+#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Control/Label.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 namespace ui
 {
@@ -209,4 +209,4 @@ void ToolTip::DestroyToolTip()
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

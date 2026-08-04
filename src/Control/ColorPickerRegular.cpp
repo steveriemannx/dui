@@ -1,4 +1,4 @@
-#include "duilib/Control/ColorPickerRegular.h"
+#include "dui/Control/ColorPickerRegular.h"
 
 namespace ui
 {

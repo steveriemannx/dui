@@ -1,6 +1,6 @@
-#include "duilib/Core/FullscreenBox.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Control/Button.h"
+#include "dui/Core/FullscreenBox.h"
+#include "dui/Core/Window.h"
+#include "dui/Control/Button.h"
 
 namespace ui 
 {

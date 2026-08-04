@@ -1,13 +1,13 @@
-#include "duilib/Utils/TrayIcon.h"
+#include "dui/Utils/TrayIcon.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/FileUtil.h"
-#include "duilib/Utils/ApiWrapper_Windows.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/FileUtil.h"
+#include "dui/Utils/ApiWrapper_Windows.h"
 
 #include <shellapi.h>
 
@@ -122,7 +122,7 @@ TrayIconImpl::~TrayIconImpl()
 }
 
 //Name of the window class
-#define DUILIB_TRAY_MESSAGE_WINDOW_CLASS L"TrayIconMessageWindow"
+#define DUI_TRAY_MESSAGE_WINDOW_CLASS L"TrayIconMessageWindow"
 
 bool TrayIconImpl::Initialize(const Window* pWindow, const DString& iconFilePath, const DString& tooltip)
 {
@@ -137,13 +137,13 @@ bool TrayIconImpl::Initialize(const Window* pWindow, const DString& iconFilePath
     wc.cbSize = sizeof(WNDCLASSEXW);
     wc.lpfnWndProc = TrayIconWndProc;
     wc.hInstance = hInstance;
-    wc.lpszClassName = DUILIB_TRAY_MESSAGE_WINDOW_CLASS;
+    wc.lpszClassName = DUI_TRAY_MESSAGE_WINDOW_CLASS;
     ATOM ret = ::RegisterClassExW(&wc);
     ASSERT_UNUSED_VARIABLE(ret != 0 || ::GetLastError() == ERROR_CLASS_ALREADY_EXISTS);
 
     //Unregister the ATOM when the module exits
     GlobalManager::Instance().AddAtExitFunction([hInstance]() {
-            ::UnregisterClassW(DUILIB_TRAY_MESSAGE_WINDOW_CLASS, hInstance);
+            ::UnregisterClassW(DUI_TRAY_MESSAGE_WINDOW_CLASS, hInstance);
         });
 
     m_hWnd = ::CreateWindowExW(0, wc.lpszClassName, L"", WS_POPUP, 0, 0, 0, 0, HWND_MESSAGE, nullptr, hInstance, nullptr);
@@ -425,4 +425,4 @@ std::unique_ptr<TrayIcon> TrayIcon::Create(const Window* pWindow, const DString&
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

@@ -148,7 +148,7 @@ void MainForm::UpdateUI()
         DString text = ui::StringUtil::Printf(_T("W:%d, H:%d [Left:%d, Top:%d]"), rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
         pLabel->SetText(text);
     }
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowSize")));
     if (pLabel != nullptr) {
         int32_t w = 0;

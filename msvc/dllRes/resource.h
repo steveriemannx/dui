@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by duilib.rc
+// Used by dui.rc
 
 // Next default values for new objects
 // 

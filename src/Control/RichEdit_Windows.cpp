@@ -1,27 +1,27 @@
-#include "duilib/Control/RichEdit_Windows.h"
-#include "duilib/Control/RichEditHost_Windows.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/WindowMessage.h"
-#include "duilib/Core/ControlDropTarget.h"
-#include "duilib/Core/ScrollBar.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Utils/BitmapHelper_Windows.h"
-#include "duilib/Utils/PerformanceUtil.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Render/AutoClip.h"
-#include "duilib/Animation/AnimationManager.h"
-#include "duilib/Animation/AnimationPlayer.h"
-#include "duilib/Control/Menu.h"
-#include "duilib/Box/VBox.h"
-#include "duilib/Control/Button.h"
+#include "dui/Control/RichEdit_Windows.h"
+#include "dui/Control/RichEditHost_Windows.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/WindowMessage.h"
+#include "dui/Core/ControlDropTarget.h"
+#include "dui/Core/ScrollBar.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/BitmapHelper_Windows.h"
+#include "dui/Utils/PerformanceUtil.h"
+#include "dui/Render/IRender.h"
+#include "dui/Render/AutoClip.h"
+#include "dui/Animation/AnimationManager.h"
+#include "dui/Animation/AnimationPlayer.h"
+#include "dui/Control/Menu.h"
+#include "dui/Box/VBox.h"
+#include "dui/Control/Button.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Core/ControlDropTargetImpl_Windows.h"
-#include "duilib/Core/ControlDropTargetUtils.h"
+#include "dui/Core/ControlDropTargetImpl_Windows.h"
+#include "dui/Core/ControlDropTargetUtils.h"
 
 namespace ui {
 
@@ -353,7 +353,7 @@ RichEdit::RichEdit(Window* pWindow) :
     m_bUseControlCursor(false),
     m_bEnableWheelZoom(false),
     m_bEnableDefaultContextMenu(false),
-#ifdef DUILIB_RICHEDIT_SUPPORT_RICHTEXT
+#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
     m_pControlDropTarget(nullptr),
 #endif
     m_bDisableTextChangeEvent(false),
@@ -376,7 +376,7 @@ RichEdit::RichEdit(Window* pWindow) :
 
 RichEdit::~RichEdit()
 {
-#ifdef DUILIB_RICHEDIT_SUPPORT_RICHTEXT
+#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
     if (m_pControlDropTarget != nullptr) {
         delete m_pControlDropTarget;
         m_pControlDropTarget = nullptr;
@@ -593,7 +593,7 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
         //This property is not supported, ignore it
     }
 
-#ifdef DUILIB_RICHEDIT_SUPPORT_RICHTEXT
+#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
     else if (strName == _T("zoom")) {
         //Zoom ratio:
         //Set the zoom ratio: wParam is the numerator of the zoom ratio, lParam is the denominator of the zoom ratio,
@@ -1154,7 +1154,7 @@ DString RichEdit::GetText() const
     std::wstring sText(pText);
     delete[] pText;
     pText = nullptr;
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return sText;
 #else
     return StringConvert::WStringToT(sText);
@@ -1166,7 +1166,7 @@ void RichEdit::SetText(const DStringW& strText)
     m_bDisableTextChangeEvent = false;
     SetSel(0, -1);
 
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     ReplaceSel(strText, FALSE);
 #else
     DString text = StringConvert::WStringToT(strText);
@@ -1178,7 +1178,7 @@ void RichEdit::SetText(const DStringA& strText)
 {
     m_bDisableTextChangeEvent = false;
     SetSel(0, -1);
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     DString text = StringConvert::UTF8ToT(strText);
     ReplaceSel(text, FALSE);
 #else
@@ -1226,7 +1226,7 @@ int32_t RichEdit::SetSel(int32_t nStartChar, int32_t nEndChar)
 
 void RichEdit::ReplaceSel(const DString& lpszNewText, bool bCanUndo)
 {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     m_richCtrl.ReplaceSel(lpszNewText.c_str(), bCanUndo);
 #else
     std::wstring newText = StringConvert::TToWString(lpszNewText);
@@ -1237,7 +1237,7 @@ void RichEdit::ReplaceSel(const DString& lpszNewText, bool bCanUndo)
 DString RichEdit::GetSelText() const
 {
     DString text;
-#ifdef DUILIB_UNICODE    
+#ifdef DUI_UNICODE    
     m_richCtrl.GetSelText(text);
 #else
     DStringW textW;
@@ -1276,7 +1276,7 @@ DString RichEdit::GetTextRange(int32_t nStartChar, int32_t nEndChar) const
     m_richCtrl.GetTextRange(&tr);
     DStringW sText = (LPCWSTR)lpText;
     delete[] lpText;
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return sText;
 #else
     return StringConvert::WStringToT(sText);
@@ -1359,7 +1359,7 @@ DString RichEdit::GetLine(int32_t nIndex, int32_t nMaxLength) const
     m_richCtrl.GetLine(nIndex, lpText);
     DStringW sText = lpText;
     delete[] lpText;
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return sText;
 #else
     return StringConvert::WStringToUTF8(sText);
@@ -1414,7 +1414,7 @@ void RichEdit::OnTxNotify(DWORD iNotify, void *pv)
     { 
     case EN_LINK:   
         {
-#ifdef DUILIB_RICHEDIT_SUPPORT_RICHTEXT
+#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
             NMHDR* hdr = (NMHDR*) pv;
             ENLINK* link = (ENLINK*)hdr;
 
@@ -1576,7 +1576,7 @@ bool RichEdit::ClientToScreen(UiPoint& pt)
 // iPos was introduced to fix this bug
 void RichEdit::SetScrollPos(UiSize64 szPos)
 {
-#ifdef DUILIB_RICHEDIT_SUPPORT_RICHTEXT
+#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
     bool bRichText = IsRichText();
 #else
     bool bRichText = false;
@@ -1621,7 +1621,7 @@ void RichEdit::LineUp(int32_t /*deltaValue*/)
 
 void RichEdit::LineDown(int32_t /*deltaValue*/)
 {
-#ifdef DUILIB_RICHEDIT_SUPPORT_RICHTEXT
+#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
     bool bRichText = IsRichText();
 #else
     bool bRichText = false;
@@ -2078,7 +2078,7 @@ bool RichEdit::OnChar(const EventArgs& msg)
             return true;
         }
     }
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     WPARAM wParam = msg.wParam;
     WPARAM lParam = msg.lParam;
     if (msg.modifierKey & ModifierKey::kIsSystemKey) {
@@ -2300,7 +2300,7 @@ void RichEdit::Paint(IRender* pRender, const UiRect& rcPaint)
     m_pRichHost->GetControlRect(&rc);
 
     if (bNeedPaint) {
-#if !defined (DUILIB_RICH_EDIT_DRAW_OPT) 
+#if !defined (DUI_RICH_EDIT_DRAW_OPT) 
         HDC hdc = pRender->GetRenderDC(GetWindow()->NativeWnd()->GetHWND());
 #else
         HDC hdc = nullptr;
@@ -3906,7 +3906,7 @@ ControlDropTarget_SDL* RichEdit::GetControlDropTarget_SDL()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef DUILIB_RICHEDIT_SUPPORT_RICHTEXT
+#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
 void RichEdit::SetSaveSelection(bool fSaveSelection)
 {
     if (m_pRichHost != nullptr) {
@@ -4149,7 +4149,7 @@ void RichEdit::ScrollCaret()
 
 int32_t RichEdit::InsertText(int32_t nInsertAfterChar, const DString& text, bool bCanUndo)
 {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return m_richCtrl.InsertText(nInsertAfterChar, text.c_str(), bCanUndo);
 #else
     return m_richCtrl.InsertText(nInsertAfterChar, StringConvert::TToWString(text).c_str(), bCanUndo);
@@ -4159,7 +4159,7 @@ int32_t RichEdit::InsertText(int32_t nInsertAfterChar, const DString& text, bool
 int32_t RichEdit::AppendText(const DString& text, bool bCanUndo, bool bScrollBottom)
 {
     int32_t nRet = -1;
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     nRet = m_richCtrl.AppendText(text.c_str(), bCanUndo);
 #else
     nRet = m_richCtrl.AppendText(StringConvert::TToWString(text).c_str(), bCanUndo);
@@ -4248,8 +4248,8 @@ void RichEdit::PasteSpecial(UINT uClipFormat, DWORD dwAspect/* = 0*/, HMETAFILE 
     return m_richCtrl.PasteSpecial(uClipFormat, dwAspect, hMF);
 }
 
-#endif //DUILIB_RICHEDIT_SUPPORT_RICHTEXT
+#endif //DUI_RICHEDIT_SUPPORT_RICHTEXT
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

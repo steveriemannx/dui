@@ -1,9 +1,9 @@
-#include "duilib/Image/ImageDecoder_SVG.h"
-#include "duilib/Image/ImageUtil.h"
-#include "duilib/Image/Image_Svg.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/FileUtil.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Image/ImageDecoder_SVG.h"
+#include "dui/Image/ImageUtil.h"
+#include "dui/Image/Image_Svg.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/FileUtil.h"
+#include "dui/Core/GlobalManager.h"
 #include <cmath>
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -24,13 +24,13 @@
     #pragma GCC diagnostic pop
 #endif
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "modules/svg/include/SkSVGDOM.h"
 #include "modules/svg/include/SkSVGRenderContext.h"
 #include "include/core/SkStream.h"
 #include "include/core/SkBitmap.h"
 #include "include/core/SkCanvas.h"
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui
 {
@@ -134,7 +134,7 @@ public:
         }
 
         SkBitmap skBitmap;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         SkImageInfo info = SkImageInfo::Make((int32_t)nImageWidth, (int32_t)nImageHeight, SkColorType::kN32_SkColorType, SkAlphaType::kPremul_SkAlphaType);
 #else
         SkImageInfo info = SkImageInfo::Make((int32_t)nImageWidth, (int32_t)nImageHeight, SkColorType::kRGBA_8888_SkColorType, SkAlphaType::kPremul_SkAlphaType);

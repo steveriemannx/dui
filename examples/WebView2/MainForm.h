@@ -2,9 +2,9 @@
 #ifndef EXAMPLES_MAIN_FORM_H_
 #define EXAMPLES_MAIN_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
-#include "duilib/duilib_webview2.h"
+// dui
+#include "dui/dui.h"
+#include "dui/dui_webview2.h"
 
 /** Main window implementation of the application
 */

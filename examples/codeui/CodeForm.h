@@ -1,7 +1,7 @@
 #ifndef EXAMPLES_CODEUI_CODE_FORM_H_
 #define EXAMPLES_CODEUI_CODE_FORM_H_
 
-#include "duilib/duilib.h"
+#include "dui/dui.h"
 
 /** Pure-code form - no XML at all, all UI defined in C++
 */

@@ -34,7 +34,7 @@ def xml_to_header(output_path, input_files):
     lines.append(f'#ifndef {guard}')
     lines.append(f'#define {guard}')
     lines.append('')
-    lines.append('#include "duilib/duilib_string.h"')
+    lines.append('#include "dui/dui_string.h"')
     lines.append('')
     lines.append('namespace ui_resources {')
     lines.append('')

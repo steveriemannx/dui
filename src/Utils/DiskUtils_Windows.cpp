@@ -1,8 +1,8 @@
-#include "duilib/Utils/DiskUtils_Windows.h"
+#include "dui/Utils/DiskUtils_Windows.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Utils/StringConvert.h"
 #include <shellapi.h>
 #include <memory>
 
@@ -168,4 +168,4 @@ uint64_t DiskUtils::GetFreeDiskSpace(const DString& fullDirectory)
     return freeSize;
 }
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

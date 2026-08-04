@@ -1,9 +1,9 @@
-#include "duilib/Utils/ShadowWnd.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Core/Shadow.h"
+#include "dui/Utils/ShadowWnd.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/Shadow.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
-#if defined(DUILIB_BUILD_FOR_SDL)
+#ifdef DUI_BUILD_FOR_SDL
+#if defined(DUI_BUILD_FOR_SDL)
 #include <SDL3/SDL.h>
 #endif
 
@@ -222,4 +222,4 @@ void ShadowWnd::InitShadow()
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

@@ -1,8 +1,8 @@
-#include "duilib/CEFControl/internal/CefRegisteredFunctions.h"
+#include "dui/CEFControl/internal/CefRegisteredFunctions.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui
 {
@@ -208,4 +208,4 @@ void BrowserRegisteredFunctions::ClearAllCppFunctions()
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

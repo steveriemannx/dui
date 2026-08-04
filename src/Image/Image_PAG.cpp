@@ -1,10 +1,10 @@
-#include "duilib/Image/Image_PAG.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Image/ImageDecoder.h"
-#include "duilib/Utils/FileUtil.h"
+#include "dui/Image/Image_PAG.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
+#include "dui/Image/ImageDecoder.h"
+#include "dui/Utils/FileUtil.h"
 
-#ifdef DUILIB_IMAGE_SUPPORT_LIB_PAG
+#ifdef DUI_IMAGE_SUPPORT_LIB_PAG
 
 #if defined (_MSC_VER)
     #pragma warning (push)
@@ -305,7 +305,7 @@ bool Image_PAG::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSiz
         return false;
     }
     size_t rowBytes = pBitmap->GetWidth() * 4;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     pag::ColorType colorType = pag::ColorType::BGRA_8888;
 #else
     pag::ColorType colorType = pag::ColorType::RGBA_8888;
@@ -332,4 +332,4 @@ bool Image_PAG::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSiz
 
 } //namespace ui
 
-#endif //DUILIB_IMAGE_SUPPORT_LIB_PAG
+#endif //DUI_IMAGE_SUPPORT_LIB_PAG

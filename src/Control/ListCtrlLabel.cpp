@@ -1,6 +1,6 @@
-#include "duilib/Control/ListCtrlLabel.h"
-#include "duilib/Control/ListCtrlView.h"
-#include "duilib/Core/Window.h"
+#include "dui/Control/ListCtrlLabel.h"
+#include "dui/Control/ListCtrlView.h"
+#include "dui/Core/Window.h"
 
 namespace ui
 {

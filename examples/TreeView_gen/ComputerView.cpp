@@ -134,9 +134,9 @@ DString ComputerView::FormatUsedPercent(uint64_t nTotalSpace, uint64_t nFreeSpac
 
 void ComputerView::InitComputerViewHeader()
 {
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     InitComputerViewHeader_Win();
-#elif defined (DUILIB_BUILD_FOR_LINUX)
+#elif defined (DUI_BUILD_FOR_LINUX)
     InitComputerViewHeader_Linux();
 #endif
 }
@@ -161,14 +161,14 @@ void ComputerView::ShowMyComputerContents(const std::vector<ui::DirectoryTree::D
     if (pImageList != nullptr) {
         pImageList->Clear();
     }
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     ShowMyComputerContents_Win(pImageList, diskInfoList);
-#elif defined (DUILIB_BUILD_FOR_LINUX)
+#elif defined (DUI_BUILD_FOR_LINUX)
     ShowMyComputerContents_Linux(pImageList, diskInfoList);
 #endif
 }
 
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
 void ComputerView::InitComputerViewHeader_Win()
 {
     if (m_pComputerListCtrl == nullptr) {
@@ -287,9 +287,9 @@ void ComputerView::ShowMyComputerContents_Win(ui::ImageListPtr pImageList, const
     }
 }
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN
 
-#if defined (DUILIB_BUILD_FOR_LINUX)
+#if defined (DUI_BUILD_FOR_LINUX)
 void ComputerView::InitComputerViewHeader_Linux()
 {
     if (m_pComputerListCtrl == nullptr) {
@@ -458,4 +458,4 @@ DString ComputerView::GetDeviceTypeString(ui::DirectoryTree::DeviceType deviceTy
     return deviceTypeString;
 }
 
-#endif //DUILIB_BUILD_FOR_LINUX
+#endif //DUI_BUILD_FOR_LINUX

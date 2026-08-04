@@ -1,5 +1,5 @@
-#include "duilib/Core/EventArgs.h"
-#include "duilib/Core/Control.h"
+#include "dui/Core/EventArgs.h"
+#include "dui/Core/Control.h"
 #include <unordered_map>
 #include <vector>
 

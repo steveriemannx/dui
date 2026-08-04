@@ -62,7 +62,7 @@
  #define PI 3.141592653589793f
 #endif
 
-#include "../../include/duilib/duilib_config.h"
+#include "../../include/dui/dui_config.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -82,11 +82,11 @@ typedef struct tagcomplex {
 
 #endif
 
-#if defined(DUILIB_BUILD_FOR_WIN)
+#if defined(DUI_BUILD_FOR_WIN)
  #include <stdint.h>
 #endif
 
-#if !defined(DUILIB_BUILD_FOR_WIN)
+#if !defined(DUI_BUILD_FOR_WIN)
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -110,7 +110,7 @@ typedef void*      HRGN;
 #endif
 
 #ifndef TCHAR
-    #ifdef DUILIB_UNICODE
+    #ifdef DUI_UNICODE
         #define TCHAR wchar_t
     #else
         #define TCHAR char
@@ -200,14 +200,14 @@ typedef struct tagcomplex {
 
 #if defined(linux) || defined(__linux) || defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
     // Linux/macOS platforms use strcasecmp or strncasecmp
-    #ifdef DUILIB_UNICODE
+    #ifdef DUI_UNICODE
         #define _tcsnicmp(a,b,c) wcsncasecmp(a,b,c)  // Unicode version
     #else
         #define _tcsnicmp(a,b,c) strncasecmp(a,b,c)   // ANSI version
     #endif
 #else
     // Windows platforms use native functions
-    #ifdef DUILIB_UNICODE
+    #ifdef DUI_UNICODE
         #define _tcsnicmp _wcsnicmp
     #else
         #define _tcsnicmp _strnicmp

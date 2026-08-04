@@ -4,17 +4,17 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
   message(FATAL_ERROR "Prevented in-tree build. Please create a build directory outside of the source code and run \"cmake -S ${CMAKE_SOURCE_DIR} -B .\" from there")
 endif()
 
-# duilib
+# dui
 # MSVC runtime library flags are selected by an abstraction.
 set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
-if("${DUILIB_MD}" STREQUAL "ON")
+if("${DUI_MD}" STREQUAL "ON")
     # MD/MDd
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
 else()
     # MT/MTd
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
-# duilib end
+# dui end
 
 project(webp C)
 
@@ -23,10 +23,10 @@ if(MSVC)
     add_definitions(-DUNICODE -D_UNICODE)
 endif()
 
-# duilib
-get_filename_component(DUILIB_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${DUILIB_SRC_ROOT_DIR}/lib/")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUILIB_SRC_ROOT_DIR}/lib/")
+# dui
+get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
@@ -37,4 +37,4 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/enc ENC_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/utils UTILS_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/webp WEBP_SRC)
 
-add_library(duilib-webp STATIC ${DEC_SRC} ${DEMUX_SRC} ${DSP_SRC} ${ENC_SRC} ${UTILS_SRC} ${WEBP_SRC})
+add_library(dui-webp STATIC ${DEC_SRC} ${DEMUX_SRC} ${DSP_SRC} ${ENC_SRC} ${UTILS_SRC} ${WEBP_SRC})

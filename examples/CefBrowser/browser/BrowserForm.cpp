@@ -5,7 +5,7 @@
 #include "browser/DragDropManager.h"
 #include <chrono>
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     #include <iostream>
 #endif
 
@@ -219,7 +219,7 @@ void BrowserForm::OnInitWindow()
         pButton->SetVisible(false);
     }
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     //Show basic SDL information
     DString driverName = GetVideoDriverName();
     DString renderName = GetWindowRenderName();

@@ -1,4 +1,4 @@
- #include "duilib/Render/BitmapAlpha.h"
+ #include "dui/Render/BitmapAlpha.h"
 
 namespace ui
 {

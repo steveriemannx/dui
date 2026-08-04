@@ -1,7 +1,7 @@
-#include "duilib/Core/LangManager.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/FileUtil.h"
+#include "dui/Core/LangManager.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/FileUtil.h"
 
 namespace ui 
 {

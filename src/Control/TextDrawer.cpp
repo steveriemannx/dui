@@ -1,4 +1,4 @@
-#include "duilib/Control/TextDrawer.h"
+#include "dui/Control/TextDrawer.h"
 
 namespace ui
 {

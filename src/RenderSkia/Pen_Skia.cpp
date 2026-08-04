@@ -1,4 +1,4 @@
-#include "duilib/RenderSkia/Pen_Skia.h"
+#include "dui/RenderSkia/Pen_Skia.h"
 
 namespace ui {
 

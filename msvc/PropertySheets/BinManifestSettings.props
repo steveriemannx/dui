@@ -3,25 +3,25 @@
     <ImportGroup Label="PropertySheets" />
     <PropertyGroup Label="UserMacros" />
 
-    <!-- duilib项目，所有可执行程序的manifest配置 -->
+    <!-- dui项目，所有可执行程序的manifest配置 -->
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
         <Manifest>
-            <AdditionalManifestFiles>$(SolutionDir)\..\msvc\manifest\duilib.x86.manifest</AdditionalManifestFiles>
+            <AdditionalManifestFiles>$(SolutionDir)\..\msvc\manifest\dui.x86.manifest</AdditionalManifestFiles>
         </Manifest>
     </ItemDefinitionGroup>
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
         <Manifest>
-            <AdditionalManifestFiles>$(SolutionDir)\..\msvc\manifest\duilib.x86.manifest</AdditionalManifestFiles>
+            <AdditionalManifestFiles>$(SolutionDir)\..\msvc\manifest\dui.x86.manifest</AdditionalManifestFiles>
         </Manifest>
     </ItemDefinitionGroup>
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
         <Manifest>
-            <AdditionalManifestFiles>$(SolutionDir)\..\msvc\manifest\duilib.x64.manifest</AdditionalManifestFiles>
+            <AdditionalManifestFiles>$(SolutionDir)\..\msvc\manifest\dui.x64.manifest</AdditionalManifestFiles>
         </Manifest>
     </ItemDefinitionGroup>
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <Manifest>
-            <AdditionalManifestFiles>$(SolutionDir)\..\msvc\manifest\duilib.x64.manifest</AdditionalManifestFiles>
+            <AdditionalManifestFiles>$(SolutionDir)\..\msvc\manifest\dui.x64.manifest</AdditionalManifestFiles>
         </Manifest>
     </ItemDefinitionGroup>
     <ItemGroup />

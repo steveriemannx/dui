@@ -464,7 +464,7 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     ui::ListCtrlHeader* pHeaderCtrl = pListCtrl->GetHeaderCtrl();
     if (pHeaderCtrl != nullptr) {
         pHeaderCtrl->AttachRClick([this](const ui::EventArgs&) {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
             if (::MessageBox(nullptr, _T("ListCtrlHeader RClick! Run function test?"), _T(""), MB_YESNO) == IDYES) {
                 RunListCtrlTest();
             }
@@ -1458,7 +1458,7 @@ DString MainForm::GetItemFilledEventDisplayInfo(const ui::EventArgs& args)
 
 void MainForm::OutputDebugLog(const DString& logMsg)
 {
-#if defined DUILIB_BUILD_FOR_WIN && defined _DEBUG
+#if defined DUI_BUILD_FOR_WIN && defined _DEBUG
     //::OutputDebugString(logMsg.c_str());
 #endif
 }

@@ -1,11 +1,11 @@
-#include "duilib/Image/ImageDecoder_PAG.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Image/Image_Bitmap.h"
-#include "duilib/Image/Image_PAG.h"
-#include "duilib/Image/Image_Animation.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Image/ImageDecoder_PAG.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Image/Image_Bitmap.h"
+#include "dui/Image/Image_PAG.h"
+#include "dui/Image/Image_Animation.h"
+#include "dui/Utils/FilePathUtil.h"
 
-#ifdef DUILIB_IMAGE_SUPPORT_LIB_PAG
+#ifdef DUI_IMAGE_SUPPORT_LIB_PAG
 
 namespace ui
 {
@@ -75,4 +75,4 @@ std::unique_ptr<IImage> ImageDecoder_PAG::LoadImageData(const ImageDecodeParam& 
 
 } //namespace ui
 
-#endif //DUILIB_IMAGE_SUPPORT_LIB_PAG
+#endif //DUI_IMAGE_SUPPORT_LIB_PAG

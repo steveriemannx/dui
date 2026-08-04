@@ -1,8 +1,8 @@
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {

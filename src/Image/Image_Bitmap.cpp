@@ -1,5 +1,5 @@
-#include "duilib/Image/Image_Bitmap.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Image/Image_Bitmap.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {

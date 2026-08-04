@@ -1,5 +1,5 @@
-#include "duilib/Image/StateImageMap.h"
-#include "duilib/Core/Control.h"
+#include "dui/Image/StateImageMap.h"
+#include "dui/Core/Control.h"
 
 namespace ui 
 {

@@ -1,4 +1,4 @@
-#include "duilib/Utils/FileUtil.h"
+#include "dui/Utils/FileUtil.h"
 #include <stdio.h>
 
 namespace ui
@@ -8,9 +8,9 @@ bool FileUtil::ReadFileData(const FilePath& filePath, std::vector<uint8_t>& file
 {
     bool isReadOk = false;
     FILE* f = nullptr;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-    #ifdef DUILIB_UNICODE
+    #ifdef DUI_UNICODE
         ::_wfopen_s(&f, filePath.NativePath().c_str(), _T("rb"));
     #else
         ::fopen_s(&f, filePath.NativePath().c_str(), _T("rb"));
@@ -47,9 +47,9 @@ bool FileUtil::ReadFileHeaderData(const FilePath& filePath, uint32_t nReadSize, 
     }
     bool isReadOk = false;
     FILE* f = nullptr;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     ::_wfopen_s(&f, filePath.NativePath().c_str(), _T("rb"));
 #else
     ::fopen_s(&f, filePath.NativePath().c_str(), _T("rb"));
@@ -85,9 +85,9 @@ bool FileUtil::WriteFileData(const FilePath& filePath, const std::vector<uint8_t
 {
     bool isWriteOk = false;
     FILE* f = nullptr;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-    #ifdef DUILIB_UNICODE
+    #ifdef DUI_UNICODE
         ::_wfopen_s(&f, filePath.NativePath().c_str(), _T("w+b"));
     #else
         ::fopen_s(&f, filePath.NativePath().c_str(), _T("w+b"));
@@ -114,9 +114,9 @@ bool FileUtil::WriteFileData(const FilePath& filePath, const DStringW& fileData)
 {
     bool isWriteOk = false;
     FILE* f = nullptr;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     ::_wfopen_s(&f, filePath.NativePath().c_str(), _T("w+b"));
 #else
     ::fopen_s(&f, filePath.NativePath().c_str(), _T("w+b"));
@@ -143,9 +143,9 @@ bool FileUtil::WriteFileData(const FilePath& filePath, const DStringA& fileData)
 {
     bool isWriteOk = false;
     FILE* f = nullptr;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     ::_wfopen_s(&f, filePath.NativePath().c_str(), _T("w+b"));
 #else
     ::fopen_s(&f, filePath.NativePath().c_str(), _T("w+b"));

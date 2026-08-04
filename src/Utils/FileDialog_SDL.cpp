@@ -1,11 +1,11 @@
-#include "duilib/Utils/FileDialog.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Utils/FileDialog.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/StringUtil.h"
 
-#if defined(DUILIB_BUILD_FOR_SDL)
-#include "duilib/Core/MessageLoop_SDL.h"
+#if defined(DUI_BUILD_FOR_SDL)
+#include "dui/Core/MessageLoop_SDL.h"
 #include <SDL3/SDL.h>
 #endif
 
@@ -14,7 +14,7 @@ namespace ui
 
 bool FileDialog::BrowseForFolder(Window* pWindow, FilePath& folderPath, const FilePath& defaultLocation)
 {
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL)
     SDL_Window* sdlWindow = nullptr;
     if (pWindow != nullptr) {
         sdlWindow = (SDL_Window*)pWindow->NativeWnd()->GetWindowHandle();
@@ -35,7 +35,7 @@ bool FileDialog::BrowseForFolder(Window* pWindow, FilePath& folderPath, const Fi
 
 bool FileDialog::BrowseForFolders(Window* pWindow, std::vector<FilePath>& folderPaths, const FilePath& defaultLocation)
 {
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL)
     SDL_Window* sdlWindow = nullptr;
     if (pWindow != nullptr) {
         sdlWindow = (SDL_Window*)pWindow->NativeWnd()->GetWindowHandle();
@@ -59,7 +59,7 @@ bool FileDialog::BrowseForFile(Window* pWindow,
     const DString& fileName,
     const FilePath& defaultFilePath)
 {
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL)
     SDL_Window* sdlWindow = nullptr;
     if (pWindow != nullptr) {
         sdlWindow = (SDL_Window*)pWindow->NativeWnd()->GetWindowHandle();
@@ -81,7 +81,7 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
     const DString& defaultExt,
     const FilePath& defaultLocation)
 {
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL)
     SDL_Window* sdlWindow = nullptr;
     if (pWindow != nullptr) {
         sdlWindow = (SDL_Window*)pWindow->NativeWnd()->GetWindowHandle();

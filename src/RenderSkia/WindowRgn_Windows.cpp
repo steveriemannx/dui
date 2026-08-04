@@ -1,14 +1,14 @@
-#include "duilib/RenderSkia/WindowRgn_Windows.h"
+#include "dui/RenderSkia/WindowRgn_Windows.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 
 #include "include/core/SkPath.h"
 #include "include/core/SkPathBuilder.h"
 #include "include/core/SkPathMeasure.h"
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui
 {
@@ -109,4 +109,4 @@ void WindowRgn::ClearWindowRgn(HWND hWnd, bool bRedraw)
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

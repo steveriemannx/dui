@@ -1,12 +1,12 @@
-#include "duilib/Control/DateTime.h"
-#include "duilib/Core/Window.h"
+#include "dui/Control/DateTime.h"
+#include "dui/Core/Window.h"
 #include <sstream>
 #include <iomanip>
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
-    #include "duilib/Control/DateTimeWnd_Windows.h"
-#elif defined (DUILIB_BUILD_FOR_SDL) || defined (DUILIB_BUILD_FOR_WAYLAND)
-    #include "duilib/Control/DateTimeWnd_SDL.h"
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Control/DateTimeWnd_Windows.h"
+#elif defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
+    #include "dui/Control/DateTimeWnd_SDL.h"
 #endif
 
 namespace ui
@@ -23,7 +23,7 @@ DateTime::DateTime(Window* pWindow):
     SetAttribute(_T("border_color"), _T("gray"));
     SetAttribute(_T("text_align"), _T("vcenter"));
     SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     SetAttribute(_T("padding"), _T("1,1,1,1"));
     SetAttribute(_T("spin_class"), _T("rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down"));
 #endif
@@ -111,7 +111,7 @@ DString DateTime::GetDateTimeString() const
     DString dateTime;
     if (IsValidDateTime()) {
         struct tm tmSystemDate = m_dateTime;
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
         std::wstringstream ss;
 #else
         std::stringstream ss;
@@ -128,7 +128,7 @@ bool DateTime::SetDateTimeString(const DString& dateTime)
     DString sFormat = GetStringFormat();
     ASSERT(!sFormat.empty());
     struct tm t = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     std::wistringstream ss(dateTime);
 #else
     std::istringstream ss(dateTime);
@@ -138,7 +138,7 @@ bool DateTime::SetDateTimeString(const DString& dateTime)
         //After failure, intelligently recognize the separators of the year, month and day
         if (dateTime.find(_T('-')) != DString::npos) {
             StringUtil::ReplaceAll(_T("/"), _T("-"), sFormat);
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
             std::wistringstream ss2(dateTime);
 #else
             std::istringstream ss2(dateTime);
@@ -152,7 +152,7 @@ bool DateTime::SetDateTimeString(const DString& dateTime)
         }
         else if (dateTime.find(_T('/')) != DString::npos) {
             StringUtil::ReplaceAll(_T("-"), _T("/"), sFormat);
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
             std::wistringstream ss2(dateTime);
 #else
             std::istringstream ss2(dateTime);

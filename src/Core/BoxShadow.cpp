@@ -1,7 +1,7 @@
-#include "duilib/Core/BoxShadow.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/DpiManager.h"
-#include "duilib/Utils/AttributeUtil.h"
+#include "dui/Core/BoxShadow.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/DpiManager.h"
+#include "dui/Utils/AttributeUtil.h"
 #include <algorithm>
 
 namespace ui {

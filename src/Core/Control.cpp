@@ -1,27 +1,27 @@
-#include "duilib/Core/Control.h"
-#include "duilib/Core/ControlLoading.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/ColorManager.h"
-#include "duilib/Core/StateColorMap.h"
-#include "duilib/Core/StateColorMap2.h"
-#include "duilib/Image/Image.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Render/AutoClip.h"
-#include "duilib/Animation/AnimationPlayer.h"
-#include "duilib/Animation/AnimationManager.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/ControlLoading.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/ColorManager.h"
+#include "dui/Core/StateColorMap.h"
+#include "dui/Core/StateColorMap2.h"
+#include "dui/Image/Image.h"
+#include "dui/Render/IRender.h"
+#include "dui/Render/AutoClip.h"
+#include "dui/Animation/AnimationPlayer.h"
+#include "dui/Animation/AnimationManager.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/PerformanceUtil.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
-    #include "duilib/Core/ControlDropTargetImpl_Windows.h"
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Core/ControlDropTargetImpl_Windows.h"
 #endif
 
-#ifdef DUILIB_BUILD_FOR_SDL
-    #include "duilib/Core/ControlDropTargetImpl_SDL.h"
+#ifdef DUI_BUILD_FOR_SDL
+    #include "dui/Core/ControlDropTargetImpl_SDL.h"
 #endif
 
 namespace ui 
@@ -3019,7 +3019,7 @@ bool Control::OnSetFocus(const EventArgs& msg)
     if (!CheckEventType(msg, kEventSetFocus)) {
         return true;
     }
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     // By default, when the control gets focus, the input method is closed
     Window* pWindow = GetWindow();
     if (pWindow != nullptr) {
@@ -5473,7 +5473,7 @@ DString Control::GetDropFileTypes() const
 
 ControlDropTarget_Windows* Control::GetControlDropTarget()
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     if (IsEnableDragDrop() && IsEnabled()) {
         if (m_pDragDropData == nullptr) {
             m_pDragDropData = std::make_unique<TDragDropData>();
@@ -5488,7 +5488,7 @@ ControlDropTarget_Windows* Control::GetControlDropTarget()
 
 ControlDropTarget_SDL* Control::GetControlDropTarget_SDL()
 {
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     if (IsEnableDragDrop() && IsEnabled()) {
         if (m_pDragDropData == nullptr) {
             m_pDragDropData = std::make_unique<TDragDropData>();

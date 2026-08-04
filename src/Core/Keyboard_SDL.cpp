@@ -1,7 +1,7 @@
-#include "duilib/Core/Keyboard.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Core/Keyboard.h"
+#include "dui/Utils/StringConvert.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
 #include <SDL3/SDL.h>
 
@@ -133,4 +133,4 @@ DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_SDL
+#endif // DUI_BUILD_FOR_SDL

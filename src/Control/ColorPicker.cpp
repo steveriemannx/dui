@@ -1,12 +1,12 @@
-#include "duilib/Control/ColorPicker.h"
-#include "duilib/Box/TabBox.h"
-#include "duilib/Control/ColorPickerRegular.h"
-#include "duilib/Control/ColorPickerStatard.h"
-#include "duilib/Control/ColorPickerStatardGray.h"
-#include "duilib/Control/ColorPickerCustom.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/WindowCreateParam.h"
-#include "duilib/Utils/ScreenCapture.h"
+#include "dui/Control/ColorPicker.h"
+#include "dui/Box/TabBox.h"
+#include "dui/Control/ColorPickerRegular.h"
+#include "dui/Control/ColorPickerStatard.h"
+#include "dui/Control/ColorPickerStatardGray.h"
+#include "dui/Control/ColorPickerCustom.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/WindowCreateParam.h"
+#include "dui/Utils/ScreenCapture.h"
 
 namespace ui
 {
@@ -567,7 +567,7 @@ private:
                 ASSERT(colorXY < nWidth * nHeight);
                 uint32_t colorValue = pPixelBits[colorXY];
                 selColor = UiColor(colorValue);
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
                 //SDL_PIXELFORMAT_BGRA32
                 selColor = UiColor(selColor.GetR(), selColor.GetG(), selColor.GetB());
 #else
@@ -756,7 +756,7 @@ void ColorPicker::OnPickColorFromScreen()
     if (pCheckBox != nullptr) {
         bHideWindow = pCheckBox->IsSelected();
     }
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     bHideWindow = false;
 #else
     //In the SDL implementation, if the window is hidden, all child windows are hidden too, so this window cannot be hidden

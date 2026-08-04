@@ -1,12 +1,12 @@
-#include "duilib/Core/CursorManager.h"
+#include "dui/Core/CursorManager.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/FileUtil.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/FileUtil.h"
 #include <map>
 
 #include <SDL3/SDL.h>
@@ -158,7 +158,7 @@ static SDL_Cursor* LoadCursorFromData(const Window* pWindow, std::vector<uint8_t
         return nullptr;
     }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Swap R and G, the Windows platform uses the ABGR format and needs to be converted to the RGBA32 format
     // RGBA pixel structure
     struct CurRGBA {
@@ -290,4 +290,4 @@ bool CursorManager::SetCursorByID(CursorID cursorId)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WIN
+#endif // DUI_BUILD_FOR_WIN

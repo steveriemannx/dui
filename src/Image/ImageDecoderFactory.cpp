@@ -1,5 +1,5 @@
-#include "duilib/Image/ImageDecoderFactory.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/Image/ImageDecoderFactory.h"
+#include "dui/Utils/PerformanceUtil.h"
 
 namespace ui
 {

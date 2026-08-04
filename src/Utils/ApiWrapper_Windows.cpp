@@ -1,11 +1,11 @@
-#include "duilib/Utils/ApiWrapper_Windows.h"
+#include "dui/Utils/ApiWrapper_Windows.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
 #include <VersionHelpers.h>
 #include <map>
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
 
 namespace ui
 {
@@ -865,4 +865,4 @@ bool CreateIconsFromData(const std::vector<uint8_t>& iconFileData,
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

@@ -1,94 +1,94 @@
 ## XML node names of the controls
 | Class Name | XML Node Name |Associated Header File| Remarks |
 | :--- | :--- |:--- | :--- |
-| Control | "Control" | [include/duilib/Core/Control.h](../include/duilib/Core/Control.h) | |
-| ControlDragable | "ControlDragable" | [include/duilib/Core/ControlDragable.h](../include/duilib/Core/ControlDragable.h) | |
-| Box | "Box"| [include/duilib/Core/Box.h](../include/duilib/Core/Box.h) | |
-| VBox | "VBox"| [include/duilib/Box/VBox.h](../include/duilib/Box/VBox.h) | |
-| HBox | "HBox"| [include/duilib/Box/HBox.h](../include/duilib/Box/HBox.h) | |
-| VFlowBox | "VFlowBox"| [include/duilib/Box/VBox.h](../include/duilib/Box/VBox.h) | |
-| HFlowBox | "HFlowBox"| [include/duilib/Box/HBox.h](../include/duilib/Box/HBox.h) | |
-| BoxDragable | "BoxDragable" | [include/duilib/Core/ControlDragable.h](../include/duilib/Core/ControlDragable.h) | |
-| HBoxDragable | "HBoxDragable" | [include/duilib/Core/ControlDragable.h](../include/duilib/Core/ControlDragable.h) | |
-| VBoxDragable | "VBoxDragable" | [include/duilib/Core/ControlDragable.h](../include/duilib/Core/ControlDragable.h) | |
-| TabBox | "TabBox"| [include/duilib/Box/TabBox.h](../include/duilib/Box/TabBox.h) | |
-| VTileBox | "VTileBox"| [include/duilib/Box/TileBox.h](../include/duilib/Box/TileBox.h) | |
-| HTileBox | "HTileBox"| [include/duilib/Box/TileBox.h](../include/duilib/Box/TileBox.h) | |
-| ScrollBox | "ScrollBox"| [include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | |
-| VScrollBox | "VScrollBox"| [include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | |
-| HScrollBox | "HScrollBox"| [include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | |
-| VFlowScrollBox | "VFlowScrollBox"| [include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | |
-| HFlowScrollBox | "HFlowScrollBox"| [include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | |
-| VTileScrollBox | "VTileScrollBox"| [include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | |
-| HTileScrollBox | "HTileScrollBox"| [include/duilib/Box/ScrollBox.h](../include/duilib/Box/ScrollBox.h) | |
-| ListBoxItem | "ListBoxItem"| [include/duilib/Box/ListBoxItem.h](../include/duilib/Box/ListBoxItem.h) | |
-| ListBox | "ListBox"| [include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | |
-| VListBox | "VListBox"| [include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | |
-| HListBox | "HListBox"| [include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | |
-| VTileListBox | "VTileListBox"| [include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | |
-| HTileListBox | "HTileListBox"| [include/duilib/Box/ListBox.h](../include/duilib/Box/ListBox.h) | |
-| VirtualListBox | "VirtualListBox"| [include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | |
-| VirtualVListBox | "VirtualVListBox"| [include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | |
-| VirtualHListBox | "VirtualHListBox"| [include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | |
-| VirtualVTileListBox | "VirtualVTileListBox"| [include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | |
-| VirtualHTileListBox | "VirtualHTileListBox"| [include/duilib/Box/VirtualListBox.h](../include/duilib/Box/VirtualListBox.h) | |
-| ScrollBar | "ScrollBar"| [include/duilib/Core/ScrollBar.h](../include/duilib/Core/ScrollBar.h) | |
-| Label | "Label"| [include/duilib/Control/Label.h](../include/duilib/Control/Label.h) | |
-| LabelBox | "LabelBox"| [include/duilib/Control/Label.h](../include/duilib/Control/Label.h) | |
-| LabelHBox | "LabelHBox"| [include/duilib/Control/Label.h](../include/duilib/Control/Label.h) | |
-| LabelVBox | "LabelVBox"| [include/duilib/Control/Label.h](../include/duilib/Control/Label.h) | |
-| Button | "Button"| [include/duilib/Control/Button.h](../include/duilib/Control/Button.h) | |
-| ButtonBox | "ButtonBox"| [include/duilib/Control/Button.h](../include/duilib/Control/Button.h) | |
-| ButtonHBox | "ButtonHBox"| [include/duilib/Control/Button.h](../include/duilib/Control/Button.h) | |
-| ButtonVBox | "ButtonVBox"| [include/duilib/Control/Button.h](../include/duilib/Control/Button.h) | |
-| CheckBox | "CheckBox"| [include/duilib/Control/CheckBox.h](../include/duilib/Control/CheckBox.h) | |
-| CheckBoxBox | "CheckBoxBox"| [include/duilib/Control/CheckBox.h](../include/duilib/Control/CheckBox.h) | |
-| CheckBoxHBox | "CheckBoxHBox"| [include/duilib/Control/CheckBox.h](../include/duilib/Control/CheckBox.h) | |
-| CheckBoxVBox | "CheckBoxVBox"| [include/duilib/Control/CheckBox.h](../include/duilib/Control/CheckBox.h) | |
-| Option | "Option"| [include/duilib/Control/Option.h](../include/duilib/Control/Option.h) | |
-| OptionBox | "OptionBox"| [include/duilib/Control/Option.h](../include/duilib/Control/Option.h) | |
-| OptionHBox | "OptionHBox"| [include/duilib/Control/Option.h](../include/duilib/Control/Option.h) | |
-| OptionVBox | "OptionVBox"| [include/duilib/Control/Option.h](../include/duilib/Control/Option.h) | |
-| GroupBox | "GroupBox"| [include/duilib/Control/GroupBox.h](../include/duilib/Control/GroupBox.h) | |
-| GroupVBox | "GroupVBox"| [include/duilib/Control/GroupBox.h](../include/duilib/Control/GroupBox.h) | |
-| GroupHBox | "GroupHBox"| [include/duilib/Control/GroupBox.h](../include/duilib/Control/GroupBox.h) | |
-| Combo | "Combo"| [include/duilib/Control/Combo.h](../include/duilib/Control/Combo.h) | |
-| ComboButton | "ComboButton"| [include/duilib/Control/ComboButton.h](../include/duilib/Control/ComboButton.h) | |
-| CheckCombo | "CheckCombo"| [include/duilib/Control/CheckCombo.h](../include/duilib/Control/CheckCombo.h) | |
-| FilterCombo | "FilterCombo"| [include/duilib/Control/FilterCombo.h](../include/duilib/Control/FilterCombo.h) | |
-| DateTime | "DateTime"| [include/duilib/Control/DateTime.h](../include/duilib/Control/DateTime.h) | |
-| HotKey | "HotKey"| [include/duilib/Control/HotKey.h](../include/duilib/Control/HotKey.h) | |
-| HyperLink | "HyperLink"| [include/duilib/Control/HyperLink.h](../include/duilib/Control/HyperLink.h) | |
-| IPAddress | "IPAddress"| [include/duilib/Control/IPAddress.h](../include/duilib/Control/IPAddress.h) | |
-| Line | "Line"| [include/duilib/Control/Line.h](../include/duilib/Control/Line.h) | |
-| Progress | "Progress"| [include/duilib/Control/Progress.h](../include/duilib/Control/Progress.h) | |
-| Slider | "Slider"| [include/duilib/Control/Slider.h](../include/duilib/Control/Slider.h) | |
-| CircleProgress | "CircleProgress"| [include/duilib/Control/CircleProgress.h](../include/duilib/Control/CircleProgress.h) | |
-| RichEdit | "RichEdit"| [include/duilib/Control/RichEdit.h](../include/duilib/Control/RichEdit.h) | |
-| RichText | "RichText"| [include/duilib/Control/RichText.h](../include/duilib/Control/RichText.h) | |
-| Split | "Split"| [include/duilib/Control/Split.h](../include/duilib/Control/Split.h) | |
-| SplitBox | "SplitBox"| [include/duilib/Control/Split.h](../include/duilib/Control/Split.h) | |
-| TabCtrl | "TabCtrl"| [include/duilib/Control/TabCtrl.h](../include/duilib/Control/TabCtrl.h) | |
-| TabCtrlItem | "TabCtrlItem"| [include/duilib/Control/TabCtrl.h](../include/duilib/Control/TabCtrl.h) | |
-| TreeNode | "TreeNode"| [include/duilib/Control/TreeView.h](../include/duilib/Control/TreeView.h) | |
-| TreeView | "TreeView"| [include/duilib/Control/TreeView.h](../include/duilib/Control/TreeView.h) | |
-| TreeNode | "TreeNode"| [include/duilib/Control/TreeView.h](../include/duilib/Control/TreeView.h) | |
-| DirectoryTree | "DirectoryTree"| [include/duilib/Control/DirectoryTree.h](../include/duilib/Control/DirectoryTree.h) | |
-| ListCtrl | "ListCtrl"| [include/duilib/Control/ListCtrl.h](../include/duilib/Control/ListCtrl.h) | |
-| PropertyGrid | "PropertyGrid"| [include/duilib/Control/PropertyGrid.h](../include/duilib/Control/PropertyGrid.h) | |
-| ColorControl | "ColorControl"| [include/duilib/Control/ColorControl.h](../include/duilib/Control/ColorControl.h) | |
-| ColorSlider | "ColorSlider"| [include/duilib/Control/ColorSlider.h](../include/duilib/Control/ColorSlider.h) | |
-| ColorPickerRegular | "ColorPickerRegular"| [include/duilib/Control/ColorPickerRegular.h](../include/duilib/Control/ColorPickerRegular.h) | |
-| ColorPickerStatard | "ColorPickerStatard"| [include/duilib/Control/ColorPickerStatard.h](../include/duilib/Control/ColorPickerStatard.h) | |
-| ColorPickerStatardGray | "ColorPickerStatardGray"| [include/duilib/Control/ColorPickerStatardGray.h](../include/duilib/Control/ColorPickerStatardGray.h) | |
-| ColorPickerCustom | "ColorPickerCustom"| [include/duilib/Control/ColorPickerCustom.h](../include/duilib/Control/ColorPickerCustom.h) | |
-| CefControl | "CefControl"| [include/duilib/CEFControl/CefControl.h](../include/duilib/CEFControl/CefControl.h) | |
-| WebView2Control | "WebView2Control"| [include/duilib/WebView2/WebView2Control.h](../include/duilib/WebView2/WebView2Control.h) | |
+| Control | "Control" | [include/dui/Core/Control.h](../include/dui/Core/Control.h) | |
+| ControlDragable | "ControlDragable" | [include/dui/Core/ControlDragable.h](../include/dui/Core/ControlDragable.h) | |
+| Box | "Box"| [include/dui/Core/Box.h](../include/dui/Core/Box.h) | |
+| VBox | "VBox"| [include/dui/Box/VBox.h](../include/dui/Box/VBox.h) | |
+| HBox | "HBox"| [include/dui/Box/HBox.h](../include/dui/Box/HBox.h) | |
+| VFlowBox | "VFlowBox"| [include/dui/Box/VBox.h](../include/dui/Box/VBox.h) | |
+| HFlowBox | "HFlowBox"| [include/dui/Box/HBox.h](../include/dui/Box/HBox.h) | |
+| BoxDragable | "BoxDragable" | [include/dui/Core/ControlDragable.h](../include/dui/Core/ControlDragable.h) | |
+| HBoxDragable | "HBoxDragable" | [include/dui/Core/ControlDragable.h](../include/dui/Core/ControlDragable.h) | |
+| VBoxDragable | "VBoxDragable" | [include/dui/Core/ControlDragable.h](../include/dui/Core/ControlDragable.h) | |
+| TabBox | "TabBox"| [include/dui/Box/TabBox.h](../include/dui/Box/TabBox.h) | |
+| VTileBox | "VTileBox"| [include/dui/Box/TileBox.h](../include/dui/Box/TileBox.h) | |
+| HTileBox | "HTileBox"| [include/dui/Box/TileBox.h](../include/dui/Box/TileBox.h) | |
+| ScrollBox | "ScrollBox"| [include/dui/Box/ScrollBox.h](../include/dui/Box/ScrollBox.h) | |
+| VScrollBox | "VScrollBox"| [include/dui/Box/ScrollBox.h](../include/dui/Box/ScrollBox.h) | |
+| HScrollBox | "HScrollBox"| [include/dui/Box/ScrollBox.h](../include/dui/Box/ScrollBox.h) | |
+| VFlowScrollBox | "VFlowScrollBox"| [include/dui/Box/ScrollBox.h](../include/dui/Box/ScrollBox.h) | |
+| HFlowScrollBox | "HFlowScrollBox"| [include/dui/Box/ScrollBox.h](../include/dui/Box/ScrollBox.h) | |
+| VTileScrollBox | "VTileScrollBox"| [include/dui/Box/ScrollBox.h](../include/dui/Box/ScrollBox.h) | |
+| HTileScrollBox | "HTileScrollBox"| [include/dui/Box/ScrollBox.h](../include/dui/Box/ScrollBox.h) | |
+| ListBoxItem | "ListBoxItem"| [include/dui/Box/ListBoxItem.h](../include/dui/Box/ListBoxItem.h) | |
+| ListBox | "ListBox"| [include/dui/Box/ListBox.h](../include/dui/Box/ListBox.h) | |
+| VListBox | "VListBox"| [include/dui/Box/ListBox.h](../include/dui/Box/ListBox.h) | |
+| HListBox | "HListBox"| [include/dui/Box/ListBox.h](../include/dui/Box/ListBox.h) | |
+| VTileListBox | "VTileListBox"| [include/dui/Box/ListBox.h](../include/dui/Box/ListBox.h) | |
+| HTileListBox | "HTileListBox"| [include/dui/Box/ListBox.h](../include/dui/Box/ListBox.h) | |
+| VirtualListBox | "VirtualListBox"| [include/dui/Box/VirtualListBox.h](../include/dui/Box/VirtualListBox.h) | |
+| VirtualVListBox | "VirtualVListBox"| [include/dui/Box/VirtualListBox.h](../include/dui/Box/VirtualListBox.h) | |
+| VirtualHListBox | "VirtualHListBox"| [include/dui/Box/VirtualListBox.h](../include/dui/Box/VirtualListBox.h) | |
+| VirtualVTileListBox | "VirtualVTileListBox"| [include/dui/Box/VirtualListBox.h](../include/dui/Box/VirtualListBox.h) | |
+| VirtualHTileListBox | "VirtualHTileListBox"| [include/dui/Box/VirtualListBox.h](../include/dui/Box/VirtualListBox.h) | |
+| ScrollBar | "ScrollBar"| [include/dui/Core/ScrollBar.h](../include/dui/Core/ScrollBar.h) | |
+| Label | "Label"| [include/dui/Control/Label.h](../include/dui/Control/Label.h) | |
+| LabelBox | "LabelBox"| [include/dui/Control/Label.h](../include/dui/Control/Label.h) | |
+| LabelHBox | "LabelHBox"| [include/dui/Control/Label.h](../include/dui/Control/Label.h) | |
+| LabelVBox | "LabelVBox"| [include/dui/Control/Label.h](../include/dui/Control/Label.h) | |
+| Button | "Button"| [include/dui/Control/Button.h](../include/dui/Control/Button.h) | |
+| ButtonBox | "ButtonBox"| [include/dui/Control/Button.h](../include/dui/Control/Button.h) | |
+| ButtonHBox | "ButtonHBox"| [include/dui/Control/Button.h](../include/dui/Control/Button.h) | |
+| ButtonVBox | "ButtonVBox"| [include/dui/Control/Button.h](../include/dui/Control/Button.h) | |
+| CheckBox | "CheckBox"| [include/dui/Control/CheckBox.h](../include/dui/Control/CheckBox.h) | |
+| CheckBoxBox | "CheckBoxBox"| [include/dui/Control/CheckBox.h](../include/dui/Control/CheckBox.h) | |
+| CheckBoxHBox | "CheckBoxHBox"| [include/dui/Control/CheckBox.h](../include/dui/Control/CheckBox.h) | |
+| CheckBoxVBox | "CheckBoxVBox"| [include/dui/Control/CheckBox.h](../include/dui/Control/CheckBox.h) | |
+| Option | "Option"| [include/dui/Control/Option.h](../include/dui/Control/Option.h) | |
+| OptionBox | "OptionBox"| [include/dui/Control/Option.h](../include/dui/Control/Option.h) | |
+| OptionHBox | "OptionHBox"| [include/dui/Control/Option.h](../include/dui/Control/Option.h) | |
+| OptionVBox | "OptionVBox"| [include/dui/Control/Option.h](../include/dui/Control/Option.h) | |
+| GroupBox | "GroupBox"| [include/dui/Control/GroupBox.h](../include/dui/Control/GroupBox.h) | |
+| GroupVBox | "GroupVBox"| [include/dui/Control/GroupBox.h](../include/dui/Control/GroupBox.h) | |
+| GroupHBox | "GroupHBox"| [include/dui/Control/GroupBox.h](../include/dui/Control/GroupBox.h) | |
+| Combo | "Combo"| [include/dui/Control/Combo.h](../include/dui/Control/Combo.h) | |
+| ComboButton | "ComboButton"| [include/dui/Control/ComboButton.h](../include/dui/Control/ComboButton.h) | |
+| CheckCombo | "CheckCombo"| [include/dui/Control/CheckCombo.h](../include/dui/Control/CheckCombo.h) | |
+| FilterCombo | "FilterCombo"| [include/dui/Control/FilterCombo.h](../include/dui/Control/FilterCombo.h) | |
+| DateTime | "DateTime"| [include/dui/Control/DateTime.h](../include/dui/Control/DateTime.h) | |
+| HotKey | "HotKey"| [include/dui/Control/HotKey.h](../include/dui/Control/HotKey.h) | |
+| HyperLink | "HyperLink"| [include/dui/Control/HyperLink.h](../include/dui/Control/HyperLink.h) | |
+| IPAddress | "IPAddress"| [include/dui/Control/IPAddress.h](../include/dui/Control/IPAddress.h) | |
+| Line | "Line"| [include/dui/Control/Line.h](../include/dui/Control/Line.h) | |
+| Progress | "Progress"| [include/dui/Control/Progress.h](../include/dui/Control/Progress.h) | |
+| Slider | "Slider"| [include/dui/Control/Slider.h](../include/dui/Control/Slider.h) | |
+| CircleProgress | "CircleProgress"| [include/dui/Control/CircleProgress.h](../include/dui/Control/CircleProgress.h) | |
+| RichEdit | "RichEdit"| [include/dui/Control/RichEdit.h](../include/dui/Control/RichEdit.h) | |
+| RichText | "RichText"| [include/dui/Control/RichText.h](../include/dui/Control/RichText.h) | |
+| Split | "Split"| [include/dui/Control/Split.h](../include/dui/Control/Split.h) | |
+| SplitBox | "SplitBox"| [include/dui/Control/Split.h](../include/dui/Control/Split.h) | |
+| TabCtrl | "TabCtrl"| [include/dui/Control/TabCtrl.h](../include/dui/Control/TabCtrl.h) | |
+| TabCtrlItem | "TabCtrlItem"| [include/dui/Control/TabCtrl.h](../include/dui/Control/TabCtrl.h) | |
+| TreeNode | "TreeNode"| [include/dui/Control/TreeView.h](../include/dui/Control/TreeView.h) | |
+| TreeView | "TreeView"| [include/dui/Control/TreeView.h](../include/dui/Control/TreeView.h) | |
+| TreeNode | "TreeNode"| [include/dui/Control/TreeView.h](../include/dui/Control/TreeView.h) | |
+| DirectoryTree | "DirectoryTree"| [include/dui/Control/DirectoryTree.h](../include/dui/Control/DirectoryTree.h) | |
+| ListCtrl | "ListCtrl"| [include/dui/Control/ListCtrl.h](../include/dui/Control/ListCtrl.h) | |
+| PropertyGrid | "PropertyGrid"| [include/dui/Control/PropertyGrid.h](../include/dui/Control/PropertyGrid.h) | |
+| ColorControl | "ColorControl"| [include/dui/Control/ColorControl.h](../include/dui/Control/ColorControl.h) | |
+| ColorSlider | "ColorSlider"| [include/dui/Control/ColorSlider.h](../include/dui/Control/ColorSlider.h) | |
+| ColorPickerRegular | "ColorPickerRegular"| [include/dui/Control/ColorPickerRegular.h](../include/dui/Control/ColorPickerRegular.h) | |
+| ColorPickerStatard | "ColorPickerStatard"| [include/dui/Control/ColorPickerStatard.h](../include/dui/Control/ColorPickerStatard.h) | |
+| ColorPickerStatardGray | "ColorPickerStatardGray"| [include/dui/Control/ColorPickerStatardGray.h](../include/dui/Control/ColorPickerStatardGray.h) | |
+| ColorPickerCustom | "ColorPickerCustom"| [include/dui/Control/ColorPickerCustom.h](../include/dui/Control/ColorPickerCustom.h) | |
+| CefControl | "CefControl"| [include/dui/CEFControl/CefControl.h](../include/dui/CEFControl/CefControl.h) | |
+| WebView2Control | "WebView2Control"| [include/dui/WebView2/WebView2Control.h](../include/dui/WebView2/WebView2Control.h) | |
 
 ## XML node names of the window-related controls
 | Class Name | XML Node Name |Associated Header File| Remarks |
 | :--- | :--- |:--- | :--- |
-| Window | "Window" | [include/duilib/Core/Window.h](../include/duilib/Core/Window.h) | |
-| Menu | "Menu" | [include/duilib/Control/Menu.h](../include/duilib/Control/Menu.h) | |
-| SubMenu | "SubMenu" | [include/duilib/Control/Menu.h](../include/duilib/Control/Menu.h) | |
-| MenuItem | "MenuItem" | [include/duilib/Control/Menu.h](../include/duilib/Control/Menu.h) | |
+| Window | "Window" | [include/dui/Core/Window.h](../include/dui/Core/Window.h) | |
+| Menu | "Menu" | [include/dui/Control/Menu.h](../include/dui/Control/Menu.h) | |
+| SubMenu | "SubMenu" | [include/dui/Control/Menu.h](../include/dui/Control/Menu.h) | |
+| MenuItem | "MenuItem" | [include/dui/Control/Menu.h](../include/dui/Control/Menu.h) | |

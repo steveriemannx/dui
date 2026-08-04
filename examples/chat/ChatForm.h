@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_LAYOUTS_FORM_H_
 #define EXAMPLES_LAYOUTS_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 class ChatForm : public ui::WindowImplBase
 {

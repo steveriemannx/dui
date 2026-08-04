@@ -1,6 +1,6 @@
-#include "duilib/WebView2/WebView2EnvironmentOptions.h"
+#include "dui/WebView2/WebView2EnvironmentOptions.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && defined (DUILIB_BUILD_FOR_WEBVIEW2)
+#if defined (DUI_BUILD_FOR_WIN) && defined (DUI_BUILD_FOR_WEBVIEW2)
 
 namespace ui
 {
@@ -372,4 +372,4 @@ HRESULT WebView2EnvironmentOptions::CreateInstance(ICoreWebView2EnvironmentOptio
 
 } //namespace ui
 
-#endif //defined (DUILIB_BUILD_FOR_WIN) && defined (DUILIB_BUILD_FOR_WEBVIEW2)
+#endif //defined (DUI_BUILD_FOR_WIN) && defined (DUI_BUILD_FOR_WEBVIEW2)

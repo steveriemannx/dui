@@ -31,7 +31,7 @@
 #ifndef ZLIB_H
 #define ZLIB_H
 
-//duilib adapted for VC and cmake builds (formerly zconf.h; the generated file is identical on all platforms, so the msvc-generated file is used to avoid cmake regeneration overwriting it)
+//dui adapted for VC and cmake builds (formerly zconf.h; the generated file is identical on all platforms, so the msvc-generated file is used to avoid cmake regeneration overwriting it)
 #include "zconf_msvc.h"
 
 #ifdef __cplusplus

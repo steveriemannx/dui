@@ -37,7 +37,7 @@ void ControlForm::OnInitWindow()
     // Build-time generated from controls.xml
     ::InitControls(this);  // Build-time generated function (distinct from Window::InitControls, uses the global scope)
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     //Display basic SDL information
     ui::Label* pTitle = dynamic_cast<ui::Label*>(FindControl(_T("window_title")));
     if (pTitle != nullptr) {
@@ -874,7 +874,7 @@ void ControlForm::ShowTrayIcon(bool bShow)
 {
     if (bShow) {
         // Create the tray icon
-        m_pTrayIcon = ui::TrayIcon::Create(this, _T("public/caption/logo.ico"), _T("controls(nim_duilib)"));
+        m_pTrayIcon = ui::TrayIcon::Create(this, _T("public/caption/logo.ico"), _T("controls(dui)"));
         if (m_pTrayIcon != nullptr) {
             // Set the message callback
             m_pTrayIcon->SetMessageCallback([this](ui::TrayIconMessageType msgType, int32_t x, int32_t y)

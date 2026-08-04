@@ -1,11 +1,11 @@
-#include "duilib/Control/DateTimeWnd_Windows.h"
-#include "duilib/Control/DateTime.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Control/DateTimeWnd_Windows.h"
+#include "dui/Control/DateTime.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #include <windowsx.h>
 #include <ctime>
@@ -168,7 +168,7 @@ DString DateTimeWnd::GetWindowClassName() const
     return _T("DateTimeWnd");
 }
 
-static const DStringW::value_type* sPropName = L"DuiLibDateTimeWndX"; // Property name
+static const DStringW::value_type* sPropName = L"DuiDateTimeWndX"; // Property name
 
 LRESULT CALLBACK DateTimeWnd::__ControlProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -373,4 +373,4 @@ SYSTEMTIME DateTimeWnd::StdTimeToSystemTime(const struct tm& tmTime) const
 
 }//namespace ui
 
-#endif // (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#endif // (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)

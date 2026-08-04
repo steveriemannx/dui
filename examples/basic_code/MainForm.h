@@ -1,7 +1,7 @@
 #ifndef EXAMPLES_BASIC_CODE_MAIN_FORM_H_
 #define EXAMPLES_BASIC_CODE_MAIN_FORM_H_
 
-#include "duilib/duilib.h"
+#include "dui/dui.h"
 
 /** Mode 3 (pure code): the window layout is built entirely with C++ code, with no layout XML
 */

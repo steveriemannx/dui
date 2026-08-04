@@ -1,11 +1,11 @@
 #ifndef EXAMPLES_CEF_FORM_H_
 #define EXAMPLES_CEF_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 // CEF
-#include "duilib/duilib_cef.h"
+#include "dui/dui_cef.h"
 
 // Controls whether to use off-screen rendering:
 // When true, the default window shadow scheme is used, and the window has the WS_EX_LAYERED attribute in off-screen rendering mode;
@@ -14,7 +14,7 @@ const bool kEnableOffScreenRendering = false;
 
 /** Window of the CEF control
 */
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
 class CefForm: public std::conditional<kEnableOffScreenRendering, ui::WindowImplBase, ui::ShadowWnd>::type,
                public ui::CefControlEvent
 #else

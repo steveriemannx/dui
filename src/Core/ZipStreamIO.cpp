@@ -1,4 +1,4 @@
-#include "duilib/Core/ZipStreamIO.h"
+#include "dui/Core/ZipStreamIO.h"
 
 namespace ui 
 {

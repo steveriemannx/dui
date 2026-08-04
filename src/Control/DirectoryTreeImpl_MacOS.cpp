@@ -1,18 +1,18 @@
-#include "duilib/Control/DirectoryTreeImpl.h"
+#include "dui/Control/DirectoryTreeImpl.h"
 
-#ifdef DUILIB_BUILD_FOR_MACOS
+#ifdef DUI_BUILD_FOR_MACOS
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/FilePath.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/FilePath.h"
+#include "dui/Utils/FilePathUtil.h"
 
 #include <fstream>
 #include <sys/statvfs.h>
 #include <stdio.h>
 
-#ifdef DUILIB_BIT_64
+#ifdef DUI_BIT_64
     #define __USE_FILE_OFFSET64
 #endif
 #include <sys/stat.h>
@@ -509,4 +509,4 @@ void DirectoryTreeImpl::GetDiskInfoList(const std::weak_ptr<WeakFlag>& /*weakFla
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_MACOS
+#endif //DUI_BUILD_FOR_MACOS

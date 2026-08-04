@@ -74,7 +74,7 @@ void AboutForm::BuildUI()
 
     ui::Label* pTooltip = new ui::Label(this);
     pTooltip->SetName(_T("tooltip"));
-    pTooltip->SetText(_T("nim_duilib controls example."));
+    pTooltip->SetText(_T("dui controls example."));
     pTooltip->SetAttribute(_T("width"), _T("stretch"));
     pTooltip->SetAttribute(_T("text_align"), _T("center"));
     pCenter->AddItem(pTooltip);
@@ -82,7 +82,7 @@ void AboutForm::BuildUI()
     ui::Label* pLink = new ui::Label(this);
     pLink->SetName(_T("link"));
     pLink->SetAttribute(_T("width"), _T("stretch"));
-    pLink->SetText(_T("https://github.com/rhett-lee/nim_duilib"));
+    pLink->SetText(_T("https://github.com/steveriemannx/dui"));
     pLink->SetAttribute(_T("normal_text_color"), _T("blue"));
     pLink->SetAttribute(_T("text_align"), _T("center"));
     pLink->SetAttribute(_T("cursor_type"), _T("hand"));

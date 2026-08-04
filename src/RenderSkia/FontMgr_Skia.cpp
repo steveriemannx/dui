@@ -1,8 +1,8 @@
-#include "duilib/RenderSkia/FontMgr_Skia.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/RenderSkia/FontMgr_Skia.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/PerformanceUtil.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "include/core/SkFontMgr.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkData.h"
@@ -23,7 +23,7 @@
     #include "include/ports/SkFontScanner_FreeType.h"
 #endif
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 #include <map>
 

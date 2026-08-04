@@ -1,7 +1,7 @@
-#include "duilib/Utils/WinImplBase.h"
-#include "duilib/Core/WindowBuilder.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Utils/FilePath.h"
+#include "dui/Utils/WinImplBase.h"
+#include "dui/Core/WindowBuilder.h"
+#include "dui/Core/Box.h"
+#include "dui/Utils/FilePath.h"
 
 namespace ui
 {
@@ -79,7 +79,7 @@ void WindowImplBase::BindCaptionButtons()
         bFoundAny = true;
     }
 
-#if defined (DUILIB_BUILD_FOR_SDL) && !defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_SDL) && !defined (DUI_BUILD_FOR_WIN)
     //Title bar: since SDL does not support double-clicking the title bar to maximize/restore the window, implement this logic ourselves (non-Windows platforms)
     pControl = FindControl(DUI_CTR_CAPTION_BAR);
     if (pControl) {

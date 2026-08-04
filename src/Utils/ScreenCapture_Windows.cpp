@@ -1,9 +1,9 @@
-#include "duilib/Utils/ScreenCapture.h"
+#include "dui/Utils/ScreenCapture.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Control.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Control.h"
 
 namespace ui
 {
@@ -99,4 +99,4 @@ std::shared_ptr<IBitmap> ScreenCapture::CaptureBitmap(const Window* pWindow)
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

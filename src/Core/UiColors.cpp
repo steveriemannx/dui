@@ -1,11 +1,11 @@
-#include "duilib/Core/UiColors.h"
+#include "dui/Core/UiColors.h"
 
 // Include all the basic type data structures, to test for compilation errors etc. during the development stage
-#include "duilib/Core/UiColor.h"
-#include "duilib/Core/UiFont.h"
-#include "duilib/Core/UiRect.h"
-#include "duilib/Core/UiSize.h"
-#include "duilib/Core/UiPoint.h"
+#include "dui/Core/UiColor.h"
+#include "dui/Core/UiFont.h"
+#include "dui/Core/UiRect.h"
+#include "dui/Core/UiSize.h"
+#include "dui/Core/UiPoint.h"
 
 namespace ui 
 {

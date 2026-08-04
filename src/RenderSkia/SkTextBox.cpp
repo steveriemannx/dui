@@ -5,15 +5,15 @@
  * found in the LICENSE file.
  */
 
-#include "duilib/RenderSkia/SkTextBox.h"
-#include "duilib/RenderSkia/SkUtils.h"
+#include "dui/RenderSkia/SkTextBox.h"
+#include "dui/RenderSkia/SkUtils.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkFontMetrics.h"
 #include "include/core/SkTextBlob.h"
 #include "include/core/SkSpan.h"
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 //The origin of this file's original source: skia/chrome_67/src/utils/SkTextBox.cpp
 //Based on the original file, with modifications to be compatible with the latest version of the skia code (2023-06-25)

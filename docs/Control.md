@@ -8,7 +8,7 @@ The `Control` control is the base class of all available controls and contains t
 <Control width="stretch"/>
 ```
 
-| Attribute Name | Default Value | Parameter Type | Function in [Control.h](../include/duilib/Core/Control.h) | Purpose |
+| Attribute Name | Default Value | Parameter Type | Function in [Control.h](../include/dui/Core/Control.h) | Purpose |
 | :--- | :--- | :--- | :---| :--- |
 | class |  | string | SetClass|Control style; sets this control's attributes using the attribute values from the style, e.g. (btn_default). Multiple styles can be specified at the same time, separated by spaces; it must be written in the first attribute position |
 | name |  | string | SetName|Control name; it is recommended to keep it unique within the same window, otherwise query efficiency is affected and the correct result may not be found |
@@ -631,7 +631,7 @@ The HBoxResizable control inherits the `ControlResizableT` and `HBox` attributes
 The VBoxResizable control inherits the `ControlResizableT` and `VBox` attributes; for more available attributes, refer to the `ControlResizableT` and `VBox` attributes
 
 ## ListBoxItem Attributes
-ListBoxItem is a concrete implementation of the ListBoxItemTemplate template class, defined in the `duilib/Box/ListBoxItem.h` file; there are three related type definitions:    
+ListBoxItem is a concrete implementation of the ListBoxItemTemplate template class, defined in the `dui/Box/ListBoxItem.h` file; there are three related type definitions:    
 ```
 typedef ListBoxItemTemplate<Box> ListBoxItem;
 typedef ListBoxItemTemplate<HBox> ListBoxItemH;

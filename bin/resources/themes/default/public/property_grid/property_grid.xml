@@ -54,16 +54,16 @@
     
     <PropertyGrid>
         <!-- Table header -->
-        <HBox name="duilib_property_grid_header">
-            <Label name="duilib_property_grid_header_left" text="Property" width="45%" height="100%" text_padding="4" text_align="vcenter,hcenter"/>
-            <Split name="duilib_property_grid_header_split" bkcolor="darkgray" width="2" margin="0,1,0,1"/>
-            <Label name="duilib_property_grid_header_right" text="Get Value" width="55%" height="100%" text_padding="4" text_align="vcenter,hcenter"/>
+        <HBox name="dui_property_grid_header">
+            <Label name="dui_property_grid_header_left" text="Property" width="45%" height="100%" text_padding="4" text_align="vcenter,hcenter"/>
+            <Split name="dui_property_grid_header_split" bkcolor="darkgray" width="2" margin="0,1,0,1"/>
+            <Label name="dui_property_grid_header_right" text="Get Value" width="55%" height="100%" text_padding="4" text_align="vcenter,hcenter"/>
         </HBox>
         <!-- Groups and properties -->
-        <TreeView class="tree_view" name="duilib_property_grid_tree" expand_image_class="property_grid_expand" indent="20" multi_select="false"/>
+        <TreeView class="tree_view" name="dui_property_grid_tree" expand_image_class="property_grid_expand" indent="20" multi_select="false"/>
         <!-- Splitter bar -->
-        <Split name="duilib_property_grid_description_area_split" bkcolor="darkgray" height="2" margin="1,0,1,0"/>
+        <Split name="dui_property_grid_description_area_split" bkcolor="darkgray" height="2" margin="1,0,1,0"/>
         <!-- Bottom description area -->
-        <RichText name="duilib_property_grid_description_area" width="100%" height="64" text_padding="4" bkcolor="white" text_align="vcenter" border_size="1" border_color="lightgray"/>
+        <RichText name="dui_property_grid_description_area" width="100%" height="64" text_padding="4" bkcolor="white" text_align="vcenter" border_size="1" border_color="lightgray"/>
     </PropertyGrid>
 </Window>

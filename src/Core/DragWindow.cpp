@@ -1,5 +1,5 @@
-#include "duilib/Core/DragWindow.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Core/DragWindow.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {

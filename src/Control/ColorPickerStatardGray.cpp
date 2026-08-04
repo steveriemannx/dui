@@ -1,6 +1,6 @@
-#include "duilib/Control/ColorPickerStatardGray.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Control/ColorPickerStatardGray.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {

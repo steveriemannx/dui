@@ -1,10 +1,10 @@
-#include "duilib/CEFControl/internal/CefJSBridge.h"
+#include "dui/CEFControl/internal/CefJSBridge.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/CEFControl/internal/CefIPCStringDefs.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/CEFControl/internal/CefIPCStringDefs.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui {
 
@@ -307,4 +307,4 @@ CefString CefJSBridge::Int64ToCefString(int64_t nValue)
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

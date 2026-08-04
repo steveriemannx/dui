@@ -1,21 +1,21 @@
-#include "duilib/CEFControl/internal/CefBrowserHandler.h"
+#include "dui/CEFControl/internal/CefBrowserHandler.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/CEFControl/CefManager.h"
-#include "duilib/CEFControl/CefWindowUtils.h"
-#include "duilib/CEFControl/internal/CefIPCStringDefs.h"
-#include "duilib/CEFControl/internal/CefJSBridge.h"
-#include "duilib/CEFControl/internal/CefBrowserHandlerDelegate.h"
+#include "dui/CEFControl/CefManager.h"
+#include "dui/CEFControl/CefWindowUtils.h"
+#include "dui/CEFControl/internal/CefIPCStringDefs.h"
+#include "dui/CEFControl/internal/CefJSBridge.h"
+#include "dui/CEFControl/internal/CefBrowserHandlerDelegate.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
-    #include "duilib/CEFControl/internal/Windows/osr_dragdrop_win.h"
-    #include "duilib/CEFControl/internal/Windows/CefOsrDropTarget.h"
+#ifdef DUI_BUILD_FOR_WIN
+    #include "dui/CEFControl/internal/Windows/osr_dragdrop_win.h"
+    #include "dui/CEFControl/internal/Windows/CefOsrDropTarget.h"
 #endif
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/Window.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/Window.h"
 
 #pragma warning (push)
 #pragma warning (disable:4100 4324)
@@ -57,7 +57,7 @@ void CefBrowserHandler::SetHandlerDelegate(CefBrowserHandlerDelegate* handler)
 void CefBrowserHandler::RegisterDropTarget()
 {
     GlobalManager::Instance().AssertUIThread();
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     if (CefManager::GetInstance()->IsEnableOffScreenRendering()) {
         // Off-screen rendering mode
         if ((m_pHandlerDelegate != nullptr) && (m_pDropTarget == nullptr)) {
@@ -79,7 +79,7 @@ void CefBrowserHandler::RegisterDropTarget()
 void CefBrowserHandler::UnregisterDropTarget()
 {
     GlobalManager::Instance().AssertUIThread();
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     m_pDropTarget.reset();
 #endif
 }
@@ -87,7 +87,7 @@ void CefBrowserHandler::UnregisterDropTarget()
 ControlDropTarget_Windows* CefBrowserHandler::GetControlDropTarget()
 {
     GlobalManager::Instance().AssertUIThread();
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return m_pDropTarget.get();
 #else
     return nullptr;
@@ -422,7 +422,7 @@ bool CefBrowserHandler::GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect
     if ((spWindow == nullptr) || !spWindow->IsWindow()) {
         return false;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows platform
     RECT window_rect = { 0 };
     HWND root_window = GetAncestor(spWindow->NativeWnd()->GetHWND(), GA_ROOT);
@@ -510,14 +510,14 @@ bool CefBrowserHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX,
     }
     screen_pt.x = screen_pt.x + rect_cef_control.left;
     screen_pt.y = screen_pt.y + rect_cef_control.top;
-#if defined (DUILIB_BUILD_FOR_WIN)  || defined (DUILIB_BUILD_FOR_MACOS) 
+#if defined (DUI_BUILD_FOR_WIN)  || defined (DUI_BUILD_FOR_MACOS) 
     //Windows/MacOS: need to convert to screen coordinates; the Linux platform does not
     spWindow->ClientToScreen(screen_pt);
 #endif
     screenX = screen_pt.x;
     screenY = screen_pt.y;
 
-#if defined (DUILIB_BUILD_FOR_MACOS)
+#if defined (DUI_BUILD_FOR_MACOS)
     //MacOS: screen coordinates have the bottom-left corner of the screen as the origin, so conversion is required
     UiRect rcMonitor;
     spWindow->GetMonitorRect(rcMonitor);
@@ -632,7 +632,7 @@ bool CefBrowserHandler::StartDragging(CefRefPtr<CefBrowser> browser,
     if (!CefManager::GetInstance()->IsEnableOffScreenRendering()) {
         return false;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     if (!m_pHandlerDelegate) {
         return false;
     }
@@ -649,7 +649,7 @@ bool CefBrowserHandler::StartDragging(CefRefPtr<CefBrowser> browser,
 #endif
 }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
 void CefBrowserHandler::DoDragDrop(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> drag_data, CefRenderHandler::DragOperationsMask allowed_ops, int x, int y)
 {
@@ -902,7 +902,7 @@ bool CefBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
     }
     else {
         // Off-screen rendering mode: the cursor needs to be set        
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
         // Since SDL does not expose cursor setting events internally, the SDL cursor must be set proactively to ensure the cursor is correct (SDL internally sets the cursor, which overrides the cursor set here)
         if (m_pHandlerDelegate && !m_bHostWindowClosed) {
             GlobalManager::Instance().Thread().PostTask(ui::kThreadUI, UiBind(&CefBrowserHandlerDelegate::OnCursorChange, m_pHandlerDelegate, type));
@@ -1322,4 +1322,4 @@ void CefBrowserHandler::OnGotFocus(CefRefPtr<CefBrowser> browser)
 
 #pragma warning (pop)
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

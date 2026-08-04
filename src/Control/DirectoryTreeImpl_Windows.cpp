@@ -1,12 +1,12 @@
-#include "duilib/Control/DirectoryTreeImpl.h"
+#include "dui/Control/DirectoryTreeImpl.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/FilePath.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/DiskUtils_Windows.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/FilePath.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/DiskUtils_Windows.h"
 
 #include <ShellApi.h>
 #include <Shlobj.h>
@@ -491,4 +491,4 @@ void DirectoryTreeImpl::GetDiskInfoList(const std::weak_ptr<WeakFlag>& weakFlag,
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

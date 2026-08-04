@@ -1,8 +1,8 @@
-#include "duilib/duilib.h"
+#include "dui/dui.h"
 #include "ListBoxForm.h"
-#include "duilib/Utils/AppEntry.h"
+#include "dui/Utils/AppEntry.h"
 
-/** App: FrameworkThread subclass that serves as the DUILIB_APP_ENTRY target.
+/** App: FrameworkThread subclass that serves as the DUI_APP_ENTRY target.
  *  RunMessageLoop() calls OnInit() -> message loop -> OnCleanup().
  */
 class App : public ui::FrameworkThread
@@ -33,4 +33,4 @@ private:
     }
 };
 
-DUILIB_APP_ENTRY(App)
+DUI_APP_ENTRY(App)

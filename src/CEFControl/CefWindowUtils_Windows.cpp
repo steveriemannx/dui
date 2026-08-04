@@ -1,8 +1,8 @@
-#include "duilib/CEFControl/CefWindowUtils.h"
+#include "dui/CEFControl/CefWindowUtils.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && defined (DUILIB_BUILD_FOR_CEF)
+#if defined (DUI_BUILD_FOR_WIN) && defined (DUI_BUILD_FOR_CEF)
 
-#include "duilib/Core/Window.h"
+#include "dui/Core/Window.h"
 
 namespace ui
 {
@@ -164,4 +164,4 @@ void RemoveCefWindowFromParent(CefWindowHandle cefWindow)
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN/DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_WIN/DUI_BUILD_FOR_CEF

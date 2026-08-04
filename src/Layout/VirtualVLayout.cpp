@@ -1,6 +1,6 @@
-#include "duilib/Layout/VirtualVLayout.h"
-#include "duilib/Box/VirtualListBox.h"
-#include "duilib/Utils/AttributeUtil.h"
+#include "dui/Layout/VirtualVLayout.h"
+#include "dui/Box/VirtualListBox.h"
+#include "dui/Utils/AttributeUtil.h"
 
 namespace ui 
 {

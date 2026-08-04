@@ -1,14 +1,14 @@
-#include "duilib/CEFControl/CefControl.h"
+#include "dui/CEFControl/CefControl.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/FilePathUtil.h"
 
-#include "duilib/CEFControl/internal/CefJSBridge.h"
-#include "duilib/CEFControl/internal/CefBrowserHandler.h"
-#include "duilib/CEFControl/CefManager.h"
+#include "dui/CEFControl/internal/CefJSBridge.h"
+#include "dui/CEFControl/internal/CefBrowserHandler.h"
+#include "dui/CEFControl/CefManager.h"
 #include <thread>
 
 namespace ui {
@@ -481,7 +481,7 @@ bool CefControl::AttachDevTools()
 
             if (viewBrowserHost != nullptr) {
                 //Embedded in a Browser object for display
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
                 ASSERT(viewBrowserHost->GetWindowHandle() != nullptr);
                 windowInfo.SetAsWindowless(viewBrowserHost->GetWindowHandle());
 #endif
@@ -490,7 +490,7 @@ bool CefControl::AttachDevTools()
             }
             else {
                 //Show in a popup window
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
                 windowInfo.SetAsPopup(nullptr, _T("cef_devtools"));
 #endif
                 browser->GetHost()->ShowDevTools(windowInfo, new DevToolBrowserHandler(this), settings, CefPoint());
@@ -1225,4 +1225,4 @@ std::shared_ptr<IBitmap> CefControl::MakeImageSnapshot()
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

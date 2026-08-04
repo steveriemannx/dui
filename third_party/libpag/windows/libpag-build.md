@@ -25,7 +25,7 @@ git clone https://github.com/Tencent/libpag.git
      Change: change the cmake_minimum_required version to 3.18: `cmake_minimum_required(VERSION 3.18)`
 
 ### III. Sync the interface header files
-Copy `libpag\include` to the directory `duilib\third_party\libpag\windows\`, overwriting the existing header files, to keep the interface consistent.
+Copy `libpag\include` to the directory `dui\third_party\libpag\windows\`, overwriting the existing header files, to keep the interface consistent.
 
 ### IV. Build with cmake on the command line
 1. x64 build
@@ -38,7 +38,7 @@ cmake --fresh -G "Visual Studio 17 2022" -A x64 -S ./libpag -B ./build-libpag-x6
 cmake --build ./build-libpag-x64 --config Release
 ```
 After the build completes:
-（3）Copy `build-libpag-x64\Release\libpag.lib` to the directory `duilib\third_party\libpag\windows\lib-vc-x64`
+（3）Copy `build-libpag-x64\Release\libpag.lib` to the directory `dui\third_party\libpag\windows\lib-vc-x64`
 （4）Copy `build-libpag-x64\Release\libpag.dll` to the directory `bin`
 
 2. Win32 build
@@ -51,7 +51,7 @@ cmake --fresh -G "Visual Studio 17 2022" -A Win32 -S ./libpag -B ./build-libpag-
 cmake --build ./build-libpag-Win32 --config Release
 ```
 After the build completes:
-（3）Copy `build-libpag-Win32\Release\libpag.lib` to the directory `duilib\third_party\libpag\windows\lib-vc-x86`
+（3）Copy `build-libpag-Win32\Release\libpag.lib` to the directory `dui\third_party\libpag\windows\lib-vc-x86`
 （4）Copy `build-libpag-Win32\Release\libpag.dll` to the directory `bin`
 
 3. View the local configuration (for reference)

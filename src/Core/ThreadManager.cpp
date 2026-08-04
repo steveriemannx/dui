@@ -1,5 +1,5 @@
-#include "duilib/Core/ThreadManager.h"
-#include "duilib/Core/ScopedLock.h"
+#include "dui/Core/ThreadManager.h"
+#include "dui/Core/ScopedLock.h"
 
 namespace ui 
 {

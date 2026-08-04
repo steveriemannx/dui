@@ -5,7 +5,7 @@
 
 /**  Windows platform implementation of the tab box
 */
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 class TaskbarTabItem;
 
 class BrowserBox_Windows: public BrowserBox
@@ -68,6 +68,6 @@ private:
     TaskbarTabItem* m_pTaskBarItem;
 };
 
-#endif //defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #endif //EXAMPLES_BROWSER_BOX_WINDOWS_H_

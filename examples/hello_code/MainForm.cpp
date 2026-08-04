@@ -132,7 +132,7 @@ void MainForm::OnInitWindow()
 
     ui::Label* pLabel = new ui::Label(this);
     pLabel->SetName(_T("hello_label"));
-    pLabel->SetText(_T("Hello, nim_duilib!"));
+    pLabel->SetText(_T("Hello, dui!"));
     pLabel->SetAttribute(_T("height"), _T("40"));
     pLabel->SetAttribute(_T("width"), _T("100%"));
     pLabel->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));

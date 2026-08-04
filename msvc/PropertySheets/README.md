@@ -1,13 +1,13 @@
-# nim_duilib MSVC Property Configuration
+# dui MSVC Property Configuration
 
-This document describes in detail the purpose and usage of the Visual Studio property sheet files (`*.props`) and script files (`*.bat`) in the `nim_duilib\msvc\PropertySheets` directory, for maintainers' reference.
+This document describes in detail the purpose and usage of the Visual Studio property sheet files (`*.props`) and script files (`*.bat`) in the `dui\msvc\PropertySheets` directory, for maintainers' reference.
 
 ## Directory Overview
 
 ```
 PropertySheets/
 ├── CommonSettings.props           # Base configuration (required)
-├── DuilibSettings.props           # duilib library's own configuration
+├── DuiSettings.props           # dui library's own configuration
 ├── BinCommonSettings.props        # Executable common configuration
 ├── BinCommonSettingsCEF.props     # Executable configuration with CEF support
 ├── BinCommonSettingsWebView2.props # Executable configuration with WebView2 support
@@ -19,8 +19,8 @@ PropertySheets/
 ├── LibPagSettings.props           # libpag configuration
 ├── CEFSettings.props              # libCEF configuration
 ├── WebView2Settings.props         # WebView2 configuration
-├── DuilibUseDynamicRuntime.bat    # Switch to dynamic runtime mode
-└── DuilibUseStaticRuntime.bat     # Switch to static runtime mode
+├── DuiUseDynamicRuntime.bat    # Switch to dynamic runtime mode
+└── DuiUseStaticRuntime.bat     # Switch to static runtime mode
 ```
 
 ## Property Sheet Files in Detail
@@ -42,11 +42,11 @@ PropertySheets/
   - VS2022/VS2026: C++20
   - VS2019/VS2017: C++17
 
-- **Runtime library:** Automatically switches between MT/MTd and MD/MDd by detecting the `duilib_dll.flag` file
+- **Runtime library:** Automatically switches between MT/MTd and MD/MDd by detecting the `dui_dll.flag` file
 
 - **Base library list:**
   ```xml
-  duilib.lib / duilib_d.lib          # main library
+  dui.lib / dui_d.lib          # main library
   zlib.lib / zlib_d.lib              # compression library
   cximage.lib / cximage_d.lib        # image processing library
   libpng.lib / libpng_d.lib          # PNG image library
@@ -54,20 +54,20 @@ PropertySheets/
   ```
 
 **Important variables:**
-- `EnableDuilibDll`: whether to use DLL mode (1=DLL, 0=static library)
-- `DuilibSystemLibs`: system dependency library list
-- `DuilibThirdLibs`: third-party dependency library list
-- `DuilibMainLib`: duilib main library name
+- `EnableDuiDll`: whether to use DLL mode (1=DLL, 0=static library)
+- `DuiSystemLibs`: system dependency library list
+- `DuiThirdLibs`: third-party dependency library list
+- `DuiMainLib`: dui main library name
 
 ---
 
-### 2. DuilibSettings.props (duilib Library's Own Configuration)
+### 2. DuiSettings.props (dui Library's Own Configuration)
 
-**Purpose:** Property configuration used specifically for building the duilib library itself.
+**Purpose:** Property configuration used specifically for building the dui library itself.
 
 **Import relationships:**
 ```
-DuilibSettings.props
+DuiSettings.props
 ├── CommonSettings.props
 ├── SkiaSettings.props
 ├── SDLSettings.props
@@ -79,7 +79,7 @@ DuilibSettings.props
 
 **Main features:**
 
-- **Project type switching:** Builds as DLL or static library depending on the `EnableDuilibDll` variable
+- **Project type switching:** Builds as DLL or static library depending on the `EnableDuiDll` variable
   ```xml
   <ConfigurationType>DynamicLibrary</ConfigurationType>  <!-- DLL mode -->
   <ConfigurationType>StaticLibrary</ConfigurationType>   <!-- static library mode -->
@@ -88,11 +88,11 @@ DuilibSettings.props
 - **Output configuration:** DLL mode outputs to the `bin\` directory; static library mode outputs to `lib\$(Platform)\`
 
 - **Feature module macros:**
-  - `DUILIB_SDL`: SDL support switch
-  - `DUILIB_WEBVIEW2`: WebView2 support switch
-  - `DUILIB_CEF`: CEF support switch
-  - `DUILIB_JPEG_TURBO`: libjpeg-turbo support switch
-  - `DUILIB_LIB_PAG`: libpag support switch
+  - `DUI_SDL`: SDL support switch
+  - `DUI_WEBVIEW2`: WebView2 support switch
+  - `DUI_CEF`: CEF support switch
+  - `DUI_JPEG_TURBO`: libjpeg-turbo support switch
+  - `DUI_LIB_PAG`: libpag support switch
 
 ---
 
@@ -122,9 +122,9 @@ BinCommonSettings.props
 - **Library path configuration:** selects different library paths depending on whether DLL mode is enabled
 
 - **Preprocessor definitions:**
-  - `DUILIB_SDL`
-  - `DUILIB_JPEG_TURBO`
-  - `DUILIB_LIB_PAG`
+  - `DUI_SDL`
+  - `DUI_JPEG_TURBO`
+  - `DUI_LIB_PAG`
 
 ---
 
@@ -141,7 +141,7 @@ BinCommonSettingsCEF.props
 
 **Special configuration:**
 - **Delay-loaded DLL:** `libcef.dll` uses delay-loading
-- **Preprocessor definition:** `DUILIB_CEF=$(LibCefEnabled)`
+- **Preprocessor definition:** `DUI_CEF=$(LibCefEnabled)`
 
 ---
 
@@ -157,7 +157,7 @@ BinCommonSettingsWebView2.props
 ```
 
 **Special configuration:**
-- **Preprocessor definition:** `DUILIB_WEBVIEW2=$(WebView2Enabled)`
+- **Preprocessor definition:** `DUI_WEBVIEW2=$(WebView2Enabled)`
 
 ---
 
@@ -186,7 +186,7 @@ BinCommonSettingsWebView2.props
 - `SDLLibDir`: SDL lib directory (selected by platform and configuration)
 - `SDLLibs`: SDL dependency library list (`SDL3-static.lib;Version.lib;Winmm.lib;Setupapi.lib`)
 
-**Macro definition:** `DUILIB_SDL=$(SDLEnabled)`
+**Macro definition:** `DUI_SDL=$(SDLEnabled)`
 
 ---
 
@@ -214,7 +214,7 @@ BinCommonSettingsWebView2.props
 - `JpegTurboLibDir`: libjpeg-turbo lib directory
 - `JpegTurboLibs`: dependency library list (`turbojpeg-static.lib`)
 
-**Macro definition:** `DUILIB_JPEG_TURBO=$(JpegTurboEnabled)`
+**Macro definition:** `DUI_JPEG_TURBO=$(JpegTurboEnabled)`
 
 ---
 
@@ -228,7 +228,7 @@ BinCommonSettingsWebView2.props
 - `LibPagLibDir`: libpag lib directory
 - `LibPagLibs`: dependency library list (`libpag.lib`)
 
-**Macro definition:** `DUILIB_LIB_PAG=$(LibPagEnabled)`
+**Macro definition:** `DUI_LIB_PAG=$(LibPagEnabled)`
 
 ---
 
@@ -248,7 +248,7 @@ BinCommonSettingsWebView2.props
 - `LibCefLibDir`: libCEF lib directory
 - `LibCefLibs`: dependency library list
 
-**Macro definition:** `DUILIB_CEF=$(LibCefEnabled)`
+**Macro definition:** `DUI_CEF=$(LibCefEnabled)`
 
 ---
 
@@ -261,39 +261,39 @@ BinCommonSettingsWebView2.props
 - `WebView2LibDir`: WebView2 lib directory
 - `WebView2Libs`: dependency library list (`WebView2LoaderStatic.lib`)
 
-**Macro definition:** `DUILIB_WEBVIEW2=$(WebView2Enabled)`
+**Macro definition:** `DUI_WEBVIEW2=$(WebView2Enabled)`
 
 ---
 
 ## Script File Descriptions
 
-### 1. DuilibUseDynamicRuntime.bat (Switch to Dynamic Runtime Mode)
+### 1. DuiUseDynamicRuntime.bat (Switch to Dynamic Runtime Mode)
 
-**Purpose:** Switches the duilib projects to dynamic runtime mode (MD/MDd).
+**Purpose:** Switches the dui projects to dynamic runtime mode (MD/MDd).
 
 **Steps:**
-1. Creates the `duilib_dll.flag` file
+1. Creates the `dui_dll.flag` file
 2. Prompts the user to close and reopen the VS projects
 
 **Effects:**
-- `EnableDuilibDll` in `CommonSettings.props` becomes 1
+- `EnableDuiDll` in `CommonSettings.props` becomes 1
 - All projects compile with `/MD` (Release) or `/MDd` (Debug)
-- duilib itself is built as a DLL
+- dui itself is built as a DLL
 
 ---
 
-### 2. DuilibUseStaticRuntime.bat (Switch to Static Runtime Mode)
+### 2. DuiUseStaticRuntime.bat (Switch to Static Runtime Mode)
 
-**Purpose:** Switches the duilib projects to static runtime mode (MT/MTd).
+**Purpose:** Switches the dui projects to static runtime mode (MT/MTd).
 
 **Steps:**
-1. Deletes the `duilib_dll.flag` file
+1. Deletes the `dui_dll.flag` file
 2. Prompts the user to close and reopen the VS projects
 
 **Effects:**
-- `EnableDuilibDll` in `CommonSettings.props` becomes 0
+- `EnableDuiDll` in `CommonSettings.props` becomes 0
 - All projects compile with `/MT` (Release) or `/MTd` (Debug)
-- duilib itself is built as a static library
+- dui itself is built as a static library
 
 ---
 
@@ -301,9 +301,9 @@ BinCommonSettingsWebView2.props
 
 ### How to reference the property sheets in a project
 
-#### Building the duilib library itself
+#### Building the dui library itself
 ```xml
-<Import Project="$(SolutionDir)\..\msvc\PropertySheets\DuilibSettings.props" />
+<Import Project="$(SolutionDir)\..\msvc\PropertySheets\DuiSettings.props" />
 ```
 
 #### Building an executable (base version)
@@ -327,14 +327,14 @@ BinCommonSettingsWebView2.props
 
 1. **Switch to dynamic runtime mode:**
    ```batch
-   cd nim_duilib\msvc\PropertySheets
-   DuilibUseDynamicRuntime.bat
+   cd dui\msvc\PropertySheets
+   DuiUseDynamicRuntime.bat
    ```
 
 2. **Switch to static runtime mode:**
    ```batch
-   cd nim_duilib\msvc\PropertySheets
-   DuilibUseStaticRuntime.bat
+   cd dui\msvc\PropertySheets
+   DuiUseStaticRuntime.bat
    ```
 
 3. **Reload the projects:**
@@ -363,8 +363,8 @@ Edit the corresponding configuration file and change the switch variable:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    DuilibSettings.props                      │
-│               (duilib library's own configuration)          │
+│                    DuiSettings.props                      │
+│               (dui library's own configuration)          │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐   │
 │  │   Common     │    │    Skia      │    │     SDL      │   │
@@ -441,7 +441,7 @@ After modifying any `.props` file, you **must close Visual Studio and reopen the
 If a new third-party dependency needs to be added, it is recommended to:
 
 1. Create a standalone `XXXSettings.props` configuration file in the `PropertySheets` directory
-2. Add `Import` statements to `DuilibSettings.props` and `BinCommonSettings.props`
+2. Add `Import` statements to `DuiSettings.props` and `BinCommonSettings.props`
 3. Configure the corresponding Include directory, Lib directory, library file list, etc.
 4. Add the matching macro definition switch
 

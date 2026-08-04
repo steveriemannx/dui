@@ -1,7 +1,7 @@
 #include "App.h"
 #include "BrowserManager.h"
-#include "duilib/WebView2/WebView2Manager.h"
-#include "duilib/Utils/AppEntry.h"
+#include "dui/WebView2/WebView2Manager.h"
+#include "dui/Utils/AppEntry.h"
 
 App::App() :
     FrameworkThread(_T("App"), ui::kThreadUI)
@@ -78,4 +78,4 @@ void App::OnCleanup()
     ui::GlobalManager::Instance().Shutdown();
 }
 
-DUILIB_APP_ENTRY_ARGS(App)
+DUI_APP_ENTRY_ARGS(App)

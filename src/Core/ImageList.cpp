@@ -1,6 +1,6 @@
-#include "duilib/Core/ImageList.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Core/DpiManager.h"
+#include "dui/Core/ImageList.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Core/DpiManager.h"
 
 namespace ui 
 {

@@ -1,9 +1,9 @@
-#include "duilib/RenderSkia/Path_Skia.h"
-#include "duilib/RenderSkia/Matrix_Skia.h"
+#include "dui/RenderSkia/Path_Skia.h"
+#include "dui/RenderSkia/Matrix_Skia.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "include/core/SkPathBuilder.h"
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui {
 

@@ -1,8 +1,8 @@
-#include "duilib/RenderSkia/Matrix_Skia.h"
+#include "dui/RenderSkia/Matrix_Skia.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "include/core/SkMatrix.h"
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui {
 

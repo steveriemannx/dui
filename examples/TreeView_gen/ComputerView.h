@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_COMPUTER_VIEW_H_
 #define EXAMPLES_COMPUTER_VIEW_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 #include <map>
 
 class MainForm;
@@ -54,7 +54,7 @@ private:
     */
     DString FormatUsedPercent(uint64_t nTotalSpace, uint64_t nFreeSpace) const;
 
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     /** Initialize the header
     */
     void InitComputerViewHeader_Win();
@@ -64,7 +64,7 @@ private:
     */
     void ShowMyComputerContents_Win(ui::ImageListPtr pImageList, const std::vector<ui::DirectoryTree::DiskInfo>& diskInfoList);
 
-#elif defined (DUILIB_BUILD_FOR_LINUX)
+#elif defined (DUI_BUILD_FOR_LINUX)
     /** Initialize the header
     */
     void InitComputerViewHeader_Linux();

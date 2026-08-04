@@ -1,14 +1,14 @@
-#include "duilib/Core/CursorManager.h"
+#include "dui/Core/CursorManager.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/FilePathUtil.h"
 #include <map>
 
-#include "duilib/Utils/ApiWrapper_Windows.h"
+#include "dui/Utils/ApiWrapper_Windows.h"
 
 namespace ui
 {
@@ -239,4 +239,4 @@ bool CursorManager::SetCursorByID(CursorID cursorId)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WIN
+#endif // DUI_BUILD_FOR_WIN

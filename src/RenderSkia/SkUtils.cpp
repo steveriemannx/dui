@@ -4,13 +4,13 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
-#include "duilib/RenderSkia/SkUtils.h"
+#include "dui/RenderSkia/SkUtils.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "include/private/base/SkTFitsIn.h"
 #include "include/private/base/SkMath.h"
 #include "include/private/base/SkAlign.h"
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 //The origin of this file's original source: skia/chrome_67/src/core/SkUtils.cpp
 //Based on the original file, with modifications to be compatible with the latest version of the skia code (2023-06-25)

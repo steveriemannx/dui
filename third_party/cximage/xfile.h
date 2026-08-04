@@ -41,7 +41,7 @@
 #if !defined(__xfile_h)
 #define __xfile_h
 
-#include "../../include/duilib/duilib_config.h"
+#include "../../include/dui/dui_config.h"
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -1,11 +1,11 @@
-#include "duilib/Core/WindowDropTarget_SDL.h"
-#include "duilib/Core/ControlDropTarget.h"
+#include "dui/Core/WindowDropTarget_SDL.h"
+#include "dui/Core/ControlDropTarget.h"
 
-#if defined (DUILIB_BUILD_FOR_SDL) || defined (DUILIB_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
 
-#include "duilib/Core/NativeWindow_SDL.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/StringConvert.h"
 
 namespace ui 
 {
@@ -143,4 +143,4 @@ ControlPtrT<ControlDropTarget_SDL> WindowDropTarget::GetControlDropTarget(const 
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

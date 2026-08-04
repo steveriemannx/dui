@@ -1,9 +1,9 @@
-#include "duilib/Core/ControlLoading.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Utils/AttributeUtil.h"
+#include "dui/Core/ControlLoading.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
+#include "dui/Utils/AttributeUtil.h"
 
 namespace ui 
 {

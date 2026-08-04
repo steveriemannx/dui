@@ -1,6 +1,6 @@
-#include "duilib/Control/IPAddress.h"
-#include "duilib/Control/RichEdit.h"
-#include "duilib/Control/Label.h"
+#include "dui/Control/IPAddress.h"
+#include "dui/Control/RichEdit.h"
+#include "dui/Control/Label.h"
 
 namespace ui
 {

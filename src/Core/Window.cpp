@@ -1,17 +1,17 @@
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Core/FullscreenBox.h"
-#include "duilib/Core/Shadow.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/ToolTip.h"
-#include "duilib/Core/Keyboard.h"
-#include "duilib/Core/WindowMessage.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Render/AutoClip.h"
-#include "duilib/Utils/PerformanceUtil.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/AttributeUtil.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/FullscreenBox.h"
+#include "dui/Core/Shadow.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/ToolTip.h"
+#include "dui/Core/Keyboard.h"
+#include "dui/Core/WindowMessage.h"
+#include "dui/Render/IRender.h"
+#include "dui/Render/AutoClip.h"
+#include "dui/Utils/PerformanceUtil.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/AttributeUtil.h"
 
 namespace ui
 {
@@ -128,7 +128,7 @@ Window* Window::GetParentWindow() const
 
 bool Window::SetRenderBackendType(RenderBackendType backendType)
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     m_renderBackendType = backendType;
 #else
     backendType = RenderBackendType::kRaster_BackendType;
@@ -1271,7 +1271,7 @@ bool Window::Paint(const UiRect& rcPaint)
         pRender->FillRect(UiRectF::MakeFromRect(rcPaint), bkColor);
     }
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined(DUILIB_RICH_EDIT_DRAW_OPT)
+#if defined (DUI_BUILD_FOR_WIN) && !defined(DUI_RICH_EDIT_DRAW_OPT)
     //Before drawing, repair the alpha channel
     if (IsLayeredWindow()) {
         PerformanceStat statPerformance(_T("PaintWindow, Window::Paint RestoreAlpha"));

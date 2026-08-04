@@ -1,9 +1,9 @@
-#include "duilib/CEFControl/CefManager_Linux.h"
+#include "dui/CEFControl/CefManager_Linux.h"
 
-#if defined (DUILIB_BUILD_FOR_LINUX) && defined (DUILIB_BUILD_FOR_CEF)
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_CEF)
 
-#include "duilib/CEFControl/internal/CefClientApp.h"
-#include "duilib/CEFControl/internal/CefBrowserHandler.h"
+#include "dui/CEFControl/internal/CefClientApp.h"
+#include "dui/CEFControl/internal/CefBrowserHandler.h"
 
 namespace ui
 {
@@ -49,4 +49,4 @@ bool CefManager_Linux::Initialize(bool bEnableOffScreenRendering,
 
 } //namespace ui
 
-#endif //defined (DUILIB_BUILD_FOR_LINUX/DUILIB_BUILD_FOR_CEF)
+#endif //defined (DUI_BUILD_FOR_LINUX/DUI_BUILD_FOR_CEF)

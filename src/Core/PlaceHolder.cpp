@@ -1,9 +1,9 @@
-#include "duilib/Core/PlaceHolder.h"
-#include "duilib/Box/ScrollBox.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Core/PlaceHolder.h"
+#include "dui/Box/ScrollBox.h"
+#include "dui/Core/Window.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {

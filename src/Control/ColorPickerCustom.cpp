@@ -1,6 +1,6 @@
-#include "duilib/Control/ColorPickerCustom.h"
-#include "duilib/Control/ColorConvert.h"
-#include "duilib/Control/ColorPickerRegular.h"
+#include "dui/Control/ColorPickerCustom.h"
+#include "dui/Control/ColorConvert.h"
+#include "dui/Control/ColorPickerRegular.h"
 
 namespace ui
 {

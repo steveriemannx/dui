@@ -1,9 +1,9 @@
-#include "duilib/RenderSkia/SkRasterWindowContext_Wayland.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Core/MessageLoop_Wayland.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/RenderSkia/SkRasterWindowContext_Wayland.h"
+#include "dui/Render/IRender.h"
+#include "dui/Core/MessageLoop_Wayland.h"
+#include "dui/Utils/PerformanceUtil.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 #include <sys/mman.h>
 #include <unistd.h>
@@ -142,7 +142,7 @@ WaylandBuffer* SkRasterWindowContext_Wayland::CreateWaylandBuffer(int32_t width,
     int32_t stride = width * 4;
     int32_t size = stride * height;
 
-    int fd = memfd_create("duilib-wl-shm", MFD_CLOEXEC | MFD_ALLOW_SEALING);
+    int fd = memfd_create("dui-wl-shm", MFD_CLOEXEC | MFD_ALLOW_SEALING);
     if (fd < 0) return nullptr;
     if (ftruncate(fd, size) < 0) {
         close(fd);
@@ -347,4 +347,4 @@ void SkRasterWindowContext_Wayland::ValidateRect(UiRect& rcPaint) const
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

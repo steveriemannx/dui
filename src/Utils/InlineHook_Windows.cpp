@@ -1,8 +1,8 @@
-#include "duilib/Utils/InlineHook_Windows.h"
+#include "dui/Utils/InlineHook_Windows.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
-#ifdef DUILIB_ENABLE_INLINE_HOOK
+#ifdef DUI_ENABLE_INLINE_HOOK
     #include "third_party/libudis86/udis86.h"
 #endif
 
@@ -22,7 +22,7 @@ InlineHook::~InlineHook()
     Uninstall();
 }
 
-#ifndef DUILIB_ENABLE_INLINE_HOOK
+#ifndef DUI_ENABLE_INLINE_HOOK
 
 bool InlineHook::Uninstall()
 {
@@ -273,9 +273,9 @@ bool InlineHook::CreateTrampoline()
     return true;
 }
 
-#endif //DUILIB_ENABLE_INLINE_HOOK
+#endif //DUI_ENABLE_INLINE_HOOK
 
 } //namespace ui 
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN
 
