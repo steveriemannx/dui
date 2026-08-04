@@ -5,6 +5,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 // Local base64 decoder (same as generated_ui.inc, but avoids multiple-definition)
@@ -27,8 +28,18 @@ static const signed char kDecLocal[256] = {
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 };
 inline DString DecodeIcon() {
+#if defined(__linux__)
+    // Linux: anonymous memory file (no disk writes), readable via /proc/self/fd
     int fd = memfd_create("icon_png", MFD_CLOEXEC);
     if (fd < 0) return _T("");
+#else
+    // macOS / FreeBSD: memfd_create and /proc/self/fd are Linux-only; fall back
+    // to an anonymous temporary file (the example process is short-lived, so the
+    // temp file is not worth unlinking)
+    char tmpl[] = "/tmp/duilib_icon_png_XXXXXX";
+    int fd = mkstemp(tmpl);
+    if (fd < 0) return _T("");
+#endif
     const unsigned char* s = (const unsigned char*)kIconPngB64;
     unsigned char buf[1024]; size_t di = 0; int val = 0, vb = -8;
     while (*s && di < sizeof(buf)) {
@@ -37,10 +48,16 @@ inline DString DecodeIcon() {
         if (vb >= 0) { buf[di++] = (unsigned char)((val >> vb) & 0xFF); vb -= 8; }
     }
     if (write(fd, buf, di) != (ssize_t)di) { close(fd); return _T(""); }
+#if defined(__linux__)
     char tmp[32]; snprintf(tmp, sizeof(tmp), "%d", fd);
     DString path = _T("/proc/self/fd/");
     for (char* p = tmp; *p; p++) path += (DString::value_type)(unsigned char)*p;
     return path;
+#else
+    DString path;
+    for (char* p = tmpl; *p; p++) path += (DString::value_type)(unsigned char)*p;
+    return path;
+#endif
 }
 
 Item::Item(ui::Window* pWindow):

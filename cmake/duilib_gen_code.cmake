@@ -26,6 +26,13 @@ endif()
 set(GENERATED_SRC "${CMAKE_CURRENT_SOURCE_DIR}/generated_ui.inc")
 set(RESOURCES_DIR "${DUILIB_ROOT}/bin/resources")
 
+# GEN_AUTO_EMBED ON: pass -g global.xml so the tool emits RegisterEmbeddedClasses()
+# with the images referenced by classes in global.xml embedded into the binary
+set(GEN_TOOL_GLOBAL_ARGS)
+if(GEN_AUTO_EMBED)
+    set(GEN_TOOL_GLOBAL_ARGS -g "${RESOURCES_DIR}/themes/default/global.xml")
+endif()
+
 # Find XML files
 set(XML_INPUT_FILES)
 foreach(xml_file ${GEN_XML_FILES})
@@ -78,7 +85,7 @@ if(DUILIB_OS_WINDOWS)
 
     add_custom_command(
         OUTPUT "${GENERATED_SRC}"
-        COMMAND "${TOOL_EXE}" "${GENERATED_SRC}" "${GEN_FUNC_NAME}" ${XML_INPUT_FILES}
+        COMMAND "${TOOL_EXE}" ${GEN_TOOL_GLOBAL_ARGS} "${GENERATED_SRC}" "${GEN_FUNC_NAME}" ${XML_INPUT_FILES}
         DEPENDS "${TOOL_EXE}" ${XML_INPUT_FILES}
         COMMENT "Generating C++ UI code from XML: ${GENERATED_SRC}"
     )
@@ -113,7 +120,7 @@ else()
 
     add_custom_command(
         OUTPUT "${GENERATED_SRC}"
-        COMMAND "${TOOL_EXE}" "${GENERATED_SRC}" "${GEN_FUNC_NAME}" ${XML_INPUT_FILES}
+        COMMAND "${TOOL_EXE}" ${GEN_TOOL_GLOBAL_ARGS} "${GENERATED_SRC}" "${GEN_FUNC_NAME}" ${XML_INPUT_FILES}
         DEPENDS "${TOOL_EXE}" ${XML_INPUT_FILES}
         COMMENT "Generating C++ UI code from XML: ${GENERATED_SRC}"
     )
