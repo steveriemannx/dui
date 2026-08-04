@@ -325,13 +325,14 @@ else()
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
 endif()
 
-# Build-order wiring: the Skia/SDL3 archives (built by cmake/dui_deps.cmake at make time)
+# Build-order wiring: the SDL3/Skia archives (built by cmake/dui_deps.cmake at make time)
 # must exist before this library links (dui_bin*.cmake links them into the executables).
-if(TARGET dui_skia)
-    add_dependencies(${PROJECT_NAME} dui_skia)
-endif()
+# SDL3 is wired first so it builds before Skia (faster feedback on SDL issues).
 if(TARGET dui_sdl)
     add_dependencies(${PROJECT_NAME} dui_sdl)
+endif()
+if(TARGET dui_skia)
+    add_dependencies(${PROJECT_NAME} dui_skia)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")

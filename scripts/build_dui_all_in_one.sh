@@ -402,6 +402,34 @@ if [ "$has_curl$has_wget" != "00" ] && [ "$has_linux$has_macos" != "00" ] && [ "
 fi
 # download CEF end
 
+# Build SDL3 before skia (faster feedback on SDL issues; skia is the longest step)
+cmake_version=$(cmake --version | grep -oE '[0-9]+\.[0-9]+')
+required_version=3.24
+if [ $(echo "$cmake_version >= $required_version" | bc) -eq 1 ]; then
+    DUI_CMAKE_REFRESH=--fresh
+else
+    DUI_CMAKE_REFRESH=
+fi
+
+if ! is_windows; then
+    # build SDL on Linux/MacOS
+    echo "- Building SDL ..."
+    cmake ${DUI_CMAKE_REFRESH} -S "./SDL/" -B "./SDL.build" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
+    cmake --build ./SDL.build
+    cmake --install ./SDL.build
+elif [ "$ENABLE_SDL" == "1" ]; then
+    # build SDL on Windows
+    echo "- Building SDL ..."
+    if [ "$has_clang" -eq 1 ]; then
+        DUI_SDL_DIR=SDL.build.msys2.llvm
+    else
+        DUI_SDL_DIR=SDL.build.msys2.gcc
+    fi
+    cmake ${DUI_CMAKE_REFRESH} -S "./SDL/" -B "./${DUI_SDL_DIR}" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release 
+    cmake --build ./${DUI_SDL_DIR} -j 6
+    cmake --install ./${DUI_SDL_DIR}
+fi
+
 echo "- Building skia ..."
 if [ "$has_clang" -eq 1 ]; then
     # clang/clang++
