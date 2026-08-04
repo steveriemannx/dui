@@ -542,7 +542,7 @@ int main(int argc, char** argv) {
         out << "// Auto-embedded images (only those referenced by generated UI)\n";
         out << "// ============================================================\n\n";
         out << "#include <sys/mman.h>\n#include <unistd.h>\n";
-        out << "#include <cstring>\n#include <cstdio>\n\n";
+        out << "#include <cstring>\n#include <cstdio>\n#include <cstdlib>\n\n";
 
         // Base64 decoder
         out << "static const signed char kDecTbl[256] = {\n";
@@ -559,7 +559,15 @@ int main(int argc, char** argv) {
         }
         out << "};\n\n";
         out << "inline DString ImgToMemFd(const char* b64, const char* tag) {\n";
+        out << "#if defined(__linux__)\n";
+        out << "    // Linux: anonymous memory file, readable via /proc/self/fd\n";
         out << "    int fd=memfd_create(tag,MFD_CLOEXEC); if(fd<0)return _T(\"\");\n";
+        out << "#else\n";
+        out << "    // macOS / FreeBSD: memfd_create and /proc/self/fd are Linux-only;\n";
+        out << "    // fall back to an anonymous temporary file\n";
+        out << "    char tmpl[]=\"/tmp/duilib_embedded_XXXXXX\";\n";
+        out << "    int fd=mkstemp(tmpl); if(fd<0)return _T(\"\");\n";
+        out << "#endif\n";
         out << "    unsigned char buf[8192];\n";
         out << "    const unsigned char* s=(const unsigned char*)b64;\n";
         out << "    size_t di=0;int val=0,vb=-8;\n";
@@ -569,9 +577,14 @@ int main(int argc, char** argv) {
         out << "        if(vb>=0){buf[di++]=(unsigned char)((val>>vb)&0xFF);vb-=8;}\n";
         out << "    }\n";
         out << "    if(write(fd,buf,di)!=(ssize_t)di){close(fd);return _T(\"\");}\n";
+        out << "#if defined(__linux__)\n";
         out << "    char tmp[32];snprintf(tmp,sizeof(tmp),\"%d\",fd);\n";
         out << "    DString p=_T(\"/proc/self/fd/\");\n";
         out << "    for(char* x=tmp;*x;x++)p+=(DString::value_type)(unsigned char)*x;\n";
+        out << "#else\n";
+        out << "    DString p;\n";
+        out << "    for(char* x=tmpl;*x;x++)p+=(DString::value_type)(unsigned char)*x;\n";
+        out << "#endif\n";
         out << "    return p;\n}\n\n";
 
         // Embed each used image
