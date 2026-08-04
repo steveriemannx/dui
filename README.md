@@ -105,6 +105,6 @@ The compiled example programs are in `bin/`. Platform prerequisites and detailed
 - **Platforms**: Windows 7+, Linux (OpenEuler, OpenKylin, UbuntuKylin, UOS, Ubuntu, Debian, Fedora, OpenSuse, ...), macOS 12+, FreeBSD
 
 ## Related Links
-1. Skia build documentation library: [skia_compile](https://github.com/rhett-lee/skia_compile)
-2. Base project: [NIM_Duilib_Framework](https://github.com/netease-im/NIM_Duilib_Framework/)
+1. Base project: [nim_duilib](https://github.com/rhett-lee/nim_duilib) — the upstream project that dui is the English version of
+2. NIM_Duilib_Framework: [NIM_Duilib_Framework](https://github.com/netease-im/NIM_Duilib_Framework/)
 3. Original project: [duilib](https://github.com/duilib/duilib)
