@@ -48,16 +48,36 @@ See [docs/ThreeModes.md](docs/ThreeModes.md) for details.
 | licenses      | License files of the project and its dependencies |
 
 ## Quick Start
-```bash
-# One-click build (downloads and builds all dependencies automatically)
-./scripts/build_duilib_all_in_one.sh    # Linux / macOS / FreeBSD
-scripts\build_duilib_all_in_one.bat     # Windows
 
-# Or the CMake way
-cmake -S . -B build
-cmake --build build
+The Skia and SDL3 sources are downloaded and extracted automatically at configure time, so no manual fetching is needed.
+
 ```
-The compiled example programs are in `bin/`. Platform prerequisites and detailed build steps: [docs/Build.md](docs/Build.md); script reference: [scripts/build.md](scripts/build.md).
+# Release build (single-config generators: Makefiles/Ninja on Linux/macOS/FreeBSD)
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+
+# Debug build
+cmake -S . -B build_debug -DCMAKE_BUILD_TYPE=Debug
+cmake --build build_debug
+```
+
+On multi-config generators the build type is selected at build time with `--config` instead:
+
+```
+# macOS / Linux / FreeBSD (Ninja Multi-Config generator)
+cmake -S . -B build -G "Ninja Multi-Config"
+cmake --build build --config Release
+cmake --build build --config Debug
+```
+
+```
+# Windows (Visual Studio generator)
+cmake -S . -B build
+cmake --build build --config Release
+cmake --build build --config Debug
+```
+
+The compiled example programs are in `bin/`. Platform prerequisites and detailed build steps: [docs/Build.md](docs/Build.md).
 
 ## Documentation
 - [Getting Started](docs/Getting-Started.md) · [Example Programs](docs/Examples.md)
