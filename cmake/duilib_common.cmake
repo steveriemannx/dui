@@ -187,13 +187,13 @@ else()
 endif()
 set(DUILIB_SKIA_LIBS svg skshaper skottie sksg jsonreader skia)
 
-# Build Skia from the vendored submodule at make time (see cmake/duilib_deps.cmake: duilib_skia target).
+# Build Skia from the zip-fetched source at make time (see cmake/duilib_deps.cmake: duilib_skia target).
 # ON: auto-build with gn + ninja; OFF: use a prebuilt Skia you provide yourself.
-option(DUILIB_BUILD_SKIA_FROM_SOURCE "Build Skia from the vendored submodule (gn + ninja)" ON)
+option(DUILIB_BUILD_SKIA_FROM_SOURCE "Build Skia from the fetched source (gn + ninja)" ON)
 
-# Build SDL3 from the vendored submodule at make time (see cmake/duilib_deps.cmake: duilib_sdl target).
+# Build SDL3 from the zip-fetched source at make time (see cmake/duilib_deps.cmake: duilib_sdl target).
 # ON: auto-build with cmake; OFF: use a prebuilt SDL3 you provide yourself.
-option(DUILIB_BUILD_SDL_FROM_SOURCE "Build SDL3 from the vendored submodule" ON)
+option(DUILIB_BUILD_SDL_FROM_SOURCE "Build SDL3 from the fetched source" ON)
 
 # SDL source root and library directories (optional on Windows, required on other platforms)
 if(DUILIB_ENABLE_SDL)
@@ -203,7 +203,7 @@ if(DUILIB_ENABLE_SDL)
     elseif(EXISTS "${DUILIB_SDL_SRC_ROOT_DIR}/lib/")
         set(DUILIB_SDL_LIB_PATH "${DUILIB_SDL_SRC_ROOT_DIR}/lib")
     elseif(DUILIB_BUILD_SDL_FROM_SOURCE)
-        # SDL3 built from the submodule at make time; installed into the build directory
+        # SDL3 built from the fetched source at make time; installed into the build directory
         set(DUILIB_SDL_LIB_PATH "${CMAKE_BINARY_DIR}/sdl3-install/lib")
     else()
         set(DUILIB_SDL_LIB_PATH "${DUILIB_SDL_SRC_ROOT_DIR}/lib")
@@ -335,8 +335,10 @@ if(DUILIB_LOG)
     message(STATUS "")
 endif()
 
-# Dependency management: Skia/SDL3 sources come from the git submodules and are built at make time;
-# CEF is downloaded at configure time when missing. Both functions are idempotent (GLOBAL-property guarded).
+# Dependency management: Skia/SDL3 sources come from the fetched zips
+# (scripts/fetch_skia.sh/.bat and scripts/fetch_sdl.sh/.bat) and are built at
+# make time; CEF is downloaded at configure time when missing.
+# Both functions are idempotent (GLOBAL-property guarded).
 include("${CMAKE_CURRENT_LIST_DIR}/duilib_deps.cmake")
 duilib_deps_configure()
 duilib_deps_add_targets()

@@ -1,8 +1,9 @@
 # duilib_deps.cmake
 # Dependency management for Skia / SDL3 / CEF:
-#   - Skia and SDL3 sources are vendored as git submodules (third_party/skia, third_party/SDL3),
-#     so they are present at configure time (src/CMakeLists.txt compiles skia's tools/window sources
-#     directly into the duilib library).
+#   - Skia and SDL3 sources are vendored as zip downloads (third_party/skia, third_party/SDL3,
+#     fetched by scripts/fetch_skia.sh/.bat and scripts/fetch_sdl.sh/.bat), so they are present
+#     at configure time
+#     (src/CMakeLists.txt compiles skia's tools/window sources directly into the duilib library).
 #   - The actual BUILD happens at make time via add_custom_target (duilib_skia / duilib_sdl):
 #     Skia is built with gn + ninja, SDL3 with cmake --build --target install into the build dir.
 #   - CEF is a binary distribution (not source); when missing it is downloaded and extracted
@@ -29,20 +30,20 @@ function(duilib_deps_configure)
     endif()
     set_property(GLOBAL PROPERTY DUILIB_DEPS_CONFIGURED TRUE)
 
-    # Source guards: the submodules must be initialized, otherwise give a clear error
+    # Source guards: the zip-fetched sources must be present, otherwise give a clear error
     # instead of CMake's cryptic "Cannot find source file" from src/CMakeLists.txt.
     if(NOT EXISTS "${DUILIB_SKIA_SRC_ROOT_DIR}/BUILD.gn")
         message(FATAL_ERROR
             "Skia source not found at ${DUILIB_SKIA_SRC_ROOT_DIR}.\n"
-            "Initialize the submodules first:\n"
-            "    git submodule update --init --recursive\n"
+            "Fetch it first:\n"
+            "    scripts/fetch_skia.sh (Windows: scripts\\fetch_skia.bat)\n"
             "(or set -DDUILIB_BUILD_SKIA_FROM_SOURCE=OFF and provide Skia yourself)")
     endif()
     if(DUILIB_ENABLE_SDL AND NOT EXISTS "${DUILIB_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
         message(FATAL_ERROR
             "SDL3 source not found at ${DUILIB_SDL_SRC_ROOT_DIR}.\n"
-            "Initialize the submodules first:\n"
-            "    git submodule update --init --recursive\n"
+            "Fetch it first:\n"
+            "    scripts/fetch_sdl.sh (Windows: scripts\\fetch_sdl.bat)\n"
             "(or set -DDUILIB_BUILD_SDL_FROM_SOURCE=OFF and provide SDL3 yourself)")
     endif()
 
@@ -100,7 +101,7 @@ ${_gn_extra}
             # Debug: same release-grade build, but with debug CRT so it links against
             # Debug-configuration projects without _ITERATOR_DEBUG_LEVEL / RuntimeLibrary
             # mismatches. We keep is_debug=false + is_official_build=true to avoid pulling
-            # in third_party/externals that the shallow submodule checkout doesn't have.
+            # in third_party/externals that the fetched zip archive doesn't have.
             file(MAKE_DIRECTORY "${DUILIB_SKIA_LIB_PATH_DEBUG}")
             file(WRITE "${DUILIB_SKIA_LIB_PATH_DEBUG}/args.gn" "${GN_ARGS_COMMON}is_debug = false\nextra_cflags += [ \"/MTd\", \"-D_ITERATOR_DEBUG_LEVEL=2\" ]\n")
             file(MAKE_DIRECTORY "${DUILIB_SKIA_LIB_PATH_RELEASE}")
@@ -194,9 +195,9 @@ function(duilib_deps_add_targets)
         else()
             # ---- Single-config Skia ----
             if(NOT EXISTS "${DUILIB_SKIA_LIB_PATH}/${_skia_main_lib}")
-                # Look for gn/ninja inside the Skia checkout's bin/ first (the convention used by
-                # scripts/build_duilib_all_in_one.bat: the skia_compile bundle drops gn.exe/ninja.exe
-                # there), then fall back to PATH.
+                # Look for gn/ninja inside the Skia source's bin/ first (the convention used by
+                # scripts/build_duilib_all_in_one.bat: bin/fetch-gn drops gn.exe there and
+                # bin/fetch-ninja drops ninja.exe into third_party/ninja), then fall back to PATH.
                 find_program(GN_EXECUTABLE
                     NAMES gn
                     HINTS "${DUILIB_SKIA_SRC_ROOT_DIR}/bin"
@@ -222,7 +223,7 @@ function(duilib_deps_add_targets)
         endif()
     endif()
 
-    # ---- SDL3: cmake configure + build + install into the build dir (keeps the submodule clean).
+    # ---- SDL3: cmake configure + build + install into the build dir (keeps the source dir clean).
     if(DUILIB_ENABLE_SDL AND DUILIB_BUILD_SDL_FROM_SOURCE)
         if(NOT EXISTS "${DUILIB_SDL_SRC_ROOT_DIR}/lib" AND NOT EXISTS "${DUILIB_SDL_SRC_ROOT_DIR}/lib64")
             set(SDL_BUILD_DIR "${CMAKE_BINARY_DIR}/sdl3-build")

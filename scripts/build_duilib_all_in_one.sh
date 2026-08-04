@@ -153,96 +153,77 @@ if [ ! -d "./nim_duilib/.git" ]; then
     exit 1
 fi
 
-# Retry clone skia
-echo "- Cloning skia ..."
-clone_skia() {
-    if [ ! -d "./skia/.git" ]; then
-        git clone https://github.com/google/skia.git
+# Download a zip archive (curl preferred, wget fallback) with retry
+# $1: URL, $2: output file
+download_zip() {
+    local url="$1"
+    local output="$2"
+    if ! command -v curl &> /dev/null && ! command -v wget &> /dev/null; then
+        echo "- curl/wget not found!"
+        exit 1
+    fi
+    echo "=== Downloading: $url ==="
+    if command -v curl &> /dev/null; then
+        curl -L -f -C - -o "$output" --retry 3 --connect-timeout 15 --retry-delay 10 --speed-limit 100 --speed-time 120 "$url"
     else
-        git -C ./skia stash
-        git -C ./skia checkout main
-        git -C ./skia pull
+        wget -O "$output" -t 3 --timeout 15 -c "$url"
     fi
     if [ $? -ne 0 ]; then
         sleep $retry_delay
-        clone_skia
+        download_zip "$url" "$output"
     fi
 }
-clone_skia
-if [ ! -d "./skia/.git" ]; then
-    echo "clone skia failed!"
+
+# Extract a zip archive into $2, stripping the single top-level folder
+# $1: zip path, $2: dest dir
+extract_zip() {
+    local zip_path="$1"
+    local dest="$2"
+    local tmp_dir="$dest.tmp"
+    local top_dir
+    rm -rf "$tmp_dir" "$dest"
+    unzip -q -o "$zip_path" -d "$tmp_dir"
+    if [ $? -ne 0 ]; then
+        echo "unzip failed: $zip_path"
+        exit 1
+    fi
+    top_dir=$(find "$tmp_dir" -mindepth 1 -maxdepth 1 -type d | head -n 1)
+    if [ -z "$top_dir" ]; then
+        echo "unexpected zip layout: $zip_path"
+        exit 1
+    fi
+    mkdir -p "$dest"
+    cp -R "$top_dir"/. "$dest"/
+    rm -rf "$tmp_dir" "$zip_path"
+}
+
+SKIA_ZIP_URL="https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip"
+SDL_ZIP_URL="https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip"
+
+# Fetch skia (zip archive instead of git clone)
+echo "- Fetching skia ..."
+download_zip "$SKIA_ZIP_URL" ./skia.zip
+extract_zip ./skia.zip ./skia
+if [ ! -f "./skia/BUILD.gn" ]; then
+    echo "fetch skia failed!"
     cd "$CURRENT_DIR"
     exit 1
 fi
-
-# Retry clone skia_compile
-echo "- Cloning skia_compile ..."
-clone_skia_compile() {
-    if [ ! -d "./skia_compile/.git" ]; then
-        git clone https://github.com/rhett-lee/skia_compile.git
-    else
-        git -C ./skia_compile pull
-    fi
-    if [ $? -ne 0 ]; then
-        sleep $retry_delay
-        clone_skia_compile
-    fi
-}
-clone_skia_compile
-if [ ! -d "./skia_compile/.git" ]; then
-    echo "clone skia_compile failed!"
-    cd "$CURRENT_DIR"
-    exit 1
-fi
-
-# Retry clone SDL
-echo "- Cloning SDL ..."
-clone_SDL() {
-    if [ ! -d "./SDL/.git" ]; then
-        git clone https://github.com/libsdl-org/SDL.git
-    else
-        git -C ./SDL pull
-    fi
-    if [ $? -ne 0 ]; then
-        sleep $retry_delay
-        clone_SDL
-    fi
-}
 
 if is_windows; then
     echo "ENABLE_SDL: $ENABLE_SDL"
 fi
 
 if ! is_windows || [ "$ENABLE_SDL" == "1" ]; then
-    # clone SDL
-    clone_SDL
-    if [ ! -d "./SDL/.git" ]; then
-        echo "clone SDL failed!"
+    # Fetch SDL (zip archive instead of git clone)
+    echo "- Fetching SDL ..."
+    download_zip "$SDL_ZIP_URL" ./SDL.zip
+    extract_zip ./SDL.zip ./SDL
+    if [ ! -f "./SDL/CMakeLists.txt" ]; then
+        echo "fetch SDL failed!"
         cd "$CURRENT_DIR"
         exit 1
     fi
-fi
-
-SKIA_PATCH_SRC_ZIP=skia.2026-02-10.src.zip
-if [ ! -f "./skia_compile/$SKIA_PATCH_SRC_ZIP" ]; then
-    echo "./skia_compile/$SKIA_PATCH_SRC_ZIP not found!"
-    cd "$CURRENT_DIR"
-    exit 1
-fi
-
-cd skia
-git checkout 34aa71b8bee4648a442b7125680232d803374f19
-if [ $? -ne 0 ]; then
-    echo "git checkout skia failed!"
-    cd "$CURRENT_DIR"
-    exit 1
-fi
-cd ..
-
-unzip -o skia_compile/$SKIA_PATCH_SRC_ZIP -d ./skia/
-if [ $? -ne 0 ]; then
-    echo "./skia_compile/$SKIA_PATCH_SRC_ZIP unzip failed!"
-    exit 1
 fi
 
 # download CEF
