@@ -132,7 +132,7 @@ if not exist ".\dui\.git" (
 set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip
 set SKIA_ZIP_FILE=skia.zip
 
-if exist ".\skia\BUILD.gn" goto fetch_skia_done
+if exist ".\dui\third_party\skia\BUILD.gn" goto fetch_skia_done
 :retry_fetch_skia
 curl -L -f -o %SKIA_ZIP_FILE% --retry 3 --connect-timeout 15 --retry-delay 10 --speed-limit 100 --speed-time 120 %SKIA_ZIP_URL%
 if %errorlevel% neq 0 (
@@ -145,14 +145,14 @@ if not exist "%SKIA_ZIP_FILE%" (
     exit /b 1
 )
 @REM Windows 10+ ships tar.exe (bsdtar) which reads zip archives
-if not exist ".\skia" mkdir ".\skia"
-tar -xf %SKIA_ZIP_FILE% --strip-components=1 -C .\skia
+if not exist ".\dui\third_party\skia" mkdir ".\dui\third_party\skia"
+tar -xf %SKIA_ZIP_FILE% --strip-components=1 -C .\dui\third_party\skia
 if %errorlevel% neq 0 (
     echo extract skia failed!
     cd /d %CURRENT_DIR%
     exit /b 1
 )
-if not exist ".\skia\BUILD.gn" (
+if not exist ".\dui\third_party\skia\BUILD.gn" (
     echo fetch skia failed!
     cd /d %CURRENT_DIR%
     exit /b 1
@@ -160,28 +160,38 @@ if not exist ".\skia\BUILD.gn" (
 del %SKIA_ZIP_FILE%
 :fetch_skia_done
 
-@REM Fetch gn/ninja build tools with skia's own fetch scripts (python3, checked above)
-if not exist ".\skia\bin\gn.exe" (
-    python3 .\skia\bin\fetch-gn
+@REM Fetch ninja with skia's own fetch script (python3, checked above)
+if not exist ".\dui\third_party\skia\third_party\ninja\ninja.exe" (
+    python3 .\dui\third_party\skia\bin\fetch-ninja
 )
-if not exist ".\skia\third_party\ninja\ninja.exe" (
-    python3 .\skia\bin\fetch-ninja
+
+@REM Build gn from source (official instructions; needs the MSVC toolchain in PATH)
+if not exist ".\dui\third_party\gn\out\gn.exe" (
+    if not exist ".\dui\third_party\gn\.git" (
+        git clone https://gn.googlesource.com/gn .\dui\third_party\gn
+    )
+    for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_PATH=%%i"
+    @call "%MSVC_VAR_PATH%" x64
+    cd dui\third_party\gn
+    python3 build/gen.py
+    ..\skia\third_party\ninja\ninja.exe -C out
+    cd ..\..\..
 )
 
 @REM build skia
-cd skia
-.\bin\gn.exe gen out/llvm.x64.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
+cd dui\third_party\skia
+..\gn\out\gn.exe gen out/llvm.x64.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x64.debug
 
-.\bin\gn.exe gen out/llvm.x64.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
+..\gn\out\gn.exe gen out/llvm.x64.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x64.release
 
-.\bin\gn.exe gen out/llvm.x86.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
+..\gn\out\gn.exe gen out/llvm.x86.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x86.release
 
-.\bin\gn.exe gen out/llvm.x86.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
+..\gn\out\gn.exe gen out/llvm.x86.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x86.debug
-cd ..
+cd ..\..\..
 
 @REM build dui
 for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_PATH=%%i"

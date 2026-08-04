@@ -22,6 +22,7 @@ function(dui_deps_configure)
     if(DUI_ENABLE_SDL)
         dui_deps_download_sdl()
     endif()
+    dui_deps_download_gn()
 
     # WebView2 SDK download (idempotent, Windows only)
     if(DUI_WEBVIEW2_EXE AND DUI_OS_WINDOWS)
@@ -152,7 +153,7 @@ function(dui_deps_add_targets)
             if(NOT EXISTS "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}")
                 find_program(GN_EXECUTABLE_DEBUG
                     NAMES gn
-                    HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                    HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                     REQUIRED)
                 find_program(NINJA_EXECUTABLE_DEBUG
                     NAMES ninja
@@ -176,7 +177,7 @@ function(dui_deps_add_targets)
             if(NOT EXISTS "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}")
                 find_program(GN_EXECUTABLE_RELEASE
                     NAMES gn
-                    HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                    HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                     REQUIRED)
                 find_program(NINJA_EXECUTABLE_RELEASE
                     NAMES ninja
@@ -212,7 +213,7 @@ function(dui_deps_add_targets)
                 # bin/fetch-ninja drops ninja.exe into third_party/ninja), then fall back to PATH.
                 find_program(GN_EXECUTABLE
                     NAMES gn
-                    HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                    HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                     REQUIRED)
                 find_program(NINJA_EXECUTABLE
                     NAMES ninja
@@ -428,6 +429,75 @@ function(dui_deps_download_sdl)
     endif()
     file(REMOVE_RECURSE "${_sdl_tmp_dir}")  # keep the zip itself for offline re-extract
     message(STATUS "SDL3 source ready: ${DUI_SDL_SRC_ROOT_DIR}")
+endfunction()
+
+# ---- GN build from source (idempotent; official instructions from the gn README) ----
+# Building skia requires gn. Prebuilt CIPD binaries only cover amd64 reliably, so build gn
+# from source at configure time (git clone + build/gen.py + ninja -C out), following
+# https://gn.googlesource.com/gn/+/refs/heads/main/README.md. The binary lands in
+# third_party/gn/out/gn (gn.exe on Windows); if the build is unavailable (e.g. no VS
+# toolchain in PATH on Windows), configure falls back to a system gn or skia's bin/.
+function(dui_deps_download_gn)
+    if(NOT DUI_BUILD_SKIA_FROM_SOURCE)
+        return()
+    endif()
+    set(_gn_dir "${DUI_ROOT}/third_party/gn")
+    if(WIN32)
+        set(_gn_bin "${_gn_dir}/out/gn.exe")
+    else()
+        set(_gn_bin "${_gn_dir}/out/gn")
+    endif()
+    if(EXISTS "${_gn_bin}")
+        return()  # already built
+    endif()
+
+    # 1. Clone the gn source (idempotent: keep an existing clone, as with the skia/SDL zips)
+    if(NOT EXISTS "${_gn_dir}/.git")
+        message(STATUS "Cloning gn source: https://gn.googlesource.com/gn")
+        execute_process(
+            COMMAND git clone https://gn.googlesource.com/gn "${_gn_dir}"
+            RESULT_VARIABLE _gn_clone_result
+        )
+        if(NOT _gn_clone_result EQUAL 0 OR NOT EXISTS "${_gn_dir}/build/gen.py")
+            message(WARNING "gn clone failed; configure will look for a system gn (or skia's bin/)")
+            return()
+        endif()
+    endif()
+
+    # 2. Generate + build (python3 preferred, python fallback; needs ninja on PATH)
+    if(NOT WIN32)
+        execute_process(COMMAND chmod +x "${_gn_dir}/build/gen.py" RESULT_VARIABLE _gn_chmod_result)
+    endif()
+    find_program(_gn_python NAMES python3 python)
+    if(NOT _gn_python)
+        message(WARNING "python3 not found; gn source build skipped (use a system gn instead)")
+        return()
+    endif()
+    message(STATUS "Building gn from source (python build/gen.py + ninja -C out)...")
+    execute_process(
+        COMMAND "${_gn_python}" build/gen.py
+        WORKING_DIRECTORY "${_gn_dir}"
+        RESULT_VARIABLE _gn_gen_result
+    )
+    if(_gn_gen_result EQUAL 0)
+        execute_process(
+            COMMAND ninja -C out
+            WORKING_DIRECTORY "${_gn_dir}"
+            RESULT_VARIABLE _gn_build_result
+        )
+    else()
+        set(_gn_build_result 1)
+    endif()
+    if(_gn_build_result EQUAL 0 AND EXISTS "${_gn_bin}")
+        if(NOT WIN32)
+            execute_process(COMMAND chmod +x "${_gn_bin}")
+        endif()
+        message(STATUS "gn built: ${_gn_bin}")
+    else()
+        # Windows: gen.py requires the MSVC toolchain (cl.exe/link.exe) in PATH; if the
+        # configure environment lacks it (e.g. not run from a VS prompt), fall back.
+        message(WARNING "gn source build failed; configure will look for a system gn (or skia's bin/)")
+    endif()
 endfunction()
 
 # ---- CEF binary distribution download (only when missing) ----

@@ -6,7 +6,7 @@ if [ "$(uname -s)" != "FreeBSD" ]; then
 fi
 
 DUI_SRC_ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-SKIA_SRC_ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../skia" && pwd)
+SKIA_SRC_ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../third_party/skia" && pwd)
 echo "DUI_SRC_ROOT_DIR: $DUI_SRC_ROOT_DIR"
 echo "SKIA_SRC_ROOT_DIR: $SKIA_SRC_ROOT_DIR"
 

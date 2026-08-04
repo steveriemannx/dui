@@ -53,15 +53,6 @@ else
     which python3
 fi
 
-if ! command -v gn &> /dev/null
-then
-    echo "- gn not found!"
-    exit 1
-else
-    echo "gn found at:"
-    which gn
-fi
-
 if ! command -v ninja &> /dev/null
 then
     echo "- ninja not found!"
@@ -200,14 +191,36 @@ extract_zip() {
 SKIA_ZIP_URL="https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip"
 SDL_ZIP_URL="https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip"
 
-# Fetch skia (zip archive instead of git clone)
+# Fetch skia into third_party/skia (same layout as the CMake build; idempotent)
 echo "- Fetching skia ..."
-download_zip "$SKIA_ZIP_URL" ./skia.zip
-extract_zip ./skia.zip ./skia
-if [ ! -f "./skia/BUILD.gn" ]; then
+if [ ! -f "./dui/third_party/skia/BUILD.gn" ]; then
+    download_zip "$SKIA_ZIP_URL" ./skia.zip
+    extract_zip ./skia.zip ./dui/third_party/skia
+fi
+if [ ! -f "./dui/third_party/skia/BUILD.gn" ]; then
     echo "fetch skia failed!"
     cd "$CURRENT_DIR"
     exit 1
+fi
+
+# Build gn from source (official instructions; idempotent; system gn as fallback)
+echo "- Building gn ..."
+if [ ! -f "./dui/third_party/gn/out/gn" ]; then
+    if [ ! -d "./dui/third_party/gn/.git" ]; then
+        git clone https://gn.googlesource.com/gn ./dui/third_party/gn
+    fi
+    (cd ./dui/third_party/gn && python3 build/gen.py && ninja -C out)
+fi
+GN_BIN=$(cd ./dui/third_party/gn/out 2>/dev/null && pwd)/gn
+if [ ! -x "$GN_BIN" ]; then
+    if command -v gn &> /dev/null; then
+        echo "- gn source build failed; using system gn"
+        GN_BIN=gn
+    else
+        echo "gn build failed! Install gn or check the build log above."
+        cd "$CURRENT_DIR"
+        exit 1
+    fi
 fi
 
 if is_windows; then
@@ -215,11 +228,13 @@ if is_windows; then
 fi
 
 if ! is_windows || [ "$ENABLE_SDL" == "1" ]; then
-    # Fetch SDL (zip archive instead of git clone)
+    # Fetch SDL into third_party/SDL3 (same layout as the CMake build; idempotent)
     echo "- Fetching SDL ..."
-    download_zip "$SDL_ZIP_URL" ./SDL.zip
-    extract_zip ./SDL.zip ./SDL
-    if [ ! -f "./SDL/CMakeLists.txt" ]; then
+    if [ ! -f "./dui/third_party/SDL3/CMakeLists.txt" ]; then
+        download_zip "$SDL_ZIP_URL" ./SDL.zip
+        extract_zip ./SDL.zip ./dui/third_party/SDL3
+    fi
+    if [ ! -f "./dui/third_party/SDL3/CMakeLists.txt" ]; then
         echo "fetch SDL failed!"
         cd "$CURRENT_DIR"
         exit 1
@@ -414,7 +429,7 @@ fi
 if ! is_windows; then
     # build SDL on Linux/MacOS
     echo "- Building SDL ..."
-    cmake ${DUI_CMAKE_REFRESH} -S "./SDL/" -B "./SDL.build" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
+    cmake ${DUI_CMAKE_REFRESH} -S "./dui/third_party/SDL3/" -B "./SDL.build" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
     cmake --build ./SDL.build
     cmake --install ./SDL.build
 elif [ "$ENABLE_SDL" == "1" ]; then
@@ -425,7 +440,7 @@ elif [ "$ENABLE_SDL" == "1" ]; then
     else
         DUI_SDL_DIR=SDL.build.msys2.gcc
     fi
-    cmake ${DUI_CMAKE_REFRESH} -S "./SDL/" -B "./${DUI_SDL_DIR}" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release 
+    cmake ${DUI_CMAKE_REFRESH} -S "./dui/third_party/SDL3/" -B "./${DUI_SDL_DIR}" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release 
     cmake --build ./${DUI_SDL_DIR} -j 6
     cmake --install ./${DUI_SDL_DIR}
 fi
@@ -439,17 +454,17 @@ if [ "$has_clang" -eq 1 ]; then
     echo "clang found at:"
     which clang
 
-    cd ./skia
+    cd ./dui/third_party/skia
     # Check if the system is FreeBSD
     if [ "$(uname)" = "FreeBSD" ]; then
         echo "Building for FreeBSD"
-        gn gen out/llvm.${CPU_ARCH}.release --args="target_cpu=\"${CPU_ARCH}\" ar=\"llvm-ar\" skia_enable_fontmgr_fontconfig=true skia_use_freetype=true extra_ldflags = [ \"-L/usr/local/lib\" ] cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\", \"-I/usr/local/include/freetype2\", \"-I/usr/local/include\"]"
+        $GN_BIN gen out/llvm.${CPU_ARCH}.release --args="target_cpu=\"${CPU_ARCH}\" ar=\"llvm-ar\" skia_enable_fontmgr_fontconfig=true skia_use_freetype=true extra_ldflags = [ \"-L/usr/local/lib\" ] cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\", \"-I/usr/local/include/freetype2\", \"-I/usr/local/include\"]"
     else
-        gn gen out/llvm.${CPU_ARCH}.release --args="target_cpu=\"${CPU_ARCH}\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        $GN_BIN gen out/llvm.${CPU_ARCH}.release --args="target_cpu=\"${CPU_ARCH}\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
         
     fi
     ninja -C out/llvm.${CPU_ARCH}.release
-    cd ..
+    cd ../../../
 else
     if [ "$has_gcc" -eq 1 ]; then
         # gcc/g++
@@ -459,39 +474,13 @@ else
         echo "gcc found at:"
         which gcc
 
-        cd ./skia
-        gn gen out/gcc.${CPU_ARCH}.release --args="target_cpu=\"${CPU_ARCH}\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        cd ./dui/third_party/skia
+        $GN_BIN gen out/gcc.${CPU_ARCH}.release --args="target_cpu=\"${CPU_ARCH}\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
         ninja -C out/gcc.${CPU_ARCH}.release
-        cd ..
+        cd ../../../
     fi
 fi
 
-cmake_version=$(cmake --version | grep -oE '[0-9]+\.[0-9]+')
-required_version=3.24
-if [ $(echo "$cmake_version >= $required_version" | bc) -eq 1 ]; then
-    DUI_CMAKE_REFRESH=--fresh
-else
-    DUI_CMAKE_REFRESH=
-fi
-
-if ! is_windows; then
-    # build SDL on Linux/MacOS
-    echo "- Building SDL ..."
-    cmake ${DUI_CMAKE_REFRESH} -S "./SDL/" -B "./SDL.build" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
-    cmake --build ./SDL.build
-    cmake --install ./SDL.build
-elif [ "$ENABLE_SDL" == "1" ]; then
-    # build SDL on Windows
-    echo "- Building SDL ..."
-    if [ "$has_clang" -eq 1 ]; then
-        DUI_SDL_DIR=SDL.build.msys2.llvm
-    else
-        DUI_SDL_DIR=SDL.build.msys2.gcc
-    fi
-    cmake ${DUI_CMAKE_REFRESH} -S "./SDL/" -B "./${DUI_SDL_DIR}" -DCMAKE_INSTALL_PREFIX="./SDL3/" -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release 
-    cmake --build ./${DUI_SDL_DIR} -j 6
-    cmake --install ./${DUI_SDL_DIR}
-fi
 
 # build dui
 echo "- Building dui ..."
