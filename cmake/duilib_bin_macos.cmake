@@ -64,6 +64,11 @@ else()
         add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_embed_res")
     endif()
 
+    # Embed XML dependency
+    if(DEFINED DUILIB_EMBED_XML_HEADER)
+        add_dependencies(${PROJECT_NAME} embed_xml)
+    endif()
+
     # Generate C++ code from XML dependency
     if(TARGET "${PROJECT_NAME}_gen_xml_code")
         add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_gen_xml_code")
