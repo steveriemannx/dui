@@ -3,9 +3,9 @@
 #include "browser/BrowserForm.h"
 #include <chrono>
 
-// duilib
-#include "duilib/duilib_cef.h"
-#include "duilib/Utils/AppEntry.h"
+// dui
+#include "dui/dui_cef.h"
+#include "dui/Utils/AppEntry.h"
 
 App::App() :
     FrameworkThread(_T("App"), ui::kThreadUI)
@@ -29,7 +29,7 @@ int App::Run(int argc, char** argv)
 
     // Parse command-line arguments.
     CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     command_line->InitFromString(::GetCommandLineW());
 #else
     command_line->InitFromArgv(argc, argv);
@@ -162,5 +162,5 @@ const ui::DpiInitParam& App::GetDpiInitParam() const
 
 // On macOS the entry point is provided by main_macos.mm (Objective-C++ for CEF)
 #if !defined(__APPLE__)
-DUILIB_APP_ENTRY_ARGS(App)
+DUI_APP_ENTRY_ARGS(App)
 #endif

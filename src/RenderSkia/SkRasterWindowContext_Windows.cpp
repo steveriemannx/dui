@@ -1,8 +1,8 @@
-#include "duilib/RenderSkia/SkRasterWindowContext_Windows.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/RenderSkia/SkRasterWindowContext_Windows.h"
+#include "dui/Render/IRender.h"
+#include "dui/Utils/PerformanceUtil.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
 namespace ui {
 
@@ -301,4 +301,4 @@ HBITMAP SkRasterWindowContext_Windows::CreateHBitmap(int32_t nWidth, int32_t nHe
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

@@ -38,7 +38,7 @@ void MainForm::BuildUI()
     pRoot->AddItem(pCaption);
 
     ui::Label* pTitle = new ui::Label(this);
-    pTitle->SetText(_T("duilib Multithreading Example"));
+    pTitle->SetText(_T("dui Multithreading Example"));
     pTitle->SetAttribute(_T("height"), _T("32"));
     pTitle->SetAttribute(_T("text_align"), _T("vcenter"));
     pTitle->SetAttribute(_T("margin"), _T("10,0,0,0"));

@@ -1,6 +1,6 @@
-#include "duilib/Core/MessageLoop_Windows.h"
+#include "dui/Core/MessageLoop_Windows.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
 
 namespace ui
 {
@@ -63,4 +63,4 @@ int32_t MessageLoop_Windows::RunWithIdle(MessageLoopIdleCallback idleCallback)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WIN
+#endif // DUI_BUILD_FOR_WIN

@@ -1,9 +1,9 @@
-#include "duilib/Core/FontManager.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/DpiManager.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Core/FontManager.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/DpiManager.h"
+#include "dui/Render/IRender.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/FilePathUtil.h"
 
 namespace ui 
 {
@@ -359,7 +359,7 @@ void FontManager::GetFontSizeList(const DpiManager& dpi, std::vector<FontSizeInf
     fontSizeList.push_back({ _T("48"), 48.0f, 0 });
     fontSizeList.push_back({ _T("72"), 72.0f, 0 });
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     if (::GetACP() == 936) {
         //Only used in the Chinese environment
         fontSizeList.push_back({ _T("1 inch"), 95.6f, 0 });

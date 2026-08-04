@@ -1,7 +1,7 @@
-#include "duilib/Core/ClickThrough.h"
-#include "duilib/Core/Window.h"
+#include "dui/Core/ClickThrough.h"
+#include "dui/Core/Window.h"
 
-#ifdef DUILIB_BUILD_FOR_MACOS
+#ifdef DUI_BUILD_FOR_MACOS
 #import <Cocoa/Cocoa.h>
 #import <CoreGraphics/CoreGraphics.h>
 #include <ApplicationServices/ApplicationServices.h>
@@ -116,4 +116,4 @@ bool ClickThrough::ClickThroughWindow(Window* pWindow, const UiPoint& ptMouse)
 
 }//namespace ui
 
-#endif //DUILIB_BUILD_FOR_MACOS
+#endif //DUI_BUILD_FOR_MACOS

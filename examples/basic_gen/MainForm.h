@@ -1,7 +1,7 @@
 #ifndef EXAMPLES_BASIC_GEN_MAIN_FORM_H_
 #define EXAMPLES_BASIC_GEN_MAIN_FORM_H_
 
-#include "duilib/duilib.h"
+#include "dui/dui.h"
 
 class MainForm : public ui::WindowImplBase
 {

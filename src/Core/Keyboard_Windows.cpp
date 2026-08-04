@@ -1,6 +1,6 @@
-#include "duilib/Core/Keyboard.h"
+#include "dui/Core/Keyboard.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 namespace ui
 {
@@ -56,4 +56,4 @@ DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool fExtended)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WIN
+#endif // DUI_BUILD_FOR_WIN

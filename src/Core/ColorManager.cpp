@@ -1,6 +1,6 @@
-#include "duilib/Core/ColorManager.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Core/ColorManager.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui 
 {

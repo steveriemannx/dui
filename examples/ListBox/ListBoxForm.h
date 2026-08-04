@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_LISTBOX_FORM_H_
 #define EXAMPLES_LISTBOX_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 class ListBoxForm : public ui::WindowImplBase
 {

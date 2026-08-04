@@ -1,18 +1,18 @@
-#include "duilib/RenderSkia/Render_Skia_Windows.h"
+#include "dui/RenderSkia/Render_Skia_Windows.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
-#include "duilib/RenderSkia/SkRasterWindowContext_Windows.h"
-#include "duilib/RenderSkia/SkGLWindowContext_Windows.h"
-#include "duilib/RenderSkia/WindowRgn_Windows.h"
+#include "dui/RenderSkia/SkRasterWindowContext_Windows.h"
+#include "dui/RenderSkia/SkGLWindowContext_Windows.h"
+#include "dui/RenderSkia/WindowRgn_Windows.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 
 #include "include/core/SkCanvas.h"
 #include "include/core/SkSurface.h"
 #include "include/core/SkRegion.h"
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui {
 
@@ -325,4 +325,4 @@ void Render_Skia_Windows::ClearWindowRgn(bool bRedraw)
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

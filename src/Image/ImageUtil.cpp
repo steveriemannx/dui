@@ -1,6 +1,6 @@
-#include "duilib/Image/ImageUtil.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Image/ImageUtil.h"
+#include "dui/Render/IRender.h"
+#include "dui/Core/GlobalManager.h"
 #include <cmath>
 
 #pragma warning (push)

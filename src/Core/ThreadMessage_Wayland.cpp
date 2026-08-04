@@ -1,8 +1,8 @@
-#include "duilib/Core/ThreadMessage.h"
+#include "dui/Core/ThreadMessage.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
-#include "duilib/Core/MessageLoop_Wayland.h"
+#include "dui/Core/MessageLoop_Wayland.h"
 
 namespace ui
 {
@@ -79,4 +79,4 @@ void ThreadMessage::OnUserMessage(uint32_t /*msgId*/, WPARAM /*wParam*/, LPARAM 
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

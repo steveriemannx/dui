@@ -1,18 +1,18 @@
-#include "duilib/RenderSkia/Render_Skia_SDL.h"
-#include "duilib/RenderSkia/SkRasterWindowContext_SDL.h"
+#include "dui/RenderSkia/Render_Skia_SDL.h"
+#include "dui/RenderSkia/SkRasterWindowContext_SDL.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 
 #include "include/core/SkCanvas.h"
 #include "include/core/SkSurface.h"
 #include "include/core/SkRegion.h"
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
-    #include "duilib/RenderSkia/WindowRgn_Windows.h"
+#ifdef DUI_BUILD_FOR_WIN
+    #include "dui/RenderSkia/WindowRgn_Windows.h"
     #include "SDL3/SDL.h"
 #endif
 
@@ -180,7 +180,7 @@ SkCanvas* Render_Skia_SDL::GetSkCanvas() const
 
 bool Render_Skia_SDL::SetWindowRoundRectRgn(const UiRect& rcWnd, float rx, float ry, bool bRedraw)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     if (m_sdlWindow != nullptr) {
         SDL_PropertiesID propID = SDL_GetWindowProperties(m_sdlWindow);
         HWND hWnd = (HWND)SDL_GetPointerProperty(propID, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
@@ -200,7 +200,7 @@ bool Render_Skia_SDL::SetWindowRoundRectRgn(const UiRect& rcWnd, float rx, float
 
 bool Render_Skia_SDL::SetWindowRectRgn(const UiRect& rcWnd, bool bRedraw)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     if (m_sdlWindow != nullptr) {
         SDL_PropertiesID propID = SDL_GetWindowProperties(m_sdlWindow);
         HWND hWnd = (HWND)SDL_GetPointerProperty(propID, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
@@ -218,7 +218,7 @@ bool Render_Skia_SDL::SetWindowRectRgn(const UiRect& rcWnd, bool bRedraw)
 
 void Render_Skia_SDL::ClearWindowRgn(bool bRedraw)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     if (m_sdlWindow != nullptr) {
         SDL_PropertiesID propID = SDL_GetWindowProperties(m_sdlWindow);
         HWND hWnd = (HWND)SDL_GetPointerProperty(propID, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
@@ -232,7 +232,7 @@ void Render_Skia_SDL::ClearWindowRgn(bool bRedraw)
 #endif
 }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
 HDC Render_Skia_SDL::GetRenderDC(HWND /*hWnd*/)
 {
@@ -249,4 +249,4 @@ void Render_Skia_SDL::ReleaseRenderDC(HDC /*hdc*/)
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL

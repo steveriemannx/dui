@@ -1,6 +1,6 @@
 #include "BrowserBox_Windows.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #include "Windows/taskbar/TaskbarManager.h"
 
@@ -134,4 +134,4 @@ HICON BrowserBox_Windows::ConvertCefImageToHICON(CefImage& cefImage) const
     return hIcon;
 }
 
-#endif // defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#endif // defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)

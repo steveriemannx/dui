@@ -1,7 +1,7 @@
-#include "duilib/Image/Image_GIF.h"
-#include "duilib/Image/FrameSequence_gif.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
+#include "dui/Image/Image_GIF.h"
+#include "dui/Image/FrameSequence_gif.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
 
 #include "third_party/giflib/gif_lib.h"
 #include <atomic>
@@ -165,7 +165,7 @@ static AnimationFramePtr UiGifToRgbaFrames(FrameSequence_gif& gif,
     gif.DrawFrame(nFrameIndex, (Color8888*)canvas.data(), outputPixelStride, nPrevFrameIndex);
 
     // Update the bitmap data
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     std::vector<UiGifRGBA> canvasWin = canvas;
     //Swap R and B; the Windows platform uses the ABGR format
     for (int y = 0; y < nImageHeight; y++) {

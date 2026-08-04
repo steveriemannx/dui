@@ -1,6 +1,6 @@
-#include "duilib/Utils/PerformanceUtil.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/LogUtil.h"
+#include "dui/Utils/PerformanceUtil.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/LogUtil.h"
 
 namespace ui 
 {

@@ -2,8 +2,8 @@
 #ifndef EXAMPLES_DPI_DISPLAY_SCALE_MAIN_FORM_H_
 #define EXAMPLES_DPI_DISPLAY_SCALE_MAIN_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 /** Main window implementation of the application (mode 3: pure code layout)
 */

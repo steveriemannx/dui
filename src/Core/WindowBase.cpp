@@ -1,8 +1,8 @@
-#include "duilib/Core/WindowBase.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/WindowCreateAttributes.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/MonitorUtil.h"
+#include "dui/Core/WindowBase.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/WindowCreateAttributes.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/MonitorUtil.h"
 #include <random>
 
 namespace ui
@@ -578,8 +578,8 @@ bool WindowBase::ChangeDisplayScale(uint32_t nNewDisplayScaleFactor, bool bDisab
         return false;
     }
     //The DPI scale ratio is limited to between 60 and 300 (when it is less than 50, problems may occur; for example, a value of 1 may become 0 after DPI conversion, causing many logic failures)
-    const uint32_t nDisplayScaleFactorMin = (uint32_t)(DUILIB_DISPLAY_SCALE_MIN * 100 + 0.5f);
-    const uint32_t nDisplayScaleFactorMax = (uint32_t)(DUILIB_DISPLAY_SCALE_MAX * 100 + 0.5f);
+    const uint32_t nDisplayScaleFactorMin = (uint32_t)(DUI_DISPLAY_SCALE_MIN * 100 + 0.5f);
+    const uint32_t nDisplayScaleFactorMax = (uint32_t)(DUI_DISPLAY_SCALE_MAX * 100 + 0.5f);
     ASSERT((nNewDisplayScaleFactor >= nDisplayScaleFactorMin) && (nNewDisplayScaleFactor <= nDisplayScaleFactorMax)) ;
     if ((nNewDisplayScaleFactor < nDisplayScaleFactorMin) || (nNewDisplayScaleFactor > nDisplayScaleFactorMax)) {
         return false;
@@ -888,7 +888,7 @@ void* WindowBase::GetWindowHandle() const
     return m_pNativeWindow->GetWindowHandle();
 }
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 DString WindowBase::GetVideoDriverName() const
 {
     return m_pNativeWindow->GetVideoDriverName();

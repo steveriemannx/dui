@@ -6,33 +6,33 @@ set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
 # Define the project name and language
 project(CefBrowser CXX)
 
-# duilib source root directory
-get_filename_component(DUILIB_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE) 
+# dui source root directory
+get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE) 
 
 # Project source directory
-get_filename_component(DUILIB_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE) 
+get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE) 
 
 # Name of the resource (*.rc) file; the default is "<ProjectName>.rc" and its encoding must be UTF-8
 # The resource file must be in the source directory; only effective on Windows, ignored on other platforms
-set(DUILIB_WINRES_FILE_NAME "${PROJECT_NAME}.rc")
+set(DUI_WINRES_FILE_NAME "${PROJECT_NAME}.rc")
 
 # Use the CEF module
-set(DUILIB_ENABLE_CEF ON)
+set(DUI_ENABLE_CEF ON)
 
 # Include the common implementation
-include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_common.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
 # Define the subdirectories whose source files are enumerated
-if(DUILIB_OS_WINDOWS)
+if(DUI_OS_WINDOWS)
     # Windows platform
-    set(DUILIB_SRC_SUB_DIRS "browser" "Windows" "Windows/taskbar")
+    set(DUI_SRC_SUB_DIRS "browser" "Windows" "Windows/taskbar")
 else()
     # Other platforms
-    set(DUILIB_SRC_SUB_DIRS "browser")
+    set(DUI_SRC_SUB_DIRS "browser")
 endif()
 
 # Name of the resource subdirectory (a subdirectory under resources/themes/default; used when macOS copies resources)
-set(DUILIB_THEME_DIR_NAME "cef_browser")
+set(DUI_THEME_DIR_NAME "cef_browser")
 
 # Include the common implementation
-include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_bin.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

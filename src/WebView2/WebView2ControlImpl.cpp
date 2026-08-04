@@ -1,19 +1,19 @@
-#include "duilib/WebView2/WebView2ControlImpl.h"
+#include "dui/WebView2/WebView2ControlImpl.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && defined (DUILIB_BUILD_FOR_WEBVIEW2)
+#if defined (DUI_BUILD_FOR_WIN) && defined (DUI_BUILD_FOR_WEBVIEW2)
 
-#include "duilib/WebView2/WebView2Manager.h"
-#include "duilib/WebView2/WebView2EnvironmentOptions.h"
-#include "duilib/WebView2/ComCallback.h"
+#include "dui/WebView2/WebView2Manager.h"
+#include "dui/WebView2/WebView2EnvironmentOptions.h"
+#include "dui/WebView2/ComCallback.h"
 
-#include "duilib/Core/Window.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/FilePath.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Image/ImageLoadParam.h"
-#include "duilib/Image/ImageInfo.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/FilePath.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Image/ImageLoadParam.h"
+#include "dui/Image/ImageInfo.h"
 
 #include <shlwapi.h>
 #include <sstream>
@@ -95,7 +95,7 @@ HRESULT WebView2Control::Impl::CallCreateCoreWebView2EnvironmentWithOptions(PCWS
     ICoreWebView2EnvironmentOptions* environmentOptions,
     ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* environmentCreatedHandler)
 {
-#ifndef DUILIB_USE_WEBVIEW2_LOADER_DLL
+#ifndef DUI_USE_WEBVIEW2_LOADER_DLL
     return CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder,
                                                     userDataFolder,
                                                     environmentOptions,
@@ -1158,7 +1158,7 @@ HRESULT WebView2Control::Impl::CapturePreview(const DString& filePath,
     if (filePath.empty()) {
         return E_FAIL;
     }
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     DString filePathW = filePath;
 #else
     DStringW filePathW = StringConvert::MBCSToUnicode(filePath);
@@ -1349,7 +1349,7 @@ void WebView2Control::Impl::Cleanup()
     m_bNavigating = false;
     m_lastError = S_OK;
 
-#ifdef DUILIB_USE_WEBVIEW2_LOADER_DLL
+#ifdef DUI_USE_WEBVIEW2_LOADER_DLL
     if (m_hWebView2Loader != nullptr) {
         ::FreeLibrary(m_hWebView2Loader);
         m_hWebView2Loader = nullptr;
@@ -1627,4 +1627,4 @@ bool WebView2Control::Impl::IsEnableF11() const
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WEBVIEW2
+#endif //DUI_BUILD_FOR_WEBVIEW2

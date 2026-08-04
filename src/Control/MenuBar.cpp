@@ -1,5 +1,5 @@
-#include "duilib/Control/MenuBar.h"
-#include "duilib/Control/Button.h"
+#include "dui/Control/MenuBar.h"
+#include "dui/Control/Button.h"
 
 namespace ui
 {

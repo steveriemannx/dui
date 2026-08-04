@@ -1,9 +1,9 @@
-#include "duilib/RenderSkia/SkGLWindowContext_Windows.h"
-#include "duilib/Render/IRender.h"
+#include "dui/RenderSkia/SkGLWindowContext_Windows.h"
+#include "dui/Render/IRender.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 
 #include "include/gpu/ganesh/GrDirectContext.h"
 #include "include/gpu/ganesh/gl/GrGLInterface.h"
@@ -12,7 +12,7 @@
 
 #include <GL/gl.h>
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui {
 
@@ -213,4 +213,4 @@ bool SkGLWindowContext_Windows::PaintAndSwapBuffers(IRender* /*pRender*/, IRende
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

@@ -1,7 +1,7 @@
-#include "duilib/Core/DpiAwareness.h"
+#include "dui/Core/DpiAwareness.h"
 
 //Non-Windows platforms only; the various DpiAwareness modes are not supported, non-Windows platforms have no such concept
-#if defined (DUILIB_BUILD_FOR_SDL) && !defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_SDL) && !defined (DUI_BUILD_FOR_WIN)
 
 namespace ui
 {
@@ -40,4 +40,4 @@ DpiAwarenessMode DpiAwareness::GetDpiAwareness() const
 
 }
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL

@@ -1,7 +1,7 @@
 #ifndef EXAMPLES_GENLIST_ITEM_H_
 #define EXAMPLES_GENLIST_ITEM_H_
 
-#include "duilib/duilib.h"
+#include "dui/dui.h"
 
 class Item : public ui::ListBoxItem
 {

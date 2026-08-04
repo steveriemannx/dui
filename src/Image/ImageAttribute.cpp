@@ -1,7 +1,7 @@
-#include "duilib/Image/ImageAttribute.h"
-#include "duilib/Core/DpiManager.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/AttributeUtil.h"
+#include "dui/Image/ImageAttribute.h"
+#include "dui/Core/DpiManager.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/AttributeUtil.h"
 
 namespace ui 
 {

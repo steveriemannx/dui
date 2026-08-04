@@ -1,24 +1,24 @@
-#include "duilib/Core/FrameworkThread.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/WindowMessage.h"
-#include "duilib/Core/ScopedLock.h"
+#include "dui/Core/FrameworkThread.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/WindowMessage.h"
+#include "dui/Core/ScopedLock.h"
 
-#if defined (DUILIB_BUILD_FOR_SDL)
-    #include "duilib/Core/MessageLoop_SDL.h"
+#if defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Core/MessageLoop_SDL.h"
     #include <SDL3/SDL.h>
-#elif defined (DUILIB_BUILD_FOR_WAYLAND)
-    #include "duilib/Core/MessageLoop_Wayland.h"
-#elif defined (DUILIB_BUILD_FOR_WIN)
-    #include "duilib/Core/MessageLoop_Windows.h"
+#elif defined (DUI_BUILD_FOR_WAYLAND)
+    #include "dui/Core/MessageLoop_Wayland.h"
+#elif defined (DUI_BUILD_FOR_WIN)
+    #include "dui/Core/MessageLoop_Windows.h"
 #endif
 
 #include <sstream>
 
 /** User-defined message
 */
-#if defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_SDL)
     #define WM_USER_DEFINED_MSG     (SDL_EVENT_USER + 1)
-#elif defined (DUILIB_BUILD_FOR_WAYLAND)
+#elif defined (DUI_BUILD_FOR_WAYLAND)
     #define WM_USER_DEFINED_MSG     (kWM_USER + 1)
 #else
     #define WM_USER_DEFINED_MSG     (kWM_USER + 568)
@@ -39,9 +39,9 @@ FrameworkThread::FrameworkThread(const DString& threadName, int32_t nThreadIdent
         m_nThisThreadId = std::this_thread::get_id();
         m_bThreadUI = true;
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
         MessageLoop_SDL::CheckInitSDL();
-#elif defined(DUILIB_BUILD_FOR_WAYLAND)
+#elif defined(DUI_BUILD_FOR_WAYLAND)
         MessageLoop_Wayland::CheckInitWayland();
 #endif
         //Initialize the mechanism for communicating with the main thread
@@ -146,7 +146,7 @@ std::thread::id FrameworkThread::GetThreadId() const
 DString FrameworkThread::ThreadIdToString(const std::thread::id& threadId)
 {
     // Convert to a string
-#ifdef DUILIB_UNICODE    
+#ifdef DUI_UNICODE    
     std::wstringstream ss;
     ss << threadId;
     std::wstring thread_id_str = ss.str();
@@ -274,7 +274,7 @@ bool FrameworkThread::NotifyExecTask(size_t nTaskId,
 {
     if (IsUIThread()) {
         //UI thread: execute asynchronously
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
         //Release the outer lock, to avoid deadlock caused by reverse calls of the SDL underlying locks
         if (unlockClosure1) {
             unlockClosure1();
@@ -287,7 +287,7 @@ bool FrameworkThread::NotifyExecTask(size_t nTaskId,
         UNUSED_VARIABLE(unlockClosure2);
 #endif
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
         //Process the delayed messages first
         std::vector<size_t> winTaskIds;
         {
@@ -310,7 +310,7 @@ bool FrameworkThread::NotifyExecTask(size_t nTaskId,
 
         uint32_t nErrorCode = 0;
         bool bRet = m_threadMsg.PostMsg(WM_USER_DEFINED_MSG, nTaskId, 0, &nErrorCode);
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
         if (!bRet) {
             if (nErrorCode == ERROR_NOT_ENOUGH_QUOTA) {
                 if (!GlobalManager::Instance().IsInUIThread()) { //Executed in a worker thread
@@ -440,13 +440,13 @@ void FrameworkThread::OnInit()
 
 void FrameworkThread::OnRunMessageLoop()
 {
-#if defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_SDL)
     MessageLoop_SDL msgLoop;
     MessageLoop_SDL::CheckInitSDL();
-#elif defined (DUILIB_BUILD_FOR_WAYLAND)
+#elif defined (DUI_BUILD_FOR_WAYLAND)
     MessageLoop_Wayland msgLoop;
     MessageLoop_Wayland::CheckInitWayland();
-#elif defined (DUILIB_BUILD_FOR_WIN)
+#elif defined (DUI_BUILD_FOR_WIN)
     MessageLoop_Windows msgLoop;
 #else
     ASSERT(0);
@@ -461,7 +461,7 @@ void FrameworkThread::OnRunMessageLoop()
             });
     }
     else {
-#if defined (DUILIB_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_WAYLAND)
         // Wayland backend always needs idle for painting
         msgLoop.Run([this]() {
             return OnMessageLoopIdle();

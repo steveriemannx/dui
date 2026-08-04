@@ -1,7 +1,7 @@
-#include "duilib/Control/ListCtrlHeaderItem.h"
-#include "duilib/Control/ListCtrl.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
+#include "dui/Control/ListCtrlHeaderItem.h"
+#include "dui/Control/ListCtrl.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
 
 namespace ui
 {

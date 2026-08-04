@@ -1,6 +1,6 @@
-#include "duilib/Core/ControlDropTargetImpl_Wayland.h"
+#include "dui/Core/ControlDropTargetImpl_Wayland.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 namespace ui {
 
@@ -8,4 +8,4 @@ namespace ui {
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

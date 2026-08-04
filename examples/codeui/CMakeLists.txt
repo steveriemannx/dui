@@ -6,14 +6,14 @@ set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
 # Define project
 project(codeui CXX)
 
-# duilib source root
-get_filename_component(DUILIB_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+# dui source root
+get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 
 # Project source directory
-get_filename_component(DUILIB_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE)
+get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE)
 
 # Include common build rules
-include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_common.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
 # Include binary build rules
-include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_bin.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

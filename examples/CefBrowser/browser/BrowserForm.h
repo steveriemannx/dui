@@ -1,11 +1,11 @@
 #ifndef EXAMPLES_BROWSER_FORM_H_
 #define EXAMPLES_BROWSER_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 // CEF
-#include "duilib/duilib_cef.h"
+#include "dui/dui_cef.h"
 
 class BrowserBox;
 

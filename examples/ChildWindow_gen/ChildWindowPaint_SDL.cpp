@@ -1,6 +1,6 @@
 #include "ChildWindowPaint.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
 #include "SDL3/SDL.h"
 #include <stdlib.h>

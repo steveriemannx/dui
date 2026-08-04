@@ -1,9 +1,9 @@
-#include "duilib/Box/XmlBox.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Shadow.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/FileUtil.h"
+#include "dui/Box/XmlBox.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Shadow.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/FileUtil.h"
 #include <set>
 
 namespace ui

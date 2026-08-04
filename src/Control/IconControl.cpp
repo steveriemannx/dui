@@ -1,6 +1,6 @@
-#include "duilib/Control/IconControl.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Control/IconControl.h"
+#include "dui/Render/IRender.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {

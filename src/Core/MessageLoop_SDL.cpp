@@ -1,9 +1,9 @@
-#include "duilib/Core/MessageLoop_SDL.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Core/MessageLoop_SDL.h"
+#include "dui/Utils/StringConvert.h"
 
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL)
 
-#include "duilib/Core/NativeWindow_SDL.h"
+#include "dui/Core/NativeWindow_SDL.h"
 #include <SDL3/SDL.h>
 
 namespace ui
@@ -41,10 +41,10 @@ bool MessageLoop_SDL::CheckInitSDL(const DString& videoDriverName)
 
         //Usage of custom messages:
         //1. SDL_EVENT_USER + 0:  occupied by the MessageLoop_SDL::PostNoneEvent function
-        //2. SDL_EVENT_USER + 1:  occupied by the WM_USER_DEFINED_MSG message in duilib\Core\FrameworkThread.cpp
-        //3. SDL_EVENT_USER + 2:  occupied by WM_USER_DEFINED_TIMER in duilib\Core\TimerManager.cpp
-        //4. SDL_EVENT_USER + 3:  occupied by WM_USER_PAINT_MSG in duilib\Core\NativeWindow_SDL.cpp
-        //5. SDL_EVENT_USER + 4:  occupied by WM_USER_HOVER_MSG in duilib\Core\NativeWindow_SDL.cpp
+        //2. SDL_EVENT_USER + 1:  occupied by the WM_USER_DEFINED_MSG message in dui\Core\FrameworkThread.cpp
+        //3. SDL_EVENT_USER + 2:  occupied by WM_USER_DEFINED_TIMER in dui\Core\TimerManager.cpp
+        //4. SDL_EVENT_USER + 3:  occupied by WM_USER_PAINT_MSG in dui\Core\NativeWindow_SDL.cpp
+        //5. SDL_EVENT_USER + 4:  occupied by WM_USER_HOVER_MSG in dui\Core\NativeWindow_SDL.cpp
     }
     return bRet;
 }
@@ -332,4 +332,4 @@ void MessageLoop_SDL::OnUserEvent(const SDL_Event& sdlEvent)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_SDL
+#endif // DUI_BUILD_FOR_SDL

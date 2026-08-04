@@ -1,6 +1,6 @@
 #include "BrowserManager.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     #include "Windows/BrowserForm_Windows.h"
 #else
     #include "BrowserForm.h"
@@ -22,7 +22,7 @@ BrowserManager* BrowserManager::GetInstance()
 
 BrowserForm* BrowserManager::CreateBrowserForm()
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     return new BrowserForm_Windows;
 #else
     return new BrowserForm;

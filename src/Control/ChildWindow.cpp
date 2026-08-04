@@ -1,8 +1,8 @@
-#include "duilib/Control/ChildWindow.h"
-#include "duilib/Control/ChildWindowImpl.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/AttributeUtil.h"
+#include "dui/Control/ChildWindow.h"
+#include "dui/Control/ChildWindowImpl.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/AttributeUtil.h"
 
 namespace ui
 {
@@ -126,7 +126,7 @@ void ChildWindow::AdjustChildWindowPos()
         UiPoint pt;
         pt.x = rc.left;
         pt.y = rc.top;
-#if defined (DUILIB_BUILD_FOR_SDL) && !defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_SDL) && !defined (DUI_BUILD_FOR_WIN)
         //SDL uses screen coordinates, while the Windows SDK uses client area coordinates
         UiRect rcWindow;
         if (GetWindow() != nullptr) {

@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_LISTBOX_CODE_ITEM_H_
 #define EXAMPLES_LISTBOX_CODE_ITEM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 // Inherit all available functionality from ui::ListBoxItem
 class Item : public ui::ControlDragableT<ui::ListBoxItem>

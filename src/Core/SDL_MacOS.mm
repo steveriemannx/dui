@@ -1,4 +1,4 @@
-#import "duilib/Core/SDL_MacOS.h"
+#import "dui/Core/SDL_MacOS.h"
 
 #if defined(__APPLE__) && defined(__MACH__)
 

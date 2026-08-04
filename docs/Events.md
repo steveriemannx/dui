@@ -1,5 +1,5 @@
 ## Control Events (EventArgs) Documentation
-The event-related content of controls is defined in the files [`include/duilib/Core/EventArgs.h`](../include/duilib/Core/EventArgs.h) and [`include/duilib/duilib_defs.h`](../include/duilib/duilib_defs.h).
+The event-related content of controls is defined in the files [`include/dui/Core/EventArgs.h`](../include/dui/Core/EventArgs.h) and [`include/dui/dui_defs.h`](../include/dui/dui_defs.h).
 
 | Event (eventType)           | Parameter (wParam)  | Parameter (lParam) | Parameter (ptMouse) | Parameter (vkCode) | Parameter (modifierKey) |Parameter (eventData) | Remarks     |
 | :---                      | :---          | :---         |:---           |:---          |:---               |:---            |:---      |

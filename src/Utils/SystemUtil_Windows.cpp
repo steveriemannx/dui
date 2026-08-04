@@ -1,10 +1,10 @@
-#include "duilib/Utils/SystemUtil.h"
+#include "dui/Utils/SystemUtil.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
 
 #include <shellapi.h>
 
@@ -28,4 +28,4 @@ bool SystemUtil::ShowMessageBox(const Window* pWindow, const DString& content, c
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

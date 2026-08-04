@@ -1,4 +1,4 @@
-#include "duilib/Animation/EasingFunctions.h"
+#include "dui/Animation/EasingFunctions.h"
 #include <map>
 #include <cmath>
 

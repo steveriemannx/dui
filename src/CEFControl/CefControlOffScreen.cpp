@@ -1,22 +1,22 @@
-#include "duilib/CEFControl/CefControlOffScreen.h"
+#include "dui/CEFControl/CefControlOffScreen.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/Core/Window.h"
+#include "dui/Core/Window.h"
 
-#include "duilib/CEFControl/CefManager.h"
-#include "duilib/CEFControl/internal/CefBrowserHandler.h"
-#include "duilib/CEFControl/internal/CefMemoryBlock.h"
+#include "dui/CEFControl/CefManager.h"
+#include "dui/CEFControl/internal/CefBrowserHandler.h"
+#include "dui/CEFControl/internal/CefMemoryBlock.h"
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Box.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Box.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
-    #include "duilib/CEFControl/internal/Windows/util_win.h"
-    #include "duilib/CEFControl/internal/Windows/osr_ime_handler_win.h"
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+    #include "dui/CEFControl/internal/Windows/util_win.h"
+    #include "dui/CEFControl/internal/Windows/osr_ime_handler_win.h"
 #endif
 
-#if defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_SDL)
     #include <SDL3/SDL.h>
 #endif
 
@@ -143,20 +143,20 @@ void CefControlOffScreen::ReCreateBrowser()
     window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
 #endif
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     HWND hWnd = pWindow->NativeWnd()->GetHWND();
     window_info.SetAsWindowless(hWnd);
     if (::GetWindowLongPtr(hWnd, GWL_EXSTYLE) & WS_EX_NOACTIVATE) {
         // Don't activate the browser window on creation.
         window_info.ex_style |= WS_EX_NOACTIVATE;
     }
-#elif defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
+#elif defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)
     CefWindowHandle hParenWindow = (CefWindowHandle)pWindow->NativeWnd()->GetX11WindowNumber();
 if (pWindow->NativeWnd()->IsVideoDriverWayland() ){
         hParenWindow = (CefWindowHandle)pWindow->NativeWnd()->GetWaylandDisplayPointer();
     }
     window_info.SetAsWindowless(hParenWindow);
-#elif defined DUILIB_BUILD_FOR_MACOS
+#elif defined DUI_BUILD_FOR_MACOS
     window_info.SetAsWindowless(pWindow->NativeWnd()->GetNSView());
 #endif
     CefBrowserSettings browser_settings;
@@ -254,9 +254,9 @@ if (CefManager::GetInstance()->IsEnableOffScreenRendering() ){
     }
 }
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
-// Convert the CEF cursor type to the duilib standard cursor type (only part of the cursor types are supported)
+// Convert the CEF cursor type to the dui standard cursor type (only part of the cursor types are supported)
 static CursorType CefCursorTypeToUiCursor(cef_cursor_type_t cefCursor)
 {
     switch (cefCursor) {
@@ -325,11 +325,11 @@ static CursorType CefCursorTypeToUiCursor(cef_cursor_type_t cefCursor)
     return CursorType::kCursorArrow;
 }
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL
 
 void CefControlOffScreen::OnCursorChange(cef_cursor_type_t type)
 {
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     CursorType uiCursorType = CefCursorTypeToUiCursor(type);
     SetCursorType(uiCursorType);
 #else
@@ -339,7 +339,7 @@ void CefControlOffScreen::OnCursorChange(cef_cursor_type_t type)
 
 bool CefControlOffScreen::OnSetCursor(const EventArgs& msg)
 {
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     // When using SDL, the cursor needs to be set
     return BaseClass::OnSetCursor(msg);
 #else
@@ -682,7 +682,7 @@ bool CefControlOffScreen::OnKillFocus(const EventArgs& msg)
 bool CefControlOffScreen::OnChar(const EventArgs& msg)
 {
     bool bRet = BaseClass::OnChar(msg);
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     bool bHandled = false;
     if (msg.modifierKey & ModifierKey::kIsSystemKey) {
         SendKeyEvent(WM_SYSCHAR, msg.wParam, msg.lParam, bHandled);
@@ -700,7 +700,7 @@ bool CefControlOffScreen::OnChar(const EventArgs& msg)
 bool CefControlOffScreen::OnKeyDown(const EventArgs& msg)
 {
     bool bRet = BaseClass::OnKeyDown(msg);
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     bool bHandled = false;
     if (msg.modifierKey & ModifierKey::kIsSystemKey) {
         SendKeyEvent(WM_SYSKEYDOWN, msg.wParam, msg.lParam, bHandled);
@@ -718,7 +718,7 @@ bool CefControlOffScreen::OnKeyDown(const EventArgs& msg)
 bool CefControlOffScreen::OnKeyUp(const EventArgs& msg)
 {
     bool bRet = BaseClass::OnKeyUp(msg);
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     bool bHandled = false;
     if (msg.modifierKey & ModifierKey::kIsSystemKey) {
         SendKeyEvent(WM_SYSKEYUP, msg.wParam, msg.lParam, bHandled);
@@ -750,7 +750,7 @@ bool CefControlOffScreen::IsCefOsrImeMode() const
 
 bool CefControlOffScreen::OnImeSetContext(const EventArgs& msg)
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 if (IsCefOsrImeMode() ){
         OnIMESetContext(WM_IME_SETCONTEXT, msg.wParam, msg.lParam);
     }
@@ -762,7 +762,7 @@ if (IsCefOsrImeMode() ){
 
 bool CefControlOffScreen::OnImeStartComposition(const EventArgs& /*msg*/)
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 if (IsCefOsrImeMode() ){
         OnIMEStartComposition();
     }
@@ -772,7 +772,7 @@ if (IsCefOsrImeMode() ){
 
 bool CefControlOffScreen::OnImeComposition(const EventArgs& msg)
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 if (IsCefOsrImeMode() ){
         OnIMEComposition(WM_IME_COMPOSITION, msg.wParam, msg.lParam);
     }
@@ -784,7 +784,7 @@ if (IsCefOsrImeMode() ){
 
 bool CefControlOffScreen::OnImeEndComposition(const EventArgs& /*msg*/)
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 if (IsCefOsrImeMode() ){
         OnIMECancelCompositionEvent();
     }
@@ -792,7 +792,7 @@ if (IsCefOsrImeMode() ){
     return false;
 }
 
-#if defined (DUILIB_BUILD_FOR_SDL) 
+#if defined (DUI_BUILD_FOR_SDL) 
 
 /** Get the key flags
 */
@@ -881,7 +881,7 @@ if ((msg.eventData == SDL_EVENT_TEXT_INPUT) && (msg.wParam != 0) && (msg.lParam 
 }
 #endif
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 static int LogicalToDevice(int value, float device_scale_factor)
 {
     float scaled_val = static_cast<float>(value) * device_scale_factor;
@@ -899,7 +899,7 @@ static CefRect LogicalToDevice(const CefRect& value, float device_scale_factor)
 
 void CefControlOffScreen::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> /*browser*/, const CefRange& selected_range, const std::vector<CefRect>& character_bounds)
 {
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     CefCurrentlyOn(TID_UI);
     if (m_imeHandler != nullptr) {
         float device_scale_factor = Dpi().GetDisplayScale();
@@ -982,7 +982,7 @@ if ((render != nullptr) && m_pCefMemData->MakeImageSnapshot(render.get()) ){
     return nullptr;
 }
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 LRESULT CefControlOffScreen::SendKeyEvent(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled)
 {
@@ -1120,8 +1120,8 @@ if ((browser != nullptr) && (browser->GetHost() != nullptr) ){
 }
 
 
-#endif //defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

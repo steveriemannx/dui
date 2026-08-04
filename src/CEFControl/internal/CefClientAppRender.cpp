@@ -1,11 +1,11 @@
-#include "duilib/CEFControl/internal/CefClientApp.h"
+#include "dui/CEFControl/internal/CefClientApp.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/CEFControl/internal/CefJsHandler.h"
-#include "duilib/CEFControl/internal/CefIPCStringDefs.h"
-#include "duilib/CEFControl/internal/CefJSBridge.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/CEFControl/internal/CefJsHandler.h"
+#include "dui/CEFControl/internal/CefIPCStringDefs.h"
+#include "dui/CEFControl/internal/CefJSBridge.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui
 {
@@ -170,4 +170,4 @@ bool CefClientApp::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
 }
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

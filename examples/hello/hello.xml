@@ -19,7 +19,7 @@
         <!-- Work area: everything outside the title bar goes into this large Box area -->
         <Box>
             <VBox valign="center" halign="center" height="100">
-                <Label name="hello_label" text="Hello, nim_duilib!" height="40" width="100%" text_align="hcenter,vcenter" margin="0,0,0,16"/>
+                <Label name="hello_label" text="Hello, dui!" height="40" width="100%" text_align="hcenter,vcenter" margin="0,0,0,16"/>
                 <Button name="hello_btn" class="btn_global_blue_80x30" text="Click Me" halign="center" width="90" height="32"/>
             </VBox>
         </Box>

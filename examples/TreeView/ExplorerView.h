@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_EXPLORER_VIEW_H_
 #define EXAMPLES_EXPLORER_VIEW_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 class MainForm;
 

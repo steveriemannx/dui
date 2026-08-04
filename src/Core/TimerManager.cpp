@@ -1,20 +1,20 @@
-#include "duilib/Core/TimerManager.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/LogUtil.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Core/WindowMessage.h"
+#include "dui/Core/TimerManager.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/LogUtil.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Core/WindowMessage.h"
 
-#if defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_SDL)
     #include <SDL3/SDL.h>
-#elif defined (DUILIB_BUILD_FOR_WAYLAND)
-    #include "duilib/Core/WindowMessage.h"
+#elif defined (DUI_BUILD_FOR_WAYLAND)
+    #include "dui/Core/WindowMessage.h"
 #endif
 
 /** Custom message
 */
-#if defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_SDL)
     #define WM_USER_DEFINED_TIMER   (SDL_EVENT_USER + 2)
-#elif defined (DUILIB_BUILD_FOR_WAYLAND)
+#elif defined (DUI_BUILD_FOR_WAYLAND)
     #define WM_USER_DEFINED_TIMER   (kWM_USER + 2)
 #else
     #define WM_USER_DEFINED_TIMER   (kWM_USER + 567)
@@ -253,7 +253,7 @@ void TimerManager::WorkerThreadProc()
 
             uint32_t nErrorCode = 0;
             bool bRet = m_threadMsg.PostMsg(WM_USER_DEFINED_TIMER, 0, 0, &nErrorCode);
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
             if (!bRet) {
                 if ((nErrorCode == ERROR_NOT_ENOUGH_QUOTA) && !GlobalManager::Instance().IsInUIThread()) {
                     // When the program starts, posting a message to the main thread from a child thread will encounter this error

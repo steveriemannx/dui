@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ImportGroup Label="PropertySheets" />
+    <PropertyGroup Label="UserMacros" />
+
+    <!-- 公共配置 -->
+    <Import Project="CommonSettings.props" />
+
+    <!-- Skia: 需要添加include路径-->
+    <Import Project="SkiaSettings.props" />
+
+    <!-- SDL: 需要添加include路径，功能开关宏定义: DUI_SDL=1 开启，DUI_SDL=0 关闭-->
+    <Import Project="SDLSettings.props" />
+
+    <!-- libCEF: 需要添加include路径和是否支持的宏定义：DUI_CEF=1 开启，DUI_CEF=0 关闭 -->
+    <Import Project="CEFSettings.props" />
+    
+    <!-- WebView2: 需要添加是否支持的宏定义： DUI_WEBVIEW2=1 开启，DUI_WEBVIEW2=0 关闭 -->
+    <Import Project="WebView2Settings.props" />
+    
+    <!-- libjpeg-turbo: 需要添加include路径，需要添加是否支持的宏定义： DUI_JPEG_TURBO=1 开启，DUI_JPEG_TURBO=0 关闭  -->
+    <Import Project="JpegTurboSettings.props" />
+    
+    <!-- libpag: 需要添加include路径，需要添加是否支持的宏定义： DUI_LIB_PAG=1 开启，DUI_LIB_PAG=0 关闭  -->
+    <Import Project="LibPagSettings.props" />
+  
+    <PropertyGroup Label="Globals">
+        <!-- Include 目录  -->
+        <DuiIncludeDirectories>$(SolutionDir)\..;$(ProjectDir);$(SkiaIncludeDir);$(SDLIncludeDir);$(LibCefIncludeDir);$(JpegTurboIncludeDir);$(LibPagIncludeDir)</DuiIncludeDirectories>
+    </PropertyGroup>
+
+    <ItemDefinitionGroup>
+        <ClCompile>
+            <AdditionalIncludeDirectories>$(DuiIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+            <PreprocessorDefinitions>$(SkiaPreprocessorDefinitions);DUI_SDL=$(SDLEnabled);DUI_WEBVIEW2=$(WebView2Enabled);DUI_CEF=$(LibCefEnabled);DUI_JPEG_TURBO=$(JpegTurboEnabled);DUI_LIB_PAG=$(LibPagEnabled);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        </ClCompile>
+    </ItemDefinitionGroup>
+
+    <!-- $(EnableDuiDll)的值为1时，表示使用动态链接库，最终编译为DLL形式，该变量在CommonSettings.props文件中定义 -->
+    <!-- dui项目，当使用DLL时，设置工程类型为动态链接库(*.dll)，否则为静态库(*.lib) -->
+    <PropertyGroup Condition="'$(EnableDuiDll)' == '1'">
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(EnableDuiDll)' != '1'">
+        <ConfigurationType>StaticLibrary</ConfigurationType>
+    </PropertyGroup>
+
+    <!-- dui项目，当使用DLL时，定义符号导出的宏 -->
+    <ItemDefinitionGroup Condition="'$(EnableDuiDll)' == '1'">
+        <ClCompile>
+            <PreprocessorDefinitions>DUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+        </ClCompile>
+        <Link Condition="'$(Configuration)'=='Debug'">
+            <ImportLibrary>$(SolutionDir)\..\lib\$(Platform)\$(ProjectName)_d.lib</ImportLibrary>
+        </Link>
+        <Link Condition="'$(Configuration)'=='Release'">
+            <ImportLibrary>$(SolutionDir)\..\lib\$(Platform)\$(ProjectName).lib</ImportLibrary>
+        </Link>
+    </ItemDefinitionGroup>
+    
+    <!-- dui项目，当使用DLL时，定义输出DLL的目录和DLL文件名 -->
+    <PropertyGroup Condition="'$(EnableDuiDll)' == '1' And '$(Configuration)|$(Platform)'=='Release|x64'">
+        <OutDir>$(SolutionDir)\..\bin\</OutDir>
+        <TargetName>$(ProjectName)</TargetName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(EnableDuiDll)' == '1' And '$(Configuration)|$(Platform)'=='Debug|x64'">
+        <OutDir>$(SolutionDir)\..\bin\</OutDir>
+        <TargetName>$(ProjectName)_d</TargetName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(EnableDuiDll)' == '1' And '$(Configuration)|$(Platform)'=='Release|Win32'">
+        <OutDir>$(SolutionDir)\..\bin\</OutDir>
+        <TargetName>$(ProjectName)32</TargetName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(EnableDuiDll)' == '1' And '$(Configuration)|$(Platform)'=='Debug|Win32'">
+        <OutDir>$(SolutionDir)\..\bin\</OutDir>
+        <TargetName>$(ProjectName)32_d</TargetName>
+    </PropertyGroup>
+
+    <!-- libCEF: lib路径, lib列表，libcef.dll延迟加载属性 -->
+    <ItemDefinitionGroup Condition="'$(EnableDuiDll)' == '1' And '$(LibCefEnabled)' != '0'">
+        <Link>
+            <AdditionalLibraryDirectories>$(LibCefLibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+            <AdditionalDependencies>$(LibCefLibs);%(AdditionalDependencies)</AdditionalDependencies>
+            <DelayLoadDLLs>$(LibCefDllName)</DelayLoadDLLs>
+        </Link>
+    </ItemDefinitionGroup>
+
+    <!-- WebView2: 添加DUI_WEBVIEW2宏定义, include路径, lib路径, lib列表 -->
+    <ItemDefinitionGroup Condition="'$(EnableDuiDll)' == '1' And '$(WebView2Enabled)' != '0'">
+        <Link>
+            <AdditionalLibraryDirectories>$(WebView2LibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+            <AdditionalDependencies>$(WebView2Libs);%(AdditionalDependencies)</AdditionalDependencies>
+        </Link>
+    </ItemDefinitionGroup>
+
+    <!-- dui项目，当使用DLL时，添加公共依赖lib文件的路径和lib库列表 -->
+    <PropertyGroup Condition="'$(EnableDuiDll)' == '1'" Label="Globals">
+        <!-- 库文件Include -->
+        <DuiBinLibIncludeDir>$(SkiaLibDir);$(SDLLibDir);$(JpegTurboLibDir);$(LibPagLibDir);$(SolutionDir)\..\lib\$(Platform)\</DuiBinLibIncludeDir>
+
+        <!-- 库文件列表 -->
+        <DuiBinLibList>$(SkiaLibs);$(SDLLibs);$(JpegTurboLibs);$(LibPagLibs);$(DuiThirdLibs);$(DuiSystemLibs);</DuiBinLibList>
+    </PropertyGroup>
+
+    <!-- dui项目，当使用DLL时，设置库文件Include路径、lib列表-->
+    <ItemDefinitionGroup Condition="'$(EnableDuiDll)' == '1'">
+        <ClCompile>
+            <AdditionalIncludeDirectories>$(DuiBinIncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+        </ClCompile>
+        <Link>
+            <AdditionalLibraryDirectories>$(DuiBinLibIncludeDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+            <AdditionalDependencies>$(DuiBinLibList);$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+        </Link>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(EnableDuiDll)' == '1' And '$(Configuration)'=='Debug'">
+        <Link>
+            <AdditionalOptions>/NODEFAULTLIB:"libcmt.lib" %(AdditionalOptions)</AdditionalOptions>
+        </Link>
+    </ItemDefinitionGroup>
+
+    <!-- dui项目，当使用DLL时，添加嵌入的Manifest配置文件 -->
+    <Import Project="BinManifestSettings.props" Condition="'$(EnableDuiDll)' == '1'"/>
+    
+</Project>

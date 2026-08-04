@@ -1,9 +1,9 @@
-#include "duilib/Core/NativeWindow_SDL.h"
-#include "duilib/Core/MessageLoop_Wayland.h"
-#include "duilib/Core/Keycode.h"
-#include "duilib/Core/Keyboard.h"
+#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Core/MessageLoop_Wayland.h"
+#include "dui/Core/Keycode.h"
+#include "dui/Core/Keyboard.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 #include <wayland-client.h>
 #include <xdg-shell-client-protocol.h>
@@ -251,11 +251,11 @@ static void pointer_button_handler(void* data, wl_pointer* pointer, uint32_t ser
 
     if (button == BTN_LEFT) {
         if (isDown) {
-            // Check for caption/resize BEFORE duilib processing (serial is fresh)
+            // Check for caption/resize BEFORE dui processing (serial is fresh)
             if (s_pPointerFocusWindow) {
                 s_pPointerFocusWindow->ProcessWaylandMoveResize(s_pointerPos, serial);
             }
-            // Then let duilib handle the click normally
+            // Then let dui handle the click normally
             if (IsDoubleClick(s_leftButton, s_pointerPos)) {
                 pOwner->OnNativeMouseLButtonDbClickMsg(s_pointerPos, mod, NativeMsg(0, 0, 0), bHandled);
             } else {
@@ -306,7 +306,7 @@ static void pointer_axis_handler(void* data, wl_pointer* pointer, uint32_t time,
     int32_t delta = wl_fixed_to_int(value);
     if (delta == 0) return;
     // Wayland axis values are typically in scroll units (e.g., 15 per notch)
-    // Scale to match duilib/SDL wheel delta
+    // Scale to match dui/SDL wheel delta
     delta = -delta * 8; // Negate and scale to match typical wheel delta
 
     uint32_t mod = GetModifiersFromXkb();
@@ -528,4 +528,4 @@ struct xkb_keymap* GetWaylandXkbKeymap() { return s_xkbKeymap; }
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

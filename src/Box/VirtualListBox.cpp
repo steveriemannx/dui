@@ -1,5 +1,5 @@
-#include "duilib/Box/VirtualListBox.h"
-#include "duilib/Core/ScrollBar.h"
+#include "dui/Box/VirtualListBox.h"
+#include "dui/Core/ScrollBar.h"
 #include <algorithm>
 #include <set>
 

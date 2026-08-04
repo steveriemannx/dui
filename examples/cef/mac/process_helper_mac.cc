@@ -2,10 +2,10 @@
 // reserved. Use of this source code is governed by a BSD-style license that can
 // be found in the LICENSE file.
 
-// duilib
-#include "duilib/duilib.h"
-#include "duilib/duilib_cef.h"
-#include "duilib/CEFControl/internal/CefClientApp.h"
+// dui
+#include "dui/dui.h"
+#include "dui/dui_cef.h"
+#include "dui/CEFControl/internal/CefClientApp.h"
 
 #include "include/cef_app.h"
 #include "include/wrapper/cef_library_loader.h"

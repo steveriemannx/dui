@@ -1,10 +1,10 @@
-#include "duilib/Core/Shadow.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/ClickThrough.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Render/AutoClip.h"
+#include "dui/Core/Shadow.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/ClickThrough.h"
+#include "dui/Render/IRender.h"
+#include "dui/Render/AutoClip.h"
 
 namespace ui 
 {

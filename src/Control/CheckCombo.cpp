@@ -1,10 +1,10 @@
-#include "duilib/Control/CheckCombo.h"
-#include "duilib/Core/Keyboard.h"
-#include "duilib/Core/WindowCreateParam.h"
-#include "duilib/Box/VBox.h"
-#include "duilib/Box/ListBox.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/AttributeUtil.h"
+#include "dui/Control/CheckCombo.h"
+#include "dui/Core/Keyboard.h"
+#include "dui/Core/WindowCreateParam.h"
+#include "dui/Box/VBox.h"
+#include "dui/Box/ListBox.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/AttributeUtil.h"
 
 namespace ui
 {

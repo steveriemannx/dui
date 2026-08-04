@@ -1,7 +1,7 @@
-#include "duilib/Utils/ScreenCapture_X11.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Utils/ScreenCapture_X11.h"
+#include "dui/Core/GlobalManager.h"
 
-#if defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
+#if defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)
 //Linux/FreeBSD OS
 
 #include <X11/Xlib.h>
@@ -259,4 +259,4 @@ std::shared_ptr<IBitmap> ScreenCapture_X11::CaptureBitmap(const ui::Window* pWin
 
 } // namespace ui
 
-#endif //defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
+#endif //defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)

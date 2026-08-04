@@ -1,4 +1,4 @@
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Utils/StringUtil.h"
 #include <filesystem>
 #include <cstdlib>
 #include <cstdarg>
@@ -136,7 +136,7 @@ inline int vsnprintfT(char *dst, size_t count, const char *format, va_list ap)
 
 inline int vsnprintfT(wchar_t *dst, size_t count, const wchar_t *format, va_list ap)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return _vsnwprintf_s(dst, count, count, format, ap);
 #else
     return vswprintf(dst, count, format, ap);
@@ -507,14 +507,14 @@ std::list<std::string> StringUtil::Split(const std::string& input, const std::st
         return output;
 
     char* context = nullptr;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     char *token = strtok_s(input2.data(), delimitor.c_str(), &context);
 #else
     char* token = strtok_r(input2.data(), delimitor.c_str(), &context);
 #endif
     while (token != nullptr) {
         output.push_back(token);
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         token = strtok_s(nullptr, delimitor.c_str(), &context);
 #else
         token = strtok_r(nullptr, delimitor.c_str(), &context);
@@ -533,14 +533,14 @@ std::list<std::wstring> StringUtil::Split(const std::wstring& input, const std::
     }
 
     wchar_t* context = nullptr;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     wchar_t* token = wcstok_s(input2.data(), delimitor.c_str(), &context);
 #else
     wchar_t* token = wcstok(input2.data(), delimitor.c_str(), &context);
 #endif
     while (token != nullptr) {
         output.push_back(token);
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         token = wcstok_s(nullptr, delimitor.c_str(), &context);
 #else
         token = wcstok(nullptr, delimitor.c_str(), &context);
@@ -709,7 +709,7 @@ int32_t StringUtil::StringCompare(const char* lhs, const char* rhs)
 
 int32_t StringUtil::StringICompare(const std::wstring& lhs, const std::wstring& rhs)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return ::_wcsicmp(lhs.c_str(), rhs.c_str());
 #else
     return ::wcscasecmp(lhs.c_str(), rhs.c_str());
@@ -728,7 +728,7 @@ int32_t StringUtil::StringICompare(const wchar_t* lhs, const wchar_t* rhs)
         return 1;
     }
     else {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         return ::_wcsicmp(lhs, rhs);
 #else
         return ::wcscasecmp(lhs, rhs);
@@ -738,7 +738,7 @@ int32_t StringUtil::StringICompare(const wchar_t* lhs, const wchar_t* rhs)
 
 int32_t StringUtil::StringICompare(const std::string& lhs, const std::string& rhs)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return ::_stricmp(lhs.c_str(), rhs.c_str());
 #else
     return ::strcasecmp(lhs.c_str(), rhs.c_str());
@@ -757,7 +757,7 @@ int32_t StringUtil::StringICompare(const char* lhs, const char* rhs)
         return 1;
     }
     else {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         return ::_stricmp(lhs, rhs);
 #else
         return ::strcasecmp(lhs, rhs);
@@ -810,7 +810,7 @@ std::string StringUtil::UInt32ToStringA(uint32_t value)
 
 std::wstring StringUtil::Int64ToStringW(int64_t value)
 {
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     return StringUtil::Printf(L"%I64d", value);
 #else
     return StringUtil::Printf(L"%lld", value);
@@ -824,7 +824,7 @@ std::wstring StringUtil::Int32ToStringW(int32_t value)
 
 std::string StringUtil::Int64ToStringA(int64_t value)
 {
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     return StringUtil::Printf("%I64d", value);
 #else
     return StringUtil::Printf("%lld", value);
@@ -836,7 +836,7 @@ std::string StringUtil::Int32ToStringA(int32_t value)
     return StringUtil::Printf("%d", value);
 }
 
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
 std::wstring StringUtil::UInt64ToString(uint64_t value)
 {
     return UInt64ToStringW(value);
@@ -881,7 +881,7 @@ std::string StringUtil::Int32ToString(int32_t value)
 
 int32_t StringUtil::StringToInt32(const std::wstring& str)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return ::_wtoi(str.c_str());
 #else
     return wcstol(str.c_str(), nullptr, 10);
@@ -892,7 +892,7 @@ int32_t StringUtil::StringToInt32(const std::wstring::value_type* str)
 {
     ASSERT(str != nullptr);
     if (str != nullptr) {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         return ::_wtoi(str);
 #else
         return wcstol(str, nullptr, 10);
@@ -1037,7 +1037,7 @@ int32_t StringUtil::StringCopy(wchar_t* dest, size_t destSize, const wchar_t* sr
     if ((dest == nullptr) || (destSize == 0) || (src == nullptr)) {
         return 0;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return ::wcscpy_s(dest, destSize, src);
 #else
     size_t nLen = std::min((size_t)wcslen(src), destSize);
@@ -1052,7 +1052,7 @@ int32_t StringUtil::StringNCopy(wchar_t* dest, size_t destSize, const wchar_t* s
     if ((dest == nullptr) || (destSize == 0) || (src == nullptr) || (srcSize == 0)) {
         return 0;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return ::wcsncpy_s(dest, destSize, src, srcSize);
 #else
     size_t nLen = std::min(srcSize, destSize);
@@ -1072,7 +1072,7 @@ int32_t StringUtil::StringCopy(char* dest, size_t destSize, const char* src)
     if ((dest == nullptr) || (destSize == 0) || (src == nullptr)) {
         return 0;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return ::strcpy_s(dest, destSize, src);
 #else
     size_t nLen = std::min(destSize, strlen(src));
@@ -1091,7 +1091,7 @@ int32_t StringUtil::StringNCopy(char* dest, size_t destSize, const char* src, si
     if ((dest == nullptr) || (destSize == 0) || (src == nullptr) || (srcSize == 0)) {
         return 0;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     return ::strncpy_s(dest, destSize, src, srcSize);
 #else
     size_t nLen = std::min(srcSize, destSize);

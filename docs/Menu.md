@@ -1,5 +1,5 @@
 ## Menu
-The menu is implemented based on a window ([WindowImplBase](../include/duilib/Utils/WinImplBase.h)), mainly composed of two classes: [Menu](../include/duilib/Control/Menu.h) and [MenuItem](../include/duilib/Control/Menu.h).
+The menu is implemented based on a window ([WindowImplBase](../include/dui/Utils/WinImplBase.h)), mainly composed of two classes: [Menu](../include/dui/Control/Menu.h) and [MenuItem](../include/dui/Control/Menu.h).
 1. Menu effect preview
 This preview is the menu in the `examples/controls` example program.
 <img src="./Images/Menu.png"/>

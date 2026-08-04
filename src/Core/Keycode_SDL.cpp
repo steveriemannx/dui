@@ -1,8 +1,8 @@
-#include "duilib/Core/Keycode.h"
+#include "dui/Core/Keycode.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL)
 #include <SDL3/SDL.h>
 #endif
 
@@ -1193,4 +1193,4 @@ SDL_Keycode Keycode::GetSDLKeyCode(VirtualKeyCode virtualKeycode)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_SDL
+#endif // DUI_BUILD_FOR_SDL

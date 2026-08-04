@@ -1,14 +1,14 @@
-#include "duilib/Image/Image_LOTTIE.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/RenderSkia/FontMgr_Skia.h"
+#include "dui/Image/Image_LOTTIE.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
+#include "dui/RenderSkia/FontMgr_Skia.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "modules/skottie/include/Skottie.h"
 #include "include/core/SkBitmap.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkFontMgr.h"
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui
 {
@@ -45,7 +45,7 @@ static bool DecodeImage_LOTTIE(sk_sp<skottie::Animation>& pSkAnimation,
     }
 
     SkBitmap skBitmap;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     SkImageInfo info = SkImageInfo::Make((int32_t)nImageWidth, (int32_t)nImageHeight, SkColorType::kN32_SkColorType, SkAlphaType::kPremul_SkAlphaType);
 #else
     SkImageInfo info = SkImageInfo::Make((int32_t)nImageWidth, (int32_t)nImageHeight, SkColorType::kRGBA_8888_SkColorType, SkAlphaType::kPremul_SkAlphaType);

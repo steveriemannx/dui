@@ -1,7 +1,7 @@
 #ifndef EXAMPLES_MULTILANG_CODE_MAIN_FORM_H_
 #define EXAMPLES_MULTILANG_CODE_MAIN_FORM_H_
 
-#include "duilib/duilib.h"
+#include "dui/dui.h"
 
 /** Mode 3 (pure code): multilingual example; the layout is built entirely with C++ code
 */

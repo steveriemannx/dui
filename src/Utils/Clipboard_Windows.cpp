@@ -1,7 +1,7 @@
-#include "duilib/Utils/Clipboard.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Utils/Clipboard.h"
+#include "dui/Utils/StringConvert.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 namespace ui
 {
@@ -79,4 +79,4 @@ bool Clipboard::SetClipboardText(const DStringA& text)
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

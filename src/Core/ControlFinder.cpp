@@ -1,7 +1,7 @@
-#include "duilib/Core/ControlFinder.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/FullscreenBox.h"
+#include "dui/Core/ControlFinder.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/FullscreenBox.h"
 
 namespace ui
 {

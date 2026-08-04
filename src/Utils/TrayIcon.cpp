@@ -1,4 +1,4 @@
-#include "duilib/Utils/TrayIcon.h"
+#include "dui/Utils/TrayIcon.h"
 
 namespace ui
 {

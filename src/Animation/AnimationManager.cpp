@@ -1,6 +1,6 @@
-#include "duilib/Animation/AnimationManager.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/ControlPtrT.h"
+#include "dui/Animation/AnimationManager.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/ControlPtrT.h"
 
 namespace ui 
 {

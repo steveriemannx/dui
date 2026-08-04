@@ -1,9 +1,9 @@
-#include "duilib/Image/Image.h"
-#include "duilib/Image/ImageUtil.h"
-#include "duilib/Image/ImagePlayer.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/DpiManager.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/Image/Image.h"
+#include "dui/Image/ImageUtil.h"
+#include "dui/Image/ImagePlayer.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/DpiManager.h"
+#include "dui/Utils/PerformanceUtil.h"
 
 namespace ui 
 {

@@ -1,8 +1,8 @@
-#include "duilib/Utils/LogUtil.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Utils/LogUtil.h"
+#include "dui/Utils/StringUtil.h"
 #include <chrono>
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     #include <SDL3/SDL.h>
 #endif
 
@@ -34,18 +34,18 @@ void LogUtil::Output(const DString& log, bool bPrintTime)
     else {
         logMsg = log;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     ::OutputDebugString(logMsg.c_str());
-#elif defined (DUILIB_BUILD_FOR_SDL)
+#elif defined (DUI_BUILD_FOR_SDL)
     SDL_Log("%s", logMsg.c_str());
-#elif defined (DUILIB_BUILD_FOR_WAYLAND)
+#elif defined (DUI_BUILD_FOR_WAYLAND)
     fprintf(stderr, "%s\n", logMsg.c_str());
 #endif
 }
 
 void LogUtil::OutputLine(const DString& log, bool bPrintTime)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     Output(log + _T("\r\n"), bPrintTime);
 #else
     Output(log + _T("\n"), bPrintTime);

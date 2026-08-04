@@ -1,8 +1,8 @@
-#include "duilib/Layout/HTileLayout.h"
-#include "duilib/Core/Box.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Layout/HTileLayout.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/StringUtil.h"
 #include <numeric>
 
 namespace ui 

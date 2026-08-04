@@ -1,11 +1,11 @@
-#include "duilib/Core/WindowDropTarget_SDL.h"
-#include "duilib/Core/NativeWindow_SDL.h"
-#include "duilib/Core/MessageLoop_Wayland.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Utils/MonitorUtil.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Core/WindowDropTarget_SDL.h"
+#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Core/MessageLoop_Wayland.h"
+#include "dui/Render/IRender.h"
+#include "dui/Utils/MonitorUtil.h"
+#include "dui/Utils/StringConvert.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 #include <wayland-client.h>
 #include <wayland-egl.h>
@@ -177,7 +177,7 @@ static wl_buffer* wayland_create_and_attach(wl_surface* surface, wl_shm* shm,
     int stride = width * 4;
     int size = stride * height;
 
-    int fd = memfd_create("duilib-wl", MFD_CLOEXEC | MFD_ALLOW_SEALING);
+    int fd = memfd_create("dui-wl", MFD_CLOEXEC | MFD_ALLOW_SEALING);
     if (fd < 0) return nullptr;
     if (ftruncate(fd, size) < 0) { close(fd); return nullptr; }
 
@@ -225,9 +225,9 @@ bool NativeWindow_SDL::CreateWnd(NativeWindow_SDL* pParentWindow,
     if (!m_pXdgToplevel) return false;
     xdg_toplevel_add_listener(m_pXdgToplevel, &xdg_toplevel_listener_impl, this);
 
-    xdg_toplevel_set_app_id(m_pXdgToplevel, "duilib.basic");
+    xdg_toplevel_set_app_id(m_pXdgToplevel, "dui.basic");
 
-    std::string title = "duilib Demo";
+    std::string title = "dui Demo";
     if (!createParam.m_windowTitle.empty()) {
         title = StringConvert::TToUTF8(createParam.m_windowTitle);
     }
@@ -635,4 +635,4 @@ const UiRect& NativeWindow_SDL::GetUpdateRect() const {
 }
 
 } // namespace ui
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

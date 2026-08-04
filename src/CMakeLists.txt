@@ -4,19 +4,19 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
   message(FATAL_ERROR "Prevented in-tree build. Please create a build directory outside of the source code and run \"cmake -S ${CMAKE_SOURCE_DIR} -B .\" from there")
 endif()
 
-# duilib
+# dui
 # MSVC runtime library flags are selected by an abstraction.
 set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
-if("${DUILIB_MD}" STREQUAL "ON")
+if("${DUI_MD}" STREQUAL "ON")
     # MD/MDd
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
 else()
     # MT/MTd
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
-# duilib end
+# dui end
 
-project(duilib CXX C)
+project(dui CXX C)
 
 if(MSVC)
     # Source files use UTF-8 encoding
@@ -42,7 +42,7 @@ add_definitions(-DSK_GANESH -DSK_GL -DSK_RELEASE)
 # Set the libcef directory path
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")  # macOS
     set(CEF_LIB_DIR "libcef_macos")
-    set(DUILIB_SRC_MACOS 1)
+    set(DUI_SRC_MACOS 1)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")  # Linux
     set(CEF_LIB_DIR "libcef_linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows
@@ -55,17 +55,17 @@ else()
 endif()
 
 # Set include directories
-get_filename_component(DUILIB_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
+get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
 get_filename_component(SKIA_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/skia/" ABSOLUTE)
 get_filename_component(SDL_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/SDL3/" ABSOLUTE)
 
 # Wayland option (Linux only, alternative to SDL)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    option(DUILIB_ENABLE_WAYLAND "Enable Wayland (alternative to SDL)" OFF)
+    option(DUI_ENABLE_WAYLAND "Enable Wayland (alternative to SDL)" OFF)
 endif()
 
 # Wayland library detection
-if(DUILIB_ENABLE_WAYLAND)
+if(DUI_ENABLE_WAYLAND)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(WAYLAND_CLIENT REQUIRED wayland-client)
     pkg_check_modules(WAYLAND_EGL REQUIRED wayland-egl)
@@ -74,7 +74,7 @@ if(DUILIB_ENABLE_WAYLAND)
     pkg_check_modules(EGL REQUIRED egl)
     pkg_check_modules(GLESV2 REQUIRED glesv2)
     pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols)
-    set(DUILIB_WAYLAND_INCLUDE_DIRS
+    set(DUI_WAYLAND_INCLUDE_DIRS
         ${WAYLAND_CLIENT_INCLUDE_DIRS}
         ${WAYLAND_EGL_INCLUDE_DIRS}
         ${WAYLAND_CURSOR_INCLUDE_DIRS}
@@ -83,7 +83,7 @@ if(DUILIB_ENABLE_WAYLAND)
         ${GLESV2_INCLUDE_DIRS}
         ${WAYLAND_PROTOCOLS_INCLUDE_DIRS}
     )
-    set(DUILIB_WAYLAND_LIBS
+    set(DUI_WAYLAND_LIBS
         ${WAYLAND_CLIENT_LIBRARIES}
         ${WAYLAND_EGL_LIBRARIES}
         ${WAYLAND_CURSOR_LIBRARIES}
@@ -120,15 +120,15 @@ if(DUILIB_ENABLE_WAYLAND)
 
     
     include_directories(${WAYLAND_GEN_DIR})
-    list(APPEND DUILIB_WAYLAND_INCLUDE_DIRS ${WAYLAND_GEN_DIR})
+    list(APPEND DUI_WAYLAND_INCLUDE_DIRS ${WAYLAND_GEN_DIR})
 endif()
 
 # Always include these directories
-include_directories(${DUILIB_SRC_ROOT_DIR})
-include_directories(${DUILIB_SRC_ROOT_DIR}/include)
+include_directories(${DUI_SRC_ROOT_DIR})
+include_directories(${DUI_SRC_ROOT_DIR}/include)
 include_directories(${SKIA_SRC_ROOT_DIR})
-if(DUILIB_ENABLE_WAYLAND)
-    include_directories(${DUILIB_WAYLAND_INCLUDE_DIRS})
+if(DUI_ENABLE_WAYLAND)
+    include_directories(${DUI_WAYLAND_INCLUDE_DIRS})
 else()
     include_directories("${SDL_SRC_ROOT_DIR}/include")
 endif()
@@ -142,8 +142,8 @@ else()
 endif()
 
 # Set the library output directory
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${DUILIB_SRC_ROOT_DIR}/lib/")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUILIB_SRC_ROOT_DIR}/lib/")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
 
 # Add source code files
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR} DIR_LIB_SRC)
@@ -159,7 +159,7 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Utils UTILS_SRC)
 
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
 # Wayland build excludes CEF
-if(DUILIB_ENABLE_WAYLAND)
+if(DUI_ENABLE_WAYLAND)
     message(STATUS "CEF support disabled (Wayland build)")
 elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl CEF_CONTROL_SRC)
@@ -171,7 +171,7 @@ else()
 endif()
 
 # On non-macOS platforms, remove *.mm files to avoid compile errors
-if(NOT DUILIB_SRC_MACOS)
+if(NOT DUI_SRC_MACOS)
     list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/SDL_MacOS.mm)
     list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/SDL_MacOS.h)    
     list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/ClickThrough_MacOS.mm)    
@@ -183,37 +183,37 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows
     aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl/internal/Windows CEF_CONTROL_INTERNAL_WINDOWS_SRC)
 endif()
 
-aux_source_directory(${DUILIB_SRC_ROOT_DIR}/third_party/apng APNG_SRC)
-aux_source_directory(${DUILIB_SRC_ROOT_DIR}/third_party/stb_image STB_SRC)
-aux_source_directory(${DUILIB_SRC_ROOT_DIR}/third_party/svg SVG_SRC)
-aux_source_directory(${DUILIB_SRC_ROOT_DIR}/third_party/convert_utf UTF_SRC)
-aux_source_directory(${DUILIB_SRC_ROOT_DIR}/third_party/xml XML_SRC)
+aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/apng APNG_SRC)
+aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/stb_image STB_SRC)
+aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/svg SVG_SRC)
+aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/convert_utf UTF_SRC)
+aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/xml XML_SRC)
 
 set(UNZIP_HDRS
-    ${DUILIB_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/ioapi.h
-    ${DUILIB_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/unzip.h
+    ${DUI_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/ioapi.h
+    ${DUI_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/unzip.h
 )
 
 set(UNZIP_SRCS
-    ${DUILIB_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/ioapi.c
-    ${DUILIB_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/unzip.c
+    ${DUI_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/ioapi.c
+    ${DUI_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/unzip.c
 )
 
 set(GIFLIB_HDRS
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/gif_hash.h
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/gif_lib.h
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/gif_lib_private.h
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/gif_hash.h
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/gif_lib.h
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/gif_lib_private.h
 )
 
 set(GIFLIB_SRCS
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/dgif_lib.c
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/egif_lib.c
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/gif_err.c
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/gif_font.c
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/gif_hash.c
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/gifalloc.c
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/openbsd-reallocarray.c
-    ${DUILIB_SRC_ROOT_DIR}/third_party/giflib/quantize.c
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/dgif_lib.c
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/egif_lib.c
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/gif_err.c
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/gif_font.c
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/gif_hash.c
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/gifalloc.c
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/openbsd-reallocarray.c
+    ${DUI_SRC_ROOT_DIR}/third_party/giflib/quantize.c
 )
 
 set(SKIA_HDRS
@@ -239,21 +239,21 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Windows platform: source files depended on separately
     set(UDIS_HDRS 
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/decode.h
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/extern.h
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/itab.h
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/syn.h
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/types.h
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/udint.h
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/udis86.h
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/decode.h
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/extern.h
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/itab.h
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/syn.h
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/types.h
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/udint.h
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/udis86.h
     )
     set(UDIS_SRCS 
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/udis86.c
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/syn-att.c
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/syn-intel.c
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/syn.c
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/itab.c
-        ${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/decode.c
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/udis86.c
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/syn-att.c
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/syn-intel.c
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/syn.c
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/itab.c
+        ${DUI_SRC_ROOT_DIR}/third_party/libudis86/decode.c
     )
 endif()
 
@@ -294,7 +294,7 @@ endif()
 
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
 # Wayland build excludes CEF
-if(DUILIB_ENABLE_WAYLAND)
+if(DUI_ENABLE_WAYLAND)
     message(STATUS "CEF support disabled (Wayland build)")
 elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     list(APPEND LIBRARY_SOURCES
@@ -315,50 +315,50 @@ if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
     target_link_libraries(${PROJECT_NAME} Freetype::Freetype Fontconfig::Fontconfig)
     target_include_directories(${PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
-elseif(DUILIB_ENABLE_WAYLAND)
+elseif(DUI_ENABLE_WAYLAND)
     list(APPEND LIBRARY_SOURCES "${WAYLAND_GEN_DIR}/xdg-shell-client-protocol.c")
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
     add_dependencies(${PROJECT_NAME} generate_wayland_protocols)
-    target_link_libraries(${PROJECT_NAME} ${DUILIB_WAYLAND_LIBS})
+    target_link_libraries(${PROJECT_NAME} ${DUI_WAYLAND_LIBS})
 else()
     # Create the library with the filtered sources
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
 endif()
 
-# Build-order wiring: the Skia/SDL3 archives (built by cmake/duilib_deps.cmake at make time)
-# must exist before this library links (duilib_bin*.cmake links them into the executables).
-if(TARGET duilib_skia)
-    add_dependencies(${PROJECT_NAME} duilib_skia)
+# Build-order wiring: the Skia/SDL3 archives (built by cmake/dui_deps.cmake at make time)
+# must exist before this library links (dui_bin*.cmake links them into the executables).
+if(TARGET dui_skia)
+    add_dependencies(${PROJECT_NAME} dui_skia)
 endif()
-if(TARGET duilib_sdl)
-    add_dependencies(${PROJECT_NAME} duilib_sdl)
+if(TARGET dui_sdl)
+    add_dependencies(${PROJECT_NAME} dui_sdl)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    if(DUILIB_ENABLE_WAYLAND)
+    if(DUI_ENABLE_WAYLAND)
         # Enable Wayland support for Linux (alternative to SDL)
-        target_compile_definitions(${PROJECT_NAME} PRIVATE DUILIB_WAYLAND=1)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_WAYLAND=1)
     endif()
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    if(DUILIB_ENABLE_SDL)
+    if(DUI_ENABLE_SDL)
         # Enable SDL support for windows
-        target_compile_definitions(${PROJECT_NAME} PRIVATE DUILIB_SDL=1)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_SDL=1)
     endif()
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows, WebView2
-    target_compile_definitions(${PROJECT_NAME} PRIVATE DUILIB_WEBVIEW2=1)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE DUILIB_USE_WEBVIEW2_LOADER_DLL=1)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_WEBVIEW2=1)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_USE_WEBVIEW2_LOADER_DLL=1)
 endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-    # Skia automatically enables compile options such as AVX/AVX2; duilib references some skia sources directly and must keep the compile options consistent
-    include(${DUILIB_SRC_ROOT_DIR}/cmake/duilib_compiles.cmake)
+    # Skia automatically enables compile options such as AVX/AVX2; dui references some skia sources directly and must keep the compile options consistent
+    include(${DUI_SRC_ROOT_DIR}/cmake/dui_compiles.cmake)
 
     # Compiler arguments
-    set(DUILIB_COMPILER_FLAGS
+    set(DUI_COMPILER_FLAGS
         -fno-strict-aliasing            # Avoid assumptions regarding non-aliasing of objects of different types
         -fstack-protector               # Protect some vulnerable functions from stack-smashing (security feature)
         -funwind-tables                 # Support stack unwinding for backtrace()
@@ -371,7 +371,7 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
         -Wno-missing-field-initializers # Don't warn about missing field initializers
         -Wno-unused-parameter           # Don't warn about unused parameters
     )
-    set(DUILIB_CXX_COMPILER_FLAGS
+    set(DUI_CXX_COMPILER_FLAGS
         -fno-threadsafe-statics         # Don't generate thread-safe statics
         -fvisibility-inlines-hidden     # Give hidden visibility to inlined class member functions
         -frtti
@@ -380,23 +380,23 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
         -Wno-unused-variable
     )
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-        list(APPEND DUILIB_CXX_COMPILER_FLAGS
+        list(APPEND DUI_CXX_COMPILER_FLAGS
             -Wno-reorder
             -Wno-cast-function-type
           )
-          set_source_files_properties("${DUILIB_SRC_ROOT_DIR}/third_party/libudis86/decode.c" PROPERTIES COMPILE_OPTIONS "-Wno-implicit-fallthrough")
-          if(DUILIB_HAVE_AVX2)
+          set_source_files_properties("${DUI_SRC_ROOT_DIR}/third_party/libudis86/decode.c" PROPERTIES COMPILE_OPTIONS "-Wno-implicit-fallthrough")
+          if(DUI_HAVE_AVX2)
             set_source_files_properties("${SKIA_SRC_ROOT_DIR}/tools/window/GLWindowContext.cpp" PROPERTIES COMPILE_OPTIONS "-mavx2")
-          elseif(DUILIB_HAVE_AVX)
+          elseif(DUI_HAVE_AVX)
             set_source_files_properties("${SKIA_SRC_ROOT_DIR}/tools/window/GLWindowContext.cpp" PROPERTIES COMPILE_OPTIONS "-mavx")
           endif()
     endif()
     
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        list(APPEND DUILIB_COMPILER_FLAGS
+        list(APPEND DUI_COMPILER_FLAGS
             -Wnewline-eof                   # Warn about no newline at end of file
           )
-        list(APPEND DUILIB_CXX_COMPILER_FLAGS
+        list(APPEND DUI_CXX_COMPILER_FLAGS
             -fobjc-call-cxx-cdtors          # Call the constructor/destructor of C++ instance variables in ObjC objects
             -Wno-reorder-ctor
             -Wno-unused-lambda-capture
@@ -404,14 +404,14 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
           )
     endif()
     
-    target_compile_options(${PROJECT_NAME} PRIVATE ${DUILIB_COMPILER_FLAGS})
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>: ${DUILIB_CXX_COMPILER_FLAGS}>)
+    target_compile_options(${PROJECT_NAME} PRIVATE ${DUI_COMPILER_FLAGS})
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>: ${DUI_CXX_COMPILER_FLAGS}>)
 endif()
 
 # Third-party libraries are included in the build (following the develop2 branch: third_party/CMakeLists.txt)
 # skia/SDL are not built here; keep them prebuilt in sibling directories
 add_subdirectory(../third_party third_party)
 
-# Ensure third-party libraries build before duilib (duilib sources reference some third-party headers)
-add_dependencies(${PROJECT_NAME} duilib-cximage png_static duilib-zlib duilib-webp)
+# Ensure third-party libraries build before dui (dui sources reference some third-party headers)
+add_dependencies(${PROJECT_NAME} dui-cximage png_static dui-zlib dui-webp)
 

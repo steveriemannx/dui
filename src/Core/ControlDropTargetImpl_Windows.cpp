@@ -1,13 +1,13 @@
-#include "duilib/Core/ControlDropTargetImpl_Windows.h"
+#include "dui/Core/ControlDropTargetImpl_Windows.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Core/Control.h"
-#include "duilib/Core/ControlDropTargetUtils.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/StringCharset.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/FilePath.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/ControlDropTargetUtils.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/StringCharset.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/FilePath.h"
 #include <oleidl.h>
 #include <shellapi.h>
 
@@ -329,4 +329,4 @@ int32_t ControlDropTargetImpl_Windows::Drop(void* pDataObj, uint32_t grfKeyState
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

@@ -1,18 +1,18 @@
-#include "duilib/RenderSkia/VerticalDrawText.h"
-#include "duilib/RenderSkia/Font_Skia.h"
+#include "dui/RenderSkia/VerticalDrawText.h"
+#include "dui/RenderSkia/Font_Skia.h"
 
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/PerformanceUtil.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 
 #include "include/core/SkCanvas.h"
 #include "include/core/SkPaint.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkFontMetrics.h"
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui {
 
@@ -33,7 +33,7 @@ UTF16String VerticalDrawText::GetDrawStringUTF16(const DString& strText, bool bS
     if (bSingleLineMode) {
         StringUtil::ReplaceAll(_T("\n"), _T(" "), text);
     }
-#if defined DUILIB_UNICODE && defined WCHAR_T_IS_UTF16
+#if defined DUI_UNICODE && defined WCHAR_T_IS_UTF16
     return text;
 #else
     std::string textUTF8 = StringConvert::TToUTF8(text);

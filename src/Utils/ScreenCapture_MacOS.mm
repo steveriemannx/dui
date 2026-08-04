@@ -1,7 +1,7 @@
-#include "duilib/Utils/ScreenCapture.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Utils/ScreenCapture.h"
+#include "dui/Core/GlobalManager.h"
 
-#ifdef DUILIB_BUILD_FOR_MACOS
+#ifdef DUI_BUILD_FOR_MACOS
 //MacOS
 #import <Cocoa/Cocoa.h>
 
@@ -132,4 +132,4 @@ std::shared_ptr<IBitmap> ScreenCapture::CaptureBitmap(const Window* pWindow)
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_MACOS
+#endif //DUI_BUILD_FOR_MACOS

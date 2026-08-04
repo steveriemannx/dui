@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_MAIN_FORM_H_
 #define EXAMPLES_MAIN_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 #include <chrono>
 
 /** Application interface: the worker-thread pool is owned by the App class

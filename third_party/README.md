@@ -27,23 +27,23 @@
 | libcef/libcef_macos  |2025-11-11|<div style="width: 160px">cef_binary_142.0.10+g29548e2+chromium-142.0.7444.135</div> |Yes |<div style="width: 360px">ARM64: https://cef-builds.spotifycdn.com/index.html#macosarm64:142</div>  | <div style="width: 360px">ARM64: https://cef-builds.spotifycdn.com/cef_binary_142.0.10%2Bg29548e2%2Bchromium-142.0.7444.135_macosarm64.tar.bz2 </div>|
 | WebView2      |2025-06-28|1.0.3296.44 |No | Installed via the NuGet package WebView2 SDK: <br>Microsoft.Web.WebView2| |
 | libpag        |2025-11-13|main branch |No | https://github.com/Tencent/libpag| No modification |
-| skia          |2026-08-02|skia-dui-0.1.0 |No |https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip| Tagged from the dui branch of the fork; includes the expat patch. Downloaded and extracted to third_party/skia automatically by CMake at configure time (cmake/duilib_deps.cmake), built with gn + ninja at make time |
-| SDL3          |2026-08-04|v3.4.14 |No |https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip| Official source package. Downloaded and extracted to third_party/SDL3 automatically by CMake at configure time (cmake/duilib_deps.cmake), built at make time |
+| skia          |2026-08-02|skia-dui-0.1.0 |No |https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip| Tagged from the dui branch of the fork; includes the expat patch. Downloaded and extracted to third_party/skia automatically by CMake at configure time (cmake/dui_deps.cmake), built with gn + ninja at make time |
+| SDL3          |2026-08-04|v3.4.14 |No |https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip| Official source package. Downloaded and extracted to third_party/SDL3 automatically by CMake at configure time (cmake/dui_deps.cmake), built at make time |
 
 ## libpng Update Notes
 1. Download the latest release package: https://github.com/pnggroup/libpng/ or https://sourceforge.net/projects/libpng/
 2. Extract the downloaded package, enter the extracted directory, and following the INSTALL instructions, run from the VS command prompt: `nmake -f scripts\makefile.vcwin32`, which generates the `pnglibconf.h` file
-3. Then overlay the whole directory (excluding .lib and .obj files) onto `duilib\third_party\libpng`, keeping it identical to the downloaded package; add missing files, delete extra ones, and add newly added files to git
+3. Then overlay the whole directory (excluding .lib and .obj files) onto `dui\third_party\libpng`, keeping it identical to the downloaded package; add missing files, delete extra ones, and add newly added files to git
 4. Check the `pnglibconf.h` file and keep it in sync as needed
 5. Do not update the `libpng\projects\vstudio\libpng\libpng.vcxproj` project file lightly, unless it is required by file changes (you can run `nmake -f scripts\makefile.vcwin32` in both the old and new official packages, compare the generated vcxproj, and then decide whether it needs modification)
 6. Sync the CMakeLists.txt changes: compare the old and new CMakeLists.txt, and port the modifications made on the old version to the new one
 7. Apply the APNG support patch:
  - Patch download: https://sourceforge.net/projects/libpng-apng/ ; if the matching patch cannot be found, search for `libpng PNG_APNG_SUPPORTED` and try to locate it
  - If no matching patch version is available, consider postponing the libpng update
- - Update step 1: extract the `libpng-1.6.50-apng.patch.gz` file to get `libpng-1.6.50-apng.patch`, and put it in the `duilib\third_party\libpng` directory
- - Update step 2: from the command prompt, enter the `duilib\third_party\libpng` directory and run: `git apply .\libpng-1.6.50-apng.patch`
+ - Update step 1: extract the `libpng-1.6.50-apng.patch.gz` file to get `libpng-1.6.50-apng.patch`, and put it in the `dui\third_party\libpng` directory
+ - Update step 2: from the command prompt, enter the `dui\third_party\libpng` directory and run: `git apply .\libpng-1.6.50-apng.patch`
  - Update step 3: after applying the patch, check, test and commit.
-8. Modify `duilib\third_party\libpng\pngstruct.h`, syncing the changes;
+8. Modify `dui\third_party\libpng\pngstruct.h`, syncing the changes;
 
 ## libcef Update Notes
 1. The CMakeLists.txt file and VC project files of libcef are modified, as follows:
@@ -62,4 +62,4 @@ The files above are modified; keep the differences in mind when updating.
 2. Other content that needs modification in the project
  - `README.md` — the CEF version number must be updated
  - `docs\CEF.md`
- - `build\build_duilib_all_in_one.sh`
+ - `build\build_dui_all_in_one.sh`

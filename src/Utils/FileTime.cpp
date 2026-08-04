@@ -1,5 +1,5 @@
-#include "duilib/Utils/FileTime.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Utils/FileTime.h"
+#include "dui/Utils/StringUtil.h"
 
 #include <iomanip>
 #include <sstream>
@@ -21,7 +21,7 @@ uint64_t FileTime::GetValue() const
     return m_uFileTime;
 }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 void FileTime::FromFileTime(const FILETIME& ft)
 {
     ULARGE_INTEGER li;

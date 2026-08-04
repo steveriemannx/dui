@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_CHILD_WINDOW_PAINT_H_
 #define EXAMPLES_CHILD_WINDOW_PAINT_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 /** Drawing implementation of the child window
 */

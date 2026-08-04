@@ -1,9 +1,9 @@
-#include "duilib/CEFControl/CefManager_MacOS.h"
+#include "dui/CEFControl/CefManager_MacOS.h"
 
-#if defined (DUILIB_BUILD_FOR_MACOS) && defined (DUILIB_BUILD_FOR_CEF)
+#if defined (DUI_BUILD_FOR_MACOS) && defined (DUI_BUILD_FOR_CEF)
 
-#include "duilib/CEFControl/internal/CefClientApp.h"
-#include "duilib/CEFControl/internal/CefBrowserHandler.h"
+#include "dui/CEFControl/internal/CefClientApp.h"
+#include "dui/CEFControl/internal/CefBrowserHandler.h"
 
 #include "include/wrapper/cef_library_loader.h"
 
@@ -49,4 +49,4 @@ bool CefManager_MacOS::IsMultiThreadedMessageLoop() const
 
 } //namespace ui
 
-#endif //defined (DUILIB_BUILD_FOR_MACOS/DUILIB_BUILD_FOR_CEF)
+#endif //defined (DUI_BUILD_FOR_MACOS/DUI_BUILD_FOR_CEF)

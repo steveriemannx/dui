@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_MY_CHILD_WINDOW_EVENTS_H_
 #define EXAMPLES_MY_CHILD_WINDOW_EVENTS_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 #include <chrono>
 #include <memory>

@@ -1,12 +1,12 @@
-#include "duilib/WebView2/WebView2Control.h"
+#include "dui/WebView2/WebView2Control.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && defined (DUILIB_BUILD_FOR_WEBVIEW2)
+#if defined (DUI_BUILD_FOR_WIN) && defined (DUI_BUILD_FOR_WEBVIEW2)
 
-#include "duilib/WebView2/WebView2ControlImpl.h"
-#include "duilib/WebView2/WebView2Manager.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Render/IRender.h"
+#include "dui/WebView2/WebView2ControlImpl.h"
+#include "dui/WebView2/WebView2Manager.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Render/IRender.h"
 
 namespace ui {
 
@@ -602,4 +602,4 @@ std::shared_ptr<IBitmap> WebView2Control::MakeImageSnapshot()
 }
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WEBVIEW2
+#endif //DUI_BUILD_FOR_WEBVIEW2

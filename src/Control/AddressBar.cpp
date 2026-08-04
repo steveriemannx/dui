@@ -1,11 +1,11 @@
-#include "duilib/Control/AddressBar.h"
-#include "duilib/Control/RichEdit.h"
-#include "duilib/Control/Button.h"
-#include "duilib/Utils/FilePath.h"
+#include "dui/Control/AddressBar.h"
+#include "dui/Control/RichEdit.h"
+#include "dui/Control/Button.h"
+#include "dui/Utils/FilePath.h"
 #include <numeric>
 
-#ifdef DUILIB_BUILD_FOR_WIN
-    #include "duilib/Utils/DiskUtils_Windows.h"
+#ifdef DUI_BUILD_FOR_WIN
+    #include "dui/Utils/DiskUtils_Windows.h"
 #endif
 
 namespace ui
@@ -455,7 +455,7 @@ bool AddressBar::UpdateAddressBarControls(const DString& addressPath)
     for (const FilePath& subPath : pathList) {
         displayName = subPath.GetFileName();
         if (bRoot && displayName.empty()) {            
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
             //Windows drive letter
             DiskUtils::DiskInfo diskInfo;
             DiskUtils::GetLogicalDriveInfo(subPath.ToString(), diskInfo);

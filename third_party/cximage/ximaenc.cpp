@@ -573,10 +573,10 @@ bool CxImage::Load(const TCHAR* filename, uint32_t imagetype)
     if (GetTypeIndexFromId(imagetype)) {
         FILE* hFile = nullptr;    //file handle to read the image
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         if ((hFile = _tfopen(filename, _T("rb"))) == NULL)  return false;    // For UNICODE support
 #else
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
         ::_wfopen_s(&hFile, filename, _T("rb"));
         if (hFile == nullptr) {
             return false;
@@ -597,10 +597,10 @@ bool CxImage::Load(const TCHAR* filename, uint32_t imagetype)
     // if failed, try automatic recognition of the file...
     FILE* hFile = nullptr;
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     if ((hFile = _tfopen(filename, _T("rb"))) == NULL)  return false;    // For UNICODE support
 #else
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     ::_wfopen_s(&hFile, filename, _T("rb"));
     if (hFile == nullptr) {
         return false;
@@ -618,7 +618,7 @@ bool CxImage::Load(const TCHAR* filename, uint32_t imagetype)
     return bOK;
 }
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 //bool CxImage::Load(LPCWSTR filename, uint32_t imagetype)
 //{
 //    /*FILE* hFile;    //file handle to read the image

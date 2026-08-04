@@ -25,7 +25,7 @@
   </PropertyGroup>
   <Import Project="..\zlib.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <!-- duilib -->
+  <!-- dui -->
   <Import Project="..\..\..\..\..\..\msvc\PropertySheets\CommonSettings.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>

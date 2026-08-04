@@ -1,7 +1,7 @@
-#include "duilib/Image/ImageInfo.h"
-#include "duilib/Image/ImageUtil.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/Image/ImageInfo.h"
+#include "dui/Image/ImageUtil.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/PerformanceUtil.h"
 #include <cmath>
 
 namespace ui 

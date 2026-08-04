@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_MAIN_FORM_H_
 #define EXAMPLES_MAIN_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 #include "RichEditFindReplace.h"
 
@@ -125,7 +125,7 @@ private:
     */
     uint32_t GetNextZoomPercent(uint32_t nOldZoomPercent, bool bZoomIn) const;
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
     // Determine whether a file extension is an RTF file
     bool IsRtfFile(const DString& filePath) const;

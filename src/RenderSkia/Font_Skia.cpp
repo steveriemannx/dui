@@ -1,5 +1,5 @@
-#include "duilib/RenderSkia/Font_Skia.h"
-#include "duilib/RenderSkia/FontMgr_Skia.h"
+#include "dui/RenderSkia/Font_Skia.h"
+#include "dui/RenderSkia/FontMgr_Skia.h"
 
 namespace ui 
 {

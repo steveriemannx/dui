@@ -1,16 +1,16 @@
-#include "duilib/WebView2/WebView2Manager.h"
+#include "dui/WebView2/WebView2Manager.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && defined (DUILIB_BUILD_FOR_WEBVIEW2)
+#if defined (DUI_BUILD_FOR_WIN) && defined (DUI_BUILD_FOR_WEBVIEW2)
 
-#include "duilib/WebView2/WebView2Control.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/WebView2/WebView2Control.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/FilePathUtil.h"
 #include <objbase.h>
 
 namespace ui {
 
 // The callback function for creating WebView controls
-static Control* DuilibCreateWebView2Control(const DString& className)
+static Control* DuiCreateWebView2Control(const DString& className)
 {
     Control* pControl = nullptr;
     if (className == _T("WebView2Control")) {
@@ -54,7 +54,7 @@ bool WebView2Manager::Initialize(const DString& userDataFolder,
     m_browserExecutableFolder = browserExecutableFolder;
 
     // Add the callback function for creating WebView2 controls
-    GlobalManager::Instance().AddCreateControlCallback(DuilibCreateWebView2Control);
+    GlobalManager::Instance().AddCreateControlCallback(DuiCreateWebView2Control);
     return true;
 }
 
@@ -207,4 +207,4 @@ bool WebView2Manager::IsEnableF11() const
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_WEBVIEW2
+#endif //DUI_BUILD_FOR_WEBVIEW2

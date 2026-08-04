@@ -1,9 +1,9 @@
-#include "duilib/duilib.h"
+#include "dui/dui.h"
 #include "MainForm.h"
 #include "WorkerThread.h"
-#include "duilib/Utils/AppEntry.h"
+#include "dui/Utils/AppEntry.h"
 
-/** App: FrameworkThread subclass that serves as the DUILIB_APP_ENTRY target.
+/** App: FrameworkThread subclass that serves as the DUI_APP_ENTRY target.
  *  RunMessageLoop() calls OnInit() -> message loop -> OnCleanup().
  *  Owns the worker-thread pool; the main form controls it through the IMainThread interface.
  */
@@ -121,4 +121,4 @@ void App::PrintLog(const DString& log)
     }
 }
 
-DUILIB_APP_ENTRY(App)
+DUI_APP_ENTRY(App)

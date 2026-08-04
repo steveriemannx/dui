@@ -1,6 +1,6 @@
-#include "duilib/Core/DpiAwareness.h"
+#include "dui/Core/DpiAwareness.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 namespace ui
 {
@@ -39,4 +39,4 @@ DpiAwarenessMode DpiAwareness::GetDpiAwareness() const
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

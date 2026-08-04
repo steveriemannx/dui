@@ -1,10 +1,10 @@
-#include "duilib/Core/WindowDropTarget_Windows.h"
-#include "duilib/Core/ControlDropTarget.h"
+#include "dui/Core/WindowDropTarget_Windows.h"
+#include "dui/Core/ControlDropTarget.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Core/NativeWindow_Windows.h"
-#include "duilib/Core/Control.h"
+#include "dui/Core/NativeWindow_Windows.h"
+#include "dui/Core/Control.h"
 
 namespace ui 
 {
@@ -248,4 +248,4 @@ ControlPtrT<ControlDropTarget_Windows> WindowDropTarget::GetControlDropTarget(co
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

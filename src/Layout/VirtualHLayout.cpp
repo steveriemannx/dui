@@ -1,5 +1,5 @@
-#include "duilib/Layout/VirtualHLayout.h"
-#include "duilib/Box/VirtualListBox.h"
+#include "dui/Layout/VirtualHLayout.h"
+#include "dui/Box/VirtualListBox.h"
 
 namespace ui 
 {

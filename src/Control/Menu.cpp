@@ -1,9 +1,9 @@
-#include "duilib/Control/Menu.h"
-#include "duilib/Control/MenuListBox.h"
-#include "duilib/Control/MenuBar.h"
-#include "duilib/Core/Keyboard.h"
-#include "duilib/Core/WindowCreateParam.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Control/Menu.h"
+#include "dui/Control/MenuListBox.h"
+#include "dui/Control/MenuBar.h"
+#include "dui/Core/Keyboard.h"
+#include "dui/Core/WindowCreateParam.h"
+#include "dui/Utils/FilePathUtil.h"
 
 namespace ui {
 

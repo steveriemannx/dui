@@ -1,7 +1,7 @@
-#include "duilib/Control/DirectoryTree.h"
-#include "duilib/Control/DirectoryTreeImpl.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Control/DirectoryTree.h"
+#include "dui/Control/DirectoryTreeImpl.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Core/GlobalManager.h"
 #include <set>
 
 /** String identifying the "Computer" virtual node
@@ -13,7 +13,7 @@ namespace ui
 DirectoryTree::DirectoryTree(Window* pWindow):
     TreeView(pWindow),
     m_nThreadIdentifier(ui::kThreadWorker),
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     m_nSmallIconSize(16),
 #else
     m_nSmallIconSize(20),
@@ -98,7 +98,7 @@ void DirectoryTree::ClearDiskInfoList(std::vector<DirectoryTree::DiskInfo>& disk
 void DirectoryTree::SetSmallIconSize(int32_t nIconSize)
 {
     if (nIconSize < 1) {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         nIconSize = 16;
 #else
         nIconSize = 20;
@@ -204,7 +204,7 @@ TreeNode* DirectoryTree::ShowAllDiskNodes(const DString& computerName, const DSt
     std::vector<DirectoryTree::PathInfo> pathInfoList;
     m_impl->GetRootPathInfoList(false, pathInfoList);
     UNUSED_VARIABLE(fileSystemName);
-#ifndef DUILIB_BUILD_FOR_WIN
+#ifndef DUI_BUILD_FOR_WIN
     bool bFirstNode = true;
 #endif
     for (const DirectoryTree::PathInfo& pathInfo : pathInfoList) {
@@ -212,7 +212,7 @@ TreeNode* DirectoryTree::ShowAllDiskNodes(const DString& computerName, const DSt
             continue;
         }
         DString displayName = pathInfo.m_displayName;
-#ifndef DUILIB_BUILD_FOR_WIN
+#ifndef DUI_BUILD_FOR_WIN
         if (bFirstNode && (displayName == _T("/")) && !fileSystemName.empty()) {
             //Replace with the file system
             bFirstNode = false;
@@ -922,7 +922,7 @@ bool DirectoryTree::IsChildTreeNode(TreeNode* pTreeNode, TreeNode* pChildTreeNod
 
 bool DirectoryTree::IsSamePath(const UiString& p1, const UiString& p2) const
 {
-#if !defined (DUILIB_BUILD_FOR_LINUX) && !defined (DUILIB_BUILD_FOR_FREEBSD)
+#if !defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_FREEBSD)
     //Windows/macOS file names are case-insensitive, while Linux/FreeBSD are case-sensitive
     return StringUtil::IsEqualNoCase(p1.c_str(), p2.c_str());
 #else
@@ -1119,7 +1119,7 @@ void DirectoryTree::RefreshPathInfo(std::vector<std::shared_ptr<RefreshNodeData>
             std::set<DString> dirSet;
             for (const FilePath& dirPath : pNodeData->m_childPaths) {
                 DString dirPathString = dirPath.ToString();
-#if !defined (DUILIB_BUILD_FOR_LINUX) && !defined (DUILIB_BUILD_FOR_FREEBSD)
+#if !defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_FREEBSD)
                 dirPathString = StringUtil::MakeLowerString(dirPathString);
 #endif
                 if (!dirPathString.empty()) {
@@ -1133,7 +1133,7 @@ void DirectoryTree::RefreshPathInfo(std::vector<std::shared_ptr<RefreshNodeData>
 
             for (const DirectoryTree::PathInfo& pathInfo : folderList) {
                 DString filePath = pathInfo.m_filePath.ToString();
-#if !defined (DUILIB_BUILD_FOR_LINUX) && !defined (DUILIB_BUILD_FOR_FREEBSD)
+#if !defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_FREEBSD)
                 filePath = StringUtil::MakeLowerString(filePath);
 #endif
                 if (!filePath.empty()) {

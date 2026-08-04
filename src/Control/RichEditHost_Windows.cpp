@@ -1,10 +1,10 @@
-#include "duilib/Control/RichEditHost_Windows.h"
-#include "duilib/Control/RichEdit_Windows.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Control/RichEditHost_Windows.h"
+#include "dui/Control/RichEdit_Windows.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Utils/StringConvert.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #include <TextServ.h>
 
@@ -25,7 +25,7 @@
 #define UI_WS_HSCROLL           0x4000L
 #define UI_WS_VSCROLL           0x8000L
 
-#if defined (DUILIB_COMPILER_MINGW)
+#if defined (DUI_COMPILER_MINGW)
     typedef HRESULT(STDAPICALLTYPE* PShutdownTextServices)(IUnknown* pTextServices);
     #define TXTBIT_SHOWPASSWORD		        0x800000	// Show password string
     #define TXTBIT_FLASHLASTPASSWORDCHAR    0x10000000	// Show last password char momentarily
@@ -573,9 +573,9 @@ HRESULT RichEditHost::TxGetPasswordChar(_Out_ TCHAR* pch)
     if (pch == nullptr) {
         return NOERROR;
     }
-#ifndef DUILIB_UNICODE
+#ifndef DUI_UNICODE
     ASSERT(m_chPasswordChar <= CHAR_MAX);
-#endif // !DUILIB_UNICODE
+#endif // !DUI_UNICODE
     *pch = (TCHAR)m_chPasswordChar;
     if (!IsPassword()) {
         //Password not enabled
@@ -1150,4 +1150,4 @@ LONG RichEditHost::DYtoHimetricY(LONG dy, LONG yPerInch)
 
 }//name space ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

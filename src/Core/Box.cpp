@@ -1,6 +1,6 @@
-#include "duilib/Core/Box.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/Window.h"
+#include "dui/Utils/StringUtil.h"
 
 namespace ui
 {

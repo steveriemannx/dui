@@ -1,8 +1,8 @@
-#include "duilib/Utils/BitmapHelper_Windows.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Utils/BitmapHelper_Windows.h"
+#include "dui/Core/GlobalManager.h"
 #include <algorithm>
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
 namespace ui {
 
@@ -152,4 +152,4 @@ HBITMAP BitmapHelper::CreateGDIBitmap(int32_t nWidth, int32_t nHeight, bool flip
 
 } //namespace ui 
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

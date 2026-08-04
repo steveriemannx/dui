@@ -1,7 +1,7 @@
-#include "duilib/Core/ControlDropTargetUtils.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/FilePath.h"
+#include "dui/Core/ControlDropTargetUtils.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/FilePath.h"
 
 namespace ui 
 {
@@ -62,7 +62,7 @@ void ControlDropTargetUtils::RemoveUnsupportedFiles(std::vector<DString>& fileLi
 
 bool ControlDropTargetUtils::IsSameFileType(const DString& ext1, const DString& ext2)
 {
-#if !defined (DUILIB_BUILD_FOR_LINUX) && !defined (DUILIB_BUILD_FOR_FREEBSD)
+#if !defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_FREEBSD)
     // Windows/MacOS file names are case-insensitive; Linux/FreeBSD are case-sensitive
     return StringUtil::IsEqualNoCase(ext1.c_str(), ext2.c_str());
 #else

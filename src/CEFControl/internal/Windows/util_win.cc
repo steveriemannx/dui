@@ -1,9 +1,9 @@
 // Copyright (c) 2015 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
-#include "duilib/CEFControl/internal/Windows/util_win.h"
+#include "dui/CEFControl/internal/Windows/util_win.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
 #pragma warning (push)
 #pragma warning (disable:4100)
@@ -197,4 +197,4 @@ float GetDeviceScaleFactor() {
 
 }  // namespace client
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

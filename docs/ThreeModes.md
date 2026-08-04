@@ -1,6 +1,6 @@
 # Three Modes: XML / XML-to-code Generation / Pure Code
 
-nim_duilib supports three UI development modes, and all 18 non-CEF examples provide versions of all three modes.
+dui supports three UI development modes, and all 18 non-CEF examples provide versions of all three modes.
 
 ## Mode 1: XML Mode (traditional)
 
@@ -12,11 +12,11 @@ nim_duilib supports three UI development modes, and all 18 non-CEF examples prov
 
 - **Workflow**: write/debug the UI in XML (parsed at runtime for immediate visual feedback) → at build time `cmake/xml_to_code.cpp` converts the XML into pure C++ code → the final program has zero layout XML parsing
 - Examples: `examples/<name>_gen` (18 of them); build-time generation produces `generated_ui.inc`, and `MainForm::OnInitWindow` calls the generated `InitXxx(this)`
-- CMake configuration (see `cmake/duilib_gen_code.cmake`):
+- CMake configuration (see `cmake/dui_gen_code.cmake`):
   ```cmake
   set(GEN_XML_FILES layout.xml)     # Layout XML list (multiple files supported)
   set(GEN_FUNC_NAME Init)           # Prefix of the generated function name
-  include(duilib_gen_code.cmake)
+  include(dui_gen_code.cmake)
   ```
 - The generator supports: all control class names (aligned with the WindowBuilder factory table), `<Include src="x.xml" count="n"/>` expansion, `<RichText>` rich text content, and window-level `<Class>/<Font>/<TextColor>/<DefaultFontFamilyNames>` definitions
 - **Events**: `on_click`/`on_select` attributes and `<Event>` tags are skipped; they must be wired up manually in `MainForm::OnInitWindow` (`FindControl` + `AttachClick/AttachSelect`)
@@ -59,7 +59,7 @@ menu->AddMenuItem(pItem);               // sub-menus use pItem->AddSubMenuItem(p
 menu->AddMenuControl(pControl);         // add ordinary controls such as separators
 ```
 
-Library support (on the duilib side):
+Library support (on the dui side):
 - `Menu::PreInitWindow`: builds the `MenuListBox` root node when the XML is empty
 - `Menu::AddMenuControl`: adds regular controls to the menu
 - `MenuBar::AddTopMenu(id, text, builder)`: the builder callback builds the menu items (no XML)
@@ -67,7 +67,7 @@ Library support (on the duilib side):
 
 ## Build
 
-The repository uses **top-level CMake management** (following the develop2 branch): the root CMakeLists.txt uniformly manages duilib, the third-party libraries, and all examples.
+The repository uses **top-level CMake management** (following the develop2 branch): the root CMakeLists.txt uniformly manages dui, the third-party libraries, and all examples.
 
 ```bash
 # Top-level build (default: configure + build everything at once; use --target <example name> to build only a single target)
@@ -88,6 +88,6 @@ mkdir build && cd build
 cmake ..          # Release by default when no build type is specified
 make -j6          # builds everything at once; make basic etc. builds only a single target
 ```
-- The third-party libraries are vendored under `third_party/`; skia and SDL3 are built automatically by the top-level build (`duilib_skia` / `duilib_sdl` targets) when their libraries are missing
+- The third-party libraries are vendored under `third_party/`; skia and SDL3 are built automatically by the top-level build (`dui_skia` / `dui_sdl` targets) when their libraries are missing
 - Platform notes: WebView2/WebView2Browser are Windows-only; codeui/embedxml/genlist/genui are Linux-only (no macOS entry; genlist depends on memfd)
 - Each example directory is still an independent CMake project and can be built alone with `cmake -S examples/<name> -B build/...`

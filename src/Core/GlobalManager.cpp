@@ -1,26 +1,26 @@
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/Box.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/Box.h"
 
 //The render engine
-#include "duilib/RenderSkia/RenderFactory_Skia.h"
+#include "dui/RenderSkia/RenderFactory_Skia.h"
 
 //Image decode interfaces
-#include "duilib/Image/ImageDecoder_ICO.h"
-#include "duilib/Image/ImageDecoder_Icon.h"
-#include "duilib/Image/ImageDecoder_GIF.h"
-#include "duilib/Image/ImageDecoder_PNG.h"
-#include "duilib/Image/ImageDecoder_PAG.h"
-#include "duilib/Image/ImageDecoder_SVG.h"
-#include "duilib/Image/ImageDecoder_WEBP.h"
-#include "duilib/Image/ImageDecoder_JPEG.h"
-#include "duilib/Image/ImageDecoder_LOTTIE.h"
-#include "duilib/Image/ImageDecoder_Common.h"
+#include "dui/Image/ImageDecoder_ICO.h"
+#include "dui/Image/ImageDecoder_Icon.h"
+#include "dui/Image/ImageDecoder_GIF.h"
+#include "dui/Image/ImageDecoder_PNG.h"
+#include "dui/Image/ImageDecoder_PAG.h"
+#include "dui/Image/ImageDecoder_SVG.h"
+#include "dui/Image/ImageDecoder_WEBP.h"
+#include "dui/Image/ImageDecoder_JPEG.h"
+#include "dui/Image/ImageDecoder_LOTTIE.h"
+#include "dui/Image/ImageDecoder_Common.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     //Standard controls such as ToolTip/date time require initializing commctrl
     #include <commctrl.h>
     #include <Objbase.h>
@@ -51,7 +51,7 @@ private:
     */
     virtual void OnInit() override
     {
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
         HRESULT hr = ::CoInitialize(nullptr);
         ASSERT_UNUSED_VARIABLE((hr == S_OK) || (hr == S_FALSE));
 #endif
@@ -61,7 +61,7 @@ private:
     */
     virtual void OnCleanup() override
     {
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
         ::CoUninitialize();
 #endif
     }
@@ -86,13 +86,13 @@ GlobalManager& GlobalManager::Instance()
 FilePath GlobalManager::GetDefaultResourcePath(bool bMacOsAppBundle)
 {
     ui::FilePath resourcePath;
-#ifdef DUILIB_BUILD_FOR_MACOS
+#ifdef DUI_BUILD_FOR_MACOS
     //On the MacOS platform, prefer to use the resource directory of the bundle
     if (bMacOsAppBundle) {
         resourcePath = ui::FilePathUtil::GetBundleResourcesPath();
         if (!resourcePath.IsEmpty()) {
             resourcePath.NormalizeDirectoryPath();
-            resourcePath += _T("duilib/");
+            resourcePath += _T("dui/");
             if (!resourcePath.IsExistsDirectory()) {
                 resourcePath.Clear();
             }
@@ -118,7 +118,7 @@ bool GlobalManager::Startup(const ResourceParam& resParam,
         return false;
     }
     //Initialize COM/OLE
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     HRESULT hr = ::CoInitialize(nullptr);
     ASSERT_UNUSED_VARIABLE((hr == S_OK) || (hr == S_FALSE));
 
@@ -141,7 +141,7 @@ bool GlobalManager::Startup(const ResourceParam& resParam,
     m_imageDecoderFactory.AddImageDecoder(std::make_shared<ImageDecoder_PNG>());
     m_imageDecoderFactory.AddImageDecoder(std::make_shared<ImageDecoder_GIF>());
 
-#ifdef DUILIB_IMAGE_SUPPORT_JPEG_TURBO
+#ifdef DUI_IMAGE_SUPPORT_JPEG_TURBO
     m_imageDecoderFactory.AddImageDecoder(std::make_shared<ImageDecoder_JPEG>());
 #endif
 
@@ -150,7 +150,7 @@ bool GlobalManager::Startup(const ResourceParam& resParam,
     m_imageDecoderFactory.AddImageDecoder(std::make_shared<ImageDecoder_Icon>());
     m_imageDecoderFactory.AddImageDecoder(std::make_shared<ImageDecoder_LOTTIE>());
 
-#ifdef DUILIB_IMAGE_SUPPORT_LIB_PAG
+#ifdef DUI_IMAGE_SUPPORT_LIB_PAG
     m_imageDecoderFactory.AddImageDecoder(std::make_shared<ImageDecoder_PAG>());
 #endif
 
@@ -226,7 +226,7 @@ void GlobalManager::Shutdown()
     }
     m_atExitFunctions.clear();
 
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     ::CoUninitialize();
     ::OleUninitialize();
 #endif
@@ -379,7 +379,7 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
             return false;
         }
     }
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     else if (resParam.GetResType() == ResourceType::kResZipFile) {
         //The resource files are packaged into a zip archive and placed in the resource file of the exe/dll
         const ResZipFileResParam& param = static_cast<const ResZipFileResParam&>(resParam);
@@ -518,7 +518,7 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& la
     }
 
     languageList.clear();
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows: the path string uses DStringW::value_type, UTF16
     const std::filesystem::path path{ languagePath.ToStringW()};
 #else
@@ -650,7 +650,7 @@ FilePath GlobalManager::FindExistsResFullPath(const FilePath& windowResPath,
         return resPath;
     }
     FilePath imageFullPath;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     const bool bOSWindows = true;
 #else
     const bool bOSWindows = false;

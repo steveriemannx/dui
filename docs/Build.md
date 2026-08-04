@@ -26,26 +26,26 @@ REM For Visual Studio 2022/2026
 echo OFF
 set retry_delay=10
 
-:retry_clone_duilib
-if not exist ".\nim_duilib\.git" (
-    git clone https://github.com/rhett-lee/nim_duilib
+:retry_clone_dui
+if not exist ".\dui\.git" (
+    git clone https://github.com/steveriemannx/dui dui
 ) else (  
-    git -C ./nim_duilib pull
+    git -C ./dui pull
 )
 if %errorlevel% neq 0 (
     timeout /t %retry_delay% >nul
-    goto retry_clone_duilib
+    goto retry_clone_dui
 )
-if not exist ".\nim_duilib\.git" (
-    echo clone duilib failed!
+if not exist ".\dui\.git" (
+    echo clone dui failed!
     exit /b 1
 )
-.\nim_duilib\scripts\build_duilib_all_in_one.bat
+.\dui\scripts\build_dui_all_in_one.bat
 ```
 The script above builds with static runtime libraries (MT and MTd) by default. To use dynamic runtime libraries (MD and MDd), append the `/MD` parameter to the last line, changing it to:    
-`.\nim_duilib\scripts\build_duilib_all_in_one.bat /MD`    
-Note 1: if nim_duilib is ultimately built as a DLL, the dynamic runtime libraries must be used.    
-Note 2: if nim_duilib uses dynamic runtime libraries, the Skia library must also use dynamic runtime libraries; see the skia_compile library documentation for the build method.    
+`.\dui\scripts\build_dui_all_in_one.bat /MD`    
+Note 1: if dui is ultimately built as a DLL, the dynamic runtime libraries must be used.    
+Note 2: if dui uses dynamic runtime libraries, the Skia library must also use dynamic runtime libraries; see the skia_compile library documentation for the build method.    
     
 * Once the script file is ready, open a command prompt and run the script: 
 ```
@@ -57,15 +57,18 @@ The compiled example programs are in the bin directory.
 1. CEF module notes:    
 (1) The CEF module depends on the Windows 11 SDK; a lower SDK version will cause build errors.    
 (2) The CEF module can be disabled if not needed: edit the `msvc\PropertySheets\CEFSettings.props` file and change the value of `LibCefEnabled` to `0`.    
-(3) After disabling the CEF module, use the `duilib_no_cef.sln` or `examples_no_cef.sln` projects to build, reducing the compilation of libCEF code.    
+(3) After disabling the CEF module, use the `dui_no_cef.sln` or `examples_no_cef.sln` projects to build, reducing the compilation of libCEF code.    
 2. WebView2 module notes:    
 (1) The WebView2 module can be disabled if not needed: edit the `msvc\PropertySheets\WebView2Settings.props` file and change the value of `WebView2Enabled` to `0`.    
-3. The nim_duilib library uses static runtime libraries by default (/MT and /MTd), and also supports dynamic runtime libraries (/MD and /MDd); to switch:    
-(1) The runtime library used when building the Skia library must be the same as the one used by the nim_duilib library. See the skia_compile library documentation for how to build Skia.    
-(2) To switch the nim_duilib library to dynamic runtime libraries, run the following script:    
-    `.\nim_duilib\msvc\PropertySheets\DuilibUseDynamicRuntime.bat`    
-(3) To switch the nim_duilib library to static runtime libraries, run the following script:    
-    `.\nim_duilib\msvc\PropertySheets\DuilibUseStaticRuntime.bat`    
+For CMake builds, the CEF and WebView2 examples are included by default in the `ALL`/`XML` example modes and download large binary distributions at configure time (CEF ≈ 200 MB). To skip them (no CEF/WebView2 download):    
+    `cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DDUI_BUILD_CEF_EXAMPLES=OFF -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF`    
+The `GEN`/`CODE` example modes (`-DDUI_EXAMPLES_MODE=GEN|CODE`) never include the CEF/WebView2 examples.    
+3. The dui library uses static runtime libraries by default (/MT and /MTd), and also supports dynamic runtime libraries (/MD and /MDd); to switch:    
+(1) The runtime library used when building the Skia library must be the same as the one used by the dui library. See the skia_compile library documentation for how to build Skia.    
+(2) To switch the dui library to dynamic runtime libraries, run the following script:    
+    `.\dui\msvc\PropertySheets\DuiUseDynamicRuntime.bat`    
+(3) To switch the dui library to static runtime libraries, run the following script:    
+    `.\dui\msvc\PropertySheets\DuiUseStaticRuntime.bat`    
 
 ## B. Build Process (Linux platform)
 ### I. Prerequisites: Install the required software
@@ -95,12 +98,12 @@ The script content is as follows:
 ```
 #!/bin/bash
 
-# Retry clone nim_duilib
+# Retry clone dui
 while true; do
-    if [ ! -d "./nim_duilib/.git" ]; then
-        git clone https://github.com/rhett-lee/nim_duilib
+    if [ ! -d "./dui/.git" ]; then
+        git clone https://github.com/steveriemannx/dui dui
     else
-        git -C ./nim_duilib pull
+        git -C ./dui pull
     fi
     if [ $? -ne 0 ]; then
         sleep 10
@@ -109,8 +112,8 @@ while true; do
     break
 done
 
-chmod +x ./nim_duilib/scripts/build_duilib_all_in_one.sh
-./nim_duilib/scripts/build_duilib_all_in_one.sh
+chmod +x ./dui/scripts/build_dui_all_in_one.sh
+./dui/scripts/build_dui_all_in_one.sh
 ```
 The compiled example programs are in the bin directory.    
 Note: on UOS systems, install the required development environment first, then install; see the document: [Compiling skia on UnionTech UOS](https://github.com/rhett-lee/skia_compile/blob/main/%E7%BB%9F%E4%BF%A1UOS%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)。
@@ -171,12 +174,12 @@ The script content is as follows:
 ```
 #!/bin/bash
 
-# Retry clone nim_duilib
+# Retry clone dui
 while true; do
-    if [ ! -d "./nim_duilib/.git" ]; then
-        git clone https://github.com/rhett-lee/nim_duilib
+    if [ ! -d "./dui/.git" ]; then
+        git clone https://github.com/steveriemannx/dui dui
     else
-        git -C ./nim_duilib pull
+        git -C ./dui pull
     fi
     if [ $? -ne 0 ]; then
         sleep 10
@@ -185,8 +188,8 @@ while true; do
     break
 done
 
-chmod +x ./nim_duilib/scripts/build_duilib_all_in_one.sh
-./nim_duilib/scripts/build_duilib_all_in_one.sh
+chmod +x ./dui/scripts/build_dui_all_in_one.sh
+./dui/scripts/build_dui_all_in_one.sh
 ```
 The compiled example programs are in the bin directory.    
 
@@ -208,12 +211,12 @@ The script content is as follows:
 ```
 #!/usr/bin/env bash
 
-# Retry clone nim_duilib
+# Retry clone dui
 while true; do
-    if [ ! -d "./nim_duilib/.git" ]; then
-        git clone https://github.com/rhett-lee/nim_duilib
+    if [ ! -d "./dui/.git" ]; then
+        git clone https://github.com/steveriemannx/dui dui
     else
-        git -C ./nim_duilib pull
+        git -C ./dui pull
     fi
     if [ $? -ne 0 ]; then
         sleep 10
@@ -222,8 +225,8 @@ while true; do
     break
 done
 
-chmod +x ./nim_duilib/scripts/build_duilib_all_in_one.sh
-./nim_duilib/scripts/build_duilib_all_in_one.sh
+chmod +x ./dui/scripts/build_dui_all_in_one.sh
+./dui/scripts/build_dui_all_in_one.sh
 ```
 The compiled example programs are in the bin directory.
 

@@ -1,10 +1,10 @@
 #ifndef EXAMPLES_DWM_UTIL_H_
 #define EXAMPLES_DWM_UTIL_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #define WM_DWMSENDICONICTHUMBNAIL           0x0323
 #define WM_DWMSENDICONICLIVEPREVIEWBITMAP   0x0326
@@ -35,6 +35,6 @@ HRESULT DwmSetIconicLivePreviewBitmap(HWND hwnd, HBITMAP hbmp, POINT *pptClient,
 HRESULT DwmInvalidateIconicBitmaps(HWND hwnd);
 HRESULT DwmSetWindowAttribute(HWND hwnd, DWORD dwAttribute, LPCVOID pvAttribute, DWORD cbAttribute);
 
-#endif //defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #endif //EXAMPLES_DWM_UTIL_H_

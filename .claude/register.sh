@@ -1,30 +1,30 @@
 #!/bin/bash
-# nim_duilib AI toolchain - global register script
-# Usage: cd nim_duilib && bash .claude/register.sh
+# dui AI toolchain - global register script
+# Usage: cd dui && bash .claude/register.sh
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DUILIB_ROOT="$(dirname "$SCRIPT_DIR")"
+DUI_ROOT="$(dirname "$SCRIPT_DIR")"
 CLAUDE_HOME="${HOME}/.claude"
 GLOBAL_SKILLS_DIR="${CLAUDE_HOME}/skills"
 
-echo "=== nim_duilib AI toolchain register ==="
-echo "nim_duilib path: ${DUILIB_ROOT}"
+echo "=== dui AI toolchain register ==="
+echo "dui path: ${DUI_ROOT}"
 echo ""
 
 # Validate
-if [ ! -f "${DUILIB_ROOT}/duilib/duilib.h" ]; then
-    echo "Error: nim_duilib project not detected. Run this from nim_duilib root."
+if [ ! -f "${DUI_ROOT}/include/dui/dui.h" ]; then
+    echo "Error: dui project not detected. Run this from dui root."
     exit 1
 fi
 
 # ============================================================
-# Step 1: Register all nim-duilib-* skills as global skills
+# Step 1: Register all dui-* skills as global skills
 # ============================================================
 echo "[1/2] Registering global skills..."
 
-for skill_file in "${SCRIPT_DIR}/skills"/nim-duilib-*.md; do
+for skill_file in "${SCRIPT_DIR}/skills"/dui-*.md; do
     [ -f "$skill_file" ] || continue
     skill_name="$(basename "$skill_file" .md)"
     target_dir="${GLOBAL_SKILLS_DIR}/${skill_name}"
@@ -44,41 +44,41 @@ mkdir -p "$NIM_INIT_DIR"
 cat > "${NIM_INIT_DIR}/SKILL.md" << SKILLEOF
 ---
 name: nim-init
-description: "Initialize nim_duilib AI dev toolkit for current project (copy LLM docs + update CLAUDE.md). Global skills are already available - this command sets up project-specific config."
+description: "Initialize dui AI dev toolkit for current project (copy LLM docs + update CLAUDE.md). Global skills are already available - this command sets up project-specific config."
 user-invocable: true
 disable-model-invocation: true
 ---
 
-# nim_duilib AI Toolkit - Project Init
+# dui AI Toolkit - Project Init
 
 When the user invokes /nim-init, follow these steps:
 
 ## Config
-- nim_duilib install path: \`${DUILIB_ROOT}\`
-- Source docs: \`${DUILIB_ROOT}/.claude/docs/\`
+- dui install path: \`${DUI_ROOT}\`
+- Source docs: \`${DUI_ROOT}/.claude/docs/\`
 
 ## Step 1: Copy LLM reference doc
 Run this bash command to copy the reference doc to the current project:
 \`\`\`bash
 mkdir -p .claude/docs
-cp "${DUILIB_ROOT}/.claude/docs/nim-duilib-llm-reference.md" .claude/docs/
+cp "${DUI_ROOT}/.claude/docs/dui-llm-reference.md" .claude/docs/
 \`\`\`
 
 ## Step 2: Update CLAUDE.md
-Check if the current project's CLAUDE.md already contains "nim_duilib UI". If not, append the following block (create CLAUDE.md if it doesn't exist):
+Check if the current project's CLAUDE.md already contains "dui UI". If not, append the following block (create CLAUDE.md if it doesn't exist):
 
 \`\`\`markdown
 
-## nim_duilib UI
+## dui UI
 
-This project uses [nim_duilib](https://github.com/rhett-lee/nim_duilib) as the UI framework.
-Library path: \`${DUILIB_ROOT}\`
+This project uses [dui](https://github.com/steveriemannx/dui) as the UI framework.
+Library path: \`${DUI_ROOT}\`
 
-- LLM reference: \`.claude/docs/nim-duilib-llm-reference.md\`
+- LLM reference: \`.claude/docs/dui-llm-reference.md\`
 - XML layouts: \`bin/resources/themes/default/<skin_folder>/\`
 - Global resources (fonts/colors/styles): \`bin/resources/themes/default/global.xml\`
-- nim_duilib docs: \`${DUILIB_ROOT}/docs/\`
-- nim_duilib examples: \`${DUILIB_ROOT}/examples/\`
+- dui docs: \`${DUI_ROOT}/docs/\`
+- dui examples: \`${DUI_ROOT}/examples/\`
 
 ### Resource rules (IMPORTANT)
 - MUST copy: \`global.xml\` + \`public/\` (shared icons) + your app's own skin directory
@@ -95,13 +95,13 @@ Library path: \`${DUILIB_ROOT}\`
 \`\`\`
 
 ## Step 3: Report
-Tell the user initialization is complete. Note that nim_duilib skills are already globally available (no per-project copy needed):
-- nim-duilib-create-window - Create new window
-- nim-duilib-xml-layout - Design XML layout
-- nim-duilib-add-control - Add controls
-- nim-duilib-event-handler - Event handlers
-- nim-duilib-theme - Theme customization
-- nim-duilib-resource-pack - Resource packaging / single EXE
+Tell the user initialization is complete. Note that dui skills are already globally available (no per-project copy needed):
+- dui-create-window - Create new window
+- dui-xml-layout - Design XML layout
+- dui-add-control - Add controls
+- dui-event-handler - Event handlers
+- dui-theme - Theme customization
+- dui-resource-pack - Resource packaging / single EXE
 SKILLEOF
 
 # ============================================================
@@ -112,7 +112,7 @@ echo "=== Register complete ==="
 echo ""
 echo "Registered:"
 echo "  /nim-init               - project initialization command"
-for skill_file in "${SCRIPT_DIR}/skills"/nim-duilib-*.md; do
+for skill_file in "${SCRIPT_DIR}/skills"/dui-*.md; do
     [ -f "$skill_file" ] || continue
     echo "  /$(basename "$skill_file" .md)  - global skill"
 done

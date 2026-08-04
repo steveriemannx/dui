@@ -1,8 +1,8 @@
-#include "duilib/Utils/Clipboard.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Utils/Clipboard.h"
+#include "dui/Utils/StringConvert.h"
 
-#if defined(DUILIB_BUILD_FOR_SDL) || defined(DUILIB_BUILD_FOR_WAYLAND)
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
+#if defined(DUI_BUILD_FOR_SDL)
 #include <SDL3/SDL.h>
 #endif
 
@@ -19,7 +19,7 @@ bool Clipboard::GetClipboardText(DStringW& text)
 bool Clipboard::GetClipboardText(DStringA& text)
 {
     text.clear();
-    #if defined(DUILIB_BUILD_FOR_SDL)
+    #if defined(DUI_BUILD_FOR_SDL)
     if (SDL_HasClipboardText()) {
         char* szTemp = SDL_GetClipboardText();
         if (szTemp != nullptr) {
@@ -39,7 +39,7 @@ bool Clipboard::SetClipboardText(const DStringW& text)
 
 bool Clipboard::SetClipboardText(const DStringA& text)
 {
-    #if defined(DUILIB_BUILD_FOR_SDL)
+    #if defined(DUI_BUILD_FOR_SDL)
     return SDL_SetClipboardText(text.c_str());
 #else
     (void)text;
@@ -49,4 +49,4 @@ bool Clipboard::SetClipboardText(const DStringA& text)
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL

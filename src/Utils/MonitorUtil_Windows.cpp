@@ -1,10 +1,10 @@
-#include "duilib/Utils/MonitorUtil.h"
-#include "duilib/Core/WindowBase.h"
-#include "duilib/Core/DpiManager.h"
+#include "dui/Utils/MonitorUtil.h"
+#include "dui/Core/WindowBase.h"
+#include "dui/Core/DpiManager.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
-#include "duilib/Utils/ApiWrapper_Windows.h"
-#include "duilib/duilib_config_windows.h"
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#include "dui/Utils/ApiWrapper_Windows.h"
+#include "dui/dui_config_windows.h"
 #include <VersionHelpers.h>
 
 namespace ui
@@ -98,4 +98,4 @@ float MonitorUtil::GetPrimaryMonitorDisplayScale()
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

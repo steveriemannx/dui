@@ -1,9 +1,9 @@
-#include "duilib/CEFControl/internal/CefClientApp.h"
+#include "dui/CEFControl/internal/CefClientApp.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/CEFControl/CefManager.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/CEFControl/CefManager.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {
@@ -93,4 +93,4 @@ CefRefPtr<CefRequestContextHandler> CefClientApp::GetDefaultRequestContextHandle
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

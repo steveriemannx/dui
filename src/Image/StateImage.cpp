@@ -1,9 +1,9 @@
-#include "duilib/Image/StateImage.h"
-#include "duilib/Image/Image.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Animation/AnimationManager.h"
+#include "dui/Image/StateImage.h"
+#include "dui/Image/Image.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
+#include "dui/Animation/AnimationManager.h"
 
 namespace ui 
 {

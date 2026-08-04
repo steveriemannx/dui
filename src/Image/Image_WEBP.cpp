@@ -1,7 +1,7 @@
-#include "duilib/Image/Image_WEBP.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Utils/FileUtil.h"
+#include "dui/Image/Image_WEBP.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
+#include "dui/Utils/FileUtil.h"
 
 #include "third_party/libwebp/src/webp/decode.h"
 #include "third_party/libwebp/src/webp/demux.h"
@@ -197,7 +197,7 @@ bool Image_WEBP::LoadImageFile(std::vector<uint8_t>& fileData,
 
     WebPAnimDecoderOptions dec_options;
     WebPAnimDecoderOptionsInit(&dec_options);
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Data format: BGRA on Windows (premultiplied), RGBA on other platforms (premultiplied)
     dec_options.color_mode = MODE_bgrA;
 #else

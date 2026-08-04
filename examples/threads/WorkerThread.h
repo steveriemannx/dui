@@ -2,8 +2,8 @@
 #ifndef EXAMPLES_WORKDER_THREAD_H_
 #define EXAMPLES_WORKDER_THREAD_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 class MainForm;
 

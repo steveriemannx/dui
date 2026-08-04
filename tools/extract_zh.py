@@ -26,7 +26,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # dirs to scan
 XML_DIRS = [os.path.join(ROOT, 'bin/resources/themes/default')]
-CODE_DIRS = [os.path.join(ROOT, 'duilib'), os.path.join(ROOT, 'examples'),
+CODE_DIRS = [os.path.join(ROOT, 'src'), os.path.join(ROOT, 'examples'),
              os.path.join(ROOT, 'cmake'), os.path.join(ROOT, 'build')]
 
 # files/dirs to skip entirely

@@ -1,9 +1,9 @@
-#include "duilib/Core/ClickThrough.h"
+#include "dui/Core/ClickThrough.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
 
 namespace ui
 {
@@ -50,4 +50,4 @@ bool ClickThrough::ClickThroughWindow(Window* pWindow, const UiPoint& ptMouse)
 
 }//namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

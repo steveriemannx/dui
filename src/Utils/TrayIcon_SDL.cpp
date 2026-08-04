@@ -1,14 +1,14 @@
-#include "duilib/Utils/TrayIcon.h"
-#include "duilib/Core/Window.h"
+#include "dui/Utils/TrayIcon.h"
+#include "dui/Core/Window.h"
 
-#if defined(DUILIB_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_SDL)
 #include <SDL3/SDL.h>
 #endif
 
 namespace ui
 {
 
-#if defined(DUILIB_BUILD_FOR_SDL) || defined(DUILIB_BUILD_FOR_WAYLAND)
+#if defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
 
 class TrayIconImpl : public TrayIcon
 {
@@ -35,7 +35,7 @@ std::unique_ptr<TrayIcon> TrayIcon::Create(const Window* pWindow, const DString&
     return std::make_unique<TrayIconImpl>(pWindow);
 }
 
-#endif // DUILIB_BUILD_FOR_SDL || DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_SDL || DUI_BUILD_FOR_WAYLAND
 
 } // namespace ui
 

@@ -1,9 +1,9 @@
-#include "duilib/Control/Combo.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Keyboard.h"
-#include "duilib/Box/ListBox.h"
-#include "duilib/Box/HBox.h"
-#include "duilib/Core/WindowCreateParam.h"
+#include "dui/Control/Combo.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Keyboard.h"
+#include "dui/Box/ListBox.h"
+#include "dui/Box/HBox.h"
+#include "dui/Core/WindowCreateParam.h"
 
 namespace ui
 {
@@ -72,7 +72,7 @@ void CComboWnd::InitComboWnd(Combo* pOwner, bool bActivated)
     WindowCreateParam createWndParam;
     createWndParam.m_dwStyle = kWS_POPUP;
     createWndParam.m_dwExStyle = kWS_EX_LAYERED;
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
     createWndParam.m_dwExStyle |= kWS_EX_NOACTIVATE;
 #endif
     createWndParam.m_nX = rcWnd.left;

@@ -1,5 +1,5 @@
-#include "duilib/Control/RichEditData.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/Control/RichEditData.h"
+#include "dui/Utils/PerformanceUtil.h"
 #include <unordered_set>
 
 namespace ui

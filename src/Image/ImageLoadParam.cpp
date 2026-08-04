@@ -1,8 +1,8 @@
-#include "duilib/Image/ImageLoadParam.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/FilePath.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Image/ImageLoadParam.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/FilePath.h"
+#include "dui/Utils/FilePathUtil.h"
 
 namespace ui 
 {

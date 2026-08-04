@@ -1,14 +1,14 @@
-#include "duilib/Core/NativeWindow_Windows.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/FileUtil.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Core/NativeWindow_Windows.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/FileUtil.h"
+#include "dui/Core/GlobalManager.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Utils/ApiWrapper_Windows.h"
-#include "duilib/Utils/InlineHook_Windows.h"
-#include "duilib/Core/WindowDropTarget_Windows.h"
-#include "duilib/Core/ControlDropTargetImpl_Windows.h"
+#include "dui/Utils/ApiWrapper_Windows.h"
+#include "dui/Utils/InlineHook_Windows.h"
+#include "dui/Core/WindowDropTarget_Windows.h"
+#include "dui/Core/ControlDropTargetImpl_Windows.h"
 
 #include <CommCtrl.h>
 #include <Olectl.h>
@@ -182,7 +182,7 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
 }
 
 //Allow text input in the DoModal interface
-#ifdef DUILIB_ENABLE_INLINE_HOOK
+#ifdef DUI_ENABLE_INLINE_HOOK
 
 /** The singleton object of the Hook function
 */
@@ -209,7 +209,7 @@ typedef BOOL(WINAPI* PfnIsDialogMessage)(_In_ HWND hDlg, _In_ LPMSG lpMsg);
 
 /** The replaced function
 */
-static BOOL WINAPI IsDialogMessageDuiLib(_In_ HWND hDlg, _In_ LPMSG lpMsg)
+static BOOL WINAPI IsDialogMessageDui(_In_ HWND hDlg, _In_ LPMSG lpMsg)
 {
     // Call the original function (via the trampoline)
     BOOL bRet = FALSE;
@@ -233,7 +233,7 @@ static BOOL WINAPI IsDialogMessageDuiLib(_In_ HWND hDlg, _In_ LPMSG lpMsg)
     return bRet;
 }
 
-#endif //DUILIB_ENABLE_INLINE_HOOK
+#endif //DUI_ENABLE_INLINE_HOOK
 
 int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
                                       const WindowCreateParam& createParam,
@@ -318,7 +318,7 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
     //Mark as the modal dialog state
     m_bDoModal = true;
 
-#ifdef DUILIB_ENABLE_INLINE_HOOK
+#ifdef DUI_ENABLE_INLINE_HOOK
     //Handle IsDialogMessage to support text input in RichEdit controls
     {
         FARPROC targetFunc = nullptr;
@@ -331,11 +331,11 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
 #endif
         }
         if (targetFunc != nullptr) {
-            HookIsDialogMessage::Instance().Install((void*)targetFunc, (void*)IsDialogMessageDuiLib);
+            HookIsDialogMessage::Instance().Install((void*)targetFunc, (void*)IsDialogMessageDui);
         }
-        HookIsDialogMessage::Instance().Install((void*)::IsDialogMessage, (void*)IsDialogMessageDuiLib);
+        HookIsDialogMessage::Instance().Install((void*)::IsDialogMessage, (void*)IsDialogMessageDui);
     }
-#endif //DUILIB_ENABLE_INLINE_HOOK
+#endif //DUI_ENABLE_INLINE_HOOK
 
     //Show the modal dialog
     INT_PTR nRet = ::DialogBoxIndirectParam(GetResModuleHandle(), (LPDLGTEMPLATE)lpDialogTemplate, hParentWnd, NativeWindow_Windows::__DialogProc, (LPARAM)this);
@@ -346,7 +346,7 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
         nRet = m_closeParam;
     }
 
-#ifdef DUILIB_ENABLE_INLINE_HOOK
+#ifdef DUI_ENABLE_INLINE_HOOK
     HookIsDialogMessage::Instance().Uninstall();
 #endif
 
@@ -1342,7 +1342,7 @@ bool NativeWindow_Windows::SetWindowIcon(const std::vector<uint8_t>& iconFileDat
 void NativeWindow_Windows::SetText(const DString& strText)
 {
     ASSERT(::IsWindow(m_hWnd));
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     ::SetWindowText(m_hWnd, strText.c_str());
 #else
     //strText is UTF-8 encoded
@@ -1867,8 +1867,8 @@ bool NativeWindow_Windows::UnregisterHotKey(int32_t id)
 
 /** The property name of the window handle
 */
-static const DStringW::value_type* sPropName  = L"DuiLibWindow";     // Property name (for pointer validation)
-static const DStringW::value_type* sPropName2 = L"DuiLibWindow2";    // Property name (process ID)
+static const DStringW::value_type* sPropName  = L"DuiWindow";     // Property name (for pointer validation)
+static const DStringW::value_type* sPropName2 = L"DuiWindow2";    // Property name (process ID)
 
 LRESULT CALLBACK NativeWindow_Windows::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -2162,11 +2162,11 @@ INativeWindow* NativeWindow_Windows::WindowBaseFromPoint(const UiPoint& pt, bool
             pWindow = reinterpret_cast<NativeWindow_Windows*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
             if (pWindow != nullptr) {
                 if (::GetPropW(hWnd, sPropName2) != (HANDLE)(size_t)::GetCurrentProcessId()) {
-                    //Validation failed: not a duilib window
+                    //Validation failed: not a dui window
                     pWindow = nullptr;
                 }
                 else if ((NativeWindow_Windows*)::GetPropW(hWnd, sPropName) != pWindow) {
-                    //Validation failed: not a duilib window
+                    //Validation failed: not a dui window
                     pWindow = nullptr;
                 }
                 else if (pWindow->m_hWnd != hWnd) {
@@ -3334,4 +3334,4 @@ HRESULT NativeWindow_Windows::OnDrop(IDataObject* pDataObj, DWORD grfKeyState, P
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

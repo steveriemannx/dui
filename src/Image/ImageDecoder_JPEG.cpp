@@ -1,10 +1,10 @@
-#include "duilib/Image/ImageDecoder_JPEG.h"
-#include "duilib/Image/Image_JPEG.h"
-#include "duilib/Image/Image_Bitmap.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Image/ImageDecoder_JPEG.h"
+#include "dui/Image/Image_JPEG.h"
+#include "dui/Image/Image_Bitmap.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/StringUtil.h"
 
-#ifdef DUILIB_IMAGE_SUPPORT_JPEG_TURBO
+#ifdef DUI_IMAGE_SUPPORT_JPEG_TURBO
 
 namespace ui
 {
@@ -80,4 +80,4 @@ std::unique_ptr<IImage> ImageDecoder_JPEG::LoadImageData(const ImageDecodeParam&
 
 } //namespace ui
 
-#endif //DUILIB_IMAGE_SUPPORT_JPEG_TURBO
+#endif //DUI_IMAGE_SUPPORT_JPEG_TURBO

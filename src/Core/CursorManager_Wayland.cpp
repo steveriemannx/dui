@@ -1,12 +1,12 @@
-#include "duilib/Core/CursorManager.h"
+#include "dui/Core/CursorManager.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/FileUtil.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/FileUtil.h"
 #include <map>
 
 namespace ui
@@ -78,4 +78,4 @@ bool CursorManager::SetCursorByID(CursorID cursorId)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

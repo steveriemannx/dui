@@ -1,8 +1,8 @@
-#include "duilib/Core/ToolTip.h"
-#include "duilib/Core/WindowBase.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Core/ToolTip.h"
+#include "dui/Core/WindowBase.h"
+#include "dui/Utils/StringConvert.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #include <CommCtrl.h>
 
@@ -110,7 +110,7 @@ void ToolTip::TImpl::ShowToolTip(const WindowBase* pParentWnd,
     }
     // If the length is exceeded, truncate it
     DStringW newText;
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     newText = text;    
 #else
     // text is in UTF8 encoding
@@ -226,4 +226,4 @@ void ToolTip::DestroyToolTip()
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

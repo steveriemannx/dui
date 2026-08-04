@@ -1,13 +1,13 @@
-#include "duilib/CEFControl/internal/CefClientApp.h"
+#include "dui/CEFControl/internal/CefClientApp.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/CEFControl/CefManager.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/CEFControl/CefManager.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
 
-#if defined (DUILIB_BUILD_FOR_LINUX) && defined (DUILIB_BUILD_FOR_SDL)
-    #include "duilib/Core/MessageLoop_SDL.h"
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Core/MessageLoop_SDL.h"
 #endif
 
 #pragma warning (push)
@@ -18,14 +18,14 @@
 #include "include/cef_v8.h"
 #pragma warning (pop)
 
-#if defined (DUILIB_BUILD_FOR_LINUX) && defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_SDL)
     #include <cstdlib> // for getenv
 #endif
 
 namespace ui
 {
 
-#if defined (DUILIB_BUILD_FOR_LINUX) && defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_SDL)
     static bool IsWaylandEnvironment()
     {
         // The following environment variables are usually set in a Wayland environment
@@ -53,7 +53,7 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
         command_line->AppendSwitch("disable-gpu");
         command_line->AppendSwitch("disable-gpu-compositing");
 
-#if defined (DUILIB_BUILD_FOR_LINUX) && defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_SDL)
         // Disable the GPU sandbox; when this option is enabled, the GPU process cannot start properly on the Linux platform
         command_line->AppendSwitch("disable-gpu-sandbox");
 
@@ -80,7 +80,7 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
             }
         }
 
-#endif //DUILIB_BUILD_FOR_LINUX && DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_LINUX && DUI_BUILD_FOR_SDL
 
         // Enable off-screen rendering
         if (CefManager::GetInstance()->IsEnableOffScreenRendering()) {
@@ -122,4 +122,4 @@ CefRefPtr<CefRenderProcessHandler> CefClientApp::GetRenderProcessHandler()
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

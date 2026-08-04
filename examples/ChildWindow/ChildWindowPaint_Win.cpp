@@ -1,6 +1,6 @@
 #include "ChildWindowPaint.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #include <stdlib.h>
 #include <time.h>

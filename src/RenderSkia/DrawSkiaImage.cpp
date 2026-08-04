@@ -1,6 +1,6 @@
-#include "duilib/RenderSkia/DrawSkiaImage.h"
+#include "dui/RenderSkia/DrawSkiaImage.h"
 
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/Utils/PerformanceUtil.h"
 
 #pragma warning (push)
 #pragma warning (disable: 4505)
@@ -8,27 +8,27 @@
     #include "third_party/stb_image/stb_image_resize2.h"
 #pragma warning (pop)
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "include/core/SkBitmap.h"
 #include "include/core/SkImageInfo.h"
 #include "include/core/SkData.h"
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
-//Define the DUILIB_HAVE_OPENCV macro to enable OpenCV; using OpenCV for image scaling is the fastest
+//Define the DUI_HAVE_OPENCV macro to enable OpenCV; using OpenCV for image scaling is the fastest
 //If enabled, the following steps are required:
-//1. In the duilib project, add the root of the OpenCV library installation path to the include directory of the VC project
+//1. In the dui project, add the root of the OpenCV library installation path to the include directory of the VC project
 //2. In the executable project, the following libs need to be added when linking: opencv_core4110.lib;opencv_imgproc4110.lib (these are the libs of OpenCV 4.11; other versions have different lib names)
 
-//#define DUILIB_HAVE_OPENCV 1
+//#define DUI_HAVE_OPENCV 1
 
-#ifdef DUILIB_HAVE_OPENCV
+#ifdef DUI_HAVE_OPENCV
     #pragma warning (push)
     #pragma warning (disable: 4127)
         #include "opencv2/opencv.hpp"
     #pragma warning (pop)
 #endif
 
-//#ifdef DUILIB_HAVE_OPENCV
+//#ifdef DUI_HAVE_OPENCV
 //    #ifdef _DEBUG
 //        #pragma comment (lib, "opencv_core4110d.lib")
 //        #pragma comment (lib, "opencv_imgproc4110d.lib")
@@ -41,7 +41,7 @@
 namespace ui 
 {
 
-#ifdef DUILIB_HAVE_OPENCV
+#ifdef DUI_HAVE_OPENCV
 //OpenCV
 
 // Direct memory mapping (zero copy)
@@ -186,7 +186,7 @@ void DrawSkiaImage::DrawImage(SkCanvas* pSkCanvas,
     SkIRect rcSkSrcI = { rcSrc.left, rcSrc.top, rcSrc.right, rcSrc.bottom };
     SkRect rcSkSrc = SkRect::Make(rcSkSrcI);
 
-#ifdef DUILIB_HAVE_OPENCV
+#ifdef DUI_HAVE_OPENCV
     sk_sp<SkImage> skNewImage;
     if (ResizeSkiaImageByOpenCV(skSrcImage, rcSrc, rcDest, skNewImage)) {
         PerformanceStat statPerformance(_T("Render_Skia::DrawSkiaImage::DrawImage drawImageRect(OpenCV)"));

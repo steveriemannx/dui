@@ -1,9 +1,9 @@
-#include "duilib/Core/DpiAwareness.h"
+#include "dui/Core/DpiAwareness.h"
 
 //Windows platform only
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
 
-#include "duilib/Utils/ApiWrapper_Windows.h"
+#include "dui/Utils/ApiWrapper_Windows.h"
 #include <VersionHelpers.h>
 
 namespace ui
@@ -179,4 +179,4 @@ DpiAwarenessMode DpiAwareness::GetDpiAwareness() const
 
 }
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

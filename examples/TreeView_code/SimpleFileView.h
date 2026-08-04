@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_SIMPLE_FILE_VIEW_H_
 #define EXAMPLES_SIMPLE_FILE_VIEW_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 #include <unordered_set>
 
 /** File information

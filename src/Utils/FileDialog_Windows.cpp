@@ -1,12 +1,12 @@
-#include "duilib/Utils/FileDialog.h"
+#include "dui/Utils/FileDialog.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/StringConvert.h"
 
-#include "duilib/duilib_config_windows.h"
+#include "dui/dui_config_windows.h"
 #include <shlobj.h>
 
 namespace ui
@@ -278,4 +278,4 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
 
 }//namespace ui
 
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN

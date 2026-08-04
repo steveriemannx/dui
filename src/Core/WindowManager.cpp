@@ -1,7 +1,7 @@
-#include "duilib/Core/WindowManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Core/WindowManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/GlobalManager.h"
 #include <set>
 
 namespace ui 

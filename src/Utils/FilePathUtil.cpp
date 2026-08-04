@@ -1,20 +1,20 @@
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/StringUtil.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/StringUtil.h"
 #include <filesystem>
 
-#ifdef DUILIB_BUILD_FOR_LINUX
+#ifdef DUI_BUILD_FOR_LINUX
     #include <unistd.h>
     #include <limits.h>
 #endif
 
-#ifdef DUILIB_BUILD_FOR_FREEBSD
+#ifdef DUI_BUILD_FOR_FREEBSD
     #include <sys/types.h>
     #include <sys/sysctl.h>
     #include <unistd.h>
 #endif
 
-#ifdef DUILIB_BUILD_FOR_MACOS
+#ifdef DUI_BUILD_FOR_MACOS
     #include <mach-o/dyld.h>
     #include <CoreFoundation/CoreFoundation.h>
 #endif
@@ -31,13 +31,13 @@ FilePath FilePathUtil::JoinFilePath(const FilePath& path1, const FilePath& path2
 
 FilePath FilePathUtil::NormalizeFilePath(const FilePath& filePath)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     DStringW nativePath;
 #else
     DStringA nativePath;
 #endif
     try {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         std::filesystem::path file_path(filePath.ToStringW());
 #else
         std::filesystem::path file_path(filePath.ToStringA());
@@ -51,14 +51,14 @@ FilePath FilePathUtil::NormalizeFilePath(const FilePath& filePath)
 
 DString FilePathUtil::NormalizeFilePath(const DString& filePath)
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows platform
     DStringW nativePath;
     try {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
         std::filesystem::path file_path(filePath);
 #else
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         std::filesystem::path file_path(StringConvert::UTF8ToWString(filePath));
 #else
         std::filesystem::path file_path(filePath);
@@ -68,7 +68,7 @@ DString FilePathUtil::NormalizeFilePath(const DString& filePath)
     }
     catch (...) {
     }
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
     return nativePath;
 #else
     return StringConvert::WStringToUTF8(nativePath);
@@ -118,7 +118,7 @@ bool FilePathUtil::CreateDirectories(const DString& filePath)
 DString FilePathUtil::GetFileExtension(const DString& filePath)
 {
     DString path = filePath;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     size_t pos = filePath.find_last_of(_T("/\\"));
 #else
     size_t pos = filePath.find_last_of(_T("/"));
@@ -138,14 +138,14 @@ DString FilePathUtil::GetFileExtension(const DString& filePath)
 
 FilePath FilePathUtil::GetCurrentModuleDirectory()
 {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     DStringW dirPath;
     dirPath.resize(1024, 0);
     dirPath.resize(::GetModuleFileNameW(nullptr, &dirPath[0], (uint32_t)dirPath.size()));
     FilePath currentDir(dirPath);
     currentDir.RemoveFileName();
     return currentDir;
-#elif defined (DUILIB_BUILD_FOR_LINUX)
+#elif defined (DUI_BUILD_FOR_LINUX)
     std::error_code ec;
     std::filesystem::path exeFullPath = std::filesystem::canonical("/proc/self/exe", ec);
     DString dirPath = exeFullPath.parent_path().native();
@@ -155,7 +155,7 @@ FilePath FilePathUtil::GetCurrentModuleDirectory()
     FilePath filePath(dirPath);
     filePath.NormalizeDirectoryPath();
     return filePath;
-#elif defined (DUILIB_BUILD_FOR_FREEBSD)
+#elif defined (DUI_BUILD_FOR_FREEBSD)
     int mib[4];
     mib[0] = CTL_KERN;
     mib[1] = KERN_PROC;
@@ -193,7 +193,7 @@ FilePath FilePathUtil::GetCurrentModuleDirectory()
     FilePath filePath(dirPath);
     filePath.NormalizeDirectoryPath();
     return filePath;
-#elif defined (DUILIB_BUILD_FOR_MACOS)
+#elif defined (DUI_BUILD_FOR_MACOS)
     std::filesystem::path exeFullPath;
     char path[PATH_MAX];
     uint32_t size = sizeof(path);
@@ -216,7 +216,7 @@ FilePath FilePathUtil::GetCurrentModuleDirectory()
 #endif
 }
 
-#ifdef DUILIB_BUILD_FOR_MACOS
+#ifdef DUI_BUILD_FOR_MACOS
 FilePath FilePathUtil::GetBundleResourcesPath()
 {
     DString dirPath;

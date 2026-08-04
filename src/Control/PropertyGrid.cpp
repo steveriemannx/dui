@@ -1,9 +1,9 @@
-#include "duilib/Control/PropertyGrid.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Control/ColorPicker.h"
-#include "duilib/Control/ColorPickerRegular.h"
-#include "duilib/Core/WindowCreateParam.h"
+#include "dui/Control/PropertyGrid.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
+#include "dui/Control/ColorPicker.h"
+#include "dui/Control/ColorPickerRegular.h"
+#include "dui/Core/WindowCreateParam.h"
 
 namespace ui
 {
@@ -100,10 +100,10 @@ void PropertyGrid::OnInit()
         m_configXml = _T("public/property_grid/property_grid.xml");
     }
     ui::GlobalManager::Instance().FillBoxWithCache(this, FilePath(m_configXml.c_str()));
-    m_pHeaderCtrl = FindSubControl(_T("duilib_property_grid_header"));
-    m_pHeaderLeft = dynamic_cast<Label*>(FindSubControl(_T("duilib_property_grid_header_left")));
-    m_pHeaderRight = dynamic_cast<Label*>(FindSubControl(_T("duilib_property_grid_header_right")));
-    m_pHeaderSplit = dynamic_cast<Split*>(FindSubControl(_T("duilib_property_grid_header_split")));
+    m_pHeaderCtrl = FindSubControl(_T("dui_property_grid_header"));
+    m_pHeaderLeft = dynamic_cast<Label*>(FindSubControl(_T("dui_property_grid_header_left")));
+    m_pHeaderRight = dynamic_cast<Label*>(FindSubControl(_T("dui_property_grid_header_right")));
+    m_pHeaderSplit = dynamic_cast<Split*>(FindSubControl(_T("dui_property_grid_header_split")));
     if (m_pHeaderCtrl != nullptr) {
         ASSERT(m_pHeaderLeft != nullptr);
         ASSERT(m_pHeaderRight != nullptr);
@@ -114,11 +114,11 @@ void PropertyGrid::OnInit()
         m_bHeaderCtrl = false;
     }
 
-    m_pDescriptionArea = dynamic_cast<RichText*>(FindSubControl(_T("duilib_property_grid_description_area")));
+    m_pDescriptionArea = dynamic_cast<RichText*>(FindSubControl(_T("dui_property_grid_description_area")));
     m_bDescriptionArea = m_pDescriptionArea != nullptr;
-    m_pDescriptionAreaSplit = dynamic_cast<Split*>(FindSubControl(_T("duilib_property_grid_description_area_split")));
+    m_pDescriptionAreaSplit = dynamic_cast<Split*>(FindSubControl(_T("dui_property_grid_description_area_split")));
 
-    m_pTreeView = dynamic_cast<TreeView*>(FindSubControl(_T("duilib_property_grid_tree")));
+    m_pTreeView = dynamic_cast<TreeView*>(FindSubControl(_T("dui_property_grid_tree")));
     ASSERT(m_pTreeView != nullptr);
 
     //Attach the drag response event to adjust the column width

@@ -1,6 +1,6 @@
-#include "duilib/Animation/AnimationPlayer.h"
-#include "duilib/Animation/EasingFunctions.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Animation/AnimationPlayer.h"
+#include "dui/Animation/EasingFunctions.h"
+#include "dui/Core/GlobalManager.h"
 
 #define AP_NO_VALUE -1
 

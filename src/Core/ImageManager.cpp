@@ -1,16 +1,16 @@
-#include "duilib/Core/ImageManager.h"
-#include "duilib/Image/Image.h"
-#include "duilib/Image/ImageLoadParam.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/DpiManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Control.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/FileUtil.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Core/ImageManager.h"
+#include "dui/Image/Image.h"
+#include "dui/Image/ImageLoadParam.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/DpiManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Control.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/FileUtil.h"
+#include "dui/Utils/FilePathUtil.h"
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //#define OUTPUT_IMAGE_LOG 1
 #endif
 
@@ -170,7 +170,7 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
         //Load the image
         std::unique_ptr<IImage> pImageData = ImageDecoders.LoadImageData(decodeParam);
         bool bEnableAssert = true;
-#ifndef DUILIB_IMAGE_SUPPORT_LIB_PAG        
+#ifndef DUI_IMAGE_SUPPORT_LIB_PAG        
         if (pImageData == nullptr) {
             DString fileExt = FilePathUtil::GetFileExtension(decodeParam.m_imageFilePath.ToString());
             StringUtil::MakeUpperString(fileExt);

@@ -1,7 +1,7 @@
 #ifndef EXAMPLES_CODEUI_THEME_INIT_H_
 #define EXAMPLES_CODEUI_THEME_INIT_H_
 
-#include "duilib/duilib.h"
+#include "dui/dui.h"
 
 /** Compile-time theme initialization - no XML parsing at runtime.
  *  Registers the same colors, fonts, and classes as global.xml.

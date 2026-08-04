@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Top-level CMake management (following the develop2 branch pattern):
-#   cmake -S . -B build      # configure the whole repository at once (duilib + third-party libraries + all examples)
+#   cmake -S . -B build      # configure the whole repository at once (dui + third-party libraries + all examples)
 #   cmake --build build      # build everything at once (--target <name> builds only one example)
 # Standalone per-example builds are also kept (each example directory is an independent CMake project; see scripts/*.sh --standalone)
-project(nim_duilib)
+project(dui)
 
 # Default to Release when no build type is explicitly specified (e.g. mkdir build && cd build && cmake .. && make)
 # Note: with an empty build type there is no optimization, and some inline symbols won't be inlined, causing link failures
@@ -13,8 +13,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Dependency management (Skia/SDL3 submodule build targets + CEF download) must be in place
-# BEFORE src/CMakeLists.txt, which compiles Skia's tools/window sources into the duilib library.
-include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/duilib_common.cmake")
+# BEFORE src/CMakeLists.txt, which compiles Skia's tools/window sources into the dui library.
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/dui_common.cmake")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

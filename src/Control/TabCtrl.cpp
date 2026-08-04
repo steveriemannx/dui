@@ -1,5 +1,5 @@
-#include "duilib/Control/TabCtrl.h"
-#include "duilib/Box/TabBox.h"
+#include "dui/Control/TabCtrl.h"
+#include "dui/Box/TabBox.h"
 
 namespace ui
 {

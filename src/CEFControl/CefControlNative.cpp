@@ -1,12 +1,12 @@
-#include "duilib/CEFControl/CefControlNative.h"
+#include "dui/CEFControl/CefControlNative.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/CEFControl/CefWindowUtils.h"
-#include "duilib/CEFControl/internal/CefBrowserHandler.h"
+#include "dui/CEFControl/CefWindowUtils.h"
+#include "dui/CEFControl/internal/CefBrowserHandler.h"
 
-#include "duilib/Core/Box.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Core/Box.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui {
 
@@ -31,7 +31,7 @@ void CefControlNative::Init()
 {
     GlobalManager::Instance().AssertUIThread();
     if (m_pBrowserHandler.get() == nullptr) {
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         //Check whether the control is being created in a layered window
         HWND hWnd = GetWindow()->NativeWnd()->GetHWND();
         LONG style = ::GetWindowLong(hWnd, GWL_STYLE);
@@ -94,17 +94,17 @@ void CefControlNative::ReCreateBrowser()
     UiRect rc = GetRect();
     Dpi().ClientSizeToWindowSize(rc);
     CefRect rect = { rc.left, rc.top, rc.right, rc.bottom};
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
     //Windows
     window_info.SetAsChild(pWindow->NativeWnd()->GetHWND(), rect);
-#elif defined (DUILIB_BUILD_FOR_LINUX) || defined (DUILIB_BUILD_FOR_FREEBSD)
+#elif defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)
     //Linux
     CefWindowHandle hParenWindow = (CefWindowHandle)pWindow->NativeWnd()->GetX11WindowNumber();
     if (pWindow->NativeWnd()->IsVideoDriverWayland()) {
         hParenWindow = (CefWindowHandle)pWindow->NativeWnd()->GetWaylandDisplayPointer();
     }
     window_info.SetAsChild(hParenWindow, rect);
-#elif defined DUILIB_BUILD_FOR_MACOS
+#elif defined DUI_BUILD_FOR_MACOS
     //MacOS
     window_info.SetAsChild(pWindow->NativeWnd()->GetNSView(), rect);
 #endif
@@ -249,4 +249,4 @@ bool CefControlNative::IsCefNative() const
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

@@ -1,7 +1,7 @@
-#include "duilib/Control/HotKey.h"
-#include "duilib/Control/RichEdit.h"
-#include "duilib/Control/Label.h"
-#include "duilib/Core/Keyboard.h"
+#include "dui/Control/HotKey.h"
+#include "dui/Control/RichEdit.h"
+#include "dui/Control/Label.h"
+#include "dui/Core/Keyboard.h"
 
 namespace ui
 {

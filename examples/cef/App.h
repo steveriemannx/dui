@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_APP_H_
 #define EXAMPLES_APP_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 /** Application entry point (defined in main.cpp).
  *  Declared in a header so that the macOS entry point (main_macos.mm,

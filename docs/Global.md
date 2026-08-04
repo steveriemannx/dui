@@ -27,7 +27,7 @@ The id attribute of the Font tag defines a font ID, which represents a set of fo
 ```xml
 <Button text="Hello Button" font="system_12"/>
 ```
-When the UI is displayed, the duilib UI library draws the button's text using the font attributes identified by the font ID "system_12" (font name: system default font; font size: 12; bold: yes; italic: yes).
+When the UI is displayed, the dui UI library draws the button's text using the font attributes identified by the font ID "system_12" (font name: system default font; font size: 12; bold: yes; italic: yes).
 
 ### All available attributes of Font
 
@@ -105,7 +105,7 @@ Then, when you need to use this color to set the text color of a Label, you can 
 A valid color value is defined as follows:
 1. In the form "#FFFFFFFF": starts with "#" and consists of 8 hexadecimal characters, an ARGB-format color value (from left to right: the 1st and 2nd characters represent A (alpha), the 3rd and 4th represent R (red), the 5th and 6th represent G (green), and the 7th and 8th represent B (blue));
 2. In the form "#FFFFFF": starts with "#" and consists of 6 hexadecimal characters, an RGB-format color value (from left to right: the 1st and 2nd characters represent R (red), the 3rd and 4th represent G (green), and the 5th and 6th represent B (blue)). Colors in this format contain no alpha channel and are treated as opaque;
-3. Directly specify a predefined color alias: for example, "Blue" means blue, "Aqua" means light green, etc. These color aliases are defined in [src/Core/UiColors.cpp](../src/Core/UiColors.cpp), and the color values are defined in [include/duilib/Core/UiColors.h](../include/duilib/Core/UiColors.h). These color aliases can be used directly without defining colors in `global.xml`.    
+3. Directly specify a predefined color alias: for example, "Blue" means blue, "Aqua" means light green, etc. These color aliases are defined in [src/Core/UiColors.cpp](../src/Core/UiColors.cpp), and the color values are defined in [include/dui/Core/UiColors.h](../include/dui/Core/UiColors.h). These color aliases can be used directly without defining colors in `global.xml`.    
 For example, all of the following XML configurations are valid:
 ```xml
 <Label text="Hello Label" normal_text_color="Aqua"/>
@@ -245,17 +245,17 @@ When defining a common style, if an attribute value is enclosed in double quotes
 
 | Class Name | Associated Header File| Purpose |
 | :--- | :--- | :--- |
-| GlobalManager | [include/duilib/Core/GlobalManager.h](../include/duilib/Core/GlobalManager.h) | Global attribute management utility class, used to manage various global attributes, including global styles (global.xml) and language settings |
-| IRenderFactory | [include/duilib/Render/IRender.h](../include/duilib/Render/IRender.h) | Management class of the rendering interface, used to create rendering implementation objects such as Font, Pen, Brush, Path, Matrix, Bitmap and Render |
-| FontManager | [include/duilib/Core/FontManager.h](../include/duilib/Core/FontManager.h) | Management class of fonts |
-| ColorManager | [include/duilib/Core/ColorManager.h](../include/duilib/Core/ColorManager.h) | Management class of colors |
-| IconManager | [include/duilib/Core/IconManager.h](../include/duilib/Core/IconManager.h) | HICON handle manager |
-| ZipManager | [include/duilib/Core/ZipManager.h](../include/duilib/Core/ZipManager.h) | ZIP archive manager |
-| DpiManager | [include/duilib/Core/DpiManager.h](../include/duilib/Core/DpiManager.h) | DPI manager, used to support features such as DPI adaptation |
-| TimerManager | [include/duilib/Core/TimerManager.h](../include/duilib/Core/TimerManager.h) | Timer manager |
-| LangManager | [include/duilib/Core/LangManager.h](../include/duilib/Core/LangManager.h) | Multi-language support manager |
-| ImageManager | [include/duilib/Core/ImageManager.h](../include/duilib/Core/ImageManager.h) | Management class of images |
-| ImageDecoderFactory | [include/duilib/Image/ImageDecoderFactory.h](../include/duilib/Image/ImageDecoderFactory.h) | Management class of image decoders, supporting extensible image formats |
-| ThreadManager | [include/duilib/Core/ThreadManager.h](../include/duilib/Core/ThreadManager.h) | Thread manager, used to support inter-thread communication |
-| CursorManager | [include/duilib/Core/CursorManager.h](../include/duilib/Core/CursorManager.h) | Cursor management class |
-| WindowManager | [include/duilib/Core/WindowManager.h](../include/duilib/Core/WindowManager.h) | Window management class |
+| GlobalManager | [include/dui/Core/GlobalManager.h](../include/dui/Core/GlobalManager.h) | Global attribute management utility class, used to manage various global attributes, including global styles (global.xml) and language settings |
+| IRenderFactory | [include/dui/Render/IRender.h](../include/dui/Render/IRender.h) | Management class of the rendering interface, used to create rendering implementation objects such as Font, Pen, Brush, Path, Matrix, Bitmap and Render |
+| FontManager | [include/dui/Core/FontManager.h](../include/dui/Core/FontManager.h) | Management class of fonts |
+| ColorManager | [include/dui/Core/ColorManager.h](../include/dui/Core/ColorManager.h) | Management class of colors |
+| IconManager | [include/dui/Core/IconManager.h](../include/dui/Core/IconManager.h) | HICON handle manager |
+| ZipManager | [include/dui/Core/ZipManager.h](../include/dui/Core/ZipManager.h) | ZIP archive manager |
+| DpiManager | [include/dui/Core/DpiManager.h](../include/dui/Core/DpiManager.h) | DPI manager, used to support features such as DPI adaptation |
+| TimerManager | [include/dui/Core/TimerManager.h](../include/dui/Core/TimerManager.h) | Timer manager |
+| LangManager | [include/dui/Core/LangManager.h](../include/dui/Core/LangManager.h) | Multi-language support manager |
+| ImageManager | [include/dui/Core/ImageManager.h](../include/dui/Core/ImageManager.h) | Management class of images |
+| ImageDecoderFactory | [include/dui/Image/ImageDecoderFactory.h](../include/dui/Image/ImageDecoderFactory.h) | Management class of image decoders, supporting extensible image formats |
+| ThreadManager | [include/dui/Core/ThreadManager.h](../include/dui/Core/ThreadManager.h) | Thread manager, used to support inter-thread communication |
+| CursorManager | [include/dui/Core/CursorManager.h](../include/dui/Core/CursorManager.h) | Cursor management class |
+| WindowManager | [include/dui/Core/WindowManager.h](../include/dui/Core/WindowManager.h) | Window management class |

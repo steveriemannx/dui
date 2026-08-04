@@ -1,4 +1,4 @@
-#include "duilib/RenderSkia/Brush_Skia.h"
+#include "dui/RenderSkia/Brush_Skia.h"
 
 namespace ui {
 

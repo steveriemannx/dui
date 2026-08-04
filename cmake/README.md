@@ -1,26 +1,26 @@
-# nim_duilib CMake Project Configuration
+# dui CMake Project Configuration
 
-This document describes in detail the purpose and usage of the CMake configuration files (`*.cmake`) in the `nim_duilib\cmake` directory, for maintainers' reference.
+This document describes in detail the purpose and usage of the CMake configuration files (`*.cmake`) in the `dui\cmake` directory, for maintainers' reference.
 
 ## Directory Overview
 
 ```
 cmake/
-├── duilib_common.cmake        # Common configuration (OS/compiler/CPU detection, path setup)
-├── duilib_bin.cmake           # Executable base configuration (C++ standard, path setup)
-├── duilib_bin_windows.cmake   # Windows platform-specific configuration
-├── duilib_bin_linux.cmake     # Linux platform-specific configuration
-├── duilib_bin_macos.cmake     # macOS platform-specific configuration
-├── duilib_bin_freebsd.cmake   # FreeBSD platform-specific configuration
-├── duilib_compiles.cmake      # Compile-option detection (AVX/AVX2)
-└── duilib_cef_macos.cmake     # macOS CEF special configuration
+├── dui_common.cmake        # Common configuration (OS/compiler/CPU detection, path setup)
+├── dui_bin.cmake           # Executable base configuration (C++ standard, path setup)
+├── dui_bin_windows.cmake   # Windows platform-specific configuration
+├── dui_bin_linux.cmake     # Linux platform-specific configuration
+├── dui_bin_macos.cmake     # macOS platform-specific configuration
+├── dui_bin_freebsd.cmake   # FreeBSD platform-specific configuration
+├── dui_compiles.cmake      # Compile-option detection (AVX/AVX2)
+└── dui_cef_macos.cmake     # macOS CEF special configuration
 ```
 
 ---
 
 ## Configuration Files in Detail
 
-### 1. duilib_common.cmake (Common Configuration)
+### 1. dui_common.cmake (Common Configuration)
 
 **Purpose:** Defines cross-platform common configuration variables and switches; it is the base configuration file of every CMake project.
 
@@ -28,70 +28,70 @@ cmake/
 
 #### 1.1 OS detection
 ```cmake
-DUILIB_OS_WINDOWS  # Windows system
-DUILIB_OS_LINUX    # Linux system
-DUILIB_OS_MACOS    # macOS system
-DUILIB_OS_FREEBSD  # FreeBSD system
+DUI_OS_WINDOWS  # Windows system
+DUI_OS_LINUX    # Linux system
+DUI_OS_MACOS    # macOS system
+DUI_OS_FREEBSD  # FreeBSD system
 ```
 
 #### 1.2 Compiler detection
 ```cmake
-DUILIB_COMPILER_MSVC    # MSVC compiler
-DUILIB_COMPILER_GCC     # GCC compiler
-DUILIB_COMPILER_LLVM    # Clang/LLVM compiler
-DUILIB_COMPILER_NAME    # Compiler name (e.g. "msvc", "mingw64-gcc", "mingw64-llvm")
+DUI_COMPILER_MSVC    # MSVC compiler
+DUI_COMPILER_GCC     # GCC compiler
+DUI_COMPILER_LLVM    # Clang/LLVM compiler
+DUI_COMPILER_NAME    # Compiler name (e.g. "msvc", "mingw64-gcc", "mingw64-llvm")
 ```
 
 #### 1.3 CPU architecture detection
 ```cmake
-DUILIB_SYSTEM_PROCESSOR  # Processor type: x86, x64, arm32, arm64
-DUILIB_BITS_64           # Whether this is a 64-bit system
+DUI_SYSTEM_PROCESSOR  # Processor type: x86, x64, arm32, arm64
+DUI_BITS_64           # Whether this is a 64-bit system
 ```
 
 #### 1.4 Build type detection
 ```cmake
-DUILIB_BUILD_TYPE        # "debug" or "release"
+DUI_BUILD_TYPE        # "debug" or "release"
 ```
 
 **Main switches:**
 
 | Option | Default | Description |
 |----------|--------|------|
-| `DUILIB_LOG` | OFF | Print duilib debug logs |
-| `DUILIB_SKIA_LIB_SUBPATH` | OFF | Skia library subdirectory (OFF = auto-composed) |
-| `DUILIB_ENABLE_SDL` | Windows=OFF, others=ON | Enable SDL input support |
-| `DUILIB_ENABLE_CEF` | OFF | Enable CEF browser support |
-| `DUILIB_CEF_109` | OFF | Use CEF 109 (supports Win7) |
-| `DUILIB_WEBVIEW2_EXE` | OFF | WebView2 executable (Windows only) |
-| `DUILIB_MINGW_STATIC` | ON | MinGW static linking |
+| `DUI_LOG` | OFF | Print dui debug logs |
+| `DUI_SKIA_LIB_SUBPATH` | OFF | Skia library subdirectory (OFF = auto-composed) |
+| `DUI_ENABLE_SDL` | Windows=OFF, others=ON | Enable SDL input support |
+| `DUI_ENABLE_CEF` | OFF | Enable CEF browser support |
+| `DUI_CEF_109` | OFF | Use CEF 109 (supports Win7) |
+| `DUI_WEBVIEW2_EXE` | OFF | WebView2 executable (Windows only) |
+| `DUI_MINGW_STATIC` | ON | MinGW static linking |
 
 **Main path variables:**
 
 | Variable | Description |
 |--------|------|
-| `DUILIB_ROOT` | duilib source root directory |
-| `DUILIB_LIB_PATH` | duilib library output directory |
-| `DUILIB_BIN_PATH` | duilib executable output directory |
-| `DUILIB_SKIA_SRC_ROOT_DIR` | Skia source directory |
-| `DUILIB_SKIA_LIB_PATH` | Skia library directory |
-| `DUILIB_SDL_SRC_ROOT_DIR` | SDL3 source directory |
-| `DUILIB_SDL_LIB_PATH` | SDL3 library directory |
-| `DUILIB_CEF_SRC_ROOT_DIR` | libCEF source directory |
-| `DUILIB_CEF_LIB_PATH` | libCEF library directory |
+| `DUI_ROOT` | dui source root directory |
+| `DUI_LIB_PATH` | dui library output directory |
+| `DUI_BIN_PATH` | dui executable output directory |
+| `DUI_SKIA_SRC_ROOT_DIR` | Skia source directory |
+| `DUI_SKIA_LIB_PATH` | Skia library directory |
+| `DUI_SDL_SRC_ROOT_DIR` | SDL3 source directory |
+| `DUI_SDL_LIB_PATH` | SDL3 library directory |
+| `DUI_CEF_SRC_ROOT_DIR` | libCEF source directory |
+| `DUI_CEF_LIB_PATH` | libCEF library directory |
 
 **Main library list variables:**
 
 | Variable | Description |
 |--------|------|
-| `DUILIB_LIBS` | duilib base library list |
-| `DUILIB_SKIA_LIBS` | Skia library list (svg, skshaper, skottie, sksg, jsonreader, skia) |
-| `DUILIB_SDL_LIBS` | SDL3 library list |
-| `DUILIB_CEF_LIBS` | libCEF library list |
+| `DUI_LIBS` | dui base library list |
+| `DUI_SKIA_LIBS` | Skia library list (svg, skshaper, skottie, sksg, jsonreader, skia) |
+| `DUI_SDL_LIBS` | SDL3 library list |
+| `DUI_CEF_LIBS` | libCEF library list |
 
 **Skia path composition rule:**
 ```cmake
-# When DUILIB_SKIA_LIB_SUBPATH is OFF, the path is auto-composed as:
-${DUILIB_SKIA_SRC_ROOT_DIR}/out/${DUILIB_COMPILER_NAME}.${DUILIB_SYSTEM_PROCESSOR}.${DUILIB_BUILD_TYPE}
+# When DUI_SKIA_LIB_SUBPATH is OFF, the path is auto-composed as:
+${DUI_SKIA_SRC_ROOT_DIR}/out/${DUI_COMPILER_NAME}.${DUI_SYSTEM_PROCESSOR}.${DUI_BUILD_TYPE}
 
 # Examples:
 # skia/out/msvc.x64.release
@@ -101,7 +101,7 @@ ${DUILIB_SKIA_SRC_ROOT_DIR}/out/${DUILIB_COMPILER_NAME}.${DUILIB_SYSTEM_PROCESSO
 
 ---
 
-### 2. duilib_bin.cmake (Executable Base Configuration)
+### 2. dui_bin.cmake (Executable Base Configuration)
 
 **Purpose:** Common CMake configuration for executables, applicable to all platforms.
 
@@ -115,41 +115,41 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)    # C++20 required
 
 #### 2.2 Path configuration
 ```cmake
-include_directories(${DUILIB_ROOT})              # duilib root directory
-include_directories(${DUILIB_PROJECT_SRC_DIR})   # project source directory
-link_directories("${DUILIB_LIB_PATH}")           # duilib library directory
-link_directories("${DUILIB_SKIA_LIB_PATH}")      # Skia library directory
-link_directories("${DUILIB_SDL_LIB_PATH}")       # SDL library directory (if enabled)
+include_directories(${DUI_ROOT})              # dui root directory
+include_directories(${DUI_PROJECT_SRC_DIR})   # project source directory
+link_directories("${DUI_LIB_PATH}")           # dui library directory
+link_directories("${DUI_SKIA_LIB_PATH}")      # Skia library directory
+link_directories("${DUI_SDL_LIB_PATH}")       # SDL library directory (if enabled)
 ```
 
 #### 2.3 Output directory
 ```cmake
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${DUILIB_BIN_PATH}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${DUI_BIN_PATH}")
 ```
 
 #### 2.4 Source collection
 ```cmake
-aux_source_directory(${DUILIB_PROJECT_SRC_DIR} SRC_FILES)
-# Subdirectories are supported via the DUILIB_SRC_SUB_DIRS variable
+aux_source_directory(${DUI_PROJECT_SRC_DIR} SRC_FILES)
+# Subdirectories are supported via the DUI_SRC_SUB_DIRS variable
 ```
 
 #### 2.5 Platform dispatch
 The matching platform configuration file is included automatically based on the OS:
 ```cmake
-if(DUILIB_OS_WINDOWS)
-    include("${CMAKE_CURRENT_LIST_DIR}/duilib_bin_windows.cmake")
-elseif(DUILIB_OS_LINUX)
-    include("${CMAKE_CURRENT_LIST_DIR}/duilib_bin_linux.cmake")
-elseif(DUILIB_OS_MACOS)
-    include("${CMAKE_CURRENT_LIST_DIR}/duilib_bin_macos.cmake")
-elseif(DUILIB_OS_FREEBSD)
-    include("${CMAKE_CURRENT_LIST_DIR}/duilib_bin_freebsd.cmake")
+if(DUI_OS_WINDOWS)
+    include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_windows.cmake")
+elseif(DUI_OS_LINUX)
+    include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_linux.cmake")
+elseif(DUI_OS_MACOS)
+    include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_macos.cmake")
+elseif(DUI_OS_FREEBSD)
+    include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_freebsd.cmake")
 endif()
 ```
 
 ---
 
-### 3. duilib_bin_windows.cmake (Windows Platform Configuration)
+### 3. dui_bin_windows.cmake (Windows Platform Configuration)
 
 **Purpose:** Windows-specific compile and link configuration.
 
@@ -157,7 +157,7 @@ endif()
 
 #### 3.1 MSVC runtime library
 ```cmake
-if("${DUILIB_MD}" STREQUAL "ON")
+if("${DUI_MD}" STREQUAL "ON")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")  # MD/MDd
 else()
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")     # MT/MTd
@@ -178,9 +178,9 @@ add_definitions(-DUNICODE -D_UNICODE)
 
 #### 3.4 MinGW-w64 special handling
 ```cmake
-if(DUILIB_MINGW)
+if(DUI_MINGW)
     set(CMAKE_EXE_LINKER_FLAGS "-mwindows ${CMAKE_EXE_LINKER_FLAGS}")    # Windows program
-    if(DUILIB_MINGW_STATIC)
+    if(DUI_MINGW_STATIC)
         set(CMAKE_EXE_LINKER_FLAGS "-static ${CMAKE_EXE_LINKER_FLAGS}")  # Static linking
     endif()
 endif()
@@ -188,10 +188,10 @@ endif()
 
 #### 3.5 Manifest file configuration
 ```cmake
-if(DUILIB_BITS_64)
-    set(DUILIB_WIN_MANIFEST "${DUILIB_ROOT}/msvc/manifest/duilib.x64.manifest")
+if(DUI_BITS_64)
+    set(DUI_WIN_MANIFEST "${DUI_ROOT}/msvc/manifest/dui.x64.manifest")
 else()
-    set(DUILIB_WIN_MANIFEST "${DUILIB_ROOT}/msvc/manifest/duilib.x86.manifest")
+    set(DUI_WIN_MANIFEST "${DUI_ROOT}/msvc/manifest/dui.x86.manifest")
 endif()
 ```
 
@@ -203,28 +203,28 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 #### 3.7 CEF delay loading
 ```cmake
-if(DUILIB_ENABLE_CEF)
+if(DUI_ENABLE_CEF)
     target_link_options(${PROJECT_NAME} PRIVATE "/DELAYLOAD:libcef.dll")
 endif()
 ```
 
 #### 3.8 WebView2 support
 ```cmake
-if(DUILIB_WEBVIEW2_EXE)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE DUILIB_WEBVIEW2=1)
+if(DUI_WEBVIEW2_EXE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_WEBVIEW2=1)
     # Automatically copies WebView2Loader.dll
 endif()
 ```
 
 #### 3.9 Windows system dependency libraries
 ```cmake
-set(DUILIB_WINDOWS_LIBS Comctl32 Imm32 Opengl32 User32 shlwapi)
+set(DUI_WINDOWS_LIBS Comctl32 Imm32 Opengl32 User32 shlwapi)
 # Optional: Version.lib Winmm.lib Setupapi.lib (SDL dependencies)
 ```
 
 ---
 
-### 4. duilib_bin_linux.cmake (Linux Platform Configuration)
+### 4. dui_bin_linux.cmake (Linux Platform Configuration)
 
 **Purpose:** Linux-specific compile and link configuration.
 
@@ -232,21 +232,21 @@ set(DUILIB_WINDOWS_LIBS Comctl32 Imm32 Opengl32 User32 shlwapi)
 
 ```cmake
 # CEF support
-if(DUILIB_ENABLE_CEF)
-    include_directories(${DUILIB_CEF_SRC_ROOT_DIR})
-    link_directories("${DUILIB_CEF_LIB_PATH}")
+if(DUI_ENABLE_CEF)
+    include_directories(${DUI_CEF_SRC_ROOT_DIR})
+    link_directories("${DUI_CEF_LIB_PATH}")
 endif()
 
 # Linux system dependency libraries
-set(DUILIB_LINUX_LIBS X11 freetype fontconfig pthread dl)
+set(DUI_LINUX_LIBS X11 freetype fontconfig pthread dl)
 
 # Link command
-target_link_libraries(${PROJECT_NAME} ${DUILIB_LIBS} ${DUILIB_SDL_LIBS} ${DUILIB_SKIA_LIBS} ${DUILIB_CEF_LIBS} ${DUILIB_LINUX_LIBS})
+target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_LINUX_LIBS})
 ```
 
 ---
 
-### 5. duilib_bin_macos.cmake (macOS Platform Configuration)
+### 5. dui_bin_macos.cmake (macOS Platform Configuration)
 
 **Purpose:** macOS-specific compile and link configuration.
 
@@ -262,7 +262,7 @@ find_library(COREGRAPHICS CoreGraphics)
 
 #### 5.2 Compiler flags
 ```cmake
-set(DUILIB_COMPILER_FLAGS
+set(DUI_COMPILER_FLAGS
     -fno-strict-aliasing
     -fstack-protector
     -funwind-tables
@@ -272,7 +272,7 @@ set(DUILIB_COMPILER_FLAGS
     # ... more flags
 )
 
-set(DUILIB_CXX_COMPILER_FLAGS
+set(DUI_CXX_COMPILER_FLAGS
     -fno-threadsafe-statics
     -fvisibility-inlines-hidden
     -frtti
@@ -283,15 +283,15 @@ set(DUILIB_CXX_COMPILER_FLAGS
 #### 5.3 Link command
 ```cmake
 target_link_libraries(${PROJECT_NAME}
-    ${DUILIB_LIBS} ${DUILIB_SDL_LIBS} ${DUILIB_SKIA_LIBS} ${DUILIB_CEF_LIBS}
-    ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS} ${DUILIB_MACOS_LIBS}
+    ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS}
+    ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS} ${DUI_MACOS_LIBS}
     "-framework AppKit" "-framework Foundation" "-framework Metal" "-framework Cocoa"
 )
 ```
 
 ---
 
-### 6. duilib_bin_freebsd.cmake (FreeBSD Platform Configuration)
+### 6. dui_bin_freebsd.cmake (FreeBSD Platform Configuration)
 
 **Purpose:** FreeBSD-specific compile and link configuration.
 
@@ -299,18 +299,18 @@ target_link_libraries(${PROJECT_NAME}
 
 ```cmake
 # FreeBSD system dependency libraries
-set(DUILIB_FREEBSD_LIBS pthread dl)
+set(DUI_FREEBSD_LIBS pthread dl)
 
 find_package(Freetype REQUIRED)
 find_package(Fontconfig REQUIRED)
 find_package(X11 REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} ${DUILIB_LIBS} ${DUILIB_SDL_LIBS} ${DUILIB_SKIA_LIBS} ${DUILIB_FREEBSD_LIBS} ${X11_LIBRARIES} Freetype::Freetype Fontconfig::Fontconfig)
+target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_FREEBSD_LIBS} ${X11_LIBRARIES} Freetype::Freetype Fontconfig::Fontconfig)
 ```
 
 ---
 
-### 7. duilib_compiles.cmake (Compile-Option Detection)
+### 7. dui_compiles.cmake (Compile-Option Detection)
 
 **Purpose:** Detects CPU feature support of the target platform (e.g. AVX/AVX2 instruction sets).
 
@@ -324,7 +324,7 @@ check_cxx_source_compiles("
         __m256 a = _mm256_set1_ps(0.0f);
         return 0;
     }
-" DUILIB_HAVE_AVX)
+" DUI_HAVE_AVX)
 
 # AVX2 support detection
 check_cxx_source_compiles("
@@ -333,12 +333,12 @@ check_cxx_source_compiles("
         __m256i a = _mm256_set1_epi32(0);
         return 0;
     }
-" DUILIB_HAVE_AVX2)
+" DUI_HAVE_AVX2)
 ```
 
 ---
 
-### 8. duilib_cef_macos.cmake (macOS CEF Special Configuration)
+### 8. dui_cef_macos.cmake (macOS CEF Special Configuration)
 
 **Purpose:** Special configuration for CEF browser support on macOS.
 
@@ -362,13 +362,13 @@ Create `CMakeLists.txt` in the project root:
 
 ```cmake
 cmake_minimum_required(VERSION 3.21)
-project(my_duilib_app)
+project(my_dui_app)
 
 # Set the project source directory
-set(DUILIB_PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# Include the duilib CMake configuration
-include(${DUILIB_ROOT}/cmake/duilib_bin.cmake)
+# Include the dui CMake configuration
+include(${DUI_ROOT}/cmake/dui_bin.cmake)
 ```
 
 #### 2. Build commands
@@ -392,37 +392,37 @@ cmake --build . --config Release
 #### 1. Enable SDL support
 
 ```bash
-cmake -S .. -B . -DDUILIB_ENABLE_SDL=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S .. -B . -DDUI_ENABLE_SDL=ON -DCMAKE_BUILD_TYPE=Release
 ```
 
 #### 2. Enable CEF support
 
 ```bash
-cmake -S .. -B . -DDUILIB_ENABLE_CEF=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S .. -B . -DDUI_ENABLE_CEF=ON -DCMAKE_BUILD_TYPE=Release
 ```
 
 #### 3. Use CEF 109 (supports Win7)
 
 ```bash
-cmake -S .. -B . -DDUILIB_ENABLE_CEF=ON -DDUILIB_CEF_109=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S .. -B . -DDUI_ENABLE_CEF=ON -DDUI_CEF_109=ON -DCMAKE_BUILD_TYPE=Release
 ```
 
 #### 4. Specify the Skia library path
 
 ```bash
-cmake -S .. -B . -DDUILIB_SKIA_LIB_SUBPATH=llvm.x64.release -DCMAKE_BUILD_TYPE=Release
+cmake -S .. -B . -DDUI_SKIA_LIB_SUBPATH=llvm.x64.release -DCMAKE_BUILD_TYPE=Release
 ```
 
 #### 5. Enable debug logs
 
 ```bash
-cmake -S .. -B . -DDUILIB_LOG=ON -DCMAKE_BUILD_TYPE=Debug
+cmake -S .. -B . -DDUI_LOG=ON -DCMAKE_BUILD_TYPE=Debug
 ```
 
 #### 6. MSVC dynamic runtime
 
 ```bash
-cmake -S .. -B . -DDUILIB_MD=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S .. -B . -DDUI_MD=ON -DCMAKE_BUILD_TYPE=Release
 ```
 
 ---
@@ -436,7 +436,7 @@ cmake -S .. -B ./build_gcc -G "MinGW Makefiles" ^
     -DCMAKE_C_COMPILER=gcc ^
     -DCMAKE_CXX_COMPILER=g++ ^
     -DCMAKE_BUILD_TYPE=Release ^
-    -DDUILIB_ENABLE_SDL=ON
+    -DDUI_ENABLE_SDL=ON
 
 cmake --build ./build_gcc
 ```
@@ -448,7 +448,7 @@ cmake -S .. -B ./build_llvm -G "MinGW Makefiles" ^
     -DCMAKE_C_COMPILER=clang ^
     -DCMAKE_CXX_COMPILER=clang++ ^
     -DCMAKE_BUILD_TYPE=Release ^
-    -DDUILIB_ENABLE_SDL=ON
+    -DDUI_ENABLE_SDL=ON
 
 cmake --build ./build_llvm
 ```
@@ -459,14 +459,14 @@ cmake --build ./build_llvm
 
 | Option | Type | Default | Description |
 |----------|------|--------|------|
-| `DUILIB_LOG` | BOOL | OFF | Print debug logs |
-| `DUILIB_SKIA_LIB_SUBPATH` | STRING | OFF | Skia library subdirectory |
-| `DUILIB_ENABLE_SDL` | BOOL | Windows=OFF, others=ON | Enable SDL support |
-| `DUILIB_ENABLE_CEF` | BOOL | OFF | Enable CEF support |
-| `DUILIB_CEF_109` | BOOL | OFF | CEF 109 version (Win7) |
-| `DUILIB_WEBVIEW2_EXE` | BOOL | OFF | WebView2 executable |
-| `DUILIB_MD` | BOOL | OFF | MSVC dynamic runtime (/MD) |
-| `DUILIB_MINGW_STATIC` | BOOL | ON | MinGW static linking |
+| `DUI_LOG` | BOOL | OFF | Print debug logs |
+| `DUI_SKIA_LIB_SUBPATH` | STRING | OFF | Skia library subdirectory |
+| `DUI_ENABLE_SDL` | BOOL | Windows=OFF, others=ON | Enable SDL support |
+| `DUI_ENABLE_CEF` | BOOL | OFF | Enable CEF support |
+| `DUI_CEF_109` | BOOL | OFF | CEF 109 version (Win7) |
+| `DUI_WEBVIEW2_EXE` | BOOL | OFF | WebView2 executable |
+| `DUI_MD` | BOOL | OFF | MSVC dynamic runtime (/MD) |
+| `DUI_MINGW_STATIC` | BOOL | ON | MinGW static linking |
 
 ---
 
@@ -507,7 +507,7 @@ rm -rf CMakeCache.txt CMakeFiles/
 
 ### 2. In-source builds are forbidden
 
-The duilib CMake configuration forcibly forbids in-source builds:
+The dui CMake configuration forcibly forbids in-source builds:
 
 ```cmake
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
@@ -545,7 +545,7 @@ Make sure the following dependencies are available before building:
 
 **Cause:** The operating system is not supported.
 
-**Solution:** Check the OS detection logic in `duilib_common.cmake`.
+**Solution:** Check the OS detection logic in `dui_common.cmake`.
 
 ---
 
@@ -555,7 +555,7 @@ Make sure the following dependencies are available before building:
 
 **Solution:**
 1. Verify Skia is built: `ls skia/out/`
-2. Use `DUILIB_SKIA_LIB_SUBPATH` to specify the correct path
+2. Use `DUI_SKIA_LIB_SUBPATH` to specify the correct path
 
 ---
 
@@ -564,7 +564,7 @@ Make sure the following dependencies are available before building:
 **Cause:** A dependency library may be missing or the link order is wrong.
 
 **Solution:**
-1. Make sure `DUILIB_MINGW_STATIC=ON`
+1. Make sure `DUI_MINGW_STATIC=ON`
 2. Check `CMAKE_EXE_LINKER_FLAGS`
 
 ---
@@ -575,7 +575,7 @@ Make sure the following dependencies are available before building:
 
 **Solution:**
 1. Verify the CEF libraries were downloaded correctly
-2. Check the `DUILIB_CEF_LIB_PATH` path
+2. Check the `DUI_CEF_LIB_PATH` path
 3. Copy libcef.dll to the executable directory
 
 ---
@@ -585,7 +585,7 @@ Make sure the following dependencies are available before building:
 **Cause:** WebView2Loader.dll not found.
 
 **Solution:**
-1. Make sure `DUILIB_WEBVIEW2_EXE=ON`
+1. Make sure `DUI_WEBVIEW2_EXE=ON`
 2. Check whether WebView2Loader.dll is in the bin directory
 
 ---
@@ -596,4 +596,4 @@ Make sure the following dependencies are available before building:
 
 **Solution:**
 1. Make sure Xcode (or a compiler with framework support) is used
-2. Check the framework configuration in `duilib_bin_macos.cmake`
+2. Check the framework configuration in `dui_bin_macos.cmake`

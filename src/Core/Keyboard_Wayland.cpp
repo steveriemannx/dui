@@ -1,8 +1,8 @@
-#include "duilib/Core/Keyboard.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Core/MessageLoop_Wayland.h"
+#include "dui/Core/Keyboard.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Core/MessageLoop_Wayland.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 #include <xkbcommon/xkbcommon.h>
 
@@ -58,4 +58,4 @@ DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

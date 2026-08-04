@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_FIND_FORM_H_
 #define EXAMPLES_FIND_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 class MainForm;
 class FindForm : public ui::WindowImplBase

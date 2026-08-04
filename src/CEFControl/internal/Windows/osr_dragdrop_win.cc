@@ -1,9 +1,9 @@
 // Copyright (c) 2014 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
-#include "duilib/CEFControl/internal/Windows/osr_dragdrop_win.h"
+#include "dui/CEFControl/internal/Windows/osr_dragdrop_win.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
 #include <shellapi.h>
 #include <shlobj.h>
@@ -12,15 +12,15 @@
 #include <algorithm>
 #include <string>
 
-#include "duilib/CEFControl/internal/Windows/bytes_write_handler.h"
-#include "duilib/CEFControl/internal/Windows/util_win.h"
+#include "dui/CEFControl/internal/Windows/bytes_write_handler.h"
+#include "dui/CEFControl/internal/Windows/util_win.h"
 
 #pragma warning (push)
 #pragma warning (disable:4100)
 #include "include/wrapper/cef_helpers.h"
 #pragma warning (pop)
 
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Utils/StringConvert.h"
 
 namespace client {
 
@@ -705,4 +705,4 @@ DataObjectWin::DataObjectWin(FORMATETC* fmtetc, STGMEDIUM* stgmed, int count)
 
 }  // namespace client
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

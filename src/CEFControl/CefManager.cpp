@@ -1,21 +1,21 @@
-#include "duilib/CEFControl/CefManager.h"
+#include "dui/CEFControl/CefManager.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
-#include "duilib/CEFControl/CefControlNative.h"
-#include "duilib/CEFControl/CefControlOffScreen.h"
+#include "dui/CEFControl/CefControlNative.h"
+#include "dui/CEFControl/CefControlOffScreen.h"
 
-#include "duilib/Utils/FilePathUtil.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Window.h"
-#include "duilib/Core/Box.h"
+#include "dui/Utils/FilePathUtil.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Core/Box.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN)
-    #include "duilib/CEFControl/CefManager_Windows.h"
-#elif defined (DUILIB_BUILD_FOR_LINUX)
-    #include "duilib/CEFControl/CefManager_Linux.h"
-#elif defined (DUILIB_BUILD_FOR_MACOS)
-    #include "duilib/CEFControl/CefManager_MacOS.h"
+#if defined (DUI_BUILD_FOR_WIN)
+    #include "dui/CEFControl/CefManager_Windows.h"
+#elif defined (DUI_BUILD_FOR_LINUX)
+    #include "dui/CEFControl/CefManager_Linux.h"
+#elif defined (DUI_BUILD_FOR_MACOS)
+    #include "dui/CEFControl/CefManager_MacOS.h"
 #endif
 
 #pragma warning (push)
@@ -28,7 +28,7 @@
 namespace ui
 {
 //Callback function for creating CEF controls
-static Control* DuilibCreateCefControl(const DString& className)
+static Control* DuiCreateCefControl(const DString& className)
 {
     Control* pControl = nullptr;
     if (className == _T("CefControl")) {
@@ -58,7 +58,7 @@ CefManager::CefManager():
     m_bEnableF12(true),
     m_bEnableF11(true)
 {
-#ifdef DUILIB_BUILD_FOR_MACOS
+#ifdef DUI_BUILD_FOR_MACOS
     m_bExiting = false;
 #endif
 }
@@ -69,13 +69,13 @@ CefManager::~CefManager()
 
 CefManager* CefManager::GetInstance()
 {
-#if defined (DUILIB_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN)
     static CefManager_Windows self;
     return &self;
-#elif defined (DUILIB_BUILD_FOR_LINUX)
+#elif defined (DUI_BUILD_FOR_LINUX)
     static CefManager_Linux self;
     return &self;
-#elif defined (DUILIB_BUILD_FOR_MACOS)
+#elif defined (DUI_BUILD_FOR_MACOS)
     static CefManager_MacOS self;
     return &self;
 #else
@@ -161,7 +161,7 @@ bool CefManager::Initialize(bool bEnableOffScreenRendering,
     m_bEnableOffScreenRendering = bEnableOffScreenRendering;
 
     //Add the callback function for creating window CEF controls
-    GlobalManager::Instance().AddCreateControlCallback(DuilibCreateCefControl);
+    GlobalManager::Instance().AddCreateControlCallback(DuiCreateCefControl);
     m_bCefInit = true;
     return true;
 }
@@ -256,7 +256,7 @@ void CefManager::PostQuitMessage(int32_t nExitCode)
 {
     m_nExitCode = nExitCode;
     bool bForceExit = false;
-#ifdef DUILIB_BUILD_FOR_MACOS
+#ifdef DUI_BUILD_FOR_MACOS
     //Fix the process residue problem on MacOS when exiting in child window mode (CefBrowserHandler::OnBeforeClose is not called; the reason is unknown)
     if (!m_bExiting) {
         m_bExiting = true;
@@ -405,7 +405,7 @@ namespace {
     // These flags must match the Chromium values.
     const char kProcessType[] = "type";
     const char kRendererProcess[] = "renderer";
-#if defined(DUILIB_BUILD_FOR_LINUX)
+#if defined(DUI_BUILD_FOR_LINUX)
     const char kZygoteProcess[] = "zygote";
 #endif
 
@@ -422,7 +422,7 @@ CefManager::ProcessType CefManager::GetProcessType(CefRefPtr<CefCommandLine> com
     if (processType == kRendererProcess) {
         return RendererProcess;
     }
-#if defined(DUILIB_BUILD_FOR_LINUX)
+#if defined(DUI_BUILD_FOR_LINUX)
     else if (processType == kZygoteProcess) {
         return ZygoteProcess;
     }
@@ -466,4 +466,4 @@ bool CefManager::IsEnableF11() const
 
 } //namespace ui
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

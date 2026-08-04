@@ -24,26 +24,26 @@
 
     <PropertyGroup Label="Globals">
         <!-- 头文件Include -->
-        <DuilibBinIncludeDir>$(SolutionDir)\..;$(ProjectDir)</DuilibBinIncludeDir>
+        <DuiBinIncludeDir>$(SolutionDir)\..;$(ProjectDir)</DuiBinIncludeDir>
 
         <!-- 库文件Include: DLL模式仅依赖DLL导出的lib -->
-        <DuilibBinLibIncludeDir Condition="'$(EnableDuilibDll)' == '1'">$(SolutionDir)\..\lib\$(Platform)\</DuilibBinLibIncludeDir>
-        <DuilibBinLibIncludeDir Condition="'$(EnableDuilibDll)' != '1'">$(SkiaLibDir);$(SDLLibDir);$(JpegTurboLibDir);$(LibPagLibDir);$(SolutionDir)\..\lib\$(Platform)\</DuilibBinLibIncludeDir>
+        <DuiBinLibIncludeDir Condition="'$(EnableDuiDll)' == '1'">$(SolutionDir)\..\lib\$(Platform)\</DuiBinLibIncludeDir>
+        <DuiBinLibIncludeDir Condition="'$(EnableDuiDll)' != '1'">$(SkiaLibDir);$(SDLLibDir);$(JpegTurboLibDir);$(LibPagLibDir);$(SolutionDir)\..\lib\$(Platform)\</DuiBinLibIncludeDir>
         
         <!-- 库文件列表: DLL模式仅依赖DLL导出的lib  -->
-        <DuilibBinLibList Condition="'$(EnableDuilibDll)' == '1'">$(DuilibMainLib);</DuilibBinLibList>
-        <DuilibBinLibList Condition="'$(EnableDuilibDll)' != '1'">$(SkiaLibs);$(SDLLibs);$(JpegTurboLibs);$(LibPagLibs);$(DuilibMainLib);$(DuilibThirdLibs);$(DuilibSystemLibs);</DuilibBinLibList>
+        <DuiBinLibList Condition="'$(EnableDuiDll)' == '1'">$(DuiMainLib);</DuiBinLibList>
+        <DuiBinLibList Condition="'$(EnableDuiDll)' != '1'">$(SkiaLibs);$(SDLLibs);$(JpegTurboLibs);$(LibPagLibs);$(DuiMainLib);$(DuiThirdLibs);$(DuiSystemLibs);</DuiBinLibList>
     </PropertyGroup>
 
     <!-- 设置库文件Include路径、lib列表、宏定义-->
     <ItemDefinitionGroup>
         <ClCompile>
-            <AdditionalIncludeDirectories>$(DuilibBinIncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-            <PreprocessorDefinitions>DUILIB_SDL=$(SDLEnabled);DUILIB_JPEG_TURBO=$(JpegTurboEnabled);DUILIB_LIB_PAG=$(LibPagEnabled);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <AdditionalIncludeDirectories>$(DuiBinIncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+            <PreprocessorDefinitions>DUI_SDL=$(SDLEnabled);DUI_JPEG_TURBO=$(JpegTurboEnabled);DUI_LIB_PAG=$(LibPagEnabled);%(PreprocessorDefinitions)</PreprocessorDefinitions>
         </ClCompile>
         <Link>
-            <AdditionalLibraryDirectories>$(DuilibBinLibIncludeDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-            <AdditionalDependencies>$(DuilibBinLibList);$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+            <AdditionalLibraryDirectories>$(DuiBinLibIncludeDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+            <AdditionalDependencies>$(DuiBinLibList);$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
         </Link>
     </ItemDefinitionGroup>
     <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">

@@ -3,7 +3,7 @@
     <ImportGroup Label="PropertySheets" />
     <PropertyGroup Label="UserMacros" />
 
-    <!-- duilib项目，所有可执行程序工程的输出公共配置，必须放在"CommonSettings.props"后面Import -->
+    <!-- dui项目，所有可执行程序工程的输出公共配置，必须放在"CommonSettings.props"后面Import -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
         <OutDir>$(SolutionDir)\..\bin\</OutDir>
         <IntDir>$(SolutionDir)\build_temp\$(PlatformName)\$(ProjectName)\$(Configuration)\</IntDir>

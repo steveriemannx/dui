@@ -1,6 +1,6 @@
-#include "duilib/Core/WindowDropTarget_Wayland.h"
+#include "dui/Core/WindowDropTarget_Wayland.h"
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 namespace ui {
 
@@ -39,4 +39,4 @@ void WindowDropTarget::OnDropComplete()
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

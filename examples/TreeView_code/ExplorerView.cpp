@@ -231,7 +231,7 @@ void ExplorerView::SetFileList(const ui::FilePath& currentPath, const std::vecto
 
         // Set the sort order of the "File Name" column
         uint8_t nSortFlag = ui::kSortByGroup;
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
         // On Windows, file name sorting is case-insensitive
         nSortFlag |= ui::kSortNoCase;
 #endif

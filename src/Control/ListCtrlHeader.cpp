@@ -1,5 +1,5 @@
-#include "duilib/Control/ListCtrlHeader.h"
-#include "duilib/Control/ListCtrl.h"
+#include "dui/Control/ListCtrlHeader.h"
+#include "dui/Control/ListCtrl.h"
 
 namespace ui
 {

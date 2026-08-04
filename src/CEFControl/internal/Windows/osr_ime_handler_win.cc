@@ -4,16 +4,16 @@
 
 // Implementation based on ui/base/ime/win/imm32_manager.cc from Chromium.
 
-#include "duilib/CEFControl/internal/Windows/osr_ime_handler_win.h"
+#include "dui/CEFControl/internal/Windows/osr_ime_handler_win.h"
 
-#ifdef DUILIB_BUILD_FOR_CEF
+#ifdef DUI_BUILD_FOR_CEF
 
 #include <msctf.h>
 #include <windowsx.h>
 
 #include "include/base/cef_build.h"
 #include "include/cef_version.h"
-#include "duilib/CEFControl/internal/Windows/util_win.h"
+#include "dui/CEFControl/internal/Windows/util_win.h"
 
 #define ColorUNDERLINE \
   0xFF000000  // Black SkColor value for underline,
@@ -415,4 +415,4 @@ void OsrImeHandlerWin::ChangeCompositionRange(
 
 }  // namespace client
 
-#endif //DUILIB_BUILD_FOR_CEF
+#endif //DUI_BUILD_FOR_CEF

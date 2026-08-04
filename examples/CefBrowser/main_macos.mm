@@ -7,7 +7,7 @@
 #include <TargetConditionals.h>  // macOS 平台检测头文件
 #if TARGET_OS_MAC               // 明确排除iOS等其他Apple平台
 
-#include "duilib/duilib_config_macos.h"  // macOS专用配置头文件
+#include "dui/dui_config_macos.h"  // macOS专用配置头文件
 #include "App.h"
 #include <CoreFoundation/CoreFoundation.h>  // macOS核心服务头文件
 

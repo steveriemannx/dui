@@ -1,12 +1,12 @@
-#include "duilib/Control/RichTextImpl.h"
-#include "duilib/Animation/AnimationManager.h"
-#include "duilib/Animation/AnimationPlayer.h"
-#include "duilib/Core/WindowBuilder.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Core/Window.h"
+#include "dui/Control/RichTextImpl.h"
+#include "dui/Animation/AnimationManager.h"
+#include "dui/Animation/AnimationPlayer.h"
+#include "dui/Core/WindowBuilder.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Core/Window.h"
 
 namespace ui 
 {

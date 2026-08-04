@@ -1,9 +1,9 @@
-#include "duilib/Core/ZipManager.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/ZipStreamIO.h"
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/FilePathUtil.h"
+#include "dui/Core/ZipManager.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/ZipStreamIO.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/FilePathUtil.h"
 
 #include "third_party/zlib/zlib.h"
 #include "third_party/zlib/contrib/minizip/unzip.h"
@@ -100,7 +100,7 @@ bool ZipManager::OpenMemoryArchive(const uint8_t* pData, size_t nSize)
     return true;
 }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
 bool ZipManager::OpenResZip(HMODULE hModule, LPCTSTR resourceName, LPCTSTR resourceType, const DString& password)
 {
@@ -186,8 +186,8 @@ bool ZipManager::GetZipData(const FilePath& path, std::vector<unsigned char>& fi
     if (!m_password.empty() && bFileEncrypted) {
         // The password is in local encoding (ANSI)
         std::string password;
-#ifdef DUILIB_BUILD_FOR_WIN
-    #ifdef DUILIB_UNICODE
+#ifdef DUI_BUILD_FOR_WIN
+    #ifdef DUI_UNICODE
         password = StringConvert::UnicodeToMBCS(m_password);
     #else
         password = m_password;
@@ -243,7 +243,7 @@ bool ZipManager::IsZipResExist(const FilePath& path) const
                 bool bUtf8 = file_info.flag & (1 << 11);
                 DString fileName = GetZipFilePath(szFileName.data(), bUtf8);
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
                 DStringW innerFilePath = StringConvert::MBCSToUnicode(szFileName.data(), bUtf8 ? CP_UTF8 : CP_ACP);
 #else
                 DStringW innerFilePath = StringConvert::UTF8ToWString(szFileName.data());
@@ -438,8 +438,8 @@ DString ZipManager::GetZipFilePath(const char* szInZipFilePath, bool bUtf8) cons
     if (szInZipFilePath == nullptr) {
         return filePath;
     }
-#ifdef DUILIB_BUILD_FOR_WIN
-    #ifdef DUILIB_UNICODE
+#ifdef DUI_BUILD_FOR_WIN
+    #ifdef DUI_UNICODE
         filePath = StringConvert::MBCSToUnicode(szInZipFilePath, bUtf8 ? CP_UTF8 : CP_ACP);
     #else
         if (bUtf8) {

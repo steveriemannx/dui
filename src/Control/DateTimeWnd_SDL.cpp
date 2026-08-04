@@ -1,12 +1,12 @@
-#include "duilib/Control/DateTimeWnd_SDL.h"
-#include "duilib/Control/DateTime.h"
-#include "duilib/Control/RichEdit.h"
-#include "duilib/Control/Label.h"
-#include "duilib/Control/Button.h"
-#include "duilib/Box/VBox.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Control/DateTimeWnd_SDL.h"
+#include "dui/Control/DateTime.h"
+#include "dui/Control/RichEdit.h"
+#include "dui/Control/Label.h"
+#include "dui/Control/Button.h"
+#include "dui/Box/VBox.h"
+#include "dui/Core/GlobalManager.h"
 
-#if defined(DUILIB_BUILD_FOR_SDL) || defined(DUILIB_BUILD_FOR_WAYLAND)
+#if defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
 
 namespace ui
 {
@@ -622,5 +622,5 @@ void DateTimeWnd::AdjustTextNumber(int32_t nDelta)
 
 } //namespace ui
 
-#endif // DUILIB_BUILD_FOR_SDL
+#endif // DUI_BUILD_FOR_SDL
 

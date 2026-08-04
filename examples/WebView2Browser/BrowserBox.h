@@ -1,11 +1,11 @@
 #ifndef EXAMPLES_BROWSER_BOX_H_
 #define EXAMPLES_BROWSER_BOX_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 // WebView2
-#include "duilib/duilib_webview2.h"
+#include "dui/dui_webview2.h"
 
 /** Tab box
 */

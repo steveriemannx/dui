@@ -1209,7 +1209,7 @@ static void nsvg__rasterizeSortedEdges(NSVGrasterizer *r, float tx, float ty, fl
 
 static void nsvg__unpremultiplyAlpha(unsigned char* image, int w, int h, int stride)
 {
-    //for nim_duilib
+    //for dui
     return;
 
 	int x,y;

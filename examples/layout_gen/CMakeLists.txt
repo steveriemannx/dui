@@ -3,15 +3,15 @@ set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
 
 project(layout_gen CXX)
 
-get_filename_component(DUILIB_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
-get_filename_component(DUILIB_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE)
+get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE)
 
-include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_common.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
 # Mode 2 (XML-to-code generation): convert layout.xml to pure C++ code at build time
 # (with 17 <Include src="page_*.xml"/> expansions)
 set(GEN_XML_FILES layout.xml)
 set(GEN_FUNC_NAME Init)
-include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_gen_code.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_gen_code.cmake")
 
-include("${DUILIB_SRC_ROOT_DIR}/cmake/duilib_bin.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

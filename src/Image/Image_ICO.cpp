@@ -1,7 +1,7 @@
-#include "duilib/Image/Image_ICO.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Image/ImageUtil.h"
+#include "dui/Image/Image_ICO.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Render/IRender.h"
+#include "dui/Image/ImageUtil.h"
 
 namespace ui
 {

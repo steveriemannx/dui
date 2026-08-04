@@ -1,40 +1,40 @@
-# nim_duilib AI toolchain - global register script
-# Usage: cd nim_duilib && .claude\register.bat
+# dui AI toolchain - global register script
+# Usage: cd dui && .claude\register.bat
 #    or: pwsh .claude\register.ps1
 
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$DuilibRoot = (Resolve-Path (Join-Path $ScriptDir "..")).Path
+$DuiRoot = (Resolve-Path (Join-Path $ScriptDir "..")).Path
 $ClaudeHome = Join-Path $env:USERPROFILE ".claude"
 $GlobalSkillsDir = Join-Path $ClaudeHome "skills"
 $NimInitDir = Join-Path $GlobalSkillsDir "nim-init"
 
-Write-Host "=== nim_duilib AI toolchain register ===" -ForegroundColor Cyan
-Write-Host "nim_duilib path: $DuilibRoot"
+Write-Host "=== dui AI toolchain register ===" -ForegroundColor Cyan
+Write-Host "dui path: $DuiRoot"
 Write-Host ""
 
 # Validate
-if (-not (Test-Path (Join-Path (Join-Path $DuilibRoot "duilib") "duilib.h"))) {
-    Write-Host "Error: nim_duilib project not detected. Run this from nim_duilib root." -ForegroundColor Red
+if (-not (Test-Path (Join-Path (Join-Path $DuiRoot "dui") "dui.h"))) {
+    Write-Host "Error: dui project not detected. Run this from dui root." -ForegroundColor Red
     exit 1
 }
 
 # Normalize path for use in markdown (forward slashes)
-$DuilibRootUnix = $DuilibRoot -replace '\\', '/'
+$DuiRootUnix = $DuiRoot -replace '\\', '/'
 
 # ============================================================
-# Step 1: Register all nim-duilib-* skills as global skills
+# Step 1: Register all dui-* skills as global skills
 # ============================================================
 Write-Host "[1/2] Registering global skills..." -ForegroundColor Yellow
 
 $SourceSkillsDir = Join-Path $ScriptDir "skills"
-$SkillFiles = Get-ChildItem -Path $SourceSkillsDir -Filter "nim-duilib-*.md" -File
+$SkillFiles = Get-ChildItem -Path $SourceSkillsDir -Filter "dui-*.md" -File
 
 foreach ($file in $SkillFiles) {
     # Each skill needs its own subdirectory: ~/.claude/skills/<name>/SKILL.md
-    $skillName = $file.BaseName  # e.g. "nim-duilib-create-window"
+    $skillName = $file.BaseName  # e.g. "dui-create-window"
     $targetDir = Join-Path $GlobalSkillsDir $skillName
     if (-not (Test-Path $targetDir)) {
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
@@ -55,41 +55,41 @@ if (-not (Test-Path $NimInitDir)) {
 $SkillContent = @"
 ---
 name: nim-init
-description: "Initialize nim_duilib AI dev toolkit for current project (copy LLM docs + update CLAUDE.md). Global skills are already available - this command sets up project-specific config."
+description: "Initialize dui AI dev toolkit for current project (copy LLM docs + update CLAUDE.md). Global skills are already available - this command sets up project-specific config."
 user-invocable: true
 disable-model-invocation: true
 ---
 
-# nim_duilib AI Toolkit - Project Init
+# dui AI Toolkit - Project Init
 
 When the user invokes /nim-init, follow these steps:
 
 ## Config
-- nim_duilib install path: ``$DuilibRootUnix``
-- Source docs: ``$DuilibRootUnix/.claude/docs/``
+- dui install path: ``$DuiRootUnix``
+- Source docs: ``$DuiRootUnix/.claude/docs/``
 
 ## Step 1: Copy LLM reference doc
 Run this bash command to copy the reference doc to the current project:
 ``````bash
 mkdir -p .claude/docs
-cp "$DuilibRootUnix/.claude/docs/nim-duilib-llm-reference.md" .claude/docs/
+cp "$DuiRootUnix/.claude/docs/dui-llm-reference.md" .claude/docs/
 ``````
 
 ## Step 2: Update CLAUDE.md
-Check if the current project's CLAUDE.md already contains "nim_duilib UI". If not, append the following block (create CLAUDE.md if it doesn't exist):
+Check if the current project's CLAUDE.md already contains "dui UI". If not, append the following block (create CLAUDE.md if it doesn't exist):
 
 ``````markdown
 
-## nim_duilib UI
+## dui UI
 
-This project uses [nim_duilib](https://github.com/rhett-lee/nim_duilib) as the UI framework.
-Library path: ``$DuilibRootUnix``
+This project uses [dui](https://github.com/steveriemannx/dui) as the UI framework.
+Library path: ``$DuiRootUnix``
 
-- LLM reference: ``.claude/docs/nim-duilib-llm-reference.md``
+- LLM reference: ``.claude/docs/dui-llm-reference.md``
 - XML layouts: ``bin/resources/themes/default/<skin_folder>/``
 - Global resources (fonts/colors/styles): ``bin/resources/themes/default/global.xml``
-- nim_duilib docs: ``$DuilibRootUnix/docs/``
-- nim_duilib examples: ``$DuilibRootUnix/examples/``
+- dui docs: ``$DuiRootUnix/docs/``
+- dui examples: ``$DuiRootUnix/examples/``
 
 ### Resource rules (IMPORTANT)
 - MUST copy: ``global.xml`` + ``public/`` (shared icons) + your app's own skin directory
@@ -106,13 +106,13 @@ Library path: ``$DuilibRootUnix``
 ``````
 
 ## Step 3: Report
-Tell the user initialization is complete. Note that nim_duilib skills are already globally available (no per-project copy needed):
-- nim-duilib-create-window - Create new window
-- nim-duilib-xml-layout - Design XML layout
-- nim-duilib-add-control - Add controls
-- nim-duilib-event-handler - Event handlers
-- nim-duilib-theme - Theme customization
-- nim-duilib-resource-pack - Resource packaging / single EXE
+Tell the user initialization is complete. Note that dui skills are already globally available (no per-project copy needed):
+- dui-create-window - Create new window
+- dui-xml-layout - Design XML layout
+- dui-add-control - Add controls
+- dui-event-handler - Event handlers
+- dui-theme - Theme customization
+- dui-resource-pack - Resource packaging / single EXE
 "@
 
 $SkillPath = Join-Path $NimInitDir "SKILL.md"

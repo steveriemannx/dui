@@ -1,9 +1,9 @@
-#include "duilib/Core/ControlDropTargetImpl_SDL.h"
+#include "dui/Core/ControlDropTargetImpl_SDL.h"
 
-#ifdef DUILIB_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_SDL
 
-#include "duilib/Core/Control.h"
-#include "duilib/Core/ControlDropTargetUtils.h"
+#include "dui/Core/Control.h"
+#include "dui/Core/ControlDropTargetUtils.h"
 
 namespace ui 
 {
@@ -135,4 +135,4 @@ void ControlDropTargetImpl_SDL::OnDropLeave()
 
 } // namespace ui
 
-#endif //DUILIB_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_SDL

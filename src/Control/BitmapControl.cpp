@@ -1,10 +1,10 @@
-#include "duilib/Control/BitmapControl.h"
-#include "duilib/Render/IRender.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Utils/AttributeUtil.h"
-#include "duilib/Utils/PerformanceUtil.h"
-#include "duilib/Utils/FileUtil.h"
-#include "duilib/Image/ImageAttribute.h"
+#include "dui/Control/BitmapControl.h"
+#include "dui/Render/IRender.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/PerformanceUtil.h"
+#include "dui/Utils/FileUtil.h"
+#include "dui/Image/ImageAttribute.h"
 
 namespace ui
 {

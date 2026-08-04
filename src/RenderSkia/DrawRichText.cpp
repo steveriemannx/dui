@@ -1,19 +1,19 @@
-#include "duilib/RenderSkia/DrawRichText.h"
-#include "duilib/RenderSkia/Font_Skia.h"
-#include "duilib/RenderSkia/SkTextBox.h"
+#include "dui/RenderSkia/DrawRichText.h"
+#include "dui/RenderSkia/Font_Skia.h"
+#include "dui/RenderSkia/SkTextBox.h"
 
-#include "duilib/Utils/StringUtil.h"
-#include "duilib/Utils/StringConvert.h"
-#include "duilib/Utils/PerformanceUtil.h"
+#include "dui/Utils/StringUtil.h"
+#include "dui/Utils/StringConvert.h"
+#include "dui/Utils/PerformanceUtil.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 
 #include "include/core/SkCanvas.h"
 #include "include/core/SkPaint.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkFontMetrics.h"
 
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 #include <unordered_set>
 #include <unordered_map>
@@ -1234,7 +1234,7 @@ SkTextEncoding DrawRichText::GetTextEncoding() const
         return SkTextEncoding::kUTF32;
     }
     else {
-#ifdef DUILIB_UNICODE
+#ifdef DUI_UNICODE
         return SkTextEncoding::kUTF16;
 #else
         return SkTextEncoding::kUTF8;

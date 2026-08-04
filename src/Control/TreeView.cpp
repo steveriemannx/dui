@@ -1,7 +1,7 @@
-#include "duilib/Control/TreeView.h"
-#include "duilib/Core/ScrollBar.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Image/Image.h"
+#include "dui/Control/TreeView.h"
+#include "dui/Core/ScrollBar.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Image/Image.h"
 
 namespace ui
 {
@@ -475,7 +475,7 @@ bool TreeNode::AddChildNodeAt(TreeNode* pTreeNode, const size_t iIndex)
     return bAdded;
 }
 
-#ifdef DUILIB_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN
 
 void TreeNode::SetBkIcon(HICON hIcon, uint32_t nIconSize, bool bNeedDpiScale)
 {
@@ -486,7 +486,7 @@ void TreeNode::SetBkIcon(HICON hIcon, uint32_t nIconSize, bool bNeedDpiScale)
     uint32_t nIconID = GlobalManager::Instance().Icon().AddIcon(hIcon);
     SetBkIconID(nIconID, nIconSize, bNeedDpiScale);
 }
-#endif //DUILIB_BUILD_FOR_WIN
+#endif //DUI_BUILD_FOR_WIN
 
 void TreeNode::SetBkIconID(uint32_t nIconID, uint32_t nIconSize, bool bNeedDpiScale)
 {

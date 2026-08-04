@@ -1,10 +1,10 @@
-#include "duilib/Control/ListCtrl.h"
-#include "duilib/Control/ListCtrlReportView.h"
-#include "duilib/Control/ListCtrlIconView.h"
-#include "duilib/Control/ListCtrlListView.h"
-#include "duilib/Control/RichEdit.h"
-#include "duilib/Core/GlobalManager.h"
-#include "duilib/Core/Keyboard.h"
+#include "dui/Control/ListCtrl.h"
+#include "dui/Control/ListCtrlReportView.h"
+#include "dui/Control/ListCtrlIconView.h"
+#include "dui/Control/ListCtrlListView.h"
+#include "dui/Control/RichEdit.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Keyboard.h"
 #include <set>
 
 namespace ui

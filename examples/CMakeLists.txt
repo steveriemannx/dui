@@ -3,21 +3,27 @@
 # Also includes codeui/embedxml/genlist/genui from the code-backend branch
 
 # ---- Compile-time mode selection ----
-# DUILIB_EXAMPLES_MODE selects which development-mode examples to build, avoiding a full build every time:
+# DUI_EXAMPLES_MODE selects which development-mode examples to build, avoiding a full build every time:
 #   ALL  - build all three modes (default)
 #   XML  - mode 1 only: XML layout (parsed at runtime)
 #   GEN  - mode 2 only: generate C++ code from XML at build time (*_gen + embedxml/genlist/genui)
 #   CODE - mode 3 only: pure code (*_code + codeui)
-set(DUILIB_EXAMPLES_MODE "ALL" CACHE STRING "Which example mode to build: ALL/XML/GEN/CODE")
-if(NOT DUILIB_EXAMPLES_MODE MATCHES "^(ALL|XML|GEN|CODE)$")
-    message(FATAL_ERROR "DUILIB_EXAMPLES_MODE must be ALL/XML/GEN/CODE, got: ${DUILIB_EXAMPLES_MODE}")
+set(DUI_EXAMPLES_MODE "ALL" CACHE STRING "Which example mode to build: ALL/XML/GEN/CODE")
+if(NOT DUI_EXAMPLES_MODE MATCHES "^(ALL|XML|GEN|CODE)$")
+    message(FATAL_ERROR "DUI_EXAMPLES_MODE must be ALL/XML/GEN/CODE, got: ${DUI_EXAMPLES_MODE}")
 endif()
 
+# CEF and WebView2 are the only examples that download large binary distributions at
+# configure time (CEF ≈ 200 MB; WebView2 Windows only). They are built by default in the
+# ALL/XML modes; set these OFF to skip them entirely (no download, no CEF/WebView2 code).
+option(DUI_BUILD_CEF_EXAMPLES "Build the cef/CefBrowser examples (downloads the CEF binary distribution)" ON)
+option(DUI_BUILD_WEBVIEW2_EXAMPLES "Build the WebView2/WebView2Browser examples (Windows only)" ON)
+
 # ---- XML mode (original examples) ----
-if(DUILIB_EXAMPLES_MODE STREQUAL "ALL" OR DUILIB_EXAMPLES_MODE STREQUAL "XML")
+if(DUI_EXAMPLES_MODE STREQUAL "ALL" OR DUI_EXAMPLES_MODE STREQUAL "XML")
 add_subdirectory(basic)
 # CEF is not supported on FreeBSD (no official binary distribution; see src/CMakeLists.txt)
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND DUI_BUILD_CEF_EXAMPLES)
     add_subdirectory(cef)
     add_subdirectory(CefBrowser)
 endif()
@@ -37,8 +43,8 @@ add_subdirectory(RichEdit)
 add_subdirectory(threads)
 add_subdirectory(TreeView)
 add_subdirectory(VirtualListBox)
-# WebView2 is Windows-only (WebView2Control is compiled only with DUILIB_BUILD_FOR_WIN)
-if(WIN32)
+# WebView2 is Windows-only (WebView2Control is compiled only with DUI_BUILD_FOR_WIN)
+if(WIN32 AND DUI_BUILD_WEBVIEW2_EXAMPLES)
     add_subdirectory(WebView2)
     add_subdirectory(WebView2Browser)
 endif()
@@ -49,18 +55,18 @@ endif()
 # tools are portable C++, supported on Linux / macOS / FreeBSD) ----
 # codeui follows the pure-code direction (built with CODE); embedxml/genlist/genui follow the build-time generation/embedding direction (built with GEN)
 if(UNIX)
-    if(DUILIB_EXAMPLES_MODE STREQUAL "ALL" OR DUILIB_EXAMPLES_MODE STREQUAL "GEN")
+    if(DUI_EXAMPLES_MODE STREQUAL "ALL" OR DUI_EXAMPLES_MODE STREQUAL "GEN")
         add_subdirectory(embedxml)
         add_subdirectory(genlist)
         add_subdirectory(genui)
     endif()
-    if(DUILIB_EXAMPLES_MODE STREQUAL "ALL" OR DUILIB_EXAMPLES_MODE STREQUAL "CODE")
+    if(DUI_EXAMPLES_MODE STREQUAL "ALL" OR DUI_EXAMPLES_MODE STREQUAL "CODE")
         add_subdirectory(codeui)
     endif()
 endif()
 
 # ---- Mode 2: XML-to-code generation (*_gen) ----
-if(DUILIB_EXAMPLES_MODE STREQUAL "ALL" OR DUILIB_EXAMPLES_MODE STREQUAL "GEN")
+if(DUI_EXAMPLES_MODE STREQUAL "ALL" OR DUI_EXAMPLES_MODE STREQUAL "GEN")
 add_subdirectory(basic_gen)
 add_subdirectory(controls_gen)
 add_subdirectory(ColorPicker_gen)
@@ -82,7 +88,7 @@ add_subdirectory(XmlPreview_gen)
 endif()
 
 # ---- Mode 3: pure code (*_code) ----
-if(DUILIB_EXAMPLES_MODE STREQUAL "ALL" OR DUILIB_EXAMPLES_MODE STREQUAL "CODE")
+if(DUI_EXAMPLES_MODE STREQUAL "ALL" OR DUI_EXAMPLES_MODE STREQUAL "CODE")
 add_subdirectory(basic_code)
 add_subdirectory(controls_code)
 add_subdirectory(ColorPicker_code)

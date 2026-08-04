@@ -1,10 +1,10 @@
 #ifndef EXAMPLES_BROWSER_FORM_WINDOWS_H_
 #define EXAMPLES_BROWSER_FORM_WINDOWS_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
-#if defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 
 #include "Browser/BrowserForm.h"
 #include "Windows/taskbar/TaskbarManager.h"
@@ -75,5 +75,5 @@ private:
     TaskbarManager m_taskbarManager;
 };
 
-#endif //defined (DUILIB_BUILD_FOR_WIN) && !defined (DUILIB_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
 #endif //EXAMPLES_BROWSER_FORM_WINDOWS_H_

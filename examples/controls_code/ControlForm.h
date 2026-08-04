@@ -1,8 +1,8 @@
 #ifndef EXAMPLES_CONTROLS_FORM_H_
 #define EXAMPLES_CONTROLS_FORM_H_
 
-// duilib
-#include "duilib/duilib.h"
+// dui
+#include "dui/dui.h"
 
 class ControlForm : public ui::WindowImplBase
 {

@@ -1,9 +1,9 @@
-#include "duilib/Core/MessageLoop_Wayland.h"
-#include "duilib/Core/NativeWindow_SDL.h"
-#include "duilib/Utils/StringConvert.h"
+#include "dui/Core/MessageLoop_Wayland.h"
+#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Utils/StringConvert.h"
 #include <algorithm>
 
-#ifdef DUILIB_BUILD_FOR_WAYLAND
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 #include <wayland-client.h>
 #include <wayland-egl.h>
@@ -556,4 +556,4 @@ void MessageLoop_Wayland::PaintAllWindows()
 
 } // namespace ui
 
-#endif // DUILIB_BUILD_FOR_WAYLAND
+#endif // DUI_BUILD_FOR_WAYLAND

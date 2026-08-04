@@ -1,9 +1,9 @@
-#include "duilib/RenderSkia/Bitmap_Skia.h"
-#include "duilib/Image/ImageUtil.h"
+#include "dui/RenderSkia/Bitmap_Skia.h"
+#include "dui/Image/ImageUtil.h"
 
-#include "duilib/RenderSkia/SkiaHeaderBegin.h"
+#include "dui/RenderSkia/SkiaHeaderBegin.h"
 #include "include/core/SkBitmap.h"
-#include "duilib/RenderSkia/SkiaHeaderEnd.h"
+#include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui
 {

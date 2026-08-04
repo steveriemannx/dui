@@ -1,5 +1,5 @@
-#include "duilib/Control/CircleProgress.h"
-#include "duilib/Core/GlobalManager.h"
+#include "dui/Control/CircleProgress.h"
+#include "dui/Core/GlobalManager.h"
 
 namespace ui
 {
