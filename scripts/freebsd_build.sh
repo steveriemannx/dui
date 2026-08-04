@@ -15,12 +15,20 @@ DUI_CC=clang
 DUI_CXX=clang++
 DUI_COMPILER_ID=clang
 
-cmake_version=$(cmake --version | grep -oE '[0-9]+\.[0-9]+')
-required_version=3.24
-if [ $(echo "$cmake_version >= $required_version" | bc) -eq 1 ]; then
-    DUI_CMAKE_REFRESH=--fresh
-else
-    DUI_CMAKE_REFRESH=
+# Arguments:
+#   --fresh       clean and re-configure (incremental by default)
+#   --standalone  build each example as an independent CMake project (legacy mode); default uses top-level CMake management
+DUI_CMAKE_REFRESH=
+if [[ "$*" == *"--fresh"* ]]; then
+    cmake_version=$(cmake --version | grep -oE '[0-9]+\.[0-9]+')
+    required_version=3.24
+    if [ $(echo "$cmake_version >= $required_version" | bc) -eq 1 ]; then
+        DUI_CMAKE_REFRESH=--fresh
+    fi
+fi
+STANDALONE=false
+if [[ "$*" == *"--standalone"* ]]; then
+    STANDALONE=true
 fi
 
 DUI_CMAKE="cmake ${DUI_CMAKE_REFRESH} -DCMAKE_C_COMPILER=$DUI_CC -DCMAKE_CXX_COMPILER=$DUI_CXX"
@@ -57,6 +65,30 @@ fi
 # Build temporary directory
 DUI_BUILD_DIR="$DUI_SRC_ROOT_DIR/scripts/build_temp/${DUI_COMPILER_ID}_build"
 
+# ============================================================
+# Top-level CMake build (default; follows the develop2 branch):
+#   Configure the whole repository at once (dui + third-party libraries + all examples),
+#   Build everything at once; use --target <example name> to build a single target
+# ============================================================
+if [ "$STANDALONE" = false ]; then
+    DUI_TOP_BUILD_DIR="$DUI_BUILD_DIR/top"
+    mkdir -p "$DUI_TOP_BUILD_DIR"
+
+    $DUI_CMAKE -S "$DUI_SRC_ROOT_DIR" -B "$DUI_TOP_BUILD_DIR" \
+        -DCMAKE_BUILD_TYPE=${DUI_BUILD_TYPE} \
+        -DDUI_SKIA_LIB_SUBPATH="$DUI_SKIA_LIB_SUBPATH"
+    if [ $? -ne 0 ]; then
+        echo "Top-level cmake configure failed."
+        exit 1
+    fi
+
+    $DUI_MAKE "$DUI_TOP_BUILD_DIR" $DUI_MAKE_THREADS
+    exit $?
+fi
+
+# ============================================================
+# --standalone: build each example as an independent CMake project (legacy mode)
+# ============================================================
 target_dir="$DUI_BUILD_DIR"
 if [[ ! -d "$target_dir" ]]; then
     mkdir -p "$target_dir"

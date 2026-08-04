@@ -69,12 +69,14 @@ if grep -q "ID=uos" /etc/os-release; then
     DUI_COMPILER_ID=gcc
 fi
 
-cmake_version=$(cmake --version | grep -oE '[0-9]+\.[0-9]+')
-required_version=3.24
-if [ $(echo "$cmake_version >= $required_version" | bc) -eq 1 ]; then
-    DUI_CMAKE_REFRESH=--fresh
-else
-    DUI_CMAKE_REFRESH=
+# --fresh only on request (like macos_build.sh): incremental configure by default
+DUI_CMAKE_REFRESH=
+if [[ "$*" == *"--fresh"* ]]; then
+    cmake_version=$(cmake --version | grep -oE '[0-9]+\.[0-9]+')
+    required_version=3.24
+    if [ $(echo "$cmake_version >= $required_version" | bc) -eq 1 ]; then
+        DUI_CMAKE_REFRESH=--fresh
+    fi
 fi
 
 DUI_CMAKE="cmake ${DUI_CMAKE_REFRESH} -DCMAKE_C_COMPILER=$DUI_CC -DCMAKE_CXX_COMPILER=$DUI_CXX"

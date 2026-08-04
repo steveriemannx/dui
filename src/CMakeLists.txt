@@ -4,6 +4,11 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
   message(FATAL_ERROR "Prevented in-tree build. Please create a build directory outside of the source code and run \"cmake -S ${CMAKE_SOURCE_DIR} -B .\" from there")
 endif()
 
+# Make this directory self-contained so it can also be configured standalone
+# (scripts/*_build.sh --standalone). In the top-level build dui_common.cmake is
+# already included; its execution blocks are GLOBAL-property guarded and idempotent.
+include("${CMAKE_CURRENT_LIST_DIR}/../cmake/dui_common.cmake")
+
 # dui
 # MSVC runtime library flags are selected by an abstraction.
 set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
