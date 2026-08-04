@@ -108,3 +108,7 @@ The compiled example programs are in `bin/`. Platform prerequisites and detailed
 1. Base project: [nim_duilib](https://github.com/rhett-lee/nim_duilib) — the upstream project that dui is the English version of
 2. NIM_Duilib_Framework: [NIM_Duilib_Framework](https://github.com/netease-im/NIM_Duilib_Framework/)
 3. Original project: [duilib](https://github.com/duilib/duilib)
+
+## Upstream Baseline
+This repository is based on [nim_duilib](https://github.com/rhett-lee/nim_duilib), which is now (as of 2026-08-05) at commit
+[6f9fb44](https://github.com/rhett-lee/nim_duilib/commit/6f9fb44c53caadfe9f2a6f50385b11814205c624).
