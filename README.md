@@ -41,14 +41,14 @@ See [docs/ThreeModes.md](docs/ThreeModes.md) for details.
 | examples      | Example programs (each with `_code` / `_gen` variants; see the three development modes) |
 | bin           | Build output: example programs; `resources/` and `resources.zip` are synced from the repo-root `resources/` at configure time |
 | resources     | Theme resources: `fonts/`, `lang/`, `themes/` (synced into `bin/` at configure time; `resources.zip` is generated) |
-
-> **Resources editing**: `bin/resources/` is a generated copy — always edit resource files (XML layouts, images, fonts) in the repo-root `resources/` directory. Changes take effect after reconfiguring (or re-copying); anything edited directly under `bin/` is overwritten at the next configure.
 | cmake         | Common CMake configuration |
 | msvc          | Windows VC project property sheets |
 | scripts       | Build scripts and Visual Studio solutions |
 | third_party   | Vendored third-party libraries (built/downloaded automatically) |
 | docs          | Project documentation |
 | licenses      | License files of the project and its dependencies |
+
+* **Resources editing**: `bin/resources/` is a generated copy — always edit resource files (XML layouts, images, fonts) in the repo-root `resources/` directory. Changes take effect after reconfiguring (or re-copying); anything edited directly under `bin/` is overwritten at the next configure.
 
 ## Quick Start
 
