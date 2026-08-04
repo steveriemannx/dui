@@ -95,9 +95,11 @@ if not exist "%DUI_BUILD_DIR%" (
 
 @REM ============================================================
 @REM Top-level CMake build (default): configure the whole repository at once
+@REM NOTE: DUI_TOP_BUILD_DIR is set OUTSIDE the if block - cmd expands %VAR%
+@REM at parse time for the whole block, so an in-block SET would be empty.
 @REM ============================================================
+SET DUI_TOP_BUILD_DIR=%DUI_BUILD_DIR%\top
 if "%STANDALONE%"=="false" (
-    SET DUI_TOP_BUILD_DIR=%DUI_BUILD_DIR%\top
     if not exist "%DUI_TOP_BUILD_DIR%" mkdir "%DUI_TOP_BUILD_DIR%"
 
     %DUI_CMAKE% -S "%DUI_SRC_ROOT_DIR%" -B "%DUI_TOP_BUILD_DIR%" -DCMAKE_BUILD_TYPE=%DUI_BUILD_TYPE% -DDUI_SKIA_LIB_SUBPATH="%DUI_SKIA_LIB_SUBPATH%" %SDL_PARAM%
