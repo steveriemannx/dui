@@ -344,7 +344,9 @@ ASALocalRun/
 healthchecksdb
 /scripts/build_temp
 # hello example: layout XML copied into the runtime resources tree at build time
-/bin/resources/themes/default/hello/
+/resources/themes/default/hello/
+# stray resources.zip at the repo root (a previous bug wrote the archive there)
+/resources.zip
 /bin/libcef_linux
 /bin/libcef_win
 /bin/libcef_win_109
@@ -363,9 +365,11 @@ healthchecksdb
 # libpng's real arm/ NEON source directory - keep it tracked:
 !third_party/libpng/arm/
 
-# Prebuilt example binaries (build outputs; theme resources are assets and stay tracked)
+# Prebuilt example binaries (build outputs; resources are synced from the repo-root
+# resources/ directory into bin/ at configure time by cmake/dui_common.cmake)
 /bin/*
-!/bin/resources/
+# resources.zip is generated at configure time (resources/ stays tracked)
+/resources/resources.zip
 
 # CEF binary distribution (downloaded/extracted automatically by cmake/dui_deps.cmake;
 # archive cached in third_party/downloads/)

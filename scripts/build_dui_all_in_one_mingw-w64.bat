@@ -109,6 +109,21 @@ if not exist ".\dui\.git" (
     exit /b 1
 )
 
+@REM Fetch SDL first, then skia (same layout as the CMake build; SDL clone is idempotent)
+if %ENABLE_SDL% equ 1 (
+echo - Cloning SDL ...
+:retry_clone_SDL
+    if not exist ".\dui\third_party\SDL3\.git" (
+        git clone https://github.com/libsdl-org/SDL.git
+    ) else (
+        git -C ./dui/third_party/SDL3 pull
+    )
+    if %errorlevel% neq 0 (
+        timeout /t %retry_delay% >nul
+        goto retry_clone_SDL
+    )
+)
+
 @REM Fetch skia: download the dui fork zip (same source as the CMake build; idempotent)
 set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip
 set SKIA_ZIP_FILE=skia.zip
@@ -141,20 +156,6 @@ if not exist ".\dui\third_party\skia\BUILD.gn" (
 del %SKIA_ZIP_FILE%
 :fetch_skia_done
 
-if %ENABLE_SDL% equ 1 (
-echo - Cloning SDL ...
-:retry_clone_SDL
-    if not exist ".\dui\third_party\SDL3\.git" (
-        git clone https://github.com/libsdl-org/SDL.git
-    ) else (    
-        git -C ./dui/third_party/SDL3 pull
-    )
-    if %errorlevel% neq 0 (
-        timeout /t %retry_delay% >nul
-        goto retry_clone_SDL
-    )
-)
-
 echo - Building skia ...
 cd dui\third_party\skia
 
@@ -178,20 +179,24 @@ if %has_clang% equ 1 (
 cd ..\..\..
 
 if %ENABLE_SDL% equ 1 (
-    echo - Building SDL ...
-    if %has_clang% equ 1 (
-        SET DUI_CC=clang
-        SET DUI_CXX=clang++
-        SET DUI_SDL_DIR=SDL.build.mingw.llvm
-    ) else (
-        SET DUI_CC=gcc
-        SET DUI_CXX=g++
-        SET DUI_SDL_DIR=SDL.build.mingw.gcc
-    )
+    if not exist ".\dui\third_party\SDL3\lib" (
+        echo - Building SDL ...
+        if %has_clang% equ 1 (
+            SET DUI_CC=clang
+            SET DUI_CXX=clang++
+            SET DUI_SDL_DIR=sdl3-build.mingw.llvm
+        ) else (
+            SET DUI_CC=gcc
+            SET DUI_CXX=g++
+            SET DUI_SDL_DIR=sdl3-build.mingw.gcc
+        )
 
-    cmake --fresh -S "./dui/third_party/SDL3/" -B "./%DUI_SDL_DIR%" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -G"MinGW Makefiles" -DCMAKE_C_COMPILER=%DUI_CC% -DCMAKE_CXX_COMPILER=%DUI_CXX% -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release 
-    cmake --build ./%DUI_SDL_DIR% -j 6
-    cmake --install ./%DUI_SDL_DIR%
+        cmake -S "./dui/third_party/SDL3/" -B ".\dui\scripts\build_temp\%DUI_SDL_DIR%" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -G"MinGW Makefiles" -DCMAKE_C_COMPILER=%DUI_CC% -DCMAKE_CXX_COMPILER=%DUI_CXX% -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release
+        cmake --build .\dui\scripts\build_temp\%DUI_SDL_DIR% -j 6
+        cmake --install .\dui\scripts\build_temp\%DUI_SDL_DIR%
+    ) else (
+        echo - SDL3 already installed: .\dui\third_party\SDL3\lib
+    )
 )
 
 echo - Building dui ...

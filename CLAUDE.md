@@ -24,7 +24,8 @@ dui/
 │   └── WebView2/        # WebView2 control
 ├── examples/            # 21 example programs
 ├── docs/                # full documentation
-├── bin/resources/       # theme resources (XML layouts, images, fonts)
+├── bin/                 # build output (example programs; resources synced from resources/)
+├── resources/           # theme resources (XML layouts, images, fonts; synced into bin/ at configure time)
 ├── scripts/             # build scripts and solutions
 └── cmake/               # CMake configuration
 ```
@@ -32,8 +33,9 @@ dui/
 ## Development Modes (XML + C++)
 
 ### XML Layout Files
-- Location: `bin/resources/themes/default/<skin_folder>/<skin_file>.xml`
-- Global resources: `bin/resources/themes/default/global.xml` (fonts, colors, common styles)
+- Edit location: `resources/themes/default/<skin_folder>/<skin_file>.xml` (repo root — the single source of truth)
+- Runtime location: `bin/resources/themes/default/<skin_folder>/<skin_file>.xml` — an automatic copy synced at configure time; never edit files under `bin/` (changes are overwritten at the next configure)
+- Global resources: `resources/themes/default/global.xml` (fonts, colors, common styles)
 - Encoding: UTF-8
 
 ### The Three C++ Files

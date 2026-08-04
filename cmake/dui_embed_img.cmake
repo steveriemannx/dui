@@ -13,7 +13,7 @@ endif()
 set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/img_to_header.cpp")
 set(TOOL_BIN "${CMAKE_CURRENT_BINARY_DIR}/img_to_header")
 set(GENERATED_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/embedded_images.h")
-set(RESOURCES_DIR "${DUI_ROOT}/bin/resources")
+set(RESOURCES_DIR "${DUI_ROOT}/resources")
 
 add_custom_command(
     OUTPUT "${TOOL_BIN}"

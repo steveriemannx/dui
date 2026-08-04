@@ -23,7 +23,7 @@ endif()
 set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/xml_to_header.cpp")
 set(TOOL_BIN "${CMAKE_CURRENT_BINARY_DIR}/xml_to_header")
 set(GENERATED_HEADER "${CMAKE_CURRENT_BINARY_DIR}/embedded_resources.h")
-set(RESOURCES_DIR "${DUI_ROOT}/bin/resources")
+set(RESOURCES_DIR "${DUI_ROOT}/resources")
 
 if(DUI_OS_WINDOWS)
     # Windows: pre-compiled exe, rebuilt at configure time when source changes

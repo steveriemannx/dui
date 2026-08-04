@@ -168,6 +168,9 @@ if not exist ".\dui\third_party\skia\third_party\ninja\ninja.exe" (
 @REM Build gn from source (official instructions; needs the MSVC toolchain in PATH)
 if not exist ".\dui\third_party\gn\out\gn.exe" (
     if not exist ".\dui\third_party\gn\.git" (
+        @REM NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
+        @REM to generate last_commit_position.h, which fails on a shallow clone (the tag only
+        @REM exists in the full history). The repo is small (~40MB, ~30s to clone).
         git clone https://gn.googlesource.com/gn .\dui\third_party\gn
     )
     for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_PATH=%%i"
