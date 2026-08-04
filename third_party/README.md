@@ -27,8 +27,8 @@
 | libcef/libcef_macos  |2025-11-11|<div style="width: 160px">cef_binary_142.0.10+g29548e2+chromium-142.0.7444.135</div> |Yes |<div style="width: 360px">ARM64: https://cef-builds.spotifycdn.com/index.html#macosarm64:142</div>  | <div style="width: 360px">ARM64: https://cef-builds.spotifycdn.com/cef_binary_142.0.10%2Bg29548e2%2Bchromium-142.0.7444.135_macosarm64.tar.bz2 </div>|
 | WebView2      |2025-06-28|1.0.3296.44 |No | Installed via the NuGet package WebView2 SDK: <br>Microsoft.Web.WebView2| |
 | libpag        |2025-11-13|main branch |No | https://github.com/Tencent/libpag| No modification |
-| skia          |2026-08-02|skia-dui-0.1.0 |No |https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip| Tagged from the dui branch of the fork; includes the expat patch. Download and extract to third_party/skia (scripts/fetch_skia.sh/.bat), built by CMake with gn + ninja at make time |
-| SDL3          |2026-08-04|v3.4.14 |No |https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip| Official source package. Download and extract to third_party/SDL3 (scripts/fetch_sdl.sh/.bat), built by CMake at make time |
+| skia          |2026-08-02|skia-dui-0.1.0 |No |https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip| Tagged from the dui branch of the fork; includes the expat patch. Downloaded and extracted to third_party/skia automatically by CMake at configure time (cmake/duilib_deps.cmake), built with gn + ninja at make time |
+| SDL3          |2026-08-04|v3.4.14 |No |https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip| Official source package. Downloaded and extracted to third_party/SDL3 automatically by CMake at configure time (cmake/duilib_deps.cmake), built at make time |
 
 ## libpng Update Notes
 1. Download the latest release package: https://github.com/pnggroup/libpng/ or https://sourceforge.net/projects/libpng/

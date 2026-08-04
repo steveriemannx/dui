@@ -371,7 +371,7 @@ healthchecksdb
 /third_party/libcef/cef_binary/
 /third_party/libcef/.download/
 
-# Skia and SDL3 sources (downloaded/extracted via scripts/fetch_skia.sh/.bat and scripts/fetch_sdl.sh/.bat; not git submodules)
+# Skia and SDL3 sources (downloaded/extracted automatically by cmake/duilib_deps.cmake at configure time)
 /third_party/skia/
 /third_party/SDL3/
 /third_party/.download/

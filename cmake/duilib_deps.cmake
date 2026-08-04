@@ -1,9 +1,10 @@
 # duilib_deps.cmake
 # Dependency management for Skia / SDL3 / CEF:
-#   - Skia and SDL3 sources are vendored as zip downloads (third_party/skia, third_party/SDL3,
-#     fetched by scripts/fetch_skia.sh/.bat and scripts/fetch_sdl.sh/.bat), so they are present
-#     at configure time
-#     (src/CMakeLists.txt compiles skia's tools/window sources directly into the duilib library).
+#   - Skia and SDL3 sources are vendored as zip downloads (third_party/skia, third_party/SDL3);
+#     when missing they are downloaded and extracted automatically at configure time
+#     (see duilib_deps_download_skia / duilib_deps_download_sdl below), so they are present
+#     at configure time (src/CMakeLists.txt compiles skia's tools/window sources directly
+#     into the duilib library).
 #   - The actual BUILD happens at make time via add_custom_target (duilib_skia / duilib_sdl):
 #     Skia is built with gn + ninja, SDL3 with cmake --build --target install into the build dir.
 #   - CEF is a binary distribution (not source); when missing it is downloaded and extracted
@@ -13,6 +14,12 @@
 
 # ---- Configure-time: source guards, skia args.gn, CEF download ----
 function(duilib_deps_configure)
+    # Skia/SDL3 source zips (idempotent; the fetch scripts are the manual/offline equivalent)
+    duilib_deps_download_skia()
+    if(DUILIB_ENABLE_SDL)
+        duilib_deps_download_sdl()
+    endif()
+
     # WebView2 SDK download (idempotent, Windows only)
     if(DUILIB_WEBVIEW2_EXE AND DUILIB_OS_WINDOWS)
         duilib_deps_download_webview2()
@@ -35,15 +42,17 @@ function(duilib_deps_configure)
     if(NOT EXISTS "${DUILIB_SKIA_SRC_ROOT_DIR}/BUILD.gn")
         message(FATAL_ERROR
             "Skia source not found at ${DUILIB_SKIA_SRC_ROOT_DIR}.\n"
-            "Fetch it first:\n"
-            "    scripts/fetch_skia.sh (Windows: scripts\\fetch_skia.bat)\n"
+            "The automatic download failed; retry cmake configure, or download and extract\n"
+            "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip\n"
+            "into ${DUILIB_SKIA_SRC_ROOT_DIR} manually.\n"
             "(or set -DDUILIB_BUILD_SKIA_FROM_SOURCE=OFF and provide Skia yourself)")
     endif()
     if(DUILIB_ENABLE_SDL AND NOT EXISTS "${DUILIB_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
         message(FATAL_ERROR
             "SDL3 source not found at ${DUILIB_SDL_SRC_ROOT_DIR}.\n"
-            "Fetch it first:\n"
-            "    scripts/fetch_sdl.sh (Windows: scripts\\fetch_sdl.bat)\n"
+            "The automatic download failed; retry cmake configure, or download and extract\n"
+            "https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip\n"
+            "into ${DUILIB_SDL_SRC_ROOT_DIR} manually.\n"
             "(or set -DDUILIB_BUILD_SDL_FROM_SOURCE=OFF and provide SDL3 yourself)")
     endif()
 
@@ -264,6 +273,125 @@ function(duilib_deps_add_targets)
             message(STATUS "Using prebuilt SDL3: ${DUILIB_SDL_SRC_ROOT_DIR}")
         endif()
     endif()
+endfunction()
+
+# ---- Skia source zip download (idempotent; fetched at configure time, no shell scripts) ----
+function(duilib_deps_download_skia)
+    if(EXISTS "${DUILIB_SKIA_SRC_ROOT_DIR}/BUILD.gn")
+        return()  # already present
+    endif()
+
+    set(_skia_url "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip")
+    set(_skia_topdir "skia-skia-dui-0.1.0")  # the single top-level folder inside the zip
+    set(_skia_dl_dir "${DUILIB_ROOT}/third_party/.download")
+    set(_skia_archive "${_skia_dl_dir}/skia-dui-0.1.0.zip")
+
+    file(MAKE_DIRECTORY "${_skia_dl_dir}")
+    if(NOT EXISTS "${_skia_archive}")
+        message(STATUS "Downloading Skia source: ${_skia_url}")
+        file(DOWNLOAD "${_skia_url}" "${_skia_archive}" STATUS _skia_status)
+        list(GET _skia_status 0 _skia_code)
+        if(NOT _skia_code EQUAL 0)
+            file(REMOVE_RECURSE "${_skia_dl_dir}")
+            message(FATAL_ERROR "Skia download failed (HTTP ${_skia_code}): ${_skia_url}")
+        endif()
+    else()
+        message(STATUS "Skia archive already downloaded: ${_skia_archive}")
+    endif()
+
+    message(STATUS "Extracting Skia source...")
+    # Note: CMake's file(ARCHIVE_EXTRACT) fails on the skia zip ("ZIP decompression
+    # failed"), so use the system tools and check the exit code explicitly.
+    if(EXISTS "${DUILIB_SKIA_SRC_ROOT_DIR}")
+        file(REMOVE_RECURSE "${DUILIB_SKIA_SRC_ROOT_DIR}")  # leftover (e.g. empty submodule dir)
+    endif()
+    set(_skia_tmp_dir "${_skia_dl_dir}/extract")
+    file(REMOVE_RECURSE "${_skia_tmp_dir}")
+    file(MAKE_DIRECTORY "${_skia_tmp_dir}")
+    if(WIN32)
+        # Windows 10 1803+ ships tar.exe (bsdtar), which reads zip archives
+        execute_process(
+            COMMAND tar -xf "${_skia_archive}" --strip-components=1 -C "${DUILIB_SKIA_SRC_ROOT_DIR}"
+            RESULT_VARIABLE _skia_extract_result
+        )
+    else()
+        # unzip is a standard tool on macOS/Linux/FreeBSD
+        execute_process(
+            COMMAND unzip -q -o "${_skia_archive}" -d "${_skia_tmp_dir}"
+            RESULT_VARIABLE _skia_extract_result
+        )
+        if(_skia_extract_result EQUAL 0)
+            execute_process(
+                COMMAND "${CMAKE_COMMAND}" -E rename "${_skia_tmp_dir}/${_skia_topdir}" "${DUILIB_SKIA_SRC_ROOT_DIR}"
+                RESULT_VARIABLE _skia_extract_result
+            )
+        endif()
+    endif()
+    if(NOT _skia_extract_result EQUAL 0 OR NOT EXISTS "${DUILIB_SKIA_SRC_ROOT_DIR}/BUILD.gn")
+        file(REMOVE_RECURSE "${_skia_dl_dir}")
+        message(FATAL_ERROR "Skia archive extraction failed: ${_skia_archive}")
+    endif()
+    file(REMOVE_RECURSE "${_skia_tmp_dir}" "${_skia_dl_dir}")
+    message(STATUS "Skia source ready: ${DUILIB_SKIA_SRC_ROOT_DIR}")
+endfunction()
+
+# ---- SDL3 source zip download (idempotent; fetched at configure time, no shell scripts) ----
+function(duilib_deps_download_sdl)
+    if(EXISTS "${DUILIB_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
+        return()  # already present
+    endif()
+
+    set(_sdl_url "https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip")
+    set(_sdl_topdir "SDL3-3.4.14")  # the single top-level folder inside the zip
+    set(_sdl_dl_dir "${DUILIB_ROOT}/third_party/.download")
+    set(_sdl_archive "${_sdl_dl_dir}/SDL3-3.4.14.zip")
+
+    file(MAKE_DIRECTORY "${_sdl_dl_dir}")
+    if(NOT EXISTS "${_sdl_archive}")
+        message(STATUS "Downloading SDL3 source: ${_sdl_url}")
+        file(DOWNLOAD "${_sdl_url}" "${_sdl_archive}" STATUS _sdl_status)
+        list(GET _sdl_status 0 _sdl_code)
+        if(NOT _sdl_code EQUAL 0)
+            file(REMOVE_RECURSE "${_sdl_dl_dir}")
+            message(FATAL_ERROR "SDL3 download failed (HTTP ${_sdl_code}): ${_sdl_url}")
+        endif()
+    else()
+        message(STATUS "SDL3 archive already downloaded: ${_sdl_archive}")
+    endif()
+
+    message(STATUS "Extracting SDL3 source...")
+    # Same approach as duilib_deps_download_skia: system tools + explicit exit-code check.
+    if(EXISTS "${DUILIB_SDL_SRC_ROOT_DIR}")
+        file(REMOVE_RECURSE "${DUILIB_SDL_SRC_ROOT_DIR}")  # leftover (e.g. empty submodule dir)
+    endif()
+    set(_sdl_tmp_dir "${_sdl_dl_dir}/extract")
+    file(REMOVE_RECURSE "${_sdl_tmp_dir}")
+    file(MAKE_DIRECTORY "${_sdl_tmp_dir}")
+    if(WIN32)
+        # Windows 10 1803+ ships tar.exe (bsdtar), which reads zip archives
+        execute_process(
+            COMMAND tar -xf "${_sdl_archive}" --strip-components=1 -C "${DUILIB_SDL_SRC_ROOT_DIR}"
+            RESULT_VARIABLE _sdl_extract_result
+        )
+    else()
+        # unzip is a standard tool on macOS/Linux/FreeBSD
+        execute_process(
+            COMMAND unzip -q -o "${_sdl_archive}" -d "${_sdl_tmp_dir}"
+            RESULT_VARIABLE _sdl_extract_result
+        )
+        if(_sdl_extract_result EQUAL 0)
+            execute_process(
+                COMMAND "${CMAKE_COMMAND}" -E rename "${_sdl_tmp_dir}/${_sdl_topdir}" "${DUILIB_SDL_SRC_ROOT_DIR}"
+                RESULT_VARIABLE _sdl_extract_result
+            )
+        endif()
+    endif()
+    if(NOT _sdl_extract_result EQUAL 0 OR NOT EXISTS "${DUILIB_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
+        file(REMOVE_RECURSE "${_sdl_dl_dir}")
+        message(FATAL_ERROR "SDL3 archive extraction failed: ${_sdl_archive}")
+    endif()
+    file(REMOVE_RECURSE "${_sdl_tmp_dir}" "${_sdl_dl_dir}")
+    message(STATUS "SDL3 source ready: ${DUILIB_SDL_SRC_ROOT_DIR}")
 endfunction()
 
 # ---- CEF binary distribution download (only when missing) ----

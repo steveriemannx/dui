@@ -19,9 +19,9 @@ SKIA_DIR="$(cd "${SCRIPT_DIR}/../../skia" && pwd)"
 
 if [ ! -f "${SKIA_DIR}/BUILD.gn" ]; then
     echo "ERROR: Skia source not found at ${SKIA_DIR}"
-    echo "Fetch the fork zip first (see the header comment of this script),"
-    echo "or run the repository's fetcher:"
-    echo "  scripts/fetch_skia.sh"
+    echo "Download and extract the fork zip (see the header comment of this script):"
+    echo "  curl -L -o skia.zip https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip"
+    echo "  unzip skia.zip -d skia_tmp && mv skia_tmp/skia-skia-dui-0.1.0 ${SKIA_DIR}"
     exit 1
 fi
 
