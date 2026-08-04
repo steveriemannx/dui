@@ -21,7 +21,7 @@ echo SDL_PARAM: %SDL_PARAM%
 SET DUI_SRC_ROOT_DIR=%bat_parent_dir%
 echo DUI_SRC_ROOT_DIR: "%DUI_SRC_ROOT_DIR%"
 
-@for %%i in ("%~dp0..\..\skia") do set "bat_parent_dir=%%~fi"
+@for %%i in ("%~dp0..\third_party\skia") do set "bat_parent_dir=%%~fi"
 SET SKIA_SRC_ROOT_DIR=%bat_parent_dir%
 echo SKIA_SRC_ROOT_DIR: "%SKIA_SRC_ROOT_DIR%"
 
@@ -58,7 +58,15 @@ SET DUI_CC=clang
 SET DUI_CXX=clang++
 SET DUI_COMPILER_ID=llvm-mingw-w64
 
-SET DUI_CMAKE=cmake --fresh -G"MinGW Makefiles" -DCMAKE_C_COMPILER=%DUI_CC% -DCMAKE_CXX_COMPILER=%DUI_CXX%
+@REM Arguments:
+@REM   --fresh       clean and re-configure (incremental by default)
+@REM   --standalone  build each example as an independent CMake project (legacy mode); default uses top-level CMake management
+SET DUI_CMAKE_REFRESH=
+echo %* | findstr /C:"--fresh" >nul && set DUI_CMAKE_REFRESH=--fresh
+SET STANDALONE=false
+echo %* | findstr /C:"--standalone" >nul && set STANDALONE=true
+
+SET DUI_CMAKE=cmake %DUI_CMAKE_REFRESH% -G"MinGW Makefiles" -DCMAKE_C_COMPILER=%DUI_CC% -DCMAKE_CXX_COMPILER=%DUI_CXX%
 SET DUI_MAKE=cmake --build
 SET DUI_BUILD_TYPE=Release
 SET DUI_MAKE_THREADS=-j 6
@@ -85,15 +93,35 @@ if not exist "%DUI_BUILD_DIR%" (
     @mkdir "%DUI_BUILD_DIR%"
 )
 
+@REM ============================================================
+@REM Top-level CMake build (default): configure the whole repository at once
+@REM ============================================================
+if "%STANDALONE%"=="false" (
+    SET DUI_TOP_BUILD_DIR=%DUI_BUILD_DIR%\top
+    if not exist "%DUI_TOP_BUILD_DIR%" mkdir "%DUI_TOP_BUILD_DIR%"
+
+    %DUI_CMAKE% -S "%DUI_SRC_ROOT_DIR%" -B "%DUI_TOP_BUILD_DIR%" -DCMAKE_BUILD_TYPE=%DUI_BUILD_TYPE% -DDUI_SKIA_LIB_SUBPATH="%DUI_SKIA_LIB_SUBPATH%" %SDL_PARAM%
+    if %errorlevel% neq 0 (
+        echo Top-level cmake configure failed.
+        exit /b 1
+    )
+
+    %DUI_MAKE% "%DUI_TOP_BUILD_DIR%" %DUI_MAKE_THREADS%
+    exit /b %errorlevel%
+)
+
+@REM ============================================================
+@REM --standalone: build each example as an independent CMake project (legacy mode)
+@REM ============================================================
 @REM # Build third-party libraries
 SET DUI_THIRD_PARTY_LIBS=zlib,libpng,cximage,libwebp
 for %%i in (%DUI_THIRD_PARTY_LIBS%) do (
-    %DUI_CMAKE% -S "%DUI_SRC_ROOT_DIR%dui\third_party\%%i" -B "%DUI_BUILD_DIR%\%%i" -DCMAKE_BUILD_TYPE=%DUI_BUILD_TYPE%
+    %DUI_CMAKE% -S "%DUI_SRC_ROOT_DIR%third_party\%%i" -B "%DUI_BUILD_DIR%\%%i" -DCMAKE_BUILD_TYPE=%DUI_BUILD_TYPE%
     %DUI_MAKE% "%DUI_BUILD_DIR%\%%i" %DUI_MAKE_THREADS%
 )
 
 @REM #Build dui
-%DUI_CMAKE% -S "%DUI_SRC_ROOT_DIR%dui" -B "%DUI_BUILD_DIR%\dui" -DCMAKE_BUILD_TYPE=%DUI_BUILD_TYPE% %SDL_PARAM%
+%DUI_CMAKE% -S "%DUI_SRC_ROOT_DIR%src" -B "%DUI_BUILD_DIR%\dui" -DCMAKE_BUILD_TYPE=%DUI_BUILD_TYPE% %SDL_PARAM%
 %DUI_MAKE% "%DUI_BUILD_DIR%\dui" %DUI_MAKE_THREADS%
 
 @REM #Build each program under examples
