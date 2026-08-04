@@ -27,10 +27,30 @@ if %errorlevel% equ 0 (
 
 where python3.exe >nul 2>&1
 if %errorlevel% equ 0 (
-    echo python3.exe found at:  
+    echo python3.exe found at:
     where python3.exe
 ) else (
     echo python3.exe not found in PATH
+    cd /d %CURRENT_DIR%
+    exit /b 1
+)
+
+where curl.exe >nul 2>&1
+if %errorlevel% equ 0 (
+    echo curl.exe found at:
+    where curl.exe
+) else (
+    echo curl.exe not found in PATH
+    cd /d %CURRENT_DIR%
+    exit /b 1
+)
+
+where tar.exe >nul 2>&1
+if %errorlevel% equ 0 (
+    echo tar.exe found at:
+    where tar.exe
+) else (
+    echo tar.exe not found in PATH
     cd /d %CURRENT_DIR%
     exit /b 1
 )
@@ -103,83 +123,64 @@ if %errorlevel% neq 0 (
 )
 
 if not exist ".\nim_duilib\.git" (
-    echo clone retry_clone_skia_compile failed!
+    echo clone nim_duilib failed!
     cd /d %CURRENT_DIR%
     exit /b 1
 )
 
-:retry_clone_skia_compile
-if not exist ".\skia_compile\.git" (
-    git clone https://github.com/rhett-lee/skia_compile
-) else (    
-    git -C ./skia_compile pull
-)
+@REM Fetch skia: download the dui fork zip and extract it (replaces git clone + skia_compile patch)
+set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip
+set SKIA_ZIP_FILE=skia.zip
+
+if exist ".\skia\BUILD.gn" goto fetch_skia_done
+:retry_fetch_skia
+curl -L -f -o %SKIA_ZIP_FILE% --retry 3 --connect-timeout 15 --retry-delay 10 --speed-limit 100 --speed-time 120 %SKIA_ZIP_URL%
 if %errorlevel% neq 0 (
     timeout /t %retry_delay% >nul
-    goto retry_clone_skia_compile
+    goto retry_fetch_skia
 )
-
-if not exist ".\skia_compile\.git" (
-    echo clone retry_clone_skia_compile failed!
+if not exist "%SKIA_ZIP_FILE%" (
+    echo fetch skia failed!
     cd /d %CURRENT_DIR%
     exit /b 1
 )
-
-:retry_clone_skia
-if not exist ".\skia\.git" (
-    git clone https://github.com/google/skia.git
-) else (
-    git -C ./skia stash
-    git -C ./skia checkout main
-    git -C ./skia pull
-)
+@REM Windows 10+ ships tar.exe (bsdtar) which reads zip archives
+if not exist ".\skia" mkdir ".\skia"
+tar -xf %SKIA_ZIP_FILE% --strip-components=1 -C .\skia
 if %errorlevel% neq 0 (
-    timeout /t %retry_delay% >nul
-    goto retry_clone_skia
-)
-
-if not exist ".\skia\.git" (
-    echo clone skia failed!
+    echo extract skia failed!
     cd /d %CURRENT_DIR%
     exit /b 1
 )
-
-set SKIA_PATCH_SRC_ZIP=skia.2026-02-10.src.zip
-if not exist ".\skia_compile\%SKIA_PATCH_SRC_ZIP%" (
-    echo ".\skia_compile\%SKIA_PATCH_SRC_ZIP%" not found!
+if not exist ".\skia\BUILD.gn" (
+    echo fetch skia failed!
     cd /d %CURRENT_DIR%
     exit /b 1
 )
+del %SKIA_ZIP_FILE%
+:fetch_skia_done
 
-cd skia
-git checkout 34aa71b8bee4648a442b7125680232d803374f19
-if %errorlevel% neq 0 (
-    echo git checkout skia failed!
-    cd /d %CURRENT_DIR%
-    exit /b 1
+@REM Fetch gn/ninja build tools with skia's own fetch scripts (python3, checked above)
+if not exist ".\skia\bin\gn.exe" (
+    python3 .\skia\bin\fetch-gn
 )
-cd ..
-
-.\skia_compile\windows\bin\miniunz.exe -o skia_compile/%SKIA_PATCH_SRC_ZIP% -d ./skia/
-if %errorlevel% neq 0 (
-    echo ".\skia_compile\%SKIA_PATCH_SRC_ZIP%" Expand-Archive failed!
-    cd /d %CURRENT_DIR%
-    exit /b 1
+if not exist ".\skia\third_party\ninja\ninja.exe" (
+    python3 .\skia\bin\fetch-ninja
 )
 
 @REM build skia
 cd skia
 .\bin\gn.exe gen out/llvm.x64.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
-.\bin\ninja.exe -C out/llvm.x64.debug
+.\third_party\ninja\ninja.exe -C out/llvm.x64.debug
 
 .\bin\gn.exe gen out/llvm.x64.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
-.\bin\ninja.exe -C out/llvm.x64.release
+.\third_party\ninja\ninja.exe -C out/llvm.x64.release
 
 .\bin\gn.exe gen out/llvm.x86.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
-.\bin\ninja.exe -C out/llvm.x86.release
+.\third_party\ninja\ninja.exe -C out/llvm.x86.release
 
 .\bin\gn.exe gen out/llvm.x86.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
-.\bin\ninja.exe -C out/llvm.x86.debug
+.\third_party\ninja\ninja.exe -C out/llvm.x86.debug
 cd ..
 
 @REM build nim_duilib

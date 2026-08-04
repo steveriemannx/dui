@@ -8,8 +8,9 @@
 #   ./scripts/build_skia.sh Release x64  # explicit arch
 #
 # The Skia source is expected at ../skia/ relative to the dui project root.
-# Clone the fork first if not already present:
-#   git clone https://github.com/steveriemannx/skia.git --branch dui ../skia
+# Fetch it first if not already present (zip archive, no git clone needed):
+#   curl -L -o skia.zip https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip
+#   unzip skia.zip -d skia_tmp && mv skia_tmp/skia-skia-dui-0.1.0 ../skia
 
 set -euo pipefail
 
@@ -18,8 +19,9 @@ SKIA_DIR="$(cd "${SCRIPT_DIR}/../../skia" && pwd)"
 
 if [ ! -f "${SKIA_DIR}/BUILD.gn" ]; then
     echo "ERROR: Skia source not found at ${SKIA_DIR}"
-    echo "Clone the fork first:"
-    echo "  git clone https://github.com/steveriemannx/skia.git --branch dui ${SKIA_DIR}"
+    echo "Fetch the fork zip first (see the header comment of this script),"
+    echo "or run the repository's fetcher:"
+    echo "  scripts/fetch_skia.sh"
     exit 1
 fi
 
