@@ -197,7 +197,7 @@ if(OS_MAC)
         message(FATAL_ERROR "NOT DEFINED DUI_THEME_DIR_NAME!")
     endif()
     
-    set(DUI_RES_FROM "${DUI_ROOT}/bin/resources")
+    set(DUI_RES_FROM "${DUI_ROOT}/resources")
     set(DUI_RES_TO "${CEF_APP}/Contents/Resources/dui")
     add_custom_command(TARGET ${CEF_TARGET} 
                        POST_BUILD

@@ -3,7 +3,7 @@
 # build directory; the resources are accessed directly from memory at runtime.
 #
 # Usage in example CMakeLists.txt:
-#   set(EMBED_RES_DIR "${DUI_ROOT}/bin/resources")
+#   set(EMBED_RES_DIR "${DUI_ROOT}/resources")
 #   include(dui_embed_res.cmake)
 #
 # In your code (exactly one .cpp of the executable):
@@ -20,7 +20,7 @@
 #   - Others  : compiled from cmake/embed_resources.cpp at build time.
 
 if(NOT DEFINED EMBED_RES_DIR)
-    set(EMBED_RES_DIR "${DUI_ROOT}/bin/resources")
+    set(EMBED_RES_DIR "${DUI_ROOT}/resources")
 endif()
 
 set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/embed_resources.cpp")

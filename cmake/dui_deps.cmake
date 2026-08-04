@@ -17,11 +17,12 @@
 
 # ---- Configure-time: source guards, skia args.gn, CEF download ----
 function(dui_deps_configure)
-    # Skia/SDL3 source zips (idempotent; the fetch scripts are the manual/offline equivalent)
-    dui_deps_download_skia()
+    # SDL3/Skia source zips (idempotent; the fetch scripts are the manual/offline equivalent).
+    # Download order: SDL3 first, then skia (mirrors the make-time build order).
     if(DUI_ENABLE_SDL)
         dui_deps_download_sdl()
     endif()
+    dui_deps_download_skia()
     dui_deps_download_gn()
 
     # WebView2 SDK download (idempotent, Windows only)
@@ -148,13 +149,40 @@ function(dui_deps_add_targets)
             set(_skia_main_lib "libskia.a")
         endif()
 
+        # ---- gn: built from source at make time (ordered before SDL3/skia) ----
+        set(DUI_GN_BIN "")  # set when the gn source build is available; skia uses it below
+        if(EXISTS "${DUI_ROOT}/third_party/gn/build/gen.py")
+            find_program(DUI_GN_PYTHON NAMES python3 python)
+            if(DUI_GN_PYTHON)
+                if(WIN32)
+                    set(DUI_GN_BIN "${DUI_ROOT}/third_party/gn/out/gn.exe")
+                else()
+                    set(DUI_GN_BIN "${DUI_ROOT}/third_party/gn/out/gn")
+                endif()
+                add_custom_command(
+                    OUTPUT "${DUI_GN_BIN}"
+                    COMMAND "${DUI_GN_PYTHON}" build/gen.py
+                    COMMAND ninja -C out
+                    WORKING_DIRECTORY "${DUI_ROOT}/third_party/gn"
+                    DEPENDS "${DUI_ROOT}/third_party/gn/build/gen.py"
+                    COMMENT "Building gn (python build/gen.py + ninja -C out)..."
+                    USES_TERMINAL VERBATIM
+                )
+                add_custom_target(dui_gn DEPENDS "${DUI_GN_BIN}")
+            endif()
+        endif()
+
         if(DUI_MULTI_CONFIG)
             # ---- Debug Skia ----
             if(NOT EXISTS "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}")
-                find_program(GN_EXECUTABLE_DEBUG
-                    NAMES gn
-                    HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
-                    REQUIRED)
+                if(DUI_GN_BIN)
+                    set(GN_EXECUTABLE_DEBUG "${DUI_GN_BIN}")
+                else()
+                    find_program(GN_EXECUTABLE_DEBUG
+                        NAMES gn
+                        HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                        REQUIRED)
+                endif()
                 find_program(NINJA_EXECUTABLE_DEBUG
                     NAMES ninja
                     HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
@@ -164,21 +192,28 @@ function(dui_deps_add_targets)
                     COMMAND ${GN_EXECUTABLE_DEBUG} gen "${DUI_SKIA_LIB_PATH_DEBUG}"
                     COMMAND ${NINJA_EXECUTABLE_DEBUG} -C "${DUI_SKIA_LIB_PATH_DEBUG}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
-                    DEPENDS "${DUI_SKIA_LIB_PATH_DEBUG}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn"
+                    DEPENDS "${DUI_SKIA_LIB_PATH_DEBUG}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (debug, gn gen + ninja)..."
                     USES_TERMINAL VERBATIM
                 )
                 add_custom_target(dui_skia_debug DEPENDS "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}")
+                if(TARGET dui_gn)
+                    add_dependencies(dui_skia_debug dui_gn)
+                endif()
             else()
                 message(STATUS "Using prebuilt Skia (debug): ${DUI_SKIA_LIB_PATH_DEBUG}")
             endif()
 
             # ---- Release Skia ----
             if(NOT EXISTS "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}")
-                find_program(GN_EXECUTABLE_RELEASE
-                    NAMES gn
-                    HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
-                    REQUIRED)
+                if(DUI_GN_BIN)
+                    set(GN_EXECUTABLE_RELEASE "${DUI_GN_BIN}")
+                else()
+                    find_program(GN_EXECUTABLE_RELEASE
+                        NAMES gn
+                        HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                        REQUIRED)
+                endif()
                 find_program(NINJA_EXECUTABLE_RELEASE
                     NAMES ninja
                     HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
@@ -188,11 +223,14 @@ function(dui_deps_add_targets)
                     COMMAND ${GN_EXECUTABLE_RELEASE} gen "${DUI_SKIA_LIB_PATH_RELEASE}"
                     COMMAND ${NINJA_EXECUTABLE_RELEASE} -C "${DUI_SKIA_LIB_PATH_RELEASE}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
-                    DEPENDS "${DUI_SKIA_LIB_PATH_RELEASE}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn"
+                    DEPENDS "${DUI_SKIA_LIB_PATH_RELEASE}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (release, gn gen + ninja)..."
                     USES_TERMINAL VERBATIM
                 )
                 add_custom_target(dui_skia_release DEPENDS "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}")
+                if(TARGET dui_gn)
+                    add_dependencies(dui_skia_release dui_gn)
+                endif()
             else()
                 message(STATUS "Using prebuilt Skia (release): ${DUI_SKIA_LIB_PATH_RELEASE}")
             endif()
@@ -211,10 +249,14 @@ function(dui_deps_add_targets)
                 # Look for gn/ninja inside the Skia source's bin/ first (the convention used by
                 # scripts/build_dui_all_in_one.bat: bin/fetch-gn drops gn.exe there and
                 # bin/fetch-ninja drops ninja.exe into third_party/ninja), then fall back to PATH.
-                find_program(GN_EXECUTABLE
-                    NAMES gn
-                    HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
-                    REQUIRED)
+                if(DUI_GN_BIN)
+                    set(GN_EXECUTABLE "${DUI_GN_BIN}")
+                else()
+                    find_program(GN_EXECUTABLE
+                        NAMES gn
+                        HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                        REQUIRED)
+                endif()
                 find_program(NINJA_EXECUTABLE
                     NAMES ninja
                     HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
@@ -225,11 +267,14 @@ function(dui_deps_add_targets)
                     COMMAND ${GN_EXECUTABLE} gen "${DUI_SKIA_LIB_PATH}"
                     COMMAND ${NINJA_EXECUTABLE} -C "${DUI_SKIA_LIB_PATH}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
-                    DEPENDS "${DUI_SKIA_LIB_PATH}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn"
+                    DEPENDS "${DUI_SKIA_LIB_PATH}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (gn gen + ninja)..."
                     USES_TERMINAL VERBATIM
                 )
                 add_custom_target(dui_skia DEPENDS "${DUI_SKIA_LIB_PATH}/${_skia_main_lib}")
+                if(TARGET dui_gn)
+                    add_dependencies(dui_skia dui_gn)
+                endif()
             else()
                 message(STATUS "Using prebuilt Skia: ${DUI_SKIA_LIB_PATH}")
             endif()
@@ -273,6 +318,10 @@ function(dui_deps_add_targets)
                 USES_TERMINAL VERBATIM
             )
             add_custom_target(dui_sdl DEPENDS "${SDL_STAMP}")
+            # Build order: gn first, then SDL3 (and skia after that)
+            if(TARGET dui_gn)
+                add_dependencies(dui_sdl dui_gn)
+            endif()
         else()
             message(STATUS "Using prebuilt SDL3: ${DUI_SDL_SRC_ROOT_DIR}")
         endif()
@@ -431,72 +480,30 @@ function(dui_deps_download_sdl)
     message(STATUS "SDL3 source ready: ${DUI_SDL_SRC_ROOT_DIR}")
 endfunction()
 
-# ---- GN build from source (idempotent; official instructions from the gn README) ----
-# Building skia requires gn. Prebuilt CIPD binaries only cover amd64 reliably, so build gn
-# from source at configure time (git clone + build/gen.py + ninja -C out), following
-# https://gn.googlesource.com/gn/+/refs/heads/main/README.md. The binary lands in
-# third_party/gn/out/gn (gn.exe on Windows); if the build is unavailable (e.g. no VS
-# toolchain in PATH on Windows), configure falls back to a system gn or skia's bin/.
+# ---- GN source clone (idempotent; the build itself happens at make time) ----
+# Building skia requires gn. Prebuilt CIPD binaries only cover amd64 reliably, so clone the
+# gn source at configure time and build it at make time via the dui_gn target
+# (build/gen.py + ninja -C out, per https://gn.googlesource.com/gn/+/refs/heads/main/README.md),
+# ordered before the SDL3/skia builds. The binary lands in third_party/gn/out/gn (gn.exe on
+# Windows); if the clone is unavailable, configure falls back to a system gn or skia's bin/.
 function(dui_deps_download_gn)
     if(NOT DUI_BUILD_SKIA_FROM_SOURCE)
         return()
     endif()
     set(_gn_dir "${DUI_ROOT}/third_party/gn")
-    if(WIN32)
-        set(_gn_bin "${_gn_dir}/out/gn.exe")
-    else()
-        set(_gn_bin "${_gn_dir}/out/gn")
+    if(EXISTS "${_gn_dir}/build/gen.py")
+        return()  # already cloned
     endif()
-    if(EXISTS "${_gn_bin}")
-        return()  # already built
-    endif()
-
-    # 1. Clone the gn source (idempotent: keep an existing clone, as with the skia/SDL zips)
-    if(NOT EXISTS "${_gn_dir}/.git")
-        message(STATUS "Cloning gn source: https://gn.googlesource.com/gn")
-        execute_process(
-            COMMAND git clone https://gn.googlesource.com/gn "${_gn_dir}"
-            RESULT_VARIABLE _gn_clone_result
-        )
-        if(NOT _gn_clone_result EQUAL 0 OR NOT EXISTS "${_gn_dir}/build/gen.py")
-            message(WARNING "gn clone failed; configure will look for a system gn (or skia's bin/)")
-            return()
-        endif()
-    endif()
-
-    # 2. Generate + build (python3 preferred, python fallback; needs ninja on PATH)
-    if(NOT WIN32)
-        execute_process(COMMAND chmod +x "${_gn_dir}/build/gen.py" RESULT_VARIABLE _gn_chmod_result)
-    endif()
-    find_program(_gn_python NAMES python3 python)
-    if(NOT _gn_python)
-        message(WARNING "python3 not found; gn source build skipped (use a system gn instead)")
-        return()
-    endif()
-    message(STATUS "Building gn from source (python build/gen.py + ninja -C out)...")
+    message(STATUS "Cloning gn source: https://gn.googlesource.com/gn")
     execute_process(
-        COMMAND "${_gn_python}" build/gen.py
-        WORKING_DIRECTORY "${_gn_dir}"
-        RESULT_VARIABLE _gn_gen_result
+        # NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
+        # to generate last_commit_position.h, which fails on a shallow clone (the tag only
+        # exists in the full history). The repo is small (~40MB, ~30s to clone).
+        COMMAND git clone https://gn.googlesource.com/gn "${_gn_dir}"
+        RESULT_VARIABLE _gn_clone_result
     )
-    if(_gn_gen_result EQUAL 0)
-        execute_process(
-            COMMAND ninja -C out
-            WORKING_DIRECTORY "${_gn_dir}"
-            RESULT_VARIABLE _gn_build_result
-        )
-    else()
-        set(_gn_build_result 1)
-    endif()
-    if(_gn_build_result EQUAL 0 AND EXISTS "${_gn_bin}")
-        if(NOT WIN32)
-            execute_process(COMMAND chmod +x "${_gn_bin}")
-        endif()
-        message(STATUS "gn built: ${_gn_bin}")
-    else()
-        # Windows: gen.py requires the MSVC toolchain (cl.exe/link.exe) in PATH; if the
-        # configure environment lacks it (e.g. not run from a VS prompt), fall back.
-        message(WARNING "gn source build failed; configure will look for a system gn (or skia's bin/)")
+    if(NOT _gn_clone_result EQUAL 0 OR NOT EXISTS "${_gn_dir}/build/gen.py")
+        message(WARNING "gn clone failed; configure will look for a system gn (or skia's bin/)")
     endif()
 endfunction()
 

@@ -335,6 +335,56 @@ if(DUI_LOG)
     message(STATUS "")
 endif()
 
+# ---- Resource sync: keep the runtime resource tree in bin/ in sync with the repo-root
+# resources/ directory (fonts/lang/themes) and generate the resources.zip archive.
+# bin/ is build output and may be deleted at any time; configure re-creates it.
+# Idempotent per configure run (GLOBAL-property guarded); safe to call per scope.
+function(dui_sync_resources)
+    get_property(_dui_res_synced GLOBAL PROPERTY DUI_RESOURCES_SYNCED)
+    if(_dui_res_synced)
+        return()
+    endif()
+    set_property(GLOBAL PROPERTY DUI_RESOURCES_SYNCED TRUE)
+
+    set(_res_src "${DUI_ROOT}/resources")
+    if(NOT EXISTS "${_res_src}/themes")
+        return()  # resources/ not present (e.g. library-only build)
+    endif()
+
+    # 1. Generate resources.zip next to resources/ (zip with a "resources/" top-level folder,
+    #    matching the runtime path convention used by ZipManager / the embedded-zip flow)
+    set(_res_zip "${_res_src}/resources.zip")
+    if(WIN32)
+        # bsdtar (Windows 10 1803+) writes zip archives with -a
+        execute_process(
+            COMMAND tar -a -cf "${_res_zip}" resources
+            WORKING_DIRECTORY "${DUI_ROOT}"
+            RESULT_VARIABLE _zip_result
+        )
+    else()
+        execute_process(
+            COMMAND zip -q -r "${_res_zip}" resources
+            WORKING_DIRECTORY "${DUI_ROOT}"
+            RESULT_VARIABLE _zip_result
+        )
+    endif()
+    if(_zip_result EQUAL 0 AND EXISTS "${_res_zip}")
+        message(STATUS "resources.zip: ${_res_zip}")
+    else()
+        message(WARNING "resources.zip creation failed; the zip resource mode will be unavailable")
+    endif()
+
+    # 2. Copy resources/ + resources.zip into bin/ (create bin/ if missing - it is build
+    #    output and may have been deleted; configure must re-create the resource tree)
+    file(MAKE_DIRECTORY "${DUI_BIN_PATH}/resources")
+    file(COPY "${_res_src}/fonts" "${_res_src}/lang" "${_res_src}/themes"
+         DESTINATION "${DUI_BIN_PATH}/resources")
+    if(EXISTS "${_res_zip}")
+        file(COPY "${_res_zip}" DESTINATION "${DUI_BIN_PATH}")
+    endif()
+    message(STATUS "Resources synced to ${DUI_BIN_PATH}")
+endfunction()
+
 # Dependency management: Skia/SDL3 sources are downloaded/extracted from zips at
 # configure time when missing (see dui_deps.cmake) and are built at make time;
 # CEF is downloaded at configure time when missing.
@@ -342,3 +392,4 @@ endif()
 include("${CMAKE_CURRENT_LIST_DIR}/dui_deps.cmake")
 dui_deps_configure()
 dui_deps_add_targets()
+dui_sync_resources()

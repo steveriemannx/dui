@@ -191,6 +191,20 @@ extract_zip() {
 SKIA_ZIP_URL="https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip"
 SDL_ZIP_URL="https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip"
 
+# Fetch SDL into third_party/SDL3 first, then skia (same layout as the CMake build; idempotent)
+if ! is_windows || [ "$ENABLE_SDL" == "1" ]; then
+    echo "- Fetching SDL ..."
+    if [ ! -f "./dui/third_party/SDL3/CMakeLists.txt" ]; then
+        download_zip "$SDL_ZIP_URL" ./SDL.zip
+        extract_zip ./SDL.zip ./dui/third_party/SDL3
+    fi
+    if [ ! -f "./dui/third_party/SDL3/CMakeLists.txt" ]; then
+        echo "fetch SDL failed!"
+        cd "$CURRENT_DIR"
+        exit 1
+    fi
+fi
+
 # Fetch skia into third_party/skia (same layout as the CMake build; idempotent)
 echo "- Fetching skia ..."
 if [ ! -f "./dui/third_party/skia/BUILD.gn" ]; then
@@ -207,6 +221,9 @@ fi
 echo "- Building gn ..."
 if [ ! -f "./dui/third_party/gn/out/gn" ]; then
     if [ ! -d "./dui/third_party/gn/.git" ]; then
+        # NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
+        # to generate last_commit_position.h, which fails on a shallow clone (the tag only
+        # exists in the full history). The repo is small (~40MB, ~30s to clone).
         git clone https://gn.googlesource.com/gn ./dui/third_party/gn
     fi
     (cd ./dui/third_party/gn && python3 build/gen.py && ninja -C out)
@@ -225,20 +242,6 @@ fi
 
 if is_windows; then
     echo "ENABLE_SDL: $ENABLE_SDL"
-fi
-
-if ! is_windows || [ "$ENABLE_SDL" == "1" ]; then
-    # Fetch SDL into third_party/SDL3 (same layout as the CMake build; idempotent)
-    echo "- Fetching SDL ..."
-    if [ ! -f "./dui/third_party/SDL3/CMakeLists.txt" ]; then
-        download_zip "$SDL_ZIP_URL" ./SDL.zip
-        extract_zip ./SDL.zip ./dui/third_party/SDL3
-    fi
-    if [ ! -f "./dui/third_party/SDL3/CMakeLists.txt" ]; then
-        echo "fetch SDL failed!"
-        cd "$CURRENT_DIR"
-        exit 1
-    fi
 fi
 
 # download CEF
@@ -366,45 +369,57 @@ else
 fi
 
 if [ "$has_curl$has_wget" != "00" ] && [ "$has_linux$has_macos" != "00" ] && [ "$ENABLE_WAYLAND" != "1" ]; then
-    # download CEF on Linux and MacOS (skipped for Wayland builds)
+    # download CEF on Linux and MacOS (skipped for Wayland builds).
+    # Shares the CMake flow's cache (third_party/downloads/) and install target
+    # (third_party/libcef/cef_binary): no download when the archive is already cached.
     libcef_linux_dest_dir=./dui/bin/libcef_linux
-    libcef_cef_binary_dir=./cef_binary
-    
-    # libcef file name prefix
+    libcef_cef_binary_dir=./dui/third_party/libcef/cef_binary
+    libcef_cache_dir=./dui/third_party/downloads
+    if [ -f "$libcef_cef_binary_dir/CMakeLists.txt" ]; then
+        echo "- CEF already present: $libcef_cef_binary_dir"
+    else
+    # libcef file name prefix (same full archive as the CMake flow)
     libcef_file_name_prefix=cef_binary_142.0.10+g29548e2+chromium-142.0.7444.135
     if [ "$has_linux" == "1" ]; then
         # Linux
         if [ "$CPU_ARCH" == "arm64" ]; then
-            libcef_file_name="${libcef_file_name_prefix}_linuxarm64_minimal"
+            libcef_file_name="${libcef_file_name_prefix}_linuxarm64"
         else
-            libcef_file_name="${libcef_file_name_prefix}_linux64_minimal"
+            libcef_file_name="${libcef_file_name_prefix}_linux64"
         fi
     else
         # MacOS
         if [ "$CPU_ARCH" == "arm64" ]; then
-            libcef_file_name="${libcef_file_name_prefix}_macosarm64_minimal"
+            libcef_file_name="${libcef_file_name_prefix}_macosarm64"
         else
-            libcef_file_name="${libcef_file_name_prefix}_macosx64_minimal"
+            libcef_file_name="${libcef_file_name_prefix}_macosx64"
         fi
     fi
 
     if [ "$libcef_file_name" != "" ]; then
-        # download .tar.bz2
+        # Use the shared cache; download into it only when missing
         libcef_local_file=${libcef_file_name}.tar.bz2
-        if [ "$has_curl" == "1" ]; then
-            curl_download_with_retry "https://cef-builds.spotifycdn.com/${libcef_file_name}.tar.bz2" "$libcef_local_file" 100 30
+        libcef_cached_file="$libcef_cache_dir/$libcef_local_file"
+        if [ -f "$libcef_cached_file" ]; then
+            echo "- CEF archive cached: $libcef_cached_file"
         else
-            wget_download_with_retry "https://cef-builds.spotifycdn.com/${libcef_file_name}.tar.bz2" "$libcef_local_file" 100 30
+            if [ "$has_curl" == "1" ]; then
+                curl_download_with_retry "https://cef-builds.spotifycdn.com/${libcef_file_name}.tar.bz2" "$libcef_cached_file" 100 30
+            else
+                wget_download_with_retry "https://cef-builds.spotifycdn.com/${libcef_file_name}.tar.bz2" "$libcef_cached_file" 100 30
+            fi
         fi
-        
-        if [ $? -eq 0 ]; then
-            if [ -f "$libcef_local_file" ]; then
-                # Linux and MacOS: extract .tar.bz2
-                echo "Extracting: ${libcef_local_file} ..."
-                tar -xjf "$libcef_local_file"
-                mv "$libcef_file_name" "$libcef_cef_binary_dir"
-                echo "Extracted: ${libcef_local_file}."
-                
+
+        if [ -f "$libcef_cached_file" ]; then
+            # Linux and MacOS: extract .tar.bz2 into third_party/libcef/
+            echo "Extracting: ${libcef_cached_file} ..."
+            mkdir -p ./dui/third_party/libcef
+            tar -xjf "$libcef_cached_file" -C ./dui/third_party/libcef/
+            if [ -d "./dui/third_party/libcef/$libcef_file_name" ]; then
+                rm -rf "$libcef_cef_binary_dir"
+                mv "./dui/third_party/libcef/$libcef_file_name" "$libcef_cef_binary_dir"
+                echo "Extracted: ${libcef_cached_file}."
+
                 if [ "$has_linux" == "1" ]; then
                     # Linux
                     mkdir -p $libcef_linux_dest_dir
@@ -413,6 +428,7 @@ if [ "$has_curl$has_wget" != "00" ] && [ "$has_linux$has_macos" != "00" ] && [ "
                 fi
             fi
         fi
+    fi
     fi
 fi
 # download CEF end
@@ -426,23 +442,49 @@ else
     DUI_CMAKE_REFRESH=
 fi
 
-if ! is_windows; then
-    # build SDL on Linux/MacOS
-    echo "- Building SDL ..."
-    cmake ${DUI_CMAKE_REFRESH} -S "./dui/third_party/SDL3/" -B "./SDL.build" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
-    cmake --build ./SDL.build
-    cmake --install ./SDL.build
-elif [ "$ENABLE_SDL" == "1" ]; then
-    # build SDL on Windows
-    echo "- Building SDL ..."
-    if [ "$has_clang" -eq 1 ]; then
-        DUI_SDL_DIR=SDL.build.msys2.llvm
-    else
-        DUI_SDL_DIR=SDL.build.msys2.gcc
+# Skip the SDL build when the library is installed AND the source is not newer than it
+# (a refreshed source zip re-extracts CMakeLists.txt with a new timestamp -> rebuild).
+sdl_needs_build() {
+    local lib_file
+    lib_file=$(ls -t ./dui/third_party/SDL3/lib/libSDL3* ./dui/third_party/SDL3/lib/SDL3* 2>/dev/null | head -1)
+    if [ -z "$lib_file" ]; then
+        return 0  # not installed -> build
     fi
-    cmake ${DUI_CMAKE_REFRESH} -S "./dui/third_party/SDL3/" -B "./${DUI_SDL_DIR}" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release 
-    cmake --build ./${DUI_SDL_DIR} -j 6
-    cmake --install ./${DUI_SDL_DIR}
+    if [ "./dui/third_party/SDL3/CMakeLists.txt" -nt "$lib_file" ]; then
+        return 0  # source newer than the installed lib -> rebuild
+    fi
+    echo "- SDL3 already installed: $lib_file"
+    return 1  # skip
+}
+
+if ! is_windows; then
+    # build SDL on Linux/MacOS (no --fresh: the incremental build directory in scripts/build_temp is kept)
+    if sdl_needs_build; then
+        echo "- Building SDL ..."
+        cmake -S "./dui/third_party/SDL3/" -B "./dui/scripts/build_temp/sdl3-build" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -DSDL_SHARED=ON -DSDL_STATIC=OFF -DSDL_TEST_LIBRARY=OFF -DSDL_X11_XSCRNSAVER=OFF -DSDL_X11_XTEST=OFF -DCMAKE_BUILD_TYPE=Release
+        cmake --build ./dui/scripts/build_temp/sdl3-build
+        cmake --install ./dui/scripts/build_temp/sdl3-build
+    fi
+elif [ "$ENABLE_SDL" == "1" ]; then
+    # build SDL on Windows (same skip logic)
+    if sdl_needs_build; then
+        echo "- Building SDL ..."
+        if [ "$has_clang" -eq 1 ]; then
+            DUI_SDL_DIR=sdl3-build.msys2.llvm
+        else
+            DUI_SDL_DIR=sdl3-build.msys2.gcc
+        fi
+        cmake -S "./dui/third_party/SDL3/" -B "./dui/scripts/build_temp/${DUI_SDL_DIR}" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release
+        cmake --build ./dui/scripts/build_temp/${DUI_SDL_DIR} -j 6
+        cmake --install ./dui/scripts/build_temp/${DUI_SDL_DIR}
+    fi
+fi
+
+# Verify gn is built before compiling skia
+if [ ! -x "$GN_BIN" ]; then
+    echo "gn not available: $GN_BIN (build it first or install gn)"
+    cd "$CURRENT_DIR"
+    exit 1
 fi
 
 echo "- Building skia ..."

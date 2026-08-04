@@ -24,7 +24,7 @@ endif()
 
 # Output to source dir as .inc (not .cpp) to avoid duplicate compilation
 set(GENERATED_SRC "${CMAKE_CURRENT_SOURCE_DIR}/generated_ui.inc")
-set(RESOURCES_DIR "${DUI_ROOT}/bin/resources")
+set(RESOURCES_DIR "${DUI_ROOT}/resources")
 
 # GEN_AUTO_EMBED ON: pass -g global.xml so the tool emits RegisterEmbeddedClasses()
 # with the images referenced by classes in global.xml embedded into the binary

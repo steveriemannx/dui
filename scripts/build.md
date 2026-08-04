@@ -35,12 +35,12 @@ This directory contains the build documentation and the dependency build scripts
 
 ## Files needed for program release
 
-1. The `${DUI_ROOT}/bin/resources` directory: the resource files (XML files, image resources, etc.)    
-（1）`${DUI_ROOT}/bin/resources/fonts`: font directory; if no custom fonts are used, this directory can be deleted.    
-（2）`${DUI_ROOT}/bin/resources/lang`: multi-language text files; if multi-language support is not used, this directory can be deleted.    
-（3）`${DUI_ROOT}/bin/resources/themes/default`: the theme resource directory; only the `public` directory and the `global.xml` file need to be kept, the other directories can be deleted.    
-2. On Windows, to pack the resources into a zip and embed it in the exe:    
-   Pack the `bin/resources` directory prepared in step 1 into a `resources.zip` file and place it in the `bin` directory, then rebuild the exe.    
+1. The `${DUI_ROOT}/resources` directory (repo root, synced into `bin/resources` at configure time): the resource files (XML files, image resources, etc.)    
+（1）`${DUI_ROOT}/resources/fonts`: font directory; if no custom fonts are used, this directory can be deleted.    
+（2）`${DUI_ROOT}/resources/lang`: multi-language text files; if multi-language support is not used, this directory can be deleted.    
+（3）`${DUI_ROOT}/resources/themes/default`: the theme resource directory; only the `public` directory and the `global.xml` file need to be kept, the other directories can be deleted.    
+2. `bin/` is build output and can be deleted at any time: at configure time, `cmake/dui_common.cmake` regenerates `resources/resources.zip` (zip with a `resources/` top-level folder) and copies `resources/` + `resources.zip` into `bin/`.    
+   On Windows, to pack the resources into a zip and embed it in the exe: use the generated `resources.zip` (in `bin/`) and rebuild the exe.    
    For how to use `resources.zip`, refer to the `examples/basic` example program.    
 3. If the CEF module is used: copy the files in CEF's Release and Resources directories to the `bin\libcef_win` or `bin\libcef_win_109` directory.    
    For details, see the CEF usage documentation: [docs/CEF.md](../docs/CEF.md).
