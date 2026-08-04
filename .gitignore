@@ -374,6 +374,8 @@ healthchecksdb
 # Skia and SDL3 sources (downloaded/extracted automatically by cmake/dui_deps.cmake at configure time)
 /third_party/skia/
 /third_party/SDL3/
+# GN source (cloned + built from source automatically by cmake/dui_deps.cmake at configure time)
+/third_party/gn/
 # Cached Skia/SDL3 zip archives (kept after extraction so reconfigure re-extracts offline)
 /third_party/downloads/
 

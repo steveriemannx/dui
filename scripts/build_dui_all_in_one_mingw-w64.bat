@@ -58,6 +58,20 @@ if %has_gcc%%has_clang% equ 00 (
     exit /b 1
 )
 
+where gn >nul 2>&1
+if %errorlevel% neq 0 (
+    echo gn not found in PATH - install the mingw-w64 gn package or build gn from source
+    cd /d %CURRENT_DIR%
+    exit /b 1
+)
+
+where ninja >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ninja not found in PATH - install the mingw-w64 ninja package
+    cd /d %CURRENT_DIR%
+    exit /b 1
+)
+
 if %has_clang% equ 1 (
     where clang
     where clang++
@@ -90,56 +104,50 @@ if %errorlevel% neq 0 (
 )
 
 if not exist ".\dui\.git" (
-    echo clone retry_clone_skia_compile failed!
+    echo clone dui failed!
     cd /d %CURRENT_DIR%
     exit /b 1
 )
 
-echo - Cloning skia_compile ...
-:retry_clone_skia_compile
-if not exist ".\skia_compile\.git" (
-    git clone https://github.com/rhett-lee/skia_compile
-) else (    
-    git -C ./skia_compile pull
-)
+@REM Fetch skia: download the dui fork zip (same source as the CMake build; idempotent)
+set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip
+set SKIA_ZIP_FILE=skia.zip
+
+if exist ".\dui\third_party\skia\BUILD.gn" goto fetch_skia_done
+:retry_fetch_skia
+curl -L -f -o %SKIA_ZIP_FILE% --retry 3 --connect-timeout 15 --retry-delay 10 --speed-limit 100 --speed-time 120 %SKIA_ZIP_URL%
 if %errorlevel% neq 0 (
     timeout /t %retry_delay% >nul
-    goto retry_clone_skia_compile
+    goto retry_fetch_skia
 )
-
-if not exist ".\skia_compile\.git" (
-    echo clone retry_clone_skia_compile failed!
+if not exist "%SKIA_ZIP_FILE%" (
+    echo fetch skia failed!
     cd /d %CURRENT_DIR%
     exit /b 1
 )
-
-echo - Cloning skia ...
-:retry_clone_skia
-if not exist ".\skia\.git" (
-    git clone https://github.com/google/skia.git
-) else (
-    git -C ./skia stash
-    git -C ./skia checkout main
-    git -C ./skia pull
-)
+@REM Windows 10+ ships tar.exe (bsdtar) which reads zip archives
+if not exist ".\dui\third_party\skia" mkdir ".\dui\third_party\skia"
+tar -xf %SKIA_ZIP_FILE% --strip-components=1 -C .\dui\third_party\skia
 if %errorlevel% neq 0 (
-    timeout /t %retry_delay% >nul
-    goto retry_clone_skia
-)
-
-if not exist ".\skia\.git" (
-    echo clone skia failed!
+    echo extract skia failed!
     cd /d %CURRENT_DIR%
     exit /b 1
 )
+if not exist ".\dui\third_party\skia\BUILD.gn" (
+    echo fetch skia failed!
+    cd /d %CURRENT_DIR%
+    exit /b 1
+)
+del %SKIA_ZIP_FILE%
+:fetch_skia_done
 
 if %ENABLE_SDL% equ 1 (
 echo - Cloning SDL ...
 :retry_clone_SDL
-    if not exist ".\SDL\.git" (
+    if not exist ".\dui\third_party\SDL3\.git" (
         git clone https://github.com/libsdl-org/SDL.git
     ) else (    
-        git -C ./SDL pull
+        git -C ./dui/third_party/SDL3 pull
     )
     if %errorlevel% neq 0 (
         timeout /t %retry_delay% >nul
@@ -147,50 +155,27 @@ echo - Cloning SDL ...
     )
 )
 
-set SKIA_PATCH_SRC_ZIP=skia.2026-02-10.src.zip
-if not exist ".\skia_compile\%SKIA_PATCH_SRC_ZIP%" (
-    echo ".\skia_compile\%SKIA_PATCH_SRC_ZIP%" not found!
-    cd /d %CURRENT_DIR%
-    exit /b 1
-)
-
-cd skia
-git checkout 34aa71b8bee4648a442b7125680232d803374f19
-if %errorlevel% neq 0 (
-    echo git checkout skia failed!
-    cd /d %CURRENT_DIR%
-    exit /b 1
-)
-cd ..
-
-.\skia_compile\windows\bin\miniunz.exe -o skia_compile/%SKIA_PATCH_SRC_ZIP% -d ./skia/
-if %errorlevel% neq 0 (
-    echo ".\skia_compile\%SKIA_PATCH_SRC_ZIP%" Expand-Archive failed!
-    cd /d %CURRENT_DIR%
-    exit /b 1
-)
-
 echo - Building skia ...
-cd skia
+cd dui\third_party\skia
 
 if %has_clang% equ 1 (
     if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-        .\bin\gn.exe gen out/mingw64-llvm.x64.release --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
-        .\bin\ninja.exe -C out/mingw64-llvm.x64.release
+        gn gen out/mingw64-llvm.x64.release --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        ninja -C out/mingw64-llvm.x64.release
     ) else (
-        .\bin\gn.exe gen out/mingw64-llvm.x86.release --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
-        .\bin\ninja.exe -C out/mingw64-llvm.x86.release
+        gn gen out/mingw64-llvm.x86.release --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        ninja -C out/mingw64-llvm.x86.release
     )
 ) else (
     if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-        .\bin\gn.exe gen out/mingw64-gcc.x64.release --args="target_cpu=\"x64\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
-        .\bin\ninja.exe -C out/mingw64-gcc.x64.release
+        gn gen out/mingw64-gcc.x64.release --args="target_cpu=\"x64\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        ninja -C out/mingw64-gcc.x64.release
     ) else (
-        .\bin\gn.exe gen out/mingw64-gcc.x86.release --args="target_cpu=\"x86\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
-        .\bin\ninja.exe -C out/mingw64-gcc.x86.release
+        gn gen out/mingw64-gcc.x86.release --args="target_cpu=\"x86\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        ninja -C out/mingw64-gcc.x86.release
     )
 )
-cd ..
+cd ..\..\..
 
 if %ENABLE_SDL% equ 1 (
     echo - Building SDL ...
@@ -204,7 +189,7 @@ if %ENABLE_SDL% equ 1 (
         SET DUI_SDL_DIR=SDL.build.mingw.gcc
     )
 
-    cmake --fresh -S "./SDL/" -B "./%DUI_SDL_DIR%" -DCMAKE_INSTALL_PREFIX="./SDL3/" -G"MinGW Makefiles" -DCMAKE_C_COMPILER=%DUI_CC% -DCMAKE_CXX_COMPILER=%DUI_CXX% -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release 
+    cmake --fresh -S "./dui/third_party/SDL3/" -B "./%DUI_SDL_DIR%" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -G"MinGW Makefiles" -DCMAKE_C_COMPILER=%DUI_CC% -DCMAKE_CXX_COMPILER=%DUI_CXX% -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release 
     cmake --build ./%DUI_SDL_DIR% -j 6
     cmake --install ./%DUI_SDL_DIR%
 )

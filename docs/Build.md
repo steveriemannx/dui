@@ -149,17 +149,8 @@ brew install cmake
 ```
 brew install ninja
 ```
-#### Install gn (gn needs to be compiled from source)
-```
-mkdir ~/develop
-cd ~/develop
-git clone https://github.com/timniederhausen/gn
-cd gn
-python3 build/gen.py
-ninja -C out
-sudo cp out/gn /usr/local/bin/
-gn --version
-```
+#### gn (no installation needed)
+CMake builds gn from source automatically at configure time (git clone + `build/gen.py` + `ninja -C out`, following the official gn README), so a system gn is optional — it is only used as a fallback if the automatic build is unavailable.
 
 ### II. Automated build with a script (recommended)
 The script automatically handles downloading and building the relevant source code.    
