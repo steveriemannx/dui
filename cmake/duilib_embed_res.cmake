@@ -47,7 +47,7 @@ if(DUILIB_OS_WINDOWS)
         message(FATAL_ERROR "embed_resources.exe not found at ${TOOL_EXE}")
     endif()
 else()
-    # macOS / Linux: compile from source at build time
+    # macOS / Linux / FreeBSD: compile from source at build time
     set(TOOL_EXE "${TOOL_BIN}")
     add_custom_command(
         OUTPUT "${TOOL_EXE}"
