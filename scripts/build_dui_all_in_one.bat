@@ -112,9 +112,16 @@ echo %cd%
 set retry_delay=10
 
 @REM Fetch skia: download the dui fork zip and extract it (replaces git clone + skia_compile patch)
+@REM The version marker (.dui_skia_version) triggers a re-fetch when the tag changes.
+set SKIA_VERSION=skia-dui-0.1.1
 set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip
 set SKIA_ZIP_FILE=skia.zip
-
+set SKIA_HAVE_VERSION=
+if exist ".\dui\third_party\skia\.dui_skia_version" set /p SKIA_HAVE_VERSION=<.\dui\third_party\skia\.dui_skia_version
+if exist ".\dui\third_party\skia\BUILD.gn" if not "%SKIA_HAVE_VERSION%"=="%SKIA_VERSION%" (
+    echo Skia version mismatch - re-fetching ...
+    rmdir /s /q ".\dui\third_party\skia"
+)
 if exist ".\dui\third_party\skia\BUILD.gn" goto fetch_skia_done
 :retry_fetch_skia
 curl -L -f -o %SKIA_ZIP_FILE% --retry 3 --connect-timeout 15 --retry-delay 10 --speed-limit 100 --speed-time 120 %SKIA_ZIP_URL%
@@ -140,6 +147,7 @@ if not exist ".\dui\third_party\skia\BUILD.gn" (
     cd /d %CURRENT_DIR%
     exit /b 1
 )
+> ".\dui\third_party\skia\.dui_skia_version" <nul set /p =%SKIA_VERSION%
 del %SKIA_ZIP_FILE%
 :fetch_skia_done
 

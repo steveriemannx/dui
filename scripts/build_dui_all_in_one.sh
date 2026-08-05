@@ -186,11 +186,18 @@ if ! is_windows || [ "$ENABLE_SDL" == "1" ]; then
     fi
 fi
 
-# Fetch skia into third_party/skia (same layout as the CMake build; idempotent)
+SKIA_VERSION="skia-dui-0.1.1"
+# Fetch skia into third_party/skia (same layout as the CMake build; idempotent).
+# The version marker (.dui_skia_version) triggers a re-fetch when the tag changes.
 echo "- Fetching skia ..."
+if [ -f "./dui/third_party/skia/BUILD.gn" ] && { [ ! -f "./dui/third_party/skia/.dui_skia_version" ] || [ "$(cat ./dui/third_party/skia/.dui_skia_version 2>/dev/null)" != "$SKIA_VERSION" ]; }; then
+    echo "  Skia version mismatch; re-fetching ..."
+    rm -rf ./dui/third_party/skia
+fi
 if [ ! -f "./dui/third_party/skia/BUILD.gn" ]; then
     download_zip "$SKIA_ZIP_URL" ./skia.zip
     extract_zip ./skia.zip ./dui/third_party/skia
+    printf '%s' "$SKIA_VERSION" > ./dui/third_party/skia/.dui_skia_version
 fi
 if [ ! -f "./dui/third_party/skia/BUILD.gn" ]; then
     echo "fetch skia failed!"
