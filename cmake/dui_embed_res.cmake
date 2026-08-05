@@ -15,8 +15,8 @@
 # time; after adding new files to the resources directory, re-run cmake.
 #
 # Tool:
-#   - Windows : pre-compiled cmake/embed_resources.exe (rebuilt at configure time
-#               when the source changes; avoids Device Guard)
+#   - Windows : compiled at configure time into cmake/embed_resources.exe when
+#               missing or the sources changed (run inside the vcvarsall environment)
 #   - Others  : compiled from cmake/embed_resources.cpp at build time.
 
 if(NOT DEFINED EMBED_RES_DIR)
@@ -28,23 +28,23 @@ set(TOOL_BIN "${CMAKE_CURRENT_BINARY_DIR}/embed_resources")
 set(GENERATED_INC "${CMAKE_CURRENT_BINARY_DIR}/embedded_resources.inc")
 
 if(DUI_OS_WINDOWS)
-    # Windows: pre-compiled exe, rebuilt at configure time when source changes
+    # Windows: compiled at configure time when missing or the sources changed
     set(TOOL_EXE "${DUI_SRC_ROOT_DIR}/cmake/embed_resources.exe")
 
     if("${TOOL_SRC}" IS_NEWER_THAN "${TOOL_EXE}")
         message(STATUS "Rebuilding embed_resources.exe (source changed)")
-        execute_process(
-            COMMAND "${CMAKE_CXX_COMPILER}" /nologo /std:c++17 /O2 /EHsc "${TOOL_SRC}" /Fe:"${TOOL_EXE}"
-            WORKING_DIRECTORY "${DUI_SRC_ROOT_DIR}"
-            RESULT_VARIABLE _build_result
-        )
-        if(NOT _build_result EQUAL 0)
-            message(FATAL_ERROR "Failed to build embed_resources.exe")
+        dui_build_msvc_tool(_tool_ok "${TOOL_SRC}" "${TOOL_EXE}" "")
+        if(NOT _tool_ok)
+            message(WARNING "Failed to rebuild embed_resources.exe automatically.\n"
+                            "Compile it manually in a VS Developer Command Prompt:\n"
+                            "  cl /nologo /std:c++17 /O2 /EHsc cmake/embed_resources.cpp /Fe:cmake/embed_resources.exe")
         endif()
     endif()
 
     if(NOT EXISTS "${TOOL_EXE}")
-        message(FATAL_ERROR "embed_resources.exe not found at ${TOOL_EXE}")
+        message(FATAL_ERROR "embed_resources.exe not found at ${TOOL_EXE}.\n"
+                "Compile it manually in a VS Developer Command Prompt:\n"
+                "  cl /nologo /std:c++17 /O2 /EHsc cmake/embed_resources.cpp /Fe:cmake/embed_resources.exe")
     endif()
 else()
     # macOS / Linux / FreeBSD: compile from source at build time
