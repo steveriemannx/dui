@@ -119,7 +119,7 @@ set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-du
 set SKIA_ZIP_FILE=skia.zip
 set SKIA_HAVE_VERSION=
 set SKIA_REFETCH=0
-if exist ".\dui\third_party\skia\.dui_skia_version" set /p SKIA_HAVE_VERSION=<.\dui\third_party\skia\.dui_skia_version
+if exist ".\dui\third_party\skia\.dui_skia_version" for /f "usebackq delims=" %%v in (".\dui\third_party\skia\.dui_skia_version") do set "SKIA_HAVE_VERSION=%%v"
 if exist ".\dui\third_party\skia\BUILD.gn" if not "%SKIA_HAVE_VERSION%"=="%SKIA_VERSION%" set SKIA_REFETCH=1
 if "%SKIA_REFETCH%"=="1" (
     echo Skia version mismatch - re-fetching ...
