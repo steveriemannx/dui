@@ -395,7 +395,11 @@ function(dui_deps_download_retry _url _file _kind)
         endif()
         file(REMOVE "${_file}")  # never leave a partial file for the next configure
     endwhile()
-    message(FATAL_ERROR "Download failed after ${_attempt} attempts: ${_url}")
+    get_filename_component(_file_dir "${_file}" DIRECTORY)
+    message(FATAL_ERROR "Download failed after ${_attempt} attempts: ${_url}\n"
+            "Please retry cmake configure later, or download the file manually (see the URL\n"
+            "above) and place it into ${_file_dir} keeping its original filename - the next\n"
+            "configure re-extracts from the cache without downloading.")
 endfunction()
 
 # ---- Skia source zip download (idempotent; fetched at configure time, no shell scripts) ----
@@ -666,7 +670,11 @@ function(dui_deps_download_cef)
         )
         if(NOT _cef_tar_result EQUAL 0 OR NOT EXISTS "${_cef_extracted}")
             file(REMOVE "${_cef_archive}")  # corrupt archive; force a fresh download next time
-            message(FATAL_ERROR "CEF archive extraction failed: ${_cef_archive}")
+            message(FATAL_ERROR "CEF archive extraction failed: ${_cef_archive}\n"
+                    "Download the archive manually from https://cef-builds.spotifycdn.com/ and\n"
+                    "either place it into ${_cef_dl_dir} (keep the original filename), or\n"
+                    "extract it into ${_cef_dest} (the extraction location), then re-run\n"
+                    "cmake configure. If you do not need the CEF examples, set -DDUI_ENABLE_CEF=OFF.")
         endif()
     endif()
 
