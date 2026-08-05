@@ -401,7 +401,9 @@ function(dui_deps_download_skia)
     file(REMOVE_RECURSE "${_skia_tmp_dir}")
     file(MAKE_DIRECTORY "${_skia_tmp_dir}")
     if(WIN32)
-        # Windows 10 1803+ ships tar.exe (bsdtar), which reads zip archives
+        # Windows 10 1803+ ships tar.exe (bsdtar), which reads zip archives.
+        # bsdtar -C requires the target dir to exist, so create it first.
+        file(MAKE_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}")
         execute_process(
             COMMAND tar -xf "${_skia_archive}" --strip-components=1 -C "${DUI_SKIA_SRC_ROOT_DIR}"
             RESULT_VARIABLE _skia_extract_result
@@ -453,7 +455,9 @@ function(dui_deps_download_sdl)
     file(REMOVE_RECURSE "${_sdl_tmp_dir}")
     file(MAKE_DIRECTORY "${_sdl_tmp_dir}")
     if(WIN32)
-        # Windows 10 1803+ ships tar.exe (bsdtar), which reads zip archives
+        # Windows 10 1803+ ships tar.exe (bsdtar), which reads zip archives.
+        # bsdtar -C requires the target dir to exist, so create it first.
+        file(MAKE_DIRECTORY "${DUI_SDL_SRC_ROOT_DIR}")
         execute_process(
             COMMAND tar -xf "${_sdl_archive}" --strip-components=1 -C "${DUI_SDL_SRC_ROOT_DIR}"
             RESULT_VARIABLE _sdl_extract_result
