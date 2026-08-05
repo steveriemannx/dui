@@ -84,32 +84,14 @@ if %has_clang% equ 1 (
 
 cd /d %SCRIPT_DIR%
 echo %cd%
-if not exist ".\dui\.git" (
-    if exist "..\..\dui\.git" (
+if not exist ".\dui\CMakeLists.txt" (
+    if exist "..\..\dui\CMakeLists.txt" (
         cd ..\..\
     )
 )
 echo %cd%
 
 set retry_delay=10
-
-echo - Cloning dui ...
-:retry_clone_dui
-if not exist ".\dui\.git" (
-    git clone https://github.com/steveriemannx/dui dui
-) else (
-    git -C ./dui pull
-)
-if %errorlevel% neq 0 (
-    timeout /t %retry_delay% >nul
-    goto retry_clone_dui
-)
-
-if not exist ".\dui\.git" (
-    echo clone dui failed!
-    cd /d %CURRENT_DIR%
-    exit /b 1
-)
 
 @REM Fetch SDL first, then skia (same layout as the CMake build; SDL clone is idempotent)
 if %ENABLE_SDL% equ 1 (

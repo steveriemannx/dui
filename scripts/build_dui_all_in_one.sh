@@ -114,8 +114,9 @@ is_windows() {
 
 cd "$SCRIPT_DIR"
 pwd
-if [ ! -d "./dui/.git" ]; then
-    if [ -d "../../dui/.git" ]; then
+# zip source archives have no .git dir, so locate the repo root by CMakeLists.txt
+if [ ! -f "./dui/CMakeLists.txt" ]; then
+    if [ -f "../../dui/CMakeLists.txt" ]; then
         cd ../../
     fi
 fi
