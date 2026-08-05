@@ -124,26 +124,6 @@ pwd
 start_time=$(date +%s)
 retry_delay=10
 
-# Retry clone dui
-echo "- Cloning dui ..."
-clone_dui() {
-    if [ ! -d "./dui/.git" ]; then
-        git clone https://github.com/steveriemannx/dui.git dui
-    else
-        git -C ./dui pull
-    fi
-    if [ $? -ne 0 ]; then
-        sleep $retry_delay
-        clone_dui
-    fi
-}
-clone_dui
-if [ ! -d "./dui/.git" ]; then
-    echo "clone dui failed!"
-    cd "$CURRENT_DIR"
-    exit 1
-fi
-
 # Download a zip archive (curl preferred, wget fallback) with retry
 # $1: URL, $2: output file
 download_zip() {
