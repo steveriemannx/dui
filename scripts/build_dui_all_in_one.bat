@@ -214,6 +214,11 @@ if "%GN_BIN%"=="" (
             cd /d %CURRENT_DIR%
             exit /b 1
         )
+        @REM Normalize line endings to LF (Windows autocrlf converts text files to
+        @REM CRLF, which breaks gn's own unit tests - format_test_data comparison)
+        git -C .\dui\third_party\gn config core.autocrlf false
+        git -C .\dui\third_party\gn rm --cached -r .
+        git -C .\dui\third_party\gn reset --hard
         for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_PATH=%%i"
         @call "%MSVC_VAR_PATH%" x64
         cd dui\third_party\gn
@@ -221,7 +226,9 @@ if "%GN_BIN%"=="" (
         @REM chars and the build treats warnings as errors; /utf-8 fixes the parsing.
         set "CL=%CL% /utf-8"
         python3 build/gen.py
-        ..\skia\third_party\ninja\ninja.exe -C out
+        @REM Hide the /showIncludes notes; the log keeps the full output.
+        ..\skia\third_party\ninja\ninja.exe -C out > "%TEMP%\dui_gn_ninja.log" 2>&1
+        findstr /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LINK" "%TEMP%\dui_gn_ninja.log"
         cd ..\..\..
         if not exist ".\dui\third_party\gn\out\gn.exe" (
             echo gn build failed! Install gn or check the build log above.
@@ -239,16 +246,17 @@ cd dui\third_party\skia
 @REM and the build treats warnings as errors; /utf-8 fixes the parsing.
 set "CL=%CL% /utf-8"
 %GN_BIN% gen out/llvm.x64.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
-.\third_party\ninja\ninja.exe -C out/llvm.x64.debug
-
+.\third_party\ninja\ninja.exe -C out/llvm.x64.debug > "%TEMP%\dui_skia_ninja.log" 2>&1
+findstr /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LINK" "%TEMP%\dui_skia_ninja.log"
 %GN_BIN% gen out/llvm.x64.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
-.\third_party\ninja\ninja.exe -C out/llvm.x64.release
-
+.\third_party\ninja\ninja.exe -C out/llvm.x64.release > "%TEMP%\dui_skia_ninja.log" 2>&1
+findstr /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LINK" "%TEMP%\dui_skia_ninja.log"
 %GN_BIN% gen out/llvm.x86.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
-.\third_party\ninja\ninja.exe -C out/llvm.x86.release
-
+.\third_party\ninja\ninja.exe -C out/llvm.x86.release > "%TEMP%\dui_skia_ninja.log" 2>&1
+findstr /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LINK" "%TEMP%\dui_skia_ninja.log"
 %GN_BIN% gen out/llvm.x86.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
-.\third_party\ninja\ninja.exe -C out/llvm.x86.debug
+.\third_party\ninja\ninja.exe -C out/llvm.x86.debug > "%TEMP%\dui_skia_ninja.log" 2>&1
+findstr /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LINK" "%TEMP%\dui_skia_ninja.log"
 cd ..\..\..
 
 @REM build dui

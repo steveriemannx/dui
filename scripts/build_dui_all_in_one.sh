@@ -287,6 +287,16 @@ if [ -z "$GN_BIN" ]; then
             fi
         fi
     fi
+    if [ -d "./dui/third_party/gn/.git" ] && is_windows; then
+        # Windows checkouts convert text files to CRLF (core.autocrlf), which breaks
+        # gn's own unit tests (format_test_data comparison); normalize to LF once
+        if [ "$(git -C ./dui/third_party/gn config --get core.autocrlf 2>/dev/null)" != "false" ]; then
+            echo "  Normalizing gn checkout line endings to LF ..."
+            git -C ./dui/third_party/gn config core.autocrlf false
+            git -C ./dui/third_party/gn rm --cached -r . >/dev/null 2>&1
+            git -C ./dui/third_party/gn reset --hard >/dev/null 2>&1
+        fi
+    fi
     (cd ./dui/third_party/gn && python3 build/gen.py && ninja -C out)
     GN_BIN=$(cd ./dui/third_party/gn/out 2>/dev/null && pwd)/gn
     if [ ! -x "$GN_BIN" ]; then

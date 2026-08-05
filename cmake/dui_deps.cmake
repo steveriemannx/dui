@@ -141,13 +141,21 @@ function(dui_deps_add_targets)
 
     # ---- Skia: gn gen + ninja (ninja is incremental: interrupted builds self-heal,
     # ---- args.gn changes re-trigger gn gen; no stamp file needed).
-    # C4819 on Chinese Windows (codepage 936): skia sources contain non-ASCII chars
-    # and the build treats warnings as errors; CL=/utf-8 makes clang-cl read them as
-    # UTF-8 (harmless on other platforms/compilers).
+    # Windows: run every ninja build through a filter .bat that (a) sets CL=/utf-8
+    # (C4819 on codepage-936 Windows: sources contain non-ASCII chars and the build
+    # treats warnings as errors) and (b) hides cl's /showIncludes notes ("Note:
+    # including file") from the console - ninja still parses them internally for
+    # dependency tracking - keeping only progress and error lines visible.
+    #   Usage: dui_ninja.bat <ninja> <build-dir> [target...]
     if(WIN32)
-        set(_ninja_wrap "${CMAKE_COMMAND}" -E env "CL=/utf-8")
-    else()
-        set(_ninja_wrap)
+        set(DUI_NINJA_FILTER_BAT "${CMAKE_CURRENT_BINARY_DIR}/dui_ninja.bat")
+        file(WRITE "${DUI_NINJA_FILTER_BAT}"
+            "@echo off\r\n"
+            "set \"CL=%CL% /utf-8\"\r\n"
+            "\"%~1\" -C \"%~2\" %~3 %~4 > \"%TEMP%\\dui_ninja.log\" 2>&1\r\n"
+            "set \"RC=%errorlevel%\"\r\n"
+            "findstr /r /c:\"^\\[[0-9]*/[0-9]*\\]\" /c:\"error\" /c:\"FAILED\" /c:\"ninja:\" /c:\"LINK\" \"%TEMP%\\dui_ninja.log\"\r\n"
+            "exit /b %RC%\r\n")
     endif()
     if(DUI_BUILD_SKIA_FROM_SOURCE)
         # Main Skia output filename differs by platform (MSVC: skia.lib, others: libskia.a)
@@ -201,18 +209,18 @@ function(dui_deps_add_targets)
                 endif()
                 # gen.py emits build.ninja that invokes bare "cl.exe", which requires
                 # the MSVC toolchain in PATH (ninja fails with "CreateProcess failed:
-                # The system cannot find the file specified" otherwise), and the gn
-                # sources need /utf-8 on codepage-936 Windows. Run the whole build
-                # inside a temp .bat that calls vcvarsall first.
+                # The system cannot find the file specified" otherwise). Run the whole
+                # build inside a temp .bat that calls vcvarsall first, through the
+                # shared filter .bat (line endings are normalized to LF at configure
+                # time, so the unit tests build and pass too).
                 if(WIN32)
                     dui_find_vcvarsall(_gn_vcvarsall _gn_vc_arch)
                     if(_gn_vcvarsall)
                         set(_gn_bat "${CMAKE_CURRENT_BINARY_DIR}/build_gn.bat")
                         file(WRITE "${_gn_bat}"
                             "@call \"${_gn_vcvarsall}\" ${_gn_vc_arch} >nul\r\n"
-                            "set \"CL=%CL% /utf-8\"\r\n"
                             "\"${DUI_GN_PYTHON}\" build/gen.py\r\n"
-                            "\"${DUI_NINJA_BIN}\" -C out\r\n")
+                            "call \"${DUI_NINJA_FILTER_BAT}\" \"${DUI_NINJA_BIN}\" out\r\n")
                         set(_gn_commands COMMAND cmd /c "${_gn_bat}")
                     else()
                         message(WARNING "vcvarsall not found - the gn source build will likely fail. "
@@ -254,7 +262,7 @@ function(dui_deps_add_targets)
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE_DEBUG} gen "${DUI_SKIA_LIB_PATH_DEBUG}"
-                    COMMAND ${_ninja_wrap} ${NINJA_EXECUTABLE_DEBUG} -C "${DUI_SKIA_LIB_PATH_DEBUG}"
+                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_DEBUG} "${DUI_SKIA_LIB_PATH_DEBUG}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH_DEBUG}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (debug, gn gen + ninja)..."
@@ -282,7 +290,7 @@ function(dui_deps_add_targets)
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE_RELEASE} gen "${DUI_SKIA_LIB_PATH_RELEASE}"
-                    COMMAND ${_ninja_wrap} ${NINJA_EXECUTABLE_RELEASE} -C "${DUI_SKIA_LIB_PATH_RELEASE}"
+                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_RELEASE} "${DUI_SKIA_LIB_PATH_RELEASE}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH_RELEASE}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (release, gn gen + ninja)..."
@@ -323,7 +331,7 @@ function(dui_deps_add_targets)
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE} gen "${DUI_SKIA_LIB_PATH}"
-                    COMMAND ${_ninja_wrap} ${NINJA_EXECUTABLE} -C "${DUI_SKIA_LIB_PATH}"
+                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE} "${DUI_SKIA_LIB_PATH}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (gn gen + ninja)..."
@@ -558,6 +566,24 @@ function(dui_deps_download_gn)
         return()
     endif()
     set(_gn_dir "${DUI_ROOT}/third_party/gn")
+    # Windows checkouts convert text files to CRLF (core.autocrlf default), which
+    # breaks gn's own unit tests (format_test_data byte comparison) and confuses
+    # other tools. Normalize the clone to LF once (config is persisted, so this
+    # only runs on the first configure).
+    if(WIN32 AND EXISTS "${_gn_dir}/.git")
+        execute_process(
+            COMMAND git -C "${_gn_dir}" config --get core.autocrlf
+            OUTPUT_VARIABLE _gn_autocrlf
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            RESULT_VARIABLE _gn_cfg_result
+        )
+        if(NOT _gn_autocrlf STREQUAL "false")
+            message(STATUS "Normalizing gn checkout line endings to LF (core.autocrlf false)")
+            execute_process(COMMAND git -C "${_gn_dir}" config core.autocrlf false)
+            execute_process(COMMAND git -C "${_gn_dir}" rm --cached -r . OUTPUT_QUIET)
+            execute_process(COMMAND git -C "${_gn_dir}" reset --hard OUTPUT_QUIET)
+        endif()
+    endif()
     if(EXISTS "${_gn_dir}/build/gen.py")
         return()  # already cloned
     endif()
