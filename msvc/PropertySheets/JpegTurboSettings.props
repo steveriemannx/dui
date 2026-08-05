@@ -4,7 +4,7 @@
     <PropertyGroup Label="Globals">
 
         <!-- 是否支持libjpeg-turbo的宏定义： 0表示不支持；1 表示支持 -->
-        <JpegTurboEnabled>1</JpegTurboEnabled>
+        <JpegTurboEnabled>0</JpegTurboEnabled>
 
         <!-- libjpeg-turbo的include目录 -->
         <JpegTurboIncludeDir Condition="'$(JpegTurboEnabled)' == '0'"></JpegTurboIncludeDir>
