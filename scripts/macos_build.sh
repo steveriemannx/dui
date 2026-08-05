@@ -32,7 +32,10 @@ DUI_COMPILER_ID=llvm
 
 DUI_CMAKE="cmake ${DUI_CMAKE_REFRESH} -DCMAKE_C_COMPILER=$DUI_CC -DCMAKE_CXX_COMPILER=$DUI_CXX"
 DUI_MAKE="cmake --build"
-DUI_MAKE_THREADS="-j 6"
+# Parallel build jobs: 3/4 of the CPU cores (leave the rest for the system)
+DUI_JOBS=$(( $(sysctl -n hw.ncpu) * 3 / 4 ))
+[ "$DUI_JOBS" -lt 1 ] && DUI_JOBS=1
+DUI_MAKE_THREADS="-j ${DUI_JOBS}"
 
 # Build type: Debug or Release
 DUI_BUILD_TYPE=Release

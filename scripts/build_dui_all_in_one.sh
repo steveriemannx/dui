@@ -483,6 +483,14 @@ sdl_needs_build() {
     return 1  # skip
 }
 
+# Parallel build jobs: 3/4 of the CPU cores (leave the rest for the system)
+if [ "$(uname -s)" = "Darwin" ] || [ "$(uname -s)" = "FreeBSD" ]; then
+    DUI_JOBS=$(( $(sysctl -n hw.ncpu) * 3 / 4 ))
+else
+    DUI_JOBS=$(( $(nproc) * 3 / 4 ))
+fi
+[ "$DUI_JOBS" -lt 1 ] && DUI_JOBS=1
+
 if ! is_windows; then
     # build SDL on Linux/MacOS (no --fresh: the incremental build directory in scripts/build_temp is kept)
     if sdl_needs_build; then
@@ -501,7 +509,7 @@ elif [ "$ENABLE_SDL" == "1" ]; then
             DUI_SDL_DIR=sdl3-build.msys2.gcc
         fi
         cmake -S "./dui/third_party/SDL3/" -B "./dui/scripts/build_temp/${DUI_SDL_DIR}" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release
-        cmake --build ./dui/scripts/build_temp/${DUI_SDL_DIR} -j 6
+        cmake --build ./dui/scripts/build_temp/${DUI_SDL_DIR} -j ${DUI_JOBS}
         cmake --install ./dui/scripts/build_temp/${DUI_SDL_DIR}
     fi
 fi

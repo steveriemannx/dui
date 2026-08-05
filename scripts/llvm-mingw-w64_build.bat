@@ -69,7 +69,10 @@ echo %* | findstr /C:"--standalone" >nul && set STANDALONE=true
 SET DUI_CMAKE=cmake %DUI_CMAKE_REFRESH% -G"MinGW Makefiles" -DCMAKE_C_COMPILER=%DUI_CC% -DCMAKE_CXX_COMPILER=%DUI_CXX%
 SET DUI_MAKE=cmake --build
 SET DUI_BUILD_TYPE=Release
-SET DUI_MAKE_THREADS=-j 6
+@REM Parallel build jobs: 3/4 of the CPU cores (leave the rest for the system)
+set /a DUI_JOBS=%NUMBER_OF_PROCESSORS% * 3 / 4
+if %DUI_JOBS% lss 1 set DUI_JOBS=1
+SET DUI_MAKE_THREADS=-j %DUI_JOBS%
 
 if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
     SET DUI_SKIA_LIB_SUBPATH=mingw64-llvm.x64.release

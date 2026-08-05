@@ -93,6 +93,10 @@ echo %cd%
 
 set retry_delay=10
 
+@REM Parallel build jobs: 3/4 of the CPU cores (leave the rest for the system)
+set /a DUI_JOBS=%NUMBER_OF_PROCESSORS% * 3 / 4
+if %DUI_JOBS% lss 1 set DUI_JOBS=1
+
 @REM Fetch SDL first, then skia (same layout as the CMake build; SDL clone is idempotent)
 if %ENABLE_SDL% equ 1 (
 echo - Cloning SDL ...
@@ -176,7 +180,7 @@ if %ENABLE_SDL% equ 1 (
         )
 
         cmake -S "./dui/third_party/SDL3/" -B ".\dui\scripts\build_temp\%DUI_SDL_DIR%" -DCMAKE_INSTALL_PREFIX="./dui/third_party/SDL3" -G"MinGW Makefiles" -DCMAKE_C_COMPILER=%DUI_CC% -DCMAKE_CXX_COMPILER=%DUI_CXX% -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST_LIBRARY=OFF -DCMAKE_BUILD_TYPE=Release
-        cmake --build .\dui\scripts\build_temp\%DUI_SDL_DIR% -j 6
+        cmake --build .\dui\scripts\build_temp\%DUI_SDL_DIR% -j %DUI_JOBS%
         cmake --install .\dui\scripts\build_temp\%DUI_SDL_DIR%
     ) else (
         echo - SDL3 already installed: .\dui\third_party\SDL3\lib
