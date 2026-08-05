@@ -48,7 +48,7 @@ function(dui_deps_configure)
         message(FATAL_ERROR
             "Skia source not found at ${DUI_SKIA_SRC_ROOT_DIR}.\n"
             "The automatic download failed; retry cmake configure, or download and extract\n"
-            "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip\n"
+            "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip\n"
             "into ${DUI_SKIA_SRC_ROOT_DIR} manually.\n"
             "(or set -DDUI_BUILD_SKIA_FROM_SOURCE=OFF and provide Skia yourself)")
     endif()
@@ -143,16 +143,19 @@ function(dui_deps_add_targets)
     # ---- args.gn changes re-trigger gn gen; no stamp file needed).
     # Windows: run every ninja build through a filter .bat that (a) sets CL=/utf-8
     # (C4819 on codepage-936 Windows: sources contain non-ASCII chars and the build
-    # treats warnings as errors) and (b) hides cl's /showIncludes notes ("Note:
+    # treats warnings as errors), (b) hides cl's /showIncludes notes ("Note:
     # including file") from the console - ninja still parses them internally for
-    # dependency tracking - keeping only progress and error lines visible.
-    #   Usage: dui_ninja.bat <ninja> <build-dir> [target...]
+    # dependency tracking - keeping only progress and error lines visible, and
+    # (c) prepends the directory of the gn binary (%~3) to PATH, since skia's
+    # find_headers.py action runs a bare "gn" (fork change in skia-dui-0.1.1).
+    #   Usage: dui_ninja.bat <ninja> <build-dir> [gn-path] [target...]
     if(WIN32)
         set(DUI_NINJA_FILTER_BAT "${CMAKE_CURRENT_BINARY_DIR}/dui_ninja.bat")
         file(WRITE "${DUI_NINJA_FILTER_BAT}"
             "@echo off\r\n"
             "set \"CL=%CL% /utf-8\"\r\n"
-            "\"%~1\" -C \"%~2\" %~3 %~4 > \"%TEMP%\\dui_ninja.log\" 2>&1\r\n"
+            "if not \"%~3\"==\"\" (for %%i in (\"%~3\") do set \"PATH=%%~dpi;%PATH%\")\r\n"
+            "\"%~1\" -C \"%~2\" %~4 %~5 > \"%TEMP%\\dui_ninja.log\" 2>&1\r\n"
             "set \"RC=%errorlevel%\"\r\n"
             "findstr /i /r /c:\"^\\[[0-9]*/[0-9]*\\]\" /c:\"error\" /c:\"FAILED\" /c:\"ninja:\" /c:\"LINK\" \"%TEMP%\\dui_ninja.log\"\r\n"
             "exit /b %RC%\r\n")
@@ -259,18 +262,10 @@ function(dui_deps_add_targets)
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE_DEBUG "${DUI_NINJA_BIN}")
-                # skia's find_headers.py action runs //bin/gn on Windows; make our
-                # gn binary available there before the build (we never run fetch-gn)
-                if(WIN32)
-                    set(_gn_copy_cmd COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GN_EXECUTABLE_DEBUG} "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn.exe")
-                else()
-                    set(_gn_copy_cmd)
-                endif()
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}"
-                    ${_gn_copy_cmd}
                     COMMAND ${GN_EXECUTABLE_DEBUG} gen "${DUI_SKIA_LIB_PATH_DEBUG}"
-                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_DEBUG} "${DUI_SKIA_LIB_PATH_DEBUG}"
+                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_DEBUG} "${DUI_SKIA_LIB_PATH_DEBUG}" ${GN_EXECUTABLE_DEBUG}
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH_DEBUG}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (debug, gn gen + ninja)..."
@@ -295,16 +290,10 @@ function(dui_deps_add_targets)
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE_RELEASE "${DUI_NINJA_BIN}")
-                if(WIN32)
-                    set(_gn_copy_cmd COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GN_EXECUTABLE_RELEASE} "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn.exe")
-                else()
-                    set(_gn_copy_cmd)
-                endif()
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}"
-                    ${_gn_copy_cmd}
                     COMMAND ${GN_EXECUTABLE_RELEASE} gen "${DUI_SKIA_LIB_PATH_RELEASE}"
-                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_RELEASE} "${DUI_SKIA_LIB_PATH_RELEASE}"
+                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_RELEASE} "${DUI_SKIA_LIB_PATH_RELEASE}" ${GN_EXECUTABLE_RELEASE}
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH_RELEASE}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (release, gn gen + ninja)..."
@@ -342,16 +331,10 @@ function(dui_deps_add_targets)
                 endif()
                 set(NINJA_EXECUTABLE "${DUI_NINJA_BIN}")
 
-                if(WIN32)
-                    set(_gn_copy_cmd COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GN_EXECUTABLE} "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn.exe")
-                else()
-                    set(_gn_copy_cmd)
-                endif()
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH}/${_skia_main_lib}"
-                    ${_gn_copy_cmd}
                     COMMAND ${GN_EXECUTABLE} gen "${DUI_SKIA_LIB_PATH}"
-                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE} "${DUI_SKIA_LIB_PATH}"
+                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE} "${DUI_SKIA_LIB_PATH}" ${GN_EXECUTABLE}
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (gn gen + ninja)..."
@@ -473,10 +456,10 @@ function(dui_deps_download_skia)
         return()  # already present
     endif()
 
-    set(_skia_url "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip")
-    set(_skia_topdir "skia-skia-dui-0.1.0")  # the single top-level folder inside the zip
+    set(_skia_url "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip")
+    set(_skia_topdir "skia-skia-dui-0.1.1")  # the single top-level folder inside the zip
     set(_skia_dl_dir "${DUI_ROOT}/third_party/downloads")
-    set(_skia_archive "${_skia_dl_dir}/skia-dui-0.1.0.zip")
+    set(_skia_archive "${_skia_dl_dir}/skia-dui-0.1.1.zip")
 
     file(MAKE_DIRECTORY "${_skia_dl_dir}")
     dui_deps_download_retry("${_skia_url}" "${_skia_archive}" "zip")

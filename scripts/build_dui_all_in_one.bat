@@ -112,7 +112,7 @@ echo %cd%
 set retry_delay=10
 
 @REM Fetch skia: download the dui fork zip and extract it (replaces git clone + skia_compile patch)
-set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip
+set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip
 set SKIA_ZIP_FILE=skia.zip
 
 if exist ".\dui\third_party\skia\BUILD.gn" goto fetch_skia_done
@@ -245,8 +245,10 @@ cd dui\third_party\skia
 @REM C4819 on Chinese Windows (codepage 936): skia sources contain non-ASCII chars
 @REM and the build treats warnings as errors; /utf-8 fixes the parsing.
 set "CL=%CL% /utf-8"
-@REM skia's find_headers.py action runs //bin/gn on Windows; make our gn available there
-if /i not "%GN_BIN%"=="..\skia\bin\gn.exe" copy /y "%GN_BIN%" "bin\gn.exe" >nul 2>&1
+@REM skia's find_headers.py action runs "gn" from PATH (fork change skia-dui-0.1.1);
+@REM make our gn directory visible
+for %%i in ("%GN_BIN%") do set "GN_BIN_DIR=%%~dpi"
+set "PATH=%GN_BIN_DIR%;%PATH%"
 %GN_BIN% gen out/llvm.x64.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x64.debug > "%TEMP%\dui_skia_ninja.log" 2>&1
 findstr /i /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LINK" "%TEMP%\dui_skia_ninja.log"

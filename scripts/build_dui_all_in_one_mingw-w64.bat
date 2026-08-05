@@ -113,7 +113,7 @@ echo - Cloning SDL ...
 )
 
 @REM Fetch skia: download the dui fork zip (same source as the CMake build; idempotent)
-set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip
+set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip
 set SKIA_ZIP_FILE=skia.zip
 
 if exist ".\dui\third_party\skia\BUILD.gn" goto fetch_skia_done
