@@ -485,6 +485,17 @@ if [ "$has_curl$has_wget" != "00" ] && [ "$has_linux$has_macos" != "00" ] && [ "
                 fi
             fi
         fi
+        if [ ! -f "$libcef_cached_file" ]; then
+            echo ""
+            echo "CEF download failed! Options:"
+            echo "  - re-run this script later (it retries automatically), or"
+            echo "  - download the archive manually from https://cef-builds.spotifycdn.com/ and"
+            echo "    place the .tar.bz2 file into $libcef_cache_dir (keep the original"
+            echo "    filename; the script skips the download when the archive is cached), or"
+            echo "    extract it into $libcef_cef_binary_dir (the script skips CEF when it"
+            echo "    is already present there)"
+            echo ""
+        fi
     fi
     fi
 fi
