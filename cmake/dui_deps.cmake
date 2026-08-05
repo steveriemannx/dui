@@ -141,6 +141,14 @@ function(dui_deps_add_targets)
 
     # ---- Skia: gn gen + ninja (ninja is incremental: interrupted builds self-heal,
     # ---- args.gn changes re-trigger gn gen; no stamp file needed).
+    # C4819 on Chinese Windows (codepage 936): skia sources contain non-ASCII chars
+    # and the build treats warnings as errors; CL=/utf-8 makes clang-cl read them as
+    # UTF-8 (harmless on other platforms/compilers).
+    if(WIN32)
+        set(_ninja_wrap "${CMAKE_COMMAND}" -E env "CL=/utf-8")
+    else()
+        set(_ninja_wrap)
+    endif()
     if(DUI_BUILD_SKIA_FROM_SOURCE)
         # Main Skia output filename differs by platform (MSVC: skia.lib, others: libskia.a)
         if(MSVC)
@@ -191,10 +199,37 @@ function(dui_deps_add_targets)
                 else()
                     set(DUI_GN_BIN "${DUI_ROOT}/third_party/gn/out/gn")
                 endif()
+                # gen.py emits build.ninja that invokes bare "cl.exe", which requires
+                # the MSVC toolchain in PATH (ninja fails with "CreateProcess failed:
+                # The system cannot find the file specified" otherwise), and the gn
+                # sources need /utf-8 on codepage-936 Windows. Run the whole build
+                # inside a temp .bat that calls vcvarsall first.
+                if(WIN32)
+                    dui_find_vcvarsall(_gn_vcvarsall _gn_vc_arch)
+                    if(_gn_vcvarsall)
+                        set(_gn_bat "${CMAKE_CURRENT_BINARY_DIR}/build_gn.bat")
+                        file(WRITE "${_gn_bat}"
+                            "@call \"${_gn_vcvarsall}\" ${_gn_vc_arch} >nul\r\n"
+                            "set \"CL=%CL% /utf-8\"\r\n"
+                            "\"${DUI_GN_PYTHON}\" build/gen.py\r\n"
+                            "\"${DUI_NINJA_BIN}\" -C out\r\n")
+                        set(_gn_commands COMMAND cmd /c "${_gn_bat}")
+                    else()
+                        message(WARNING "vcvarsall not found - the gn source build will likely fail. "
+                                "Install gn via a package manager or build it manually in a VS "
+                                "Developer Command Prompt")
+                        set(_gn_commands
+                            COMMAND "${DUI_GN_PYTHON}" build/gen.py
+                            COMMAND "${DUI_NINJA_BIN}" -C out)
+                    endif()
+                else()
+                    set(_gn_commands
+                        COMMAND "${DUI_GN_PYTHON}" build/gen.py
+                        COMMAND "${DUI_NINJA_BIN}" -C out)
+                endif()
                 add_custom_command(
                     OUTPUT "${DUI_GN_BIN}"
-                    COMMAND "${DUI_GN_PYTHON}" build/gen.py
-                    COMMAND "${DUI_NINJA_BIN}" -C out
+                    ${_gn_commands}
                     WORKING_DIRECTORY "${DUI_ROOT}/third_party/gn"
                     DEPENDS "${DUI_ROOT}/third_party/gn/build/gen.py"
                     COMMENT "Building gn (python build/gen.py + ninja -C out)..."
@@ -219,7 +254,7 @@ function(dui_deps_add_targets)
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE_DEBUG} gen "${DUI_SKIA_LIB_PATH_DEBUG}"
-                    COMMAND ${NINJA_EXECUTABLE_DEBUG} -C "${DUI_SKIA_LIB_PATH_DEBUG}"
+                    COMMAND ${_ninja_wrap} ${NINJA_EXECUTABLE_DEBUG} -C "${DUI_SKIA_LIB_PATH_DEBUG}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH_DEBUG}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (debug, gn gen + ninja)..."
@@ -247,7 +282,7 @@ function(dui_deps_add_targets)
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE_RELEASE} gen "${DUI_SKIA_LIB_PATH_RELEASE}"
-                    COMMAND ${NINJA_EXECUTABLE_RELEASE} -C "${DUI_SKIA_LIB_PATH_RELEASE}"
+                    COMMAND ${_ninja_wrap} ${NINJA_EXECUTABLE_RELEASE} -C "${DUI_SKIA_LIB_PATH_RELEASE}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH_RELEASE}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (release, gn gen + ninja)..."
@@ -288,7 +323,7 @@ function(dui_deps_add_targets)
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE} gen "${DUI_SKIA_LIB_PATH}"
-                    COMMAND ${NINJA_EXECUTABLE} -C "${DUI_SKIA_LIB_PATH}"
+                    COMMAND ${_ninja_wrap} ${NINJA_EXECUTABLE} -C "${DUI_SKIA_LIB_PATH}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (gn gen + ninja)..."

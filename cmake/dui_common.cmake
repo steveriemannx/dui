@@ -389,10 +389,39 @@ endfunction()
 # configure time when missing (see dui_deps.cmake) and are built at make time;
 # CEF is downloaded at configure time when missing.
 # Both functions are idempotent (GLOBAL-property guarded).
-include("${CMAKE_CURRENT_LIST_DIR}/dui_deps.cmake")
-dui_deps_configure()
-dui_deps_add_targets()
-dui_sync_resources()
+# ---- Locate the VS installation's vcvarsall.bat and the matching arch ----
+# Sets ${result_var} to the vcvarsall path and ${arch_var} to x86/x64/arm64;
+# both are empty when the VS installation cannot be found.
+function(dui_find_vcvarsall _result_var _arch_var)
+    set(${_result_var} "" PARENT_SCOPE)
+    set(${_arch_var} "" PARENT_SCOPE)
+    set(_vswhere "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
+    if(NOT EXISTS "${_vswhere}")
+        return()
+    endif()
+    execute_process(
+        COMMAND "${_vswhere}" -latest -property installationPath
+        OUTPUT_VARIABLE _vs_install
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE _vswhere_result
+    )
+    if(NOT _vswhere_result EQUAL 0 OR NOT _vs_install)
+        return()
+    endif()
+    set(_vcvarsall "${_vs_install}/VC/Auxiliary/Build/vcvarsall.bat")
+    if(NOT EXISTS "${_vcvarsall}")
+        return()
+    endif()
+    if(CMAKE_VS_PLATFORM_NAME STREQUAL "Win32")
+        set(_vc_arch x86)
+    elseif(CMAKE_VS_PLATFORM_NAME STREQUAL "ARM64")
+        set(_vc_arch arm64)
+    else()
+        set(_vc_arch x64)
+    endif()
+    set(${_result_var} "${_vcvarsall}" PARENT_SCOPE)
+    set(${_arch_var} "${_vc_arch}" PARENT_SCOPE)
+endfunction()
 
 # ---- Rebuild a small MSVC command-line tool at configure time ----
 # cl.exe needs the vcvarsall environment (INCLUDE/LIB) to find the standard library
@@ -422,32 +451,10 @@ function(dui_build_msvc_tool _result_var _srcs _exe _include_dirs)
     # compile through a small batch file - a cmd /c "call ... && cl ..." one-liner
     # breaks because CMake re-escapes the embedded quotes for CreateProcess and cmd
     # does not understand backslash-escaped quotes.
-    set(_vswhere "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
-    if(NOT EXISTS "${_vswhere}")
-        message(WARNING "vswhere not found at ${_vswhere} - cannot rebuild ${_exe} automatically")
+    dui_find_vcvarsall(_vcvarsall _vc_arch)
+    if(NOT _vcvarsall)
+        message(WARNING "vcvarsall not found - cannot rebuild ${_exe} automatically")
         return()
-    endif()
-    execute_process(
-        COMMAND "${_vswhere}" -latest -property installationPath
-        OUTPUT_VARIABLE _vs_install
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        RESULT_VARIABLE _vswhere_result
-    )
-    if(NOT _vswhere_result EQUAL 0 OR NOT _vs_install)
-        message(WARNING "vswhere failed - cannot rebuild ${_exe} automatically")
-        return()
-    endif()
-    set(_vcvarsall "${_vs_install}/VC/Auxiliary/Build/vcvarsall.bat")
-    if(NOT EXISTS "${_vcvarsall}")
-        message(WARNING "vcvarsall not found at ${_vcvarsall} - cannot rebuild ${_exe} automatically")
-        return()
-    endif()
-    if(CMAKE_VS_PLATFORM_NAME STREQUAL "Win32")
-        set(_vc_arch x86)
-    elseif(CMAKE_VS_PLATFORM_NAME STREQUAL "ARM64")
-        set(_vc_arch arm64)
-    else()
-        set(_vc_arch x64)
     endif()
     string(REPLACE ";" " " _srcs_str "${_srcs}")
     string(REPLACE ";" " " _inc_str "${_include_dirs}")
@@ -468,3 +475,8 @@ function(dui_build_msvc_tool _result_var _srcs _exe _include_dirs)
         message(WARNING "Tool build failed (${_exe}):\n${_build_err}\n${_build_out}")
     endif()
 endfunction()
+include("${CMAKE_CURRENT_LIST_DIR}/dui_deps.cmake")
+dui_deps_configure()
+dui_deps_add_targets()
+dui_sync_resources()
+
