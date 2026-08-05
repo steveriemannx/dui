@@ -12,6 +12,12 @@
     <PropertyGroup Label="Globals">
         <DuiBinIncludeDir>$(SolutionDir)\..;$(SolutionDir)\..\include;$(ProjectDir)</DuiBinIncludeDir>
     </PropertyGroup>
+    <!-- 无条件应用到所有工程(含静态库): DuiSettings.props 里的 include 只在 DLL 模式生效 -->
+    <ItemDefinitionGroup>
+        <ClCompile>
+            <AdditionalIncludeDirectories>$(DuiBinIncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+        </ClCompile>
+    </ItemDefinitionGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <TargetName>$(ProjectName)_d</TargetName>
     </PropertyGroup>
