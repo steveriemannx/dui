@@ -217,6 +217,9 @@ if "%GN_BIN%"=="" (
         for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_PATH=%%i"
         @call "%MSVC_VAR_PATH%" x64
         cd dui\third_party\gn
+        @REM C4819 on Chinese Windows (codepage 936): gn sources contain non-ASCII
+        @REM chars and the build treats warnings as errors; /utf-8 fixes the parsing.
+        set "CL=%CL% /utf-8"
         python3 build/gen.py
         ..\skia\third_party\ninja\ninja.exe -C out
         cd ..\..\..
@@ -232,6 +235,9 @@ if "%GN_BIN%"=="" (
 
 @REM build skia
 cd dui\third_party\skia
+@REM C4819 on Chinese Windows (codepage 936): skia sources contain non-ASCII chars
+@REM and the build treats warnings as errors; /utf-8 fixes the parsing.
+set "CL=%CL% /utf-8"
 %GN_BIN% gen out/llvm.x64.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x64.debug
 
