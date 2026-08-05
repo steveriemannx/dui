@@ -154,10 +154,12 @@ function(dui_deps_add_targets)
         file(WRITE "${DUI_NINJA_FILTER_BAT}"
             "@echo off\r\n"
             "set \"CL=%CL% /utf-8\"\r\n"
-            "if not \"%~3\"==\"\" (for %%i in (\"%~3\") do set \"PATH=%%~dpi;%PATH%\")\r\n"
+            "if not \"%~3\"==\"\" set \"GN_BIN_DIR=%~dp3\"\r\n"
+            "if defined GN_BIN_DIR set \"PATH=%GN_BIN_DIR%;%PATH%\"\r\n"
             "\"%~1\" -C \"%~2\" %~4 %~5 > \"%TEMP%\\dui_ninja.log\" 2>&1\r\n"
             "set \"RC=%errorlevel%\"\r\n"
             "findstr /i /r /c:\"^\\[[0-9]*/[0-9]*\\]\" /c:\"error\" /c:\"FAILED\" /c:\"ninja:\" /c:\"LINK\" \"%TEMP%\\dui_ninja.log\"\r\n"
+            "if not \"%RC%\"==\"0\" echo [dui_ninja] ninja exited with code %RC% - full log: %TEMP%\\dui_ninja.log\r\n"
             "exit /b %RC%\r\n")
     endif()
     if(DUI_BUILD_SKIA_FROM_SOURCE)
