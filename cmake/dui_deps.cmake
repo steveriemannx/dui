@@ -452,8 +452,24 @@ endfunction()
 # The zip is cached in third_party/downloads/ (gitignored); only the extraction temp dir is
 # removed, so a later configure re-extracts from the cached archive without re-downloading.
 function(dui_deps_download_skia)
-    if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn")
-        return()  # already present
+    # Version marker: the extracted dir alone does not say which zip it came from,
+    # so a version bump would otherwise be silently ignored. Re-extract whenever
+    # the marker is missing or differs from the expected version.
+    set(_skia_version "skia-dui-0.1.1")  # keep in sync with the zip tag below
+    if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version")
+        file(READ "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" _skia_have_version)
+        string(STRIP "${_skia_have_version}" _skia_have_version)
+        if(_skia_have_version STREQUAL "${_skia_version}")
+            return()  # already present and up to date
+        endif()
+        message(STATUS "Skia version changed (${_skia_have_version} -> ${_skia_version}); re-extracting")
+    elseif(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn")
+        message(STATUS "Skia present without a version marker; re-extracting")
+    else()
+        message(STATUS "Fetching Skia source ...")
+    endif()
+    if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}")
+        file(REMOVE_RECURSE "${DUI_SKIA_SRC_ROOT_DIR}")
     endif()
 
     set(_skia_url "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip")
@@ -500,7 +516,8 @@ function(dui_deps_download_skia)
         message(FATAL_ERROR "Skia archive extraction failed: ${_skia_archive}")
     endif()
     file(REMOVE_RECURSE "${_skia_tmp_dir}")  # keep the zip itself for offline re-extract
-    message(STATUS "Skia source ready: ${DUI_SKIA_SRC_ROOT_DIR}")
+    file(WRITE "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" "${_skia_version}")
+    message(STATUS "Skia source ready: ${DUI_SKIA_SRC_ROOT_DIR} (${_skia_version})")
 endfunction()
 
 # ---- SDL3 source zip download (idempotent; fetched at configure time, no shell scripts) ----
