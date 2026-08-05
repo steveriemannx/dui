@@ -393,3 +393,64 @@ include("${CMAKE_CURRENT_LIST_DIR}/dui_deps.cmake")
 dui_deps_configure()
 dui_deps_add_targets()
 dui_sync_resources()
+
+# ---- Rebuild a small MSVC command-line tool at configure time ----
+# cl.exe needs the vcvarsall environment (INCLUDE/LIB) to find the standard library
+# headers (iostream, stddef.h, ...), so locate the VS installation with vswhere and
+# run the compile inside it. Sets ${result_var} to TRUE on success.
+#   result_var    - output variable name (TRUE/FALSE) in the caller's scope
+#   srcs          - source files to compile (list)
+#   exe           - output executable path
+#   include_dirs  - extra -I flags (list), may be empty
+function(dui_build_msvc_tool _result_var _srcs _exe _include_dirs)
+    set(${_result_var} FALSE PARENT_SCOPE)
+    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        # clang-cl / clang++ / g++: the compiler finds its own standard headers
+        execute_process(
+            COMMAND "${CMAKE_CXX_COMPILER}" -std=c++17 -O2
+                    ${_include_dirs} ${_srcs} -o "${_exe}"
+            WORKING_DIRECTORY "${DUI_SRC_ROOT_DIR}"
+            RESULT_VARIABLE _build_result
+        )
+        if(_build_result EQUAL 0)
+            set(${_result_var} TRUE PARENT_SCOPE)
+        endif()
+        return()
+    endif()
+    # MSVC: find the VS installation (same tool as scripts/detect_vs_version.bat)
+    set(_vswhere "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
+    if(NOT EXISTS "${_vswhere}")
+        return()
+    endif()
+    execute_process(
+        COMMAND "${_vswhere}" -latest -property installationPath
+        OUTPUT_VARIABLE _vs_install
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE _vswhere_result
+    )
+    if(NOT _vswhere_result EQUAL 0 OR NOT _vs_install)
+        return()
+    endif()
+    set(_vcvarsall "${_vs_install}/VC/Auxiliary/Build/vcvarsall.bat")
+    if(NOT EXISTS "${_vcvarsall}")
+        return()
+    endif()
+    if(CMAKE_VS_PLATFORM_NAME STREQUAL "Win32")
+        set(_vc_arch x86)
+    elseif(CMAKE_VS_PLATFORM_NAME STREQUAL "ARM64")
+        set(_vc_arch arm64)
+    else()
+        set(_vc_arch x64)
+    endif()
+    # One cmd line: set up the environment, then compile (paths must not contain spaces)
+    string(REPLACE ";" " " _srcs_str "${_srcs}")
+    string(REPLACE ";" " " _inc_str "${_include_dirs}")
+    execute_process(
+        COMMAND cmd /c "call \"${_vcvarsall}\" ${_vc_arch} >nul && \"${CMAKE_CXX_COMPILER}\" /nologo /std:c++17 /O2 /EHsc ${_inc_str} ${_srcs_str} /Fe:\"${_exe}\""
+        WORKING_DIRECTORY "${DUI_SRC_ROOT_DIR}"
+        RESULT_VARIABLE _build_result
+    )
+    if(_build_result EQUAL 0)
+        set(${_result_var} TRUE PARENT_SCOPE)
+    endif()
+endfunction()

@@ -12,8 +12,8 @@
 #   DString GetSkinFile() override { return ui_resources::k_basic_xml; }
 #
 # Tool:
-#   - Windows : pre-compiled cmake/xml_to_header.exe (rebuilt at configure time
-#               when the source changes; avoids Device Guard)
+#   - Windows : compiled at configure time into cmake/xml_to_header.exe when
+#               missing or the sources changed (run inside the vcvarsall environment)
 #   - Others  : compiled from cmake/xml_to_header.cpp at build time (Linux / macOS / FreeBSD).
 
 if(NOT DEFINED EMBED_XML_FILES)
@@ -26,17 +26,13 @@ set(GENERATED_HEADER "${CMAKE_CURRENT_BINARY_DIR}/embedded_resources.h")
 set(RESOURCES_DIR "${DUI_ROOT}/resources")
 
 if(DUI_OS_WINDOWS)
-    # Windows: pre-compiled exe, rebuilt at configure time when source changes
+    # Windows: compiled at configure time when missing or the sources changed
     set(TOOL_EXE "${DUI_SRC_ROOT_DIR}/cmake/xml_to_header.exe")
 
     if("${TOOL_SRC}" IS_NEWER_THAN "${TOOL_EXE}")
         message(STATUS "Rebuilding xml_to_header.exe (source changed)")
-        execute_process(
-            COMMAND "${CMAKE_CXX_COMPILER}" /nologo /std:c++17 /O2 /EHsc "${TOOL_SRC}" /Fe:"${TOOL_EXE}"
-            WORKING_DIRECTORY "${DUI_SRC_ROOT_DIR}"
-            RESULT_VARIABLE _build_result
-        )
-        if(NOT _build_result EQUAL 0)
+        dui_build_msvc_tool(_tool_ok "${TOOL_SRC}" "${TOOL_EXE}" "")
+        if(NOT _tool_ok)
             message(WARNING "Failed to rebuild xml_to_header.exe automatically. "
                             "Please compile it manually in a VS Developer Command Prompt: "
                             "cl /std:c++17 /O2 /EHsc cmake/xml_to_header.cpp /Fe:cmake/xml_to_header.exe")

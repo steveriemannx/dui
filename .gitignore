@@ -389,5 +389,9 @@ healthchecksdb
 /examples/*/generated_ui.inc
 third_party/Microsoft.Web.WebView2/
 
-# Build-time XML-to-code generator tool (built once at configure time; Windows uses the tracked xml_to_code.exe)
+# Build-time generator tools (compiled at configure time into the source tree;
+# not tracked - binaries do not belong in git)
 /cmake/xml_to_code
+/cmake/xml_to_code.exe
+/cmake/xml_to_header.exe
+/cmake/embed_resources.exe

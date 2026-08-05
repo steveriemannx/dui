@@ -10,10 +10,10 @@
 # that creates the entire UI in pure C++ (no XML parsing at runtime).
 #
 # Tool:
-#   - Windows : pre-compiled cmake/xml_to_code.exe (rebuilt at configure time
-#               when the source changes; avoids Device Guard blocking an exe
-#               compiled on-the-fly during the MSBuild step).
-#   - Others  : compiled from cmake/xml_to_code.cpp at build time.
+#   - Windows : compiled at configure time into cmake/xml_to_code.exe (only when
+#               missing or the sources changed), run inside the vcvarsall
+#               environment so cl.exe finds the standard library headers.
+#   - Others  : compiled from cmake/xml_to_code.cpp at configure time.
 
 if(NOT DEFINED GEN_XML_FILES)
     message(FATAL_ERROR "GEN_XML_FILES must be set before including dui_gen_code.cmake")
@@ -55,9 +55,9 @@ if(NOT XML_INPUT_FILES)
 endif()
 
 if(DUI_OS_WINDOWS)
-    # Windows: pre-compiled exe in the source tree.
-    # It is rebuilt at CONFIGURE time when its source files change so that
-    # it stays up-to-date without triggering Device Guard at build time.
+    # Windows: compile the tool into the source tree at CONFIGURE time (only
+    # when missing or the sources changed), so it stays up-to-date without
+    # triggering Device Guard at build time.
 
     set(TOOL_EXE "${DUI_SRC_ROOT_DIR}/cmake/xml_to_code.exe")
     set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/xml_to_code.cpp")
@@ -67,20 +67,18 @@ if(DUI_OS_WINDOWS)
     # Rebuild at configure time if source is newer (idempotent across examples)
     if("${TOOL_SRC}" IS_NEWER_THAN "${TOOL_EXE}" OR "${PUGIXML_SRC}" IS_NEWER_THAN "${TOOL_EXE}")
         message(STATUS "Rebuilding xml_to_code.exe (source changed)")
-        execute_process(
-            COMMAND "${CMAKE_CXX_COMPILER}" /nologo /std:c++17 /O2 /EHsc
-                    "-I${PUGIXML_DIR}"
-                    "${TOOL_SRC}" "${PUGIXML_SRC}" /Fe:"${TOOL_EXE}"
-            WORKING_DIRECTORY "${DUI_SRC_ROOT_DIR}"
-            RESULT_VARIABLE _build_result
-        )
-        if(NOT _build_result EQUAL 0)
-            message(FATAL_ERROR "Failed to build xml_to_code.exe")
+        dui_build_msvc_tool(_tool_ok "${TOOL_SRC};${PUGIXML_SRC}" "${TOOL_EXE}" "-I${PUGIXML_DIR}")
+        if(NOT _tool_ok)
+            message(WARNING "Failed to rebuild xml_to_code.exe automatically.\n"
+                            "Compile it manually in a VS Developer Command Prompt:\n"
+                            "  cl /nologo /std:c++17 /O2 /EHsc -I${PUGIXML_DIR} ${TOOL_SRC} ${PUGIXML_SRC} /Fe:${TOOL_EXE}")
         endif()
     endif()
 
     if(NOT EXISTS "${TOOL_EXE}")
-        message(FATAL_ERROR "xml_to_code.exe not found at ${TOOL_EXE}")
+        message(FATAL_ERROR "xml_to_code.exe not found at ${TOOL_EXE}.\n"
+                "Compile it manually in a VS Developer Command Prompt:\n"
+                "  cl /nologo /std:c++17 /O2 /EHsc -I${PUGIXML_DIR} ${TOOL_SRC} ${PUGIXML_SRC} /Fe:${TOOL_EXE}")
     endif()
 
     add_custom_command(
@@ -92,8 +90,8 @@ if(DUI_OS_WINDOWS)
 else()
     # macOS / Linux / FreeBSD: build the tool once at CONFIGURE time into the
     # source tree and share it across all *_gen examples (the same approach as
-    # the pre-compiled xml_to_code.exe on Windows, avoiding rebuilding the tool
-    # once per example at build time).
+    # the xml_to_code.exe on Windows, avoiding rebuilding the tool once per
+    # example at build time).
     set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/xml_to_code.cpp")
     set(PUGIXML_SRC "${DUI_SRC_ROOT_DIR}/third_party/xml/pugixml.cpp")
     set(PUGIXML_DIR "${DUI_SRC_ROOT_DIR}/third_party/xml")
