@@ -169,7 +169,7 @@ extract_zip() {
     rm -rf "$tmp_dir" "$zip_path"
 }
 
-SKIA_ZIP_URL="https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip"
+SKIA_ZIP_URL="https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip"
 SDL_ZIP_URL="https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip"
 
 # Fetch SDL into third_party/SDL3 first, then skia (same layout as the CMake build; idempotent)
