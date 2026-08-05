@@ -274,12 +274,11 @@ for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_
 echo vcvarsall.bat full path: %MSVC_VAR_PATH%
 @call "%MSVC_VAR_PATH%" x64
 
-where devenv >nul 2>&1
-if %errorlevel% equ 0 (
-    echo devenv found at:  
-    where devenv
-) else (
-    echo devenv not found in PATH
+@REM Use MSBuild directly (console-only) instead of devenv - devenv is a GUI
+@REM app that can pop up modal dialogs and block the script.
+set "MSBUILD_EXE=%MSVC_PATH:"=%\MSBuild\Current\Bin\MSBuild.exe"
+if not exist "%MSBUILD_EXE%" (
+    echo MSBuild.exe not found at %MSBUILD_EXE%
     cd /d %CURRENT_DIR%
     exit /b 1
 )
@@ -291,7 +290,7 @@ if "%RuntimeLibraryDebug%" == "/MDd" (
     call .\dui\msvc\PropertySheets\DuiUseStaticRuntime.bat /S
 )
 
-devenv "./dui/scripts/examples.sln" /Build "Debug|x64"
+"%MSBUILD_EXE%" ".\dui\scripts\examples.sln" /p:Configuration=Debug /p:Platform=x64
 
 cd /d %CURRENT_DIR%
 echo.
