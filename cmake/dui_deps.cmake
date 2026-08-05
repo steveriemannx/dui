@@ -149,6 +149,36 @@ function(dui_deps_add_targets)
             set(_skia_main_lib "libskia.a")
         endif()
 
+        # ---- ninja: required at make time to build gn and skia. Prefer PATH or skia's
+        # ---- own locations; fetch it automatically when missing (like build_dui_all_in_one.bat).
+        find_program(DUI_NINJA_BIN
+            NAMES ninja ninja.exe
+            HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin" "${DUI_SKIA_SRC_ROOT_DIR}/third_party/ninja")
+        if(NOT DUI_NINJA_BIN)
+            message(STATUS "ninja not found; fetching it with skia's bin/fetch-ninja ...")
+            find_program(_ninja_python NAMES python3 python)
+            if(_ninja_python)
+                execute_process(
+                    COMMAND "${_ninja_python}" "${DUI_SKIA_SRC_ROOT_DIR}/bin/fetch-ninja"
+                    WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
+                    RESULT_VARIABLE _ninja_fetch_result
+                )
+            endif()
+            if(WIN32)
+                set(_ninja_bin "${DUI_SKIA_SRC_ROOT_DIR}/third_party/ninja/ninja.exe")
+            else()
+                set(_ninja_bin "${DUI_SKIA_SRC_ROOT_DIR}/third_party/ninja/ninja")
+            endif()
+            if(_ninja_fetch_result EQUAL 0 AND EXISTS "${_ninja_bin}")
+                set(DUI_NINJA_BIN "${_ninja_bin}")
+            endif()
+        endif()
+        if(NOT DUI_NINJA_BIN)
+            message(FATAL_ERROR "ninja is required to build skia but was not found and could not be "
+                    "fetched automatically. Install it (choco install ninja / scoop install ninja / "
+                    "pacman -S ninja) and re-run cmake configure.")
+        endif()
+
         # ---- gn: built from source at make time (ordered before SDL3/skia) ----
         set(DUI_GN_BIN "")  # set when the gn source build is available; skia uses it below
         if(EXISTS "${DUI_ROOT}/third_party/gn/build/gen.py")
@@ -162,7 +192,7 @@ function(dui_deps_add_targets)
                 add_custom_command(
                     OUTPUT "${DUI_GN_BIN}"
                     COMMAND "${DUI_GN_PYTHON}" build/gen.py
-                    COMMAND ninja -C out
+                    COMMAND "${DUI_NINJA_BIN}" -C out
                     WORKING_DIRECTORY "${DUI_ROOT}/third_party/gn"
                     DEPENDS "${DUI_ROOT}/third_party/gn/build/gen.py"
                     COMMENT "Building gn (python build/gen.py + ninja -C out)..."
@@ -183,10 +213,7 @@ function(dui_deps_add_targets)
                         HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                         REQUIRED)
                 endif()
-                find_program(NINJA_EXECUTABLE_DEBUG
-                    NAMES ninja
-                    HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
-                    REQUIRED)
+                set(NINJA_EXECUTABLE_DEBUG "${DUI_NINJA_BIN}")
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE_DEBUG} gen "${DUI_SKIA_LIB_PATH_DEBUG}"
@@ -214,10 +241,7 @@ function(dui_deps_add_targets)
                         HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                         REQUIRED)
                 endif()
-                find_program(NINJA_EXECUTABLE_RELEASE
-                    NAMES ninja
-                    HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
-                    REQUIRED)
+                set(NINJA_EXECUTABLE_RELEASE "${DUI_NINJA_BIN}")
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE_RELEASE} gen "${DUI_SKIA_LIB_PATH_RELEASE}"
@@ -257,10 +281,7 @@ function(dui_deps_add_targets)
                         HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                         REQUIRED)
                 endif()
-                find_program(NINJA_EXECUTABLE
-                    NAMES ninja
-                    HINTS "${DUI_SKIA_SRC_ROOT_DIR}/bin"
-                    REQUIRED)
+                set(NINJA_EXECUTABLE "${DUI_NINJA_BIN}")
 
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH}/${_skia_main_lib}"
@@ -499,6 +520,25 @@ function(dui_deps_download_gn)
     if(EXISTS "${_gn_dir}/build/gen.py")
         return()  # already cloned
     endif()
+    # Try skia's own bin/fetch-gn first: it downloads the skia-pinned prebuilt CIPD
+    # binary into skia/bin/gn (gn.exe on Windows), avoiding a source clone+build.
+    if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/bin/fetch-gn")
+        find_program(_gn_python NAMES python3 python)
+        if(_gn_python)
+            message(STATUS "Fetching prebuilt gn with skia's bin/fetch-gn ...")
+            execute_process(
+                COMMAND "${_gn_python}" "${DUI_SKIA_SRC_ROOT_DIR}/bin/fetch-gn"
+                WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
+                RESULT_VARIABLE _gn_fetch_result
+            )
+            if(_gn_fetch_result EQUAL 0 AND
+               (EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn" OR EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn.exe"))
+                message(STATUS "gn fetched: ${DUI_SKIA_SRC_ROOT_DIR}/bin/gn (skipping source clone)")
+                return()
+            endif()
+            message(STATUS "fetch-gn failed; falling back to a system gn or a source clone")
+        endif()
+    endif()
     # Prefer a system gn: the make-time skia steps fall back to find_program(gn) when the
     # source build is unavailable, so skip the clone entirely if gn is in PATH.
     find_program(_gn_system NAMES gn)
@@ -545,7 +585,11 @@ function(dui_deps_download_gn)
                         "  Arch Linux:    sudo pacman -S gn\n"
                         "  FreeBSD:       pkg install gn\n"
                         "  MSYS2:         pacman -S mingw-w64-x86_64-gn\n"
-                        "  macOS:         no package - build gn from source (see the gn README)")
+                        "  macOS:         no package - build gn from source (see the gn README)\n"
+                        "Or clone the gn source into ${DUI_ROOT}/third_party/gn (the build at\n"
+                        "make time compiles it automatically; full history, not --depth 1):\n"
+                        "  git clone https://gn.googlesource.com/gn ${DUI_ROOT}/third_party/gn\n"
+                        "  or the GitHub mirror: git clone https://github.com/ArthurSonzogni/gn ${DUI_ROOT}/third_party/gn")
     endif()
 endfunction()
 
