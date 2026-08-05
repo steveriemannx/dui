@@ -574,6 +574,14 @@ if [ ! -x "$GN_BIN" ]; then
 fi
 
 echo "- Building skia ..."
+# skia's find_headers.py action runs "gn" from PATH (non-Windows); make ours visible
+if [ -n "$GN_BIN" ] && [ -x "$GN_BIN" ]; then
+    GN_DIR=$(cd "$(dirname "$GN_BIN")" 2>/dev/null && pwd)
+    case ":$PATH:" in
+        *":$GN_DIR:"*) ;;
+        *) export PATH="$GN_DIR:$PATH" ;;
+    esac
+fi
 if [ "$has_clang" -eq 1 ]; then
     # clang/clang++
     echo "clang++ found at:"

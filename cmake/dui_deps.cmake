@@ -154,7 +154,7 @@ function(dui_deps_add_targets)
             "set \"CL=%CL% /utf-8\"\r\n"
             "\"%~1\" -C \"%~2\" %~3 %~4 > \"%TEMP%\\dui_ninja.log\" 2>&1\r\n"
             "set \"RC=%errorlevel%\"\r\n"
-            "findstr /r /c:\"^\\[[0-9]*/[0-9]*\\]\" /c:\"error\" /c:\"FAILED\" /c:\"ninja:\" /c:\"LINK\" \"%TEMP%\\dui_ninja.log\"\r\n"
+            "findstr /i /r /c:\"^\\[[0-9]*/[0-9]*\\]\" /c:\"error\" /c:\"FAILED\" /c:\"ninja:\" /c:\"LINK\" \"%TEMP%\\dui_ninja.log\"\r\n"
             "exit /b %RC%\r\n")
     endif()
     if(DUI_BUILD_SKIA_FROM_SOURCE)
@@ -259,8 +259,16 @@ function(dui_deps_add_targets)
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE_DEBUG "${DUI_NINJA_BIN}")
+                # skia's find_headers.py action runs //bin/gn on Windows; make our
+                # gn binary available there before the build (we never run fetch-gn)
+                if(WIN32)
+                    set(_gn_copy_cmd COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GN_EXECUTABLE_DEBUG} "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn.exe")
+                else()
+                    set(_gn_copy_cmd)
+                endif()
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}"
+                    ${_gn_copy_cmd}
                     COMMAND ${GN_EXECUTABLE_DEBUG} gen "${DUI_SKIA_LIB_PATH_DEBUG}"
                     COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_DEBUG} "${DUI_SKIA_LIB_PATH_DEBUG}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
@@ -287,8 +295,14 @@ function(dui_deps_add_targets)
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE_RELEASE "${DUI_NINJA_BIN}")
+                if(WIN32)
+                    set(_gn_copy_cmd COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GN_EXECUTABLE_RELEASE} "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn.exe")
+                else()
+                    set(_gn_copy_cmd)
+                endif()
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}"
+                    ${_gn_copy_cmd}
                     COMMAND ${GN_EXECUTABLE_RELEASE} gen "${DUI_SKIA_LIB_PATH_RELEASE}"
                     COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_RELEASE} "${DUI_SKIA_LIB_PATH_RELEASE}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
@@ -328,8 +342,14 @@ function(dui_deps_add_targets)
                 endif()
                 set(NINJA_EXECUTABLE "${DUI_NINJA_BIN}")
 
+                if(WIN32)
+                    set(_gn_copy_cmd COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GN_EXECUTABLE} "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn.exe")
+                else()
+                    set(_gn_copy_cmd)
+                endif()
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH}/${_skia_main_lib}"
+                    ${_gn_copy_cmd}
                     COMMAND ${GN_EXECUTABLE} gen "${DUI_SKIA_LIB_PATH}"
                     COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE} "${DUI_SKIA_LIB_PATH}"
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
