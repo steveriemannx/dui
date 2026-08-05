@@ -485,7 +485,8 @@ endfunction()
 # gn source at configure time and build it at make time via the dui_gn target
 # (build/gen.py + ninja -C out, per https://gn.googlesource.com/gn/+/refs/heads/main/README.md),
 # ordered before the SDL3/skia builds. The binary lands in third_party/gn/out/gn (gn.exe on
-# Windows); if the clone is unavailable, configure falls back to a system gn or skia's bin/.
+# Windows). A system gn is preferred and skips the clone entirely; if the clone is
+# unavailable, configure falls back to a system gn or skia's bin/ at make time.
 function(dui_deps_download_gn)
     if(NOT DUI_BUILD_SKIA_FROM_SOURCE)
         return()
@@ -494,15 +495,45 @@ function(dui_deps_download_gn)
     if(EXISTS "${_gn_dir}/build/gen.py")
         return()  # already cloned
     endif()
-    message(STATUS "Cloning gn source: https://gn.googlesource.com/gn")
-    execute_process(
-        # NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
-        # to generate last_commit_position.h, which fails on a shallow clone (the tag only
-        # exists in the full history). The repo is small (~40MB, ~30s to clone).
-        COMMAND git clone https://gn.googlesource.com/gn "${_gn_dir}"
-        RESULT_VARIABLE _gn_clone_result
-    )
-    if(NOT _gn_clone_result EQUAL 0 OR NOT EXISTS "${_gn_dir}/build/gen.py")
+    # Prefer a system gn: the make-time skia steps fall back to find_program(gn) when the
+    # source build is unavailable, so skip the clone entirely if gn is in PATH.
+    find_program(_gn_system NAMES gn)
+    if(_gn_system)
+        message(STATUS "Using system gn: ${_gn_system} (skipping source clone)")
+        return()
+    endif()
+    # Try the Google source 3 times, then fall back to a GitHub mirror.
+    set(_gn_google_url "https://gn.googlesource.com/gn")
+    set(_gn_mirror_url "https://github.com/ArthurSonzogni/gn")
+    set(_gn_clone_ok FALSE)
+    foreach(_gn_attempt RANGE 1 3)
+        message(STATUS "Cloning gn source (attempt ${_gn_attempt}/3): ${_gn_google_url}")
+        execute_process(
+            # NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
+            # to generate last_commit_position.h, which fails on a shallow clone (the tag only
+            # exists in the full history). The repo is small (~40MB, ~30s to clone).
+            # Abort slow/hung clones: 15s connect timeout, and fail if the transfer stays
+            # below 100 KB/s for 60s (git http.lowSpeed* options).
+            COMMAND git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone "${_gn_google_url}" "${_gn_dir}"
+            RESULT_VARIABLE _gn_clone_result
+        )
+        if(_gn_clone_result EQUAL 0 AND EXISTS "${_gn_dir}/build/gen.py")
+            set(_gn_clone_ok TRUE)
+            break()
+        endif()
+        file(REMOVE_RECURSE "${_gn_dir}")  # partial clone; retry from scratch
+    endforeach()
+    if(NOT _gn_clone_ok)
+        message(STATUS "Google source failed after 3 attempts; trying GitHub mirror: ${_gn_mirror_url}")
+        execute_process(
+            COMMAND git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone "${_gn_mirror_url}" "${_gn_dir}"
+            RESULT_VARIABLE _gn_clone_result
+        )
+        if(_gn_clone_result EQUAL 0 AND EXISTS "${_gn_dir}/build/gen.py")
+            set(_gn_clone_ok TRUE)
+        endif()
+    endif()
+    if(NOT _gn_clone_ok)
         message(WARNING "gn clone failed; configure will look for a system gn (or skia's bin/)")
     endif()
 endfunction()
