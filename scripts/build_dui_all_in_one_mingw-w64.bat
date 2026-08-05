@@ -60,7 +60,9 @@ if %has_gcc%%has_clang% equ 00 (
 
 where gn >nul 2>&1
 if %errorlevel% neq 0 (
-    echo gn not found in PATH - install the mingw-w64 gn package or build gn from source
+    echo gn not found in PATH - install it and re-run this script:
+    echo   MSYS2: pacman -S mingw-w64-x86_64-gn
+    echo   or build gn from source per https://gn.googlesource.com/gn/+/refs/heads/main/README.md
     cd /d %CURRENT_DIR%
     exit /b 1
 )

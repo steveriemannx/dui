@@ -502,19 +502,19 @@ function(dui_deps_download_gn)
         message(STATUS "Using system gn: ${_gn_system} (skipping source clone)")
         return()
     endif()
-    # Try the Google source 3 times, then fall back to a GitHub mirror.
+    # Try the Google source 2 times, then fall back to a GitHub mirror.
+    # Abort slow/hung clones quickly: 10s connect timeout, and fail if the transfer
+    # stays below 200 KB/s for 30s (git http.lowSpeed* options).
     set(_gn_google_url "https://gn.googlesource.com/gn")
     set(_gn_mirror_url "https://github.com/ArthurSonzogni/gn")
     set(_gn_clone_ok FALSE)
-    foreach(_gn_attempt RANGE 1 3)
-        message(STATUS "Cloning gn source (attempt ${_gn_attempt}/3): ${_gn_google_url}")
+    foreach(_gn_attempt RANGE 1 2)
+        message(STATUS "Cloning gn source (attempt ${_gn_attempt}/2): ${_gn_google_url}")
         execute_process(
             # NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
             # to generate last_commit_position.h, which fails on a shallow clone (the tag only
             # exists in the full history). The repo is small (~40MB, ~30s to clone).
-            # Abort slow/hung clones: 15s connect timeout, and fail if the transfer stays
-            # below 100 KB/s for 60s (git http.lowSpeed* options).
-            COMMAND git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone "${_gn_google_url}" "${_gn_dir}"
+            COMMAND git -c http.connectTimeout=10 -c http.lowSpeedLimit=204800 -c http.lowSpeedTime=30 clone "${_gn_google_url}" "${_gn_dir}"
             RESULT_VARIABLE _gn_clone_result
         )
         if(_gn_clone_result EQUAL 0 AND EXISTS "${_gn_dir}/build/gen.py")
@@ -524,9 +524,9 @@ function(dui_deps_download_gn)
         file(REMOVE_RECURSE "${_gn_dir}")  # partial clone; retry from scratch
     endforeach()
     if(NOT _gn_clone_ok)
-        message(STATUS "Google source failed after 3 attempts; trying GitHub mirror: ${_gn_mirror_url}")
+        message(STATUS "Google source failed after 2 attempts; trying GitHub mirror: ${_gn_mirror_url}")
         execute_process(
-            COMMAND git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone "${_gn_mirror_url}" "${_gn_dir}"
+            COMMAND git -c http.connectTimeout=10 -c http.lowSpeedLimit=204800 -c http.lowSpeedTime=30 clone "${_gn_mirror_url}" "${_gn_dir}"
             RESULT_VARIABLE _gn_clone_result
         )
         if(_gn_clone_result EQUAL 0 AND EXISTS "${_gn_dir}/build/gen.py")
@@ -534,7 +534,14 @@ function(dui_deps_download_gn)
         endif()
     endif()
     if(NOT _gn_clone_ok)
-        message(WARNING "gn clone failed; configure will look for a system gn (or skia's bin/)")
+        message(WARNING "gn clone failed; configure will look for a system gn (or skia's bin/).\n"
+                        "Please install gn manually and re-run cmake configure. Known package names:\n"
+                        "  Debian/Ubuntu: sudo apt install generate-ninja   (NOT \"gn\")\n"
+                        "  Fedora/RHEL:   sudo dnf install gn\n"
+                        "  Arch Linux:    sudo pacman -S gn\n"
+                        "  FreeBSD:       pkg install gn\n"
+                        "  MSYS2:         pacman -S mingw-w64-x86_64-gn\n"
+                        "  macOS:         no package - build gn from source (see the gn README)")
     endif()
 endfunction()
 
