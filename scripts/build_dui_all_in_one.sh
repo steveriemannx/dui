@@ -218,12 +218,27 @@ if [ ! -f "./dui/third_party/skia/BUILD.gn" ]; then
 fi
 
 # Prefer a system gn; otherwise build gn from source (official instructions; idempotent).
-# The clone tries the Google source 3 times, then falls back to a GitHub mirror.
-# Slow/hung clones abort automatically: 15s connect timeout, and the transfer fails
-# if it stays below 100 KB/s for 60s (git http.lowSpeed* options). Tune the numbers
-# below if your network is slower than 100 KB/s but still usable.
+# The clone tries the Google source 2 times, then falls back to a GitHub mirror.
+# Slow/hung clones abort quickly: 10s connect timeout, and the transfer fails if it
+# stays below 200 KB/s for 30s (git http.lowSpeed* options). Tune the numbers below
+# if your network is slower than 200 KB/s but still usable.
 gn_git_clone() {
-    git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone "$@"
+    git -c http.connectTimeout=10 -c http.lowSpeedLimit=204800 -c http.lowSpeedTime=30 clone "$@"
+}
+
+# Manual-install hint shown when gn is unavailable (static list; the Debian/Ubuntu
+# package is named "generate-ninja" because the name "gn" is taken there)
+gn_install_hint() {
+    echo ""
+    echo "  gn is required to build skia but could not be downloaded. Please install it"
+    echo "  manually and re-run this script. Known package names:"
+    echo "    Debian/Ubuntu: sudo apt install generate-ninja   (NOT \"gn\")"
+    echo "    Fedora/RHEL:   sudo dnf install gn"
+    echo "    Arch Linux:    sudo pacman -S gn"
+    echo "    FreeBSD:       pkg install gn"
+    echo "    MSYS2:         pacman -S mingw-w64-x86_64-gn"
+    echo "    macOS:         no package - build gn from source (see the gn README)"
+    echo ""
 }
 GN_BIN=""
 if command -v gn &> /dev/null; then
@@ -239,8 +254,8 @@ else
             GN_GOOGLE_URL="https://gn.googlesource.com/gn"
             GN_GITHUB_MIRROR_URL="https://github.com/ArthurSonzogni/gn"
             gn_cloned=0
-            for attempt in 1 2 3; do
-                echo "  Cloning gn from Google source (attempt ${attempt}/3): ${GN_GOOGLE_URL}"
+            for attempt in 1 2; do
+                echo "  Cloning gn from Google source (attempt ${attempt}/2): ${GN_GOOGLE_URL}"
                 if gn_git_clone "${GN_GOOGLE_URL}" ./dui/third_party/gn; then
                     gn_cloned=1
                     break
@@ -250,9 +265,10 @@ else
                 sleep 10
             done
             if [ "$gn_cloned" -ne 1 ]; then
-                echo "  Google source failed after 3 attempts; trying GitHub mirror: ${GN_GITHUB_MIRROR_URL}"
+                echo "  Google source failed after 2 attempts; trying GitHub mirror: ${GN_GITHUB_MIRROR_URL}"
                 if ! gn_git_clone "${GN_GITHUB_MIRROR_URL}" ./dui/third_party/gn; then
                     echo "clone gn failed from both sources!"
+                    gn_install_hint
                     cd "$CURRENT_DIR"
                     exit 1
                 fi
@@ -263,6 +279,7 @@ else
     GN_BIN=$(cd ./dui/third_party/gn/out 2>/dev/null && pwd)/gn
     if [ ! -x "$GN_BIN" ]; then
         echo "gn build failed! Install gn or check the build log above."
+        gn_install_hint
         cd "$CURRENT_DIR"
         exit 1
     fi

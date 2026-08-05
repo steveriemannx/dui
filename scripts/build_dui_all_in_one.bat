@@ -166,8 +166,9 @@ if not exist ".\dui\third_party\skia\third_party\ninja\ninja.exe" (
 )
 
 @REM Use a system gn if available; otherwise build gn from source (official instructions;
-@REM needs the MSVC toolchain in PATH). The clone tries the Google source 3 times, then
-@REM falls back to a GitHub mirror.
+@REM needs the MSVC toolchain in PATH). The clone tries the Google source 2 times, then
+@REM falls back to a GitHub mirror. Slow/hung clones abort quickly: 10s connect timeout,
+@REM and fail if the transfer stays below 200 KB/s for 30s (git http.lowSpeed* options).
 set GN_BIN=
 where gn >nul 2>&1
 if %errorlevel% equ 0 (
@@ -181,25 +182,26 @@ if %errorlevel% equ 0 (
             @REM NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
             @REM to generate last_commit_position.h, which fails on a shallow clone (the tag only
             @REM exists in the full history). The repo is small (~40MB, ~30s to clone).
-            @REM Abort slow/hung clones: 15s connect timeout, and fail if the transfer
-            @REM stays below 100 KB/s for 60s (git http.lowSpeed* options).
-            for /l %%n in (1,1,3) do (
+            for /l %%n in (1,1,2) do (
                 if not exist ".\dui\third_party\gn\.git" (
-                    echo Cloning gn from Google source (attempt %%n/3): https://gn.googlesource.com/gn
-                    git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone https://gn.googlesource.com/gn .\dui\third_party\gn
+                    echo Cloning gn from Google source (attempt %%n/2): https://gn.googlesource.com/gn
+                    git -c http.connectTimeout=10 -c http.lowSpeedLimit=204800 -c http.lowSpeedTime=30 clone https://gn.googlesource.com/gn .\dui\third_party\gn
                     if not exist ".\dui\third_party\gn\.git" (
                         if exist ".\dui\third_party\gn" rmdir /s /q ".\dui\third_party\gn"
-                        if %%n lss 3 timeout /t %retry_delay% >nul
+                        if %%n lss 2 timeout /t %retry_delay% >nul
                     )
                 )
             )
             if not exist ".\dui\third_party\gn\.git" (
-                echo Google source failed after 3 attempts; trying GitHub mirror: https://github.com/ArthurSonzogni/gn
-                git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone https://github.com/ArthurSonzogni/gn .\dui\third_party\gn
+                echo Google source failed after 2 attempts; trying GitHub mirror: https://github.com/ArthurSonzogni/gn
+                git -c http.connectTimeout=10 -c http.lowSpeedLimit=204800 -c http.lowSpeedTime=30 clone https://github.com/ArthurSonzogni/gn .\dui\third_party\gn
             )
         )
         if not exist ".\dui\third_party\gn\.git" (
             echo clone gn failed from both sources!
+            echo Please install gn manually and re-run this script.
+            echo   MSYS2: pacman -S mingw-w64-x86_64-gn
+            echo   or build gn from source per https://gn.googlesource.com/gn/+/refs/heads/main/README.md
             cd /d %CURRENT_DIR%
             exit /b 1
         )
@@ -209,6 +211,12 @@ if %errorlevel% equ 0 (
         python3 build/gen.py
         ..\skia\third_party\ninja\ninja.exe -C out
         cd ..\..\..
+        if not exist ".\dui\third_party\gn\out\gn.exe" (
+            echo gn build failed! Install gn or check the build log above.
+            echo Hint: build gn from source per https://gn.googlesource.com/gn/+/refs/heads/main/README.md
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
     )
     set GN_BIN=..\gn\out\gn.exe
 )
