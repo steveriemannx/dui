@@ -220,43 +220,68 @@ gn_install_hint() {
     echo "    MSYS2:         pacman -S mingw-w64-x86_64-gn"
     echo "    macOS:         no package - build gn from source (see the gn README)"
     echo ""
+    echo "  Or clone the gn source into dui/third_party/gn and re-run - the script will"
+    echo "  build it from source automatically (clone the full history, not --depth 1):"
+    echo "    git clone https://gn.googlesource.com/gn dui/third_party/gn"
+    echo "    # Google source unreachable? Use the GitHub mirror instead:"
+    echo "    git clone https://github.com/ArthurSonzogni/gn dui/third_party/gn"
+    echo ""
 }
 GN_BIN=""
-if command -v gn &> /dev/null; then
+# gn acquisition order: existing source build -> skia's bin/fetch-gn (prebuilt
+# CIPD binary) -> system gn -> clone Google source (2 attempts) -> GitHub mirror
+# -> build from source.
+# 1) reuse an existing source-built gn
+if [ -f "./dui/third_party/gn/out/gn" ]; then
+    GN_BIN=$(cd ./dui/third_party/gn/out 2>/dev/null && pwd)/gn
+fi
+# 2) try skia's own bin/fetch-gn (prebuilt CIPD binary into skia/bin)
+if [ -z "$GN_BIN" ] && [ -f "./dui/third_party/skia/bin/fetch-gn" ]; then
+    echo "- Trying skia's bin/fetch-gn ..."
+    (cd ./dui/third_party/skia && python3 bin/fetch-gn)
+    if [ -f "./dui/third_party/skia/bin/gn.exe" ]; then
+        GN_BIN=$(cd ./dui/third_party/skia/bin 2>/dev/null && pwd)/gn.exe
+    elif [ -x "./dui/third_party/skia/bin/gn" ]; then
+        GN_BIN=$(cd ./dui/third_party/skia/bin 2>/dev/null && pwd)/gn
+    fi
+fi
+# 3) system gn
+if [ -z "$GN_BIN" ] && command -v gn &> /dev/null; then
     echo "- Using system gn: $(command -v gn)"
     GN_BIN=$(command -v gn)
-else
-    echo "- gn not found in PATH; building gn from source ..."
-    if [ ! -f "./dui/third_party/gn/out/gn" ]; then
-        if [ ! -d "./dui/third_party/gn/.git" ]; then
-            # NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
-            # to generate last_commit_position.h, which fails on a shallow clone (the tag only
-            # exists in the full history). The repo is small (~40MB, ~30s to clone).
-            GN_GOOGLE_URL="https://gn.googlesource.com/gn"
-            GN_GITHUB_MIRROR_URL="https://github.com/ArthurSonzogni/gn"
-            gn_cloned=0
-            for attempt in 1 2; do
-                echo "  Cloning gn from Google source (attempt ${attempt}/2): ${GN_GOOGLE_URL}"
-                if gn_git_clone "${GN_GOOGLE_URL}" ./dui/third_party/gn; then
-                    gn_cloned=1
-                    break
-                fi
-                rm -rf ./dui/third_party/gn
-                echo "  Clone failed (or too slow); retrying in 10s ..."
-                sleep 10
-            done
-            if [ "$gn_cloned" -ne 1 ]; then
-                echo "  Google source failed after 2 attempts; trying GitHub mirror: ${GN_GITHUB_MIRROR_URL}"
-                if ! gn_git_clone "${GN_GITHUB_MIRROR_URL}" ./dui/third_party/gn; then
-                    echo "clone gn failed from both sources!"
-                    gn_install_hint
-                    cd "$CURRENT_DIR"
-                    exit 1
-                fi
+fi
+# 4) build gn from source: clone Google source (2 attempts), fall back to a
+#    GitHub mirror, then compile (official instructions; idempotent)
+if [ -z "$GN_BIN" ]; then
+    echo "- gn not found; building gn from source ..."
+    if [ ! -d "./dui/third_party/gn/.git" ]; then
+        # NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
+        # to generate last_commit_position.h, which fails on a shallow clone (the tag only
+        # exists in the full history). The repo is small (~40MB, ~30s to clone).
+        GN_GOOGLE_URL="https://gn.googlesource.com/gn"
+        GN_GITHUB_MIRROR_URL="https://github.com/ArthurSonzogni/gn"
+        gn_cloned=0
+        for attempt in 1 2; do
+            echo "  Cloning gn from Google source (attempt ${attempt}/2): ${GN_GOOGLE_URL}"
+            if gn_git_clone "${GN_GOOGLE_URL}" ./dui/third_party/gn; then
+                gn_cloned=1
+                break
+            fi
+            rm -rf ./dui/third_party/gn
+            echo "  Clone failed (or too slow); retrying in 10s ..."
+            sleep 10
+        done
+        if [ "$gn_cloned" -ne 1 ]; then
+            echo "  Google source failed after 2 attempts; trying GitHub mirror: ${GN_GITHUB_MIRROR_URL}"
+            if ! gn_git_clone "${GN_GITHUB_MIRROR_URL}" ./dui/third_party/gn; then
+                echo "clone gn failed from both sources!"
+                gn_install_hint
+                cd "$CURRENT_DIR"
+                exit 1
             fi
         fi
-        (cd ./dui/third_party/gn && python3 build/gen.py && ninja -C out)
     fi
+    (cd ./dui/third_party/gn && python3 build/gen.py && ninja -C out)
     GN_BIN=$(cd ./dui/third_party/gn/out 2>/dev/null && pwd)/gn
     if [ ! -x "$GN_BIN" ]; then
         echo "gn build failed! Install gn or check the build log above."

@@ -148,18 +148,37 @@ if not exist ".\dui\third_party\skia\third_party\ninja\ninja.exe" (
     python3 .\dui\third_party\skia\bin\fetch-ninja
 )
 
-@REM Use a system gn if available; otherwise build gn from source (official instructions;
-@REM needs the MSVC toolchain in PATH). The clone tries the Google source 2 times, then
-@REM falls back to a GitHub mirror. Slow/hung clones abort quickly: 10s connect timeout,
-@REM and fail if the transfer stays below 200 KB/s for 30s (git http.lowSpeed* options).
+@REM gn acquisition order: existing source build -> skia's bin/fetch-gn (prebuilt
+@REM CIPD binary) -> system gn -> clone Google source (2 attempts) -> GitHub mirror
+@REM -> build from source (official instructions; needs the MSVC toolchain in PATH).
+@REM Slow/hung clones abort quickly: 10s connect timeout, and fail if the transfer
+@REM stays below 200 KB/s for 30s (git http.lowSpeed* options).
 set GN_BIN=
-where gn >nul 2>&1
-if %errorlevel% equ 0 (
-    echo Using system gn:
-    where gn
-    set GN_BIN=gn
-) else (
-    echo gn not found in PATH - building gn from source
+@REM 1) reuse an existing source-built gn
+if exist ".\dui\third_party\gn\out\gn.exe" set GN_BIN=..\gn\out\gn.exe
+@REM 2) try skia's own bin/fetch-gn (prebuilt CIPD binary into skia/bin)
+if "%GN_BIN%"=="" (
+    if exist ".\dui\third_party\skia\bin\fetch-gn" (
+        echo Trying skia's bin/fetch-gn ...
+        python3 .\dui\third_party\skia\bin\fetch-gn
+        if exist ".\dui\third_party\skia\bin\gn.exe" (
+            echo Using gn fetched by skia's bin/fetch-gn
+            set GN_BIN=..\skia\bin\gn.exe
+        )
+    )
+)
+@REM 3) system gn
+if "%GN_BIN%"=="" (
+    where gn >nul 2>&1
+    if not errorlevel 1 (
+        echo Using system gn:
+        where gn
+        set GN_BIN=gn
+    )
+)
+@REM 4) clone + build from source
+if "%GN_BIN%"=="" (
+    echo gn not found - building gn from source
     if not exist ".\dui\third_party\gn\out\gn.exe" (
         if not exist ".\dui\third_party\gn\.git" (
             @REM NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
@@ -185,6 +204,10 @@ if %errorlevel% equ 0 (
             echo Please install gn manually and re-run this script.
             echo   MSYS2: pacman -S mingw-w64-x86_64-gn
             echo   or build gn from source per https://gn.googlesource.com/gn/+/refs/heads/main/README.md
+            echo   or clone the gn source into .\dui\third_party\gn and re-run (the script
+            echo   builds it from source automatically; full history, not --depth 1):
+            echo     git clone https://gn.googlesource.com/gn .\dui\third_party\gn
+            echo     or the GitHub mirror: git clone https://github.com/ArthurSonzogni/gn .\dui\third_party\gn
             cd /d %CURRENT_DIR%
             exit /b 1
         )
