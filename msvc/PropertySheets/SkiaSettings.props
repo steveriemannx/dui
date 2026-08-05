@@ -8,13 +8,13 @@
         <SkiaPreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">SK_GANESH;SK_GL;SK_RELEASE</SkiaPreprocessorDefinitions>
 
         <!-- Skia的include目录 -->
-        <SkiaIncludeDir>$(SolutionDir)\..\..\skia</SkiaIncludeDir>
+        <SkiaIncludeDir>$(SolutionDir)\..\third_party\skia</SkiaIncludeDir>
 
         <!-- Skia的lib目录: 目前固定使用 llvm 编译 -->
-        <SkiaLibDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\..\..\skia\out\llvm.x64.release</SkiaLibDir>
-        <SkiaLibDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\..\..\skia\out\llvm.x64.debug</SkiaLibDir>
-        <SkiaLibDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\..\..\skia\out\llvm.x86.release</SkiaLibDir>
-        <SkiaLibDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\..\..\skia\out\llvm.x86.debug</SkiaLibDir>
+        <SkiaLibDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\..\third_party\skia\out\llvm.x64.release</SkiaLibDir>
+        <SkiaLibDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\..\third_party\skia\out\llvm.x64.debug</SkiaLibDir>
+        <SkiaLibDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\..\third_party\skia\out\llvm.x86.release</SkiaLibDir>
+        <SkiaLibDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\..\third_party\skia\out\llvm.x86.debug</SkiaLibDir>
 
         <!-- Skia的lib列表 -->
         <SkiaLibs>skia.lib;svg.lib;skshaper.lib;skottie.lib;sksg.lib;jsonreader.lib</SkiaLibs>
