@@ -196,7 +196,7 @@ if "%GN_BIN%"=="" (
             @REM exists in the full history). The repo is small (~40MB, ~30s to clone).
             for /l %%n in (1,1,2) do (
                 if not exist ".\dui\third_party\gn\.git" (
-                    echo Cloning gn from Google source (attempt %%n/2): https://gn.googlesource.com/gn
+                    echo Cloning gn from Google source - attempt %%n/2 - https://gn.googlesource.com/gn
                     git -c http.connectTimeout=10 -c http.lowSpeedLimit=204800 -c http.lowSpeedTime=30 clone https://gn.googlesource.com/gn .\dui\third_party\gn
                     if not exist ".\dui\third_party\gn\.git" (
                         if exist ".\dui\third_party\gn" rmdir /s /q ".\dui\third_party\gn"
@@ -217,8 +217,8 @@ if "%GN_BIN%"=="" (
             echo   .\dui\third_party\skia\bin\gn.exe - the script uses it directly:
             echo     https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/git_revision:b2afae122eeb6ce09c52d63f67dc53fc517dbdc8
             echo   or build gn from source per https://gn.googlesource.com/gn/+/refs/heads/main/README.md
-            echo   or clone the gn source into .\dui\third_party\gn and re-run (the script
-            echo   builds it from source automatically; full history, not --depth 1):
+            echo   or clone the gn source into .\dui\third_party\gn and re-run - the script
+            echo   builds it from source automatically - full history, not --depth 1
             echo     git clone https://gn.googlesource.com/gn .\dui\third_party\gn
             echo     or the GitHub mirror: git clone https://github.com/ArthurSonzogni/gn .\dui\third_party\gn
             cd /d %CURRENT_DIR%
