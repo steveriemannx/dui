@@ -23,8 +23,8 @@
     <Import Project="LibPagSettings.props" />
 
     <PropertyGroup Label="Globals">
-        <!-- 头文件Include -->
-        <DuiBinIncludeDir>$(SolutionDir)\..;$(ProjectDir)</DuiBinIncludeDir>
+        <!-- 头文件Include: 仓库根 + include/ (public headers live in include/dui/...) -->
+        <DuiBinIncludeDir>$(SolutionDir)\..;$(SolutionDir)\..\include;$(ProjectDir)</DuiBinIncludeDir>
 
         <!-- 库文件Include: DLL模式仅依赖DLL导出的lib -->
         <DuiBinLibIncludeDir Condition="'$(EnableDuiDll)' == '1'">$(SolutionDir)\..\lib\$(Platform)\</DuiBinLibIncludeDir>

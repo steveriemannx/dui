@@ -159,7 +159,7 @@
     <ClCompile Include="browser\DragDropManager.cpp" />
     <ClCompile Include="browser\DragForm.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="main.cpp" />
+    
     <ClCompile Include="Windows\BrowserBox_Windows.cpp" />
     <ClCompile Include="Windows\BrowserForm_Windows.cpp" />
     <ClCompile Include="Windows\taskbar\DwmUtil.cpp" />
@@ -172,7 +172,7 @@
     <ResourceCompile Include="CefBrowser.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dui\dui.vcxproj">
+    <ProjectReference Include="..\..\src\dui.vcxproj">
       <Project>{e106acd7-4e53-4aee-942b-d0dd426db34e}</Project>
     </ProjectReference>
   </ItemGroup>
