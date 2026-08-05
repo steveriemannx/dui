@@ -150,7 +150,7 @@ brew install cmake
 brew install ninja
 ```
 #### gn (no installation needed)
-CMake builds gn from source automatically at configure time (git clone + `build/gen.py` + `ninja -C out`, following the official gn README), so a system gn is optional — it is only used as a fallback if the automatic build is unavailable.
+CMake prefers a system gn if one is installed; otherwise it builds gn from source automatically at configure time (git clone + `build/gen.py` + `ninja -C out`, following the official gn README). The clone tries the Google source (3 attempts) and falls back to a GitHub mirror if it keeps failing; slow or hung clones are aborted automatically (15s connect timeout, and under 100 KB/s for 60s triggers a source switch).
 
 ### II. Automated build with a script (recommended)
 The script automatically handles downloading and building the relevant source code.    

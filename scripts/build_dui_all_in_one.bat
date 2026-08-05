@@ -165,34 +165,66 @@ if not exist ".\dui\third_party\skia\third_party\ninja\ninja.exe" (
     python3 .\dui\third_party\skia\bin\fetch-ninja
 )
 
-@REM Build gn from source (official instructions; needs the MSVC toolchain in PATH)
-if not exist ".\dui\third_party\gn\out\gn.exe" (
-    if not exist ".\dui\third_party\gn\.git" (
-        @REM NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
-        @REM to generate last_commit_position.h, which fails on a shallow clone (the tag only
-        @REM exists in the full history). The repo is small (~40MB, ~30s to clone).
-        git clone https://gn.googlesource.com/gn .\dui\third_party\gn
+@REM Use a system gn if available; otherwise build gn from source (official instructions;
+@REM needs the MSVC toolchain in PATH). The clone tries the Google source 3 times, then
+@REM falls back to a GitHub mirror.
+set GN_BIN=
+where gn >nul 2>&1
+if %errorlevel% equ 0 (
+    echo Using system gn:
+    where gn
+    set GN_BIN=gn
+) else (
+    echo gn not found in PATH - building gn from source
+    if not exist ".\dui\third_party\gn\out\gn.exe" (
+        if not exist ".\dui\third_party\gn\.git" (
+            @REM NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
+            @REM to generate last_commit_position.h, which fails on a shallow clone (the tag only
+            @REM exists in the full history). The repo is small (~40MB, ~30s to clone).
+            @REM Abort slow/hung clones: 15s connect timeout, and fail if the transfer
+            @REM stays below 100 KB/s for 60s (git http.lowSpeed* options).
+            for /l %%n in (1,1,3) do (
+                if not exist ".\dui\third_party\gn\.git" (
+                    echo Cloning gn from Google source (attempt %%n/3): https://gn.googlesource.com/gn
+                    git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone https://gn.googlesource.com/gn .\dui\third_party\gn
+                    if not exist ".\dui\third_party\gn\.git" (
+                        if exist ".\dui\third_party\gn" rmdir /s /q ".\dui\third_party\gn"
+                        if %%n lss 3 timeout /t %retry_delay% >nul
+                    )
+                )
+            )
+            if not exist ".\dui\third_party\gn\.git" (
+                echo Google source failed after 3 attempts; trying GitHub mirror: https://github.com/ArthurSonzogni/gn
+                git -c http.connectTimeout=15 -c http.lowSpeedLimit=102400 -c http.lowSpeedTime=60 clone https://github.com/ArthurSonzogni/gn .\dui\third_party\gn
+            )
+        )
+        if not exist ".\dui\third_party\gn\.git" (
+            echo clone gn failed from both sources!
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
+        for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_PATH=%%i"
+        @call "%MSVC_VAR_PATH%" x64
+        cd dui\third_party\gn
+        python3 build/gen.py
+        ..\skia\third_party\ninja\ninja.exe -C out
+        cd ..\..\..
     )
-    for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_PATH=%%i"
-    @call "%MSVC_VAR_PATH%" x64
-    cd dui\third_party\gn
-    python3 build/gen.py
-    ..\skia\third_party\ninja\ninja.exe -C out
-    cd ..\..\..
+    set GN_BIN=..\gn\out\gn.exe
 )
 
 @REM build skia
 cd dui\third_party\skia
-..\gn\out\gn.exe gen out/llvm.x64.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
+%GN_BIN% gen out/llvm.x64.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x64.debug
 
-..\gn\out\gn.exe gen out/llvm.x64.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
+%GN_BIN% gen out/llvm.x64.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x64.release
 
-..\gn\out\gn.exe gen out/llvm.x86.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
+%GN_BIN% gen out/llvm.x86.release --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryRelease%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x86.release
 
-..\gn\out\gn.exe gen out/llvm.x86.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
+%GN_BIN% gen out/llvm.x86.debug --ide="%VS_VERSION%" --sln="skia" --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" clang_win=\"C:/LLVM\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\",\"%RuntimeLibraryDebug%\"]"
 .\third_party\ninja\ninja.exe -C out/llvm.x86.debug
 cd ..\..\..
 
