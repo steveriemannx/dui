@@ -102,31 +102,14 @@ if %VS_MAJOR_VERSION% LSS 17 (
 
 cd /d %SCRIPT_DIR%
 echo %cd%
-if not exist ".\dui\.git" (
-    if exist "..\..\dui\.git" (
+if not exist ".\dui\CMakeLists.txt" (
+    if exist "..\..\dui\CMakeLists.txt" (
         cd ..\..\
     )
 )
 echo %cd%
 
 set retry_delay=10
-
-:retry_clone_dui
-if not exist ".\dui\.git" (
-    git clone https://github.com/steveriemannx/dui dui
-) else (
-    git -C ./dui pull
-)
-if %errorlevel% neq 0 (
-    timeout /t %retry_delay% >nul
-    goto retry_clone_dui
-)
-
-if not exist ".\dui\.git" (
-    echo clone dui failed!
-    cd /d %CURRENT_DIR%
-    exit /b 1
-)
 
 @REM Fetch skia: download the dui fork zip and extract it (replaces git clone + skia_compile patch)
 set SKIA_ZIP_URL=https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip
