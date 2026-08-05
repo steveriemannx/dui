@@ -213,14 +213,8 @@ if "%GN_BIN%"=="" (
             echo clone gn failed from both sources!
             echo Please install gn manually and re-run this script.
             echo   MSYS2: pacman -S mingw-w64-x86_64-gn
-            echo   or download a prebuilt gn binary from CIPD (a zip) and unzip it to
-            echo   .\dui\third_party\skia\bin\gn.exe - the script uses it directly:
-            echo     https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/git_revision:b2afae122eeb6ce09c52d63f67dc53fc517dbdc8
-            echo   or build gn from source per https://gn.googlesource.com/gn/+/refs/heads/main/README.md
-            echo   or clone the gn source into .\dui\third_party\gn and re-run - the script
-            echo   builds it from source automatically - full history, not --depth 1
-            echo     git clone https://gn.googlesource.com/gn .\dui\third_party\gn
-            echo     or the GitHub mirror: git clone https://github.com/ArthurSonzogni/gn .\dui\third_party\gn
+            echo   or clone the gn source into .\dui\third_party\gn
+            echo   or download a prebuilt gn binary and unzip it to .\dui\third_party\skia\bin\gn.exe
             cd /d %CURRENT_DIR%
             exit /b 1
         )
