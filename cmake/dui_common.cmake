@@ -417,9 +417,14 @@ function(dui_build_msvc_tool _result_var _srcs _exe _include_dirs)
         endif()
         return()
     endif()
-    # MSVC: find the VS installation (same tool as scripts/detect_vs_version.bat)
+    # MSVC: cl needs the vcvarsall environment (INCLUDE/LIB) to find the standard
+    # library headers, so locate the VS installation with vswhere and run the
+    # compile through a small batch file - a cmd /c "call ... && cl ..." one-liner
+    # breaks because CMake re-escapes the embedded quotes for CreateProcess and cmd
+    # does not understand backslash-escaped quotes.
     set(_vswhere "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe")
     if(NOT EXISTS "${_vswhere}")
+        message(WARNING "vswhere not found at ${_vswhere} - cannot rebuild ${_exe} automatically")
         return()
     endif()
     execute_process(
@@ -429,10 +434,12 @@ function(dui_build_msvc_tool _result_var _srcs _exe _include_dirs)
         RESULT_VARIABLE _vswhere_result
     )
     if(NOT _vswhere_result EQUAL 0 OR NOT _vs_install)
+        message(WARNING "vswhere failed - cannot rebuild ${_exe} automatically")
         return()
     endif()
     set(_vcvarsall "${_vs_install}/VC/Auxiliary/Build/vcvarsall.bat")
     if(NOT EXISTS "${_vcvarsall}")
+        message(WARNING "vcvarsall not found at ${_vcvarsall} - cannot rebuild ${_exe} automatically")
         return()
     endif()
     if(CMAKE_VS_PLATFORM_NAME STREQUAL "Win32")
@@ -442,15 +449,22 @@ function(dui_build_msvc_tool _result_var _srcs _exe _include_dirs)
     else()
         set(_vc_arch x64)
     endif()
-    # One cmd line: set up the environment, then compile (paths must not contain spaces)
     string(REPLACE ";" " " _srcs_str "${_srcs}")
     string(REPLACE ";" " " _inc_str "${_include_dirs}")
+    set(_bat "${CMAKE_CURRENT_BINARY_DIR}/dui_rebuild_tool.bat")
+    file(WRITE "${_bat}"
+        "@call \"${_vcvarsall}\" ${_vc_arch} >nul\r\n"
+        "\"${CMAKE_CXX_COMPILER}\" /nologo /std:c++17 /O2 /EHsc ${_inc_str} ${_srcs_str} /Fe:\"${_exe}\"\r\n")
     execute_process(
-        COMMAND cmd /c "call \"${_vcvarsall}\" ${_vc_arch} >nul && \"${CMAKE_CXX_COMPILER}\" /nologo /std:c++17 /O2 /EHsc ${_inc_str} ${_srcs_str} /Fe:\"${_exe}\""
+        COMMAND cmd /c "${_bat}"
         WORKING_DIRECTORY "${DUI_SRC_ROOT_DIR}"
         RESULT_VARIABLE _build_result
+        OUTPUT_VARIABLE _build_out
+        ERROR_VARIABLE _build_err
     )
     if(_build_result EQUAL 0)
         set(${_result_var} TRUE PARENT_SCOPE)
+    else()
+        message(WARNING "Tool build failed (${_exe}):\n${_build_err}\n${_build_out}")
     endif()
 endfunction()
