@@ -176,7 +176,9 @@ function(dui_deps_add_targets)
         if(NOT DUI_NINJA_BIN)
             message(FATAL_ERROR "ninja is required to build skia but was not found and could not be "
                     "fetched automatically. Install it (choco install ninja / scoop install ninja / "
-                    "pacman -S ninja) and re-run cmake configure.")
+                    "pacman -S ninja), or download it from https://github.com/ninja-build/ninja/releases "
+                    "and place ninja(.exe) in ${DUI_SKIA_SRC_ROOT_DIR}/third_party/ninja/ or in PATH, "
+                    "then re-run cmake configure.")
         endif()
 
         # ---- gn: built from source at make time (ordered before SDL3/skia) ----
@@ -520,7 +522,15 @@ function(dui_deps_download_gn)
     if(EXISTS "${_gn_dir}/build/gen.py")
         return()  # already cloned
     endif()
-    # Try skia's own bin/fetch-gn first: it downloads the skia-pinned prebuilt CIPD
+    # Prefer a system gn (zero cost - already installed, no download needed): the
+    # make-time skia steps fall back to find_program(gn) when the source build is
+    # unavailable, so skip the clone entirely if gn is in PATH.
+    find_program(_gn_system NAMES gn)
+    if(_gn_system)
+        message(STATUS "Using system gn: ${_gn_system} (skipping source clone)")
+        return()
+    endif()
+    # Then try skia's own bin/fetch-gn: it downloads the skia-pinned prebuilt CIPD
     # binary into skia/bin/gn (gn.exe on Windows), avoiding a source clone+build.
     if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/bin/fetch-gn")
         find_program(_gn_python NAMES python3 python)
@@ -536,15 +546,8 @@ function(dui_deps_download_gn)
                 message(STATUS "gn fetched: ${DUI_SKIA_SRC_ROOT_DIR}/bin/gn (skipping source clone)")
                 return()
             endif()
-            message(STATUS "fetch-gn failed; falling back to a system gn or a source clone")
+            message(STATUS "fetch-gn failed; falling back to a source clone")
         endif()
-    endif()
-    # Prefer a system gn: the make-time skia steps fall back to find_program(gn) when the
-    # source build is unavailable, so skip the clone entirely if gn is in PATH.
-    find_program(_gn_system NAMES gn)
-    if(_gn_system)
-        message(STATUS "Using system gn: ${_gn_system} (skipping source clone)")
-        return()
     endif()
     # Try the Google source 2 times, then fall back to a GitHub mirror.
     # Abort slow/hung clones quickly: 10s connect timeout, and fail if the transfer
@@ -586,6 +589,11 @@ function(dui_deps_download_gn)
                         "  FreeBSD:       pkg install gn\n"
                         "  MSYS2:         pacman -S mingw-w64-x86_64-gn\n"
                         "  macOS:         no package - build gn from source (see the gn README)\n"
+                        "Or download a prebuilt gn binary from CIPD (a zip; version pinned in\n"
+                        "${DUI_SKIA_SRC_ROOT_DIR}/bin/fetch-gn) and unzip it to\n"
+                        "${DUI_SKIA_SRC_ROOT_DIR}/bin/gn (gn.exe on Windows):\n"
+                        "  https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/git_revision:b2afae122eeb6ce09c52d63f67dc53fc517dbdc8\n"
+                        "  (use linux-amd64 / mac-amd64 / mac-arm64 / linux-arm64 as needed)\n"
                         "Or clone the gn source into ${DUI_ROOT}/third_party/gn (the build at\n"
                         "make time compiles it automatically; full history, not --depth 1):\n"
                         "  git clone https://gn.googlesource.com/gn ${DUI_ROOT}/third_party/gn\n"

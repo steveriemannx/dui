@@ -220,6 +220,12 @@ gn_install_hint() {
     echo "    MSYS2:         pacman -S mingw-w64-x86_64-gn"
     echo "    macOS:         no package - build gn from source (see the gn README)"
     echo ""
+    echo "  Or download a prebuilt gn binary from CIPD (a zip; version pinned in skia's"
+    echo "  bin/fetch-gn) and unzip it to dui/third_party/skia/bin/gn (gn.exe on Windows):"
+    echo "    https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/git_revision:b2afae122eeb6ce09c52d63f67dc53fc517dbdc8"
+    echo "  (use linux-amd64 / mac-amd64 / mac-arm64 / linux-arm64 instead of windows-amd64"
+    echo "  for other platforms; the script uses the binary directly once it is in place)"
+    echo ""
     echo "  Or clone the gn source into dui/third_party/gn and re-run - the script will"
     echo "  build it from source automatically (clone the full history, not --depth 1):"
     echo "    git clone https://gn.googlesource.com/gn dui/third_party/gn"
@@ -228,14 +234,19 @@ gn_install_hint() {
     echo ""
 }
 GN_BIN=""
-# gn acquisition order: existing source build -> skia's bin/fetch-gn (prebuilt
-# CIPD binary) -> system gn -> clone Google source (2 attempts) -> GitHub mirror
+# gn acquisition order: existing source build -> system gn -> skia's bin/fetch-gn
+# (prebuilt CIPD binary) -> clone Google source (2 attempts) -> GitHub mirror
 # -> build from source.
 # 1) reuse an existing source-built gn
 if [ -f "./dui/third_party/gn/out/gn" ]; then
     GN_BIN=$(cd ./dui/third_party/gn/out 2>/dev/null && pwd)/gn
 fi
-# 2) try skia's own bin/fetch-gn (prebuilt CIPD binary into skia/bin)
+# 2) system gn (zero cost - already installed, no download needed)
+if [ -z "$GN_BIN" ] && command -v gn &> /dev/null; then
+    echo "- Using system gn: $(command -v gn)"
+    GN_BIN=$(command -v gn)
+fi
+# 3) try skia's own bin/fetch-gn (prebuilt CIPD binary into skia/bin)
 if [ -z "$GN_BIN" ] && [ -f "./dui/third_party/skia/bin/fetch-gn" ]; then
     echo "- Trying skia's bin/fetch-gn ..."
     (cd ./dui/third_party/skia && python3 bin/fetch-gn)
@@ -244,11 +255,6 @@ if [ -z "$GN_BIN" ] && [ -f "./dui/third_party/skia/bin/fetch-gn" ]; then
     elif [ -x "./dui/third_party/skia/bin/gn" ]; then
         GN_BIN=$(cd ./dui/third_party/skia/bin 2>/dev/null && pwd)/gn
     fi
-fi
-# 3) system gn
-if [ -z "$GN_BIN" ] && command -v gn &> /dev/null; then
-    echo "- Using system gn: $(command -v gn)"
-    GN_BIN=$(command -v gn)
 fi
 # 4) build gn from source: clone Google source (2 attempts), fall back to a
 #    GitHub mirror, then compile (official instructions; idempotent)
