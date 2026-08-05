@@ -7,7 +7,11 @@
     <PropertyGroup>
         <OutDir>$(SolutionDir)\..\lib\$(Platform)\</OutDir>
         <IntDir>$(SolutionDir)\build_temp\$(PlatformName)\$(ProjectName)\$(Configuration)\</IntDir>
-    </PropertyGroup>    
+    </PropertyGroup>
+    <!-- 头文件Include: 仓库根 + include/ (public headers live in include/dui/...) -->
+    <PropertyGroup Label="Globals">
+        <DuiBinIncludeDir>$(SolutionDir)\..;$(SolutionDir)\..\include;$(ProjectDir)</DuiBinIncludeDir>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <TargetName>$(ProjectName)_d</TargetName>
     </PropertyGroup>
