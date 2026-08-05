@@ -186,19 +186,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\skia\tools\ganesh\gl\win\SkWGL_win.cpp">
+    <ClCompile Include="..\third_party\skia\tools\ganesh\gl\win\SkWGL_win.cpp">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
     </ClCompile>
-    <ClCompile Include="..\..\skia\tools\window\GLWindowContext.cpp">
+    <ClCompile Include="..\third_party\skia\tools\window\GLWindowContext.cpp">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
     </ClCompile>
-    <ClCompile Include="..\..\skia\tools\window\WindowContext.cpp">
+    <ClCompile Include="..\third_party\skia\tools\window\WindowContext.cpp">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TurnOffAllWarnings</WarningLevel>
@@ -538,11 +538,11 @@
     <ClCompile Include="WebView2\WebView2Manager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\skia\tools\ganesh\gl\win\SkWGL.h" />
-    <ClInclude Include="..\..\skia\tools\window\DisplayParams.h" />
-    <ClInclude Include="..\..\skia\tools\window\GLWindowContext.h" />
-    <ClInclude Include="..\..\skia\tools\window\RasterWindowContext.h" />
-    <ClInclude Include="..\..\skia\tools\window\WindowContext.h" />
+    <ClInclude Include="..\third_party\skia\tools\ganesh\gl\win\SkWGL.h" />
+    <ClInclude Include="..\third_party\skia\tools\window\DisplayParams.h" />
+    <ClInclude Include="..\third_party\skia\tools\window\GLWindowContext.h" />
+    <ClInclude Include="..\third_party\skia\tools\window\RasterWindowContext.h" />
+    <ClInclude Include="..\third_party\skia\tools\window\WindowContext.h" />
     <ClInclude Include="..\msvc\dllRes\framework.h" />
     <ClInclude Include="..\msvc\dllRes\resource.h" />
     <ClInclude Include="..\msvc\dllRes\version.h" />
