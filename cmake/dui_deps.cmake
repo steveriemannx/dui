@@ -602,6 +602,15 @@ function(dui_deps_download_gn)
     if(NOT DUI_BUILD_SKIA_FROM_SOURCE)
         return()
     endif()
+    # Resolve gn once per configure: dui_deps_configure runs per scope (each
+    # example), which would otherwise repeat the "Using system gn" status
+    # messages once per example.
+    get_property(_gn_resolved GLOBAL PROPERTY DUI_GN_RESOLVED)
+    if(_gn_resolved)
+        return()
+    endif()
+    set_property(GLOBAL PROPERTY DUI_GN_RESOLVED TRUE)
+
     set(_gn_dir "${DUI_ROOT}/third_party/gn")
     # Windows checkouts convert text files to CRLF (core.autocrlf default), which
     # breaks gn's own unit tests (format_test_data byte comparison) and confuses
