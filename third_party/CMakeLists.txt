@@ -20,29 +20,21 @@ add_subdirectory(cximage)   # target: dui-cximage
 add_subdirectory(libpng)    # target: png_static（OUTPUT_NAME dui-png）
 add_subdirectory(libwebp)   # target: dui-webp
 
-# libcef 按平台内建（FreeBSD 不编译 CEF；MinGW 不支持 CEF，见构建脚本）
-if(WIN32 AND NOT MINGW)
-    if(DUI_CEF_109)
-        add_subdirectory(libcef/libcef_win_109)
-    else()
-        # 与 Mac/Linux 一致：wrapper 直接从下载的 cef_binary 发行包内建。
-        # Windows 上 dui 始终编译 CEF 模块（dui_config.h 默认定义 DUI_BUILD_FOR_CEF），
-        # 因此发行包缺失时在这里自动下载（幂等，缓存于 third_party/downloads/）；
-        # bat/sh 流程也会提前抓取到同一个目录。
-        if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libcef/cef_binary/CMakeLists.txt")
-            dui_deps_download_cef()
-        endif()
-        set(CEF_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libcef/cef_binary")
-        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
-        find_package(CEF REQUIRED)
-        # 只内建 libcef_dll 的 libcef_dll_wrapper 目标（发行包自带的 CMakeLists 引导
-        # 还会内建 tests/，不需要）；wrapper 归档输出到 lib/ 供示例按名链接
-        # （与旧 libcef_win 的 CMAKE_ARCHIVE_OUTPUT_DIRECTORY 设置一致）。
-        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_ROOT}/lib/")
-        add_subdirectory("${CEF_ROOT}/libcef_dll" libcef_dll_wrapper)
+# libcef 内建：统一从下载的 cef_binary 发行包构建 wrapper（Windows/Mac/Linux 一致；
+# FreeBSD 不编译 CEF；MinGW 不支持 CEF，见构建脚本；CEF 109 分支保留 libcef_win_109）
+if(WIN32 AND DUI_CEF_109)
+    add_subdirectory(libcef/libcef_win_109)
+elseif((WIN32 AND NOT MINGW) OR APPLE OR DUI_OS_LINUX)
+    # 发行包缺失时自动下载（幂等，缓存于 third_party/downloads/）；bat/sh 流程也会
+    # 提前抓取到同一个目录。
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libcef/cef_binary/CMakeLists.txt")
+        dui_deps_download_cef()
     endif()
-elseif(APPLE)
-    add_subdirectory(libcef/libcef_macos)
-elseif(DUI_OS_LINUX)
-    add_subdirectory(libcef/libcef_linux)
+    set(CEF_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libcef/cef_binary")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
+    find_package(CEF REQUIRED)
+    # 只内建 libcef_dll 的 libcef_dll_wrapper 目标（发行包自带的 CMakeLists 引导
+    # 还会内建 tests/，不需要）；wrapper 归档输出到 lib/ 供示例按名链接。
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_ROOT}/lib/")
+    add_subdirectory("${CEF_ROOT}/libcef_dll" libcef_dll_wrapper)
 endif()

@@ -160,7 +160,9 @@ fi
 # --standalone: build each example as an independent CMake project (legacy mode)
 # ============================================================
 # Build third-party libraries
-DUI_THIRD_PARTY_LIBS=("zlib" "libpng" "cximage" "libwebp" "libcef/libcef_linux")
+# libcef is not built here: the wrapper is built from the downloaded
+# cef_binary distribution inside the dui build (third_party/CMakeLists.txt).
+DUI_THIRD_PARTY_LIBS=("zlib" "libpng" "cximage" "libwebp")
 for third_party_lib in "${DUI_THIRD_PARTY_LIBS[@]}"; do
     $DUI_CMAKE -S "$DUI_SRC_ROOT_DIR/dui/third_party/$third_party_lib" -B "$DUI_BUILD_DIR/$third_party_lib" -DCMAKE_BUILD_TYPE=${DUI_BUILD_TYPE}
     $DUI_MAKE "$DUI_BUILD_DIR/$third_party_lib" $DUI_MAKE_THREADS

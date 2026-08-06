@@ -91,7 +91,7 @@ resources.pak
 locales (directory containing language packs such as zh-CN.pak and en-US.pak)
 ```
 ### 3. Content to add to the Makefile or CMakeLists.txt of the program
-* Add `third_party/libcef/libcef_linux` to the header include paths    
+* Add `third_party/libcef/cef_binary` to the header include paths    
 * Add `bin/cef_binary` to the library include paths (this directory contains the shared library files of libcef, such as libcef.so)    
 * Set the linked libraries and add ` libcef.so cef_dll_wrapper X11`    
 * Place the libcef binaries and resource files (libcef.so, etc.) in the directory `bin/cef_binary`.    
@@ -100,7 +100,7 @@ locales (directory containing language packs such as zh-CN.pak and en-US.pak)
 The basic steps are as follows (all directories are written as subdirectories relative to the dui root `${NIM_DUI_ROOT}`; the actual settings can be flexibly adjusted according to your own project structure):    
 ### 1. Getting the libcef binaries and resource files (automatic with CMake)
 The CMake build downloads the complete binary distribution automatically at configure time when it is missing, and extracts it to the `${NIM_DUI_ROOT}/third_party/libcef/cef_binary` directory (it contains the framework binaries in the `Release/` directory).    
-Note: `third_party/libcef/libcef_macos` is released together with the dui source code (wrapper sources and headers only); `cef_binary` is the complete binary distribution.    
+Note: the wrapper sources and headers are no longer vendored per platform — they are built from the downloaded `cef_binary` distribution (see `third_party/CMakeLists.txt`), the same way as on Windows and Linux.    
 `cmake/dui_cef_macos.cmake` uses the `cef_binary` directory as the default `CEF_ROOT`; it can be overridden with `-DCEF_ROOT=...` when running CMake.
 ### 2. Contents of the cef_binary directory
 ```
