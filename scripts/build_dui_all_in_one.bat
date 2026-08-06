@@ -269,6 +269,27 @@ findstr /i /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LIN
 findstr /i /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LINK" "%TEMP%\dui_skia_ninja.log"
 cd ..\..\..
 
+@REM Fetch CEF (Windows): the VS flow expects the binary distribution at
+@REM third_party/libcef/libcef_win (Release/libcef.lib etc.)
+set CEF_VERSION=142.0.10+g29548e2+chromium-142.0.7444.135
+if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (set CEF_ARCH=windows64) else (set CEF_ARCH=windows32)
+set CEF_FILE=cef_binary_%CEF_VERSION%_%CEF_ARCH%
+if not exist ".\dui\third_party\libcef\libcef_win\Release\libcef.lib" (
+    if not exist ".\dui\third_party\downloads\%CEF_FILE%.tar.bz2" (
+        echo Downloading CEF: https://cef-builds.spotifycdn.com/%CEF_FILE%.tar.bz2
+        curl -L -f -o ".\dui\third_party\downloads\%CEF_FILE%.tar.bz2" --retry 3 --connect-timeout 15 --retry-delay 10 --speed-limit 100 --speed-time 120 "https://cef-builds.spotifycdn.com/%CEF_FILE%.tar.bz2"
+    )
+    if exist ".\dui\third_party\downloads\%CEF_FILE%.tar.bz2" (
+        echo Extracting CEF into third_party/libcef/libcef_win ...
+        if not exist ".\dui\third_party\libcef\libcef_win" mkdir ".\dui\third_party\libcef\libcef_win"
+        tar -xjf ".\dui\third_party\downloads\%CEF_FILE%.tar.bz2" -C ".\dui\third_party\libcef\libcef_win" --strip-components=1
+    )
+    if not exist ".\dui\third_party\libcef\libcef_win\Release\libcef.lib" (
+        echo CEF download failed! Download it manually from https://cef-builds.spotifycdn.com/
+        echo and extract the archive into .\dui\third_party\libcef\libcef_win
+    )
+)
+
 @REM build dui
 for /f "delims=" %%i in ('where /R %MSVC_PATH% vcvarsall.bat') do set "MSVC_VAR_PATH=%%i"
 echo vcvarsall.bat full path: %MSVC_VAR_PATH%
