@@ -147,4 +147,14 @@ if(DUI_WEBVIEW2_EXE)
     list(APPEND DUI_WINDOWS_LIBS WinInet.lib WebView2Loader.dll.lib)
 endif()
 
+# Make the CEF feature switch explicit (matches the VS flow's DUI_CEF=$(LibCefEnabled)):
+# without it, dui_config.h defaults DUI_BUILD_FOR_CEF to enabled on Windows.
+# Note: the dui library itself always compiles the CEF code (the cef examples
+# link against it), so this only affects the examples' own compilation.
+if(DUI_ENABLE_CEF)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_CEF=1)
+else()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_CEF=0)
+endif()
+
 target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_WINDOWS_LIBS})
