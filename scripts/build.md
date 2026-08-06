@@ -40,7 +40,9 @@ This directory contains the build documentation and the dependency build scripts
 （2）`${DUI_ROOT}/resources/lang`: multi-language text files; if multi-language support is not used, this directory can be deleted.    
 （3）`${DUI_ROOT}/resources/themes/default`: the theme resource directory; only the `public` directory and the `global.xml` file need to be kept, the other directories can be deleted.    
 2. `bin/` is build output and can be deleted at any time: at configure time, `cmake/dui_common.cmake` regenerates `resources/resources.zip` (zip with a `resources/` top-level folder) and copies `resources/` + `resources.zip` into `bin/`.    
+   The Windows bat flow (`scripts/build_dui_all_in_one.bat`) does the same before building with MSBuild.    
+   The examples that embed the zip (`basic`/`MultiLang`/`XmlPreview`) also regenerate `bin/resources.zip` in a PreBuildEvent when it is missing, so building the sln directly (VS or MSBuild) works without a prior configure.    
    On Windows, to pack the resources into a zip and embed it in the exe: use the generated `resources.zip` (in `bin/`) and rebuild the exe.    
    For how to use `resources.zip`, refer to the `examples/basic` example program.    
-3. If the CEF module is used: copy the files in CEF's Release and Resources directories to the `bin\libcef_win` or `bin\libcef_win_109` directory.    
+3. If the CEF module is used: copy the files in CEF's Release and Resources directories to the `bin\cef_binary` directory — one copy only, the same directory name on Windows and Linux (CEF 109: `bin\libcef_win_109\x64`). The `build_dui_all_in_one.bat` flow stages them automatically.    
    For details, see the CEF usage documentation: [docs/CEF.md](../docs/CEF.md).

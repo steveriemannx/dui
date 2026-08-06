@@ -65,8 +65,7 @@ public:
     /** Set the path of the CEF module runtime library file (libcef.dll) (Windows only; if not set, the default rule directory is used)
     *   It can be a relative path. If a relative directory is set, the corresponding relative directory will be matched in the current program directory
     *   Default rule:
-    *       Windows x64: "libcef_win\\x64"
-    *       Windows x86: "libcef_win\\Win32"
+    *       Windows: "cef_binary"
     *       Windows x64: "libcef_win_109\\x64" (CEF 109)
     *       Windows x86: "libcef_win_109\\Win32" (CEF 109)
     */

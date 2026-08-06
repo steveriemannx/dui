@@ -18,7 +18,10 @@ if "%1" == "-sdl" (
 echo SDL_PARAM: %SDL_PARAM%
 
 @for %%i in ("%~dp0..\") do set "bat_parent_dir=%%~fi"
-SET DUI_SRC_ROOT_DIR=%bat_parent_dir%
+@REM Strip the trailing backslash: -S "%DUI_SRC_ROOT_DIR%" would otherwise end
+@REM with \" which the CRT parses as an escaped quote, swallowing the rest of
+@REM the command line into the -S argument.
+SET DUI_SRC_ROOT_DIR=%bat_parent_dir:~0,-1%
 echo DUI_SRC_ROOT_DIR: "%DUI_SRC_ROOT_DIR%"
 
 @for %%i in ("%~dp0..\third_party\skia") do set "bat_parent_dir=%%~fi"

@@ -51,7 +51,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")  # macOS
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")  # Linux
     set(CEF_LIB_DIR "libcef_linux")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows
-    set(CEF_LIB_DIR "libcef_win")
+    # 头文件目录与 Mac/Linux 一致取自 cef_binary（下载的发行包，含 include/）；
+    # CEF 109 分支继续使用随仓库内建的 libcef_win_109（libcef_win 已删除）
+    if(DUI_CEF_109)
+        set(CEF_LIB_DIR "libcef_win_109")
+    else()
+        set(CEF_LIB_DIR "cef_binary")
+    endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")  # FreeBSD
     message(WARNING "CEF is not supported on FreeBSD - building without CEF support")
     set(CEF_LIB_DIR "")  # Empty or set to a dummy value
@@ -139,7 +145,7 @@ else()
 endif()
 
 # Conditionally include CEF directory
-if(CEF_LIB_DIR AND NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+if(CEF_LIB_DIR AND NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW)
     get_filename_component(CEF_INCLUDE_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/libcef/${CEF_LIB_DIR}/" ABSOLUTE)
     include_directories(${CEF_INCLUDE_ROOT_DIR})
 else()
@@ -163,16 +169,16 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/RenderSkia RENDER_SKIA_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Utils UTILS_SRC)
 
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
-# Wayland build excludes CEF
+# Wayland build excludes CEF; MinGW does not support CEF (see the build scripts)
 if(DUI_ENABLE_WAYLAND)
     message(STATUS "CEF support disabled (Wayland build)")
-elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW)
     aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl CEF_CONTROL_SRC)
     aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl/internal CEF_CONTROL_INTERNAL_SRC)
     list(APPEND PROJECT_SOURCES ${CEF_CONTROL_SRC} ${CEF_CONTROL_INTERNAL_SRC})
     message(STATUS "CEF support enabled (${CMAKE_SYSTEM_NAME})")
 else()
-    message(STATUS "CEF support disabled (FreeBSD is not supported)")
+    message(STATUS "CEF support disabled (FreeBSD/MinGW is not supported)")
 endif()
 
 # On non-macOS platforms, remove *.mm files to avoid compile errors
@@ -184,7 +190,7 @@ if(NOT DUI_SRC_MACOS)
     list(REMOVE_ITEM UTILS_SRC ${CMAKE_CURRENT_LIST_DIR}/Utils/ScreenCapture_MacOS.mm)
 endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND NOT MINGW)  # Windows CEF internals (not on MinGW)
     aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl/internal/Windows CEF_CONTROL_INTERNAL_WINDOWS_SRC)
 endif()
 
@@ -298,10 +304,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows, WebView2
 endif()
 
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
-# Wayland build excludes CEF
+# Wayland build excludes CEF; MinGW does not support CEF (see the build scripts)
 if(DUI_ENABLE_WAYLAND)
     message(STATUS "CEF support disabled (Wayland build)")
-elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW)
     list(APPEND LIBRARY_SOURCES
         ${CEF_CONTROL_SRC}
         ${CEF_CONTROL_INTERNAL_SRC}

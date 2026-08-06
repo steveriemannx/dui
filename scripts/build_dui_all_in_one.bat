@@ -92,7 +92,7 @@ if not exist %MSVC_PATH% (
 if %VS_MAJOR_VERSION% LSS 17 (
     echo.
     echo ==============================================
-    echo "ERROR: Visual Studio 2022 (version 17.0) or newer is required!"
+    echo "ERROR: Visual Studio 2022 - version 17.0 or newer is required!"
     echo "Detected VS Major Version: %VS_MAJOR_VERSION%"
     echo ==============================================
     echo.
@@ -101,16 +101,13 @@ if %VS_MAJOR_VERSION% LSS 17 (
 )
 
 cd /d %SCRIPT_DIR%
-echo %cd%
 if not exist ".\dui\CMakeLists.txt" (
     if exist "..\..\dui\CMakeLists.txt" (
         cd ..\..\
     )
 )
-echo %cd%
 
 set retry_delay=10
-
 @REM Fetch skia: download the dui fork zip and extract it (replaces git clone + skia_compile patch)
 @REM The version marker (.dui_skia_version) triggers a re-fetch when the tag changes.
 set SKIA_VERSION=skia-dui-0.1.1
@@ -270,7 +267,7 @@ findstr /i /r /c:"^\[[0-9]*/[0-9]*\]" /c:"error" /c:"FAILED" /c:"ninja:" /c:"LIN
 cd ..\..\..
 
 @REM Fetch CEF (Windows): the VS flow expects the binary distribution at
-@REM third_party/libcef/libcef_win (Release/libcef.lib etc.)
+@REM third_party/libcef/cef_binary (Release/libcef.lib etc.)
 set CEF_VERSION=142.0.10+g29548e2+chromium-142.0.7444.135
 if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (set CEF_ARCH=windows64) else (set CEF_ARCH=windows32)
 set CEF_FILE=cef_binary_%CEF_VERSION%_%CEF_ARCH%
@@ -280,7 +277,7 @@ if not exist ".\dui\third_party\libcef\cef_binary\Release\libcef.lib" (
         curl -L -f -o ".\dui\third_party\downloads\%CEF_FILE%.tar.bz2" --retry 3 --connect-timeout 15 --retry-delay 10 --speed-limit 100 --speed-time 120 "https://cef-builds.spotifycdn.com/%CEF_FILE%.tar.bz2"
     )
     if exist ".\dui\third_party\downloads\%CEF_FILE%.tar.bz2" (
-        echo Extracting CEF into third_party/libcef/libcef_win ...
+        echo Extracting CEF into third_party/libcef/cef_binary ...
         if not exist ".\dui\third_party\libcef\cef_binary" mkdir ".\dui\third_party\libcef\cef_binary"
         tar -xjf ".\dui\third_party\downloads\%CEF_FILE%.tar.bz2" -C ".\dui\third_party\libcef\cef_binary" --strip-components=1
     )
@@ -309,6 +306,32 @@ if "%RuntimeLibraryDebug%" == "/MDd" (
     call .\dui\msvc\PropertySheets\DuiUseDynamicRuntime.bat /S
 ) else (
     call .\dui\msvc\PropertySheets\DuiUseStaticRuntime.bat /S
+)
+
+@REM Sync resources into bin/ and generate resources.zip before building:
+@REM the .rc files embed ..\..\bin\resources.zip (basic/MultiLang/XmlPreview),
+@REM and the examples load their runtime tree from bin\resources.
+@REM Same logic as dui_sync_resources in cmake/dui_common.cmake (which runs at
+@REM configure time in the CMake flow). Note: this script's convention is to
+@REM run from the repo's parent directory, so all paths carry the ".\dui\" prefix.
+if not exist ".\dui\bin" mkdir ".\dui\bin"
+if not exist ".\dui\bin\resources" mkdir ".\dui\bin\resources"
+xcopy /E /I /Y /Q ".\dui\resources\fonts" ".\dui\bin\resources\fonts" >nul
+xcopy /E /I /Y /Q ".\dui\resources\lang" ".\dui\bin\resources\lang" >nul
+xcopy /E /I /Y /Q ".\dui\resources\themes" ".\dui\bin\resources\themes" >nul
+@REM bsdtar (Windows 10 1803+) writes zip archives with -a; run from the repo
+@REM root (-C ".\dui") so the archive has a "resources/" top-level folder
+tar -a -cf ".\dui\resources\resources.zip" -C ".\dui" resources
+copy /Y ".\dui\resources\resources.zip" ".\dui\bin\resources.zip" >nul
+
+@REM Stage the CEF runtime files (libcef.dll + resources) next to the examples:
+@REM CefManager loads them from the program dir's cef_binary directory.
+@REM One copy only (Release), like the sh flow's bin/cef_binary and the
+@REM macOS app bundle - no Debug staging to keep the footprint small.
+if not exist ".\dui\bin\cef_binary" mkdir ".\dui\bin\cef_binary"
+xcopy /E /I /Y /Q ".\dui\third_party\libcef\cef_binary\Release\*" ".\dui\bin\cef_binary\" >nul
+if exist ".\dui\third_party\libcef\cef_binary\Resources" (
+    xcopy /E /I /Y /Q ".\dui\third_party\libcef\cef_binary\Resources\*" ".\dui\bin\cef_binary\" >nul
 )
 
 "%MSBUILD_EXE%" ".\dui\scripts\examples.sln" /p:Configuration=Debug /p:Platform=x64

@@ -446,7 +446,8 @@ if [ "$has_curl$has_wget" != "00" ] && [ "$has_linux$has_macos" != "00" ] && [ "
     # download CEF on Linux and MacOS (skipped for Wayland builds).
     # Shares the CMake flow's cache (third_party/downloads/) and install target
     # (third_party/libcef/cef_binary): no download when the archive is already cached.
-    libcef_linux_dest_dir=./dui/bin/libcef_linux
+    # Unified runtime directory (same name on Windows/Linux/macOS app bundle)
+    libcef_runtime_dest_dir=./dui/bin/cef_binary
     libcef_cef_binary_dir=./dui/third_party/libcef/cef_binary
     libcef_cache_dir=./dui/third_party/downloads
     if [ -f "$libcef_cef_binary_dir/CMakeLists.txt" ]; then
@@ -496,9 +497,9 @@ if [ "$has_curl$has_wget" != "00" ] && [ "$has_linux$has_macos" != "00" ] && [ "
 
                 if [ "$has_linux" == "1" ]; then
                     # Linux
-                    mkdir -p $libcef_linux_dest_dir
-                    cp -rf $libcef_cef_binary_dir/Release/* $libcef_linux_dest_dir
-                    cp -rf $libcef_cef_binary_dir/Resources/* $libcef_linux_dest_dir
+                    mkdir -p $libcef_runtime_dest_dir
+                    cp -rf $libcef_cef_binary_dir/Release/* $libcef_runtime_dest_dir
+                    cp -rf $libcef_cef_binary_dir/Resources/* $libcef_runtime_dest_dir
                 fi
             fi
         fi

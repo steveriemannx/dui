@@ -24,9 +24,11 @@
         <!-- libCEF 启动dll名称 -->
         <LibCefDllName>libcef.dll</LibCefDllName>
 
-        <!-- libCEF的include/lib目录: 与CMake流程共享 cef_binary/ (发行版布局 Release/Debug) -->
+        <!-- libCEF的include/lib目录: 与CMake流程共享 cef_binary/ (发行版布局 Release/Debug)。
+             注意 include 目录是发行包根目录(cef_binary)，不是其下的 include\：
+             dui 代码按 #include "include/cef_*.h" 的方式引用 CEF 头文件 -->
         <LibCefIncludeDir Condition="'$(LibCefEnabled)' == '0'"></LibCefIncludeDir>
-        <LibCefIncludeDir Condition="'$(LibCefEnabled)' != '0'">$(SolutionDir)\..\third_party\libcef\$(LibCefSrcDir)\include</LibCefIncludeDir>
+        <LibCefIncludeDir Condition="'$(LibCefEnabled)' != '0'">$(SolutionDir)\..\third_party\libcef\$(LibCefSrcDir)</LibCefIncludeDir>
 
         <LibCefLibDir Condition="'$(LibCefEnabled)' == '0'"></LibCefLibDir>
         <LibCefLibDir Condition="'$(LibCefEnabled)' != '0' And '$(Configuration)' == 'Release'">$(SolutionDir)\..\third_party\libcef\$(LibCefSrcDir)\Release</LibCefLibDir>
