@@ -65,11 +65,16 @@ if %has_gcc%%has_clang% equ 00 (
 if %has_clang% equ 1 (
     clang --version | findstr /i "windows-msvc" >nul 2>&1
     if not errorlevel 1 (
-        echo The clang on PATH targets MSVC - LLVM for Windows, not MinGW.
-        echo Add the llvm-mingw bin directory to the FRONT of PATH, for example:
-        echo   SET PATH=C:\mingw64\llvm-mingw-20250430-ucrt-x86_64\bin;%%PATH%%
-        cd /d %CURRENT_DIR%
-        exit /b 1
+        echo The clang on PATH targets MSVC, not MinGW - skipping clang.
+        if %has_gcc% equ 1 (
+            echo Using GCC/G++ instead.
+            set has_clang=0
+        ) else (
+            echo Add the llvm-mingw bin directory to the FRONT of PATH, for example:
+            echo   SET PATH=C:\mingw64\llvm-mingw-20250430-ucrt-x86_64\bin;%%PATH%%
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
     )
 )
 
@@ -161,9 +166,9 @@ if not defined GN_BIN (
         )
         if not exist ".\dui\third_party\gn\.git" (
             echo clone gn failed from both sources!
-            echo Please install gn manually and re-run this script.
-            echo   MSYS2: pacman -S mingw-w64-x86_64-gn
-            echo   or clone the gn source into .\dui\third_party\gn
+            echo Please clone gn manually, then re-run this script:
+            echo   git clone https://gn.googlesource.com/gn .\dui\third_party\gn
+            echo   ^(GitHub mirror: git clone https://github.com/ArthurSonzogni/gn .\dui\third_party\gn^)
             echo   or download a prebuilt gn binary and unzip it to .\dui\third_party\skia\bin\gn.exe
             cd /d %CURRENT_DIR%
             exit /b 1
@@ -174,7 +179,13 @@ if not defined GN_BIN (
         git -C .\dui\third_party\gn rm --cached -r .
         git -C .\dui\third_party\gn reset --hard
         cd dui\third_party\gn
-        python3 build/gen.py --platform mingw
+        @REM Fix multi-line comment (//    / \) that triggers -Werror=comment on GCC
+        python3 -c "p='src/gn/header_checker.h';c=open(p).read();open(p,'w').write(c.replace('/ \\','/ /'))"
+        @REM --no-last-commit-position: skip git describe (tag may be missing from
+        @REM GitHub mirror); create a stub so the source files that include it compile.
+        python3 build/gen.py --platform mingw --no-last-commit-position
+        echo #define LAST_COMMIT_POSITION "unknown" > out\last_commit_position.h
+        echo #define LAST_COMMIT_POSITION_NUM 0 >> out\last_commit_position.h
         %NINJA_BIN% -C out
         cd ..\..\..
         if not exist ".\dui\third_party\gn\out\gn.exe" (
