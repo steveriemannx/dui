@@ -162,6 +162,18 @@ function(dui_deps_add_targets)
             "if not \"%RC%\"==\"0\" echo [dui_ninja] ninja exited with code %RC% - full log: %TEMP%\\dui_ninja.log\r\n"
             "exit /b %RC%\r\n")
     endif()
+
+    # Run the skia ninja build. Windows runs it through dui_ninja.bat (sets CL=/utf-8,
+    # hides cl /showIncludes notes, puts the gn directory on PATH for skia's
+    # find_headers.py action); other platforms use plain "ninja -C <dir>".
+    macro(dui_skia_ninja_command _out _ninja _dir _gn)
+        if(WIN32)
+            set(${_out} COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${_ninja} "${_dir}" ${_gn})
+        else()
+            set(${_out} COMMAND ${_ninja} -C "${_dir}")
+        endif()
+    endmacro()
+
     if(DUI_BUILD_SKIA_FROM_SOURCE)
         # Main Skia output filename differs by platform (MSVC: skia.lib, others: libskia.a)
         if(MSVC)
@@ -264,10 +276,11 @@ function(dui_deps_add_targets)
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE_DEBUG "${DUI_NINJA_BIN}")
+                dui_skia_ninja_command(_skia_ninja_cmd ${NINJA_EXECUTABLE_DEBUG} "${DUI_SKIA_LIB_PATH_DEBUG}" ${GN_EXECUTABLE_DEBUG})
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE_DEBUG} gen "${DUI_SKIA_LIB_PATH_DEBUG}"
-                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_DEBUG} "${DUI_SKIA_LIB_PATH_DEBUG}" ${GN_EXECUTABLE_DEBUG}
+                    ${_skia_ninja_cmd}
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH_DEBUG}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (debug, gn gen + ninja)..."
@@ -292,10 +305,11 @@ function(dui_deps_add_targets)
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE_RELEASE "${DUI_NINJA_BIN}")
+                dui_skia_ninja_command(_skia_ninja_cmd ${NINJA_EXECUTABLE_RELEASE} "${DUI_SKIA_LIB_PATH_RELEASE}" ${GN_EXECUTABLE_RELEASE})
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE_RELEASE} gen "${DUI_SKIA_LIB_PATH_RELEASE}"
-                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE_RELEASE} "${DUI_SKIA_LIB_PATH_RELEASE}" ${GN_EXECUTABLE_RELEASE}
+                    ${_skia_ninja_cmd}
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH_RELEASE}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (release, gn gen + ninja)..."
@@ -332,11 +346,12 @@ function(dui_deps_add_targets)
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE "${DUI_NINJA_BIN}")
+                dui_skia_ninja_command(_skia_ninja_cmd ${NINJA_EXECUTABLE} "${DUI_SKIA_LIB_PATH}" ${GN_EXECUTABLE})
 
                 add_custom_command(
                     OUTPUT "${DUI_SKIA_LIB_PATH}/${_skia_main_lib}"
                     COMMAND ${GN_EXECUTABLE} gen "${DUI_SKIA_LIB_PATH}"
-                    COMMAND cmd /c "${DUI_NINJA_FILTER_BAT}" ${NINJA_EXECUTABLE} "${DUI_SKIA_LIB_PATH}" ${GN_EXECUTABLE}
+                    ${_skia_ninja_cmd}
                     WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
                     DEPENDS "${DUI_SKIA_LIB_PATH}/args.gn" "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn" ${DUI_GN_BIN}
                     COMMENT "Building Skia (gn gen + ninja)..."
