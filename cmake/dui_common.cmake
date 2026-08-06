@@ -153,7 +153,7 @@ if(DUI_ENABLE_CEF)
         set(DUI_CEF_WRAPPER_LIB_NAME libcef_dll_wrapper)
     elseif(DUI_OS_MACOS)
         # macOS platform
-        set(DUI_CEF_SRC_ROOT_DIR "${DUI_ROOT}/third_party/libcef/libcef_macos")
+        set(DUI_CEF_SRC_ROOT_DIR "${DUI_ROOT}/third_party/libcef/cef_binary")
         set(DUI_CEF_LIB_PATH "")
         # The CEF distribution's wrapper target is named libcef_dll_wrapper (libcef_dll/CMakeLists.txt)
         set(DUI_CEF_WRAPPER_LIB_NAME libcef_dll_wrapper)

@@ -46,10 +46,10 @@ add_definitions(-DSK_GANESH -DSK_GL -DSK_RELEASE)
 
 # Set the libcef directory path
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")  # macOS
-    set(CEF_LIB_DIR "libcef_macos")
+    set(CEF_LIB_DIR "cef_binary")
     set(DUI_SRC_MACOS 1)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")  # Linux
-    set(CEF_LIB_DIR "libcef_linux")
+    set(CEF_LIB_DIR "cef_binary")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows
     # 头文件目录与 Mac/Linux 一致取自 cef_binary（下载的发行包，含 include/）；
     # CEF 109 分支继续使用随仓库内建的 libcef_win_109（libcef_win 已删除）
