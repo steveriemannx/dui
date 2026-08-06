@@ -88,27 +88,6 @@ if not exist ".\dui\CMakeLists.txt" (
     )
 )
 
-@REM Reuse the gn already built by the CMake/MSVC flows (dui\third_party\gn\out\gn.exe)
-@REM or skia's fetch-gn (dui\third_party\skia\bin\gn.exe); fall back to gn on PATH.
-set GN_BIN=
-if exist ".\dui\third_party\gn\out\gn.exe" (
-    set "GN_BIN=%CD%\dui\third_party\gn\out\gn.exe"
-)
-if not defined GN_BIN if exist ".\dui\third_party\skia\bin\gn.exe" (
-    set "GN_BIN=%CD%\dui\third_party\skia\bin\gn.exe"
-)
-if not defined GN_BIN (
-    where gn >nul 2>&1
-    if errorlevel 1 (
-        echo gn not found - run the CMake or MSVC build first to create dui\third_party\gn\out\gn.exe, or install it with:
-        echo   MSYS2: pacman -S mingw-w64-x86_64-gn
-        cd /d %CURRENT_DIR%
-        exit /b 1
-    )
-    set "GN_BIN=gn"
-)
-echo GN_BIN: %GN_BIN%
-
 @REM Reuse the ninja vendored in the skia fork; fall back to ninja on PATH.
 set NINJA_BIN=
 if exist ".\dui\third_party\skia\third_party\ninja\ninja.exe" (
@@ -126,6 +105,93 @@ if not defined NINJA_BIN (
 echo NINJA_BIN: %NINJA_BIN%
 
 set retry_delay=10
+
+@REM gn acquisition order: existing source build -> system gn -> skia's bin/fetch-gn
+@REM (prebuilt CIPD binary) -> clone Google source (2 attempts) -> GitHub mirror
+@REM -> build from source.
+@REM Slow/hung clones abort quickly: 10s connect timeout, and fail if the transfer
+@REM stays below 200 KB/s for 30s (git http.lowSpeed* options).
+set GN_BIN=
+@REM 1) reuse an existing source-built gn
+if exist ".\dui\third_party\gn\out\gn.exe" (
+    set "GN_BIN=%CD%\dui\third_party\gn\out\gn.exe"
+)
+@REM 2) system gn (zero cost - already installed, no download needed)
+if not defined GN_BIN (
+    where gn >nul 2>&1
+    if not errorlevel 1 (
+        echo Using system gn:
+        where gn
+        for /f "delims=" %%i in ('where gn') do set "GN_BIN=%%i"
+    )
+)
+@REM 3) try skia's own bin/fetch-gn (prebuilt CIPD binary into skia/bin)
+if not defined GN_BIN (
+    if exist ".\dui\third_party\skia\bin\fetch-gn" (
+        echo Trying skia's bin/fetch-gn ...
+        python3 .\dui\third_party\skia\bin\fetch-gn
+        if exist ".\dui\third_party\skia\bin\gn.exe" (
+            echo Using gn fetched by skia's bin/fetch-gn
+            set "GN_BIN=%CD%\dui\third_party\skia\bin\gn.exe"
+        )
+    )
+)
+@REM 4) clone + build from source
+if not defined GN_BIN (
+    echo gn not found - building gn from source
+    if not exist ".\dui\third_party\gn\out\gn.exe" (
+        if not exist ".\dui\third_party\gn\.git" (
+            @REM NOTE: full clone required - build/gen.py runs `git describe --match initial-commit`
+            @REM to generate last_commit_position.h, which fails on a shallow clone (the tag only
+            @REM exists in the full history). The repo is small (~40MB, ~30s to clone).
+            for /l %%n in (1,1,2) do (
+                if not exist ".\dui\third_party\gn\.git" (
+                    echo Cloning gn from Google source - attempt %%n/2 - https://gn.googlesource.com/gn
+                    git -c http.connectTimeout=10 -c http.lowSpeedLimit=204800 -c http.lowSpeedTime=30 clone https://gn.googlesource.com/gn .\dui\third_party\gn
+                    if not exist ".\dui\third_party\gn\.git" (
+                        if exist ".\dui\third_party\gn" rmdir /s /q ".\dui\third_party\gn"
+                        if %%n lss 2 timeout /t %retry_delay% >nul
+                    )
+                )
+            )
+            if not exist ".\dui\third_party\gn\.git" (
+                echo Google source failed after 2 attempts; trying GitHub mirror: https://github.com/ArthurSonzogni/gn
+                git -c http.connectTimeout=10 -c http.lowSpeedLimit=204800 -c http.lowSpeedTime=30 clone https://github.com/ArthurSonzogni/gn .\dui\third_party\gn
+            )
+        )
+        if not exist ".\dui\third_party\gn\.git" (
+            echo clone gn failed from both sources!
+            echo Please install gn manually and re-run this script.
+            echo   MSYS2: pacman -S mingw-w64-x86_64-gn
+            echo   or clone the gn source into .\dui\third_party\gn
+            echo   or download a prebuilt gn binary and unzip it to .\dui\third_party\skia\bin\gn.exe
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
+        @REM Normalize line endings to LF (Windows autocrlf converts text files to
+        @REM CRLF, which breaks gn's own unit tests - format_test_data comparison)
+        git -C .\dui\third_party\gn config core.autocrlf false
+        git -C .\dui\third_party\gn rm --cached -r .
+        git -C .\dui\third_party\gn reset --hard
+        cd dui\third_party\gn
+        python3 build/gen.py --platform mingw
+        %NINJA_BIN% -C out
+        cd ..\..\..
+        if not exist ".\dui\third_party\gn\out\gn.exe" (
+            echo gn build failed! Install gn or check the build output above.
+            echo Hint: build gn from source per https://gn.googlesource.com/gn/+/refs/heads/main/README.md
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
+    )
+    set "GN_BIN=%CD%\dui\third_party\gn\out\gn.exe"
+)
+echo GN_BIN: %GN_BIN%
+
+@REM Put gn on PATH so skia's find_headers.py (called during ninja) can find it
+if "%GN_BIN%" neq "gn" (
+    for %%F in ("%GN_BIN%") do set "PATH=%%~dpF;%PATH%"
+)
 
 @REM Parallel build jobs: 3/4 of the CPU cores (leave the rest for the system)
 set /a DUI_JOBS=%NUMBER_OF_PROCESSORS% * 3 / 4
