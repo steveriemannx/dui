@@ -52,26 +52,25 @@ where gcc >nul 2>&1 && where g++ >nul 2>&1 && set has_gcc=1
 where clang >nul 2>&1 && where clang++ >nul 2>&1 && set has_clang=1
 
 if %has_gcc%%has_clang% equ 00 (
-    echo  "GCC/G++ (MinGW) not found in PATH"
-    echo  "Clang/Clang++ (LLVM) not found in PATH"
+    echo  "GCC/G++ - MinGW not found in PATH"
+    echo  "Clang/Clang++ - LLVM not found in PATH"
     cd /d %CURRENT_DIR%
     exit /b 1
 )
 
-where gn >nul 2>&1
-if %errorlevel% neq 0 (
-    echo gn not found in PATH - install it and re-run this script:
-    echo   MSYS2: pacman -S mingw-w64-x86_64-gn
-    echo   or build gn from source per https://gn.googlesource.com/gn/+/refs/heads/main/README.md
-    cd /d %CURRENT_DIR%
-    exit /b 1
-)
-
-where ninja >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ninja not found in PATH - install the mingw-w64 ninja package
-    cd /d %CURRENT_DIR%
-    exit /b 1
+@REM Skia's gn selects the mingw toolchain only for a MinGW-targeting compiler
+@REM (gn/is_mingw.py); an MSVC-targeting clang (e.g. C:\LLVM) would silently fall
+@REM back to the MSVC cl.exe toolchain and fail on clang-only flags. Verify
+@REM that the clang on PATH targets MinGW before building skia.
+if %has_clang% equ 1 (
+    clang --version | findstr /i "windows-msvc" >nul 2>&1
+    if not errorlevel 1 (
+        echo The clang on PATH targets MSVC - LLVM for Windows, not MinGW.
+        echo Add the llvm-mingw bin directory to the FRONT of PATH, for example:
+        echo   SET PATH=C:\mingw64\llvm-mingw-20250430-ucrt-x86_64\bin;%%PATH%%
+        cd /d %CURRENT_DIR%
+        exit /b 1
+    )
 )
 
 if %has_clang% equ 1 (
@@ -83,13 +82,48 @@ if %has_clang% equ 1 (
 )
 
 cd /d %SCRIPT_DIR%
-echo %cd%
 if not exist ".\dui\CMakeLists.txt" (
     if exist "..\..\dui\CMakeLists.txt" (
         cd ..\..\
     )
 )
-echo %cd%
+
+@REM Reuse the gn already built by the CMake/MSVC flows (dui\third_party\gn\out\gn.exe)
+@REM or skia's fetch-gn (dui\third_party\skia\bin\gn.exe); fall back to gn on PATH.
+set GN_BIN=
+if exist ".\dui\third_party\gn\out\gn.exe" (
+    set "GN_BIN=%CD%\dui\third_party\gn\out\gn.exe"
+)
+if not defined GN_BIN if exist ".\dui\third_party\skia\bin\gn.exe" (
+    set "GN_BIN=%CD%\dui\third_party\skia\bin\gn.exe"
+)
+if not defined GN_BIN (
+    where gn >nul 2>&1
+    if errorlevel 1 (
+        echo gn not found - run the CMake or MSVC build first to create dui\third_party\gn\out\gn.exe, or install it with:
+        echo   MSYS2: pacman -S mingw-w64-x86_64-gn
+        cd /d %CURRENT_DIR%
+        exit /b 1
+    )
+    set "GN_BIN=gn"
+)
+echo GN_BIN: %GN_BIN%
+
+@REM Reuse the ninja vendored in the skia fork; fall back to ninja on PATH.
+set NINJA_BIN=
+if exist ".\dui\third_party\skia\third_party\ninja\ninja.exe" (
+    set "NINJA_BIN=%CD%\dui\third_party\skia\third_party\ninja\ninja.exe"
+)
+if not defined NINJA_BIN (
+    where ninja >nul 2>&1
+    if errorlevel 1 (
+        echo ninja not found - install the mingw-w64 ninja package
+        cd /d %CURRENT_DIR%
+        exit /b 1
+    )
+    set "NINJA_BIN=ninja"
+)
+echo NINJA_BIN: %NINJA_BIN%
 
 set retry_delay=10
 
@@ -159,19 +193,39 @@ cd dui\third_party\skia
 
 if %has_clang% equ 1 (
     if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-        gn gen out/mingw64-llvm.x64.release --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
-        ninja -C out/mingw64-llvm.x64.release
+        %GN_BIN% gen out/mingw64-llvm.x64.release --args="target_cpu=\"x64\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        %NINJA_BIN% -C out/mingw64-llvm.x64.release
+        if errorlevel 1 (
+            echo skia build failed - fix the errors above and re-run this script.
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
     ) else (
-        gn gen out/mingw64-llvm.x86.release --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
-        ninja -C out/mingw64-llvm.x86.release
+        %GN_BIN% gen out/mingw64-llvm.x86.release --args="target_cpu=\"x86\" cc=\"clang\" cxx=\"clang++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        %NINJA_BIN% -C out/mingw64-llvm.x86.release
+        if errorlevel 1 (
+            echo skia build failed - fix the errors above and re-run this script.
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
     )
 ) else (
     if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-        gn gen out/mingw64-gcc.x64.release --args="target_cpu=\"x64\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
-        ninja -C out/mingw64-gcc.x64.release
+        %GN_BIN% gen out/mingw64-gcc.x64.release --args="target_cpu=\"x64\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        %NINJA_BIN% -C out/mingw64-gcc.x64.release
+        if errorlevel 1 (
+            echo skia build failed - fix the errors above and re-run this script.
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
     ) else (
-        gn gen out/mingw64-gcc.x86.release --args="target_cpu=\"x86\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
-        ninja -C out/mingw64-gcc.x86.release
+        %GN_BIN% gen out/mingw64-gcc.x86.release --args="target_cpu=\"x86\" cc=\"gcc\" cxx=\"g++\" is_trivial_abi=false is_official_build=true skia_use_libwebp_encode=false skia_use_libwebp_decode=false skia_use_libpng_encode=false skia_use_libpng_decode=false skia_use_zlib=false skia_use_libjpeg_turbo_encode=false skia_use_libjpeg_turbo_decode=false skia_enable_fontmgr_win_gdi=false skia_use_icu=false skia_use_expat=false skia_use_xps=false skia_enable_pdf=false skia_use_wuffs=false skia_enable_svg=true skia_use_expat=true skia_use_system_expat=false is_debug=false extra_cflags=[\"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\"]"
+        %NINJA_BIN% -C out/mingw64-gcc.x86.release
+        if errorlevel 1 (
+            echo skia build failed - fix the errors above and re-run this script.
+            cd /d %CURRENT_DIR%
+            exit /b 1
+        )
     )
 )
 cd ..\..\..

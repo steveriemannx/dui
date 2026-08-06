@@ -145,9 +145,12 @@ Box* ShadowWnd::AttachShadow(Box* pRoot)
     if (pRoot == nullptr) {
         return nullptr;
     }
-    ASSERT(m_pShadowWnd == nullptr);
+    // Re-entry (e.g. PreInitWindow attaches the shadow and AttachBox calls
+    // AttachShadow again because the external-shadow path never sets the base
+    // Shadow's shadow box): the external shadow window already covers pRoot,
+    // so return it unchanged - same idempotent contract as Shadow::AttachShadow.
     if (m_pShadowWnd != nullptr) {
-        return BaseClass::AttachShadow(pRoot);
+        return pRoot;
     }
 
     bool needCreateShadowWnd = NeedCreateShadowWnd();

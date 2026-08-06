@@ -144,6 +144,15 @@
   <ItemGroup>
     <None Include="..\..\bin\resources.zip" />
   </ItemGroup>
+  <ItemDefinitionGroup>
+    <PreBuildEvent>
+      <!-- The .rc file embeds ..\..\bin\resources.zip; generate it if missing (zip with a "resources/" top-level folder) -->
+      <!-- cmd pitfall: "if cond cmd1 & cmd2" makes the WHOLE rest of the line the then-branch (same for &amp;&amp;),
+           so a false condition skips everything. Parentheses bound each then-branch; the &amp; after ")" is a
+           real line separator and the second if always runs. -->
+      <Command>if not exist "$(ProjectDir)..\..\bin" (mkdir "$(ProjectDir)..\..\bin") &amp; if not exist "$(ProjectDir)..\..\bin\resources.zip" (tar -a -cf "$(ProjectDir)..\..\bin\resources.zip" -C "$(ProjectDir)..\.." resources)</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

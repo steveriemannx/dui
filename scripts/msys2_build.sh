@@ -153,12 +153,12 @@ fi
 # Build third-party libraries
 DUI_THIRD_PARTY_LIBS=("zlib" "libpng" "cximage" "libwebp")
 for third_party_lib in "${DUI_THIRD_PARTY_LIBS[@]}"; do
-    $DUI_CMAKE -S "$DUI_SRC_ROOT_DIR/dui/third_party/$third_party_lib" -B "$DUI_BUILD_DIR/$third_party_lib" -DCMAKE_BUILD_TYPE=${DUI_BUILD_TYPE}
+    $DUI_CMAKE -S "$DUI_SRC_ROOT_DIR/third_party/$third_party_lib" -B "$DUI_BUILD_DIR/$third_party_lib" -DCMAKE_BUILD_TYPE=${DUI_BUILD_TYPE}
     $DUI_MAKE "$DUI_BUILD_DIR/$third_party_lib" $DUI_MAKE_THREADS
 done
 
 # Build dui
-$DUI_CMAKE -S "$DUI_SRC_ROOT_DIR/dui" -B "$DUI_BUILD_DIR/dui" -DCMAKE_BUILD_TYPE=${DUI_BUILD_TYPE} ${SDL_PARAM}
+$DUI_CMAKE -S "$DUI_SRC_ROOT_DIR/src" -B "$DUI_BUILD_DIR/dui" -DCMAKE_BUILD_TYPE=${DUI_BUILD_TYPE} ${SDL_PARAM}
 $DUI_MAKE "$DUI_BUILD_DIR/dui" $DUI_MAKE_THREADS
 
 # Build each program under examples

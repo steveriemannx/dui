@@ -27,7 +27,7 @@ if exist "%SCRIPT_DIR%\detect_vs_version.bat" (
 if %VS_MAJOR_VERSION% LSS 17 (
     echo.
     echo ==============================================
-    echo "ERROR: Visual Studio 2022 (version 17.0) or newer is required!"
+    echo "ERROR: Visual Studio 2022 - version 17.0 or newer is required!"
     echo "Detected VS Major Version: %VS_MAJOR_VERSION%"
     echo ==============================================
     echo.
@@ -83,7 +83,10 @@ if not exist "%DUI_BUILD_DIR%" (
 )
 
 @REM # Build third-party libraries
-SET DUI_THIRD_PARTY_LIBS=zlib,libpng,cximage,libwebp,libcef\libcef_win
+@REM libcef is not built here: the wrapper is built from the downloaded
+@REM cef_binary distribution inside the dui build (third_party/CMakeLists.txt),
+@REM the same way the CMake/Mac/Linux flows do.
+SET DUI_THIRD_PARTY_LIBS=zlib,libpng,cximage,libwebp
 for %%i in (%DUI_THIRD_PARTY_LIBS%) do (
     %DUI_CMAKE% -S "%DUI_SRC_ROOT_DIR%dui\third_party\%%i" -B "%DUI_BUILD_DIR%\%%i" -DCMAKE_BUILD_TYPE=%DUI_BUILD_TYPE%
     %DUI_MAKE% "%DUI_BUILD_DIR%\%%i" %DUI_BUILD_PARAM%

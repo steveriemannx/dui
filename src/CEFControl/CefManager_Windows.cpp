@@ -41,12 +41,9 @@ DString CefManager_Windows::GetCefMoudlePath() const
         cefMoudlePath = _T("libcef_win_109\\Win32");
     #endif
 #else
-    //CEF higher versions
-    #ifdef _WIN64
-        cefMoudlePath = _T("libcef_win\\x64");
-    #else
-        cefMoudlePath = _T("libcef_win\\Win32");
-    #endif
+    //CEF higher versions: the runtime files are staged into the program dir's
+    //cef_binary directory (one copy, same name on Windows and Linux).
+    cefMoudlePath = _T("cef_binary");
 #endif
     }
     return cefMoudlePath;
