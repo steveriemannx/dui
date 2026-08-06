@@ -355,9 +355,11 @@ function(dui_sync_resources)
     #    matching the runtime path convention used by ZipManager / the embedded-zip flow)
     set(_res_zip "${_res_src}/resources.zip")
     if(WIN32)
-        # bsdtar (Windows 10 1803+) writes zip archives with -a
+        # Use relative paths: libarchive's bsdtar may parse Windows
+        # drive-letter paths (D:/...) as remote URLs, causing
+        # "Cannot connect to D: resolve failed".
         execute_process(
-            COMMAND tar -a -cf "${_res_zip}" resources
+            COMMAND tar -a -cf resources/resources.zip resources
             WORKING_DIRECTORY "${DUI_ROOT}"
             RESULT_VARIABLE _zip_result
         )

@@ -109,7 +109,9 @@ if "%STANDALONE%"=="false" (
     if not exist "%DUI_TOP_BUILD_DIR%" mkdir "%DUI_TOP_BUILD_DIR%"
 
     %DUI_CMAKE% -S "%DUI_SRC_ROOT_DIR%" -B "%DUI_TOP_BUILD_DIR%" -DCMAKE_BUILD_TYPE=%DUI_BUILD_TYPE% -DDUI_SKIA_LIB_SUBPATH="%DUI_SKIA_LIB_SUBPATH%" %SDL_PARAM%
-    if %errorlevel% neq 0 (
+    @REM "if errorlevel 1" evaluates at runtime - %errorlevel% inside this block
+    @REM would be expanded when the block is parsed, before cmake has run.
+    if errorlevel 1 (
         echo Top-level cmake configure failed.
         exit /b 1
     )

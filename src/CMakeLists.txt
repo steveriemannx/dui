@@ -365,6 +365,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows, WebView2
     target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_USE_WEBVIEW2_LOADER_DLL=1)
 endif()
 
+# MinGW doesn't support CEF. Disable it for the library explicitly: without
+# DUI_CEF=0, dui_config.h defaults CEF to enabled on Windows (undefined = ON),
+# which breaks MinGW builds where the CEF headers are unavailable.
+# MSVC / Linux / macOS always compile the CEF code in the library.
+if(DUI_MINGW)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_CEF=0)
+endif()
+
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     # Skia automatically enables compile options such as AVX/AVX2; dui references some skia sources directly and must keep the compile options consistent
     include(${DUI_SRC_ROOT_DIR}/cmake/dui_compiles.cmake)
