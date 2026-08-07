@@ -23,7 +23,7 @@
 | WebView2      |2025-06-28|1.0.3296.44 |No | Installed via the NuGet package WebView2 SDK: <br>Microsoft.Web.WebView2| |
 | libpag        |2025-11-13|main branch |No | https://github.com/Tencent/libpag| No modification |
 | skia          |2026-08-02|skia-dui-0.1.0 |No |https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip| Tagged from the dui branch of the fork; includes the expat patch. Downloaded and extracted to third_party/skia automatically by CMake at configure time (cmake/dui_deps.cmake), built with gn + ninja at make time |
-| SDL3          |2026-08-04|v3.4.14 |No |https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip| Official source package. Downloaded and extracted to third_party/SDL3 automatically by CMake at configure time (cmake/dui_deps.cmake), built at make time |
+| SDL3          |2026-08-07|main (3.5.0+) |No |https://github.com/libsdl-org/SDL.git| Shallow-cloned (git clone --depth 1, latest main) to third_party/SDL3 automatically at configure time (cmake/dui_deps.cmake and scripts/build_dui_all_in_one.sh), built at make time. 3.4.14 was pinned before: its macOS cocoa backend breaks clicks on custom title-bar buttons of system-shadow (titled) windows |
 
 ## libpng Update Notes
 1. Download the latest release package: https://github.com/pnggroup/libpng/ or https://sourceforge.net/projects/libpng/

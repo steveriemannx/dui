@@ -170,14 +170,19 @@ extract_zip() {
 }
 
 SKIA_ZIP_URL="https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip"
-SDL_ZIP_URL="https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip"
+# SDL is shallow-cloned (git clone --depth 1, latest main). SDL 3.4.14's macOS
+# cocoa backend breaks clicks on custom title-bar buttons of system-shadow
+# (titled) windows; fixed on main (3.5.0+). See cmake/dui_deps.cmake.
+SDL_REPO_URL="https://github.com/libsdl-org/SDL.git"
 
 # Fetch SDL into third_party/SDL3 first, then skia (same layout as the CMake build; idempotent)
 if ! is_windows || [ "$ENABLE_SDL" == "1" ]; then
     echo "- Fetching SDL ..."
-    if [ ! -f "./dui/third_party/SDL3/CMakeLists.txt" ]; then
-        download_zip "$SDL_ZIP_URL" ./SDL.zip
-        extract_zip ./SDL.zip ./dui/third_party/SDL3
+    if [ ! -d "./dui/third_party/SDL3/.git" ]; then
+        rm -rf ./dui/third_party/SDL3
+        git clone --depth 1 "$SDL_REPO_URL" ./dui/third_party/SDL3
+    else
+        git -C ./dui/third_party/SDL3 pull
     fi
     if [ ! -f "./dui/third_party/SDL3/CMakeLists.txt" ]; then
         echo "fetch SDL failed!"
