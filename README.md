@@ -112,3 +112,8 @@ The compiled example programs are in `bin/`. Platform prerequisites and detailed
 ## Upstream Baseline
 This repository is based on [nim_duilib](https://github.com/rhett-lee/nim_duilib), which is now (as of 2026-08-05) at commit
 [6f9fb44](https://github.com/rhett-lee/nim_duilib/commit/6f9fb44c53caadfe9f2a6f50385b11814205c624).
+
+## Note on commit signatures
+The `Co-Authored-By` trailer on commits is added automatically by the AI
+coding tool used for this project; it only marks AI-assisted commits and does
+not identify a specific model or service.
