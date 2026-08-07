@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- StarDesk remote view window (XML mode). -->
+<Window size="960,640" caption="0,0,0,36" use_system_caption="false"
+        shadow_type="system_round" shadow_attached="true" layered_window="false"
+        size_box="2,2,2,2" min_size="480,320">
+  <VBox bkcolor="bk_wnd_darkcolor">
+    <!-- title bar -->
+    <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+      <Label name="remote_title" text="远程设备" font="system_bold_12" valign="center" margin="12,0,0,0" mouse_enabled="false"/>
+      <Label name="view_badge" text="观看模式" font="system_12" textcolor="blue" valign="center" margin="10,0,0,0" visible="false" mouse_enabled="false"/>
+      <Control mouse_enabled="false"/>
+      <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+    </HBox>
+
+    <!-- screen -->
+    <BitmapControl name="remote_bitmap" width="stretch" height="stretch"/>
+
+    <!-- toolbar -->
+    <HBox height="40" bkcolor="bk_wnd_lightcolor" padding="10,5,10,5" child_margin_x="8">
+      <Button name="fit_btn" text="适应窗口" class="btn_global_blue_80x30" height="28" width="86"/>
+      <Button name="fullscreen_btn" text="全屏" class="btn_global_color_white" height="28" width="86"/>
+      <Button name="sendfile_btn" text="发送文件" class="btn_global_color_white" height="28" width="86"/>
+      <Control mouse_enabled="false"/>
+      <Label name="status_label" text="等待画面…" font="system_12" textcolor="gray" width="auto" margin="0,0,4,0"/>
+      <Button name="disconnect_btn" text="断开" class="btn_global_red_80x30" height="28" width="86"/>
+    </HBox>
+  </VBox>
+</Window>

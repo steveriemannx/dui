@@ -961,6 +961,32 @@ void WindowBase::OnNativeGetShadowCorner(UiPadding& rcShadow) const
     GetCurrentShadowCorner(rcShadow);
 }
 
+bool WindowBase::IsSystemShadowSupported() const
+{
+    return m_pNativeWindow->IsSystemShadowSupported();
+}
+
+bool WindowBase::SetSystemShadowType(NativeWindowShadowType nativeShadowType)
+{
+    return m_pNativeWindow->SetSystemShadowType(nativeShadowType);
+}
+
+NativeWindowShadowType WindowBase::GetSystemShadowType() const
+{
+    return m_pNativeWindow->GetSystemShadowType();
+}
+
+void WindowBase::RefreshSystemShadow()
+{
+    m_pNativeWindow->RefreshSystemShadow();
+}
+
+void WindowBase::ClearWindowRgnForSystemShadow()
+{
+    m_pNativeWindow->ClearWindowRgnForSystemShadow();
+}
+
+
 const DpiManager& WindowBase::OnNativeGetDpi() const
 {
     return Dpi();

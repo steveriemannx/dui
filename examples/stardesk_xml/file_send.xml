@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- StarDesk file-send window (XML mode). -->
+<Window size="560,460" caption="0,0,0,32" use_system_caption="false"
+        shadow_type="system_round" shadow_attached="true" layered_window="false"
+        size_box="2,2,2,2">
+  <VBox bkcolor="bk_wnd_darkcolor">
+    <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
+      <Label text="发送文件" font="system_bold_12" valign="center" margin="12,0,0,0" mouse_enabled="false"/>
+      <Control mouse_enabled="false"/>
+      <Button class="btn_wnd_close_11" height="stretch" width="32" name="closebtn" margin="0,0,2,0" tooltip_text="Close"/>
+    </HBox>
+
+    <VBox padding="14,12,14,12" child_margin_y="8">
+      <!-- drop zone -->
+      <VBox name="drop_card" height="72" class="card" padding="10,10,10,10">
+        <Label name="drop_hint" text="将文件拖到此处" font="system_12" textcolor="gray" width="stretch" text_align="hcenter,vcenter"/>
+      </VBox>
+
+      <!-- buttons -->
+      <HBox child_margin_x="8">
+        <Button name="browse_btn" text="选择文件" class="btn_global_color_blue" height="28" width="96"/>
+        <Button name="send_btn" text="发送" class="btn_global_blue_80x30" height="28" width="96"/>
+        <Control mouse_enabled="false"/>
+      </HBox>
+
+      <!-- file list -->
+      <VBox name="file_list" child_margin_y="6">
+        <Label name="file_empty" text="暂无传输记录" font="system_12" textcolor="gray" height="24"/>
+      </VBox>
+    </VBox>
+  </VBox>
+</Window>

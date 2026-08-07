@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- StarDesk connection-request dialog (XML mode). -->
+<Window size="380,190" caption="0,0,0,32" use_system_caption="false"
+        shadow_type="system_round" shadow_attached="true" layered_window="false"
+        size_box="2,2,2,2">
+  <VBox bkcolor="bk_wnd_darkcolor">
+    <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
+      <Label text="连接请求" font="system_bold_12" valign="center" margin="12,0,0,0" mouse_enabled="false"/>
+      <Control mouse_enabled="false"/>
+      <Button class="btn_wnd_close_11" height="stretch" width="32" name="closebtn" margin="0,0,2,0" tooltip_text="Close"/>
+    </HBox>
+    <VBox padding="16,14,16,14" child_margin_y="12">
+      <Label name="ask_text" text="-" font="system_12" multi_line="true" text_align="left,top" width="stretch" height="auto"/>
+      <HBox child_halign="right" child_margin_x="8">
+        <Button name="reject_btn" text="拒绝" class="btn_global_red_80x30" height="30" width="80"/>
+        <Button name="accept_btn" text="接受" class="btn_global_blue_80x30" height="30" width="80"/>
+      </HBox>
+    </VBox>
+  </VBox>
+</Window>

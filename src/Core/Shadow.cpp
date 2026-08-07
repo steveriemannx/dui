@@ -241,6 +241,11 @@ Box* Shadow::AttachShadow(Box* pXmlRoot)
     if (!m_bShadowAttached) {
         return pXmlRoot;
     }
+    //System shadows are provided by the OS (macOS NSWindow / Windows DWM):
+    //no self-drawn ShadowBox is needed (matches the reference nim_duilib).
+    if (IsSystemShadowEnabled()) {
+        return pXmlRoot;
+    }
     ASSERT(m_pShadowBox == nullptr);
     if (m_pShadowBox != nullptr) {
         return pXmlRoot;
@@ -334,6 +339,89 @@ bool Shadow::IsShadowAttached() const
     return m_bShadowAttached;
 }
 
+bool Shadow::IsSystemShadowType(ShadowType nShadowType)
+{
+    return (nShadowType == ShadowType::kShadowSystemDefault) ||
+           (nShadowType == ShadowType::kShadowSystemDoNotRound) ||
+           (nShadowType == ShadowType::kShadowSystemRound) ||
+           (nShadowType == ShadowType::kShadowSystemSmallRound);
+}
+
+bool Shadow::IsShadowTypeNeedLayeredWindow(ShadowType nShadowType)
+{
+    if (IsSystemShadowType(nShadowType)) {
+        return false;
+    }
+    if (nShadowType == ShadowType::kShadowNone) {
+        return false;
+    }
+    return true;
+}
+
+bool Shadow::IsSystemShadowEnabled() const
+{
+    return IsSystemShadowEnabled(m_nShadowType);
+}
+
+bool Shadow::IsSystemShadowEnabled(ShadowType nShadowType) const
+{
+    return IsSystemShadowType(nShadowType);
+}
+
+Shadow::ShadowType Shadow::GetDefaultShadowType(const Window* pWindow)
+{
+    if (pWindow != nullptr) {
+        if (pWindow->IsLayeredWindow()) {
+            //Layered window: self-drawn shadow with rounded corners
+            return ShadowType::kShadowBigRound;
+        }
+        else if (pWindow->NativeWnd()->IsSystemShadowSupported()) {
+            //The platform supports OS-provided shadows
+            return ShadowType::kShadowSystemDefault;
+        }
+    }
+#ifdef DUI_BUILD_FOR_WIN
+    if (pWindow != nullptr && pWindow->NativeWnd()->IsSystemShadowSupported()) {
+        return ShadowType::kShadowSystemDefault;
+    }
+    return ShadowType::kShadowBigRound;
+#elif defined(DUI_BUILD_FOR_MACOS)
+    //macOS supports OS-provided shadows
+    return ShadowType::kShadowSystemDefault;
+#else
+    //Other platforms: self-drawn shadow with rounded corners
+    return ShadowType::kShadowBigRound;
+#endif
+}
+
+Shadow::ShadowType Shadow::GetSupportedShadowType(const Window* pWindow, ShadowType nShadowType)
+{
+    if (nShadowType == ShadowType::kShadowDefault) {
+        nShadowType = GetDefaultShadowType(pWindow);
+    }
+    if (pWindow == nullptr) {
+        return nShadowType;
+    }
+    if (!pWindow->NativeWnd()->IsSystemShadowSupported()) {
+        //OS shadows unsupported: fall back to self-drawn shadows
+        if (IsSystemShadowType(nShadowType)) {
+            if (nShadowType == ShadowType::kShadowSystemDefault) {
+                nShadowType = ShadowType::kShadowBigRound;
+            }
+            else if (nShadowType == ShadowType::kShadowSystemDoNotRound) {
+                nShadowType = ShadowType::kShadowNone;
+            }
+            else if (nShadowType == ShadowType::kShadowSystemRound) {
+                nShadowType = ShadowType::kShadowBigRound;
+            }
+            else if (nShadowType == ShadowType::kShadowSystemSmallRound) {
+                nShadowType = ShadowType::kShadowSmallRound;
+            }
+        }
+    }
+    return nShadowType;
+}
+
 void Shadow::SetShadowType(Shadow::ShadowType nShadowType)
 {
     ASSERT(nShadowType >= Shadow::ShadowType::kShadowFirst);
@@ -391,6 +479,18 @@ bool Shadow::GetShadowType(const DString& typeString, ShadowType& nShadowType)
     }
     else if (typeString == _T("default")) {
         nShadowType = Shadow::ShadowType::kShadowDefault;
+    }
+    else if (typeString == _T("system_default")) {
+        nShadowType = Shadow::ShadowType::kShadowSystemDefault;
+    }
+    else if (typeString == _T("system_not_round")) {
+        nShadowType = Shadow::ShadowType::kShadowSystemDoNotRound;
+    }
+    else if (typeString == _T("system_round")) {
+        nShadowType = Shadow::ShadowType::kShadowSystemRound;
+    }
+    else if (typeString == _T("system_small_round")) {
+        nShadowType = Shadow::ShadowType::kShadowSystemSmallRound;
     }
     else {
         ASSERT(0);
@@ -524,6 +624,33 @@ void Shadow::OnShadowAttached(Shadow::ShadowType nShadowType)
         }
     }
     UpdateShadow();
+
+    //OS-provided shadows: forward the type to the native window (macOS
+    //NSWindow / Windows DWM). Self-drawn types disable the OS shadow.
+    if ((m_pWindow != nullptr) && (m_pWindow->NativeWnd() != nullptr) &&
+        m_pWindow->NativeWnd()->IsSystemShadowSupported()) {
+        if (IsShadowAttached() && IsSystemShadowEnabled(nShadowType)) {
+            ui::NativeWindowShadowType nativeShadowType =
+                ui::NativeWindowShadowType::kShadowSystemDefault;
+            if (nShadowType == Shadow::ShadowType::kShadowSystemDefault) {
+                nativeShadowType = ui::NativeWindowShadowType::kShadowSystemDefault;
+            }
+            else if (nShadowType == Shadow::ShadowType::kShadowSystemDoNotRound) {
+                nativeShadowType = ui::NativeWindowShadowType::kShadowSystemDoNotRound;
+            }
+            else if (nShadowType == Shadow::ShadowType::kShadowSystemRound) {
+                nativeShadowType = ui::NativeWindowShadowType::kShadowSystemRound;
+            }
+            else if (nShadowType == Shadow::ShadowType::kShadowSystemSmallRound) {
+                nativeShadowType = ui::NativeWindowShadowType::kShadowSystemSmallRound;
+            }
+            m_pWindow->NativeWnd()->SetSystemShadowType(nativeShadowType);
+        }
+        else {
+            m_pWindow->NativeWnd()->SetSystemShadowType(
+                ui::NativeWindowShadowType::kShadowSystemDisabled);
+        }
+    }
 }
 
 void Shadow::UpdateShadow()

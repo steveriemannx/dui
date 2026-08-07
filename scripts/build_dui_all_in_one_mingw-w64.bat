@@ -213,7 +213,7 @@ if %ENABLE_SDL% equ 1 (
 echo - Cloning SDL ...
 :retry_clone_SDL
     if not exist ".\dui\third_party\SDL3\.git" (
-        git clone https://github.com/libsdl-org/SDL.git
+        git clone --depth 1 https://github.com/libsdl-org/SDL.git
     ) else (
         git -C ./dui/third_party/SDL3 pull
     )

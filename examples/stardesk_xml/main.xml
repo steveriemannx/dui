@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- StarDesk main window (XML mode).
+     system_round shadow: layered_window="false" (non-layered) -> the window
+     uses the OS-provided shadow; shadow_attached stays "true" (dui's two
+     shadow implementations: layered -> transparent self-drawn shadow,
+     normal -> system shadow). -->
+<Window size="960,640" caption="0,0,0,36" use_system_caption="false"
+        shadow_type="system_round" shadow_attached="true" layered_window="false"
+        size_box="2,2,2,2" min_size="640,420"
+        icon="public/caption/logo.ico">
+  <VBox bkcolor="bk_wnd_darkcolor">
+    <!-- ===================== title bar ===================== -->
+    <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+      <Control width="28" height="28" bkimage="public/caption/logo.svg" valign="center" margin="8,0,0,0" mouse_enabled="false"/>
+      <Label text="StarDesk" font="system_bold_14" valign="center" margin="6,0,0,0" mouse_enabled="false"/>
+      <Label name="caption_subtitle" text="远程控制" font="system_12" textcolor="gray" valign="center" margin="10,0,0,0" mouse_enabled="false"/>
+      <Control mouse_enabled="false"/>
+      <Button name="langbtn" text="简体中文" class="btn_global_color_gray" height="26" width="80" valign="center" margin="0,5,4,5" tooltip_text="Language"/>
+      <Button name="themebtn" text="🌙" class="btn_global_color_white" height="26" width="30" valign="center" margin="0,5,0,5" tooltip_text="Theme"/>
+      <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+      <Box height="stretch" width="40" margin="0,2,0,2">
+        <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
+        <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
+      </Box>
+      <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+    </HBox>
+
+    <!-- ===================== body ===================== -->
+    <HBox>
+      <!-- ---------- left sidebar ---------- -->
+      <VBox width="288" bkcolor="bk_wnd_lightcolor" padding="12,12,12,12" child_margin_y="10">
+        <!-- device card -->
+        <VBox class="card" padding="12,10,12,12" child_margin_y="6">
+          <Label name="lbl_device" text="本机设备" font="system_12" textcolor="gray"/>
+          <Label name="device_name" text="-" font="system_bold_12"/>
+          <Label name="device_addr" text="-" font="system_12" textcolor="gray" multi_line="true" text_align="left,top"/>
+        </VBox>
+
+        <!-- password card -->
+        <VBox class="card" padding="12,10,12,12" child_margin_y="6">
+          <Label name="lbl_password" text="连接密码" font="system_12" textcolor="gray"/>
+          <HBox child_margin_x="4">
+            <RichEdit name="host_pwd" class="edit" password="true" height="28"/>
+            <Button name="genpwd_btn" text="随机" class="btn_global_color_blue" height="28" width="48" tooltip_text="Generate"/>
+            <Button name="showpwd_btn" text="显示" class="btn_global_color_white" height="28" width="48" tooltip_text="Show/Hide"/>
+          </HBox>
+        </VBox>
+
+        <!-- accept mode card -->
+        <VBox class="card" padding="12,10,12,12" child_margin_y="6">
+          <Label name="lbl_accept_mode" text="连接方式" font="system_12" textcolor="gray"/>
+          <Option name="opt_auto" text="自动接受(密码正确即可连接)" class="option_1" group="acceptmode" selected="true"/>
+          <Option name="opt_manual" text="每次手动确认" class="option_1" group="acceptmode"/>
+        </VBox>
+
+        <!-- share mode card -->
+        <VBox class="card" padding="12,10,12,12" child_margin_y="6">
+          <Label name="lbl_share_mode" text="共享屏幕" font="system_12" textcolor="gray"/>
+          <Option name="opt_mirror" text="复制(镜像主屏)" class="option_1" group="sharemode" selected="true"/>
+          <Option name="opt_extend" text="拓展(拼接所有屏幕)" class="option_1" group="sharemode"/>
+        </VBox>
+
+        <!-- host status card -->
+        <VBox class="card" padding="12,10,12,12" child_margin_y="6">
+          <Label name="lbl_status" text="状态" font="system_12" textcolor="gray"/>
+          <Label name="host_status" text="就绪,等待连接" font="system_12" textcolor="green" multi_line="true" text_align="left,top"/>
+        </VBox>
+      </VBox>
+
+      <!-- ---------- right side ---------- -->
+      <VBox padding="12,8,12,12" child_margin_y="8">
+        <!-- tabs -->
+        <HBox child_margin_x="6">
+          <Button name="tab_remote" text="远程控制" class="btn_global_blue_80x30" height="28" width="96"/>
+          <Button name="tab_file" text="文件" class="btn_global_color_white" height="28" width="96"/>
+        </HBox>
+
+        <!-- remote panel -->
+        <VBox name="panel_remote" child_margin_y="10">
+          <VBox class="card" padding="12,10,12,12" child_margin_y="4">
+            <Label name="lbl_devices" text="局域网设备" font="system_12" textcolor="gray"/>
+            <VBox name="device_list" child_margin_y="4">
+              <Label name="device_empty" text="暂未发现局域网设备" font="system_12" textcolor="gray" height="24"/>
+            </VBox>
+          </VBox>
+
+          <VBox class="card" padding="12,10,12,12" child_margin_y="8">
+            <Label name="lbl_remote_title" text="远程控制" font="system_12" textcolor="gray"/>
+            <HBox child_margin_x="6">
+              <Label text="对方 IP" font="system_12" textcolor="gray" width="auto" margin="0,0,2,0"/>
+              <RichEdit name="remote_ip" class="edit" height="28" text="127.0.0.1"/>
+              <Label text="端口" font="system_12" textcolor="gray" width="auto" margin="0,0,2,0"/>
+              <RichEdit name="remote_port" class="edit" height="28" width="70" text="7456"/>
+            </HBox>
+            <HBox child_margin_x="6">
+              <Label text="密码" font="system_12" textcolor="gray" width="auto" margin="0,0,2,0"/>
+              <RichEdit name="remote_pwd" class="edit" password="true" height="28"/>
+            </HBox>
+            <HBox child_margin_x="6">
+              <Label text="模式" font="system_12" textcolor="gray" width="auto" margin="0,0,2,0"/>
+              <Combo name="mode_combo" class="combo" width="110" height="28"/>
+              <Label text="分辨率" font="system_12" textcolor="gray" width="auto" margin="0,0,2,0"/>
+              <Combo name="res_combo" class="combo" width="110" height="28"/>
+              <Label text="帧率" font="system_12" textcolor="gray" width="auto" margin="0,0,2,0"/>
+              <Combo name="fps_combo" class="combo" width="110" height="28"/>
+            </HBox>
+            <HBox child_margin_x="6">
+              <Button name="connect_btn" text="连接" class="btn_global_blue_80x30" height="32" width="110"/>
+              <Label name="conn_status" text="" font="system_12" textcolor="gray" multi_line="true" text_align="left,top"/>
+            </HBox>
+          </VBox>
+        </VBox>
+
+        <!-- file panel -->
+        <VBox name="panel_file" visible="false" child_margin_y="10">
+          <VBox class="card" padding="12,14,12,14" child_margin_y="8">
+            <Button name="send_file_btn" text="发送文件" class="btn_global_blue_80x30" height="34" width="140" halign="left"/>
+            <Label name="lbl_drag_hint" text="将文件拖到发送窗口" font="system_12" textcolor="gray" height="20"/>
+          </VBox>
+
+          <VBox class="card" padding="12,10,12,12" child_margin_y="6">
+            <HBox child_margin_x="6">
+              <Label name="lbl_receive_dir" text="文件接收目录" font="system_12" textcolor="gray" width="auto"/>
+              <Control mouse_enabled="false"/>
+              <Button name="open_dir_btn" text="打开目录" class="btn_global_color_white" height="24" width="80"/>
+            </HBox>
+            <Label name="receive_dir" text="-" font="system_12" textcolor="gray" multi_line="true" text_align="left,top"/>
+            <Label name="lbl_transfers" text="状态" font="system_12" textcolor="gray"/>
+            <VBox name="transfer_list" child_margin_y="4">
+              <Label name="transfer_empty" text="暂无传输记录" font="system_12" textcolor="gray" height="22"/>
+            </VBox>
+          </VBox>
+        </VBox>
+      </VBox>
+    </HBox>
+  </VBox>
+</Window>
