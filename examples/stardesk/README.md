@@ -65,7 +65,7 @@ device_name=           # 设备名(默认主机名)
 
 二进制帧 `[magic "SDK1"][type u8][len u32][payload]`(小端)。认证:
 `Hello → Challenge{nonce} → Auth{SHA256(nonce‖password)} → AuthResult{ok, filePort, token}`。
-画面流:`ScreenInit{宽高}` + `ScreenTile{x,y,w,h,png}` + `CursorPos{归一化坐标}`。
+画面流:`ScreenInit{宽高}` + `ScreenTile{x,y,w,h,png}` + `ScreenEnd`(帧结束标记,客户端仅在收到后渲染,避免快速滑动时瓦片拼接)+ `CursorPos{归一化坐标}`。
 输入:`InputEvent{kind, 归一化坐标/键码/修饰键}`。文件通道:独立 TCP(端口+1),
 首帧 `FileAuth{token}`,随后 `FileStart/FileAccept/FileChunk/FileEnd/FileDone/FileAbort`。
 心跳 3s Ping/Pong,15s 无响应断开。画面流阶段一不加密(局域网使用,README 说明)。
@@ -74,7 +74,8 @@ device_name=           # 设备名(默认主机名)
 
 - 画面流不加密;Linux 仅 X11;macOS 需 14+;一次一个控制会话
 - PNG 编码对彩色界面带宽较高(瓦片增量已大幅缓解);后续可接入完整 libwebp/JPEG
-- 采集为 SCScreenshotManager 单帧循环(约 5-8 fps 上限);后续可换 SCStream 连续流
+- 采集:SCStream 连续流(60fps,镜像模式);多显示器拓展模式仍为单帧采集(约 5 fps)
+- 全屏大幅变化(如视频)时 PNG 编码 + 带宽会限制帧率(1080p 局域网下约 30fps 内)
 - 多显示器「拓展」模式在 macOS 上为并集画布(副屏布局差异未做坐标补偿)
 
 ## 迁移到独立仓库

@@ -33,10 +33,13 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")
 target_include_directories(${PROJECT_NAME} PRIVATE "${DUI_SRC_ROOT_DIR}/third_party/libpng")
 
 if(APPLE)
-    # ScreenCaptureKit (macOS 14+) + CoreMedia (CMTime) for screen capture.
-    # Plain signature: dui_bin_macos.cmake already linked this target plain.
+    # ScreenCaptureKit (macOS 14+) + CoreMedia (CMTime) for screen capture,
+    # CoreVideo (CVPixelBuffer) + QuartzCore (CACurrentMediaTime) for the
+    # SCStream frame delivery path. Plain signature: dui_bin_macos.cmake
+    # already linked this target plain.
     target_link_libraries(${PROJECT_NAME}
-        "-framework ScreenCaptureKit" "-framework CoreMedia")
+        "-framework ScreenCaptureKit" "-framework CoreMedia"
+        "-framework CoreVideo" "-framework QuartzCore")
 elseif(WIN32)
     # Winsock2
     target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)

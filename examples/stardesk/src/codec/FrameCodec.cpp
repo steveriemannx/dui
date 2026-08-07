@@ -59,7 +59,9 @@ bool PngEncodeRGBA(const uint8_t* rgba, int w, int h, int stride,
     png_set_IHDR(png, info, (png_uint_32)w, (png_uint_32)h, 8,
                  PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-    png_set_compression_level(png, 6);
+    // level 3: ~2x faster than the default 6 with a modest size increase -
+    // tiles are tiny and this is a live stream, speed wins over ratio
+    png_set_compression_level(png, 3);
     png_write_info(png, info);
 
     std::vector<png_bytep> rows((size_t)h);
@@ -141,6 +143,12 @@ bool PngDecodeRGBA(const uint8_t* data, size_t len,
 
 FrameEncoder::FrameEncoder(int quality) : m_quality(quality)
 {
+    StartWorkers();
+}
+
+FrameEncoder::~FrameEncoder()
+{
+    StopWorkers();
 }
 
 void FrameEncoder::Reset()
@@ -149,6 +157,103 @@ void FrameEncoder::Reset()
     m_hashes.clear();
     m_width = 0;
     m_height = 0;
+}
+
+void FrameEncoder::StartWorkers()
+{
+    int n = (int)std::thread::hardware_concurrency();
+    if (n < 1) {
+        n = 1;
+    }
+    if (n > 8) {
+        n = 8;
+    }
+    m_workerScratch.resize((size_t)n);
+    for (size_t i = 0; i < m_workerScratch.size(); ++i) {
+        m_workerScratch[i].resize((size_t)kTile * kTile * 4);
+        m_workers.emplace_back(&FrameEncoder::WorkerMain, this, i);
+    }
+}
+
+void FrameEncoder::StopWorkers()
+{
+    {
+        std::lock_guard<std::mutex> lock(m_jobMutex);
+        m_shutdown = true;
+    }
+    m_jobCv.notify_all();
+    for (std::thread& t : m_workers) {
+        if (t.joinable()) {
+            t.join();
+        }
+    }
+    m_workers.clear();
+}
+
+void FrameEncoder::WorkerMain(size_t workerId)
+{
+    std::vector<uint8_t>& scratch = m_workerScratch[workerId];
+    for (;;) {
+        TileJob job;
+        {
+            std::unique_lock<std::mutex> lock(m_jobMutex);
+            m_jobCv.wait(lock, [this]() { return m_shutdown || m_jobPos < m_jobs.size(); });
+            if (m_shutdown) {
+                return;
+            }
+            job = m_jobs[m_jobPos++];
+        }
+
+        const uint8_t* rgba = m_frame;
+        const int width = m_frameW;
+        // FNV-1a hash over 32-bit words (4x faster than byte-wise; a changed
+        // byte always changes its word, so change detection stays reliable)
+        uint64_t hash = 1469598103934665603ull;
+        for (int yy = 0; yy < job.th; ++yy) {
+            const uint32_t* row =
+                (const uint32_t*)(rgba + (size_t)((job.y0 + yy) * width + job.x0) * 4);
+            for (int xx = 0; xx < job.tw; ++xx) {
+                hash ^= row[xx];
+                hash *= 1099511628211ull;
+            }
+        }
+        if (hash == m_hashes[job.hashIdx]) {
+            // unchanged tile: nothing to send
+        }
+        else {
+            m_hashes[job.hashIdx] = hash;
+            // copy the tile into the worker's full 64x64 scratch (PNG stride)
+            for (int yy = 0; yy < job.th; ++yy) {
+                std::memcpy(scratch.data() + (size_t)yy * kTile * 4,
+                            rgba + (size_t)((job.y0 + yy) * width + job.x0) * 4,
+                            (size_t)job.tw * 4);
+            }
+            for (int yy = 0; yy < kTile; ++yy) {
+                std::memset(scratch.data() + (size_t)(yy * kTile + job.tw) * 4, 0,
+                            (size_t)(kTile - job.tw) * 4);
+            }
+            for (int yy = job.th; yy < kTile; ++yy) {
+                std::memset(scratch.data() + (size_t)yy * kTile * 4, 0,
+                            (size_t)kTile * 4);
+            }
+            EncodedTile tile;
+            tile.x = job.x0;
+            tile.y = job.y0;
+            tile.w = job.tw;
+            tile.h = job.th;
+            if (PngEncodeRGBA(scratch.data(), kTile, kTile, kTile * 4, tile.webp)) {
+                std::lock_guard<std::mutex> lock(m_jobMutex);
+                m_results.push_back(std::move(tile));
+            }
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(m_jobMutex);
+            if (--m_jobsLeft == 0) {
+                m_doneCv.notify_one();
+            }
+        }
+    }
 }
 
 bool FrameEncoder::EncodeFrame(const uint8_t* rgba, int width, int height,
@@ -162,7 +267,6 @@ bool FrameEncoder::EncodeFrame(const uint8_t* rgba, int width, int height,
         m_tilesX = (width + kTile - 1) / kTile;
         m_tilesY = (height + kTile - 1) / kTile;
         m_hashes.assign((size_t)m_tilesX * m_tilesY, 0);
-        m_tileRgba.resize((size_t)kTile * kTile * 4);
 
         // first frame after a size change: full frame
         EncodedTile full;
@@ -182,8 +286,9 @@ bool FrameEncoder::EncodeFrame(const uint8_t* rgba, int width, int height,
                 const int th = std::min(kTile, height - y0);
                 uint64_t hash = 1469598103934665603ull; // FNV-1a offset basis
                 for (int yy = 0; yy < th; ++yy) {
-                    const uint8_t* row = m_prev.data() + (size_t)((y0 + yy) * width + x0) * 4;
-                    for (int xx = 0; xx < tw * 4; ++xx) {
+                    const uint32_t* row = (const uint32_t*)(m_prev.data() +
+                        (size_t)((y0 + yy) * width + x0) * 4);
+                    for (int xx = 0; xx < tw; ++xx) {
                         hash ^= row[xx];
                         hash *= 1099511628211ull;
                     }
@@ -195,56 +300,38 @@ bool FrameEncoder::EncodeFrame(const uint8_t* rgba, int width, int height,
         return sizeChanged;
     }
 
-    // diff against the stored frame
-    for (int ty = 0; ty < m_tilesY; ++ty) {
-        for (int tx = 0; tx < m_tilesX; ++tx) {
-            const int x0 = tx * kTile;
-            const int y0 = ty * kTile;
-            const int tw = std::min(kTile, width - x0);
-            const int th = std::min(kTile, height - y0);
-
-            uint64_t hash = 1469598103934665603ull;
-            for (int yy = 0; yy < th; ++yy) {
-                const uint8_t* row = rgba + (size_t)((y0 + yy) * width + x0) * 4;
-                for (int xx = 0; xx < tw * 4; ++xx) {
-                    hash ^= row[xx];
-                    hash *= 1099511628211ull;
-                }
-            }
-            const size_t idx = (size_t)ty * m_tilesX + tx;
-            if (hash == m_hashes[idx]) {
-                continue; // unchanged tile
-            }
-            m_hashes[idx] = hash;
-
-            // copy the tile into a full 64x64 buffer (PNG needs a stride)
-            for (int yy = 0; yy < th; ++yy) {
-                std::memcpy(m_tileRgba.data() + (size_t)yy * kTile * 4,
-                            rgba + (size_t)((y0 + yy) * width + x0) * 4,
-                            (size_t)tw * 4);
-            }
-            for (int yy = th; yy < kTile; ++yy) {
-                std::memset(m_tileRgba.data() + (size_t)yy * kTile * 4, 0,
-                            (size_t)kTile * 4);
-            }
-            for (int yy = 0; yy < th; ++yy) {
-                std::memset(m_tileRgba.data() + (size_t)(yy * kTile + tw) * 4, 0,
-                            (size_t)(kTile - tw) * 4);
-            }
-
-            EncodedTile tile;
-            tile.x = x0;
-            tile.y = y0;
-            tile.w = tw;
-            tile.h = th;
-            if (PngEncodeRGBA(m_tileRgba.data(), kTile, kTile, kTile * 4, tile.webp)) {
-                out.push_back(std::move(tile));
+    // diff against the stored frame - the per-tile hash + PNG encode is
+    // dispatched to the worker pool (tiles are independent)
+    {
+        std::lock_guard<std::mutex> lock(m_jobMutex);
+        m_frame = rgba;
+        m_frameW = width;
+        m_frameH = height;
+        m_jobs.clear();
+        m_jobs.reserve((size_t)m_tilesX * m_tilesY);
+        for (int ty = 0; ty < m_tilesY; ++ty) {
+            for (int tx = 0; tx < m_tilesX; ++tx) {
+                TileJob job;
+                job.x0 = tx * kTile;
+                job.y0 = ty * kTile;
+                job.tw = std::min(kTile, width - job.x0);
+                job.th = std::min(kTile, height - job.y0);
+                job.hashIdx = (size_t)ty * m_tilesX + tx;
+                m_jobs.push_back(job);
             }
         }
+        m_jobPos = 0;
+        m_jobsLeft = (int)m_jobs.size();
+        m_results.clear();
     }
-
-    // store the new frame
-    std::memcpy(m_prev.data(), rgba, (size_t)width * height * 4);
+    m_jobCv.notify_all();
+    {
+        std::unique_lock<std::mutex> lock(m_jobMutex);
+        m_doneCv.wait(lock, [this]() { return m_jobsLeft == 0; });
+        out.swap(m_results);
+    }
+    // (the previous frame's pixels are not kept: the delta path compares
+    // tile hashes only, so copying m_prev would be pure overhead)
     return sizeChanged;
 }
 

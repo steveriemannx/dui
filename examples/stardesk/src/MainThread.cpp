@@ -3,6 +3,8 @@
 #include "app/AppConfig.h"
 #include "ui/MainWindow.h"
 
+#include <csignal>
+
 namespace sdk {
 
 namespace {
@@ -58,6 +60,14 @@ MainThread::~MainThread()
 
 void MainThread::OnInit()
 {
+#if !defined(_WIN32)
+    // A peer that dies mid-stream (crash / network drop / power loss) makes
+    // the next send() raise SIGPIPE, which by default KILLS the process - a
+    // remote-control host must survive that. Ignore it so send() returns
+    // EPIPE instead and the existing "closed connection" handling kicks in.
+    std::signal(SIGPIPE, SIG_IGN);
+#endif
+
     // resource root next to the executable (may be absent - all theme data is
     // registered below, so the app works without any resource files)
     ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();

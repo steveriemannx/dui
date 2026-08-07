@@ -79,6 +79,9 @@ bool InputInjector::PermissionGranted()
     return true;
 }
 
+bool InputInjector::IsOwnWindowAt(double, double) { return false; }
+bool InputInjector::IsOwnAppFocused() { return false; }
+
 std::string InputInjector::PermissionHint()
 {
     return std::string();

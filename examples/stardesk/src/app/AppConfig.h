@@ -25,6 +25,7 @@ struct AppConfig {
     int language = 0;          // index into sdk::Language
     int wantFps = 30;          // default client frame-rate request (24/30/60)
     int wantRes = 0;           // default client resolution request (0=original 1=720p 2=1080p)
+    bool viewOnly = false;     // default client mode: false=control, true=view only
     DString deviceName;        // device name shown to peers
 
     /** Path of the config file (~/.stardesk.conf). */

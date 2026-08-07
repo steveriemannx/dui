@@ -20,6 +20,7 @@ const Palette& Theme::Dark()
         ui::UiColor(0xFFE6E9EE), // textMain
         ui::UiColor(0xFF8A93A3), // textSub
         ui::UiColor(0xFFFFFFFF), // textInvert
+        ui::UiColor(0xFFA9B2BF), // prompt (brighter on dark)
         ui::UiColor(0xFF4F7CF7), // accent
         ui::UiColor(0xFF6B91F9), // accentHover
         ui::UiColor(0xFF3D67E8), // accentPressed
@@ -46,6 +47,7 @@ const Palette& Theme::Light()
         ui::UiColor(0xFF1F2329), // textMain
         ui::UiColor(0xFF6B7280), // textSub
         ui::UiColor(0xFFFFFFFF), // textInvert
+        ui::UiColor(0xFF9AA1AB), // prompt
         ui::UiColor(0xFF2E6BFF), // accent
         ui::UiColor(0xFF4D82FF), // accentHover
         ui::UiColor(0xFF1F5AE6), // accentPressed

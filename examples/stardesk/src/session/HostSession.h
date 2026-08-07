@@ -40,7 +40,8 @@ public:
         std::function<void()> onClosed;
     };
 
-    HostSession(Socket::sock_t fd, std::string peerIp, const Callbacks& cb);
+    HostSession(Socket::sock_t fd, std::string peerIp, uint16_t filePort,
+                const Callbacks& cb);
     ~HostSession();
 
     void Start();
@@ -71,6 +72,7 @@ private:
     Socket::sock_t m_fd = Socket::kInvalid;   // owned by the accept thread until TakeFd()
     Socket::sock_t m_threadFd = Socket::kInvalid; // owned by the session thread
     std::string m_peerIp;
+    uint16_t m_filePort = 0; // this app's file-channel port (advertised in AuthResult)
     Callbacks m_cb;
 
     std::thread m_thread;

@@ -11,11 +11,11 @@ namespace sdk {
 
 namespace {
 
-// Physical origin of the shared logical screen in the global coordinate
-// system (mirror = main display origin (0,0); extend = union of all displays).
-void LogicalOrigin(int& ox, int& oy, int screenW, int screenH)
+// Union of all screens in AppKit coordinates (bottom-left origin, main
+// display at the bottom). CGEvent coordinates are CG (top-left) points, so
+// the vertical axis must be converted.
+void ScreenUnion(double& minX, double& minY, double& maxX, double& maxY)
 {
-    double minX = 0, minY = 0, maxX = 0, maxY = 0;
     bool first = true;
     for (NSScreen* s in [NSScreen screens]) {
         const NSRect f = [s frame];
@@ -32,20 +32,30 @@ void LogicalOrigin(int& ox, int& oy, int screenW, int screenH)
             maxY = MAX(maxY, f.origin.y + f.size.height);
         }
     }
-    (void)screenW;
-    (void)screenH;
-    ox = (int)minX;
-    oy = (int)minY;
+}
+
+// The physical (point) geometry of the shared screen in CG top-left
+// coordinates. The stream/logical size must NOT be used here: it is the
+// captured pixel size (e.g. 2x Retina) while CGEvent positions are points.
+void PhysicalScreenRect(double& x, double& y, double& w, double& h)
+{
+    double minX = 0, minY = 0, maxX = 0, maxY = 0;
+    ScreenUnion(minX, minY, maxX, maxY);
+    const double mainH = [[NSScreen mainScreen] frame].size.height;
+    x = minX;                       // x is the same in both spaces
+    y = mainH - maxY;               // top of the union in CG coordinates
+    w = maxX - minX;
+    h = maxY - minY;
 }
 
 } // namespace
 
-bool InputInjector::MoveTo(double nx, double ny, int screenW, int screenH)
+bool InputInjector::MoveTo(double nx, double ny, int /*screenW*/, int /*screenH*/)
 {
-    int ox = 0, oy = 0;
-    LogicalOrigin(ox, oy, screenW, screenH);
-    const double x = ox + nx * screenW;
-    const double y = oy + ny * screenH;
+    double x0 = 0, y0 = 0, w = 0, h = 0;
+    PhysicalScreenRect(x0, y0, w, h);
+    const double x = x0 + nx * w;
+    const double y = y0 + ny * h;
     CGEventRef ev = CGEventCreateMouseEvent(nullptr, kCGEventMouseMoved,
                                             CGPointMake(x, y), kCGMouseButtonLeft);
     if (ev == nullptr) {
@@ -71,8 +81,14 @@ bool InputInjector::Button(bool down, int button)
                 : (button == 1 ? kCGEventRightMouseUp
                                : (button == 2 ? kCGEventOtherMouseUp
                                               : kCGEventLeftMouseUp));
-    CGEventRef ev = CGEventCreateMouseEvent(nullptr, type,
-                                            CGEventGetLocation(nullptr), mb);
+    // position: the current cursor location. CGEventGetLocation spuriously
+    // returns (0,0) on macOS 26 (clicks would land in the corner); NSEvent
+    // is reliable. The move is injected before the button, so the cursor is
+    // already at the target position.
+    const NSPoint p = [NSEvent mouseLocation];
+    const double mainH = [[NSScreen mainScreen] frame].size.height;
+    const CGPoint loc = CGPointMake(p.x, mainH - p.y);
+    CGEventRef ev = CGEventCreateMouseEvent(nullptr, type, loc, mb);
     if (ev == nullptr) {
         return false;
     }
@@ -110,15 +126,63 @@ bool InputInjector::Key(uint16_t vkCode, bool down)
 
 bool InputInjector::GetCursorPos(int& x, int& y)
 {
-    const CGPoint p = CGEventGetLocation(nullptr);
+    // NSEvent.mouseLocation is reliable; CGEventGetLocation spuriously
+    // returns (0,0) on macOS 26 for this process (which would park the
+    // reported cursor in the corner)
+    const NSPoint p = [NSEvent mouseLocation];
+    const double mainH = [[NSScreen mainScreen] frame].size.height;
     x = (int)p.x;
-    y = (int)p.y;
+    y = (int)(mainH - p.y); // AppKit bottom-left -> CG top-left
     return true;
 }
 
 bool InputInjector::PermissionGranted()
 {
     return CGPreflightListenEventAccess() && CGPreflightPostEventAccess();
+}
+
+bool InputInjector::IsOwnWindowAt(double x, double y)
+{
+    // any StarDesk window (this or another instance) under the point - the
+    // topmost check is unreliable because the Dock's desktop backdrop
+    // reports a fullscreen window at the dock level
+    CFArrayRef wins = CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly,
+                                                 kCGNullWindowID);
+    if (wins == NULL) {
+        return false;
+    }
+    const CFIndex n = CFArrayGetCount(wins);
+    bool ours = false;
+    for (CFIndex i = 0; i < n; ++i) {
+        NSDictionary* d = (NSDictionary*)CFArrayGetValueAtIndex(wins, i);
+        CGRect b;
+        if (!CGRectMakeWithDictionaryRepresentation(
+                (CFDictionaryRef)d[(NSString*)kCGWindowBounds], &b)) {
+            continue;
+        }
+        if (!CGRectContainsPoint(b, CGPointMake(x, y))) {
+            continue;
+        }
+        NSString* o = d[(NSString*)kCGWindowOwnerName] ?: @"";
+        if ([o localizedCaseInsensitiveCompare:@"stardesk"] == NSOrderedSame ||
+            [o localizedCaseInsensitiveCompare:@"StarDesk"] == NSOrderedSame) {
+            ours = true;
+            break;
+        }
+    }
+    CFRelease(wins);
+    return ours;
+}
+
+bool InputInjector::IsOwnAppFocused()
+{
+    NSRunningApplication* front =
+        [[NSWorkspace sharedWorkspace] frontmostApplication];
+    if (front == nil) {
+        return false;
+    }
+    NSString* n = front.localizedName ?: front.bundleIdentifier ?: @"";
+    return [n.lowercaseString containsString:@"stardesk"];
 }
 
 std::string InputInjector::PermissionHint()

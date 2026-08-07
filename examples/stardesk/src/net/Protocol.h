@@ -38,6 +38,13 @@ enum class MsgType : uint8_t {
     ScreenInit = 16,
     ScreenTile = 17,
     CursorPos = 18,
+    ScreenEnd = 19,    // empty payload: end of the current tile batch - the
+                       // client renders ONLY on this marker so a frame never
+                       // mixes tiles from two frames (visible seams on fast
+                       // scroll)
+    // (ScreenTiles = 20 was a batched-tile message during development and
+    // is intentionally not defined here - the per-tile ScreenTile message
+    // with ScreenEnd framing is the shipping protocol)
 
     // input (client -> host)
     InputEvent = 20,

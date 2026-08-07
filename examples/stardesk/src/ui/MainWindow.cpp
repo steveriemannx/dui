@@ -4,14 +4,23 @@
 #include "../app/Language.h"
 #include "../app/Theme.h"
 #include "../net/Socket.h"
+#include "../platform/InputInject.h"
 #include "../ui/AskWindow.h"
 
 #include "dui/Utils/FilePathUtil.h"
 #include "../ui/FileSendWindow.h"
 #include "../ui/RemoteWindow.h"
+#include "../ui/SettingsWindow.h"
 
 #include <algorithm>
 #include <cstdlib>
+#include <string>
+
+#ifdef __APPLE__
+// Screen Recording permission preflight/request (CoreGraphics).
+extern "C" bool CGPreflightScreenCaptureAccess(void);
+extern "C" bool CGRequestScreenCaptureAccess(void);
+#endif
 
 namespace sdk {
 
@@ -142,6 +151,15 @@ void MainWindow::OnInitWindow()
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
     // system shadow (like shadow_type="system_round" in XML)
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemRound);
+
+#ifdef __APPLE__
+    // Ask for Screen Recording permission once at startup: without it the
+    // host falls back to the test pattern. CGRequestScreenCaptureAccess
+    // shows the system dialog on the first call (main thread only).
+    if (!CGPreflightScreenCaptureAccess()) {
+        CGRequestScreenCaptureAccess();
+    }
+#endif
 
     const Palette& p = Theme::Get();
 
@@ -421,6 +439,8 @@ void MainWindow::OnInitWindow()
     // -- tabs --
     ui::HBox* tabRow = new ui::HBox(this);
     tabRow->SetAttribute(_T("child_margin_x"), _T("6"));
+    // fixed height: the tabs must not stretch across the whole panel
+    tabRow->SetAttribute(_T("height"), _T("28"));
     mainArea->AddItem(tabRow);
 
     m_tabRemote = MakePill("client.title");
@@ -453,7 +473,9 @@ void MainWindow::OnInitWindow()
     cardDevices->SetAttribute(_T("child_margin_y"), _T("4"));
     m_panelRemote->AddItem(cardDevices);
 
-    cardDevices->AddItem(MakeLabel("client.devices", ThemeLabel::Role::Title));
+    ThemeLabel* devicesTitle = static_cast<ThemeLabel*>(MakeLabel("client.devices", ThemeLabel::Role::Title));
+    devicesTitle->SetAttribute(_T("height"), _T("20"));
+    cardDevices->AddItem(devicesTitle);
 
     m_deviceList = new ui::VBox(this);
     m_deviceList->SetAttribute(_T("child_margin_y"), _T("4"));
@@ -464,17 +486,20 @@ void MainWindow::OnInitWindow()
     m_deviceEmptyLabel->SetAttribute(_T("height"), _T("24"));
     m_deviceList->AddItem(m_deviceEmptyLabel);
 
-    // connect settings card
+    // connect card: compact form (advanced options moved to SettingsWindow)
     CardBox* cardConn = new CardBox(this);
     cardConn->SetAttribute(_T("padding"), _T("12,10,12,12"));
     cardConn->SetAttribute(_T("child_margin_y"), _T("8"));
+    // hug the content: with every row at a fixed height the card is exactly
+    // as tall as its fields, so it can never be squeezed into a collapse
+    cardConn->SetAttribute(_T("height"), _T("auto"));
     m_panelRemote->AddItem(cardConn);
 
-    cardConn->AddItem(MakeLabel("client.title", ThemeLabel::Role::Title));
-
-    auto makeRow = [this](CardBox* parent) {
+    auto makeRow = [this](CardBox* parent, const char* height) {
         ui::HBox* row = new ui::HBox(this);
         row->SetAttribute(_T("child_margin_x"), _T("6"));
+        // fixed height rows: essential for stretch-free vertical layout
+        row->SetAttribute(_T("height"), height);
         parent->AddItem(row);
         return row;
     };
@@ -485,106 +510,46 @@ void MainWindow::OnInitWindow()
         return l;
     };
 
+    // header: card title + settings button (mode/resolution/fps live there)
+    ui::HBox* headRow = makeRow(cardConn, "28");
+    m_connTitleLabel = static_cast<ThemeLabel*>(MakeLabel("client.title", ThemeLabel::Role::Title));
+    m_connTitleLabel->SetAttribute(_T("width"), _T("auto"));
+    headRow->AddItem(m_connTitleLabel);
+    ui::Control* headSpacer = new ui::Control(this);
+    headSpacer->SetMouseEnabled(false);
+    headRow->AddItem(headSpacer);
+    m_settingsBtn = MakeIconButton(VectorArt::Icon::Gear, "settings.openSettings", _T(""));
+    m_settingsBtn->SetAttribute(_T("width"), _T("28"));
+    m_settingsBtn->SetAttribute(_T("height"), _T("28"));
+    m_settingsBtn->AttachClick([this](const ui::EventArgs&) {
+        SettingsWindow* w = new SettingsWindow();
+        w->CreateWnd(this, ui::WindowCreateParam(_T("StarDesk"), true));
+        w->ShowWindow(ui::kSW_SHOW_NORMAL);
+        return true;
+    });
+    headRow->AddItem(m_settingsBtn);
+
     // IP + port row
-    ui::HBox* row1 = makeRow(cardConn);
+    ui::HBox* row1 = makeRow(cardConn, "28");
     row1->AddItem(makeFieldLabel("client.ip"));
     m_remoteIpEdit = MakeEdit("client.ip", false);
     m_remoteIpEdit->SetText(_T("127.0.0.1"));
-    m_remoteIpEdit->SetAttribute(_T("height"), _T("28"));
     row1->AddItem(m_remoteIpEdit);
 
     row1->AddItem(makeFieldLabel("client.port"));
     m_remotePortEdit = MakeEdit("client.port", false);
     m_remotePortEdit->SetText(ui::StringUtil::Printf(_T("%d"), (int)App::Instance().Config().port));
     m_remotePortEdit->SetAttribute(_T("width"), _T("70"));
-    m_remotePortEdit->SetAttribute(_T("height"), _T("28"));
     row1->AddItem(m_remotePortEdit);
 
     // password row
-    ui::HBox* row2 = makeRow(cardConn);
+    ui::HBox* row2 = makeRow(cardConn, "28");
     row2->AddItem(makeFieldLabel("client.password"));
     m_remotePwdEdit = MakeEdit("client.password", true);
-    m_remotePwdEdit->SetAttribute(_T("height"), _T("28"));
     row2->AddItem(m_remotePwdEdit);
 
-    // mode row
-    ui::HBox* row3 = makeRow(cardConn);
-    row3->AddItem(makeFieldLabel("client.mode"));
-    m_controlPill = MakePill("client.modeControl");
-    m_controlPill->SetAttribute(_T("width"), _T("64"));
-    m_controlPill->SetAttribute(_T("height"), _T("26"));
-    row3->AddItem(m_controlPill);
-    m_viewPill = MakePill("client.modeView");
-    m_viewPill->SetAttribute(_T("width"), _T("64"));
-    m_viewPill->SetAttribute(_T("height"), _T("26"));
-    row3->AddItem(m_viewPill);
-    m_controlPill->SetSelected(true);
-
-    auto selectMode = [this](bool view) {
-        m_controlPill->SetSelected(!view);
-        m_viewPill->SetSelected(view);
-    };
-    m_controlPill->AttachClick([selectMode](const ui::EventArgs&) {
-        selectMode(false);
-        return true;
-    });
-    m_viewPill->AttachClick([selectMode](const ui::EventArgs&) {
-        selectMode(true);
-        return true;
-    });
-
-    // resolution row
-    ui::HBox* row4 = makeRow(cardConn);
-    row4->AddItem(makeFieldLabel("client.resolution"));
-    auto makeResPill = [this, &row4](const char* key, int idx) {
-        PillButton* pill = MakePill(key);
-        pill->SetAttribute(_T("width"), _T("60"));
-        pill->SetAttribute(_T("height"), _T("26"));
-        row4->AddItem(pill);
-        return pill;
-    };
-    m_resOriginalPill = makeResPill("client.resOriginal", 0);
-    m_res720Pill = makeResPill("client.res720p", 1);
-    m_res1080Pill = makeResPill("client.res1080p", 2);
-
-    auto selectRes = [this](int idx) {
-        m_resOriginalPill->SetSelected(idx == 0);
-        m_res720Pill->SetSelected(idx == 1);
-        m_res1080Pill->SetSelected(idx == 2);
-    };
-    const int defRes = App::Instance().Config().wantRes;
-    selectRes(defRes);
-    m_resOriginalPill->AttachClick([selectRes](const ui::EventArgs&) { selectRes(0); return true; });
-    m_res720Pill->AttachClick([selectRes](const ui::EventArgs&) { selectRes(1); return true; });
-    m_res1080Pill->AttachClick([selectRes](const ui::EventArgs&) { selectRes(2); return true; });
-
-    // fps row
-    ui::HBox* row5 = makeRow(cardConn);
-    row5->AddItem(makeFieldLabel("client.fps"));
-    auto makeFpsPill = [this, &row5](const char* key) {
-        PillButton* pill = MakePill(key);
-        pill->SetAttribute(_T("width"), _T("60"));
-        pill->SetAttribute(_T("height"), _T("26"));
-        row5->AddItem(pill);
-        return pill;
-    };
-    m_fps24Pill = makeFpsPill("client.fps24");
-    m_fps30Pill = makeFpsPill("client.fps30");
-    m_fps60Pill = makeFpsPill("client.fps60");
-
-    auto selectFps = [this](int idx) {
-        m_fps24Pill->SetSelected(idx == 0);
-        m_fps30Pill->SetSelected(idx == 1);
-        m_fps60Pill->SetSelected(idx == 2);
-    };
-    const int defFps = App::Instance().Config().wantFps;
-    selectFps(defFps == 24 ? 0 : (defFps == 60 ? 2 : 1));
-    m_fps24Pill->AttachClick([selectFps](const ui::EventArgs&) { selectFps(0); return true; });
-    m_fps30Pill->AttachClick([selectFps](const ui::EventArgs&) { selectFps(1); return true; });
-    m_fps60Pill->AttachClick([selectFps](const ui::EventArgs&) { selectFps(2); return true; });
-
     // connect row
-    ui::HBox* row6 = makeRow(cardConn);
+    ui::HBox* row3 = makeRow(cardConn, "32");
     m_connectBtn = new AccentButton(this);
     m_connectBtn->SetText(SDK_TR("client.connect"));
     m_connectBtn->SetAttribute(_T("width"), _T("110"));
@@ -593,14 +558,14 @@ void MainWindow::OnInitWindow()
         OnConnectClicked();
         return true;
     });
-    row6->AddItem(m_connectBtn);
+    row3->AddItem(m_connectBtn);
 
     m_connStatusLabel = static_cast<ThemeLabel*>(MakeLabel("", ThemeLabel::Role::Sub));
     m_connStatusLabel->SetText(_T(""));
     m_connStatusLabel->SetAttribute(_T("margin"), _T("6,0,0,0"));
     m_connStatusLabel->SetAttribute(_T("text_align"), _T("left,top"));
     m_connStatusLabel->SetAttribute(_T("multi_line"), _T("true"));
-    row6->AddItem(m_connStatusLabel);
+    row3->AddItem(m_connStatusLabel);
 
     // ---- file tab ----
     m_panelFile = new ui::VBox(this);
@@ -706,18 +671,45 @@ void MainWindow::OnInitWindow()
     hostCb.onClosed = []() {
         // host status is restored by onStatus in HostSession::Run
     };
-    if (!m_host->Start(App::Instance().Config().port, hostCb)) {
+    // Bind the configured port; when it is taken (e.g. a second StarDesk
+    // instance already runs on this machine) HostService falls back to the
+    // next free port so both instances can host at once. The address label,
+    // discovery beacon and file port all follow the bound port.
+    if (m_host->Start(App::Instance().Config().port, hostCb)) {
+        m_actualPort = m_host->Port();
+    }
+    else {
         SetHostStatus(SDK_TR("client.networkError"), false);
+        m_actualPort = App::Instance().Config().port; // UI shows the configured value
+    }
+    // remote input injection needs the Accessibility permission (macOS);
+    // without it mouse/keyboard events are silently dropped by the system
+    if (!InputInjector::PermissionGranted()) {
+        SetHostStatus(SDK_TR("remote.accessibilityHint"), false);
     }
     // global file-transfer progress -> transfer list
     App::Instance().FileTx().SetItemCallback([this](const FileTransfer::Item& item) {
         PostToUI(ui::UiBind(this, [this, item]() { OnItemUpdated(item); }));
     });
 
-    // LAN discovery: beacon + device list
+    // Test hook: STARDESK_AUTOCONNECT=ip:port fills the connect form and
+    // connects immediately (automated two-instance testing).
+    if (const char* ac = std::getenv("STARDESK_AUTOCONNECT")) {
+        const std::string s(ac);
+        const size_t colon = s.find(':');
+        m_remoteIpEdit->SetText(ui::StringConvert::UTF8ToT(
+            colon == std::string::npos ? s : s.substr(0, colon)));
+        if (colon != std::string::npos) {
+            m_remotePortEdit->SetText(ui::StringConvert::UTF8ToT(s.substr(colon + 1)));
+        }
+        m_remotePwdEdit->SetText(App::Instance().Config().password);
+        OnConnectClicked();
+    }
+
+    // LAN discovery: beacon + device list (advertises the bound port)
     const std::string deviceName =
         ui::StringConvert::TToUTF8(App::Instance().Config().deviceName);
-    App::Instance().Disc().Start(deviceName, App::Instance().Config().port,
+    App::Instance().Disc().Start(deviceName, m_actualPort,
         [this](const std::vector<Discovery::Device>& devices) {
             PostToUI(ui::UiBind(this, [this, devices]() {
                 std::vector<std::pair<DString, DString>> rows;
@@ -774,9 +766,11 @@ void MainWindow::OnConnectClicked()
     opt.port = (uint16_t)std::max(1, std::min(65535,
                 std::atoi(ui::StringConvert::TToUTF8(m_remotePortEdit->GetText()).c_str())));
     opt.password = m_remotePwdEdit->GetText();
-    opt.mode = m_viewPill->IsSelected() ? ConnMode::View : ConnMode::Control;
-    opt.resCode = m_res1080Pill->IsSelected() ? 2 : (m_res720Pill->IsSelected() ? 1 : 0);
-    opt.fps = m_fps60Pill->IsSelected() ? 60 : (m_fps24Pill->IsSelected() ? 24 : 30);
+    // advanced options are configured in the settings window (persisted)
+    const AppConfig& cfg = App::Instance().Config();
+    opt.mode = cfg.viewOnly ? ConnMode::View : ConnMode::Control;
+    opt.resCode = cfg.wantRes;
+    opt.fps = cfg.wantFps;
 
     if (opt.host.empty() || opt.port == 0) {
         m_connStatusLabel->SetText(SDK_TR("client.networkError"));
@@ -854,7 +848,7 @@ void MainWindow::OnSendFileClicked()
         HostSessionPtr s = m_host->FirstConnectedSession();
         if (s) {
             FileSendWindow* w = new FileSendWindow(s->PeerIp(),
-                                                   (uint16_t)(App::Instance().Config().port + 1),
+                                                   App::Instance().FileTx().BoundPort(),
                                                    s->Token());
             w->CreateWnd(this, ui::WindowCreateParam(_T("StarDesk"), true));
             w->ShowWindow(ui::kSW_SHOW_NORMAL);
@@ -1010,10 +1004,10 @@ void MainWindow::SetLocalAddresses(const std::vector<DString>& ips)
             text += _T("\n");
         }
         text += ips[i];
-        text += ui::StringUtil::Printf(_T(" : %d"), (int)App::Instance().Config().port);
+        text += ui::StringUtil::Printf(_T(" : %d"), (int)m_actualPort);
     }
     if (text.empty()) {
-        text = ui::StringUtil::Printf(_T("127.0.0.1 : %d"), (int)App::Instance().Config().port);
+        text = ui::StringUtil::Printf(_T("127.0.0.1 : %d"), (int)m_actualPort);
     }
     m_addrLabel->SetText(text);
 }
@@ -1095,14 +1089,8 @@ void MainWindow::ApplyLanguage()
     m_manualAcceptPill->SetText(SDK_TR("host.manualAccept"));
     m_mirrorPill->SetText(SDK_TR("host.shareMirror"));
     m_extendPill->SetText(SDK_TR("host.shareExtend"));
-    m_controlPill->SetText(SDK_TR("client.modeControl"));
-    m_viewPill->SetText(SDK_TR("client.modeView"));
-    m_resOriginalPill->SetText(SDK_TR("client.resOriginal"));
-    m_res720Pill->SetText(SDK_TR("client.res720p"));
-    m_res1080Pill->SetText(SDK_TR("client.res1080p"));
-    m_fps24Pill->SetText(SDK_TR("client.fps24"));
-    m_fps30Pill->SetText(SDK_TR("client.fps30"));
-    m_fps60Pill->SetText(SDK_TR("client.fps60"));
+    m_connTitleLabel->SetText(SDK_TR("client.title"));
+    m_settingsBtn->SetIconToolTip(SDK_TR("settings.openSettings"));
     m_connectBtn->SetText(SDK_TR("client.connect"));
 
     // status lines (re-render with the current language)

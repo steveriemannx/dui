@@ -42,8 +42,9 @@ void FillRandom(uint8_t* out, size_t len)
 
 // ---------------------------------------------------------------- HostSession
 
-HostSession::HostSession(Socket::sock_t fd, std::string peerIp, const Callbacks& cb)
-    : m_fd(fd), m_peerIp(std::move(peerIp)), m_cb(cb)
+HostSession::HostSession(Socket::sock_t fd, std::string peerIp, uint16_t filePort,
+                         const Callbacks& cb)
+    : m_fd(fd), m_peerIp(std::move(peerIp)), m_filePort(filePort), m_cb(cb)
 {
 }
 
@@ -218,7 +219,7 @@ void HostSession::RunImpl()
 
     PayloadWriter w2;
     w2.PutU8((uint8_t)(ok ? AuthResultCode::Ok : AuthResultCode::WrongPassword));
-    w2.PutU16(cfg.port + 1);
+    w2.PutU16(m_filePort);
     w2.PutBytes(m_token, sizeof(m_token));
     SendFrame(m_threadFd, MsgType::AuthResult, w2.Result());
 
@@ -249,6 +250,19 @@ void HostSession::RunImpl()
         m_usingTestPattern = true;
         m_testPattern = std::make_unique<TestPatternSource>();
         // logical size will be set by the first encoded frame
+        // surface the failure on the host status bar (permission hint when
+        // the cause is TCC, otherwise the capturer error verbatim)
+        if (m_cb.onStatus) {
+            const std::string why = m_capturer->GetError();
+            if (why.find("permission") != std::string::npos) {
+                m_cb.onStatus(SDK_TR("remote.permissionHint"), false);
+            }
+            else {
+                const std::string fmt = ui::StringConvert::TToUTF8(SDK_TR("host.captureError"));
+                const std::string text = ui::StringUtil::Printf(fmt.c_str(), why.c_str());
+                m_cb.onStatus(ui::StringConvert::UTF8ToT(text), false);
+            }
+        }
     }
     m_captureThread = std::thread(&HostSession::CaptureLoop, this);
 
@@ -342,8 +356,34 @@ void HostSession::HandleInputEvent(const std::vector<uint8_t>& payload)
 
     const int lw = m_logicalW.load();
     const int lh = m_logicalH.load();
-    const double nx = lw > 0 ? (double)xNorm / 65535.0 : 0.0;
-    const double ny = lh > 0 ? (double)yNorm / 65535.0 : 0.0;
+    if (lw <= 0 || lh <= 0) {
+        // screen size not known yet (capture still starting): a normalized
+        // position cannot be mapped - dropping avoids moving the cursor to
+        // the screen origin
+        return;
+    }
+    const double nx = (double)xNorm / 65535.0;
+    const double ny = (double)yNorm / 65535.0;
+
+    // same-machine feedback guard: never inject into a StarDesk window
+    // (any instance). A click/key aimed into the remote-view window would
+    // land on it and re-trigger an input event (infinite loop); the windows
+    // are excluded from the capture anyway, so they are invisible in the
+    // stream and there is nothing meaningful to operate there.
+    if (m_capturer) {
+        const int pw = m_capturer->GetWidth();   // physical points
+        const int ph = m_capturer->GetHeight();
+        const int ox = m_capturer->GetOriginX();
+        const int oy = m_capturer->GetOriginY();
+        if (kind <= 2) { // mouse move / button / wheel carry a position
+            if (InputInjector::IsOwnWindowAt(ox + nx * pw, oy + ny * ph)) {
+                return;
+            }
+        }
+        else if (InputInjector::IsOwnAppFocused()) {
+            return;
+        }
+    }
 
     switch (kind) {
     case 0: // mouse move
@@ -395,14 +435,25 @@ void HostSession::CaptureLoop()
 {
     FrameEncoder encoder(75);
     const int fps = std::max(1, std::min(60, m_peerFps.load()));
-    const int periodMs = std::max(20, 1000 / fps);
+    const int periodMs = std::max(10, 1000 / fps);
     const int resTargetW = m_peerRes.load() == 1 ? 1280 : (m_peerRes.load() == 2 ? 1920 : 0);
     const int resTargetH = m_peerRes.load() == 1 ? 720 : (m_peerRes.load() == 2 ? 1080 : 0);
+    int lastTargetW = -1, lastTargetH = -1;
 
     auto nextTick = std::chrono::steady_clock::now();
     int cursorTick = 0;
     while (m_captureRunning) {
         nextTick += std::chrono::milliseconds(periodMs);
+
+        // switch the SCStream to the peer's requested resolution once
+        // (aspect-preserving; the downscale below then becomes a no-op)
+        if (resTargetW != lastTargetW || resTargetH != lastTargetH) {
+            lastTargetW = resTargetW;
+            lastTargetH = resTargetH;
+            if (m_capturer) {
+                m_capturer->SetTargetResolution(resTargetW, resTargetH);
+            }
+        }
 
         CaptureFrame frame;
         bool got = m_capturer && m_capturer->Capture(frame);
@@ -446,6 +497,9 @@ void HostSession::CaptureLoop()
                     break; // socket is congested; drop the rest of this batch
                 }
             }
+            // end-of-frame marker: the client renders only on this, so a
+            // frame never mixes tiles from two batches (seams on fast scroll)
+            SendFrameLocked(MsgType::ScreenEnd, {});
         }
 
         // cursor position at ~20fps (normalized to the logical screen)
@@ -455,14 +509,19 @@ void HostSession::CaptureLoop()
             if (m_capturer && InputInjector::GetCursorPos(cx, cy)) {
                 const int ox = m_capturer->GetOriginX();
                 const int oy = m_capturer->GetOriginY();
-                const int lw = m_logicalW.load();
-                const int lh = m_logicalH.load();
-                if (lw > 0 && lh > 0) {
+                // GetCursorPos returns PHYSICAL point coordinates; the
+                // normalized position must use the physical screen size too
+                // (the logical frame size is the captured pixel size, e.g.
+                // 2x Retina - dividing by it would put the cursor at half
+                // the true distance)
+                const int pw = m_capturer->GetWidth();
+                const int ph = m_capturer->GetHeight();
+                if (pw > 0 && ph > 0) {
                     PayloadWriter wc;
                     wc.PutU16((uint16_t)std::max(0, std::min(65535,
-                        (int)((double)(cx - ox) / lw * 65535.0))));
+                        (int)((double)(cx - ox) / pw * 65535.0))));
                     wc.PutU16((uint16_t)std::max(0, std::min(65535,
-                        (int)((double)(cy - oy) / lh * 65535.0))));
+                        (int)((double)(cy - oy) / ph * 65535.0))));
                     wc.PutU8(1); // visible
                     SendFrameLocked(MsgType::CursorPos, wc.Result());
                 }
@@ -496,13 +555,24 @@ bool HostService::Start(uint16_t port, const HostSession::Callbacks& cb)
         return true;
     }
     m_cb = cb;
-    m_port = port;
+    // bind the host port; when it is taken (e.g. a second StarDesk instance
+    // on this machine) fall back to the next free port in a small range so
+    // both instances can host at once. Port() reports what was bound.
+    m_port = 0;
     m_server = std::make_unique<TcpServer>();
-    const bool started = m_server->Start(port, [this](Socket::sock_t fd, const std::string& ip) {
-        OnAccept(fd, ip);
-    });
-    m_running = started;
-    return started;
+    for (int i = 0; i < 10 && m_port == 0; ++i) {
+        const uint32_t p = (uint32_t)port + (uint32_t)i;
+        if (p > 65535) {
+            break;
+        }
+        if (m_server->Start((uint16_t)p, [this](Socket::sock_t fd, const std::string& ip) {
+                OnAccept(fd, ip);
+            })) {
+            m_port = (uint16_t)p;
+        }
+    }
+    m_running = m_port != 0;
+    return m_running;
 }
 
 void HostService::Stop()
@@ -549,7 +619,10 @@ bool HostService::IsRunning() const
 
 void HostService::OnAccept(Socket::sock_t fd, const std::string& peerIp)
 {
-    HostSessionPtr session = std::make_shared<HostSession>(fd, peerIp, m_cb);
+    // the advertised file port is the app's actual bound file port
+    // (HostService may have fallen back to a free port on this machine)
+    HostSessionPtr session =
+        std::make_shared<HostSession>(fd, peerIp, App::Instance().FileTx().BoundPort(), m_cb);
     session->Start();
     {
         std::lock_guard<std::mutex> lock(m_mutex);

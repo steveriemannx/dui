@@ -58,6 +58,7 @@ const Entry kEntries[] = {
     E("host.connected", "已连接", "已連接", "Connected", "接続済み", "연결됨", "Verbunden", "Connecté", "Подключено"),
     E("host.sessionOf", "%s 正在连接本机", "%s 正在連接本機", "%s is connecting", "%s が接続中", "%s 연결 중", "%s verbindet sich", "%s se connecte", "%s подключается"),
     E("host.fileSaveDir", "文件接收目录", "文件接收目錄", "Receive Folder", "受信フォルダ", "받는 폴더", "Empfangsordner", "Dossier de réception", "Папка приема"),
+    E("host.captureError", "画面采集失败,已切换为测试画面:%s", "畫面採集失敗,已切換為測試畫面:%s", "Screen capture failed, switched to test pattern: %s", "画面の取得に失敗しました。テストパターンに切り替えました: %s", "화면 캡처 실패, 테스트 패턴으로 전환됨: %s", "Bildschirmaufnahme fehlgeschlagen, Testbild aktiviert: %s", "Échec de la capture, image de test activée : %s", "Ошибка захвата экрана, переключено на тестовое изображение: %s"),
 
     // ---- Client (right panel) ----
     E("client.title", "远程控制", "遠程控制", "Remote Control", "リモートコントロール", "원격 제어", "Fernsteuerung", "Contrôle à distance", "Удаленное управление"),
@@ -73,6 +74,9 @@ const Entry kEntries[] = {
     E("client.res720p", "720p", "720p", "720p", "720p", "720p", "720p", "720p", "720p"),
     E("client.res1080p", "1080p", "1080p", "1080p", "1080p", "1080p", "1080p", "1080p", "1080p"),
     E("client.fps", "帧率", "幀率", "Frame rate", "フレームレート", "프레임 속도", "Bildrate", "Images/s", "Частота кадров"),
+    E("client.fps24", "24 帧", "24 幀", "24 fps", "24 fps", "24fps", "24 fps", "24 i/s", "24 кадр/с"),
+    E("client.fps30", "30 帧", "30 幀", "30 fps", "30 fps", "30fps", "30 fps", "30 i/s", "30 кадр/с"),
+    E("client.fps60", "60 帧", "60 幀", "60 fps", "60 fps", "60fps", "60 fps", "60 i/s", "60 кадр/с"),
     E("client.connect", "连接", "連接", "Connect", "接続", "연결", "Verbinden", "Connecter", "Подключить"),
     E("client.disconnect", "断开", "斷開", "Disconnect", "切断", "연결 끊기", "Trennen", "Déconnecter", "Отключить"),
     E("client.connecting", "正在连接…", "正在連接…", "Connecting…", "接続中…", "연결 중…", "Verbinde…", "Connexion…", "Подключение…"),
@@ -134,6 +138,7 @@ const Entry kEntries[] = {
     E("file.busy", "正在处理其他传输,请稍候", "正在處理其他傳輸,請稍候", "Another transfer in progress, please wait", "他の転送を処理中です。お待ちください", "다른 전송 처리 중, 잠시 기다리세요", "Andere Übertragung läuft, bitte warten", "Autre transfert en cours, veuillez patienter", "Идет другая передача, подождите"),
 
     // ---- Settings ----
+    E("settings.title", "连接设置", "連接設置", "Connection Settings", "接続設定", "연결 설정", "Verbindungseinstellungen", "Paramètres de connexion", "Настройки подключения"),
     E("settings.theme", "主题", "主題", "Theme", "テーマ", "테마", "Design", "Thème", "Тема"),
     E("settings.dark", "暗色", "暗色", "Dark", "ダーク", "어두운", "Dunkel", "Sombre", "Темная"),
     E("settings.light", "亮色", "亮色", "Light", "ライト", "밝은", "Hell", "Clair", "Светлая"),

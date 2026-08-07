@@ -90,20 +90,14 @@ private:
     ui::VBox* m_panelRemote = nullptr;
     ui::VBox* m_panelFile = nullptr;
 
-    // connect panel
+    // connect panel (advanced options live in SettingsWindow)
     ui::VBox* m_deviceList = nullptr;
     ThemeLabel* m_deviceEmptyLabel = nullptr;
     ui::RichEdit* m_remoteIpEdit = nullptr;
     ui::RichEdit* m_remotePortEdit = nullptr;
     ui::RichEdit* m_remotePwdEdit = nullptr;
-    PillButton* m_controlPill = nullptr;
-    PillButton* m_viewPill = nullptr;
-    PillButton* m_resOriginalPill = nullptr;
-    PillButton* m_res720Pill = nullptr;
-    PillButton* m_res1080Pill = nullptr;
-    PillButton* m_fps24Pill = nullptr;
-    PillButton* m_fps30Pill = nullptr;
-    PillButton* m_fps60Pill = nullptr;
+    ThemeLabel* m_connTitleLabel = nullptr;
+    IconButton* m_settingsBtn = nullptr;
     AccentButton* m_connectBtn = nullptr;
     ThemeLabel* m_connStatusLabel = nullptr;
 
@@ -120,6 +114,9 @@ private:
     // services
     std::unique_ptr<HostService> m_host;
     std::unique_ptr<ClientSession> m_client;
+    /** Port the host actually bound (may differ from the configured port
+     *  when that one is taken, e.g. by a second instance on this machine). */
+    uint16_t m_actualPort = 0;
 
     // list of edits needing theme background refresh
     std::vector<ui::RichEdit*> m_edits;

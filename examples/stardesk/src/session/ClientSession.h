@@ -42,14 +42,22 @@ public:
         /** UI thread (posted): state transition, including failures.
          *  text is the human-readable state/error in the current language. */
         std::function<void(State state, const DString& text)> onState;
-        /** Session thread: a new decoded frame is available (snapshot copy).
-         *  cursorXN/YN are the remote cursor position normalized (0..65535),
-         *  or -1 when no cursor info arrived yet. */
-        std::function<void(int w, int h, const std::vector<uint8_t>& rgba,
-                           int cursorXN, int cursorYN)> onFrame;
+        /** Session thread: a new decoded frame is available. The callback
+         *  is a SIGNAL (no payload): latest-wins rendering - the UI fetches
+         *  the newest frame via TakeLatestFrame() and intermediate frames
+         *  are dropped when the UI cannot keep up, so a slow renderer never
+         *  blocks the receive thread (which would cap the stream rate). */
+        std::function<void()> onFrame;
         /** Session thread: ~1/s stream statistics. */
         std::function<void(int fps, int latencyMs)> onStats;
     };
+
+    /** Latest complete decoded frame (latest-wins): the UI calls this from
+     *  the posted onFrame task; returns false when no newer frame exists.
+     *  The pending flag is cleared so the session posts again for the next
+     *  frame. */
+    bool TakeLatestFrame(int& w, int& h, std::vector<uint8_t>& rgba,
+                         int& cursorXN, int& cursorYN);
 
     explicit ClientSession(const Options& opt, Callbacks cb);
     ~ClientSession();
@@ -95,6 +103,15 @@ private:
     std::string m_lastError;
     std::string m_remoteName;
     uint16_t m_filePort = 0;
+
+    // latest-wins frame delivery (session thread writes, UI thread takes)
+    std::mutex m_latestMutex;
+    bool m_latestPending = false;
+    std::vector<uint8_t> m_latestFrame;
+    int m_latestW = 0;
+    int m_latestH = 0;
+    int m_latestCxn = -1;
+    int m_latestCyn = -1;
     uint8_t m_token[32] = {0};
     ConnMode m_mode = ConnMode::Control;
     int m_peerFps = 0;
@@ -120,7 +137,31 @@ private:
 
     void HandleScreenInit(const Frame& frame);
     void HandleScreenTile(const Frame& frame);
+    void HandleScreenEnd(const Frame& frame);
     void HandleCursorPos(const Frame& frame);
+    void QueueTile(int x, int y, std::vector<uint8_t> png);
+
+    // ---- parallel tile decode (worker pool, like the host encoder) ----
+    struct DecodeJob {
+        int x = 0;
+        int y = 0;
+        std::vector<uint8_t> png;
+    };
+    void DecodeWorkerMain();
+    void StartDecodeWorkers();
+    void StopDecodeWorkers();
+
+    std::vector<std::thread> m_decodeWorkers;
+    std::mutex m_decodeMutex;
+    std::condition_variable m_decodeCv;
+    std::condition_variable m_decodeDoneCv;
+    std::vector<DecodeJob> m_decodeJobs;
+    size_t m_decodePos = 0;
+    int m_decodeLeft = 0;
+    bool m_decodeShutdown = false;
+    uint8_t* m_decodeFrame = nullptr; // points into m_frame during a batch
+    int m_decodeW = 0;
+    int m_decodeH = 0;
     void NotifyFrame();
     void UpdateStats();
 };

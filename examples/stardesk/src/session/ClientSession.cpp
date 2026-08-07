@@ -15,11 +15,69 @@ namespace sdk {
 ClientSession::ClientSession(const Options& opt, Callbacks cb)
     : m_opt(opt), m_cb(std::move(cb)), m_mode(opt.mode)
 {
+    StartDecodeWorkers();
 }
 
 ClientSession::~ClientSession()
 {
     Stop();
+    StopDecodeWorkers();
+}
+
+void ClientSession::StartDecodeWorkers()
+{
+    int n = (int)std::thread::hardware_concurrency();
+    if (n < 1) {
+        n = 1;
+    }
+    if (n > 4) {
+        n = 4;
+    }
+    for (int i = 0; i < n; ++i) {
+        m_decodeWorkers.emplace_back(&ClientSession::DecodeWorkerMain, this);
+    }
+}
+
+void ClientSession::StopDecodeWorkers()
+{
+    {
+        std::lock_guard<std::mutex> lock(m_decodeMutex);
+        m_decodeShutdown = true;
+    }
+    m_decodeCv.notify_all();
+    for (std::thread& t : m_decodeWorkers) {
+        if (t.joinable()) {
+            t.join();
+        }
+    }
+    m_decodeWorkers.clear();
+}
+
+void ClientSession::DecodeWorkerMain()
+{
+    for (;;) {
+        DecodeJob job;
+        {
+            std::unique_lock<std::mutex> lock(m_decodeMutex);
+            m_decodeCv.wait(lock, [this]() {
+                return m_decodeShutdown || m_decodePos < m_decodeJobs.size();
+            });
+            if (m_decodeShutdown) {
+                return;
+            }
+            job = std::move(m_decodeJobs[m_decodePos++]);
+        }
+        // disjoint tile regions: blit without the frame mutex
+        FrameDecoder::DecodeTileInto(job.png.data(), job.png.size(),
+                                     m_decodeFrame, m_decodeW, m_decodeH,
+                                     job.x, job.y);
+        {
+            std::lock_guard<std::mutex> lock(m_decodeMutex);
+            if (--m_decodeLeft == 0) {
+                m_decodeDoneCv.notify_one();
+            }
+        }
+    }
 }
 
 void ClientSession::Start()
@@ -243,6 +301,10 @@ void ClientSession::RunImpl()
             HandleScreenTile(frame);
             break;
         }
+        case MsgType::ScreenEnd: {
+            HandleScreenEnd(frame);
+            break;
+        }
         case MsgType::CursorPos: {
             HandleCursorPos(frame);
             break;
@@ -298,6 +360,17 @@ void ClientSession::HandleScreenInit(const Frame& frame)
         m_frame.assign((size_t)w * h * 4, 0xFF);
         m_frameDirty = true;
     }
+    {
+        // arm the decode batch (tiles blit into m_frame; realloc only here,
+        // before any tile of the batch arrives)
+        std::lock_guard<std::mutex> lock(m_decodeMutex);
+        m_decodeFrame = m_frame.data();
+        m_decodeW = (int)w;
+        m_decodeH = (int)h;
+        m_decodeJobs.clear();
+        m_decodePos = 0;
+        m_decodeLeft = 0;
+    }
     NotifyFrame();
 }
 
@@ -313,14 +386,41 @@ void ClientSession::HandleScreenTile(const Frame& frame)
     if (!r.Ok() || webp.empty()) {
         return;
     }
+    QueueTile(x, y, std::move(webp));
+    // no render here: the frame is only complete once the host sends
+    // ScreenEnd, so a frame never mixes tiles from two batches (seams)
+}
+
+void ClientSession::QueueTile(int x, int y, std::vector<uint8_t> png)
+{
+    // push the tile to the decode pool; the blit happens on a worker
+    DecodeJob job;
+    job.x = x;
+    job.y = y;
+    job.png = std::move(png);
+    {
+        std::lock_guard<std::mutex> lock(m_decodeMutex);
+        if (m_decodeFrame == nullptr) {
+            return; // no frame yet (ScreenInit not seen)
+        }
+        m_decodeJobs.push_back(std::move(job));
+        ++m_decodeLeft;
+    }
+    m_decodeCv.notify_one();
+}
+
+void ClientSession::HandleScreenEnd(const Frame& frame)
+{
+    (void)frame;
+    // wait for all tiles of this batch to be decoded+blitted, then render
+    // the complete frame
+    {
+        std::unique_lock<std::mutex> lock(m_decodeMutex);
+        m_decodeDoneCv.wait(lock, [this]() { return m_decodeLeft == 0; });
+    }
     {
         std::lock_guard<std::mutex> lock(m_frameMutex);
-        if (m_frameW <= 0 || m_frameH <= 0) {
-            return;
-        }
-        FrameDecoder::DecodeTileInto(webp.data(), webp.size(),
-                                     m_frame.data(), m_frameW, m_frameH, x, y);
-        m_frameDirty = true;
+        m_frameDirty = true; // batch complete - NotifyFrame may render it
     }
     NotifyFrame();
 }
@@ -343,9 +443,11 @@ void ClientSession::HandleCursorPos(const Frame& frame)
 
 void ClientSession::NotifyFrame()
 {
-    // coalesce + throttle: tiles arrive per-batch, the UI refreshes at ~30fps
+    // coalesce + throttle: tiles arrive per-batch; refresh at the negotiated
+    // frame rate (up to 60fps - the host paces to the same rate)
     const auto now = std::chrono::steady_clock::now();
-    if (now - m_lastNotifyAt < std::chrono::milliseconds(33)) {
+    const int notifyMs = 1000 / std::max(1, std::min(60, m_opt.fps));
+    if (now - m_lastNotifyAt < std::chrono::milliseconds(notifyMs)) {
         return;
     }
     m_lastNotifyAt = now;
@@ -363,15 +465,51 @@ void ClientSession::NotifyFrame()
         cxn = m_cursorXN;
         cyn = m_cursorYN;
     }
-    Callbacks cb;
+    // latest-wins: store the newest frame; post the UI task only when none
+    // is pending, so a slow renderer drops intermediate frames instead of
+    // blocking this (receive) thread
+    bool needPost = false;
     {
-        std::lock_guard<std::mutex> lock(m_cbMutex);
-        cb = m_cb;
+        std::lock_guard<std::mutex> lock(m_latestMutex);
+        if (w > 0 && h > 0) {
+            m_latestW = w;
+            m_latestH = h;
+            m_latestFrame = std::move(snapshot);
+            m_latestCxn = cxn;
+            m_latestCyn = cyn;
+            if (!m_latestPending) {
+                m_latestPending = true;
+                needPost = true;
+            }
+        }
     }
-    if (cb.onFrame && w > 0 && h > 0) {
-        cb.onFrame(w, h, snapshot, cxn, cyn);
+    if (needPost) {
+        Callbacks cb;
+        {
+            std::lock_guard<std::mutex> lock(m_cbMutex);
+            cb = m_cb;
+        }
+        if (cb.onFrame) {
+            cb.onFrame();
+        }
     }
     UpdateStats();
+}
+
+bool ClientSession::TakeLatestFrame(int& w, int& h, std::vector<uint8_t>& rgba,
+                                    int& cursorXN, int& cursorYN)
+{
+    std::lock_guard<std::mutex> lock(m_latestMutex);
+    if (m_latestFrame.empty()) {
+        return false;
+    }
+    w = m_latestW;
+    h = m_latestH;
+    rgba.swap(m_latestFrame); // move the pixels out (UI owns them now)
+    cursorXN = m_latestCxn;
+    cursorYN = m_latestCyn;
+    m_latestPending = false; // session may post again for the next frame
+    return true;
 }
 
 void ClientSession::UpdateStats()

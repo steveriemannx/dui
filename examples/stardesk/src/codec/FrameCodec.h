@@ -3,7 +3,11 @@
 
 #include "dui/dui.h"
 
+#include <atomic>
+#include <condition_variable>
 #include <cstdint>
+#include <mutex>
+#include <thread>
 #include <vector>
 
 namespace sdk {
@@ -25,6 +29,7 @@ struct EncodedTile {
 class FrameEncoder {
 public:
     FrameEncoder(int quality = 75);
+    ~FrameEncoder();
 
     /** Feed a new full frame (RGBA). Changed tiles are appended to `out`.
      *  Returns true when the frame size changed (caller must send ScreenInit
@@ -43,7 +48,18 @@ public:
                           std::vector<uint8_t>& dst, int& dstW, int& dstH);
 
 private:
-    void EncodeTile(int tx, int ty, std::vector<EncodedTile>& out);
+    // one tile hashed + compared + (if changed) PNG-encoded by a worker
+    struct TileJob {
+        int x0 = 0;
+        int y0 = 0;
+        int tw = 0;
+        int th = 0;
+        size_t hashIdx = 0;
+    };
+
+    void WorkerMain(size_t workerId);
+    void StartWorkers();
+    void StopWorkers();
 
     static const int kTile = 64;
     int m_quality = 75;
@@ -53,7 +69,21 @@ private:
     std::vector<uint64_t> m_hashes;   // per-tile hash of the previous frame
     int m_tilesX = 0;
     int m_tilesY = 0;
-    std::vector<uint8_t> m_tileRgba;  // scratch for one tile
+
+    // parallel tile encoding state (see EncodeFrame)
+    std::vector<std::thread> m_workers;
+    std::vector<std::vector<uint8_t>> m_workerScratch; // per-worker 64x64 buffer
+    std::mutex m_jobMutex;
+    std::condition_variable m_jobCv;   // new jobs available
+    std::condition_variable m_doneCv;  // all jobs finished
+    std::vector<TileJob> m_jobs;
+    size_t m_jobPos = 0;
+    int m_jobsLeft = 0;
+    bool m_shutdown = false;
+    const uint8_t* m_frame = nullptr;  // frame being encoded (read-only)
+    int m_frameW = 0;
+    int m_frameH = 0;
+    std::vector<EncodedTile> m_results; // tiles produced by the workers
 };
 
 /** Client-side decoder helpers: PNG -> RGBA blit into a frame buffer. */

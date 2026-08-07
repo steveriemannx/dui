@@ -107,6 +107,9 @@ bool InputInjector::PermissionGranted()
     return GetDisplay() != nullptr;
 }
 
+bool InputInjector::IsOwnWindowAt(double, double) { return false; }
+bool InputInjector::IsOwnAppFocused() { return false; }
+
 std::string InputInjector::PermissionHint()
 {
     return GetDisplay() == nullptr ? "no X display" : std::string();

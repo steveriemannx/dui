@@ -18,6 +18,7 @@ struct Palette {
     ui::UiColor textMain;      // primary text
     ui::UiColor textSub;       // secondary text
     ui::UiColor textInvert;    // text drawn on accent
+    ui::UiColor prompt;        // placeholder text inside inputs
     ui::UiColor accent;        // brand color (primary buttons, selection)
     ui::UiColor accentHover;
     ui::UiColor accentPressed;

@@ -261,10 +261,14 @@ void RemoteWindow::OnInitWindow()
     // ---- wire the session ----
     if (m_session) {
         ClientSession::Callbacks cb;
-        cb.onFrame = [this](int w, int h, const std::vector<uint8_t>& rgba,
-                            int cxn, int cyn) {
-            PostToUI(ui::UiBind(this, [this, w, h, rgba, cxn, cyn]() {
-                OnFrameReady(w, h, rgba, cxn, cyn);
+        cb.onFrame = [this]() {
+            // latest-wins: fetch the newest complete frame when the UI runs
+            PostToUI(ui::UiBind(this, [this]() {
+                int w = 0, h = 0, cxn = -1, cyn = -1;
+                std::vector<uint8_t> rgba;
+                if (m_session && m_session->TakeLatestFrame(w, h, rgba, cxn, cyn)) {
+                    OnFrameReady(w, h, rgba, cxn, cyn);
+                }
             }));
         };
         cb.onStats = [this](int fps, int latencyMs) {

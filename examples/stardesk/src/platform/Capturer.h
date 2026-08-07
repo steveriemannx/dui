@@ -35,6 +35,12 @@ public:
     bool Start(bool extend);
     void Stop();
 
+    /** Request an output resolution (0x0 = native). On macOS the capture
+     *  switches to an SCStream configured to the largest aspect-preserving
+     *  size that fits the box; used to capture at 720p/1080p directly
+     *  instead of downscaling a full-resolution frame. */
+    void SetTargetResolution(int width, int height);
+
     /** Grab one frame; returns false on transient failure (caller retries).
      *  On success `out` holds RGBA of GetWidth()xGetHeight(). */
     bool Capture(CaptureFrame& out);
@@ -53,8 +59,11 @@ public:
     /** True when the platform supports capturing the screen at all. */
     static bool PlatformSupported();
 
-private:
+    // Platform implementation state (defined in the platform .mm/.cpp).
+    // Public so the platform implementation can define and use it.
     struct Impl;
+
+private:
     std::unique_ptr<Impl> m_impl;
 };
 

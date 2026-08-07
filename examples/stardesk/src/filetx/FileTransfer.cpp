@@ -64,11 +64,23 @@ void FileTransfer::Start(uint16_t port, const uint8_t token[32], ItemCb cb)
         std::memcpy(m_token, token, 32);
         m_cb = std::move(cb);
     }
+    // bind the file port; when it is taken (e.g. a second StarDesk instance
+    // on this machine) fall back to the next free port in a small range so
+    // both instances can receive files at once
     m_server = std::make_unique<TcpServer>();
-    const bool started = m_server->Start(port, [this](Socket::sock_t fd, const std::string& ip) {
-        OnAccept(fd, ip);
-    });
-    m_running = started;
+    m_port = 0;
+    for (int i = 0; i < 10 && m_port == 0; ++i) {
+        const uint32_t p = (uint32_t)port + (uint32_t)i;
+        if (p > 65535) {
+            break;
+        }
+        if (m_server->Start((uint16_t)p, [this](Socket::sock_t fd, const std::string& ip) {
+                OnAccept(fd, ip);
+            })) {
+            m_port = (uint16_t)p;
+        }
+    }
+    m_running = m_port != 0;
 }
 
 void FileTransfer::SetSessionToken(const uint8_t token[32])

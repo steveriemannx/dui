@@ -119,6 +119,12 @@ bool Capturer::Capture(CaptureFrame& out)
     return true;
 }
 
+// The SCStream-based resolution switching is macOS-only; other platforms
+// capture at the native resolution and the host downscales when needed.
+void Capturer::SetTargetResolution(int /*width*/, int /*height*/)
+{
+}
+
 int Capturer::GetWidth() const { return m_impl->width; }
 int Capturer::GetHeight() const { return m_impl->height; }
 int Capturer::GetOriginX() const { return m_impl->originX; }

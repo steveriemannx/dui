@@ -80,6 +80,12 @@ int ToInt(const DString& s, int def)
 
 ui::FilePath AppConfig::GetFilePath()
 {
+    // Test hook: STARDESK_CONF points at an alternate config file so two
+    // instances can run on one machine without overwriting each other
+    // (e.g. `STARDESK_CONF=~/.stardesk-client.conf stardesk`).
+    if (const char* p = std::getenv("STARDESK_CONF")) {
+        return ui::FilePath(ui::StringConvert::UTF8ToT(p));
+    }
     ui::FilePath p(GetHomeDir());
     if (p.IsExistsDirectory()) {
         p.JoinFilePath(ui::FilePath(_T(".stardesk.conf")));
@@ -137,6 +143,7 @@ void AppConfig::Load()
         language = getInt("language", 0);
         wantFps = getInt("want_fps", 30);
         wantRes = getInt("want_res", 0);
+        viewOnly = getInt("view_only", 0) != 0;
         deviceName = getStr("device_name");
     }
 
@@ -148,6 +155,15 @@ void AppConfig::Load()
     }
     if (language < 0 || language >= Language::Count()) {
         language = 0;
+    }
+
+    // Test hook: STARDESK_PORT overrides the listen port so two instances can
+    // run on one machine (e.g. `STARDESK_PORT=7458 stardesk` as a client).
+    if (const char* sp = std::getenv("STARDESK_PORT")) {
+        const int p = std::atoi(sp);
+        if (p >= 1 && p <= 65535) {
+            port = (uint16_t)p;
+        }
     }
 }
 
@@ -169,6 +185,7 @@ void AppConfig::Save() const
     add(ui::StringUtil::Printf(_T("language=%d\n"), language));
     add(ui::StringUtil::Printf(_T("want_fps=%d\n"), wantFps));
     add(ui::StringUtil::Printf(_T("want_res=%d\n"), wantRes));
+    add(ui::StringUtil::Printf(_T("view_only=%d\n"), viewOnly ? 1 : 0));
     add(_T("device_name=")); add(deviceName); add(_T("\n"));
     ui::FileUtil::WriteFileData(path, data);
 }

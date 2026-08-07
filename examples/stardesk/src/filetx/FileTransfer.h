@@ -60,9 +60,13 @@ public:
     FileTransfer(const FileTransfer&) = delete;
     FileTransfer& operator=(const FileTransfer&) = delete;
 
-    /** Listen on the file port and accept incoming transfers. */
+    /** Listen on the file port (falls back to port+1..port+9 when taken) and
+     *  accept incoming transfers; BoundPort() reports what was bound. */
     void Start(uint16_t port, const uint8_t token[32], ItemCb cb);
     void Stop();
+
+    /** The file port actually bound (0 when Start() found no free port). */
+    uint16_t BoundPort() const { return m_port; }
 
     /** Session token for validating incoming senders; refreshed after each
      *  successful auth on the main channel. */
@@ -95,6 +99,7 @@ private:
     Socket::sock_t m_sendFd = Socket::kInvalid;
     mutable std::mutex m_mutex;
     uint8_t m_token[32] = {0};
+    uint16_t m_port = 0; // bound file port (0 = not running)
     ItemCb m_cb;
     std::map<uint32_t, Item> m_items;
     uint32_t m_nextId = 1;

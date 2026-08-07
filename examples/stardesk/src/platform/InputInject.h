@@ -30,6 +30,16 @@ public:
     static bool PermissionGranted();
     /** Human-readable permission hint for the UI. */
     static std::string PermissionHint();
+
+    /** True when a StarDesk window (any instance) is under the physical
+     *  point (x, y). The host skips injection there to break the
+     *  same-machine feedback loop: a click aimed into the remote-view
+     *  window would land on it and re-trigger an input event. Other
+     *  platforms: false. */
+    static bool IsOwnWindowAt(double x, double y);
+    /** True when a StarDesk app is the focused/frontmost app (keys would
+     *  echo back through the remote-view window). Other platforms: false. */
+    static bool IsOwnAppFocused();
 };
 
 } // namespace sdk
