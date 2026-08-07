@@ -233,6 +233,29 @@ public:
     * @param [in] nAlpha Opacity value [0, 255]. When nAlpha is 0 the window is fully transparent; when nAlpha is 255 the window is fully opaque.
     *             This parameter is used in the UpdateLayeredWindow function.
     */
+
+    /** True when the platform provides OS shadows (macOS: yes; Windows: DWM
+     *  composition enabled; other platforms: no).
+    */
+    bool IsSystemShadowSupported() const;
+
+    /** Enable/disable the OS-provided shadow (macOS NSWindow / Windows DWM);
+     *  returns false when unsupported or the native call failed.
+    */
+    bool SetSystemShadowType(NativeWindowShadowType nativeShadowType);
+
+    /** Current OS shadow state. */
+    NativeWindowShadowType GetSystemShadowType() const;
+
+    /** Re-apply the OS shadow state after the window changes (e.g. fullscreen
+     *  exit); call on the UI thread.
+    */
+    void RefreshSystemShadow();
+
+    /** Clear the window region (RGN) - required when enabling the OS shadow.
+    */
+    void ClearWindowRgnForSystemShadow();
+
     void SetLayeredWindowAlpha(int32_t nAlpha);
 
     /** Gets the window opacity (only valid when IsLayeredWindow() is true)
@@ -864,6 +887,7 @@ private:
     /** Whether it is a layered window
     */
     bool m_bIsLayeredWindow;
+    NativeWindowShadowType m_systemShadowType = NativeWindowShadowType::kShadowSystemDisabled;
 
     /** The update region of the window (needs painting)
     */

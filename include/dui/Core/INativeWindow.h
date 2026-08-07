@@ -27,6 +27,17 @@ public:
     virtual LRESULT FilterMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled) = 0;
 };
 
+/** OS-provided shadow state (macOS NSWindow / Windows DWM).
+ */
+enum class NativeWindowShadowType
+{
+    kShadowSystemDisabled   = 0,    //System shadow disabled (self-drawn shadow used instead)
+    kShadowSystemDefault    = 1,    //OS default shadow
+    kShadowSystemDoNotRound = 2,    //OS shadow, square corners
+    kShadowSystemRound      = 3,    //OS shadow, rounded corners
+    kShadowSystemSmallRound = 4,    //OS shadow, small rounded corners
+};
+
 class Control;
 
 class DUI_API INativeWindow: public virtual SupportWeakCallback
@@ -35,6 +46,19 @@ public:
     /** Get the DPI manager corresponding to this window
     */
     virtual const DpiManager& OnNativeGetDpi() const = 0;
+
+    /** True when the platform provides OS shadows (macOS: yes; Windows: DWM
+     *  composition on; other platforms: no).
+    */
+    virtual bool IsSystemShadowSupported() const = 0;
+
+    /** Enable/disable the OS-provided shadow; returns false when unsupported
+     *  or the native call failed.
+    */
+    virtual bool SetSystemShadowType(NativeWindowShadowType nativeShadowType) = 0;
+
+    /** Current OS shadow state. */
+    virtual NativeWindowShadowType GetSystemShadowType() const = 0;
 
     /** Get the size of the window shadow
     * @param [out] rcShadow Get the size of the rounded corner

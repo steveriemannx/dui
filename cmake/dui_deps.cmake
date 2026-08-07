@@ -55,9 +55,8 @@ function(dui_deps_configure)
     if(DUI_ENABLE_SDL AND NOT EXISTS "${DUI_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
         message(FATAL_ERROR
             "SDL3 source not found at ${DUI_SDL_SRC_ROOT_DIR}.\n"
-            "The automatic download failed; retry cmake configure, or download and extract\n"
-            "https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip\n"
-            "into ${DUI_SDL_SRC_ROOT_DIR} manually.\n"
+            "The automatic clone failed; retry cmake configure, or run manually:\n"
+            "  git clone --depth 1 https://github.com/libsdl-org/SDL.git ${DUI_SDL_SRC_ROOT_DIR}\n"
             "(or set -DDUI_BUILD_SDL_FROM_SOURCE=OFF and provide SDL3 yourself)")
     endif()
 
@@ -537,59 +536,42 @@ function(dui_deps_download_skia)
     message(STATUS "Skia source ready: ${DUI_SKIA_SRC_ROOT_DIR} (${_skia_version})")
 endfunction()
 
-# ---- SDL3 source zip download (idempotent; fetched at configure time, no shell scripts) ----
-# The zip is cached in third_party/downloads/ (gitignored); only the extraction temp dir is
-# removed, so a later configure re-extracts from the cached archive without re-downloading.
+# ---- SDL3 source: shallow clone (idempotent; fetched at configure time) ----
+# git clone --depth 1 of the main branch (matches nim_duilib's "clone latest";
+# --depth 1 keeps it small - no full history). SDL 3.4.14's macOS cocoa backend
+# breaks clicks on custom title-bar buttons of system-shadow (titled) windows;
+# fixed on the main branch (3.5.0+).
 function(dui_deps_download_sdl)
+    if(EXISTS "${DUI_SDL_SRC_ROOT_DIR}/.git")
+        message(STATUS "SDL3 source present (git): ${DUI_SDL_SRC_ROOT_DIR}")
+        return()
+    endif()
     if(EXISTS "${DUI_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
-        return()  # already present
+        message(STATUS "SDL3 source present: ${DUI_SDL_SRC_ROOT_DIR}")
+        return()
     endif()
 
-    set(_sdl_url "https://github.com/libsdl-org/SDL/releases/download/release-3.4.14/SDL3-3.4.14.zip")
-    set(_sdl_topdir "SDL3-3.4.14")  # the single top-level folder inside the zip
-    set(_sdl_dl_dir "${DUI_ROOT}/third_party/downloads")
-    set(_sdl_archive "${_sdl_dl_dir}/SDL3-3.4.14.zip")
-
-    file(MAKE_DIRECTORY "${_sdl_dl_dir}")
-    dui_deps_download_retry("${_sdl_url}" "${_sdl_archive}" "zip")
-
-    message(STATUS "Extracting SDL3 source...")
-    # Same approach as dui_deps_download_skia: system tools + explicit exit-code check.
-    if(EXISTS "${DUI_SDL_SRC_ROOT_DIR}")
-        file(REMOVE_RECURSE "${DUI_SDL_SRC_ROOT_DIR}")  # leftover (e.g. empty submodule dir)
-    endif()
-    set(_sdl_tmp_dir "${_sdl_dl_dir}/extract")
+    set(_sdl_tmp_dir "${DUI_SDL_SRC_ROOT_DIR}.tmp")
     file(REMOVE_RECURSE "${_sdl_tmp_dir}")
-    file(MAKE_DIRECTORY "${_sdl_tmp_dir}")
-    if(WIN32)
-        # Windows 10 1803+ ships tar.exe (bsdtar), which reads zip archives.
-        # bsdtar -C requires the target dir to exist, so create it first.
-        file(MAKE_DIRECTORY "${DUI_SDL_SRC_ROOT_DIR}")
+
+    set(_attempt 0)
+    while(_attempt LESS 3)
+        math(EXPR _attempt "${_attempt}+1")
+        message(STATUS "Shallow-cloning SDL3 (attempt ${_attempt}/3)...")
         execute_process(
-            COMMAND tar -xf "${_sdl_archive}" --strip-components=1 -C "${DUI_SDL_SRC_ROOT_DIR}"
-            RESULT_VARIABLE _sdl_extract_result
-        )
-    else()
-        # unzip is a standard tool on macOS/Linux/FreeBSD
-        execute_process(
-            COMMAND unzip -q -o "${_sdl_archive}" -d "${_sdl_tmp_dir}"
-            RESULT_VARIABLE _sdl_extract_result
-        )
-        if(_sdl_extract_result EQUAL 0)
-            execute_process(
-                COMMAND "${CMAKE_COMMAND}" -E rename "${_sdl_tmp_dir}/${_sdl_topdir}" "${DUI_SDL_SRC_ROOT_DIR}"
-                RESULT_VARIABLE _sdl_extract_result
-            )
+            COMMAND git clone --depth 1 https://github.com/libsdl-org/SDL.git "${_sdl_tmp_dir}"
+            RESULT_VARIABLE _sdl_clone_result
+            OUTPUT_QUIET ERROR_QUIET)
+        if(_sdl_clone_result EQUAL 0 AND EXISTS "${_sdl_tmp_dir}/CMakeLists.txt")
+            file(RENAME "${_sdl_tmp_dir}" "${DUI_SDL_SRC_ROOT_DIR}")
+            message(STATUS "SDL3 source ready (cloned): ${DUI_SDL_SRC_ROOT_DIR}")
+            return()
         endif()
-    endif()
-    if(NOT _sdl_extract_result EQUAL 0 OR NOT EXISTS "${DUI_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
-        file(REMOVE "${_sdl_archive}")  # corrupt archive; force a fresh download next time
         file(REMOVE_RECURSE "${_sdl_tmp_dir}")
-        message(FATAL_ERROR "SDL3 archive extraction failed: ${_sdl_archive}")
-    endif()
-    file(REMOVE_RECURSE "${_sdl_tmp_dir}")  # keep the zip itself for offline re-extract
-    message(STATUS "SDL3 source ready: ${DUI_SDL_SRC_ROOT_DIR}")
+    endwhile()
+    message(FATAL_ERROR "Failed to clone SDL3 source from https://github.com/libsdl-org/SDL.git")
 endfunction()
+
 
 # ---- GN source clone (idempotent; the build itself happens at make time) ----
 # Building skia requires gn. Prebuilt CIPD binaries only cover amd64 reliably, so clone the

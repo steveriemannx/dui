@@ -775,6 +775,20 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         pWindow->SetShadowAttached(bShadowAttached);
     }
 
+    //System shadow types: normalize the type for this platform and force the
+    //window to be non-layered (OS shadows need a normal window).
+    if ((nShadowType >= Shadow::ShadowType::kShadowFirst) &&
+        (nShadowType < Shadow::ShadowType::kShadowCount)) {
+        Shadow::ShadowType supportedType =
+            Shadow::GetSupportedShadowType(pWindow, nShadowType);
+        if (supportedType != nShadowType) {
+            pWindow->SetShadowType(supportedType);
+        }
+        if (Shadow::IsSystemShadowType(supportedType)) {
+            pWindow->SetLayeredWindow(false, false);
+        }
+    }
+
     bool bScaledCX = false;
     bool bScaledCY = false;
     bool bPercentCX = false;

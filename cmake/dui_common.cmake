@@ -191,7 +191,7 @@ set(DUI_SKIA_LIBS svg skshaper skottie sksg jsonreader skia)
 # ON: auto-build with gn + ninja; OFF: use a prebuilt Skia you provide yourself.
 option(DUI_BUILD_SKIA_FROM_SOURCE "Build Skia from the downloaded source (gn + ninja)" ON)
 
-# Build SDL3 from the zip-downloaded source at make time (see cmake/dui_deps.cmake: dui_sdl target).
+# Build SDL3 from the shallow-cloned source at make time (see cmake/dui_deps.cmake: dui_sdl target).
 # ON: auto-build with cmake; OFF: use a prebuilt SDL3 you provide yourself.
 option(DUI_BUILD_SDL_FROM_SOURCE "Build SDL3 from the downloaded source" ON)
 

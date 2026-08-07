@@ -33,6 +33,14 @@ public:
         kShadowNone         = 6,            //No shadow, with border, square corners
         kShadowNoneRound    = 7,            //No shadow, with border, rounded corners
         kShadowCustom       = 8,                //User-defined shadow (setting it clears the default shadow properties; subsequently call SetShadowImage, SetShadowCorner, SetShadowBorderRound to set the shadow properties)
+
+        //System shadows (provided by the OS, e.g. macOS NSWindow / Windows DWM).
+        //When one of these is selected the window must be non-layered
+        //(see IsShadowTypeNeedLayeredWindow).
+        kShadowSystemDefault    = 9,             //OS default shadow
+        kShadowSystemDoNotRound = 10,            //OS shadow, square corners
+        kShadowSystemRound      = 11,            //OS shadow, rounded corners
+        kShadowSystemSmallRound = 12,            //OS shadow, small rounded corners
         kShadowCount,                           //The maximum value of valid values
 
         kShadowDefault      = kShadowBigRound   //Default shadow (used by default when not set)
@@ -41,6 +49,26 @@ public:
     /** Get the corresponding shadow type from a string
     */
     static bool GetShadowType(const DString& typeString, ShadowType& nShadowType);
+
+    /** True when the type is one of the OS-provided shadow types
+     * (kShadowSystemDefault / DoNotRound / Round / SmallRound).
+    */
+    static bool IsSystemShadowType(ShadowType nShadowType);
+
+    /** Whether the type requires a layered window (self-drawn shadows do;
+     *  system shadows and kShadowNone do not).
+    */
+    static bool IsShadowTypeNeedLayeredWindow(ShadowType nShadowType);
+
+    /** Resolve kShadowDefault to a concrete type based on the window and the
+     *  platform (layered window -> self-drawn; macOS -> system shadow).
+    */
+    static ShadowType GetDefaultShadowType(const Window* pWindow);
+
+    /** Make the type usable on this platform: system types fall back to
+     *  self-drawn shadows when the OS shadow is unsupported.
+    */
+    static ShadowType GetSupportedShadowType(const Window* pWindow, ShadowType nShadowType);
 
     /** Get the parameters corresponding to the default shadow type
     * @param [in] nShadowType The shadow type
@@ -81,6 +109,12 @@ public:
     /** Set the shadow type
     */
     void SetShadowType(Shadow::ShadowType nShadowType);
+
+    /** True when the current shadow type is an OS-provided shadow and it is
+     *  attached (enabled).
+    */
+    bool IsSystemShadowEnabled() const;
+    bool IsSystemShadowEnabled(ShadowType nShadowType) const;
 
     /** Get the shadow type
     */

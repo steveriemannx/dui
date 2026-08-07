@@ -1327,6 +1327,22 @@ private:
     virtual void OnNativeWindowExitFullscreen() override final;
     virtual UiRect OnNativeGetSizeBox() const override final;
     virtual void OnNativeGetShadowCorner(UiPadding& rcShadow) const override final;
+    /** True when the platform provides OS shadows (macOS: yes; Windows: DWM;
+     *  others: no). */
+    virtual bool IsSystemShadowSupported() const override final;
+
+    /** Enable/disable the OS-provided shadow through the native window. */
+    virtual bool SetSystemShadowType(NativeWindowShadowType nativeShadowType) override final;
+
+    /** Current OS shadow state. */
+    virtual NativeWindowShadowType GetSystemShadowType() const override final;
+
+    /** Re-apply the OS shadow after native window changes (fullscreen etc.). */
+    void RefreshSystemShadow();
+
+    /** Clear the window region (RGN) - required when enabling the OS shadow. */
+    void ClearWindowRgnForSystemShadow();
+
     virtual const DpiManager& OnNativeGetDpi() const override final;
     virtual void OnNativeGetCaptionRect(UiRect& captionRect) const override final;
     virtual void OnNativeGetSysMenuRect(UiRect& sysMenuRect) const override final;

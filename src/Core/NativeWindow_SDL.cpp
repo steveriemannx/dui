@@ -1883,6 +1883,94 @@ int32_t NativeWindow_SDL::GetCloseParam() const
     return m_closeParam;
 }
 
+
+#ifdef DUI_BUILD_FOR_WIN
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
+namespace {
+// Enable/disable the DWM-provided window shadow by toggling WS_THICKFRAME.
+bool ModifyDwmStyle(HWND hwnd, NativeWindowShadowType nativeShadowType)
+{
+    if (hwnd == nullptr) {
+        return false;
+    }
+    LONG_PTR style = ::GetWindowLongPtrW(hwnd, GWL_STYLE);
+    if (nativeShadowType == NativeWindowShadowType::kShadowSystemDisabled) {
+        style &= ~WS_THICKFRAME;
+    }
+    else {
+        style |= WS_THICKFRAME;
+    }
+    ::SetWindowLongPtrW(hwnd, GWL_STYLE, style);
+    ::SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                   SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    return true;
+}
+} // namespace
+#endif
+
+
+bool NativeWindow_SDL::IsSystemShadowSupported() const
+{
+#ifdef DUI_BUILD_FOR_WIN
+    BOOL enabled = FALSE;
+    if (::DwmIsCompositionEnabled(&enabled) == S_OK) {
+        return enabled != FALSE;
+    }
+    return false;
+#elif defined(DUI_BUILD_FOR_MACOS)
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool NativeWindow_SDL::SetSystemShadowType(NativeWindowShadowType nativeShadowType)
+{
+#ifdef DUI_BUILD_FOR_MACOS
+    if (ModifyNsWindowShadowType(GetNSWindow(), nativeShadowType)) {
+        m_systemShadowType = nativeShadowType;
+        return true;
+    }
+#elif defined(DUI_BUILD_FOR_WIN)
+    if (ModifyDwmStyle(GetHWND(), nativeShadowType)) {
+        m_systemShadowType = nativeShadowType;
+        return true;
+    }
+#endif
+    return false;
+}
+
+NativeWindowShadowType NativeWindow_SDL::GetSystemShadowType() const
+{
+    return m_systemShadowType;
+}
+
+void NativeWindow_SDL::RefreshSystemShadow()
+{
+    if (!IsSystemShadowSupported()) {
+        return;
+    }
+#ifdef DUI_BUILD_FOR_MACOS
+    ModifyNsWindowShadowType(GetNSWindow(), m_systemShadowType);
+    RestoreWindowShadowAfterFullscreen(GetNSWindow(), m_systemShadowType);
+#elif defined(DUI_BUILD_FOR_WIN)
+    ModifyDwmStyle(GetHWND(), m_systemShadowType);
+#endif
+}
+
+void NativeWindow_SDL::ClearWindowRgnForSystemShadow()
+{
+#ifdef DUI_BUILD_FOR_WIN
+    HWND hWnd = GetHWND();
+    if (hWnd != nullptr) {
+        ::SetWindowRgn(hWnd, nullptr, TRUE);
+    }
+#else
+    // macOS has no window region concept for shadows
+#endif
+}
+
 bool NativeWindow_SDL::IsLayeredWindow() const
 {
     return m_bIsLayeredWindow;
