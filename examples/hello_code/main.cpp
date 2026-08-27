@@ -1,37 +1,9 @@
 #include "dui/dui.h"
 #include "MainForm.h"
-#include "embedded_resources.inc"  // Build-time embedded resources
-#include "dui/Utils/AppEntry.h"
+#include "embedded_resources.inc"
+#include "dui/Utils/UiBuilder.h"
 
-/** App: FrameworkThread subclass that serves as the DUI_APP_ENTRY target.
- *  RunMessageLoop() calls OnInit() -> message loop -> OnCleanup().
- */
-class App : public ui::FrameworkThread
+int main()
 {
-public:
-    App() : FrameworkThread(_T("App"), ui::kThreadUI) {}
-
-    void Run() { RunMessageLoop(); }
-
-private:
-    virtual void OnInit() override
-    {
-        // All resources (global.xml, images, fonts, language files) are embedded in
-        // the executable and accessed directly from memory; no resource directory
-        // is needed at runtime.
-        ui::GlobalManager::Instance().Startup(
-        ui::MemoryResParam(GetEmbeddedResourcesData(), GetEmbeddedResourcesSize()));
-
-        MainForm* window = new MainForm();
-        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("Hello (Pure Code)"), true));
-        window->PostQuitMsgWhenClosed(true);
-        window->ShowWindow(ui::kSW_SHOW_NORMAL);
-    }
-
-    virtual void OnCleanup() override
-    {
-        ui::GlobalManager::Instance().Shutdown();
-    }
-};
-
-DUI_APP_ENTRY(App)
+    return ui::RunMemory<MainForm>(_T("Hello (Pure Code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+}

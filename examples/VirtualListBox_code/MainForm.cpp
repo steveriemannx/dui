@@ -1,4 +1,4 @@
-#include "MainForm.h"
+﻿#include "MainForm.h"
 #include "DataProvider.h"
 
 MainForm::MainForm():
@@ -51,508 +51,272 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
 void MainForm::BuildUI()
 {
     // Corresponding to the main.xml layout
-    ui::VBox* pRoot = new ui::VBox(this);
+    auto* pRoot = ui::Create<ui::VBox>(this, {});
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar area
-    ui::HBox* pCaption = new ui::HBox(this);
-    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
-    pCaption->SetAttribute(_T("width"), _T("stretch"));
-    pCaption->SetAttribute(_T("height"), _T("36"));
+    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    ui::Label* pTitle = new ui::Label(this);
+    auto* pTitle = ui::Create<ui::Label>(this, {{_T("font"), _T("system_14")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8")}, {_T("mouse_enabled"), _T("false")}});
     pTitle->SetText(_T("Virtual List (VirtualHTileListBox | VirtualVTileListBox | VirtualHListBox | VirtualVListBox)"));
-    pTitle->SetAttribute(_T("font"), _T("system_14"));
-    pTitle->SetAttribute(_T("valign"), _T("center"));
-    pTitle->SetAttribute(_T("margin"), _T("8"));
-    pTitle->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pTitle);
 
-    ui::Control* pSpacer = new ui::Control(this);
-    pSpacer->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
     pCaption->AddItem(pSpacer);
 
-    ui::Button* pMinBtn = new ui::Button(this);
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
     pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetAttribute(_T("height"), _T("32"));
-    pMinBtn->SetAttribute(_T("width"), _T("40"));
     pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pMinBtn->SetToolTipText(_T("Minimize"));
     pCaption->AddItem(pMinBtn);
 
-    ui::Box* pMaxBox = new ui::Box(this);
-    pMaxBox->SetAttribute(_T("height"), _T("stretch"));
-    pMaxBox->SetAttribute(_T("width"), _T("40"));
-    pMaxBox->SetAttribute(_T("margin"), _T("0,2,0,2"));
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
     pCaption->AddItem(pMaxBox);
 
-    ui::Button* pMaxBtn = new ui::Button(this);
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
     pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetAttribute(_T("height"), _T("32"));
-    pMaxBtn->SetAttribute(_T("width"), _T("stretch"));
     pMaxBtn->SetName(_T("maxbtn"));
     pMaxBtn->SetToolTipText(_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    ui::Button* pRestoreBtn = new ui::Button(this);
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
     pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetAttribute(_T("height"), _T("32"));
-    pRestoreBtn->SetAttribute(_T("width"), _T("stretch"));
     pRestoreBtn->SetName(_T("restorebtn"));
     pRestoreBtn->SetVisible(false);
     pRestoreBtn->SetToolTipText(_T("Restore"));
     pMaxBox->AddItem(pRestoreBtn);
 
-    ui::Button* pCloseBtn = new ui::Button(this);
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
-    pCloseBtn->SetAttribute(_T("width"), _T("40"));
     pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
     pCloseBtn->SetToolTipText(_T("Close"));
     pCaption->AddItem(pCloseBtn);
 
     // Virtual list type display
-    ui::HBox* pTypeRow = new ui::HBox(this);
-    pTypeRow->SetAttribute(_T("height"), _T("30"));
+    auto* pTypeRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("30")}});
     pRoot->AddItem(pTypeRow);
 
-    ui::Label* pTypeLabel = new ui::Label(this);
+    auto* pTypeLabel = ui::Create<ui::Label>(this, {{_T("font"), _T("system_14")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,8,0")}});
     pTypeLabel->SetText(_T("Current virtual list container type:"));
-    pTypeLabel->SetAttribute(_T("font"), _T("system_14"));
-    pTypeLabel->SetAttribute(_T("valign"), _T("center"));
-    pTypeLabel->SetAttribute(_T("margin"), _T("8,0,8,0"));
     pTypeRow->AddItem(pTypeLabel);
 
-    ui::Label* pListType = new ui::Label(this);
+    auto* pListType = ui::Create<ui::Label>(this, {{_T("font"), _T("system_14")}, {_T("valign"), _T("center")}});
     pListType->SetName(_T("list_box_type"));
     pListType->SetText(_T("VirtualHTileListBox"));
-    pListType->SetAttribute(_T("font"), _T("system_14"));
-    pListType->SetAttribute(_T("valign"), _T("center"));
     pTypeRow->AddItem(pListType);
 
     // Main content area
-    ui::HBox* pMain = new ui::HBox(this);
-    pMain->SetAttribute(_T("child_margin"), _T("5"));
-    pMain->SetAttribute(_T("padding"), _T("5,5,5,10"));
+    auto* pMain = ui::Create<ui::HBox>(this, {{_T("child_margin"), _T("5")}, {_T("padding"), _T("5,5,5,10")}});
     pRoot->AddItem(pMain);
 
     // Left settings panel
-    ui::VBox* pSettings = new ui::VBox(this);
-    pSettings->SetAttribute(_T("width"), _T("300"));
-    pSettings->SetAttribute(_T("border_size"), _T("1"));
-    pSettings->SetAttribute(_T("border_color"), _T("splitline_level1"));
-    pSettings->SetAttribute(_T("padding"), _T("5,10,5,10"));
-    pSettings->SetAttribute(_T("child_margin"), _T("10"));
+    auto* pSettings = ui::Create<ui::VBox>(this, {{_T("width"), _T("300")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("splitline_level1")}, {_T("padding"), _T("5,10,5,10")}, {_T("child_margin"), _T("10")}});
     pMain->AddItem(pSettings);
 
     // Row/column settings
-    ui::VBox* pColumnGroup = new ui::VBox(this);
-    pColumnGroup->SetAttribute(_T("height"), _T("80"));
+    auto* pColumnGroup = ui::Create<ui::VBox>(this, {{_T("height"), _T("80")}});
     pSettings->AddItem(pColumnGroup);
 
-    ui::Label* pColumnLabel = new ui::Label(this);
+    auto* pColumnLabel = ui::Create<ui::Label>(this, {{_T("font"), _T("system_bold_14")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("valign"), _T("center")}});
     pColumnLabel->SetName(_T("label_column_row"));
-    pColumnLabel->SetAttribute(_T("font"), _T("system_bold_14"));
     pColumnLabel->SetText(_T("Rows/Columns:"));
-    pColumnLabel->SetAttribute(_T("width"), _T("auto"));
-    pColumnLabel->SetAttribute(_T("height"), _T("auto"));
-    pColumnLabel->SetAttribute(_T("valign"), _T("center"));
     pColumnGroup->AddItem(pColumnLabel);
 
-    ui::Option* pOptionColumnAuto = new ui::Option(this);
+    auto* pOptionColumnAuto = ui::Create<ui::Option>(this, {{_T("group"), _T("option_group")}, {_T("height"), _T("28")}, {_T("margin"), _T("80,0,0,0")}});
     pOptionColumnAuto->SetClass(_T("option_1"));
     pOptionColumnAuto->SetName(_T("option_column_auto"));
-    pOptionColumnAuto->SetAttribute(_T("group"), _T("option_group"));
     pOptionColumnAuto->SetText(_T("Auto Calculate"));
-    pOptionColumnAuto->SetAttribute(_T("height"), _T("28"));
-    pOptionColumnAuto->SetAttribute(_T("margin"), _T("80,0,0,0"));
     pOptionColumnAuto->Selected(true);
     pColumnGroup->AddItem(pOptionColumnAuto);
 
-    ui::HBox* pColumnFixRow = new ui::HBox(this);
-    pColumnFixRow->SetAttribute(_T("height"), _T("30"));
+    auto* pColumnFixRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("30")}});
     pColumnGroup->AddItem(pColumnFixRow);
 
-    ui::Option* pOptionColumnFix = new ui::Option(this);
+    auto* pOptionColumnFix = ui::Create<ui::Option>(this, {{_T("group"), _T("option_group")}, {_T("margin"), _T("80,0,0,0")}});
     pOptionColumnFix->SetClass(_T("option_1"));
     pOptionColumnFix->SetName(_T("option_column_fix"));
-    pOptionColumnFix->SetAttribute(_T("group"), _T("option_group"));
     pOptionColumnFix->SetText(_T("Fixed Columns"));
-    pOptionColumnFix->SetAttribute(_T("margin"), _T("80,0,0,0"));
     pColumnFixRow->AddItem(pOptionColumnFix);
 
-    ui::RichEdit* pEditColumn = new ui::RichEdit(this);
+    auto* pEditColumn = ui::Create<ui::RichEdit>(this, {{_T("min_number"), _T("1")}, {_T("max_number"), _T("12")}, {_T("text_padding"), _T("1,0,8,0")}, {_T("width"), _T("50")}, {_T("height"), _T("28")}, {_T("margin"), _T("6,0,0,0")}, {_T("default_context_menu"), _T("true")}, {_T("number_only"), _T("true")}, {_T("limit_text"), _T("3")}, {_T("valign"), _T("center")}, {_T("text_align"), _T("vcenter")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("light_gray")}});
     pEditColumn->SetClass(_T("simple rich_edit_spin"));
     pEditColumn->SetName(_T("edit_column"));
     pEditColumn->SetText(_T("3"));
-    pEditColumn->SetAttribute(_T("min_number"), _T("1"));
-    pEditColumn->SetAttribute(_T("max_number"), _T("12"));
     pEditColumn->SetVisible(false);
-    pEditColumn->SetAttribute(_T("text_padding"), _T("1,0,8,0"));
-    pEditColumn->SetAttribute(_T("width"), _T("50"));
-    pEditColumn->SetAttribute(_T("height"), _T("28"));
-    pEditColumn->SetAttribute(_T("margin"), _T("6,0,0,0"));
-    pEditColumn->SetAttribute(_T("default_context_menu"), _T("true"));
-    pEditColumn->SetAttribute(_T("number_only"), _T("true"));
-    pEditColumn->SetAttribute(_T("limit_text"), _T("3"));
-    pEditColumn->SetAttribute(_T("valign"), _T("center"));
-    pEditColumn->SetAttribute(_T("text_align"), _T("vcenter"));
     pEditColumn->SetBkColor(_T("white"));
-    pEditColumn->SetAttribute(_T("border_size"), _T("1"));
-    pEditColumn->SetAttribute(_T("border_color"), _T("light_gray"));
     pColumnFixRow->AddItem(pEditColumn);
 
-    ui::Control* pSplit1 = new ui::Control(this);
-    pSplit1->SetAttribute(_T("height"), _T("1"));
+    auto* pSplit1 = ui::Create<ui::Control>(this, {{_T("height"), _T("1")}});
     pSplit1->SetBkColor(_T("splitline_level1"));
     pSettings->AddItem(pSplit1);
 
     // Alignment
-    ui::VBox* pAlignGroup = new ui::VBox(this);
-    pAlignGroup->SetAttribute(_T("height"), _T("auto"));
+    auto* pAlignGroup = ui::Create<ui::VBox>(this, {{_T("height"), _T("auto")}});
     pSettings->AddItem(pAlignGroup);
 
-    ui::Label* pAlignLabel = new ui::Label(this);
-    pAlignLabel->SetAttribute(_T("font"), _T("system_bold_14"));
+    auto* pAlignLabel = ui::Create<ui::Label>(this, {{_T("font"), _T("system_bold_14")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("valign"), _T("center")}});
     pAlignLabel->SetText(_T("Alignment:"));
-    pAlignLabel->SetAttribute(_T("width"), _T("auto"));
-    pAlignLabel->SetAttribute(_T("height"), _T("auto"));
-    pAlignLabel->SetAttribute(_T("valign"), _T("center"));
     pAlignGroup->AddItem(pAlignLabel);
 
-    ui::Option* pOptionAlign1 = new ui::Option(this);
+    auto* pOptionAlign1 = ui::Create<ui::Option>(this, {{_T("group"), _T("option_group_align")}, {_T("height"), _T("28")}, {_T("margin"), _T("80,0,0,0")}});
     pOptionAlign1->SetClass(_T("option_1"));
     pOptionAlign1->SetName(_T("option_align1"));
-    pOptionAlign1->SetAttribute(_T("group"), _T("option_group_align"));
     pOptionAlign1->SetText(_T("Align Left (left)"));
-    pOptionAlign1->SetAttribute(_T("height"), _T("28"));
-    pOptionAlign1->SetAttribute(_T("margin"), _T("80,0,0,0"));
     pOptionAlign1->Selected(true);
     pAlignGroup->AddItem(pOptionAlign1);
 
-    ui::Option* pOptionAlign2 = new ui::Option(this);
+    auto* pOptionAlign2 = ui::Create<ui::Option>(this, {{_T("group"), _T("option_group_align")}, {_T("height"), _T("28")}, {_T("margin"), _T("80,0,0,0")}});
     pOptionAlign2->SetClass(_T("option_1"));
     pOptionAlign2->SetName(_T("option_align2"));
-    pOptionAlign2->SetAttribute(_T("group"), _T("option_group_align"));
     pOptionAlign2->SetText(_T("Align Center (center)"));
-    pOptionAlign2->SetAttribute(_T("height"), _T("28"));
-    pOptionAlign2->SetAttribute(_T("margin"), _T("80,0,0,0"));
     pAlignGroup->AddItem(pOptionAlign2);
 
-    ui::Option* pOptionAlign3 = new ui::Option(this);
+    auto* pOptionAlign3 = ui::Create<ui::Option>(this, {{_T("group"), _T("option_group_align")}, {_T("height"), _T("28")}, {_T("margin"), _T("80,0,0,0")}});
     pOptionAlign3->SetClass(_T("option_1"));
     pOptionAlign3->SetName(_T("option_align3"));
-    pOptionAlign3->SetAttribute(_T("group"), _T("option_group_align"));
     pOptionAlign3->SetText(_T("Align Right (right)"));
-    pOptionAlign3->SetAttribute(_T("height"), _T("28"));
-    pOptionAlign3->SetAttribute(_T("margin"), _T("80,0,0,0"));
     pAlignGroup->AddItem(pOptionAlign3);
 
-    ui::Control* pSplit2 = new ui::Control(this);
-    pSplit2->SetAttribute(_T("height"), _T("1"));
+    auto* pSplit2 = ui::Create<ui::Control>(this, {{_T("height"), _T("1")}});
     pSplit2->SetBkColor(_T("splitline_level1"));
     pSettings->AddItem(pSplit2);
 
     // Child spacing
-    ui::VBox* pMarginGroup = new ui::VBox(this);
-    pMarginGroup->SetAttribute(_T("height"), _T("auto"));
+    auto* pMarginGroup = ui::Create<ui::VBox>(this, {{_T("height"), _T("auto")}});
     pSettings->AddItem(pMarginGroup);
 
-    ui::HBox* pMarginXRow = new ui::HBox(this);
-    pMarginXRow->SetAttribute(_T("height"), _T("30"));
-    pMarginXRow->SetAttribute(_T("child_margin"), _T("10"));
+    auto* pMarginXRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("30")}, {_T("child_margin"), _T("10")}});
     pMarginGroup->AddItem(pMarginXRow);
 
-    ui::Label* pMarginXLabel = new ui::Label(this);
+    auto* pMarginXLabel = ui::Create<ui::Label>(this, {{_T("font"), _T("system_bold_14")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("valign"), _T("center")}});
     pMarginXLabel->SetName(_T("label_child_margin_x"));
-    pMarginXLabel->SetAttribute(_T("font"), _T("system_bold_14"));
     pMarginXLabel->SetText(_T("Child Margin X:"));
-    pMarginXLabel->SetAttribute(_T("width"), _T("auto"));
-    pMarginXLabel->SetAttribute(_T("height"), _T("auto"));
-    pMarginXLabel->SetAttribute(_T("valign"), _T("center"));
     pMarginXRow->AddItem(pMarginXLabel);
 
-    ui::Box* pMarginXBox = new ui::Box(this);
-    pMarginXBox->SetAttribute(_T("border_size"), _T("1"));
-    pMarginXBox->SetAttribute(_T("border_color"), _T("splitline_level1"));
-    pMarginXBox->SetAttribute(_T("width"), _T("90"));
-    pMarginXBox->SetAttribute(_T("height"), _T("26"));
-    pMarginXBox->SetAttribute(_T("valign"), _T("center"));
+    auto* pMarginXBox = ui::Create<ui::Box>(this, {{_T("border_size"), _T("1")}, {_T("border_color"), _T("splitline_level1")}, {_T("width"), _T("90")}, {_T("height"), _T("26")}, {_T("valign"), _T("center")}});
     pMarginXRow->AddItem(pMarginXBox);
 
-    ui::RichEdit* pEditMarginX = new ui::RichEdit(this);
+    auto* pEditMarginX = ui::Create<ui::RichEdit>(this, {{_T("font"), _T("system_14")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("valign"), _T("center")}, {_T("normal_text_color"), _T("black")}, {_T("multi_line"), _T("false")}, {_T("prompt_mode"), _T("true")}, {_T("prompt_text"), _T("Child Margin X")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("prompt_color"), _T("splitline_level1")}, {_T("auto_hscroll"), _T("true")}});
     pEditMarginX->SetName(_T("edit_child_margin_x"));
     pEditMarginX->SetBkColor(_T("white"));
-    pEditMarginX->SetAttribute(_T("font"), _T("system_14"));
-    pEditMarginX->SetAttribute(_T("width"), _T("stretch"));
-    pEditMarginX->SetAttribute(_T("height"), _T("stretch"));
-    pEditMarginX->SetAttribute(_T("valign"), _T("center"));
-    pEditMarginX->SetAttribute(_T("normal_text_color"), _T("black"));
-    pEditMarginX->SetAttribute(_T("multi_line"), _T("false"));
-    pEditMarginX->SetAttribute(_T("prompt_mode"), _T("true"));
-    pEditMarginX->SetAttribute(_T("prompt_text"), _T("Child Margin X"));
-    pEditMarginX->SetAttribute(_T("text_align"), _T("vcenter"));
-    pEditMarginX->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-    pEditMarginX->SetAttribute(_T("prompt_color"), _T("splitline_level1"));
-    pEditMarginX->SetAttribute(_T("auto_hscroll"), _T("true"));
     pMarginXBox->AddItem(pEditMarginX);
 
-    ui::HBox* pMarginYRow = new ui::HBox(this);
-    pMarginYRow->SetAttribute(_T("height"), _T("30"));
-    pMarginYRow->SetAttribute(_T("child_margin"), _T("10"));
+    auto* pMarginYRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("30")}, {_T("child_margin"), _T("10")}});
     pMarginGroup->AddItem(pMarginYRow);
 
-    ui::Label* pMarginYLabel = new ui::Label(this);
+    auto* pMarginYLabel = ui::Create<ui::Label>(this, {{_T("font"), _T("system_bold_14")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("valign"), _T("center")}});
     pMarginYLabel->SetName(_T("label_child_margin_y"));
-    pMarginYLabel->SetAttribute(_T("font"), _T("system_bold_14"));
     pMarginYLabel->SetText(_T("Child Margin Y:"));
-    pMarginYLabel->SetAttribute(_T("width"), _T("auto"));
-    pMarginYLabel->SetAttribute(_T("height"), _T("auto"));
-    pMarginYLabel->SetAttribute(_T("valign"), _T("center"));
     pMarginYRow->AddItem(pMarginYLabel);
 
-    ui::Box* pMarginYBox = new ui::Box(this);
-    pMarginYBox->SetAttribute(_T("border_size"), _T("1"));
-    pMarginYBox->SetAttribute(_T("border_color"), _T("splitline_level1"));
-    pMarginYBox->SetAttribute(_T("width"), _T("90"));
-    pMarginYBox->SetAttribute(_T("height"), _T("26"));
-    pMarginYBox->SetAttribute(_T("valign"), _T("center"));
+    auto* pMarginYBox = ui::Create<ui::Box>(this, {{_T("border_size"), _T("1")}, {_T("border_color"), _T("splitline_level1")}, {_T("width"), _T("90")}, {_T("height"), _T("26")}, {_T("valign"), _T("center")}});
     pMarginYRow->AddItem(pMarginYBox);
 
-    ui::RichEdit* pEditMarginY = new ui::RichEdit(this);
+    auto* pEditMarginY = ui::Create<ui::RichEdit>(this, {{_T("font"), _T("system_14")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("valign"), _T("center")}, {_T("normal_text_color"), _T("black")}, {_T("multi_line"), _T("false")}, {_T("prompt_mode"), _T("true")}, {_T("prompt_text"), _T("Child Margin Y")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("prompt_color"), _T("splitline_level1")}, {_T("auto_hscroll"), _T("true")}});
     pEditMarginY->SetName(_T("edit_child_margin_y"));
     pEditMarginY->SetBkColor(_T("white"));
-    pEditMarginY->SetAttribute(_T("font"), _T("system_14"));
-    pEditMarginY->SetAttribute(_T("width"), _T("stretch"));
-    pEditMarginY->SetAttribute(_T("height"), _T("stretch"));
-    pEditMarginY->SetAttribute(_T("valign"), _T("center"));
-    pEditMarginY->SetAttribute(_T("normal_text_color"), _T("black"));
-    pEditMarginY->SetAttribute(_T("multi_line"), _T("false"));
-    pEditMarginY->SetAttribute(_T("prompt_mode"), _T("true"));
-    pEditMarginY->SetAttribute(_T("prompt_text"), _T("Child Margin Y"));
-    pEditMarginY->SetAttribute(_T("text_align"), _T("vcenter"));
-    pEditMarginY->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-    pEditMarginY->SetAttribute(_T("prompt_color"), _T("splitline_level1"));
-    pEditMarginY->SetAttribute(_T("auto_hscroll"), _T("true"));
     pMarginYBox->AddItem(pEditMarginY);
 
     // Total data
-    ui::HBox* pTotalRow = new ui::HBox(this);
-    pTotalRow->SetAttribute(_T("height"), _T("30"));
-    pTotalRow->SetAttribute(_T("child_margin"), _T("10"));
+    auto* pTotalRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("30")}, {_T("child_margin"), _T("10")}});
     pSettings->AddItem(pTotalRow);
 
-    ui::Label* pTotalLabel = new ui::Label(this);
-    pTotalLabel->SetAttribute(_T("font"), _T("system_bold_14"));
+    auto* pTotalLabel = ui::Create<ui::Label>(this, {{_T("font"), _T("system_bold_14")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("valign"), _T("center")}});
     pTotalLabel->SetText(_T("Total Data:"));
-    pTotalLabel->SetAttribute(_T("width"), _T("auto"));
-    pTotalLabel->SetAttribute(_T("height"), _T("auto"));
-    pTotalLabel->SetAttribute(_T("valign"), _T("center"));
     pTotalRow->AddItem(pTotalLabel);
 
-    ui::Box* pTotalBox = new ui::Box(this);
-    pTotalBox->SetAttribute(_T("border_size"), _T("1"));
-    pTotalBox->SetAttribute(_T("border_color"), _T("splitline_level1"));
-    pTotalBox->SetAttribute(_T("width"), _T("180"));
-    pTotalBox->SetAttribute(_T("height"), _T("26"));
-    pTotalBox->SetAttribute(_T("valign"), _T("center"));
+    auto* pTotalBox = ui::Create<ui::Box>(this, {{_T("border_size"), _T("1")}, {_T("border_color"), _T("splitline_level1")}, {_T("width"), _T("180")}, {_T("height"), _T("26")}, {_T("valign"), _T("center")}});
     pTotalRow->AddItem(pTotalBox);
 
-    ui::RichEdit* pEditTotal = new ui::RichEdit(this);
+    auto* pEditTotal = ui::Create<ui::RichEdit>(this, {{_T("number_only"), _T("true")}, {_T("min_number"), _T("1")}, {_T("font"), _T("system_14")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("valign"), _T("center")}, {_T("normal_text_color"), _T("black")}, {_T("multi_line"), _T("false")}, {_T("prompt_mode"), _T("true")}, {_T("prompt_text"), _T("Total Data")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("prompt_color"), _T("splitline_level1")}, {_T("auto_hscroll"), _T("true")}});
     pEditTotal->SetName(_T("edit_total"));
     pEditTotal->SetBkColor(_T("white"));
     pEditTotal->SetText(_T("10000"));
-    pEditTotal->SetAttribute(_T("number_only"), _T("true"));
-    pEditTotal->SetAttribute(_T("min_number"), _T("1"));
-    pEditTotal->SetAttribute(_T("font"), _T("system_14"));
-    pEditTotal->SetAttribute(_T("width"), _T("stretch"));
-    pEditTotal->SetAttribute(_T("height"), _T("stretch"));
-    pEditTotal->SetAttribute(_T("valign"), _T("center"));
-    pEditTotal->SetAttribute(_T("normal_text_color"), _T("black"));
-    pEditTotal->SetAttribute(_T("multi_line"), _T("false"));
-    pEditTotal->SetAttribute(_T("prompt_mode"), _T("true"));
-    pEditTotal->SetAttribute(_T("prompt_text"), _T("Total Data"));
-    pEditTotal->SetAttribute(_T("text_align"), _T("vcenter"));
-    pEditTotal->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-    pEditTotal->SetAttribute(_T("prompt_color"), _T("splitline_level1"));
-    pEditTotal->SetAttribute(_T("auto_hscroll"), _T("true"));
     pTotalBox->AddItem(pEditTotal);
 
     // Change/set buttons
-    ui::Box* pSetTotalRow = new ui::Box(this);
-    pSetTotalRow->SetAttribute(_T("height"), _T("30"));
-    pSetTotalRow->SetAttribute(_T("child_margin"), _T("10"));
-    pSetTotalRow->SetAttribute(_T("width"), _T("stretch"));
+    auto* pSetTotalRow = ui::Create<ui::Box>(this, {{_T("height"), _T("30")}, {_T("child_margin"), _T("10")}, {_T("width"), _T("stretch")}});
     pSettings->AddItem(pSetTotalRow);
 
-    ui::Button* pSetTotalBtn = new ui::Button(this);
+    auto* pSetTotalBtn = ui::Create<ui::Button>(this, {{_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
     pSetTotalBtn->SetClass(_T("btn_global_blue_80x30"));
-    pSetTotalBtn->SetAttribute(_T("halign"), _T("center"));
-    pSetTotalBtn->SetAttribute(_T("valign"), _T("center"));
     pSetTotalBtn->SetName(_T("btn_set_total"));
     pSetTotalBtn->SetText(_T("Apply/Set"));
     pSetTotalRow->AddItem(pSetTotalBtn);
 
-    ui::Control* pSplit3 = new ui::Control(this);
-    pSplit3->SetAttribute(_T("height"), _T("1"));
+    auto* pSplit3 = ui::Create<ui::Control>(this, {{_T("height"), _T("1")}});
     pSplit3->SetBkColor(_T("splitline_level1"));
     pSettings->AddItem(pSplit3);
 
     // Modify data
-    ui::HBox* pUpdateRow = new ui::HBox(this);
-    pUpdateRow->SetAttribute(_T("height"), _T("30"));
-    pUpdateRow->SetAttribute(_T("child_margin"), _T("10"));
+    auto* pUpdateRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("30")}, {_T("child_margin"), _T("10")}});
     pSettings->AddItem(pUpdateRow);
 
-    ui::Label* pUpdateLabel = new ui::Label(this);
-    pUpdateLabel->SetAttribute(_T("font"), _T("system_bold_14"));
+    auto* pUpdateLabel = ui::Create<ui::Label>(this, {{_T("font"), _T("system_bold_14")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("valign"), _T("center")}});
     pUpdateLabel->SetText(_T("Modify Data:"));
-    pUpdateLabel->SetAttribute(_T("width"), _T("auto"));
-    pUpdateLabel->SetAttribute(_T("height"), _T("auto"));
-    pUpdateLabel->SetAttribute(_T("valign"), _T("center"));
     pUpdateRow->AddItem(pUpdateLabel);
 
-    ui::Box* pUpdateBox1 = new ui::Box(this);
-    pUpdateBox1->SetAttribute(_T("border_size"), _T("1"));
-    pUpdateBox1->SetAttribute(_T("border_color"), _T("splitline_level1"));
-    pUpdateBox1->SetAttribute(_T("height"), _T("26"));
-    pUpdateBox1->SetAttribute(_T("valign"), _T("center"));
+    auto* pUpdateBox1 = ui::Create<ui::Box>(this, {{_T("border_size"), _T("1")}, {_T("border_color"), _T("splitline_level1")}, {_T("height"), _T("26")}, {_T("valign"), _T("center")}});
     pUpdateRow->AddItem(pUpdateBox1);
 
-    ui::RichEdit* pEditUpdate = new ui::RichEdit(this);
+    auto* pEditUpdate = ui::Create<ui::RichEdit>(this, {{_T("number_only"), _T("true")}, {_T("min_number"), _T("0")}, {_T("font"), _T("system_14")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("valign"), _T("center")}, {_T("normal_text_color"), _T("black")}, {_T("multi_line"), _T("false")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("prompt_mode"), _T("true")}, {_T("prompt_text"), _T("Index (subscript)")}, {_T("prompt_color"), _T("splitline_level1")}, {_T("auto_hscroll"), _T("true")}});
     pEditUpdate->SetName(_T("edit_update"));
-    pEditUpdate->SetAttribute(_T("number_only"), _T("true"));
-    pEditUpdate->SetAttribute(_T("min_number"), _T("0"));
     pEditUpdate->SetBkColor(_T("white"));
-    pEditUpdate->SetAttribute(_T("font"), _T("system_14"));
-    pEditUpdate->SetAttribute(_T("width"), _T("stretch"));
-    pEditUpdate->SetAttribute(_T("height"), _T("stretch"));
-    pEditUpdate->SetAttribute(_T("valign"), _T("center"));
-    pEditUpdate->SetAttribute(_T("normal_text_color"), _T("black"));
-    pEditUpdate->SetAttribute(_T("multi_line"), _T("false"));
-    pEditUpdate->SetAttribute(_T("text_align"), _T("vcenter"));
-    pEditUpdate->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-    pEditUpdate->SetAttribute(_T("prompt_mode"), _T("true"));
-    pEditUpdate->SetAttribute(_T("prompt_text"), _T("Index (subscript)"));
-    pEditUpdate->SetAttribute(_T("prompt_color"), _T("splitline_level1"));
-    pEditUpdate->SetAttribute(_T("auto_hscroll"), _T("true"));
     pUpdateBox1->AddItem(pEditUpdate);
 
-    ui::Box* pUpdateBox2 = new ui::Box(this);
-    pUpdateBox2->SetAttribute(_T("border_size"), _T("1"));
-    pUpdateBox2->SetAttribute(_T("border_color"), _T("splitline_level1"));
-    pUpdateBox2->SetAttribute(_T("height"), _T("26"));
-    pUpdateBox2->SetAttribute(_T("valign"), _T("center"));
+    auto* pUpdateBox2 = ui::Create<ui::Box>(this, {{_T("border_size"), _T("1")}, {_T("border_color"), _T("splitline_level1")}, {_T("height"), _T("26")}, {_T("valign"), _T("center")}});
     pUpdateRow->AddItem(pUpdateBox2);
 
-    ui::RichEdit* pEditTaskName = new ui::RichEdit(this);
+    auto* pEditTaskName = ui::Create<ui::RichEdit>(this, {{_T("font"), _T("system_14")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("valign"), _T("center")}, {_T("normal_text_color"), _T("black")}, {_T("multi_line"), _T("false")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("prompt_mode"), _T("true")}, {_T("prompt_text"), _T("New Task Name")}, {_T("prompt_color"), _T("splitline_level1")}, {_T("auto_hscroll"), _T("true")}});
     pEditTaskName->SetName(_T("edit_task_name"));
     pEditTaskName->SetBkColor(_T("white"));
-    pEditTaskName->SetAttribute(_T("font"), _T("system_14"));
-    pEditTaskName->SetAttribute(_T("width"), _T("stretch"));
-    pEditTaskName->SetAttribute(_T("height"), _T("stretch"));
-    pEditTaskName->SetAttribute(_T("valign"), _T("center"));
-    pEditTaskName->SetAttribute(_T("normal_text_color"), _T("black"));
-    pEditTaskName->SetAttribute(_T("multi_line"), _T("false"));
-    pEditTaskName->SetAttribute(_T("text_align"), _T("vcenter"));
-    pEditTaskName->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-    pEditTaskName->SetAttribute(_T("prompt_mode"), _T("true"));
-    pEditTaskName->SetAttribute(_T("prompt_text"), _T("New Task Name"));
-    pEditTaskName->SetAttribute(_T("prompt_color"), _T("splitline_level1"));
-    pEditTaskName->SetAttribute(_T("auto_hscroll"), _T("true"));
     pUpdateBox2->AddItem(pEditTaskName);
 
-    ui::Box* pUpdateBtnRow = new ui::Box(this);
-    pUpdateBtnRow->SetAttribute(_T("height"), _T("30"));
-    pUpdateBtnRow->SetAttribute(_T("child_margin"), _T("10"));
-    pUpdateBtnRow->SetAttribute(_T("width"), _T("stretch"));
+    auto* pUpdateBtnRow = ui::Create<ui::Box>(this, {{_T("height"), _T("30")}, {_T("child_margin"), _T("10")}, {_T("width"), _T("stretch")}});
     pSettings->AddItem(pUpdateBtnRow);
 
-    ui::Button* pUpdateBtn = new ui::Button(this);
+    auto* pUpdateBtn = ui::Create<ui::Button>(this, {{_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
     pUpdateBtn->SetClass(_T("btn_global_blue_80x30"));
-    pUpdateBtn->SetAttribute(_T("halign"), _T("center"));
-    pUpdateBtn->SetAttribute(_T("valign"), _T("center"));
     pUpdateBtn->SetName(_T("btn_update"));
     pUpdateBtn->SetText(_T("Update Data"));
     pUpdateBtnRow->AddItem(pUpdateBtn);
 
-    ui::Control* pSplit4 = new ui::Control(this);
-    pSplit4->SetAttribute(_T("height"), _T("1"));
+    auto* pSplit4 = ui::Create<ui::Control>(this, {{_T("height"), _T("1")}});
     pSplit4->SetBkColor(_T("splitline_level1"));
     pSettings->AddItem(pSplit4);
 
     // Delete data
-    ui::HBox* pDeleteRow = new ui::HBox(this);
-    pDeleteRow->SetAttribute(_T("height"), _T("30"));
-    pDeleteRow->SetAttribute(_T("child_margin"), _T("10"));
+    auto* pDeleteRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("30")}, {_T("child_margin"), _T("10")}});
     pSettings->AddItem(pDeleteRow);
 
-    ui::Label* pDeleteLabel = new ui::Label(this);
-    pDeleteLabel->SetAttribute(_T("font"), _T("system_bold_14"));
+    auto* pDeleteLabel = ui::Create<ui::Label>(this, {{_T("font"), _T("system_bold_14")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("valign"), _T("center")}});
     pDeleteLabel->SetText(_T("Delete Data:"));
-    pDeleteLabel->SetAttribute(_T("width"), _T("auto"));
-    pDeleteLabel->SetAttribute(_T("height"), _T("auto"));
-    pDeleteLabel->SetAttribute(_T("valign"), _T("center"));
     pDeleteRow->AddItem(pDeleteLabel);
 
-    ui::Box* pDeleteBox = new ui::Box(this);
-    pDeleteBox->SetAttribute(_T("border_size"), _T("1"));
-    pDeleteBox->SetAttribute(_T("border_color"), _T("splitline_level1"));
-    pDeleteBox->SetAttribute(_T("height"), _T("26"));
-    pDeleteBox->SetAttribute(_T("valign"), _T("center"));
+    auto* pDeleteBox = ui::Create<ui::Box>(this, {{_T("border_size"), _T("1")}, {_T("border_color"), _T("splitline_level1")}, {_T("height"), _T("26")}, {_T("valign"), _T("center")}});
     pDeleteRow->AddItem(pDeleteBox);
 
-    ui::RichEdit* pEditDelete = new ui::RichEdit(this);
+    auto* pEditDelete = ui::Create<ui::RichEdit>(this, {{_T("number_only"), _T("true")}, {_T("min_number"), _T("0")}, {_T("font"), _T("system_14")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("valign"), _T("center")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("normal_text_color"), _T("black")}, {_T("multi_line"), _T("false")}, {_T("prompt_mode"), _T("true")}, {_T("prompt_text"), _T("Index (subscript)")}, {_T("prompt_color"), _T("splitline_level1")}, {_T("auto_hscroll"), _T("true")}});
     pEditDelete->SetName(_T("edit_delete"));
-    pEditDelete->SetAttribute(_T("number_only"), _T("true"));
-    pEditDelete->SetAttribute(_T("min_number"), _T("0"));
     pEditDelete->SetBkColor(_T("white"));
-    pEditDelete->SetAttribute(_T("font"), _T("system_14"));
-    pEditDelete->SetAttribute(_T("width"), _T("stretch"));
-    pEditDelete->SetAttribute(_T("height"), _T("stretch"));
-    pEditDelete->SetAttribute(_T("valign"), _T("center"));
-    pEditDelete->SetAttribute(_T("text_align"), _T("vcenter"));
-    pEditDelete->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-    pEditDelete->SetAttribute(_T("normal_text_color"), _T("black"));
-    pEditDelete->SetAttribute(_T("multi_line"), _T("false"));
-    pEditDelete->SetAttribute(_T("prompt_mode"), _T("true"));
-    pEditDelete->SetAttribute(_T("prompt_text"), _T("Index (subscript)"));
-    pEditDelete->SetAttribute(_T("prompt_color"), _T("splitline_level1"));
-    pEditDelete->SetAttribute(_T("auto_hscroll"), _T("true"));
     pDeleteBox->AddItem(pEditDelete);
 
-    ui::Button* pDeleteBtn = new ui::Button(this);
+    auto* pDeleteBtn = ui::Create<ui::Button>(this, {{_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
     pDeleteBtn->SetClass(_T("btn_global_red_80x30"));
-    pDeleteBtn->SetAttribute(_T("halign"), _T("center"));
-    pDeleteBtn->SetAttribute(_T("valign"), _T("center"));
     pDeleteBtn->SetName(_T("btn_delete"));
     pDeleteBtn->SetText(_T("Delete Data"));
     pDeleteRow->AddItem(pDeleteBtn);
 
     // Virtual list on the right
-    ui::Box* pListArea = new ui::Box(this);
+    auto* pListArea = ui::Create<ui::Box>(this, {});
     pMain->AddItem(pListArea);
 
-    ui::VirtualVTileListBox* pList = new ui::VirtualVTileListBox(this);
+    auto* pList = ui::Create<ui::VirtualVTileListBox>(this, {{_T("frame_selection"), _T("true")}, {_T("select_none_when_click_blank"), _T("true")}, {_T("select_like_list_ctrl"), _T("true")}, {_T("multi_select"), _T("true")}, {_T("scroll_select"), _T("false")}, {_T("item_size"), _T("240,64")}, {_T("auto_calc_item_size"), _T("false")}, {_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("splitline_level1")}, {_T("padding"), _T("1,1,1,1")}});
     pList->SetClass(_T("list"));
     pList->SetName(_T("list"));
     pList->SetBkColor(_T("white"));
-    pList->SetAttribute(_T("frame_selection"), _T("true"));
-    pList->SetAttribute(_T("select_none_when_click_blank"), _T("true"));
-    pList->SetAttribute(_T("select_like_list_ctrl"), _T("true"));
-    pList->SetAttribute(_T("multi_select"), _T("true"));
-    pList->SetAttribute(_T("scroll_select"), _T("false"));
-    pList->SetAttribute(_T("item_size"), _T("240,64"));
-    pList->SetAttribute(_T("auto_calc_item_size"), _T("false"));
-    pList->SetAttribute(_T("vscrollbar"), _T("true"));
-    pList->SetAttribute(_T("hscrollbar"), _T("true"));
-    pList->SetAttribute(_T("border_size"), _T("1"));
-    pList->SetAttribute(_T("border_color"), _T("splitline_level1"));
-    pList->SetAttribute(_T("padding"), _T("1,1,1,1"));
     pListArea->AddItem(pList);
 
     AttachBox(pRoot);

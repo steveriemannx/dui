@@ -1,4 +1,4 @@
-#include "MainForm.h"
+﻿#include "MainForm.h"
 
 MainForm::MainForm(IMainThread* pMainThread):
     m_pMainThread(pMainThread),
@@ -26,150 +26,98 @@ DString MainForm::GetSkinFile()
 void MainForm::BuildUI()
 {
     // Corresponding to the threads.xml layout
-    ui::VBox* pRoot = new ui::VBox(this);
+    auto* pRoot = ui::Create<ui::VBox>(this, {});
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar area
-    ui::HBox* pCaption = new ui::HBox(this);
-    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
-    pCaption->SetAttribute(_T("width"), _T("stretch"));
-    pCaption->SetAttribute(_T("height"), _T("36"));
+    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    ui::Label* pTitle = new ui::Label(this);
+    auto* pTitle = ui::Create<ui::Label>(this, {{_T("height"), _T("32")}, {_T("text_align"), _T("vcenter")}, {_T("margin"), _T("10,0,0,0")}, {_T("mouse_enabled"), _T("false")}});
     pTitle->SetText(_T("dui Multithreading Example"));
-    pTitle->SetAttribute(_T("height"), _T("32"));
-    pTitle->SetAttribute(_T("text_align"), _T("vcenter"));
-    pTitle->SetAttribute(_T("margin"), _T("10,0,0,0"));
-    pTitle->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pTitle);
 
-    ui::Control* pSpacer = new ui::Control(this);
-    pSpacer->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
     pCaption->AddItem(pSpacer);
 
-    ui::Button* pMinBtn = new ui::Button(this);
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
     pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetAttribute(_T("height"), _T("32"));
-    pMinBtn->SetAttribute(_T("width"), _T("40"));
     pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pMinBtn->SetToolTipText(_T("Minimize"));
     pCaption->AddItem(pMinBtn);
 
-    ui::Box* pMaxBox = new ui::Box(this);
-    pMaxBox->SetAttribute(_T("height"), _T("stretch"));
-    pMaxBox->SetAttribute(_T("width"), _T("40"));
-    pMaxBox->SetAttribute(_T("margin"), _T("0,2,0,2"));
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
     pCaption->AddItem(pMaxBox);
 
-    ui::Button* pMaxBtn = new ui::Button(this);
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
     pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetAttribute(_T("height"), _T("32"));
-    pMaxBtn->SetAttribute(_T("width"), _T("stretch"));
     pMaxBtn->SetName(_T("maxbtn"));
     pMaxBtn->SetToolTipText(_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    ui::Button* pRestoreBtn = new ui::Button(this);
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
     pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetAttribute(_T("height"), _T("32"));
-    pRestoreBtn->SetAttribute(_T("width"), _T("stretch"));
     pRestoreBtn->SetName(_T("restorebtn"));
     pRestoreBtn->SetVisible(false);
     pRestoreBtn->SetToolTipText(_T("Restore"));
     pMaxBox->AddItem(pRestoreBtn);
 
-    ui::Button* pCloseBtn = new ui::Button(this);
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
-    pCloseBtn->SetAttribute(_T("width"), _T("40"));
     pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
     pCloseBtn->SetToolTipText(_T("Close"));
     pCaption->AddItem(pCloseBtn);
 
     // Work area
-    ui::VBox* pContent = new ui::VBox(this);
-    pContent->SetAttribute(_T("padding"), _T("6,6,6,6"));
+    auto* pContent = ui::Create<ui::VBox>(this, {{_T("padding"), _T("6,6,6,6")}});
     pRoot->AddItem(pContent);
 
     // Toolbar
-    ui::HBox* pToolBar = new ui::HBox(this);
-    pToolBar->SetAttribute(_T("margin"), _T("0,0,0,0"));
-    pToolBar->SetAttribute(_T("valign"), _T("center"));
-    pToolBar->SetAttribute(_T("halign"), _T("center"));
-    pToolBar->SetAttribute(_T("height"), _T("48"));
+    auto* pToolBar = ui::Create<ui::HBox>(this, {{_T("margin"), _T("0,0,0,0")}, {_T("valign"), _T("center")}, {_T("halign"), _T("center")}, {_T("height"), _T("48")}});
     pContent->AddItem(pToolBar);
 
-    ui::Button* pStartBtn = new ui::Button(this);
+    auto* pStartBtn = ui::Create<ui::Button>(this, {{_T("margin"), _T("2,8,2,2")}});
     pStartBtn->SetClass(_T("btn_global_blue_80x30"));
     pStartBtn->SetName(_T("start_threads"));
     pStartBtn->SetText(_T("Start Worker Threads"));
-    pStartBtn->SetAttribute(_T("margin"), _T("2,8,2,2"));
     pToolBar->AddItem(pStartBtn);
 
-    ui::Button* pStopBtn = new ui::Button(this);
+    auto* pStopBtn = ui::Create<ui::Button>(this, {{_T("margin"), _T("2,8,2,2")}});
     pStopBtn->SetClass(_T("btn_global_blue_80x30"));
     pStopBtn->SetName(_T("stop_threads"));
     pStopBtn->SetText(_T("Stop Worker Threads"));
-    pStopBtn->SetAttribute(_T("margin"), _T("2,8,2,2"));
     pToolBar->AddItem(pStopBtn);
 
-    ui::Label* pLabel = new ui::Label(this);
+    auto* pLabel = ui::Create<ui::Label>(this, {{_T("height"), _T("100%")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("right,vcenter")}, {_T("margin"), _T("8,0,0,0")}});
     pLabel->SetText(_T("Run task in the following thread, thread identifier:"));
-    pLabel->SetAttribute(_T("height"), _T("100%"));
-    pLabel->SetAttribute(_T("width"), _T("auto"));
-    pLabel->SetAttribute(_T("text_align"), _T("right,vcenter"));
-    pLabel->SetAttribute(_T("margin"), _T("8,0,0,0"));
     pToolBar->AddItem(pLabel);
 
-    ui::RichEdit* pThreadId = new ui::RichEdit(this);
+    auto* pThreadId = ui::Create<ui::RichEdit>(this, {{_T("valign"), _T("center")}});
     pThreadId->SetClass(_T("rich_edit_spin simple_border"));
     pThreadId->SetName(_T("threads_identifier"));
     pThreadId->SetText(_T("1"));
     pThreadId->SetBkColor(_T("white"));
-    pThreadId->SetAttribute(_T("valign"), _T("center"));
     pToolBar->AddItem(pThreadId);
 
-    ui::Button* pRunTaskBtn = new ui::Button(this);
+    auto* pRunTaskBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("180")}, {_T("margin"), _T("8,8,2,2")}});
     pRunTaskBtn->SetClass(_T("btn_global_blue_80x30"));
     pRunTaskBtn->SetName(_T("run_task_in_threads"));
-    pRunTaskBtn->SetAttribute(_T("width"), _T("180"));
     pRunTaskBtn->SetText(_T("Run Task in Worker Thread"));
-    pRunTaskBtn->SetAttribute(_T("margin"), _T("8,8,2,2"));
     pToolBar->AddItem(pRunTaskBtn);
 
-    ui::Label* pRunningTime = new ui::Label(this);
+    auto* pRunningTime = ui::Create<ui::Label>(this, {{_T("height"), _T("100%")}, {_T("width"), _T("100%")}, {_T("text_align"), _T("hcenter,vcenter")}, {_T("margin"), _T("8,0,0,0")}});
     pRunningTime->SetName(_T("running_time"));
     pRunningTime->SetText(_T("00:00:00"));
-    pRunningTime->SetAttribute(_T("height"), _T("100%"));
-    pRunningTime->SetAttribute(_T("width"), _T("100%"));
-    pRunningTime->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
-    pRunningTime->SetAttribute(_T("margin"), _T("8,0,0,0"));
     pToolBar->AddItem(pRunningTime);
 
-    ui::Line* pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("height"), _T("1"));
+    auto* pLine = ui::Create<ui::Line>(this, {{_T("height"), _T("1")}});
     pContent->AddItem(pLine);
 
-    ui::RichEdit* pLogView = new ui::RichEdit(this);
+    auto* pLogView = ui::Create<ui::RichEdit>(this, {{_T("text_align"), _T("left,top")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("hide_selection"), _T("true")}, {_T("multi_line"), _T("true")}, {_T("vscrollbar"), _T("true")}, {_T("auto_vscroll"), _T("true")}, {_T("hscrollbar"), _T("false")}, {_T("normal_text_color"), _T("darkcolor")}, {_T("want_return_msg"), _T("true")}, {_T("rich_text"), _T("false")}, {_T("default_context_menu"), _T("true")}});
     pLogView->SetClass(_T("simple simple_border"));
     pLogView->SetName(_T("log_view"));
-    pLogView->SetAttribute(_T("text_align"), _T("left,top"));
     pLogView->SetBkColor(_T("white"));
-    pLogView->SetAttribute(_T("width"), _T("stretch"));
-    pLogView->SetAttribute(_T("height"), _T("stretch"));
-    pLogView->SetAttribute(_T("hide_selection"), _T("true"));
-    pLogView->SetAttribute(_T("multi_line"), _T("true"));
-    pLogView->SetAttribute(_T("vscrollbar"), _T("true"));
-    pLogView->SetAttribute(_T("auto_vscroll"), _T("true"));
-    pLogView->SetAttribute(_T("hscrollbar"), _T("false"));
-    pLogView->SetAttribute(_T("normal_text_color"), _T("darkcolor"));
-    pLogView->SetAttribute(_T("want_return_msg"), _T("true"));
-    pLogView->SetAttribute(_T("rich_text"), _T("false"));
-    pLogView->SetAttribute(_T("default_context_menu"), _T("true"));
     pContent->AddItem(pLogView);
 
     AttachBox(pRoot);

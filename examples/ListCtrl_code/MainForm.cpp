@@ -1,4 +1,4 @@
-#include "MainForm.h"
+﻿#include "MainForm.h"
 
 MainForm::MainForm():
     m_fLoadingPercent(0)
@@ -23,96 +23,66 @@ DString MainForm::GetSkinFile()
 void MainForm::BuildUI()
 {
     // Corresponds to the list_ctrl.xml layout (hand-written pure code)
-    ui::VBox* pRoot = new ui::VBox(this);
+    auto* pRoot = ui::Create<ui::VBox>(this, {});
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar area
-    ui::HBox* pCaption = new ui::HBox(this);
-    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
-    pCaption->SetAttribute(_T("width"), _T("stretch"));
-    pCaption->SetAttribute(_T("height"), _T("36"));
+    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    ui::Control* pSpacer = new ui::Control(this);
-    pSpacer->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
     pCaption->AddItem(pSpacer);
 
-    ui::Button* pFullscreenBtn = new ui::Button(this);
+    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
     pFullscreenBtn->SetClass(_T("btn_wnd_fullscreen_11"));
-    pFullscreenBtn->SetAttribute(_T("height"), _T("32"));
-    pFullscreenBtn->SetAttribute(_T("width"), _T("40"));
     pFullscreenBtn->SetName(_T("fullscreenbtn"));
-    pFullscreenBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pFullscreenBtn->SetToolTipText(_T("Fullscreen, press ESC to exit fullscreen"));
     pCaption->AddItem(pFullscreenBtn);
 
-    ui::Button* pMinBtn = new ui::Button(this);
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
     pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetAttribute(_T("height"), _T("32"));
-    pMinBtn->SetAttribute(_T("width"), _T("40"));
     pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pMinBtn->SetToolTipText(_T("Minimize"));
     pCaption->AddItem(pMinBtn);
 
-    ui::Box* pMaxBox = new ui::Box(this);
-    pMaxBox->SetAttribute(_T("height"), _T("stretch"));
-    pMaxBox->SetAttribute(_T("width"), _T("40"));
-    pMaxBox->SetAttribute(_T("margin"), _T("0,2,0,2"));
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
     pCaption->AddItem(pMaxBox);
 
-    ui::Button* pMaxBtn = new ui::Button(this);
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
     pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetAttribute(_T("height"), _T("32"));
-    pMaxBtn->SetAttribute(_T("width"), _T("stretch"));
     pMaxBtn->SetName(_T("maxbtn"));
     pMaxBtn->SetToolTipText(_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    ui::Button* pRestoreBtn = new ui::Button(this);
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
     pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetAttribute(_T("height"), _T("32"));
-    pRestoreBtn->SetAttribute(_T("width"), _T("stretch"));
     pRestoreBtn->SetName(_T("restorebtn"));
     pRestoreBtn->SetVisible(false);
     pRestoreBtn->SetToolTipText(_T("Restore"));
     pMaxBox->AddItem(pRestoreBtn);
 
-    ui::Button* pCloseBtn = new ui::Button(this);
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
-    pCloseBtn->SetAttribute(_T("width"), _T("40"));
     pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
     pCloseBtn->SetToolTipText(_T("Close"));
     pCaption->AddItem(pCloseBtn);
 
     // Work area
-    ui::VBox* pContent = new ui::VBox(this);
+    auto* pContent = ui::Create<ui::VBox>(this, {});
     pRoot->AddItem(pContent);
 
     // Table type row
-    ui::HBox* pTypeRow = new ui::HBox(this);
-    pTypeRow->SetAttribute(_T("height"), _T("auto"));
+    auto* pTypeRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
     pContent->AddItem(pTypeRow);
 
-    ui::Label* pTypeLabel = new ui::Label(this);
+    auto* pTypeLabel = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}});
     pTypeLabel->SetText(_T("Table Type:"));
-    pTypeLabel->SetAttribute(_T("valign"), _T("center"));
-    pTypeLabel->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pTypeRow->AddItem(pTypeLabel);
 
-    ui::Combo* pTypeCombo = new ui::Combo(this);
+    auto* pTypeCombo = ui::Create<ui::Combo>(this, {{_T("combo_type"), _T("drop_list")}, {_T("dropbox_size"), _T("0,300")}, {_T("combo_icon_class"), _T("")}, {_T("height"), _T("26")}, {_T("width"), _T("80")}, {_T("margin"), _T("0,0,0,1")}, {_T("valign"), _T("center")}});
     pTypeCombo->SetClass(_T("combo"));
     pTypeCombo->SetName(_T("list_ctrl_type_combo"));
-    pTypeCombo->SetAttribute(_T("combo_type"), _T("drop_list"));
-    pTypeCombo->SetAttribute(_T("dropbox_size"), _T("0,300"));
-    pTypeCombo->SetAttribute(_T("combo_icon_class"), _T(""));
-    pTypeCombo->SetAttribute(_T("height"), _T("26"));
-    pTypeCombo->SetAttribute(_T("width"), _T("80"));
-    pTypeCombo->SetAttribute(_T("margin"), _T("0,0,0,1"));
-    pTypeCombo->SetAttribute(_T("valign"), _T("center"));
     pTypeRow->AddItem(pTypeCombo);
 
     {
@@ -121,171 +91,101 @@ void MainForm::BuildUI()
             { _T("Report"), 0 }, { _T("Icon"), 1 }, { _T("List"), 2 },
         };
         for (const auto& item : items) {
-            ui::TreeNode* pNode = new ui::TreeNode(this);
+    auto* pNode = ui::Create<ui::TreeNode>(this, {{_T("padding"), _T("4")}});
             pNode->SetClass(_T("tree_node"));
-            pNode->SetAttribute(_T("padding"), _T("4"));
             pNode->SetText(item.text);
             pNode->SetUserDataID((size_t)item.userData);
             pTypeCombo->GetTreeView()->GetRootNode()->AddChildNode(pNode);
         }
     }
 
-    ui::CheckBox* pMultiSelect = new ui::CheckBox(this);
+    auto* pMultiSelect = ui::Create<ui::CheckBox>(this, {{_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}});
     pMultiSelect->SetClass(_T("checkbox_1"));
     pMultiSelect->SetName(_T("checkbox_multi_select"));
     pMultiSelect->SetText(_T("Multi-select"));
-    pMultiSelect->SetAttribute(_T("margin"), _T("4,0,0,0"));
-    pMultiSelect->SetAttribute(_T("valign"), _T("center"));
     pTypeRow->AddItem(pMultiSelect);
 
     // Tool area
-    ui::HBox* pToolArea = new ui::HBox(this);
-    pToolArea->SetAttribute(_T("height"), _T("auto"));
+    auto* pToolArea = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
     pContent->AddItem(pToolArea);
 
     // Report type control group
-    ui::GroupVBox* pReportGroup = new ui::GroupVBox(this);
+    auto* pReportGroup = ui::Create<ui::GroupVBox>(this, {{_T("height"), _T("auto")}, {_T("width"), _T("770")}, {_T("text"), _T("Report Type")}});
     pReportGroup->SetName(_T("report_group"));
-    pReportGroup->SetAttribute(_T("height"), _T("auto"));
-    pReportGroup->SetAttribute(_T("width"), _T("770"));
-    pReportGroup->SetAttribute(_T("text"), _T("Report Type"));
     pToolArea->AddItem(pReportGroup);
 
     // Row 1: header controls
-    ui::HBox* pRow1 = new ui::HBox(this);
-    pRow1->SetAttribute(_T("minheight"), _T("18"));
+    auto* pRow1 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,18,4,0")}});
     pRow1->SetBkColor(_T("bk_wnd_darkcolor"));
-    pRow1->SetAttribute(_T("height"), _T("auto"));
-    pRow1->SetAttribute(_T("margin"), _T("4,18,4,0"));
     pReportGroup->AddItem(pRow1);
 
-    ui::Label* pLbl = new ui::Label(this);
+    auto* pLbl = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("6,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("6,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}});
     pLbl->SetText(_T("Header Controls:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pRow1->AddItem(pLbl);
 
-    ui::Option* pOpt = new ui::Option(this);
+    auto* pOpt = ui::Create<ui::Option>(this, {{_T("group"), _T("show")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("group"), _T("show")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("group"), _T("drag_order")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("group"), _T("drag_order")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
     pOpt->SetClass(_T("option_2"));
-    pOpt->SetAttribute(_T("group"), _T("show"));
-    pOpt->SetAttribute(_T("width"), _T("64"));
-    pOpt->SetAttribute(_T("height"), _T("32"));
     pOpt->SetText(_T("Hide"));
-    pOpt->SetAttribute(_T("padding"), _T("2,2,2,2"));
-    pOpt->SetAttribute(_T("borderround"), _T("2,2"));
-    pOpt->SetAttribute(_T("valign"), _T("center"));
     pRow1->AddItem(pOpt);
 
     pOpt = new ui::Option(this);
     pOpt->SetClass(_T("option_2"));
-    pOpt->SetAttribute(_T("group"), _T("show"));
-    pOpt->SetAttribute(_T("width"), _T("64"));
-    pOpt->SetAttribute(_T("height"), _T("32"));
     pOpt->SetText(_T("Show"));
-    pOpt->SetAttribute(_T("padding"), _T("2,2,2,2"));
-    pOpt->SetAttribute(_T("borderround"), _T("2,2"));
-    pOpt->SetAttribute(_T("valign"), _T("center"));
     pOpt->Selected(true);
     pRow1->AddItem(pOpt);
 
-    ui::Line* pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("0,8,4,8"));
-    pLine->SetAttribute(_T("width"), _T("2"));
+    auto* pLine = ui::Create<ui::Line>(this, {{_T("vertical"), _T("true")}, {_T("margin"), _T("0,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("0,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,4,4,4")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,2,4,2")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,2,4,2")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("0,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("0,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,2,4,2")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,2,4,2")}, {_T("width"), _T("2")}});
     pRow1->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Drag Header to Reorder:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pRow1->AddItem(pLbl);
 
     pOpt = new ui::Option(this);
     pOpt->SetClass(_T("option_2"));
-    pOpt->SetAttribute(_T("group"), _T("drag_order"));
-    pOpt->SetAttribute(_T("width"), _T("64"));
-    pOpt->SetAttribute(_T("height"), _T("32"));
     pOpt->SetText(_T("Forbidden"));
-    pOpt->SetAttribute(_T("padding"), _T("2,2,2,2"));
-    pOpt->SetAttribute(_T("borderround"), _T("2,2"));
-    pOpt->SetAttribute(_T("valign"), _T("center"));
     pRow1->AddItem(pOpt);
 
     pOpt = new ui::Option(this);
     pOpt->SetClass(_T("option_2"));
-    pOpt->SetAttribute(_T("group"), _T("drag_order"));
-    pOpt->SetAttribute(_T("width"), _T("64"));
-    pOpt->SetAttribute(_T("height"), _T("32"));
     pOpt->SetText(_T("Allowed"));
-    pOpt->SetAttribute(_T("padding"), _T("2,2,2,2"));
-    pOpt->SetAttribute(_T("borderround"), _T("2,2"));
-    pOpt->SetAttribute(_T("valign"), _T("center"));
     pOpt->Selected(true);
     pRow1->AddItem(pOpt);
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("0,8,4,8"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow1->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Header Height:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pRow1->AddItem(pLbl);
 
-    ui::RichEdit* pHeaderHeight = new ui::RichEdit(this);
+    auto* pHeaderHeight = ui::Create<ui::RichEdit>(this, {{_T("min_number"), _T("0")}, {_T("max_number"), _T("512")}, {_T("limit_text"), _T("3")}, {_T("margin"), _T("0,2,0,0")}});
     pHeaderHeight->SetClass(_T("simple simple_border rich_edit_spin"));
     pHeaderHeight->SetName(_T("header_height_edit"));
-    pHeaderHeight->SetAttribute(_T("min_number"), _T("0"));
-    pHeaderHeight->SetAttribute(_T("max_number"), _T("512"));
-    pHeaderHeight->SetAttribute(_T("limit_text"), _T("3"));
     pHeaderHeight->SetText(_T("0"));
-    pHeaderHeight->SetAttribute(_T("margin"), _T("0,2,0,0"));
     pRow1->AddItem(pHeaderHeight);
 
-    ui::Button* pStretchBtn = new ui::Button(this);
+    auto* pStretchBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("auto")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("text_padding"), _T("8,0,8,0")}, {_T("margin"), _T("4,0,0,0")}});
     pStretchBtn->SetClass(_T("btn_global_color_gray"));
     pStretchBtn->SetName(_T("set_column_stretch"));
     pStretchBtn->SetText(_T("Set Column Widths Proportionally"));
-    pStretchBtn->SetAttribute(_T("width"), _T("auto"));
-    pStretchBtn->SetAttribute(_T("height"), _T("30"));
-    pStretchBtn->SetAttribute(_T("border_round"), _T("3,3"));
-    pStretchBtn->SetAttribute(_T("text_padding"), _T("8,0,8,0"));
-    pStretchBtn->SetAttribute(_T("margin"), _T("4,0,0,0"));
     pRow1->AddItem(pStretchBtn);
 
     // Row 2: column controls
-    ui::HBox* pRow2 = new ui::HBox(this);
-    pRow2->SetAttribute(_T("minheight"), _T("18"));
+    auto* pRow2 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
     pRow2->SetBkColor(_T("bk_wnd_darkcolor"));
-    pRow2->SetAttribute(_T("height"), _T("auto"));
-    pRow2->SetAttribute(_T("margin"), _T("4,0,4,0"));
     pReportGroup->AddItem(pRow2);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Column Controls:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pRow2->AddItem(pLbl);
 
-    ui::Combo* pColumnCombo = new ui::Combo(this);
+    auto* pColumnCombo = ui::Create<ui::Combo>(this, {{_T("combo_type"), _T("drop_list")}, {_T("dropbox_size"), _T("0,300")}, {_T("combo_icon_class"), _T("")}, {_T("height"), _T("26")}, {_T("width"), _T("80")}, {_T("margin"), _T("0,0,0,1")}, {_T("valign"), _T("center")}});
     pColumnCombo->SetClass(_T("combo"));
     pColumnCombo->SetName(_T("column_combo"));
-    pColumnCombo->SetAttribute(_T("combo_type"), _T("drop_list"));
-    pColumnCombo->SetAttribute(_T("dropbox_size"), _T("0,300"));
-    pColumnCombo->SetAttribute(_T("combo_icon_class"), _T(""));
-    pColumnCombo->SetAttribute(_T("height"), _T("26"));
-    pColumnCombo->SetAttribute(_T("width"), _T("80"));
-    pColumnCombo->SetAttribute(_T("margin"), _T("0,0,0,1"));
-    pColumnCombo->SetAttribute(_T("valign"), _T("center"));
     pRow2->AddItem(pColumnCombo);
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("8,4,4,4"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow2->AddItem(pLine);
 
     struct Row2Check { DString name; DString text; };
@@ -298,66 +198,46 @@ void MainForm::BuildUI()
         { _T("checkbox_column_editable"), _T("Editable Text") },
     };
     for (const auto& item : row2Checks) {
-        ui::CheckBox* pCheck = new ui::CheckBox(this);
+    auto* pCheck = ui::Create<ui::CheckBox>(this, {{_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}});
         pCheck->SetClass(_T("checkbox_1"));
         pCheck->SetName(item.name);
         pCheck->SetText(item.text);
-        pCheck->SetAttribute(_T("margin"), _T("4,0,0,0"));
-        pCheck->SetAttribute(_T("valign"), _T("center"));
         pRow2->AddItem(pCheck);
     }
 
     // Row 3: column-level CheckBox/icon
-    ui::HBox* pRow3 = new ui::HBox(this);
-    pRow3->SetAttribute(_T("minheight"), _T("18"));
+    auto* pRow3 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
     pRow3->SetBkColor(_T("bk_wnd_darkcolor"));
-    pRow3->SetAttribute(_T("height"), _T("auto"));
-    pRow3->SetAttribute(_T("margin"), _T("4,0,4,0"));
     pReportGroup->AddItem(pRow3);
 
-    ui::Control* pW153 = new ui::Control(this);
-    pW153->SetAttribute(_T("width"), _T("153"));
+    auto* pW153 = ui::Create<ui::Control>(this, {{_T("width"), _T("153")}, {_T("width"), _T("153")}, {_T("width"), _T("153")}});
     pRow3->AddItem(pW153);
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("8,2,4,2"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow3->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Column CheckBox:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pLbl->SetToolTipText(_T("Each column header and cell can show a CheckBox"));
     pRow3->AddItem(pLbl);
 
-    ui::CheckBox* pCheck = new ui::CheckBox(this);
+    auto* pCheck = ui::Create<ui::CheckBox>(this, {{_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}});
     pCheck->SetClass(_T("checkbox_1"));
     pCheck->SetName(_T("checkbox_column_show_header_checkbox"));
     pCheck->SetText(_T("Show in Header"));
-    pCheck->SetAttribute(_T("margin"), _T("4,0,0,0"));
-    pCheck->SetAttribute(_T("valign"), _T("center"));
     pRow3->AddItem(pCheck);
 
     pCheck = new ui::CheckBox(this);
     pCheck->SetClass(_T("checkbox_1"));
     pCheck->SetName(_T("checkbox_column_show_checkbox"));
     pCheck->SetText(_T("Show in Each Column"));
-    pCheck->SetAttribute(_T("margin"), _T("4,0,0,0"));
-    pCheck->SetAttribute(_T("valign"), _T("center"));
     pRow3->AddItem(pCheck);
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("8,2,4,2"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow3->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Column Icons:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pLbl->SetToolTipText(_T("Each column header and cell can show an icon"));
     pRow3->AddItem(pLbl);
 
@@ -365,40 +245,27 @@ void MainForm::BuildUI()
     pCheck->SetClass(_T("checkbox_1"));
     pCheck->SetName(_T("checkbox_column_show_header_icon"));
     pCheck->SetText(_T("Show in Header"));
-    pCheck->SetAttribute(_T("margin"), _T("4,0,0,0"));
-    pCheck->SetAttribute(_T("valign"), _T("center"));
     pRow3->AddItem(pCheck);
 
     pCheck = new ui::CheckBox(this);
     pCheck->SetClass(_T("checkbox_1"));
     pCheck->SetName(_T("checkbox_column_show_icon"));
     pCheck->SetText(_T("Show in Each Column"));
-    pCheck->SetAttribute(_T("margin"), _T("4,0,0,0"));
-    pCheck->SetAttribute(_T("valign"), _T("center"));
     pRow3->AddItem(pCheck);
 
     // Row 4: header/table text alignment
-    ui::HBox* pRow4 = new ui::HBox(this);
-    pRow4->SetAttribute(_T("minheight"), _T("18"));
+    auto* pRow4 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
     pRow4->SetBkColor(_T("bk_wnd_darkcolor"));
-    pRow4->SetAttribute(_T("height"), _T("auto"));
-    pRow4->SetAttribute(_T("margin"), _T("4,0,4,0"));
     pReportGroup->AddItem(pRow4);
 
     pW153 = new ui::Control(this);
-    pW153->SetAttribute(_T("width"), _T("153"));
     pRow4->AddItem(pW153);
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("8,8,4,8"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow4->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Header Text:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("6,0,2,0"));
     pRow4->AddItem(pLbl);
 
     struct AlignOpt { DString name; DString group; DString text; bool selected; };
@@ -408,30 +275,20 @@ void MainForm::BuildUI()
         { _T("header_text_align_right"), _T("header_text_align"), _T("Right"), false },
     };
     for (const auto& item : headerAligns) {
-        ui::Option* pAlign = new ui::Option(this);
+    auto* pAlign = ui::Create<ui::Option>(this, {{_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
         pAlign->SetClass(_T("option_2"));
         pAlign->SetName(item.name);
         pAlign->SetAttribute(_T("group"), item.group);
-        pAlign->SetAttribute(_T("width"), _T("64"));
-        pAlign->SetAttribute(_T("height"), _T("32"));
         pAlign->SetText(item.text);
-        pAlign->SetAttribute(_T("padding"), _T("2,2,2,2"));
-        pAlign->SetAttribute(_T("borderround"), _T("2,2"));
-        pAlign->SetAttribute(_T("valign"), _T("center"));
         if (item.selected) pAlign->Selected(true);
         pRow4->AddItem(pAlign);
     }
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("8,8,4,8"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow4->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Cell Text:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("6,0,2,0"));
     pRow4->AddItem(pLbl);
 
     const AlignOpt columnAligns[] = {
@@ -440,38 +297,26 @@ void MainForm::BuildUI()
         { _T("column_text_align_right"), _T("column_text_align"), _T("Right"), false },
     };
     for (const auto& item : columnAligns) {
-        ui::Option* pAlign = new ui::Option(this);
+    auto* pAlign = ui::Create<ui::Option>(this, {{_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
         pAlign->SetClass(_T("option_2"));
         pAlign->SetName(item.name);
         pAlign->SetAttribute(_T("group"), item.group);
-        pAlign->SetAttribute(_T("width"), _T("64"));
-        pAlign->SetAttribute(_T("height"), _T("32"));
         pAlign->SetText(item.text);
-        pAlign->SetAttribute(_T("padding"), _T("2,2,2,2"));
-        pAlign->SetAttribute(_T("borderround"), _T("2,2"));
-        pAlign->SetAttribute(_T("valign"), _T("center"));
         if (item.selected) pAlign->Selected(true);
         pRow4->AddItem(pAlign);
     }
 
     // Row 5: table properties (grid/row height)
-    ui::HBox* pRow5 = new ui::HBox(this);
-    pRow5->SetAttribute(_T("minheight"), _T("18"));
+    auto* pRow5 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
     pRow5->SetBkColor(_T("bk_wnd_darkcolor"));
-    pRow5->SetAttribute(_T("height"), _T("auto"));
-    pRow5->SetAttribute(_T("margin"), _T("4,0,4,0"));
     pReportGroup->AddItem(pRow5);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Table Properties:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pRow5->AddItem(pLbl);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Horizontal Grid:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pRow5->AddItem(pLbl);
 
     struct GridOpt { DString group; DString text; bool selected; };
@@ -480,29 +325,19 @@ void MainForm::BuildUI()
         { _T("grid_line_row"), _T("Show"), true },
     };
     for (const auto& item : gridRow) {
-        ui::Option* pGrid = new ui::Option(this);
+    auto* pGrid = ui::Create<ui::Option>(this, {{_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
         pGrid->SetClass(_T("option_2"));
         pGrid->SetAttribute(_T("group"), item.group);
-        pGrid->SetAttribute(_T("width"), _T("64"));
-        pGrid->SetAttribute(_T("height"), _T("32"));
         pGrid->SetText(item.text);
-        pGrid->SetAttribute(_T("padding"), _T("2,2,2,2"));
-        pGrid->SetAttribute(_T("borderround"), _T("2,2"));
-        pGrid->SetAttribute(_T("valign"), _T("center"));
         if (item.selected) pGrid->Selected(true);
         pRow5->AddItem(pGrid);
     }
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("0,8,4,8"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow5->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Vertical Grid:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pRow5->AddItem(pLbl);
 
     const GridOpt gridColumn[] = {
@@ -510,63 +345,40 @@ void MainForm::BuildUI()
         { _T("grid_line_column"), _T("Show"), true },
     };
     for (const auto& item : gridColumn) {
-        ui::Option* pGrid = new ui::Option(this);
+    auto* pGrid = ui::Create<ui::Option>(this, {{_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
         pGrid->SetClass(_T("option_2"));
         pGrid->SetAttribute(_T("group"), item.group);
-        pGrid->SetAttribute(_T("width"), _T("64"));
-        pGrid->SetAttribute(_T("height"), _T("32"));
         pGrid->SetText(item.text);
-        pGrid->SetAttribute(_T("padding"), _T("2,2,2,2"));
-        pGrid->SetAttribute(_T("borderround"), _T("2,2"));
-        pGrid->SetAttribute(_T("valign"), _T("center"));
         if (item.selected) pGrid->Selected(true);
         pRow5->AddItem(pGrid);
     }
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("0,8,4,8"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow5->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Row Height:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pRow5->AddItem(pLbl);
 
-    ui::RichEdit* pItemHeight = new ui::RichEdit(this);
+    auto* pItemHeight = ui::Create<ui::RichEdit>(this, {{_T("min_number"), _T("0")}, {_T("max_number"), _T("512")}, {_T("limit_text"), _T("3")}, {_T("margin"), _T("0,2,0,0")}});
     pItemHeight->SetClass(_T("simple simple_border rich_edit_spin"));
     pItemHeight->SetName(_T("list_item_height_edit"));
-    pItemHeight->SetAttribute(_T("min_number"), _T("0"));
-    pItemHeight->SetAttribute(_T("max_number"), _T("512"));
-    pItemHeight->SetAttribute(_T("limit_text"), _T("3"));
     pItemHeight->SetText(_T("0"));
-    pItemHeight->SetAttribute(_T("margin"), _T("0,2,0,0"));
     pRow5->AddItem(pItemHeight);
 
     // Row 6: row-level CheckBox/icon
-    ui::HBox* pRow6 = new ui::HBox(this);
-    pRow6->SetAttribute(_T("minheight"), _T("18"));
+    auto* pRow6 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,8")}});
     pRow6->SetBkColor(_T("bk_wnd_darkcolor"));
-    pRow6->SetAttribute(_T("height"), _T("auto"));
-    pRow6->SetAttribute(_T("margin"), _T("4,0,4,8"));
     pReportGroup->AddItem(pRow6);
 
     pW153 = new ui::Control(this);
-    pW153->SetAttribute(_T("width"), _T("153"));
     pRow6->AddItem(pW153);
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("8,2,4,2"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow6->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Row CheckBox:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pLbl->SetToolTipText(_T("Each row header and row start can show a CheckBox"));
     pRow6->AddItem(pLbl);
 
@@ -574,28 +386,19 @@ void MainForm::BuildUI()
     pCheck->SetClass(_T("checkbox_1"));
     pCheck->SetName(_T("checkbox_show_header_checkbox"));
     pCheck->SetText(_T("Show in Header"));
-    pCheck->SetAttribute(_T("margin"), _T("4,0,0,0"));
-    pCheck->SetAttribute(_T("valign"), _T("center"));
     pRow6->AddItem(pCheck);
 
     pCheck = new ui::CheckBox(this);
     pCheck->SetClass(_T("checkbox_1"));
     pCheck->SetName(_T("checkbox_show_checkbox"));
     pCheck->SetText(_T("Show at Row Start"));
-    pCheck->SetAttribute(_T("margin"), _T("4,0,0,0"));
-    pCheck->SetAttribute(_T("valign"), _T("center"));
     pRow6->AddItem(pCheck);
 
     pLine = new ui::Line(this);
-    pLine->SetAttribute(_T("vertical"), _T("true"));
-    pLine->SetAttribute(_T("margin"), _T("8,2,4,2"));
-    pLine->SetAttribute(_T("width"), _T("2"));
     pRow6->AddItem(pLine);
 
     pLbl = new ui::Label(this);
     pLbl->SetText(_T("Row Icons:"));
-    pLbl->SetAttribute(_T("valign"), _T("center"));
-    pLbl->SetAttribute(_T("margin"), _T("2,0,2,0"));
     pLbl->SetToolTipText(_T("Each row header and row start can show an icon"));
     pRow6->AddItem(pLbl);
 
@@ -603,16 +406,13 @@ void MainForm::BuildUI()
     pCheck->SetClass(_T("checkbox_1"));
     pCheck->SetName(_T("checkbox_show_icon"));
     pCheck->SetText(_T("Show at Row Start"));
-    pCheck->SetAttribute(_T("margin"), _T("4,0,0,0"));
-    pCheck->SetAttribute(_T("valign"), _T("center"));
     pRow6->AddItem(pCheck);
 
     // Other tests (Loading)
-    ui::HBox* pOtherArea = new ui::HBox(this);
+    auto* pOtherArea = ui::Create<ui::HBox>(this, {});
     pToolArea->AddItem(pOtherArea);
 
-    ui::GroupVBox* pOther1 = new ui::GroupVBox(this);
-    pOther1->SetAttribute(_T("text"), _T("Other Tests"));
+    auto* pOther1 = ui::Create<ui::GroupVBox>(this, {{_T("text"), _T("Other Tests")}});
     pOtherArea->AddItem(pOther1);
 
     struct LoadingBtn { DString name; DString text; int32_t marginTop; };
@@ -623,19 +423,15 @@ void MainForm::BuildUI()
         { _T("loading_btn2"), _T("Loading Function Test 2"), 4 },
     };
     for (const auto& item : loadingBtns1) {
-        ui::Button* pBtn = new ui::Button(this);
+    auto* pBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("200")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("width"), _T("200")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}});
         pBtn->SetClass(_T("btn_global_color_gray"));
         pBtn->SetName(item.name);
         pBtn->SetText(item.text);
-        pBtn->SetAttribute(_T("width"), _T("200"));
-        pBtn->SetAttribute(_T("height"), _T("30"));
-        pBtn->SetAttribute(_T("border_round"), _T("3,3"));
         pBtn->SetAttribute(_T("margin"), ui::StringUtil::Printf(_T("20,%d,10,0"), item.marginTop));
         pOther1->AddItem(pBtn);
     }
 
-    ui::GroupVBox* pOther2 = new ui::GroupVBox(this);
-    pOther2->SetAttribute(_T("text"), _T("Other Tests"));
+    auto* pOther2 = ui::Create<ui::GroupVBox>(this, {{_T("text"), _T("Other Tests")}});
     pOtherArea->AddItem(pOther2);
 
     const LoadingBtn loadingBtns2[] = {
@@ -645,65 +441,26 @@ void MainForm::BuildUI()
         { _T("loading_btn6"), _T("Loading Function Test 6"), 4 },
     };
     for (const auto& item : loadingBtns2) {
-        ui::Button* pBtn = new ui::Button(this);
+    auto* pBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("200")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("width"), _T("200")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}});
         pBtn->SetClass(_T("btn_global_color_gray"));
         pBtn->SetName(item.name);
         pBtn->SetText(item.text);
-        pBtn->SetAttribute(_T("width"), _T("200"));
-        pBtn->SetAttribute(_T("height"), _T("30"));
-        pBtn->SetAttribute(_T("border_round"), _T("3,3"));
         pBtn->SetAttribute(_T("margin"), ui::StringUtil::Printf(_T("20,%d,10,0"), item.marginTop));
         pOther2->AddItem(pBtn);
     }
 
     // Splitter bar
-    ui::Split* pSplit = new ui::Split(this);
+    auto* pSplit = ui::Create<ui::Split>(this, {{_T("height"), _T("2")}});
     pSplit->SetBkColor(_T("splitline_level1"));
-    pSplit->SetAttribute(_T("height"), _T("2"));
     pContent->AddItem(pSplit);
 
     // ListCtrl
-    ui::VBox* pListArea = new ui::VBox(this);
-    pListArea->SetAttribute(_T("margin"), _T("0,0,0,0"));
-    pListArea->SetAttribute(_T("valign"), _T("center"));
-    pListArea->SetAttribute(_T("halign"), _T("center"));
+    auto* pListArea = ui::Create<ui::VBox>(this, {{_T("margin"), _T("0,0,0,0")}, {_T("valign"), _T("center")}, {_T("halign"), _T("center")}});
     pContent->AddItem(pListArea);
 
-    ui::ListCtrl* pListCtrl = new ui::ListCtrl(this);
+    auto* pListCtrl = ui::Create<ui::ListCtrl>(this, {{_T("type"), _T("report")}, {_T("show_header"), _T("true")}, {_T("header_class"), _T("list_ctrl_header")}, {_T("header_item_class"), _T("list_ctrl_header_item")}, {_T("header_split_box_class"), _T("list_ctrl_header_split_box")}, {_T("header_split_control_class"), _T("list_ctrl_header_split_control")}, {_T("header_height"), _T("32")}, {_T("enable_header_drag_order"), _T("true")}, {_T("check_box_class"), _T("list_ctrl_checkbox")}, {_T("data_item_class"), _T("list_ctrl_item")}, {_T("data_sub_item_class"), _T("list_ctrl_sub_item")}, {_T("report_view_class"), _T("list_ctrl_report_view")}, {_T("data_item_height"), _T("46")}, {_T("row_grid_line_width"), _T("1")}, {_T("row_grid_line_color"), _T("lightgray")}, {_T("column_grid_line_width"), _T("1")}, {_T("column_grid_line_color"), _T("lightgray")}, {_T("multi_select"), _T("true")}, {_T("auto_check_select"), _T("false")}, {_T("show_header_checkbox"), _T("true")}, {_T("show_data_item_checkbox"), _T("true")}, {_T("icon_view_class"), _T("list_ctrl_icon_view")}, {_T("icon_view_item_class"), _T("list_ctrl_icon_view_item")}, {_T("icon_view_item_image_class"), _T("list_ctrl_icon_view_item_image")}, {_T("icon_view_item_label_class"), _T("list_ctrl_icon_view_item_label")}, {_T("list_view_class"), _T("list_ctrl_list_view")}, {_T("list_view_item_class"), _T("list_ctrl_list_view_item")}, {_T("list_view_item_image_class"), _T("list_ctrl_list_view_item_image")}, {_T("list_view_item_label_class"), _T("list_ctrl_list_view_item_label")}, {_T("enable_item_edit"), _T("true")}, {_T("list_ctrl_richedit_class"), _T("list_ctrl_richedit")}, {_T("loading"), _T("file='loading_progress1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'")}});
     pListCtrl->SetName(_T("list_ctrl"));
     pListCtrl->SetBkColor(_T("YellowGreen"));
-    pListCtrl->SetAttribute(_T("type"), _T("report"));
-    pListCtrl->SetAttribute(_T("show_header"), _T("true"));
-    pListCtrl->SetAttribute(_T("header_class"), _T("list_ctrl_header"));
-    pListCtrl->SetAttribute(_T("header_item_class"), _T("list_ctrl_header_item"));
-    pListCtrl->SetAttribute(_T("header_split_box_class"), _T("list_ctrl_header_split_box"));
-    pListCtrl->SetAttribute(_T("header_split_control_class"), _T("list_ctrl_header_split_control"));
-    pListCtrl->SetAttribute(_T("header_height"), _T("32"));
-    pListCtrl->SetAttribute(_T("enable_header_drag_order"), _T("true"));
-    pListCtrl->SetAttribute(_T("check_box_class"), _T("list_ctrl_checkbox"));
-    pListCtrl->SetAttribute(_T("data_item_class"), _T("list_ctrl_item"));
-    pListCtrl->SetAttribute(_T("data_sub_item_class"), _T("list_ctrl_sub_item"));
-    pListCtrl->SetAttribute(_T("report_view_class"), _T("list_ctrl_report_view"));
-    pListCtrl->SetAttribute(_T("data_item_height"), _T("46"));
-    pListCtrl->SetAttribute(_T("row_grid_line_width"), _T("1"));
-    pListCtrl->SetAttribute(_T("row_grid_line_color"), _T("lightgray"));
-    pListCtrl->SetAttribute(_T("column_grid_line_width"), _T("1"));
-    pListCtrl->SetAttribute(_T("column_grid_line_color"), _T("lightgray"));
-    pListCtrl->SetAttribute(_T("multi_select"), _T("true"));
-    pListCtrl->SetAttribute(_T("auto_check_select"), _T("false"));
-    pListCtrl->SetAttribute(_T("show_header_checkbox"), _T("true"));
-    pListCtrl->SetAttribute(_T("show_data_item_checkbox"), _T("true"));
-    pListCtrl->SetAttribute(_T("icon_view_class"), _T("list_ctrl_icon_view"));
-    pListCtrl->SetAttribute(_T("icon_view_item_class"), _T("list_ctrl_icon_view_item"));
-    pListCtrl->SetAttribute(_T("icon_view_item_image_class"), _T("list_ctrl_icon_view_item_image"));
-    pListCtrl->SetAttribute(_T("icon_view_item_label_class"), _T("list_ctrl_icon_view_item_label"));
-    pListCtrl->SetAttribute(_T("list_view_class"), _T("list_ctrl_list_view"));
-    pListCtrl->SetAttribute(_T("list_view_item_class"), _T("list_ctrl_list_view_item"));
-    pListCtrl->SetAttribute(_T("list_view_item_image_class"), _T("list_ctrl_list_view_item_image"));
-    pListCtrl->SetAttribute(_T("list_view_item_label_class"), _T("list_ctrl_list_view_item_label"));
-    pListCtrl->SetAttribute(_T("enable_item_edit"), _T("true"));
-    pListCtrl->SetAttribute(_T("list_ctrl_richedit_class"), _T("list_ctrl_richedit"));
-    pListCtrl->SetAttribute(_T("loading"), _T("file='loading_progress1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
     pListArea->AddItem(pListCtrl);
 
     AttachBox(pRoot);

@@ -1,4 +1,4 @@
-#include "Item.h"
+﻿#include "Item.h"
 
 Item::Item(ui::Window* pWindow):
     ui::ControlDragableT<ui::ListBoxItem>(pWindow),
@@ -13,10 +13,7 @@ Item::Item(ui::Window* pWindow):
     SetClass(_T("list_box_item_test list_box_item_checkbox_1"));
     SetAttribute(_T("height"), _T("auto"));
 
-    ui::HBox* pRow = new ui::HBox(pWindow);
-    pRow->SetAttribute(_T("height"), _T("auto"));
-    pRow->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRow->SetAttribute(_T("padding"), _T("18,5,10,5"));
+    auto* pRow = ui::Create<ui::HBox>(pWindow, {{_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}, {_T("padding"), _T("18,5,10,5")}});
     AddItem(pRow);
 
     m_pImageControl = new ui::Control(pWindow);
@@ -27,14 +24,10 @@ Item::Item(ui::Window* pWindow):
     m_pImageControl->SetAttribute(_T("mouse_enabled"), _T("false"));
     pRow->AddItem(m_pImageControl);
 
-    ui::VBox* pRight = new ui::VBox(pWindow);
-    pRight->SetAttribute(_T("margin"), _T("0,3,0,5"));
-    pRight->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pRight = ui::Create<ui::VBox>(pWindow, {{_T("margin"), _T("0,3,0,5")}, {_T("mouse_enabled"), _T("false")}});
     pRow->AddItem(pRight);
 
-    ui::HBox* pTitleRow = new ui::HBox(pWindow);
-    pTitleRow->SetAttribute(_T("height"), _T("auto"));
-    pTitleRow->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pTitleRow = ui::Create<ui::HBox>(pWindow, {{_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}});
     pRight->AddItem(pTitleRow);
 
     m_pTitleLabel = new ui::Label(pWindow);
@@ -52,9 +45,7 @@ Item::Item(ui::Window* pWindow):
     m_pDelBtn->SetAttribute(_T("margin"), _T("0,0,4,0"));
     pTitleRow->AddItem(m_pDelBtn);
 
-    ui::Control* pStretch = new ui::Control(pWindow);
-    pStretch->SetAttribute(_T("height"), _T("stretch"));
-    pStretch->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pStretch = ui::Create<ui::Control>(pWindow, {{_T("height"), _T("stretch")}, {_T("mouse_enabled"), _T("false")}});
     pRight->AddItem(pStretch);
 
     m_pProgressControl = new ui::Progress(pWindow);

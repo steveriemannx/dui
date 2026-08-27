@@ -1,4 +1,4 @@
-#include "ReplaceForm.h"
+﻿#include "ReplaceForm.h"
 #include "MainForm.h"
 
 ReplaceForm::ReplaceForm(MainForm* pMainForm):
@@ -30,183 +30,123 @@ DString ReplaceForm::GetSkinFile()
 void ReplaceForm::BuildUI()
 {
     // Corresponds to the replace.xml layout
-    ui::VBox* pRoot = new ui::VBox(this);
+    auto* pRoot = ui::Create<ui::VBox>(this, {});
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar
-    ui::HBox* pCaption = new ui::HBox(this);
-    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
-    pCaption->SetAttribute(_T("width"), _T("stretch"));
-    pCaption->SetAttribute(_T("height"), _T("35"));
+    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("35")}});
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    ui::Control* pLogo = new ui::Control(this);
-    pLogo->SetAttribute(_T("width"), _T("18"));
-    pLogo->SetAttribute(_T("height"), _T("18"));
+    auto* pLogo = ui::Create<ui::Control>(this, {{_T("width"), _T("18")}, {_T("height"), _T("18")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8")}});
     pLogo->SetBkImage(_T("public/caption/logo.svg"));
-    pLogo->SetAttribute(_T("valign"), _T("center"));
-    pLogo->SetAttribute(_T("margin"), _T("8"));
     pCaption->AddItem(pLogo);
 
-    ui::Label* pTitle = new ui::Label(this);
+    auto* pTitle = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8")}});
     pTitle->SetText(_T("Replace"));
-    pTitle->SetAttribute(_T("valign"), _T("center"));
-    pTitle->SetAttribute(_T("margin"), _T("8"));
     pCaption->AddItem(pTitle);
 
-    ui::Control* pSpacer = new ui::Control(this);
+    auto* pSpacer = ui::Create<ui::Control>(this, {});
     pCaption->AddItem(pSpacer);
 
-    ui::Button* pCloseBtn = new ui::Button(this);
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("40")}, {_T("height"), _T("32")}, {_T("margin"), _T("4,0,0,0")}});
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
     pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetAttribute(_T("width"), _T("40"));
-    pCloseBtn->SetAttribute(_T("height"), _T("32"));
-    pCloseBtn->SetAttribute(_T("margin"), _T("4,0,0,0"));
     pCaption->AddItem(pCloseBtn);
 
     // Content area
-    ui::VBox* pContent = new ui::VBox(this);
+    auto* pContent = ui::Create<ui::VBox>(this, {});
     pRoot->AddItem(pContent);
 
     // Find content row
-    ui::HBox* pFindRow = new ui::HBox(this);
-    pFindRow->SetAttribute(_T("height"), _T("auto"));
+    auto* pFindRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
     pContent->AddItem(pFindRow);
 
-    ui::Label* pFindLabel = new ui::Label(this);
+    auto* pFindLabel = ui::Create<ui::Label>(this, {{_T("height"), _T("28")}, {_T("text_align"), _T("vcenter")}, {_T("margin"), _T("8,8,0,0")}});
     pFindLabel->SetText(_T("Find What:"));
-    pFindLabel->SetAttribute(_T("height"), _T("28"));
-    pFindLabel->SetAttribute(_T("text_align"), _T("vcenter"));
-    pFindLabel->SetAttribute(_T("margin"), _T("8,8,0,0"));
     pFindRow->AddItem(pFindLabel);
 
-    ui::RichEdit* pFindText = new ui::RichEdit(this);
+    auto* pFindText = ui::Create<ui::RichEdit>(this, {{_T("width"), _T("stretch")}, {_T("height"), _T("28")}, {_T("prompttext"), _T("Find")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("text_align"), _T("vcenter")}, {_T("margin"), _T("2,8,4,0")}});
     pFindText->SetClass(_T("simple prompt simple_border"));
     pFindText->SetName(_T("btn_find_text"));
-    pFindText->SetAttribute(_T("width"), _T("stretch"));
-    pFindText->SetAttribute(_T("height"), _T("28"));
-    pFindText->SetAttribute(_T("prompttext"), _T("Find"));
-    pFindText->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-    pFindText->SetAttribute(_T("text_align"), _T("vcenter"));
     pFindText->SetBkColor(_T("white"));
-    pFindText->SetAttribute(_T("margin"), _T("2,8,4,0"));
     pFindRow->AddItem(pFindText);
 
-    ui::Button* pFindNextBtn = new ui::Button(this);
+    auto* pFindNextBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("80")}, {_T("height"), _T("28")}, {_T("margin"), _T("4,8,8,0")}});
     pFindNextBtn->SetClass(_T("btn_global_white_80x30"));
     pFindNextBtn->SetName(_T("btn_find_next"));
     pFindNextBtn->SetText(_T("Find Next"));
-    pFindNextBtn->SetAttribute(_T("width"), _T("80"));
-    pFindNextBtn->SetAttribute(_T("height"), _T("28"));
-    pFindNextBtn->SetAttribute(_T("margin"), _T("4,8,8,0"));
     pFindRow->AddItem(pFindNextBtn);
 
     // Replace-with row
-    ui::HBox* pReplaceRow = new ui::HBox(this);
-    pReplaceRow->SetAttribute(_T("height"), _T("auto"));
+    auto* pReplaceRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
     pContent->AddItem(pReplaceRow);
 
-    ui::Label* pReplaceLabel = new ui::Label(this);
+    auto* pReplaceLabel = ui::Create<ui::Label>(this, {{_T("height"), _T("28")}, {_T("text_align"), _T("vcenter")}, {_T("margin"), _T("8,8,0,0")}});
     pReplaceLabel->SetText(_T(" Replace with:"));
-    pReplaceLabel->SetAttribute(_T("height"), _T("28"));
-    pReplaceLabel->SetAttribute(_T("text_align"), _T("vcenter"));
-    pReplaceLabel->SetAttribute(_T("margin"), _T("8,8,0,0"));
     pReplaceRow->AddItem(pReplaceLabel);
 
-    ui::RichEdit* pReplaceText = new ui::RichEdit(this);
+    auto* pReplaceText = ui::Create<ui::RichEdit>(this, {{_T("width"), _T("stretch")}, {_T("height"), _T("28")}, {_T("prompttext"), _T("Replace")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("text_align"), _T("vcenter")}, {_T("margin"), _T("2,8,4,0")}});
     pReplaceText->SetClass(_T("simple prompt simple_border"));
     pReplaceText->SetName(_T("btn_replace_text"));
-    pReplaceText->SetAttribute(_T("width"), _T("stretch"));
-    pReplaceText->SetAttribute(_T("height"), _T("28"));
-    pReplaceText->SetAttribute(_T("prompttext"), _T("Replace"));
-    pReplaceText->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
-    pReplaceText->SetAttribute(_T("text_align"), _T("vcenter"));
     pReplaceText->SetBkColor(_T("white"));
-    pReplaceText->SetAttribute(_T("margin"), _T("2,8,4,0"));
     pReplaceRow->AddItem(pReplaceText);
 
-    ui::Button* pReplaceBtn = new ui::Button(this);
+    auto* pReplaceBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("80")}, {_T("height"), _T("28")}, {_T("margin"), _T("4,8,4,0")}});
     pReplaceBtn->SetClass(_T("btn_global_white_80x30"));
     pReplaceBtn->SetName(_T("btn_replace"));
     pReplaceBtn->SetText(_T("Replace"));
-    pReplaceBtn->SetAttribute(_T("width"), _T("80"));
-    pReplaceBtn->SetAttribute(_T("height"), _T("28"));
-    pReplaceBtn->SetAttribute(_T("margin"), _T("4,8,4,0"));
     pReplaceRow->AddItem(pReplaceBtn);
 
-    ui::Button* pReplaceAllBtn = new ui::Button(this);
+    auto* pReplaceAllBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("80")}, {_T("height"), _T("28")}, {_T("margin"), _T("4,8,8,0")}});
     pReplaceAllBtn->SetClass(_T("btn_global_white_80x30"));
     pReplaceAllBtn->SetName(_T("btn_replace_all"));
     pReplaceAllBtn->SetText(_T("Replace All"));
-    pReplaceAllBtn->SetAttribute(_T("width"), _T("80"));
-    pReplaceAllBtn->SetAttribute(_T("height"), _T("28"));
-    pReplaceAllBtn->SetAttribute(_T("margin"), _T("4,8,8,0"));
     pReplaceRow->AddItem(pReplaceAllBtn);
 
     // Search direction
-    ui::GroupVBox* pDirectionGroup = new ui::GroupVBox(this);
-    pDirectionGroup->SetAttribute(_T("margin"), _T("10,6,10,6"));
-    pDirectionGroup->SetAttribute(_T("text"), _T(" Search Direction "));
-    pDirectionGroup->SetAttribute(_T("height"), _T("auto"));
-    pDirectionGroup->SetAttribute(_T("corner_size"), _T("4,4"));
+    auto* pDirectionGroup = ui::Create<ui::GroupVBox>(this, {{_T("margin"), _T("10,6,10,6")}, {_T("text"), _T(" Search Direction ")}, {_T("height"), _T("auto")}, {_T("corner_size"), _T("4,4")}});
     pContent->AddItem(pDirectionGroup);
 
-    ui::HBox* pDirectionRow = new ui::HBox(this);
-    pDirectionRow->SetAttribute(_T("height"), _T("40"));
-    pDirectionRow->SetAttribute(_T("margin"), _T("24,12,8,4"));
-    pDirectionRow->SetAttribute(_T("padding"), _T("12,0,0,0"));
+    auto* pDirectionRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("40")}, {_T("margin"), _T("24,12,8,4")}, {_T("padding"), _T("12,0,0,0")}});
     pDirectionGroup->AddItem(pDirectionRow);
 
-    ui::Option* pOptionUp = new ui::Option(this);
+    auto* pOptionUp = ui::Create<ui::Option>(this, {{_T("group"), _T("option_direction_group")}, {_T("margin"), _T("0,6,0,0")}});
     pOptionUp->SetClass(_T("option_1"));
-    pOptionUp->SetAttribute(_T("group"), _T("option_direction_group"));
     pOptionUp->SetText(_T("Search Up"));
-    pOptionUp->SetAttribute(_T("margin"), _T("0,6,0,0"));
     pDirectionRow->AddItem(pOptionUp);
 
-    ui::Option* pOptionDown = new ui::Option(this);
+    auto* pOptionDown = ui::Create<ui::Option>(this, {{_T("group"), _T("option_direction_group")}, {_T("margin"), _T("16,6,0,0")}});
     pOptionDown->SetClass(_T("option_1"));
-    pOptionDown->SetAttribute(_T("group"), _T("option_direction_group"));
     pOptionDown->SetText(_T("Search Down"));
     pOptionDown->SetName(_T("option_direction_down"));
-    pOptionDown->SetAttribute(_T("margin"), _T("16,6,0,0"));
     pOptionDown->Selected(true);
     pDirectionRow->AddItem(pOptionDown);
 
     // Options row
-    ui::HBox* pOptionRow = new ui::HBox(this);
-    pOptionRow->SetAttribute(_T("height"), _T("auto"));
+    auto* pOptionRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
     pContent->AddItem(pOptionRow);
 
-    ui::CheckBox* pCaseSensitive = new ui::CheckBox(this);
+    auto* pCaseSensitive = ui::Create<ui::CheckBox>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8,8,8,0")}});
     pCaseSensitive->SetClass(_T("checkbox_1"));
     pCaseSensitive->SetName(_T("check_box_case_sensitive"));
     pCaseSensitive->SetText(_T("Case Sensitive"));
-    pCaseSensitive->SetAttribute(_T("valign"), _T("center"));
-    pCaseSensitive->SetAttribute(_T("margin"), _T("8,8,8,0"));
     pCaseSensitive->Selected(true);
     pOptionRow->AddItem(pCaseSensitive);
 
-    ui::CheckBox* pMatchWholeWord = new ui::CheckBox(this);
+    auto* pMatchWholeWord = ui::Create<ui::CheckBox>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8,8,8,0")}});
     pMatchWholeWord->SetClass(_T("checkbox_1"));
     pMatchWholeWord->SetName(_T("check_box_match_whole_word"));
     pMatchWholeWord->SetText(_T("Match Whole Word"));
-    pMatchWholeWord->SetAttribute(_T("valign"), _T("center"));
-    pMatchWholeWord->SetAttribute(_T("margin"), _T("8,8,8,0"));
     pOptionRow->AddItem(pMatchWholeWord);
 
-    ui::Control* pOptionSpacer = new ui::Control(this);
+    auto* pOptionSpacer = ui::Create<ui::Control>(this, {});
     pOptionRow->AddItem(pOptionSpacer);
 
-    ui::Button* pCancelBtn = new ui::Button(this);
+    auto* pCancelBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("80")}, {_T("height"), _T("28")}, {_T("margin"), _T("4,8,8,0")}});
     pCancelBtn->SetClass(_T("btn_global_white_80x30"));
     pCancelBtn->SetName(_T("btn_cancel"));
     pCancelBtn->SetText(_T("Cancel"));
-    pCancelBtn->SetAttribute(_T("width"), _T("80"));
-    pCancelBtn->SetAttribute(_T("height"), _T("28"));
-    pCancelBtn->SetAttribute(_T("margin"), _T("4,8,8,0"));
     pOptionRow->AddItem(pCancelBtn);
 
     AttachBox(pRoot);
