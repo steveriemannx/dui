@@ -10,10 +10,10 @@
 # that creates the entire UI in pure C++ (no XML parsing at runtime).
 #
 # Tool:
-#   - Windows : compiled at configure time into cmake/xml_to_code.exe (only when
+#   - Windows : compiled at configure time into build/tools/xml_to_code.exe (only when
 #               missing or the sources changed), run inside the vcvarsall
 #               environment so cl.exe finds the standard library headers.
-#   - Others  : compiled from cmake/xml_to_code.cpp at configure time.
+#   - Others  : compiled from tools/xml_to_code.cpp at configure time.
 
 if(NOT DEFINED GEN_XML_FILES)
     message(FATAL_ERROR "GEN_XML_FILES must be set before including dui_gen_code.cmake")
@@ -41,7 +41,13 @@ foreach(xml_file ${GEN_XML_FILES})
     elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${xml_file}")
         list(APPEND XML_INPUT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${xml_file}")
     else()
-        file(GLOB_RECURSE found_files "${RESOURCES_DIR}/themes/*/${xml_file}")
+        # Prefer the default theme for generated C++ UI code.  If we globbed
+        # every theme (default, windows11, ...), the same XML basename would
+        # produce duplicate InitXxx() functions in generated_ui.inc.
+        file(GLOB_RECURSE found_files "${RESOURCES_DIR}/themes/default/${xml_file}")
+        if(NOT found_files)
+            file(GLOB_RECURSE found_files "${RESOURCES_DIR}/themes/*/${xml_file}")
+        endif()
         if(found_files)
             list(APPEND XML_INPUT_FILES ${found_files})
         else()
@@ -59,8 +65,9 @@ if(DUI_OS_WINDOWS)
     # when missing or the sources changed), so it stays up-to-date without
     # triggering Device Guard at build time.
 
-    set(TOOL_EXE "${DUI_SRC_ROOT_DIR}/cmake/xml_to_code.exe")
-    set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/xml_to_code.cpp")
+    set(TOOL_EXE "${CMAKE_BINARY_DIR}/tools/xml_to_code.exe")
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/tools")
+    set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/tools/xml_to_code.cpp")
     set(PUGIXML_SRC "${DUI_SRC_ROOT_DIR}/third_party/xml/pugixml.cpp")
     set(PUGIXML_DIR "${DUI_SRC_ROOT_DIR}/third_party/xml")
 
@@ -92,10 +99,11 @@ else()
     # source tree and share it across all *_gen examples (the same approach as
     # the xml_to_code.exe on Windows, avoiding rebuilding the tool once per
     # example at build time).
-    set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/xml_to_code.cpp")
+    set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/tools/xml_to_code.cpp")
     set(PUGIXML_SRC "${DUI_SRC_ROOT_DIR}/third_party/xml/pugixml.cpp")
     set(PUGIXML_DIR "${DUI_SRC_ROOT_DIR}/third_party/xml")
-    set(TOOL_EXE "${DUI_SRC_ROOT_DIR}/cmake/xml_to_code")
+    set(TOOL_EXE "${CMAKE_BINARY_DIR}/tools/xml_to_code")
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/tools")
 
     # Rebuild at configure time if source is newer (idempotent across examples)
     if("${TOOL_SRC}" IS_NEWER_THAN "${TOOL_EXE}" OR "${PUGIXML_SRC}" IS_NEWER_THAN "${TOOL_EXE}")
