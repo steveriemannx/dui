@@ -725,6 +725,11 @@ UiPadding Shadow::GetShadowCorner() const
 
 UiPadding Shadow::GetCurrentShadowCorner() const
 {
+    if (IsSystemShadowEnabled()) {
+        //OS-provided shadow: no self-drawn shadow margin; the hit-test/snap
+        //logic must not reserve any edge for a shadow box
+        return UiPadding(0, 0, 0, 0);
+    }
     if (m_bShadowAttached && !m_isMaximized) {
         UiPadding rcShadowCorner = m_rcShadowCorner;
         ASSERT(m_pWindow != nullptr);

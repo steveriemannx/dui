@@ -211,7 +211,7 @@ find_package(CEF REQUIRED)
 
 # dui
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
 # dui end
 
 #

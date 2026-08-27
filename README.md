@@ -29,10 +29,10 @@ See [docs/ThreeModes.md](docs/ThreeModes.md) for details.
  - **Event-driven**: message-mechanism-based event handling; event responses can also be configured directly in XML.
  - **Multiple image formats**: SVG/PNG/GIF/JPG/BMP/APNG/WEBP/ICO, plus GIF/APNG/WEBP/Lottie/PAG animations.
  - **Multi-language & dynamic skinning**: runtime language switching; XML-defined skins.
- - **Window shadows**: rounded/right-angle shadows with selectable, real-time-updating size.
+ - **Window shadows**: selectable self-drawn shadows, or the **OS-provided shadow** (Windows DWM / macOS NSWindow) with Win11-style rounded corners (Windows).
  - **DPI awareness**: four modes (Unaware / SystemAware / PerMonitorAware / PerMonitorAware_V2), independent DPI settings (Windows only).
  - **CEF control**: libcef 109 (Windows 7) and libcef 142 (Windows 10+/Linux/macOS).
- - **WebView2 control** (Windows only) and **SDL3** window/input backend.
+ - **WebView2 control** (Windows only); **SDL3** window/input backend (Linux/macOS — Windows uses the native Win32/DWM backend).
 
 ## Directory Structure
 | Directory     | Description |

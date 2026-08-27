@@ -12,22 +12,23 @@
 #   DString GetSkinFile() override { return ui_resources::k_basic_xml; }
 #
 # Tool:
-#   - Windows : compiled at configure time into cmake/xml_to_header.exe when
+#   - Windows : compiled at configure time into build/tools/xml_to_header.exe when
 #               missing or the sources changed (run inside the vcvarsall environment)
-#   - Others  : compiled from cmake/xml_to_header.cpp at build time (Linux / macOS / FreeBSD).
+#   - Others  : compiled from tools/xml_to_header.cpp at build time (Linux / macOS / FreeBSD).
 
 if(NOT DEFINED EMBED_XML_FILES)
     message(FATAL_ERROR "EMBED_XML_FILES must be set before including dui_embed_xml.cmake")
 endif()
 
-set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/xml_to_header.cpp")
-set(TOOL_BIN "${CMAKE_CURRENT_BINARY_DIR}/xml_to_header")
+set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/tools/xml_to_header.cpp")
+set(TOOL_BIN "${CMAKE_BINARY_DIR}/tools/xml_to_header")
 set(GENERATED_HEADER "${CMAKE_CURRENT_BINARY_DIR}/embedded_resources.h")
 set(RESOURCES_DIR "${DUI_ROOT}/resources")
 
 if(DUI_OS_WINDOWS)
     # Windows: compiled at configure time when missing or the sources changed
-    set(TOOL_EXE "${DUI_SRC_ROOT_DIR}/cmake/xml_to_header.exe")
+    set(TOOL_EXE "${CMAKE_BINARY_DIR}/tools/xml_to_header.exe")
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/tools")
 
     if("${TOOL_SRC}" IS_NEWER_THAN "${TOOL_EXE}")
         message(STATUS "Rebuilding xml_to_header.exe (source changed)")
@@ -35,14 +36,14 @@ if(DUI_OS_WINDOWS)
         if(NOT _tool_ok)
             message(WARNING "Failed to rebuild xml_to_header.exe automatically. "
                             "Please compile it manually in a VS Developer Command Prompt: "
-                            "cl /std:c++17 /O2 /EHsc cmake/xml_to_header.cpp /Fe:cmake/xml_to_header.exe")
+                            "cl /std:c++17 /O2 /EHsc tools/xml_to_header.cpp /Fe:build/tools/xml_to_header.exe")
         endif()
     endif()
 
     if(NOT EXISTS "${TOOL_EXE}")
         message(FATAL_ERROR "xml_to_header.exe not found at ${TOOL_EXE}. "
                             "Compile it in a VS Developer Command Prompt: "
-                            "cl /std:c++17 /O2 /EHsc cmake/xml_to_header.cpp /Fe:cmake/xml_to_header.exe")
+                            "cl /std:c++17 /O2 /EHsc tools/xml_to_header.cpp /Fe:build/tools/xml_to_header.exe")
     endif()
 else()
     # macOS / Linux / FreeBSD: compile from source at build time

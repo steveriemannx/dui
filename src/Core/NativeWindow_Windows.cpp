@@ -13,6 +13,23 @@
 #include <CommCtrl.h>
 #include <Olectl.h>
 #include <VersionHelpers.h>
+#include <dwmapi.h>
+
+//Fallbacks for SDKs that predate the Win11 DWM attribute/values (e.g. the
+//older Windows SDKs or MinGW-w64 headers do not define them)
+#pragma comment(lib, "dwmapi.lib")
+#ifndef DWMWCP_DEFAULT
+#define DWMWCP_DEFAULT     0
+#define DWMWCP_DONOTROUND  1
+#define DWMWCP_ROUND       2
+#define DWMWCP_SMALLROUND  3
+#endif
+#ifndef DWMWA_WINDOW_CORNER_PREFERENCE
+#define DWMWA_WINDOW_CORNER_PREFERENCE 33
+#endif
+#ifndef DWMWA_BORDER_COLOR
+#define DWMWA_BORDER_COLOR 34
+#endif
 
 namespace ui {
 
@@ -45,6 +62,7 @@ NativeWindow_Windows::NativeWindow_Windows(INativeWindow* pOwner):
     m_bIsLayeredWindow(false),
     m_nLayeredWindowAlpha(255),
     m_nLayeredWindowOpacity(255),
+    m_systemShadowType(NativeWindowShadowType::kShadowSystemDisabled),
     m_bUseSystemCaption(false),
     m_bCloseing(false),
     m_closeParam(kWindowCloseNormal),
@@ -75,6 +93,99 @@ NativeWindow_Windows::NativeWindow_Windows(INativeWindow* pOwner):
     /*if (UiIsWindows11OrGreater()) {
         m_bSnapLayoutMenu = true;
     }*/
+}
+
+// ---- OS-provided shadow (Windows DWM) ------------------------------------
+// The DWM draws the drop shadow for windows that keep their frame styles
+// (WS_THICKFRAME is left untouched here: the native resize code relies on it)
+// and have no window region. Enabling a system shadow clears the region so the
+// DWM shadow and the Win11 rounded corners (DWMWA_WINDOW_CORNER_PREFERENCE) are
+// provided by the OS; disabling switches back to a rectangular region, which
+// turns the DWM shadow and the rounding off at once (what the self-drawn
+// shadows need). See Shadow.cpp for the dispatch from ShadowType to here.
+bool NativeWindow_Windows::IsSystemShadowSupported() const
+{
+    BOOL enabled = FALSE;
+    if (::DwmIsCompositionEnabled(&enabled) == S_OK) {
+        return (enabled != FALSE) && !IsChildWindow();
+    }
+    return false;
+}
+
+bool NativeWindow_Windows::SetSystemShadowType(NativeWindowShadowType nativeShadowType)
+{
+    if ((m_hWnd == nullptr) || !::IsWindow(m_hWnd) || IsChildWindow()) {
+        return false;   //Child windows get no DWM shadow / rounding
+    }
+    m_systemShadowType = nativeShadowType;
+
+    DWORD cornerPreference = DWMWCP_DEFAULT;
+    if (nativeShadowType == NativeWindowShadowType::kShadowSystemDisabled) {
+        // The DWM draws the drop shadow for borderless windows only while the
+        // window extends its frame into the client area (Steam-style recipe:
+        // non-zero frame margins = shadow on, zero = shadow off). Disabling
+        // the OS shadow resets the margins to zero.
+        MARGINS margins0;
+        margins0.cxLeftWidth = margins0.cxRightWidth = margins0.cyTopHeight = margins0.cyBottomHeight = 0;
+        ::DwmExtendFrameIntoClientArea(m_hWnd, &margins0);
+        //Immediately set a rectangular region: it disables the DWM shadow and
+        //the Win11 rounding at once (self-drawn shadows need a square window)
+        RECT rcWnd = { 0, 0, 0, 0 };
+        if (::GetWindowRect(m_hWnd, &rcWnd) != FALSE) {
+            ::SetWindowRgn(m_hWnd,
+                ::CreateRectRgn(0, 0, rcWnd.right - rcWnd.left, rcWnd.bottom - rcWnd.top),
+                TRUE);
+            //The region is owned by the system after SetWindowRgn: no DeleteObject here
+        }
+    }
+    else {
+        //Clear the region (a region would clip off both the shadow and the rounding)
+        ::SetWindowRgn(m_hWnd, nullptr, TRUE);
+        //DWM uses the native thick-frame style when calculating the standard
+        //active/inactive shadow. Keep the custom non-client layout, but retain
+        //the style so the shadow matches normal top-level Windows.
+        LONG_PTR style = ::GetWindowLongPtr(m_hWnd, GWL_STYLE);
+        if ((style & WS_THICKFRAME) == 0) {
+            ::SetWindowLongPtr(m_hWnd, GWL_STYLE, style | WS_THICKFRAME);
+        }
+        //Extend the frame into the client area: this is what makes the DWM draw
+        //the drop shadow for a borderless (WM_NCCALCSIZE=0) window on Win 10/11
+        MARGINS margins1;
+        margins1.cxLeftWidth = margins1.cxRightWidth = margins1.cyTopHeight = margins1.cyBottomHeight = 1;
+        ::DwmExtendFrameIntoClientArea(m_hWnd, &margins1);
+        switch (nativeShadowType) {
+        case NativeWindowShadowType::kShadowSystemDoNotRound: cornerPreference = DWMWCP_DONOTROUND; break;
+        case NativeWindowShadowType::kShadowSystemRound:      cornerPreference = DWMWCP_ROUND;      break;
+        case NativeWindowShadowType::kShadowSystemSmallRound: cornerPreference = DWMWCP_SMALLROUND; break;
+        default:                                              cornerPreference = DWMWCP_DEFAULT;     break;
+        }
+    }
+    //Win11: DWM rounded corners (a harmless no-op on older Windows)
+    ::DwmSetWindowAttribute(m_hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPreference, sizeof(cornerPreference));
+    //Force DWM to re-render the frame so the drop shadow appears immediately
+    //(matches the SDL backend's ModifyDwmStyle: the shadow state is cached by
+    //DWM until the frame is invalidated)
+    ::SetWindowPos(m_hWnd, nullptr, 0, 0, 0, 0,
+                   SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    return true;
+}
+
+NativeWindowShadowType NativeWindow_Windows::GetSystemShadowType() const
+{
+    return m_systemShadowType;
+}
+
+void NativeWindow_Windows::RefreshSystemShadow()
+{
+    //Idempotent re-apply (e.g. after the frame style has been restored by the fullscreen flow)
+    SetSystemShadowType(m_systemShadowType);
+}
+
+void NativeWindow_Windows::ClearWindowRgnForSystemShadow()
+{
+    if ((m_hWnd != nullptr) && ::IsWindow(m_hWnd)) {
+        ::SetWindowRgn(m_hWnd, nullptr, TRUE);
+    }
 }
 
 NativeWindow_Windows::~NativeWindow_Windows()
@@ -2198,9 +2309,19 @@ LRESULT NativeWindow_Windows::OnNcActivateMsg(UINT uMsg, WPARAM wParam, LPARAM /
         bHandled = false;
     }
     else {
-        //MSDN: when the wParam parameter is FALSE, the application should return TRUE to instruct the system to continue with the default processing
         bHandled = true;
-        lResult = (wParam == FALSE) ? TRUE : FALSE;
+        HWND hWnd = GetHWND();
+        if ((hWnd != nullptr) && ::IsWindow(hWnd)) {
+            //Update the internal non-client active-state tracking without any
+            //NC painting (lParam = -1 suppresses the repaint). With the custom
+            //title bar the whole window is client area (WM_NCCALCSIZE returns
+            //0), so there is nothing visible to paint; but swallowing this
+            //message entirely leaves the internal state stale and DWM then
+            //keeps rendering the inactive frame/shadow even when the window
+            //has focus (the shadow stays light, like an unfocused window).
+            ::DefWindowProc(hWnd, uMsg, wParam, (LPARAM)-1);
+        }
+        lResult = TRUE;
     }
     return lResult;
 }

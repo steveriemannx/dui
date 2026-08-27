@@ -59,7 +59,7 @@ DUI_BUILD_TYPE        # "debug" or "release"
 |----------|--------|------|
 | `DUI_LOG` | OFF | Print dui debug logs |
 | `DUI_SKIA_LIB_SUBPATH` | OFF | Skia library subdirectory (OFF = auto-composed) |
-| `DUI_ENABLE_SDL` | Windows=OFF, others=ON | Enable SDL input support |
+| `DUI_ENABLE_SDL` | Windows: always OFF (removed), others=ON | Enable SDL input support (Linux/macOS) |
 | `DUI_ENABLE_CEF` | OFF | Enable CEF browser support |
 | `DUI_CEF_109` | OFF | Use CEF 109 (supports Win7) |
 | `DUI_WEBVIEW2_EXE` | OFF | WebView2 executable (Windows only) |
@@ -90,13 +90,15 @@ DUI_BUILD_TYPE        # "debug" or "release"
 
 **Skia path composition rule:**
 ```cmake
-# When DUI_SKIA_LIB_SUBPATH is OFF, the path is auto-composed as:
-${DUI_SKIA_SRC_ROOT_DIR}/out/${DUI_COMPILER_NAME}.${DUI_SYSTEM_PROCESSOR}.${DUI_BUILD_TYPE}
+# Skia libraries are output alongside the other dui libraries, with no
+# extra prefix/variant directory. Multi-config generators use Debug/Release;
+# single-config generators use the current CMAKE_BUILD_TYPE.
+${DUI_LIB_PATH}/Debug
+${DUI_LIB_PATH}/Release
 
 # Examples:
-# skia/out/msvc.x64.release
-# skia/out/mingw64-gcc.x64.release
-# skia/out/llvm.x86.debug
+# build/lib/Debug
+# build/lib/Release
 ```
 
 ---
@@ -189,9 +191,9 @@ endif()
 #### 3.5 Manifest file configuration
 ```cmake
 if(DUI_BITS_64)
-    set(DUI_WIN_MANIFEST "${DUI_ROOT}/msvc/manifest/dui.x64.manifest")
+    set(DUI_WIN_MANIFEST "${DUI_ROOT}/cmake/manifest/dui.x64.manifest")
 else()
-    set(DUI_WIN_MANIFEST "${DUI_ROOT}/msvc/manifest/dui.x86.manifest")
+    set(DUI_WIN_MANIFEST "${DUI_ROOT}/cmake/manifest/dui.x86.manifest")
 endif()
 ```
 
@@ -389,7 +391,7 @@ cmake --build . --config Release
 
 ### Advanced Examples
 
-#### 1. Enable SDL support
+#### 1. Enable SDL support (Linux/macOS)
 
 ```bash
 cmake -S .. -B . -DDUI_ENABLE_SDL=ON -DCMAKE_BUILD_TYPE=Release
@@ -435,8 +437,7 @@ cmake -S .. -B . -DDUI_MD=ON -DCMAKE_BUILD_TYPE=Release
 cmake -S .. -B ./build_gcc -G "MinGW Makefiles" ^
     -DCMAKE_C_COMPILER=gcc ^
     -DCMAKE_CXX_COMPILER=g++ ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    -DDUI_ENABLE_SDL=ON
+    -DCMAKE_BUILD_TYPE=Release
 
 cmake --build ./build_gcc
 ```
@@ -447,8 +448,7 @@ cmake --build ./build_gcc
 cmake -S .. -B ./build_llvm -G "MinGW Makefiles" ^
     -DCMAKE_C_COMPILER=clang ^
     -DCMAKE_CXX_COMPILER=clang++ ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    -DDUI_ENABLE_SDL=ON
+    -DCMAKE_BUILD_TYPE=Release
 
 cmake --build ./build_llvm
 ```
@@ -461,7 +461,7 @@ cmake --build ./build_llvm
 |----------|------|--------|------|
 | `DUI_LOG` | BOOL | OFF | Print debug logs |
 | `DUI_SKIA_LIB_SUBPATH` | STRING | OFF | Skia library subdirectory |
-| `DUI_ENABLE_SDL` | BOOL | Windows=OFF, others=ON | Enable SDL support |
+| `DUI_ENABLE_SDL` | BOOL | Windows: always OFF (removed), others=ON | Enable SDL support |
 | `DUI_ENABLE_CEF` | BOOL | OFF | Enable CEF support |
 | `DUI_CEF_109` | BOOL | OFF | CEF 109 version (Win7) |
 | `DUI_WEBVIEW2_EXE` | BOOL | OFF | WebView2 executable |
@@ -519,11 +519,9 @@ endif()
 
 Make sure the Skia build output is in the correct directory:
 ```
-skia/out/
-├── msvc.x64.release/
-├── mingw64-gcc.x64.release/
-├── mingw64-llvm.x64.release/
-└── ...
+build/lib/
+├── Debug/
+└── Release/
 ```
 
 ### 4. Third-party dependencies
@@ -554,7 +552,7 @@ Make sure the following dependencies are available before building:
 **Cause:** Skia is not built or the path is incorrect.
 
 **Solution:**
-1. Verify Skia is built: `ls skia/out/`
+1. Verify Skia is built: `ls build/lib/Debug` / `ls build/lib/Release`
 2. Use `DUI_SKIA_LIB_SUBPATH` to specify the correct path
 
 ---

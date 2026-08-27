@@ -219,9 +219,9 @@ function(dui_deps_add_targets)
             find_program(DUI_GN_PYTHON NAMES python3 python)
             if(DUI_GN_PYTHON)
                 if(WIN32)
-                    set(DUI_GN_BIN "${DUI_ROOT}/third_party/gn/out/gn.exe")
+                    set(DUI_GN_BIN "${CMAKE_BINARY_DIR}/tools/gn/gn.exe")
                 else()
-                    set(DUI_GN_BIN "${DUI_ROOT}/third_party/gn/out/gn")
+                    set(DUI_GN_BIN "${CMAKE_BINARY_DIR}/tools/gn/gn")
                 endif()
                 # gen.py emits build.ninja that invokes bare "cl.exe", which requires
                 # the MSVC toolchain in PATH (ninja fails with "CreateProcess failed:
@@ -235,28 +235,33 @@ function(dui_deps_add_targets)
                         set(_gn_bat "${CMAKE_CURRENT_BINARY_DIR}/build_gn.bat")
                         file(WRITE "${_gn_bat}"
                             "@call \"${_gn_vcvarsall}\" ${_gn_vc_arch} >nul\r\n"
-                            "\"${DUI_GN_PYTHON}\" build/gen.py\r\n"
-                            "call \"${DUI_NINJA_FILTER_BAT}\" \"${DUI_NINJA_BIN}\" out\r\n")
+                            "\"${DUI_GN_PYTHON}\" build/gen.py --out-path \"${CMAKE_BINARY_DIR}/tools/gn\"\r\n"
+                            # gn's own integration tests invoke a bare "gn.exe" (see
+                            # build/ninja_file.py: run_gn rule), which cmd resolves
+                            # via PATH; without this the freshly built out/gn.exe is
+                            # not found and the gn build fails.
+                            "set \"PATH=${CMAKE_BINARY_DIR}/tools/gn;%PATH%\"\r\n"
+                            "call \"${DUI_NINJA_FILTER_BAT}\" \"${DUI_NINJA_BIN}\" \"${CMAKE_BINARY_DIR}/tools/gn\"\r\n")
                         set(_gn_commands COMMAND cmd /c "${_gn_bat}")
                     else()
                         message(WARNING "vcvarsall not found - the gn source build will likely fail. "
                                 "Install gn via a package manager or build it manually in a VS "
                                 "Developer Command Prompt")
                         set(_gn_commands
-                            COMMAND "${DUI_GN_PYTHON}" build/gen.py
-                            COMMAND "${DUI_NINJA_BIN}" -C out)
+                            COMMAND "${DUI_GN_PYTHON}" build/gen.py --out-path "${CMAKE_BINARY_DIR}/tools/gn"
+                            COMMAND "${DUI_NINJA_BIN}" -C "${CMAKE_BINARY_DIR}/tools/gn")
                     endif()
                 else()
                     set(_gn_commands
-                        COMMAND "${DUI_GN_PYTHON}" build/gen.py
-                        COMMAND "${DUI_NINJA_BIN}" -C out)
+                        COMMAND "${DUI_GN_PYTHON}" build/gen.py --out-path "${CMAKE_BINARY_DIR}/tools/gn"
+                        COMMAND "${DUI_NINJA_BIN}" -C "${CMAKE_BINARY_DIR}/tools/gn")
                 endif()
                 add_custom_command(
                     OUTPUT "${DUI_GN_BIN}"
                     ${_gn_commands}
                     WORKING_DIRECTORY "${DUI_ROOT}/third_party/gn"
                     DEPENDS "${DUI_ROOT}/third_party/gn/build/gen.py"
-                    COMMENT "Building gn (python build/gen.py + ninja -C out)..."
+                    COMMENT "Building gn (python build/gen.py + ninja -C ${CMAKE_BINARY_DIR}/tools/gn)..."
                     USES_TERMINAL VERBATIM
                 )
                 add_custom_target(dui_gn DEPENDS "${DUI_GN_BIN}")
@@ -271,7 +276,7 @@ function(dui_deps_add_targets)
                 else()
                     find_program(GN_EXECUTABLE_DEBUG
                         NAMES gn
-                        HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                        HINTS "${CMAKE_BINARY_DIR}/tools/gn" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE_DEBUG "${DUI_NINJA_BIN}")
@@ -300,7 +305,7 @@ function(dui_deps_add_targets)
                 else()
                     find_program(GN_EXECUTABLE_RELEASE
                         NAMES gn
-                        HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                        HINTS "${CMAKE_BINARY_DIR}/tools/gn" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE_RELEASE "${DUI_NINJA_BIN}")
@@ -341,7 +346,7 @@ function(dui_deps_add_targets)
                 else()
                     find_program(GN_EXECUTABLE
                         NAMES gn
-                        HINTS "${DUI_ROOT}/third_party/gn/out" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
+                        HINTS "${CMAKE_BINARY_DIR}/tools/gn" "${DUI_SKIA_SRC_ROOT_DIR}/bin"
                         REQUIRED)
                 endif()
                 set(NINJA_EXECUTABLE "${DUI_NINJA_BIN}")
@@ -577,7 +582,7 @@ endfunction()
 # Building skia requires gn. Prebuilt CIPD binaries only cover amd64 reliably, so clone the
 # gn source at configure time and build it at make time via the dui_gn target
 # (build/gen.py + ninja -C out, per https://gn.googlesource.com/gn/+/refs/heads/main/README.md),
-# ordered before the SDL3/skia builds. The binary lands in third_party/gn/out/gn (gn.exe on
+# ordered before the SDL3/skia builds. The binary lands in build/tools/gn/gn (gn.exe on
 # Windows). A system gn is preferred and skips the clone entirely; if the clone is
 # unavailable, configure falls back to a system gn or skia's bin/ at make time.
 function(dui_deps_download_gn)

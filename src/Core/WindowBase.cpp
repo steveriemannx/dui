@@ -903,6 +903,11 @@ DString WindowBase::GetWindowRenderName() const
 void WindowBase::OnWindowSized(bool bRedraw)
 {
     m_bWindowSized = true;
+    if (GetSystemShadowType() != ui::NativeWindowShadowType::kShadowSystemDisabled) {
+        //OS shadow enabled: the shadow and the rounded corners are provided by the
+        //system (DWM); any SetWindowRgn below would disable both of them
+        return;
+    }
     //The main function of this function: set the window's RGN to implement rounded corners or right-angle corners for the window
     if (!NeedSetWindowRgnOnWindowResized()) {
         //Not supported; return immediately

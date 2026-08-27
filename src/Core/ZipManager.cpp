@@ -45,7 +45,7 @@ bool ZipManager::OpenMemoryArchive(const uint8_t* pData, size_t nSize)
     //   [magic "DUIR" u32][version u32][count u32]
     //   count x [u32 pathLen][path UTF-8][u64 dataOffset][u64 dataLen]
     //   [data blocks]
-    // Must match the embed_resources tool (cmake/embed_resources.cpp).
+    // Must match the embed_resources tool (tools/embed_resources.cpp).
     size_t nPos = 0;
     auto readU32 = [pData, nSize, &nPos](uint32_t& value) -> bool {
         if (nPos + 4 > nSize) {

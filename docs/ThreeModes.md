@@ -10,7 +10,7 @@ dui supports three UI development modes, and all 18 non-CEF examples provide ver
 
 ## Mode 2: XML-to-code Generation (XML is the design-time format)
 
-- **Workflow**: write/debug the UI in XML (parsed at runtime for immediate visual feedback) → at build time `cmake/xml_to_code.cpp` converts the XML into pure C++ code → the final program has zero layout XML parsing
+- **Workflow**: write/debug the UI in XML (parsed at runtime for immediate visual feedback) → at build time `tools/xml_to_code.cpp` converts the XML into pure C++ code → the final program has zero layout XML parsing
 - Examples: `examples/<name>_gen` (18 of them); build-time generation produces `generated_ui.inc`, and `MainForm::OnInitWindow` calls the generated `InitXxx(this)`
 - CMake configuration (see `cmake/dui_gen_code.cmake`):
   ```cmake

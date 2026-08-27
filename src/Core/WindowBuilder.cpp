@@ -635,6 +635,7 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
     //Whether the window shadow is enabled
     bool bShadowAttached = false;
     bool bHasShadowAttached = false;
+    bool bHasShadowType = false;
     Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
 
     //Note: if use_system_caption is true, the layered window is disabled (because these two attributes are mutually exclusive)
@@ -707,6 +708,7 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         }
         else if (strName == _T("shadow_type")) {
             knownNames.insert(strName);
+            bHasShadowType = true;
             //Set the shadow type
             Shadow::GetShadowType(strValue, nShadowType);
             if ((nShadowType >= Shadow::ShadowType::kShadowFirst) &&
@@ -774,6 +776,22 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         //Set it afterwards, to avoid being affected by "shadow_type"
         pWindow->SetShadowAttached(bShadowAttached);
     }
+
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+    if (!bHasShadowType && (nShadowType == Shadow::ShadowType::kShadowCount)) {
+        //Windows native backend: the OS-provided shadow (Win11 style) is the
+        //default - it has no self-drawn shadow box and no shadow snapping.
+        //Windows that really need per-pixel transparency (layered with
+        //alpha < 255) keep the self-drawn big_round shadow instead.
+        bool bNeedPptAlpha = pWindow->IsLayeredWindow() &&
+            ((pWindow->GetLayeredWindowAlpha() < 255) ||
+             (pWindow->GetLayeredWindowOpacity() < 255));
+        if (!bNeedPptAlpha) {
+            pWindow->SetShadowType(Shadow::ShadowType::kShadowSystemDefault);
+            pWindow->SetLayeredWindow(false, false);   //OS shadows need a normal window
+        }
+    }
+#endif
 
     //System shadow types: normalize the type for this platform and force the
     //window to be non-layered (OS shadows need a normal window).
@@ -1169,7 +1187,6 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
             ASSERT(!"Found unknown node name, can't create control!");
             continue;
         }
-
         // TreeView related nodes must be added first and parsed later
         if (strClass == DUI_CTR_TREENODE) {
             bool bAdded = false;

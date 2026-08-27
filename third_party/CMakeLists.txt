@@ -35,6 +35,6 @@ elseif((WIN32 AND NOT MINGW) OR APPLE OR DUI_OS_LINUX)
     find_package(CEF REQUIRED)
     # 只内建 libcef_dll 的 libcef_dll_wrapper 目标（发行包自带的 CMakeLists 引导
     # 还会内建 tests/，不需要）；wrapper 归档输出到 lib/ 供示例按名链接。
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_ROOT}/lib/")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
     add_subdirectory("${CEF_ROOT}/libcef_dll" libcef_dll_wrapper)
 endif()

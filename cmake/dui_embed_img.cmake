@@ -10,7 +10,7 @@ if(NOT DEFINED EMBED_IMG_FILES)
     message(FATAL_ERROR "EMBED_IMG_FILES must be set")
 endif()
 
-set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/img_to_header.cpp")
+set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/tools/img_to_header.cpp")
 set(TOOL_BIN "${CMAKE_CURRENT_BINARY_DIR}/img_to_header")
 set(GENERATED_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/embedded_images.h")
 set(RESOURCES_DIR "${DUI_ROOT}/resources")

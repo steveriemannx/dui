@@ -2004,7 +2004,11 @@ void Window::OnWindowPosSnapped(bool bLeftSnap, bool bRightSnap, bool bTopSnap, 
     if (rcSizeBox.bottom <= 0) {
         bBottomSnap = false;
     }
-    Shadow* pShadow = GetShadow();
+    // 快速保护：避免在 m_shadow 为 nullptr 时断言/访问
+    Shadow* pShadow = nullptr;
+    if (m_shadow != nullptr) {
+        pShadow = m_shadow.get();
+    }
     if (pShadow != nullptr) {
         pShadow->SetWindowPosSnap(bLeftSnap, bRightSnap, bTopSnap, bBottomSnap);
     }

@@ -37,7 +37,7 @@ The CMake build downloads the libcef binaries automatically at configure time wh
 The directories used for compilation are:    
 * Latest version: `third_party\libcef\cef_binary` (the downloaded distribution; headers, libcef.lib and the wrapper source)    
 * libcef 109 (Windows 7 compatible): `third_party\libcef\libcef_win_109`    
-Because libcef.dll is loaded at runtime, the binaries and resource files (libcef.dll, chrome_*.pak, icudtl.dat, locales, etc. — the files in the `Release` and `Resources` directories of the downloaded distribution) must also be placed in the runtime directory used by your project (for example the `${NIM_DUI_ROOT}\bin\cef_binary` directory for the classic sln layout — the same name on Windows and Linux; the `build_dui_all_in_one.bat` flow stages them automatically).
+Because libcef.dll is loaded at runtime, the binaries and resource files (libcef.dll, chrome_*.pak, icudtl.dat, locales, etc. — the files in the `Release` and `Resources` directories of the downloaded distribution) must also be placed in the runtime directory used by your project (for example the `${NIM_DUI_ROOT}\build\bin\<Debug|Release>\cef_binary` directory for the classic sln layout — the same name on Windows and Linux; the `build_dui_all_in_one.bat` flow stages them automatically).
 
 ### 2. Using libcef 109 (for VC projects using the `CEFSettings.props` property file)
 Open the `${NIM_DUI_ROOT}\msvc\PropertySheets\CEFSettings.props` file with VS, change the LibCefVersion109 property value to `true`, and recompile the code.    
@@ -57,7 +57,7 @@ The basic steps are as follows (all directories are written as subdirectories re
 * For the Debug build, add: `libcef.lib;libcef_dll_wrapper_d.lib`    
 * For the Release build, add: `libcef.lib;libcef_dll_wrapper.lib`  
 4. In the VC project, set libcef.dll to be delay-loaded by adding `libcef.dll` (entry: VS project properties -> Linker -> Input -> Delay Loaded Dlls)    
-5. Place the libcef binaries and resource files (libcef.dll, etc.) in the runtime directory of your project (for example `${NIM_DUI_ROOT}\bin\cef_binary`).
+5. Place the libcef binaries and resource files (libcef.dll, etc.) in the runtime directory of your project (for example `${NIM_DUI_ROOT}\build\bin\<Debug|Release>\cef_binary`).
 
 #### (2) Support for libcef 109
 libcef 109 supports Windows 7 and above (Win7/Win10/Win11, etc.) and does not support older operating systems such as Windows XP.    
@@ -73,7 +73,7 @@ The basic steps are as follows (all directories are written as subdirectories re
 ## 5. Usage of the CEF control (CefControl) (Linux platform)
 The basic steps are as follows (all directories are written as subdirectories relative to the dui root `${NIM_DUI_ROOT}`; the actual settings can be flexibly adjusted according to your own project structure):    
 ### 1. Getting the libcef binaries and resource files (automatic with CMake)
-The CMake build downloads the libcef binaries automatically at configure time when they are missing (into the `${NIM_DUI_ROOT}/third_party/libcef/cef_binary` directory); the `${NIM_DUI_ROOT}/bin/cef_binary/` directory is used as the runtime library directory (the same name as on Windows).    
+The CMake build downloads the libcef binaries automatically at configure time when they are missing (into the `${NIM_DUI_ROOT}/third_party/libcef/cef_binary` directory); the `${NIM_DUI_ROOT}/build/bin/<Debug|Release>/cef_binary/` directory is used as the runtime library directory (the same name as on Windows).    
 ### 2. Directory structure of the libcef binaries and resource files
 ```
 chrome-sandbox
@@ -92,9 +92,9 @@ locales (directory containing language packs such as zh-CN.pak and en-US.pak)
 ```
 ### 3. Content to add to the Makefile or CMakeLists.txt of the program
 * Add `third_party/libcef/cef_binary` to the header include paths    
-* Add `bin/cef_binary` to the library include paths (this directory contains the shared library files of libcef, such as libcef.so)    
+* Add `build/bin/<Debug|Release>/cef_binary` to the library include paths (this directory contains the shared library files of libcef, such as libcef.so)    
 * Set the linked libraries and add ` libcef.so cef_dll_wrapper X11`    
-* Place the libcef binaries and resource files (libcef.so, etc.) in the directory `bin/cef_binary`.    
+* Place the libcef binaries and resource files (libcef.so, etc.) in the directory `build/bin/<Debug|Release>/cef_binary`.    
 
 ## 6. Usage of the CEF control (CefControl) (macOS platform)
 The basic steps are as follows (all directories are written as subdirectories relative to the dui root `${NIM_DUI_ROOT}`; the actual settings can be flexibly adjusted according to your own project structure):    

@@ -9,6 +9,11 @@
 #include <SDL3/SDL.h>
 #endif
 
+// This file only provides FileDialog definitions for the SDL and Wayland
+// builds; on native Windows, FileDialog_Windows.cpp is the implementation
+// (compiling the stubs here too defined both, producing duplicate symbols).
+#if defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
+
 namespace ui
 {
 
@@ -27,7 +32,9 @@ bool FileDialog::BrowseForFolder(Window* pWindow, FilePath& folderPath, const Fi
     // SDL dialog is async, can't get result here
     (void)folderPath;
     return false;
-#else
+#elif !defined(DUI_BUILD_FOR_WIN)
+    // No-op stub for non-Windows non-SDL platforms (e.g. Wayland):
+    // FileDialog_Windows.cpp provides the real implementation on Windows.
     (void)pWindow; (void)folderPath; (void)defaultLocation;
     return false;
 #endif
@@ -44,7 +51,7 @@ bool FileDialog::BrowseForFolders(Window* pWindow, std::vector<FilePath>& folder
     SDL_ShowOpenFolderDialog(NULL, NULL, sdlWindow, default_location, true);
     (void)folderPaths;
     return false;
-#else
+#elif !defined(DUI_BUILD_FOR_WIN)
     (void)pWindow; (void)folderPaths; (void)defaultLocation;
     return false;
 #endif
@@ -67,7 +74,7 @@ bool FileDialog::BrowseForFile(Window* pWindow,
     (void)bOpenFileDialog; (void)fileTypes; (void)nFileTypeIndex;
     (void)defaultExt; (void)fileName; (void)defaultFilePath;
     return false;
-#else
+#elif !defined(DUI_BUILD_FOR_WIN)
     (void)pWindow; (void)filePath; (void)bOpenFileDialog; (void)fileTypes;
     (void)nFileTypeIndex; (void)defaultExt; (void)fileName; (void)defaultFilePath;
     return false;
@@ -88,7 +95,7 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
     }
     (void)fileTypes; (void)nFileTypeIndex; (void)defaultExt; (void)defaultLocation;
     return false;
-#else
+#elif !defined(DUI_BUILD_FOR_WIN)
     (void)pWindow; (void)filePaths; (void)fileTypes;
     (void)nFileTypeIndex; (void)defaultExt; (void)defaultLocation;
     return false;
@@ -96,4 +103,6 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
 }
 
 } // namespace ui
+
+#endif //DUI_BUILD_FOR_SDL || DUI_BUILD_FOR_WAYLAND
 

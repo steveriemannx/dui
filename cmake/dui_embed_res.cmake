@@ -15,21 +15,22 @@
 # time; after adding new files to the resources directory, re-run cmake.
 #
 # Tool:
-#   - Windows : compiled at configure time into cmake/embed_resources.exe when
+#   - Windows : compiled at configure time into build/tools/embed_resources.exe when
 #               missing or the sources changed (run inside the vcvarsall environment)
-#   - Others  : compiled from cmake/embed_resources.cpp at build time.
+#   - Others  : compiled from tools/embed_resources.cpp at build time.
 
 if(NOT DEFINED EMBED_RES_DIR)
     set(EMBED_RES_DIR "${DUI_ROOT}/resources")
 endif()
 
-set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/cmake/embed_resources.cpp")
-set(TOOL_BIN "${CMAKE_CURRENT_BINARY_DIR}/embed_resources")
+set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/tools/embed_resources.cpp")
+set(TOOL_BIN "${CMAKE_BINARY_DIR}/tools/embed_resources")
 set(GENERATED_INC "${CMAKE_CURRENT_BINARY_DIR}/embedded_resources.inc")
 
 if(DUI_OS_WINDOWS)
     # Windows: compiled at configure time when missing or the sources changed
-    set(TOOL_EXE "${DUI_SRC_ROOT_DIR}/cmake/embed_resources.exe")
+    set(TOOL_EXE "${CMAKE_BINARY_DIR}/tools/embed_resources.exe")
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/tools")
 
     if("${TOOL_SRC}" IS_NEWER_THAN "${TOOL_EXE}")
         message(STATUS "Rebuilding embed_resources.exe (source changed)")
@@ -37,14 +38,14 @@ if(DUI_OS_WINDOWS)
         if(NOT _tool_ok)
             message(WARNING "Failed to rebuild embed_resources.exe automatically.\n"
                             "Compile it manually in a VS Developer Command Prompt:\n"
-                            "  cl /nologo /std:c++17 /O2 /EHsc cmake/embed_resources.cpp /Fe:cmake/embed_resources.exe")
+                            "  cl /nologo /std:c++17 /O2 /EHsc tools/embed_resources.cpp /Fe:build/tools/embed_resources.exe")
         endif()
     endif()
 
     if(NOT EXISTS "${TOOL_EXE}")
         message(FATAL_ERROR "embed_resources.exe not found at ${TOOL_EXE}.\n"
                 "Compile it manually in a VS Developer Command Prompt:\n"
-                "  cl /nologo /std:c++17 /O2 /EHsc cmake/embed_resources.cpp /Fe:cmake/embed_resources.exe")
+                "  cl /nologo /std:c++17 /O2 /EHsc tools/embed_resources.cpp /Fe:build/tools/embed_resources.exe")
     endif()
 else()
     # macOS / Linux / FreeBSD: compile from source at build time

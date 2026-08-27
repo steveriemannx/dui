@@ -7,6 +7,10 @@
 #include <SDL3/SDL.h>
 #endif
 
+// This file only provides SystemUtil definitions for the SDL and Wayland
+// builds; on native Windows, SystemUtil_Windows.cpp is the implementation.
+#if defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
+
 namespace ui
 {
 bool SystemUtil::OpenUrl(const DString& url)
@@ -16,7 +20,7 @@ bool SystemUtil::OpenUrl(const DString& url)
     }
 #if defined(DUI_BUILD_FOR_SDL)
     return SDL_OpenURL(StringConvert::TToUTF8(url).c_str());
-#else
+#elif !defined(DUI_BUILD_FOR_WIN)
     (void)url;
     return false;
 #endif
@@ -28,11 +32,13 @@ bool SystemUtil::ShowMessageBox(const Window* pWindow, const DString& content, c
     SDL_Window* sdlWindow = (SDL_Window*)((pWindow != nullptr) ? pWindow->NativeWnd()->GetWindowHandle() : nullptr);
     SDL_MessageBoxFlags flags = SDL_MESSAGEBOX_INFORMATION;
     return SDL_ShowSimpleMessageBox(flags, StringConvert::TToUTF8(title).c_str(), StringConvert::TToUTF8(content).c_str(), sdlWindow);
-#else
+#elif !defined(DUI_BUILD_FOR_WIN)
     (void)pWindow; (void)content; (void)title;
     return false;
 #endif
 }
 
 } //namespace ui
+
+#endif //DUI_BUILD_FOR_SDL || DUI_BUILD_FOR_WAYLAND
 

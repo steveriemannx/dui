@@ -70,6 +70,29 @@ public:
     */
     bool IsWindow() const;
 
+    /** True when the platform provides OS shadows (Windows: DWM composition on)
+    */
+    bool IsSystemShadowSupported() const;
+
+    /** Enable/disable the OS-provided shadow; returns false when unsupported
+     *  or the native call failed
+    */
+    bool SetSystemShadowType(NativeWindowShadowType nativeShadowType);
+
+    /** Current OS shadow state
+    */
+    NativeWindowShadowType GetSystemShadowType() const;
+
+    /** Re-apply the current OS shadow state (e.g. after the window style or
+     *  state was restored)
+    */
+    void RefreshSystemShadow();
+
+    /** Clear the window region so the DWM shadow/rounding is visible (a window
+     *  region disables the DWM shadow)
+    */
+    void ClearWindowRgnForSystemShadow();
+
     /** Whether the current window is a child window (a child window that is not a popup window type; for the Windows system, it is a window with only the WS_CHILD style)
     */
     bool IsChildWindow() const;
@@ -720,6 +743,10 @@ private:
 
     //Whether it is a layered window
     bool m_bIsLayeredWindow;
+
+    //Current OS-provided shadow state (Windows DWM); kShadowSystemDisabled when
+    //the window uses a self-drawn shadow instead
+    NativeWindowShadowType m_systemShadowType;
 
     //Window opacity; this value is used as a parameter (BLENDFUNCTION.SourceConstantAlpha) in UpdateLayeredWindow
     uint8_t m_nLayeredWindowAlpha;

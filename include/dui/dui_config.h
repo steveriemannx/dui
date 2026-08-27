@@ -28,12 +28,6 @@
 
 //Macro definitions for different platforms
 #if defined DUI_BUILD_FOR_WIN
-    //Whether to use SDL window and mouse/keyboard events (currently only SDL3 is supported)
-    #if (DUI_SDL)
-        //To enable SDL, change SDLEnabled to 1 in msvc\PropertySheets\SDLSettings.props
-        #define DUI_BUILD_FOR_SDL    1
-    #endif
-
     //WebView2 control feature switch
     #if (DUI_WEBVIEW2)
         //To enable WebView2, change WebView2Enabled to 1 in msvc\PropertySheets\WebView2Settings.props

@@ -727,7 +727,7 @@ if(PNG_SHARED)
 endif()
 
 #dui
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
 
 if(PNG_STATIC)
   add_library(png_static STATIC ${libpng_sources})

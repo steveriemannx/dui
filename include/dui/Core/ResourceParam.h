@@ -56,7 +56,8 @@ public:
     /** The theme path name (relative path)
     */
 #if defined (DUI_BUILD_FOR_WIN)
-    FilePath themePath = FilePath(_T("themes\\default"));
+    // Windows uses the WinUI3 / Windows 11 theme; other platforms keep "default".
+    FilePath themePath = FilePath(_T("themes\\windows11"));
 #else
     FilePath themePath = FilePath(_T("themes/default"));
 #endif
@@ -120,7 +121,7 @@ public:
 
 /** Parameters required to load global resources (the resources are packaged into a custom binary
  *  archive embedded in the executable, corresponding to resource type: kMemoryRes; Qt qrc style)
- *  The embedded data is generated at build time by the embed_resources tool (cmake/embed_resources.cpp)
+ *  The embedded data is generated at build time by the embed_resources tool (tools/embed_resources.cpp)
  */
 class DUI_API MemoryResParam : public ResourceParam
 {
