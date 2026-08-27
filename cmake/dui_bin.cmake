@@ -86,6 +86,17 @@ else()
     message(FATAL_ERROR "Unknown OS!")
 endif()
 
+# Development run support: copy the dui resource tree next to the executable.
+# Without this, binaries under build/bin/Release|Debug cannot find themes/global.xml
+# when they use LocalFilesResParam(GetCurrentModuleDirectory() + "resources").
+if(EXISTS "${DUI_ROOT}/resources")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${DUI_ROOT}/resources"
+                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
+        COMMENT "Copying dui resources next to the executable")
+endif()
+
 # Build-order wiring: the executable links ${DUI_SKIA_LIBS}/${DUI_SDL_LIBS} by name, so the
 # archives built by cmake/dui_deps.cmake must exist before linking (parallel make safety).
 if(TARGET dui_skia)
