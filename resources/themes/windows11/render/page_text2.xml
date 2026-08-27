@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window>
+    <HBox>
+        <VBox width="auto" margin="4">
+            <HBox width="80" bkcolor="blue">
+                <Label height="stretch" width="stretch" text="Text Align (H: Left, V: Top)" text_align="left,top" vertical_text="true"/>
+            </HBox>
+            <HBox width="80" bkcolor="dark_gray">
+                <Label height="stretch" width="stretch" text="Text Align (H: Left, V: Center)" text_align="left,vcenter" vertical_text="true"/>
+            </HBox>
+            <HBox width="80" bkcolor="blue">
+                <Label height="stretch" width="stretch" text="Text Align (H: Left, V: Bottom)" text_align="left,bottom" vertical_text="true"/>
+            </HBox>
+        </VBox>
+        <VBox width="auto" margin="4">
+            <HBox width="80" bkcolor="dark_gray">
+                <Label height="stretch" width="stretch" text="Text Align (H: Center, V: Top)" text_align="center,top" vertical_text="true"/>
+            </HBox>
+            <HBox width="80" bkcolor="blue">
+                <Label height="stretch" width="stretch" text="Text Align (H: Center, V: Center)" text_align="center,vcenter" vertical_text="true"/>
+            </HBox>
+            <HBox width="80" bkcolor="dark_gray">
+                <Label height="stretch" width="stretch" text="Text Align (H: Center, V: Bottom)" text_align="center,bottom" vertical_text="true"/>
+            </HBox>
+        </VBox>
+        <VBox width="auto" margin="4">
+            <HBox width="80" bkcolor="blue">
+                <Label height="stretch" width="stretch" text="Text Align (H: Right, V: Top)" text_align="right,top" vertical_text="true"/>
+            </HBox>
+            <HBox width="80" bkcolor="dark_gray">
+                <Label height="stretch" width="stretch" text="Text Align (H: Right, V: Center)" text_align="right,vcenter" vertical_text="true"/>
+            </HBox>
+            <HBox width="80" bkcolor="blue">
+                <Label height="stretch" width="stretch" text="Text Align (H: Right, V: Bottom)" text_align="right,bottom" vertical_text="true"/>
+            </HBox>
+        </VBox>
+        <VBox>
+            <HBox margin="4">
+                <HBox width="80" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Text Align (H: Center, V: Justified)" text_align="hcenter,vjustify" vertical_text="true"/>
+                </HBox>
+                <HBox width="80" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="Long text drawing test, single column text, 1234567890-. qwertyuiopasdfghjkl;lmnozxccvb.NBVCXZASDFGHJKLPOIUYTREWQ." autotooltip="true" vertical_text="true" text_align="right,top"/>
+                </HBox>
+                <HBox width="80" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Long text drawing test, multi-column text, text is 1234567890-. Long text drawing test: 1+2=3, 8/4=2, multi-column text qwertyuiopasdfghjkl-v. End of long text drawing test." autotooltip="true" single_line="false" vertical_text="true" text_align="right,top"/>
+                </HBox>
+                <HBox width="80" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="Text - Normal Font" font="system_14" vertical_text="true" text_align="right,top"/>
+                </HBox>
+                <HBox width="80" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Text - Bold" font="system_bold_14" vertical_text="true" text_align="right,top"/>
+                </HBox>
+                <HBox width="80" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="Text - Italic" font="system_italic_14" vertical_text="true" text_align="right,top"/>
+                </HBox>
+                <HBox width="80" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="123 Text - Strikethrough" font="system_strikeout_14" vertical_text="true" text_align="right,top"/>
+                </HBox>
+                <HBox width="80" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="A Text - Underlined" font="system_underline_14" vertical_text="true" text_align="right,top"/>
+                </HBox>
+                <HBox width="80" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Text - All Styles
+Second column content" font="system_fullstyle_16" normal_text_color="white" vertical_text="true" text_align="right,top" replace_newline="true" multi_line="true"/>
+                </HBox>
+                <HBox width="80" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="Text Align (H: Right, V: Center)
+This case sets line spacing.
+Normal line spacing" text_align="right,vcenter" multi_line="true" replace_newline="true" vertical_text="true"/>
+                </HBox>
+                <HBox width="80" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Text Align (H: Right, V: Center)
+This case sets line spacing.
+spacing_mul='1.2'" text_align="right,vcenter" multi_line="true" replace_newline="true" spacing_mul="1.2" vertical_text="true"/>
+                </HBox>
+                <HBox width="80" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="Text Align (H: Right, V: Center)
+This case sets line spacing.
+word_spacing='6'" text_align="right,vcenter" multi_line="true" replace_newline="true" word_spacing="6" vertical_text="true"/>
+                </HBox>
+                <HBox width="80" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Text Align (H: Right, V: Center)
+This case sets line spacing.
+spacing_mul='1.2' spacing_add='6'" text_align="right,vcenter" multi_line="true" replace_newline="true" spacing_mul="1.2" spacing_add="6" vertical_text="true"/>
+                </HBox>
+            </HBox>
+            <HBox margin="4,4,0,0">
+                <HBox width="80" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="Text Align (H: Center, V: Justified)
+Multi-line text test with line breaks
+Long text drawing test: 1+2=3, 8/4=2, end of multi-column text." text_align="hcenter,vjustify" multi_line="true" vertical_text="true" replace_newline="true"/>
+                </HBox>                       
+                <HBox width="80" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Letters and numbers are not rotated 90 degrees, 1234567890-. qwertyuiopasdfghjkl;lmnozxccvb.NBVCXZASDFGHJKLPOIUYTREWQ." single_line="false"  vertical_text="true" ascii_rotate_90="false" text_align="right,top"/>
+                </HBox>
+                <HBox width="80" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="Text displayed at actual height without fixed font height: 1234567890-. Long text drawing test: 1+2=3, 8/4=2, multi-column text qwertyuiopasdfghjkl-v. End of long text drawing test." single_line="false" vertical_text="true" use_font_height="false" text_align="right,top"/>
+                </HBox>
+                <HBox width="200" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Text displayed at actual height without fixed font height, vertical character spacing: 1234567890-. Long text drawing test: 1+2=3, 8/4=2, multi-column text qwertyuiopasdfghjkl-v. End of long text drawing test." single_line="false" vertical_text="true" use_font_height="false" word_spacing="3" text_align="right,top"/>
+                </HBox>
+                <HBox width="180" bkcolor="dark_gray">
+                    <Label height="stretch" width="stretch" text="Text displayed at actual height without fixed font height, vertical character spacing and column spacing: 1234567890-. Long text drawing test: 1+2=3, 8/4=2, multi-column text qwertyuiopasdfghjkl-v. End of long text drawing test." single_line="false" vertical_text="true" use_font_height="false" word_spacing="3" spacing_mul="1.5" spacing_add="6" text_align="right,top"/>
+                </HBox>
+                <HBox width="180" bkcolor="blue">
+                    <Label height="stretch" width="stretch" text="Text displayed at actual height without fixed font height, vertical character spacing and column spacing: 1234567890-. Long text drawing test: 1+2=3, 8/4=2, multi-column text qwertyuiopasdfghjkl-v. End of long text drawing test." single_line="false" vertical_text="true" use_font_height="false" word_spacing="3" spacing_mul="1.5" spacing_add="12" text_align="right,top"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </HBox>
+</Window>
