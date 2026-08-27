@@ -4,10 +4,11 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
   message(FATAL_ERROR "Prevented in-tree build. Please create a build directory outside of the source code and run \"cmake -S ${CMAKE_SOURCE_DIR} -B .\" from there")
 endif()
 
-# Make this directory self-contained so it can also be configured standalone
-# (scripts/*_build.sh --standalone). In the top-level build dui_common.cmake is
-# already included; its execution blocks are GLOBAL-property guarded and idempotent.
-include("${CMAKE_CURRENT_LIST_DIR}/../cmake/dui_common.cmake")
+# project() must run before dui_common.cmake: it populates CMAKE_SYSTEM_NAME,
+# which dui_common.cmake uses to pick the platform (and the SDL window-backend
+# switch). Without it, a standalone "cmake -S src" configure saw an empty
+# CMAKE_SYSTEM_NAME and wrongly evaluated the non-Windows branch.
+project(dui CXX C)
 
 # dui
 # MSVC runtime library flags are selected by an abstraction.
@@ -21,7 +22,10 @@ else()
 endif()
 # dui end
 
-project(dui CXX C)
+# Make this directory self-contained so it can also be configured standalone
+# (scripts/*_build.sh --standalone). In the top-level build dui_common.cmake is
+# already included; its execution blocks are GLOBAL-property guarded and idempotent.
+include("${CMAKE_CURRENT_LIST_DIR}/../cmake/dui_common.cmake")
 
 if(MSVC)
     # Source files use UTF-8 encoding
@@ -140,7 +144,7 @@ include_directories(${DUI_SRC_ROOT_DIR}/include)
 include_directories(${SKIA_SRC_ROOT_DIR})
 if(DUI_ENABLE_WAYLAND)
     include_directories(${DUI_WAYLAND_INCLUDE_DIRS})
-else()
+elseif(NOT WIN32)
     include_directories("${SDL_SRC_ROOT_DIR}/include")
 endif()
 
@@ -153,8 +157,8 @@ else()
 endif()
 
 # Set the library output directory
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_SRC_ROOT_DIR}/lib/")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
 
 # Add source code files
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR} DIR_LIB_SRC)
@@ -336,6 +340,11 @@ else()
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
 endif()
 
+# Optional Qt-like platform entry shim.
+# Applications that write a normal C++ main() on Windows can link dui_entry;
+# it provides WinMain/wWinMain and forwards to main().
+add_library(dui_entry STATIC "${CMAKE_CURRENT_SOURCE_DIR}/Entry/EntryPoint_main.cpp")
+
 # Build-order wiring: the SDL3/Skia archives (built by cmake/dui_deps.cmake at make time)
 # must exist before this library links (dui_bin*.cmake links them into the executables).
 # SDL3 is wired first so it builds before Skia (faster feedback on SDL issues).
@@ -350,13 +359,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     if(DUI_ENABLE_WAYLAND)
         # Enable Wayland support for Linux (alternative to SDL)
         target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_WAYLAND=1)
-    endif()
-endif()
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    if(DUI_ENABLE_SDL)
-        # Enable SDL support for windows
-        target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_SDL=1)
     endif()
 endif()
 

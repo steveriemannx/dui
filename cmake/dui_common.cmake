@@ -38,6 +38,13 @@ endif()
 # Define the switch variables (after changing them, clear the cmake build directory for them to take effect; otherwise the old cached values are used)
 option(DUI_LOG "Print dui debug log" OFF)
 
+# New examples use a normal C++ main() (Qt-like).  The dui_entry shim provides
+# the Windows WinMain/wWinMain entry and forwards to main().  Old macro-based
+# examples can still set this to OFF if they define their own entry.
+if(NOT DEFINED DUI_USE_MAIN_ENTRY)
+    set(DUI_USE_MAIN_ENTRY ON)
+endif()
+
 # Switch for the skia lib subdirectory name (by default Windows assembles the path by rules; other platforms can pin a fixed directory, e.g. the llvm build)
 option(DUI_SKIA_LIB_SUBPATH "Skia lib sub path" OFF)
 
@@ -46,10 +53,12 @@ if(DUI_OS_LINUX)
     option(DUI_ENABLE_WAYLAND "Enable Wayland (alternative to SDL)" OFF)
 endif()
 
-# SDL support: off by default on Windows, on by default on other platforms
-# If Wayland is enabled, SDL is disabled by default
+# SDL support: removed on Windows (native Win32/DWM backend only); on by default
+# on other platforms. If Wayland is enabled, SDL is disabled by default.
 if(DUI_OS_WINDOWS)
-    option(DUI_ENABLE_SDL "Enable SDL" OFF)
+    # Pin the cache variable OFF so an old cache value or a script
+    # -DDUI_ENABLE_SDL=ON can never re-enable it.
+    set(DUI_ENABLE_SDL OFF CACHE BOOL "Enable SDL (Windows: always OFF)" FORCE)
 else()
     if(DUI_ENABLE_WAYLAND)
         set(DUI_ENABLE_SDL_DEFAULT OFF)
@@ -127,8 +136,8 @@ endif()
 
 # dui source root, library directory, and bin directory
 get_filename_component(DUI_ROOT "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
-set(DUI_LIB_PATH "${DUI_ROOT}/lib")
-set(DUI_BIN_PATH "${DUI_ROOT}/bin")
+set(DUI_LIB_PATH "${CMAKE_BINARY_DIR}/lib")
+set(DUI_BIN_PATH "${CMAKE_BINARY_DIR}/bin")
 set(DUI_LIBS dui dui-cximage dui-webp dui-png dui-zlib)
 
 # CEF module source root (the CEF module is optional)
@@ -169,21 +178,18 @@ endif()
 
 # Skia source root and library directories (Skia is required)
 get_filename_component(DUI_SKIA_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/skia/" ABSOLUTE)
-if(DUI_SKIA_LIB_SUBPATH STREQUAL "" OR DUI_SKIA_LIB_SUBPATH STREQUAL "OFF")
-    if(DUI_MULTI_CONFIG)
-        # Multi-config generator (VS / Xcode): build both debug and release Skia.
-        # Generator expressions in the platform files select the right path per configuration.
-        set(DUI_SKIA_LIB_PATH_DEBUG   "${DUI_SKIA_SRC_ROOT_DIR}/out/${DUI_COMPILER_NAME}.${DUI_SYSTEM_PROCESSOR}.debug")
-        set(DUI_SKIA_LIB_PATH_RELEASE "${DUI_SKIA_SRC_ROOT_DIR}/out/${DUI_COMPILER_NAME}.${DUI_SYSTEM_PROCESSOR}.release")
-        # Default for global link_directories / add_custom_target dependencies
-        set(DUI_SKIA_LIB_PATH "${DUI_SKIA_LIB_PATH_RELEASE}")
-    else()
-        # Single-config generator: path reflects the build type
-        set(DUI_SKIA_LIB_PATH "${DUI_SKIA_SRC_ROOT_DIR}/out/${DUI_COMPILER_NAME}.${DUI_SYSTEM_PROCESSOR}.${DUI_BUILD_TYPE}")
-    endif()
+if(DUI_MULTI_CONFIG)
+    # Multi-config generator (VS / Xcode): Skia libs live in the same build/lib
+    # per-config folders as the rest of the dui libraries, with no extra prefix.
+    set(DUI_SKIA_LIB_PATH_DEBUG   "${DUI_LIB_PATH}/Debug")
+    set(DUI_SKIA_LIB_PATH_RELEASE "${DUI_LIB_PATH}/Release")
+    # Default for global link_directories / add_custom_target dependencies
+    set(DUI_SKIA_LIB_PATH "${DUI_SKIA_LIB_PATH_RELEASE}")
 else()
-    # Externally specified subdirectory name (user manages build variants themselves)
-    set(DUI_SKIA_LIB_PATH "${DUI_SKIA_SRC_ROOT_DIR}/out/${DUI_SKIA_LIB_SUBPATH}")
+    # Single-config generator: path reflects the build type.
+    # DUI_SKIA_LIB_SUBPATH is accepted for backward compatibility, but Skia output
+    # no longer gets a separate variant prefix directory.
+    set(DUI_SKIA_LIB_PATH "${DUI_LIB_PATH}/${DUI_BUILD_TYPE}")
 endif()
 set(DUI_SKIA_LIBS svg skshaper skottie sksg jsonreader skia)
 
@@ -335,56 +341,9 @@ if(DUI_LOG)
     message(STATUS "")
 endif()
 
-# ---- Resource sync: keep the runtime resource tree in bin/ in sync with the repo-root
-# resources/ directory (fonts/lang/themes) and generate the resources.zip archive.
-# bin/ is build output and may be deleted at any time; configure re-creates it.
-# Idempotent per configure run (GLOBAL-property guarded); safe to call per scope.
+# ---- Resources remain in the repository root; binaries load them directly.
 function(dui_sync_resources)
-    get_property(_dui_res_synced GLOBAL PROPERTY DUI_RESOURCES_SYNCED)
-    if(_dui_res_synced)
-        return()
-    endif()
-    set_property(GLOBAL PROPERTY DUI_RESOURCES_SYNCED TRUE)
-
-    set(_res_src "${DUI_ROOT}/resources")
-    if(NOT EXISTS "${_res_src}/themes")
-        return()  # resources/ not present (e.g. library-only build)
-    endif()
-
-    # 1. Generate resources.zip next to resources/ (zip with a "resources/" top-level folder,
-    #    matching the runtime path convention used by ZipManager / the embedded-zip flow)
-    set(_res_zip "${_res_src}/resources.zip")
-    if(WIN32)
-        # Use relative paths: libarchive's bsdtar may parse Windows
-        # drive-letter paths (D:/...) as remote URLs, causing
-        # "Cannot connect to D: resolve failed".
-        execute_process(
-            COMMAND tar -a -cf resources/resources.zip resources
-            WORKING_DIRECTORY "${DUI_ROOT}"
-            RESULT_VARIABLE _zip_result
-        )
-    else()
-        execute_process(
-            COMMAND zip -q -r "${_res_zip}" resources
-            WORKING_DIRECTORY "${DUI_ROOT}"
-            RESULT_VARIABLE _zip_result
-        )
-    endif()
-    if(_zip_result EQUAL 0 AND EXISTS "${_res_zip}")
-        message(STATUS "resources.zip: ${_res_zip}")
-    else()
-        message(WARNING "resources.zip creation failed; the zip resource mode will be unavailable")
-    endif()
-
-    # 2. Copy resources/ + resources.zip into bin/ (create bin/ if missing - it is build
-    #    output and may have been deleted; configure must re-create the resource tree)
-    file(MAKE_DIRECTORY "${DUI_BIN_PATH}/resources")
-    file(COPY "${_res_src}/fonts" "${_res_src}/lang" "${_res_src}/themes"
-         DESTINATION "${DUI_BIN_PATH}/resources")
-    if(EXISTS "${_res_zip}")
-        file(COPY "${_res_zip}" DESTINATION "${DUI_BIN_PATH}")
-    endif()
-    message(STATUS "Resources synced to ${DUI_BIN_PATH}")
+    message(STATUS "Resources are loaded directly from ${DUI_ROOT}/resources")
 endfunction()
 
 # Dependency management: Skia/SDL3 sources are downloaded/extracted from zips at
@@ -463,7 +422,7 @@ function(dui_build_msvc_tool _result_var _srcs _exe _include_dirs)
     set(_bat "${CMAKE_CURRENT_BINARY_DIR}/dui_rebuild_tool.bat")
     file(WRITE "${_bat}"
         "@call \"${_vcvarsall}\" ${_vc_arch} >nul\r\n"
-        "\"${CMAKE_CXX_COMPILER}\" /nologo /std:c++17 /O2 /EHsc ${_inc_str} ${_srcs_str} /Fe:\"${_exe}\"\r\n")
+        "\"${CMAKE_CXX_COMPILER}\" /nologo /std:c++17 /O2 /EHsc ${_inc_str} ${_srcs_str} /Fe:\"${_exe}\" /Fo\"${CMAKE_CURRENT_BINARY_DIR}/\"\r\n")
     execute_process(
         COMMAND cmd /c "${_bat}"
         WORKING_DIRECTORY "${DUI_SRC_ROOT_DIR}"

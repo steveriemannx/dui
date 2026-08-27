@@ -28,8 +28,8 @@ add_definitions(-DUNICODE -D_UNICODE)
 
 if(MSVC)
     # MSVC needs Debug/Release set explicitly; otherwise it creates Debug/Release subdirectories automatically
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${DUI_BIN_PATH}/Debug")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${DUI_BIN_PATH}/Release")
 endif()
 
 # Settings for MinGW-w64 builds
@@ -84,9 +84,9 @@ endif()
 
 # The manifest file path must be embedded
 if(DUI_BITS_64)
-    set(DUI_WIN_MANIFEST "${DUI_ROOT}/msvc/manifest/dui.x64.manifest")
+    set(DUI_WIN_MANIFEST "${DUI_ROOT}/cmake/manifest/dui.x64.manifest")
 else()
-    set(DUI_WIN_MANIFEST "${DUI_ROOT}/msvc/manifest/dui.x86.manifest")
+    set(DUI_WIN_MANIFEST "${DUI_ROOT}/cmake/manifest/dui.x86.manifest")
 endif()
      
 if(DUI_MINGW)
@@ -119,17 +119,9 @@ if(MSVC)
 endif()
 
 # Libraries required on Windows
-set(DUI_WINDOWS_LIBS Comctl32 Imm32 Opengl32 User32 shlwapi)
-
-if(DUI_ENABLE_SDL)
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        # Enable SDL support for windows
-        target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_SDL=1)
-    endif()
-    
-    # Add the SDL dependency libs
-    list(APPEND DUI_WINDOWS_LIBS Version.lib Winmm.lib Setupapi.lib)
-endif()
+# dwmapi is needed for the OS-provided shadows (NativeWindow_Windows); MinGW/clang
+# compilers ignore the #pragma comment(lib, "dwmapi.lib") directive, so link it here.
+set(DUI_WINDOWS_LIBS Comctl32 Imm32 Opengl32 User32 shlwapi dwmapi)
 
 if(DUI_WEBVIEW2_EXE)
     # Define the macro to enable WebView2
@@ -157,4 +149,10 @@ else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_CEF=0)
 endif()
 
-target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_WINDOWS_LIBS})
+if(DUI_USE_MAIN_ENTRY AND TARGET dui_entry)
+    # A normal C++ main() is used; the dui_entry shim supplies the platform
+    # WinMain/wWinMain and forwards to main() (Qt-like).
+    list(APPEND DUI_WINDOWS_LIBS dui_entry)
+endif()
+
+target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_WINDOWS_LIBS})

@@ -122,5 +122,6 @@
 #include "Control/ColorPickerStatard.h"
 #include "Control/ColorPickerStatardGray.h"
 #include "Control/ColorPickerCustom.h"
+#include "Utils/UiBuilder.h"
 
 #endif //DUI_HEADERS_H_
