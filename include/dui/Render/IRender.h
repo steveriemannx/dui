@@ -728,7 +728,11 @@ enum class RenderBackendType
     *   (2) Windows drawn with OpenGL must not be layered windows (i.e. windows with the WS_EX_LAYERED attribute)
     *   (3) Windows using OpenGL redraw the entire window on every draw and do not support partial drawing, so performance is not necessarily better than with CPU drawing; it is best to evaluate and choose the optimal drawing method for the actual situation
     */
-    kNativeGL_BackendType = 1
+    kNativeGL_BackendType = 1,
+
+    /** Draw using Metal (macOS native only; requires libskia.a built with skia_use_metal=true)
+    */
+    kMetal_BackendType = 2
 };
 
 /** Parameters used to measure the width and height of the specified text string
