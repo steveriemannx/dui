@@ -22,6 +22,7 @@ public:
 
     virtual LRESULT OnKeyDownMsg(VirtualKeyCode vkCode, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled) override;
     virtual LRESULT OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& nativeMsg, bool& bHandled) override;
+    virtual LRESULT OnMouseLButtonDownMsg(const UiPoint& pt, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled) override;
 
     /** Close the drop-down box
     * @param [in] bCanceled true indicates cancel, otherwise a normal close
@@ -196,6 +197,8 @@ void ComboButtonWnd::OnInitWindow()
     BaseClass::OnInitWindow();
     SetResourcePath(m_pOwner->GetWindow()->GetResourcePath());
     SetShadowType(m_pOwner->GetComboWndShadowType());
+    // Keep the drop shadow but remove the thin outline drawn around the list.
+    SetShadowBorderSize(0);
 
     Box* pRoot = new Box(this);
     pRoot->SetAutoDestroyChild(false);
@@ -241,6 +244,24 @@ LRESULT ComboButtonWnd::OnKillFocusMsg(WindowBase* pSetFocusWindow, const Native
         CloseComboWnd(false);
     }
     return lResult;
+}
+
+LRESULT ComboButtonWnd::OnMouseLButtonDownMsg(const UiPoint& pt, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled)
+{
+    // The popup window includes the drop shadow margin around the actual list.
+    // A click on that margin (for example when the popup overlaps the combo
+    // button after it opens upward) must close the dropdown and must not fall
+    // through to the window behind.
+    if (m_pOwner == nullptr) {
+        bHandled = true;
+        return 0;
+    }
+    if (!m_pOwner->GetComboBox()->GetPos().ContainsPt(pt)) {
+        bHandled = true;
+        CloseComboWnd(false);
+        return 0;
+    }
+    return BaseClass::OnMouseLButtonDownMsg(pt, modifierKey, nativeMsg, bHandled);
 }
 
 ////////////////////////////////////////////////////////

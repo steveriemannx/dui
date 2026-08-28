@@ -30,6 +30,7 @@ public:
 
     virtual LRESULT OnKeyDownMsg(VirtualKeyCode vkCode, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled) override;
     virtual LRESULT OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& nativeMsg, bool& bHandled) override;
+    virtual LRESULT OnMouseLButtonDownMsg(const UiPoint& pt, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled) override;
 
     /** Close the drop-down box
     * @param [in] bCanceled true indicates cancel, otherwise a normal close
@@ -72,7 +73,7 @@ void CComboWnd::InitComboWnd(Combo* pOwner, bool bActivated)
     WindowCreateParam createWndParam;
     createWndParam.m_dwStyle = kWS_POPUP;
     createWndParam.m_dwExStyle = kWS_EX_LAYERED;
-#ifdef DUI_BUILD_FOR_SDL
+#if defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_MACOS)
     createWndParam.m_dwExStyle |= kWS_EX_NOACTIVATE;
 #endif
     createWndParam.m_nX = rcWnd.left;
@@ -82,6 +83,16 @@ void CComboWnd::InitComboWnd(Combo* pOwner, bool bActivated)
     CreateWnd(pOwner->GetWindow(), createWndParam);
 
     UpdateComboWnd();
+#if defined(DUI_BUILD_FOR_MACOS)
+    // On macOS a combo popup must not take key focus away from the owner
+    // window. Make the owner foreground first, then show the non-activating
+    // popup above it so the popup remains visible while the owner stays key.
+    if (pOwner->GetWindow() != nullptr) {
+        pOwner->GetWindow()->SetWindowForeground();
+    }
+    ShowWindow(ui::kSW_SHOW_NA);
+    pOwner->SetState(kControlStateHot);
+#else
     if (bActivated) {
         ShowWindow(ui::kSW_SHOW_NORMAL);
         SetWindowForeground();
@@ -92,6 +103,7 @@ void CComboWnd::InitComboWnd(Combo* pOwner, bool bActivated)
     else {
         ShowWindow(ui::kSW_SHOW_NA);
     }
+#endif
     if (Box::IsValidItemIndex(m_iOldSel)) {
         //When expanded, ensure the selection is visible
         UpdateWindow();
@@ -225,11 +237,19 @@ void CComboWnd::CloseComboWnd(bool bCanceled, bool needUpdateSelItem)
     }
     //Switch the foreground window to the parent window first, to avoid switching to another window after the foreground window is closed
     ControlPtrT<Combo> pOwner = m_pOwner;
+#if defined(DUI_BUILD_FOR_MACOS)
+    if ((pOwner != nullptr) && (pOwner->GetWindow() != nullptr) && pOwner->GetWindow()->IsWindow()) {
+        //The popup is non-activating; after selecting an item make sure the
+        //owner window is explicitly key again.
+        pOwner->GetWindow()->SetWindowForeground();
+    }
+#else
     if ((pOwner != nullptr) && (pOwner->GetWindow() != nullptr)) {
         if (IsWindowForeground()) {
             pOwner->GetWindow()->SetWindowForeground();
         }
     }
+#endif
 
     CloseWnd();
     if (m_pOwner != nullptr) {
@@ -246,6 +266,8 @@ void CComboWnd::OnInitWindow()
 
     SetResourcePath(m_pOwner->GetWindow()->GetResourcePath());
     SetShadowType(m_pOwner->GetComboWndShadowType());
+    // Keep the drop shadow but remove the thin outline drawn around the list.
+    SetShadowBorderSize(0);
 
     Box* pRoot = new Box(this);
     pRoot->SetAutoDestroyChild(false);
@@ -293,6 +315,24 @@ LRESULT CComboWnd::OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& 
         CloseComboWnd(false, false);
     }
     return lResult;
+}
+
+LRESULT CComboWnd::OnMouseLButtonDownMsg(const UiPoint& pt, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled)
+{
+    // The popup window includes the drop shadow margin around the actual list.
+    // A click on that margin (for example when the popup overlaps the combo
+    // button after it opens upward) must close the dropdown and must not fall
+    // through to the window behind.
+    if (m_pOwner == nullptr) {
+        bHandled = true;
+        return 0;
+    }
+    if (!m_pOwner->GetTreeView()->GetPos().ContainsPt(pt)) {
+        bHandled = true;
+        CloseComboWnd(false, false);
+        return 0;
+    }
+    return BaseClass::OnMouseLButtonDownMsg(pt, modifierKey, nativeMsg, bHandled);
 }
 
 ////////////////////////////////////////////////////////
@@ -1086,11 +1126,22 @@ bool Combo::OnEditKillFocus(const EventArgs& /*args*/)
 
 bool Combo::OnWindowKillFocus(const EventArgs& /*args*/)
 {
+#if defined(DUI_BUILD_FOR_MACOS)
+    if (m_pWindow != nullptr && !m_pWindow->IsClosingWnd()) {
+        // On macOS the owner may receive the kill-focus notification before the
+        // popup reports itself as the key window, or while a non-activating
+        // popup is deliberately keeping the owner key. Do not tear the dropdown
+        // down from the owner's window-focus callback; the popup itself closes
+        // on real outside clicks.
+        return true;
+    }
+#else
     if (m_pWindow != nullptr) {
         if (m_pWindow->IsWindowFocused()) {
             return true;
         }
     }
+#endif
     HideComboList();
     return true;
 }

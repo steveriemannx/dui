@@ -32,6 +32,7 @@ public:
 
     virtual LRESULT OnKeyDownMsg(VirtualKeyCode vkCode, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled) override;
     virtual LRESULT OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& nativeMsg, bool& bHandled) override;
+    virtual LRESULT OnMouseLButtonDownMsg(const UiPoint& pt, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled) override;
 
 private:
     /** Calculate the display rectangle of the drop-down box
@@ -58,6 +59,9 @@ void CCheckComboWnd::InitComboWnd(CheckCombo* pOwner)
     WindowCreateParam createWndParam;
     createWndParam.m_dwStyle = kWS_POPUP;
     createWndParam.m_dwExStyle = kWS_EX_LAYERED;
+#if defined(DUI_BUILD_FOR_MACOS)
+    createWndParam.m_dwExStyle |= kWS_EX_NOACTIVATE;
+#endif
     createWndParam.m_nX = rcWnd.left;
     createWndParam.m_nY = rcWnd.top;
     createWndParam.m_nWidth = rcWnd.Width();
@@ -65,8 +69,16 @@ void CCheckComboWnd::InitComboWnd(CheckCombo* pOwner)
     CreateWnd(pOwner->GetWindow(), createWndParam);
     UpdateComboWnd();
 
+#if defined(DUI_BUILD_FOR_MACOS)
+    // Like the Combo popup, keep the owner window key and show the popup above it.
+    if (pOwner->GetWindow() != nullptr) {
+        pOwner->GetWindow()->SetWindowForeground();
+    }
+    ShowWindow(ui::kSW_SHOW_NA);
+#else
     ShowWindow(ui::kSW_SHOW_NORMAL);
     KeepParentActive();
+#endif
 
     //Send an event
     pOwner->SendEvent(kEventWindowCreate);
@@ -171,11 +183,18 @@ void CCheckComboWnd::CloseComboWnd()
     }
     //First switch the foreground window to the parent window to avoid switching to another window after the foreground window is closed
     CheckCombo* pOwner = m_pOwner;
+#if defined(DUI_BUILD_FOR_MACOS)
+    if ((pOwner != nullptr) && (pOwner->GetWindow() != nullptr) && pOwner->GetWindow()->IsWindow()) {
+        //Non-activating popup: make the owner explicitly key before closing.
+        pOwner->GetWindow()->SetWindowForeground();
+    }
+#else
     if ((pOwner != nullptr) && (pOwner->GetWindow() != nullptr)) {
         if (IsWindowForeground()) {
             pOwner->GetWindow()->SetWindowForeground();
         }        
     }
+#endif
     CloseWnd();
 }
 
@@ -207,6 +226,8 @@ void CCheckComboWnd::OnInitWindow()
     BaseClass::OnInitWindow();
     SetResourcePath(m_pOwner->GetWindow()->GetResourcePath());
     SetShadowType(m_pOwner->GetComboWndShadowType());
+    // Keep the drop shadow but remove the thin outline drawn around the list.
+    SetShadowBorderSize(0);
 
     Box* pRoot = new Box(this);
     pRoot->SetAutoDestroyChild(false);
@@ -248,6 +269,24 @@ LRESULT CCheckComboWnd::OnKillFocusMsg(WindowBase* pSetFocusWindow, const Native
         CloseComboWnd();
     }
     return lResult;
+}
+
+LRESULT CCheckComboWnd::OnMouseLButtonDownMsg(const UiPoint& pt, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled)
+{
+    // The popup window includes the drop shadow margin around the actual list.
+    // A click on that margin (for example when the popup overlaps the combo
+    // button after it opens upward) must close the dropdown and must not fall
+    // through to the window behind.
+    if (m_pOwner == nullptr) {
+        bHandled = true;
+        return 0;
+    }
+    if (!m_pOwner->GetListBox()->GetPos().ContainsPt(pt)) {
+        bHandled = true;
+        CloseComboWnd();
+        return 0;
+    }
+    return BaseClass::OnMouseLButtonDownMsg(pt, modifierKey, nativeMsg, bHandled);
 }
 
 ////////////////////////////////////////////////////////
