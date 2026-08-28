@@ -28,7 +28,11 @@ Window::Window() :
     m_bIsArranged(false),
     m_bCenterPendingAfterAutoSize(false),
     m_bPostQuitMsgWhenClosed(false),
+#if defined(DUI_BUILD_FOR_MACOS)
+    m_renderBackendType(RenderBackendType::kNativeGL_BackendType),
+#else
     m_renderBackendType(RenderBackendType::kRaster_BackendType),
+#endif
     m_bWindowAttributesApplied(false),
     m_bCheckSetWindowFocus(false),
     m_bControlFullscreen(false)
