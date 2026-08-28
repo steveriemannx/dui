@@ -32,25 +32,55 @@ void ChatForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
         attrs.m_bShadowAttachedDefined = true;
         attrs.m_bIsLayeredWindow = true;
         attrs.m_bIsLayeredWindowDefined = true;
-        attrs.m_rcCaption = ui::UiRect(0, 0, 0, 35);
+        attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
         attrs.m_bCaptionDefined = true;
     }
     else {
-        //Corresponds to the <Window> attributes of login.xml
-        attrs.m_bInitSizeDefined = true;
-        attrs.m_szInitSize.cx = 304;
-        attrs.m_szInitSize.cy = 520;
-        attrs.m_bShadowAttached = false;
+        //Corresponds to the <Window> attributes of login.xml (no explicit size:
+        //the generated root box is width=304/height=auto, so AutoResizeWindow
+        //fits the window to its content)
+        attrs.m_bShadowAttached = true;
+        attrs.m_bShadowAttachedDefined = true;
         attrs.m_bIsLayeredWindow = true;
         attrs.m_bIsLayeredWindowDefined = true;
-        attrs.m_rcCaption = ui::UiRect(0, 0, 0, 160);
+        attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
         attrs.m_bCaptionDefined = true;
     }
+    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
+    // the XML layout (WindowBuilder adds the shadow corner to the size).
+    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
+    ui::UiSize szBorderRound;
+    ui::UiPadding rcShadowCorner;
+    DString shadowImage;
+    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
+        attrs.m_rcShadowCorner = rcShadowCorner;
+        if (attrs.m_bInitSizeDefined) {
+            attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
+            attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
+        }
+    }
+
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
+void ChatForm::PreInitWindow()
+{
+    BaseClass::PreInitWindow();
+
+    //No layout XML is loaded, so Window::ParseWindowXml failed and reset the
+    //window resource path; restore it now so image paths resolve from the
+    //"chat" folder.
+    SetResourcePath(ui::FilePath(_T("chat")));
+}
 void ChatForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     if (m_layoutType == kWechat) {
         SetCaptionRect(ui::UiRect(0, 0, 0, 35), false);
         // Build-time generated from wechat.xml
@@ -67,7 +97,14 @@ void ChatForm::OnInitWindow()
 void ChatForm::ShowCustomWindow(LayoutType layoutType)
 {
     ChatForm* window = new ChatForm(layoutType);
-    window->CreateWnd(nullptr, ui::WindowCreateParam(_T("chat (Generated Code)"), true));
+    ui::WindowCreateParam createParam(_T("chat (Generated Code)"), true);
+    if (layoutType == kWechat) {
+        //Match wechat.xml: size="1024,768".
+        createParam.m_nWidth = 1024;
+        createParam.m_nHeight = 768;
+    }
+    //login.xml has no explicit size; the root auto-resizes to its content.
+    window->CreateWnd(nullptr, createParam);
     window->PostQuitMsgWhenClosed(true);
     window->ShowWindow(ui::kSW_SHOW_NORMAL);
 }
