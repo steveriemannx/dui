@@ -71,6 +71,11 @@ public:
     */
     void GetChildWindowRect(UiRect& rect) const;
 
+    /** Get the rendering engine object of the child window (the application layer uses it to draw the content of the child window)
+    * @return Returns the rendering engine object of the child window; returns nullptr if the child window is not created
+    */
+    IRender* GetChildWindowRender() const;
+
     /** Set whether the child window is a layered window (a layered window has the WS_EX_LAYERED attribute; child windows are only supported on Windows 8 and later platforms)
      *  Invalid when using SDL; SDL does not support dynamic modification, this attribute can only be applied at creation time
      */
