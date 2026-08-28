@@ -11,7 +11,7 @@ ChatForm::~ChatForm()
 
 DString ChatForm::GetSkinFolder()
 {
-    return _T("");
+    return _T("chat");
 }
 
 DString ChatForm::GetSkinFile()
@@ -31,21 +31,45 @@ void ChatForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
         attrs.m_bShadowAttachedDefined = true;
         attrs.m_bIsLayeredWindow = true;
         attrs.m_bIsLayeredWindowDefined = true;
-        attrs.m_rcCaption = ui::UiRect(0, 0, 0, 35);
+        attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
         attrs.m_bCaptionDefined = true;
     }
     else {
-        //Corresponds to the <Window> attributes of login.xml
-        attrs.m_bInitSizeDefined = true;
-        attrs.m_szInitSize.cx = 304;
-        attrs.m_szInitSize.cy = 520;
-        attrs.m_bShadowAttached = false;
+        //Corresponds to the <Window> attributes of login.xml (no explicit size:
+        //the root box is width=304/height=auto, so AutoResizeWindow fits the
+        //window to its content)
+        attrs.m_bShadowAttached = true;
+        attrs.m_bShadowAttachedDefined = true;
         attrs.m_bIsLayeredWindow = true;
         attrs.m_bIsLayeredWindowDefined = true;
-        attrs.m_rcCaption = ui::UiRect(0, 0, 0, 160);
+        attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
         attrs.m_bCaptionDefined = true;
     }
+    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
+    // the XML layout (WindowBuilder adds the shadow corner to the size).
+    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
+    ui::UiSize szBorderRound;
+    ui::UiPadding rcShadowCorner;
+    DString shadowImage;
+    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
+        attrs.m_rcShadowCorner = rcShadowCorner;
+        if (attrs.m_bInitSizeDefined) {
+            attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
+            attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
+        }
+    }
+
     BaseClass::GetCreateWindowAttributes(attrs);
+}
+
+void ChatForm::PreInitWindow()
+{
+    BaseClass::PreInitWindow();
+
+    //No layout XML is loaded, so Window::ParseWindowXml cannot establish the
+    //window resource sub-path; set it explicitly so image paths resolve from
+    //the "chat" folder.
+    SetResourcePath(ui::FilePath(_T("chat")));
 }
 
 void ChatForm::BuildWechatUI()
@@ -267,6 +291,13 @@ void ChatForm::BuildLoginUI()
 
 void ChatForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     if (m_layoutType == kWechat) {
         SetCaptionRect(ui::UiRect(0, 0, 0, 35), false);
         BuildWechatUI();
