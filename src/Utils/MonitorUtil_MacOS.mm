@@ -1,5 +1,6 @@
 #include "dui/Utils/MonitorUtil.h"
 #include "dui/Core/WindowBase.h"
+#include "dui/Core/NativeWindow_MacOS.h"
 
 #if defined(DUI_BUILD_FOR_MACOS)
 
