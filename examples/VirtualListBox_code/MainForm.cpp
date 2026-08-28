@@ -33,10 +33,13 @@ DString MainForm::GetSkinFile()
 
 void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
 {
-    //Corresponding to the <Window> attributes of main.xml
+    //Corresponding to the <Window> attributes of main.xml:
+    // size="75%,75%" and min_size="750,500" (min size is set in PreInitWindow)
+    ui::UiRect rcWork;
+    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
     attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = 1000;
-    attrs.m_szInitSize.cy = 600;
+    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.75f);
+    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.75f);
     attrs.m_bShadowAttached = true;
     attrs.m_bShadowAttachedDefined = true;
     attrs.m_bIsLayeredWindow = true;
@@ -45,7 +48,27 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_bSizeBoxDefined = true;
     attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
+
+    // WindowBuilder clamps the initial size to the XML min_size at parse time.
+    if (attrs.m_szInitSize.cx < 750) {
+        attrs.m_szInitSize.cx = 750;
+    }
+    if (attrs.m_szInitSize.cy < 500) {
+        attrs.m_szInitSize.cy = 500;
+    }
+
     BaseClass::GetCreateWindowAttributes(attrs);
+}
+
+void MainForm::PreInitWindow()
+{
+    BaseClass::PreInitWindow();
+
+    // No layout XML is loaded, so Window::ParseWindowXml cannot establish the
+    // window resource sub-path; set it explicitly so image paths resolve from
+    // the "virtual_list_box" folder.
+    SetResourcePath(ui::FilePath(_T("virtual_list_box")));
+    SetWindowMinimumSize(ui::UiSize(750, 500), true);
 }
 
 void MainForm::BuildUI()
@@ -325,6 +348,13 @@ void MainForm::BuildUI()
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
@@ -507,6 +537,7 @@ void MainForm::OnInitWindow()
 
     //Test the virtual list events
     TestVirtualListBoxEvents(m_pTileList);
+    BaseClass::OnInitWindow();
 }
 
 bool MainForm::OnClicked(const ui::EventArgs& args)
