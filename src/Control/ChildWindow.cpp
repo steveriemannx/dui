@@ -135,6 +135,10 @@ void ChildWindow::AdjustChildWindowPos()
         Dpi().ClientSizeToWindowSize(pt);
         pt.x += rcWindow.left;
         pt.y += rcWindow.top;
+#elif defined (DUI_BUILD_FOR_MACOS)
+        //macOS positions the child window in the parent client area (points);
+        //convert the control rect from client pixels to parent-client points
+        Dpi().ClientSizeToWindowSize(pt);
 #endif
         int32_t nWidth = rc.Width();
         int32_t nHeight = rc.Height();
@@ -166,6 +170,9 @@ bool ChildWindow::CreateChildWindow(ChildWindowEvents* pChildWindowEvents)
     m_pChildWnd->ShowWindow(ShowWindowCommands::kSW_SHOW);
 
     RegisterWindowCallbacks(pWindow);
+    //Place the native window at the control's current position right away;
+    //later SetPos / window-pos-changed messages keep it in sync
+    AdjustChildWindowPos();
     return true;
 }
 
@@ -175,12 +182,14 @@ void ChildWindow::RegisterWindowCallbacks(Window* pWindow)
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return;
     }
+#if !defined (DUI_BUILD_FOR_MACOS)
     pWindow->AttachWindowMoveMsg([this, pWindow](const EventArgs&) {
         if (GetWindow() == pWindow) {
             AdjustChildWindowPos();
         }
         return true;
         }, m_callbackID);
+#endif
     pWindow->AttachWindowPosChangedMsg([this, pWindow](const EventArgs&) {
         if (GetWindow() == pWindow) {
             AdjustChildWindowPos();
@@ -218,6 +227,12 @@ void ChildWindow::InvalidateChildWindowRect(const UiRect& rect)
 {
     if (m_pChildWnd != nullptr) {
         m_pChildWnd->Invalidate(rect);
+#if defined (DUI_BUILD_FOR_MACOS)
+        //The ChildWindow demo drives continuous painting from the idle loop; run
+        //the render pass directly instead of waiting for the vsync-bound
+        //display timer so the FPS counter can reach Windows-like rates.
+        m_pChildWnd->NativeWnd()->PaintWindow(false);
+#endif
     }
 }
 
@@ -227,6 +242,9 @@ void ChildWindow::InvalidateChildWindow()
         UiRect rect;
         m_pChildWnd->GetClientRect(rect);
         m_pChildWnd->Invalidate(rect);
+#if defined (DUI_BUILD_FOR_MACOS)
+        m_pChildWnd->NativeWnd()->PaintWindow(false);
+#endif
     }
 }
 
@@ -251,6 +269,14 @@ void ChildWindow::GetChildWindowRect(UiRect& rect) const
         rect.top = rc.top;
         rect.bottom = rect.top + rcClient.Height();
     }
+}
+
+IRender* ChildWindow::GetChildWindowRender() const
+{
+    if (m_pChildWnd != nullptr) {
+        return m_pChildWnd->GetRender();
+    }
+    return nullptr;
 }
 
 void ChildWindow::SetChildWindowLayered(bool bWindowLayered)
