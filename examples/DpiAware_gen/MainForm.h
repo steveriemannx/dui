@@ -9,6 +9,7 @@
 */
 class MainForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     MainForm();
     virtual ~MainForm() override;
@@ -24,6 +25,9 @@ public:
     *         or a file path (a string not starting with the character '<'); the file must be found under the GetSkinFolder() path
     */
     virtual DString GetSkinFile() override;
+
+    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
+    virtual void PreInitWindow() override;
 
     /** Called after the window is created, for subclasses to do some initialization work
     */

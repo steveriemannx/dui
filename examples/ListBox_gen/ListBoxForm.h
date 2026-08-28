@@ -6,6 +6,7 @@
 
 class ListBoxForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     ListBoxForm();
     virtual ~ListBoxForm() override;
