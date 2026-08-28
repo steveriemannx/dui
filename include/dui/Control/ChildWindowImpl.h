@@ -4,9 +4,12 @@
 #include "dui/Core/WindowBase.h"
 #include "dui/Control/ChildWindowEvents.h"
 #include "dui/Core/ControlPtrT.h"
+#include <memory>
 
 namespace ui
 {
+
+class IRender;
 /** Child window control; the control itself is an operating system child window. The UI library internally handles the creation and destruction of the child window, but the UI library does not perform the drawing of the child window
  *  The application layer is responsible for the drawing of the child window
  */
@@ -139,10 +142,12 @@ protected:
     */
     virtual void OnDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nNewScaleFactor) override;
 
+public:
     /** Get the rendering engine object
     */
     virtual IRender* GetRender() const override;
 
+protected:
     /** Get the control interface at the specified coordinate point
     * @param [in] pt The client area coordinate point
     */
@@ -478,6 +483,13 @@ protected:
 private:
     //The external message callback interface of the child window
     ControlPtrT<ChildWindowEvents> m_pChildWindowEvents;
+
+#if defined (DUI_BUILD_FOR_MACOS)
+    //The Skia render interface (child windows paint through the shared
+    //PaintWindow path, which needs a real IRender; on other platforms the
+    //application layer draws via native APIs and GetRender() stays empty)
+    std::unique_ptr<IRender> m_render;
+#endif
 };
 
 }//namespace ui
