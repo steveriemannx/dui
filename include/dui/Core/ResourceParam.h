@@ -56,8 +56,11 @@ public:
     /** The theme path name (relative path)
     */
 #if defined (DUI_BUILD_FOR_WIN)
-    // Windows uses the WinUI3 / Windows 11 theme; other platforms keep "default".
+    // Windows uses the WinUI3 / Windows 11 theme.
     FilePath themePath = FilePath(_T("themes\\windows11"));
+#elif defined (DUI_BUILD_FOR_MACOS)
+    // macOS uses the native macOS light theme.
+    FilePath themePath = FilePath(_T("themes/macos26"));
 #else
     FilePath themePath = FilePath(_T("themes/default"));
 #endif
