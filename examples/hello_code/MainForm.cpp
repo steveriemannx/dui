@@ -1,4 +1,4 @@
-﻿#include "MainForm.h"
+#include "MainForm.h"
 
 MainForm::MainForm()
 {
@@ -23,8 +23,8 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
 {
     // Window attributes correspond to the <Window> attributes in hello.xml
     attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = 600;
-    attrs.m_szInitSize.cy = 400;
+    attrs.m_szInitSize.cx = 800;
+    attrs.m_szInitSize.cy = 600;
     attrs.m_bShadowAttached = true;
     attrs.m_bShadowAttachedDefined = true;
     attrs.m_bIsLayeredWindow = true;
@@ -33,24 +33,18 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_bSizeBoxDefined = true;
     attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
-
-    // Shadow nine-patch parameters, corresponding to shadow_type="default" in hello.xml
-    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
-    ui::UiSize szBorderRound;
-    ui::UiPadding rcShadowCorner;
-    DString shadowImage;
-    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
-        attrs.m_rcShadowCorner = rcShadowCorner;
-        // The window size includes the shadow area, matching the size="600,400"
-        // behavior of hello.xml (WindowBuilder adds the shadow corner to the size)
-        attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
-        attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
-    }
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
 
