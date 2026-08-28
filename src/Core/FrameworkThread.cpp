@@ -10,6 +10,8 @@
     #include "dui/Core/MessageLoop_Wayland.h"
 #elif defined (DUI_BUILD_FOR_WIN)
     #include "dui/Core/MessageLoop_Windows.h"
+#elif defined (DUI_BUILD_FOR_MACOS)
+    #include "dui/Core/MessageLoop_MacOS.h"
 #endif
 
 #include <sstream>
@@ -448,6 +450,8 @@ void FrameworkThread::OnRunMessageLoop()
     MessageLoop_Wayland::CheckInitWayland();
 #elif defined (DUI_BUILD_FOR_WIN)
     MessageLoop_Windows msgLoop;
+#elif defined (DUI_BUILD_FOR_MACOS)
+    MessageLoop_MacOS msgLoop;
 #else
     ASSERT(0);
     return;
