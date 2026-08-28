@@ -132,6 +132,14 @@ void WindowImplBase::OnInitWindow()
 void WindowImplBase::OnInitLayout()
 {
     BaseClass::OnInitLayout();
+
+    // Some win-adjusted example overrides do not call WindowImplBase::OnInitWindow(),
+    // so also bind/apply the macOS title-bar style from OnInitLayout. This is
+    // idempotent: BindCaptionButtons and ApplyMacCaptionBar both no-op when done.
+    BindCaptionButtons();
+#ifdef DUI_BUILD_FOR_MACOS
+    ApplyMacCaptionBar();
+#endif
 }
 
 void WindowImplBase::OnPreCloseWindow()
@@ -333,6 +341,10 @@ bool WindowImplBase::IsPtInMaximizeRestoreButton(const UiPoint& pt) const
 void WindowImplBase::ApplyMacCaptionBar()
 {
     if (IsUseSystemCaption() || (GetRoot() == nullptr)) {
+        return;
+    }
+    if (m_pMacTrafficLights != nullptr) {
+        //Already applied (called from OnInitLayout and/or OnInitWindow).
         return;
     }
     //The self-drawn traffic lights replace the custom window buttons, so hide
