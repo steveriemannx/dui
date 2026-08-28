@@ -1,4 +1,4 @@
-﻿#include "MainForm.h"
+#include "MainForm.h"
 
 MainForm::MainForm():
     m_fLoadingPercent(0)
@@ -8,7 +8,6 @@ MainForm::MainForm():
 MainForm::~MainForm()
 {
 }
-    BaseClass::OnInitWindow();
 
 DString MainForm::GetSkinFolder()
 {
@@ -530,6 +529,8 @@ void MainForm::OnInitWindow()
     //    }        
     //    return true;
     //    });
+
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnInitLayout()

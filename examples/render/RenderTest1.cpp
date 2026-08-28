@@ -2,7 +2,7 @@
 
 #if defined (DUI_BUILD_FOR_WIN)
     #include "dui/Utils/BitmapHelper_Windows.h"
-#elif defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
+#elif defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_MACOS)
     #include "dui/Utils/BitmapHelper_SDL.h"
 #endif
 
