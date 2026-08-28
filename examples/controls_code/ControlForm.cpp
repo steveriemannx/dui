@@ -1,4 +1,4 @@
-﻿#include "ControlForm.h"
+#include "ControlForm.h"
 #include "dui/Utils/UiBuilder.h"
 #include "ControlsBuildUI.inc"  // Build the UI purely in code (corresponds to the controls.xml layout)
 #include "AboutForm.h"
@@ -21,7 +21,7 @@ ControlForm::~ControlForm()
 
 DString ControlForm::GetSkinFolder()
 {
-    return _T("");
+    return _T("controls");
 }
 
 DString ControlForm::GetSkinFile()
@@ -32,6 +32,13 @@ DString ControlForm::GetSkinFile()
 
 void ControlForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
