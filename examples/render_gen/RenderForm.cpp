@@ -24,11 +24,32 @@ DString RenderForm::GetSkinFile()
 
 void RenderForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
     // Build-time generated from render.xml
     ::InitRender(this);
+
+    // Add the custom draw-test controls to the Draw pages.
+    if (ui::Box* pPage5 = dynamic_cast<ui::Box*>(FindControl(_T("main_view_page_05")))) {
+        ui::RenderTest1* pRenderTest1 = new ui::RenderTest1(this);
+        pRenderTest1->SetAttribute(_T("width"), _T("stretch"));
+        pRenderTest1->SetAttribute(_T("height"), _T("stretch"));
+        pPage5->AddItem(pRenderTest1);
+    }
+    if (ui::Box* pPage6 = dynamic_cast<ui::Box*>(FindControl(_T("main_view_page_06")))) {
+        ui::RenderTest2* pRenderTest2 = new ui::RenderTest2(this);
+        pRenderTest2->SetAttribute(_T("width"), _T("stretch"));
+        pRenderTest2->SetAttribute(_T("height"), _T("stretch"));
+        pPage6->AddItem(pRenderTest2);
+    }
 
     TestPropertyGrid();
 
@@ -64,7 +85,10 @@ void RenderForm::OnInitWindow()
             (void)nItemIndex;
             int ii = 0;
         };
-    pMenuBar->AttachMenuBarItemActivated(callback);
+    if (pMenuBar != nullptr) {
+        pMenuBar->AttachMenuBarItemActivated(callback);
+    }
+    BaseClass::OnInitWindow();
 }
 
 void RenderForm::OnCloseWindow()
