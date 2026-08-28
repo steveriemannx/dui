@@ -53,12 +53,13 @@ if(DUI_OS_LINUX)
     option(DUI_ENABLE_WAYLAND "Enable Wayland (alternative to SDL)" OFF)
 endif()
 
-# SDL support: removed on Windows (native Win32/DWM backend only); on by default
-# on other platforms. If Wayland is enabled, SDL is disabled by default.
-if(DUI_OS_WINDOWS)
+# SDL support: removed on Windows (native Win32/DWM backend only) and macOS
+# (native Cocoa/AppKit backend only); on by default on other platforms.
+# If Wayland is enabled, SDL is disabled by default.
+if(DUI_OS_WINDOWS OR DUI_OS_MACOS)
     # Pin the cache variable OFF so an old cache value or a script
     # -DDUI_ENABLE_SDL=ON can never re-enable it.
-    set(DUI_ENABLE_SDL OFF CACHE BOOL "Enable SDL (Windows: always OFF)" FORCE)
+    set(DUI_ENABLE_SDL OFF CACHE BOOL "Enable SDL (Windows/macOS: always OFF)" FORCE)
 else()
     if(DUI_ENABLE_WAYLAND)
         set(DUI_ENABLE_SDL_DEFAULT OFF)

@@ -144,7 +144,7 @@ include_directories(${DUI_SRC_ROOT_DIR}/include)
 include_directories(${SKIA_SRC_ROOT_DIR})
 if(DUI_ENABLE_WAYLAND)
     include_directories(${DUI_WAYLAND_INCLUDE_DIRS})
-elseif(NOT WIN32)
+elseif(DUI_ENABLE_SDL)
     include_directories("${SDL_SRC_ROOT_DIR}/include")
 endif()
 
@@ -185,13 +185,25 @@ else()
     message(STATUS "CEF support disabled (FreeBSD/MinGW is not supported)")
 endif()
 
-# On non-macOS platforms, remove *.mm files to avoid compile errors
+# On non-macOS platforms, remove macOS-only source files to avoid compile errors.
 if(NOT DUI_SRC_MACOS)
     list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/SDL_MacOS.mm)
-    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/SDL_MacOS.h)    
-    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/ClickThrough_MacOS.mm)    
-    list(REMOVE_ITEM CEF_CONTROL_SRC ${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefWindowUtils_MacOS.mm)    
+    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/SDL_MacOS.h)
+    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/ClickThrough_MacOS.mm)
+    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/NativeWindow_MacOS.mm)
+    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/MessageLoop_MacOS.mm)
+    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/CursorManager_MacOS.mm)
+    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/Keyboard_MacOS.mm)
+    list(REMOVE_ITEM CEF_CONTROL_SRC ${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefWindowUtils_MacOS.mm)
     list(REMOVE_ITEM UTILS_SRC ${CMAKE_CURRENT_LIST_DIR}/Utils/ScreenCapture_MacOS.mm)
+    list(REMOVE_ITEM UTILS_SRC ${CMAKE_CURRENT_LIST_DIR}/Utils/Clipboard_MacOS.mm)
+    list(REMOVE_ITEM UTILS_SRC ${CMAKE_CURRENT_LIST_DIR}/Utils/FileDialog_MacOS.mm)
+    list(REMOVE_ITEM UTILS_SRC ${CMAKE_CURRENT_LIST_DIR}/Utils/MonitorUtil_MacOS.mm)
+    list(REMOVE_ITEM UTILS_SRC ${CMAKE_CURRENT_LIST_DIR}/Utils/SystemUtil_MacOS.mm)
+    list(REMOVE_ITEM RENDER_SKIA_SRC ${CMAKE_CURRENT_LIST_DIR}/RenderSkia/Render_Skia_MacOS.mm)
+    list(REMOVE_ITEM RENDER_SKIA_SRC ${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkGLWindowContext_MacOS.mm)
+    list(REMOVE_ITEM RENDER_SKIA_SRC ${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkMetalWindowContext_MacOS.mm)
+    list(REMOVE_ITEM RENDER_SKIA_SRC ${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkRasterWindowContext_MacOS.mm)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND NOT MINGW)  # Windows CEF internals (not on MinGW)
@@ -242,6 +254,12 @@ set(SKIA_SRCS
     ${SKIA_SRC_ROOT_DIR}/tools/window/WindowContext.cpp
     ${SKIA_SRC_ROOT_DIR}/tools/window/GLWindowContext.cpp
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    # macOS: the Metal window-context base (requires the Metal-enabled libskia.a)
+    list(APPEND SKIA_HDRS ${SKIA_SRC_ROOT_DIR}/tools/window/MetalWindowContext.h)
+    list(APPEND SKIA_SRCS ${SKIA_SRC_ROOT_DIR}/tools/window/MetalWindowContext.mm)
+endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Windows platform: several skia source files depended on separately
