@@ -10,6 +10,8 @@
     #include "dui/Core/NativeWindow_SDL.h"
 #elif defined (DUI_BUILD_FOR_WIN)
     #include "dui/Core/NativeWindow_Windows.h"
+#elif defined (DUI_BUILD_FOR_MACOS)
+    #include "dui/Core/NativeWindow_MacOS.h"
 #else
     class NativeWindow;
 #endif
