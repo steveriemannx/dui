@@ -31,7 +31,11 @@ struct UiAttr
     DString value;
 
     UiAttr(const DString& n, const DString& v) : name(n), value(v) {}
-    UiAttr(const wchar_t* n, const wchar_t* v) : name(n), value(v) {}
+    UiAttr(const wchar_t* n, const wchar_t* v)
+    {
+        name = StringConvert::WStringToT(n ? n : L"");
+        value = StringConvert::WStringToT(v ? v : L"");
+    }
     UiAttr(const char* n, const char* v)
     {
         name = StringConvert::UTF8ToT(n ? n : "");
