@@ -3,8 +3,6 @@
   <VBox width="304" height="auto" bkcolor="bk_wnd_lightcolor">
     <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
       <Control mouse_enabled="false"/>
-      <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-      <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
     </HBox>
   <Box width="304" height="auto">
     <Box width="130" height="130" margin="0,10,0,0" halign="center">

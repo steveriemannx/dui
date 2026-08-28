@@ -4,8 +4,6 @@
         <!-- Title bar area -->
         <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
             <Label name="title" width="100%" height="100%" mouse_enabled="false" text_padding="10,0,0,0" text_align="vcenter"/>
-            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
         </HBox>
         
         <!-- Work area: everything outside the title bar goes into this large Box area -->
