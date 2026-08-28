@@ -7,6 +7,8 @@
     #include "dui/Control/DateTimeWnd_Windows.h"
 #elif defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
     #include "dui/Control/DateTimeWnd_SDL.h"
+#elif defined (DUI_BUILD_FOR_MACOS)
+    #include "dui/Control/DateTimeWnd_MacOS.h"
 #endif
 
 namespace ui
