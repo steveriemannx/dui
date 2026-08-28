@@ -197,9 +197,16 @@ bool WindowBuilder::IsXmlFileExists(const FilePath& xmlFilePath) const
         return false;
     }
     bool bExists = false;
+    const FilePath themeDefaultPath = GlobalManager::Instance().GetThemeDefaultPath();
     if (GlobalManager::Instance().Zip().IsUseZip()) {
         FilePath sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
-        bExists = GlobalManager::Instance().Zip().IsZipResExist(sFile);
+        bool bResExist = GlobalManager::Instance().Zip().IsZipResExist(sFile);
+        if (!bResExist && !themeDefaultPath.IsEmpty()) {
+            //Overlay theme: fall back to the default theme archive
+            bResExist = GlobalManager::Instance().Zip().IsZipResExist(
+                FilePathUtil::JoinFilePath(themeDefaultPath, xmlFilePath));
+        }
+        bExists = bResExist;
     }
     else {
         if (xmlFilePath.IsAbsolutePath()) {
@@ -208,6 +215,10 @@ bool WindowBuilder::IsXmlFileExists(const FilePath& xmlFilePath) const
         else {
             FilePath xmlFullPath = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
             bExists = xmlFullPath.IsExistsFile();
+            if (!bExists && !themeDefaultPath.IsEmpty()) {
+                //Overlay theme: fall back to the default theme root
+                bExists = FilePathUtil::JoinFilePath(themeDefaultPath, xmlFilePath).IsExistsFile();
+            }
         }
     }
     return bExists;
@@ -267,31 +278,46 @@ bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& wi
         return false;
     }
     bool isLoaded = false;
+    //Overlay theme roots to search in order: the active theme root, then the default theme root
+    std::vector<FilePath> resRoots;
+    resRoots.push_back(GlobalManager::Instance().GetResourcePath());
+    const FilePath themeDefaultPath = GlobalManager::Instance().GetThemeDefaultPath();
+    if (!themeDefaultPath.IsEmpty() && themeDefaultPath != resRoots[0]) {
+        resRoots.push_back(themeDefaultPath);
+    }
     if (GlobalManager::Instance().Zip().IsUseZip()) {
-        FilePath sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
-        if (!windowResPath.IsEmpty() && !GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
-            //Searches in the window directory
-            sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), windowResPath);
-            sFile = FilePathUtil::JoinFilePath(sFile, xmlFilePath);
-        }
         std::vector<unsigned char> file_data;
-        if (GlobalManager::Instance().Zip().GetZipData(sFile, file_data)) {
-            pugi::xml_parse_result result = m_xml->load_buffer(file_data.data(), file_data.size());
-            if (result.status != pugi::status_ok) {
-                ASSERT(!_T("WindowBuilder::ParseXmlFile load xml from zip data failed!"));
-                return false;
+        for (const FilePath& root : resRoots) {
+            FilePath sFile = FilePathUtil::JoinFilePath(root, xmlFilePath);
+            if (!windowResPath.IsEmpty() && !GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+                //Searches in the window directory
+                sFile = FilePathUtil::JoinFilePath(root, windowResPath);
+                sFile = FilePathUtil::JoinFilePath(sFile, xmlFilePath);
             }
-            isLoaded = true;
+            if (GlobalManager::Instance().Zip().GetZipData(sFile, file_data)) {
+                pugi::xml_parse_result result = m_xml->load_buffer(file_data.data(), file_data.size());
+                if (result.status != pugi::status_ok) {
+                    ASSERT(!_T("WindowBuilder::ParseXmlFile load xml from zip data failed!"));
+                    return false;
+                }
+                isLoaded = true;
+                break;
+            }
         }
     }
     else {
         FilePath xmlFileFullPath;
         if (xmlFilePath.IsRelativePath()) {
-            xmlFileFullPath = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
-            if (!windowResPath.IsEmpty() && !xmlFileFullPath.IsExistsFile()) {
-                //Look it up in the window directory
-                xmlFileFullPath = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), windowResPath);
-                xmlFileFullPath = FilePathUtil::JoinFilePath(xmlFileFullPath, xmlFilePath);
+            for (const FilePath& root : resRoots) {
+                xmlFileFullPath = FilePathUtil::JoinFilePath(root, xmlFilePath);
+                if (!windowResPath.IsEmpty() && !xmlFileFullPath.IsExistsFile()) {
+                    //Look it up in the window directory
+                    xmlFileFullPath = FilePathUtil::JoinFilePath(root, windowResPath);
+                    xmlFileFullPath = FilePathUtil::JoinFilePath(xmlFileFullPath, xmlFilePath);
+                }
+                if (xmlFileFullPath.IsExistsFile()) {
+                    break;
+                }
             }
         }
         else {
@@ -424,6 +450,9 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
             }
             else if (StringUtil::IsEqualNoCase(strValue, _T("CPU"))) {
                 backendType = RenderBackendType::kRaster_BackendType;
+            }
+            else if (StringUtil::IsEqualNoCase(strValue, _T("Metal"))) {
+                backendType = RenderBackendType::kMetal_BackendType;
             }
         }
         else if (strName == _T("use_system_caption")) {
@@ -595,6 +624,9 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
             else if (StringUtil::IsEqualNoCase(strValue, _T("CPU"))) {
                 backendType = RenderBackendType::kRaster_BackendType;
             }
+            else if (StringUtil::IsEqualNoCase(strValue, _T("Metal"))) {
+                backendType = RenderBackendType::kMetal_BackendType;
+            }
             else {
                 ASSERT(0);
             }
@@ -605,7 +637,12 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
     }
     if (!bInitRenderBackendType) {
         //First initialize the Render backend drawing method; this call creates the Render
+#if defined(DUI_BUILD_FOR_MACOS)
+        //macOS native: GPU (GL) is the default for smooth rendering
+        pWindow->SetRenderBackendType(RenderBackendType::kNativeGL_BackendType);
+#else
         pWindow->SetRenderBackendType(RenderBackendType::kRaster_BackendType);
+#endif
     }
      
     //First process min_size/max_size/use_system_caption, because other attributes depend on these attributes
@@ -635,7 +672,6 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
     //Whether the window shadow is enabled
     bool bShadowAttached = false;
     bool bHasShadowAttached = false;
-    bool bHasShadowType = false;
     Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
 
     //Note: if use_system_caption is true, the layered window is disabled (because these two attributes are mutually exclusive)
@@ -708,7 +744,6 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         }
         else if (strName == _T("shadow_type")) {
             knownNames.insert(strName);
-            bHasShadowType = true;
             //Set the shadow type
             Shadow::GetShadowType(strValue, nShadowType);
             if ((nShadowType >= Shadow::ShadowType::kShadowFirst) &&
@@ -776,22 +811,6 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         //Set it afterwards, to avoid being affected by "shadow_type"
         pWindow->SetShadowAttached(bShadowAttached);
     }
-
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
-    if (!bHasShadowType && (nShadowType == Shadow::ShadowType::kShadowCount)) {
-        //Windows native backend: the OS-provided shadow (Win11 style) is the
-        //default - it has no self-drawn shadow box and no shadow snapping.
-        //Windows that really need per-pixel transparency (layered with
-        //alpha < 255) keep the self-drawn big_round shadow instead.
-        bool bNeedPptAlpha = pWindow->IsLayeredWindow() &&
-            ((pWindow->GetLayeredWindowAlpha() < 255) ||
-             (pWindow->GetLayeredWindowOpacity() < 255));
-        if (!bNeedPptAlpha) {
-            pWindow->SetShadowType(Shadow::ShadowType::kShadowSystemDefault);
-            pWindow->SetLayeredWindow(false, false);   //OS shadows need a normal window
-        }
-    }
-#endif
 
     //System shadow types: normalize the type for this platform and force the
     //window to be non-layered (OS shadows need a normal window).
@@ -1187,6 +1206,7 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
             ASSERT(!"Found unknown node name, can't create control!");
             continue;
         }
+
         // TreeView related nodes must be added first and parsed later
         if (strClass == DUI_CTR_TREENODE) {
             bool bAdded = false;
