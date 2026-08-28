@@ -68,51 +68,51 @@ void MainForm::OnInitWindow()
 
     // The whole window tree is built with one nested ui::Make expression:
     // it mirrors the XML layout and reads much closer to Qt/gtkmm code.
-    auto* root = Create<VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}},
+    auto* root = Create<ui::VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}},
 
-        Create<HBox>(this,
+        Create<ui::HBox>(this,
             {{"name", "window_caption_bar"},
              {"width", "stretch"},
              {"height", "36"},
              {"bkcolor", "bk_wnd_lightcolor"}},
 
-            Create<Control>(this, {{"mouse_enabled", "false"}}),
+            Create<ui::Control>(this, {{"mouse_enabled", "false"}}),
 
-            Create<Button>(this,
+            Create<ui::Button>(this,
                 {{"class", "btn_wnd_fullscreen_11"}, {"height", "32"},
                  {"width", "40"}, {"name", "fullscreenbtn"},
                  {"margin", "0,2,0,2"},
                  {"tooltip_text", "Fullscreen, press ESC to exit fullscreen"}}),
 
-            Create<Button>(this,
+            Create<ui::Button>(this,
                 {{"class", "btn_wnd_min_11"}, {"height", "32"},
                  {"width", "40"}, {"name", "minbtn"},
                  {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}}),
 
-            Create<Box>(this,
+            Create<ui::Box>(this,
                 {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}},
 
-                Create<Button>(this,
+                Create<ui::Button>(this,
                     {{"class", "btn_wnd_max_11"}, {"height", "32"},
                      {"width", "stretch"}, {"name", "maxbtn"},
                      {"tooltip_text", "Maximize"}}),
 
-                Create<Button>(this,
+                Create<ui::Button>(this,
                     {{"class", "btn_wnd_restore_11"}, {"height", "32"},
                      {"width", "stretch"}, {"name", "restorebtn"},
                      {"visible", "false"}, {"tooltip_text", "Restore"}})),
 
-            Create<Button>(this,
+            Create<ui::Button>(this,
                 {{"class", "btn_wnd_close_11"}, {"height", "stretch"},
                  {"width", "40"}, {"name", "closebtn"},
                  {"margin", "0,0,0,2"}, {"tooltip_text", "Close"}})),
 
-        Create<Box>(this, {},
+        Create<ui::Box>(this, {},
 
-            Create<VBox>(this,
+            Create<ui::VBox>(this,
                 {{"valign", "center"}, {"halign", "center"}},
 
-                Create<Label>(this,
+                Create<ui::Label>(this,
                     {{"name", "tooltip"},
                      {"text", "A simple window with a title bar and standard buttons."},
                      {"height", "100%"}, {"width", "100%"},
