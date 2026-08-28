@@ -11,7 +11,10 @@ MainForm::~MainForm()
 
 DString MainForm::GetSkinFolder()
 {
-    return _T("");
+    //Must match the skin folder of the XML version ("MultiLang"), so that
+    //image resources declared in code (like "file='language.svg'" of the
+    //btn_language class) are found under the theme's skin folder
+    return _T("MultiLang");
 }
 
 DString MainForm::GetSkinFile()
@@ -33,6 +36,20 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_bSizeBoxDefined = true;
     attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
+    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
+    // the XML layout (WindowBuilder adds the shadow corner to the size).
+    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
+    ui::UiSize szBorderRound;
+    ui::UiPadding rcShadowCorner;
+    DString shadowImage;
+    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
+        attrs.m_rcShadowCorner = rcShadowCorner;
+        if (attrs.m_bInitSizeDefined) {
+            attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
+            attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
+        }
+    }
+
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
@@ -141,6 +158,13 @@ void MainForm::BuildUI()
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     BuildUI();
 
     /* Show select language menu */
