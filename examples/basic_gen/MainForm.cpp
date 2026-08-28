@@ -23,9 +23,11 @@ DString MainForm::GetSkinFile()
 void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
 {
     // Window attributes from basic.xml (handled at build time)
+    ui::UiRect rcWork;
+    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
     attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = 1000;
-    attrs.m_szInitSize.cy = 600;
+    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.75f);
+    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.75f);
     attrs.m_bShadowAttached = true;
     attrs.m_bShadowAttachedDefined = true;
     attrs.m_bIsLayeredWindow = true;
@@ -34,13 +36,32 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_bSizeBoxDefined = true;
     attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
+
+    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
+    // basic.xml (WindowBuilder adds the shadow corner to the size).
+    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
+    ui::UiSize szBorderRound;
+    ui::UiPadding rcShadowCorner;
+    DString shadowImage;
+    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
+        attrs.m_rcShadowCorner = rcShadowCorner;
+        attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
+        attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
+    }
+
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
 void MainForm::OnInitWindow()
 {
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
 
     // Build-time generated from basic.xml: InitBasic(pWindow)
     // (calls AttachBox automatically since basic.xml root is <Window>)
