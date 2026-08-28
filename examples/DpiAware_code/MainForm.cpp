@@ -21,12 +21,23 @@ DString MainForm::GetSkinFile()
     return _T("");
 }
 
+void MainForm::PreInitWindow()
+{
+    BaseClass::PreInitWindow();
+
+    // No layout XML is loaded, so Window::ParseWindowXml cannot establish the
+    // window resource sub-path; set it explicitly so image paths resolve from
+    // the "dpi_aware" folder.
+    SetResourcePath(ui::FilePath(_T("dpi_aware")));
+    SetWindowMinimumSize(ui::UiSize(80, 50), true);
+}
+
 void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
 {
     // Corresponding to the <Window> attributes in DpiAware.xml
     attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = 900;
-    attrs.m_szInitSize.cy = 640;
+    attrs.m_szInitSize.cx = 800;
+    attrs.m_szInitSize.cy = 600;
     attrs.m_bShadowAttached = true;
     attrs.m_bShadowAttachedDefined = true;
     attrs.m_bIsLayeredWindow = true;
@@ -35,6 +46,19 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_bSizeBoxDefined = true;
     attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
+
+    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
+    // DpiAware.xml (WindowBuilder adds the shadow corner to the size).
+    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
+    ui::UiSize szBorderRound;
+    ui::UiPadding rcShadowCorner;
+    DString shadowImage;
+    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
+        attrs.m_rcShadowCorner = rcShadowCorner;
+        attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
+        attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
+    }
+
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
@@ -264,6 +288,13 @@ void MainForm::BuildUI()
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
