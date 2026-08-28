@@ -11,7 +11,9 @@ MainForm::~MainForm()
 
 DString MainForm::GetSkinFolder()
 {
-    return _T("");
+    // Keep the same resource path as the XML/gen versions so layout images
+    // and resources are resolved identically.
+    return _T("layout");
 }
 
 DString MainForm::GetSkinFile()
@@ -22,11 +24,19 @@ DString MainForm::GetSkinFile()
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
     //Pure-code-built UI (corresponding to the layout.xml layout)
     BuildUIFromXml(this);
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnCloseWindow()
