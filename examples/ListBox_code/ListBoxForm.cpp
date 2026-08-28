@@ -88,6 +88,25 @@ void ListBoxForm::BuildUI()
     AttachBox(pRoot);
 }
 
+void ListBoxForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
+{
+    ui::UiRect rcWork;
+    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
+    attrs.m_bInitSizeDefined = true;
+    attrs.m_szInitSize.cx = 540;
+    attrs.m_szInitSize.cy = 720;
+    attrs.m_bShadowAttached = true;
+    attrs.m_bShadowAttachedDefined = true;
+    attrs.m_bIsLayeredWindow = true;
+    attrs.m_bIsLayeredWindowDefined = true;
+    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
+    attrs.m_bSizeBoxDefined = true;
+    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
+    attrs.m_bCaptionDefined = true;
+
+    BaseClass::GetCreateWindowAttributes(attrs);
+}
+
 void ListBoxForm::OnInitWindow()
 {
     // Use the OS-provided system shadow on all platforms.

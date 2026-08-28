@@ -22,7 +22,12 @@ private:
 
         // Create the main window
         MainForm* pWindow = new MainForm();
-        pWindow->CreateWnd(nullptr, ui::WindowCreateParam(_T("ListCtrl Control Test Program"), true));
+                ui::WindowCreateParam createParam(_T("ListCtrl Control Test Program"), true);
+        ui::UiRect rcWork;
+        ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
+        createParam.m_nWidth = (int32_t)(rcWork.Width() * 0.85f);
+        createParam.m_nHeight = (int32_t)(rcWork.Height() * 0.85f);
+        pWindow->CreateWnd(nullptr, createParam);
         pWindow->PostQuitMsgWhenClosed(true);
         pWindow->ShowWindow(ui::kSW_SHOW_NORMAL);
     }

@@ -26,6 +26,9 @@ public:
     */
     virtual DString GetSkinFile() override;
 
+    /** Window attributes corresponding to the XML version */
+    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
+
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;

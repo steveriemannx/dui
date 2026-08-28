@@ -50,7 +50,10 @@ void App::OnInit()
 
     // Create a default centered window with a shadow
     m_pMainForm = new MainForm(this);
-    m_pMainForm->CreateWnd(nullptr, ui::WindowCreateParam(_T("threads (Pure Code)"), true));
+            ui::WindowCreateParam createParam(_T("threads (Pure Code)"), true);
+        createParam.m_nWidth = 1000;
+        createParam.m_nHeight = 700;
+        m_pMainForm->CreateWnd(nullptr, createParam);
     m_pMainForm->PostQuitMsgWhenClosed(true);
     m_pMainForm->ShowWindow(ui::kSW_SHOW_NORMAL);
 

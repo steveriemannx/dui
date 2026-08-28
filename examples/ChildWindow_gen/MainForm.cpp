@@ -46,20 +46,6 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_bIsLayeredWindow = false;
     attrs.m_bIsLayeredWindowDefined = true;
 
-    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
-    // the XML layout (WindowBuilder adds the shadow corner to the size).
-    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
-    ui::UiSize szBorderRound;
-    ui::UiPadding rcShadowCorner;
-    DString shadowImage;
-    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
-        attrs.m_rcShadowCorner = rcShadowCorner;
-        if (attrs.m_bInitSizeDefined) {
-            attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
-            attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
-        }
-    }
-
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 

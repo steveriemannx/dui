@@ -160,6 +160,31 @@ void MainForm::BuildUI()
 }
 
 
+void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
+{
+    ui::UiRect rcWork;
+    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
+    attrs.m_bInitSizeDefined = true;
+    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.75f);
+    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.75f);
+    if (attrs.m_szInitSize.cx < 750) {
+        attrs.m_szInitSize.cx = 750;
+    }
+    if (attrs.m_szInitSize.cy < 500) {
+        attrs.m_szInitSize.cy = 500;
+    }
+    attrs.m_bShadowAttached = true;
+    attrs.m_bShadowAttachedDefined = true;
+    attrs.m_bIsLayeredWindow = true;
+    attrs.m_bIsLayeredWindowDefined = true;
+    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
+    attrs.m_bSizeBoxDefined = true;
+    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
+    attrs.m_bCaptionDefined = true;
+
+    BaseClass::GetCreateWindowAttributes(attrs);
+}
+
 void MainForm::OnInitWindow()
 {
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
