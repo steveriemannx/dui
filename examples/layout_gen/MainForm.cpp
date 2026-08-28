@@ -22,11 +22,19 @@ DString MainForm::GetSkinFile()
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
     // Build-time generated from layout.xml
     InitLayout(this);
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnCloseWindow()
