@@ -37,6 +37,13 @@ DString MainForm::GetSkinFile()
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
@@ -489,6 +496,7 @@ void MainForm::OnInitWindow()
             return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 uint32_t MainForm::GetNextZoomPercent(uint32_t nOldZoomPercent, bool bZoomIn) const
@@ -1013,8 +1021,7 @@ void MainForm::LoadRichEditData()
     std::streamoff length = 0;
     std::string xml;
     ui::FilePath controls_xml = ui::GlobalManager::Instance().GetResourcePath();
-    controls_xml += GetResourcePath();
-    controls_xml += GetSkinFile();
+    controls_xml += _T("rich_edit/rich_edit.xml");
 
     std::ifstream ifs(controls_xml.NativePath().c_str(), std::ios::binary);
     if (ifs.is_open()) {
