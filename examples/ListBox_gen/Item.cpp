@@ -8,16 +8,10 @@ Item::Item(ui::Window* pWindow):
     m_pProgressControl(nullptr),
     m_pDelBtn(nullptr)
 {
-    //The item layout is built with pure code (corresponding to the item.xml template; the template XML is no longer loaded)
-    //The Item style classes are registered by ListBoxForm::OnInitWindow via AddClass
-    SetClass(_T("list_box_item_test list_box_item_checkbox_1"));
-    SetAttribute(_T("height"), _T("auto"));
-
-    ui::HBox* pRow = new ui::HBox(pWindow);
-    pRow->SetAttribute(_T("height"), _T("auto"));
-    pRow->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRow->SetAttribute(_T("padding"), _T("18,5,10,5"));
-    AddItem(pRow);
+    //Build the subtree bottom-up, matching how item.xml is loaded: a container is
+    //attached only after its children are populated, and the item root's own
+    //class/height attributes are applied last (FillBoxWithCache does the same).
+    auto* pRow = ui::Create<ui::HBox>(pWindow, {{_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}, {_T("padding"), _T("18,5,10,5")}});
 
     m_pImageControl = new ui::Control(pWindow);
     m_pImageControl->SetName(_T("control_img"));
@@ -27,15 +21,9 @@ Item::Item(ui::Window* pWindow):
     m_pImageControl->SetAttribute(_T("mouse_enabled"), _T("false"));
     pRow->AddItem(m_pImageControl);
 
-    ui::VBox* pRight = new ui::VBox(pWindow);
-    pRight->SetAttribute(_T("margin"), _T("0,3,0,5"));
-    pRight->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRow->AddItem(pRight);
+    auto* pRight = ui::Create<ui::VBox>(pWindow, {{_T("margin"), _T("0,3,0,5")}, {_T("mouse_enabled"), _T("false")}});
 
-    ui::HBox* pTitleRow = new ui::HBox(pWindow);
-    pTitleRow->SetAttribute(_T("height"), _T("auto"));
-    pTitleRow->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRight->AddItem(pTitleRow);
+    auto* pTitleRow = ui::Create<ui::HBox>(pWindow, {{_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}});
 
     m_pTitleLabel = new ui::Label(pWindow);
     m_pTitleLabel->SetName(_T("label_title"));
@@ -52,9 +40,9 @@ Item::Item(ui::Window* pWindow):
     m_pDelBtn->SetAttribute(_T("margin"), _T("0,0,4,0"));
     pTitleRow->AddItem(m_pDelBtn);
 
-    ui::Control* pStretch = new ui::Control(pWindow);
-    pStretch->SetAttribute(_T("height"), _T("stretch"));
-    pStretch->SetAttribute(_T("mouse_enabled"), _T("false"));
+    pRight->AddItem(pTitleRow);
+
+    auto* pStretch = ui::Create<ui::Control>(pWindow, {{_T("height"), _T("stretch")}, {_T("mouse_enabled"), _T("false")}});
     pRight->AddItem(pStretch);
 
     m_pProgressControl = new ui::Progress(pWindow);
@@ -63,6 +51,13 @@ Item::Item(ui::Window* pWindow):
     m_pProgressControl->SetAttribute(_T("value"), _T("30"));
     m_pProgressControl->SetAttribute(_T("mouse_enabled"), _T("false"));
     pRight->AddItem(m_pProgressControl);
+
+    // Attach the completed right column and row, then apply the root item style.
+    pRow->AddItem(pRight);
+    AddItem(pRow);
+
+    SetClass(_T("list_box_item_test list_box_item_checkbox_1"));
+    SetAttribute(_T("height"), _T("auto"));
 }
 
 Item::~Item()
