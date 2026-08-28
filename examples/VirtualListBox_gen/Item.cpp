@@ -1,4 +1,4 @@
-#include "Item.h"
+﻿#include "Item.h"
 #include "DataProvider.h"
 #include <chrono>
 
@@ -12,57 +12,64 @@ Item::Item(ui::Window* pWindow):
     m_nDataIndex(0)
 {
     //The item layout is built with pure code (corresponding to the item.xml template; the template XML is no longer loaded)
-    SetClass(_T("listitem"));
-    SetAttribute(_T("height"), _T("auto"));
+    //Build the subtree bottom-up, matching how item.xml is loaded: a container is
+    //attached only after its children are populated, and the item root's own
+    //class/height attributes are applied last.
+    auto* pRow = ui::Create<ui::HBox>(pWindow, {{_T("mouse_enabled"), _T("false")}, {_T("padding"), _T("10,5,10,5")}});
 
-    ui::HBox* pRow = new ui::HBox(pWindow);
-    pRow->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRow->SetAttribute(_T("padding"), _T("10,5,10,5"));
-    AddItem(pRow);
-
-    m_pImageControl = new ui::Control(pWindow);
-    m_pImageControl->SetName(_T("control_img"));
-    m_pImageControl->SetAttribute(_T("width"), _T("auto"));
-    m_pImageControl->SetAttribute(_T("height"), _T("auto"));
-    m_pImageControl->SetAttribute(_T("margin"), _T("0,0,10,0"));
-    m_pImageControl->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRow->AddItem(m_pImageControl);
+    // Build the child controls, but keep the member pointers null until
+    // InitSubControls() finds them, exactly like the item.xml-loaded Item:
+    // this is what triggers the one-time icon/progress/delete binding setup.
+    ui::Control* pImageControl = new ui::Control(pWindow);
+    pImageControl->SetName(_T("control_img"));
+    pImageControl->SetAttribute(_T("width"), _T("auto"));
+    pImageControl->SetAttribute(_T("height"), _T("auto"));
+    pImageControl->SetAttribute(_T("margin"), _T("0,0,10,0"));
+    pImageControl->SetAttribute(_T("mouse_enabled"), _T("false"));
+    pRow->AddItem(pImageControl);
 
     ui::VBox* pRight = new ui::VBox(pWindow);
     pRight->SetAttribute(_T("margin"), _T("0,3,0,5"));
     pRight->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRow->AddItem(pRight);
 
     ui::HBox* pTitleRow = new ui::HBox(pWindow);
     pTitleRow->SetAttribute(_T("height"), _T("auto"));
     pTitleRow->SetAttribute(_T("mouse_enabled"), _T("false"));
+
+    ui::Label* pTitleLabel = new ui::Label(pWindow);
+    pTitleLabel->SetName(_T("label_title"));
+    pTitleLabel->SetAttribute(_T("width"), _T("stretch"));
+    pTitleLabel->SetAttribute(_T("mouse_enabled"), _T("false"));
+    pTitleRow->AddItem(pTitleLabel);
+
+    ui::Button* pDelBtn = new ui::Button(pWindow);
+    pDelBtn->SetClass(_T("btn_recycle"));
+    pDelBtn->SetName(_T("btn_del"));
+    pDelBtn->SetAttribute(_T("width"), _T("auto"));
+    pDelBtn->SetAttribute(_T("height"), _T("auto"));
+    pDelBtn->SetToolTipText(_T("Delete"));
+    pTitleRow->AddItem(pDelBtn);
+
     pRight->AddItem(pTitleRow);
-
-    m_pTitleLabel = new ui::Label(pWindow);
-    m_pTitleLabel->SetName(_T("label_title"));
-    m_pTitleLabel->SetAttribute(_T("width"), _T("stretch"));
-    m_pTitleLabel->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pTitleRow->AddItem(m_pTitleLabel);
-
-    m_pDelBtn = new ui::Button(pWindow);
-    m_pDelBtn->SetClass(_T("btn_recycle"));
-    m_pDelBtn->SetName(_T("btn_del"));
-    m_pDelBtn->SetAttribute(_T("width"), _T("auto"));
-    m_pDelBtn->SetAttribute(_T("height"), _T("auto"));
-    m_pDelBtn->SetToolTipText(_T("Delete"));
-    pTitleRow->AddItem(m_pDelBtn);
 
     ui::Control* pStretch = new ui::Control(pWindow);
     pStretch->SetAttribute(_T("height"), _T("stretch"));
     pStretch->SetAttribute(_T("mouse_enabled"), _T("false"));
     pRight->AddItem(pStretch);
 
-    m_pProgressControl = new ui::Progress(pWindow);
-    m_pProgressControl->SetClass(_T("progress_horizontal_blue"));
-    m_pProgressControl->SetName(_T("progress"));
-    m_pProgressControl->SetAttribute(_T("value"), _T("30"));
-    m_pProgressControl->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRight->AddItem(m_pProgressControl);
+    ui::Progress* pProgressControl = new ui::Progress(pWindow);
+    pProgressControl->SetClass(_T("progress_horizontal_blue"));
+    pProgressControl->SetName(_T("progress"));
+    pProgressControl->SetAttribute(_T("value"), _T("30"));
+    pProgressControl->SetAttribute(_T("mouse_enabled"), _T("false"));
+    pRight->AddItem(pProgressControl);
+
+    // Attach the completed right column and row, then apply the root item style.
+    pRow->AddItem(pRight);
+    AddItem(pRow);
+
+    SetClass(_T("listitem"));
+    SetAttribute(_T("height"), _T("auto"));
 }
 
 
