@@ -25,6 +25,50 @@ DString MainForm::GetSkinFile()
     return _T("");
 }
 
+void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
+{
+    // Match the <Window> attributes in child_window.xml:
+    // size="75%,85%", size_box/caption, shadow/layered settings.
+    ui::UiRect rcWork;
+    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
+    attrs.m_bInitSizeDefined = true;
+    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.85f);
+    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.90f);
+
+    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
+    attrs.m_bSizeBoxDefined = true;
+    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
+    attrs.m_bCaptionDefined = true;
+
+    attrs.m_bShadowAttached = true;
+    attrs.m_bShadowAttachedDefined = true;
+    attrs.m_bIsLayeredWindow = false;
+    attrs.m_bIsLayeredWindowDefined = true;
+
+    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
+    // the XML layout (WindowBuilder adds the shadow corner to the size).
+    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
+    ui::UiSize szBorderRound;
+    ui::UiPadding rcShadowCorner;
+    DString shadowImage;
+    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
+        attrs.m_rcShadowCorner = rcShadowCorner;
+        if (attrs.m_bInitSizeDefined) {
+            attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
+            attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
+        }
+    }
+
+    BaseClass::GetCreateWindowAttributes(attrs);
+}
+
+void MainForm::PreInitWindow()
+{
+    BaseClass::PreInitWindow();
+    //Use the GPU (Metal) render backend on macOS, matching the XML example.
+    SetRenderBackendType(ui::RenderBackendType::kMetal_BackendType);
+}
+
 void MainForm::BuildUI()
 {
     // Corresponding to the child_window.xml layout
@@ -132,6 +176,13 @@ void MainForm::BuildUI()
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
