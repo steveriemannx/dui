@@ -65,6 +65,8 @@
     #if (DUI_WAYLAND)
         //Use Wayland + wlroots window and mouse/keyboard events (replacing SDL)
         #define DUI_BUILD_FOR_WAYLAND 1
+    #elif defined(DUI_BUILD_FOR_MACOS)
+        //macOS native (Cocoa/AppKit) backend: SDL is not supported on this platform
     #else
         //Whether to use SDL window and mouse/keyboard events (currently only SDL3 is supported)
         #define DUI_BUILD_FOR_SDL    1

@@ -172,6 +172,14 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Render RENDER_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/RenderSkia RENDER_SKIA_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Utils UTILS_SRC)
 
+# When SDL is disabled (Windows/macOS native-only), exclude every SDL backend
+# source so the library does not require SDL3 headers/libs.
+if(NOT DUI_ENABLE_SDL)
+    foreach(_sdl_src_list DIR_LIB_SRC ANIMATION_SRC BOX_SRC LAYOUT_SRC CONTROL_SRC CORE_SRC IMAGE_SRC RENDER_SRC RENDER_SKIA_SRC UTILS_SRC)
+        list(FILTER ${_sdl_src_list} EXCLUDE REGEX ".*_SDL\\..*")
+    endforeach()
+endif()
+
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
 # Wayland build excludes CEF; MinGW does not support CEF (see the build scripts)
 if(DUI_ENABLE_WAYLAND)
