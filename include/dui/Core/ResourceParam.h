@@ -28,6 +28,21 @@ enum class ResourceType
     kMemoryRes
 };
 
+/** Select the default theme directory for the current platform.
+ *  Windows uses the Windows 11 theme, macOS uses the native macOS light theme,
+ *  and the other platforms use the generic default theme.
+ */
+inline FilePath GetDefaultThemePath()
+{
+#if defined (DUI_BUILD_FOR_WIN)
+    return FilePath(_T("themes\\windows11"));
+#elif defined (DUI_BUILD_FOR_MACOS)
+    return FilePath(_T("themes/macos26"));
+#else
+    return FilePath(_T("themes/default"));
+#endif
+}
+
 /** Basic parameters required to load global resources (base class; a subclass must be used when in use, see the definitions below)
 */
 class DUI_API ResourceParam
@@ -55,15 +70,7 @@ public:
 public:
     /** The theme path name (relative path)
     */
-#if defined (DUI_BUILD_FOR_WIN)
-    // Windows uses the WinUI3 / Windows 11 theme.
-    FilePath themePath = FilePath(_T("themes\\windows11"));
-#elif defined (DUI_BUILD_FOR_MACOS)
-    // macOS uses the native macOS light theme.
-    FilePath themePath = FilePath(_T("themes/macos26"));
-#else
-    FilePath themePath = FilePath(_T("themes/default"));
-#endif
+    FilePath themePath = GetDefaultThemePath();
 
     /** The path where the external font files reside
     */
