@@ -22,10 +22,58 @@ DString MainForm::GetSkinFile()
     return _T("");
 }
 
+void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
+{
+    // Corresponding to the <Window> attributes in DpiAware.xml
+    attrs.m_bInitSizeDefined = true;
+    attrs.m_szInitSize.cx = 800;
+    attrs.m_szInitSize.cy = 600;
+    attrs.m_bShadowAttached = true;
+    attrs.m_bShadowAttachedDefined = true;
+    attrs.m_bIsLayeredWindow = true;
+    attrs.m_bIsLayeredWindowDefined = true;
+    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
+    attrs.m_bSizeBoxDefined = true;
+    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
+    attrs.m_bCaptionDefined = true;
+
+    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
+    // DpiAware.xml (WindowBuilder adds the shadow corner to the size).
+    ui::Shadow::ShadowType nShadowType = ui::Shadow::ShadowType::kShadowDefault;
+    ui::UiSize szBorderRound;
+    ui::UiPadding rcShadowCorner;
+    DString shadowImage;
+    if (ui::Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
+        attrs.m_rcShadowCorner = rcShadowCorner;
+        attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
+        attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
+    }
+
+    BaseClass::GetCreateWindowAttributes(attrs);
+}
+
+void MainForm::PreInitWindow()
+{
+    BaseClass::PreInitWindow();
+
+    // No layout XML is loaded, so Window::ParseWindowXml attempted to load an
+    // empty XML and reset the window resource sub-path; restore it now so image
+    // paths resolve from the "dpi_aware" folder.
+    SetResourcePath(ui::FilePath(_T("dpi_aware")));
+    SetWindowMinimumSize(ui::UiSize(80, 50), true);
+}
+
 void MainForm::OnInitWindow()
 {
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
 
     // Build-time generated from DpiAware.xml
     InitDpiAware(this);
@@ -72,6 +120,7 @@ void MainForm::OnInitWindow()
             return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnWindowDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nNewScaleFactor)
