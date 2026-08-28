@@ -1,4 +1,4 @@
-﻿// 纯代码构建 UI（对应 controls.xml 的布局）
+// 纯代码构建 UI（对应 controls.xml 的布局）
 // 使用 ui::Make / ui::Add 简洁 API，替代逐行 SetAttribute。
 static void BuildUIFromXml(ui::Window* pWindow)
 {
@@ -20,23 +20,23 @@ static void BuildUIFromXml(ui::Window* pWindow)
     auto* p15 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_blue_80x30")}, {_T("text"), _T("blue")}, {_T("tooltip_text"), _T("ui::Buttons")}});
     auto* p16 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_white_80x30")}, {_T("text"), _T("white")}});
     auto* p17 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_red_80x30")}, {_T("text"), _T("red")}});
-    auto* p18 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_color_gray")}, {_T("text"), _T("控件测试")}, {_T("name"), _T("test_btn")}, {_T("width"), _T("80")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
-    auto* p19 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("animation_btn")}, {_T("text"), _T("动画测试")}, {_T("width"), _T("80")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
-    auto* p20 = ui::Attach<ui::VBox>(p13, {{_T("width"), _T("120")}});
-    auto* p21 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_1")}, {_T("font"), _T("system_14")}, {_T("text"), _T("多选框1")}, {_T("margin"), _T("0,3,0,3")}, {_T("selected"), _T("true")}, {_T("tooltip_text"), _T("ui::Checkbox")}});
-    auto* p22 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_1")}, {_T("text"), _T("多选框2")}, {_T("margin"), _T("0,3,0,3")}});
-    auto* p23 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_2")}, {_T("text"), _T("多选框3")}, {_T("margin"), _T("0,3,0,3")}});
-    auto* p24 = ui::Attach<ui::Button>(p20, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("domodal2")}, {_T("text"), _T("模态对话框")}, {_T("width"), _T("110")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,12,0,0")}});
-    auto* p25 = ui::Attach<ui::Button>(p20, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("show_color_picker")}, {_T("text"), _T("拾色器(模态)")}, {_T("width"), _T("110")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
-    auto* p26 = ui::Attach<ui::VBox>(p13, {{_T("width"), _T("120")}, {_T("margin"), _T("20,0,0,0")}});
-    auto* p27 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("单选1")}, {_T("margin"), _T("0,3,0,3")}, {_T("selected"), _T("true")}, {_T("tooltip_text"), _T("ui::Option")}});
-    auto* p28 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("单选2")}, {_T("margin"), _T("0,3,0,3")}});
-    auto* p29 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("单选3")}, {_T("margin"), _T("0,3,0,3")}});
+    auto* p18 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_color_gray")}, {_T("text"), _T("Control Test")}, {_T("name"), _T("test_btn")}, {_T("width"), _T("110")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
+    auto* p19 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("animation_btn")}, {_T("text"), _T("Animation Test")}, {_T("width"), _T("120")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
+    auto* p20 = ui::Attach<ui::VBox>(p13, {{_T("width"), _T("180")}});
+    auto* p21 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_1")}, {_T("font"), _T("system_14")}, {_T("text"), _T("CheckBox 1")}, {_T("margin"), _T("0,3,0,3")}, {_T("selected"), _T("true")}, {_T("tooltip_text"), _T("ui::Checkbox")}});
+    auto* p22 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_1")}, {_T("text"), _T("CheckBox 2")}, {_T("margin"), _T("0,3,0,3")}});
+    auto* p23 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_2")}, {_T("text"), _T("CheckBox 3")}, {_T("margin"), _T("0,3,0,3")}});
+    auto* p24 = ui::Attach<ui::Button>(p20, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("domodal2")}, {_T("text"), _T("Modal Dialog")}, {_T("width"), _T("120")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,12,0,0")}});
+    auto* p25 = ui::Attach<ui::Button>(p20, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("show_color_picker")}, {_T("text"), _T("Color Picker (Modal)")}, {_T("width"), _T("170")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
+    auto* p26 = ui::Attach<ui::VBox>(p13, {{_T("width"), _T("180")}, {_T("margin"), _T("20,0,0,0")}});
+    auto* p27 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("Radio 1")}, {_T("margin"), _T("0,3,0,3")}, {_T("selected"), _T("true")}, {_T("tooltip_text"), _T("ui::Option")}});
+    auto* p28 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("Radio 2")}, {_T("margin"), _T("0,3,0,3")}});
+    auto* p29 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("Radio 3")}, {_T("margin"), _T("0,3,0,3")}});
     auto* p30 = ui::Attach<ui::HBox>(p26, {{_T("height"), _T("36")}});
-    auto* p31 = ui::Attach<ui::Label>(p30, {{_T("text"), _T("托盘图标")}, {_T("height"), _T("36")}, {_T("valign"), _T("center")}});
+    auto* p31 = ui::Attach<ui::Label>(p30, {{_T("text"), _T("Tray Icon")}, {_T("height"), _T("36")}, {_T("valign"), _T("center")}});
     auto* p32 = ui::Attach<ui::CheckBox>(p30, {{_T("class"), _T("checkbox_toggle_1")}, {_T("name"), _T("checkbox_tray_icon")}, {_T("selected"), _T("false")}, {_T("margin"), _T("4,3,0,3")}});
     auto* p33 = ui::Attach<ui::HBox>(p26, {{_T("height"), _T("36")}});
-    auto* p34 = ui::Attach<ui::Label>(p33, {{_T("text"), _T("开关示例")}, {_T("height"), _T("36")}, {_T("valign"), _T("center")}});
+    auto* p34 = ui::Attach<ui::Label>(p33, {{_T("text"), _T("Switch Example")}, {_T("height"), _T("36")}, {_T("valign"), _T("center")}});
     auto* p35 = ui::Attach<ui::CheckBox>(p33, {{_T("class"), _T("checkbox_toggle_2")}, {_T("margin"), _T("4,3,0,3")}});
     auto* p36 = ui::Attach<ui::VListBox>(p13, {{_T("class"), _T("list")}, {_T("name"), _T("list")}, {_T("padding"), _T("5,3,5,3")}, {_T("tooltip_text"), _T("ui::VListBox")}});
     auto* p37 = ui::Attach<ui::ListBoxItem>(p36, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::VListBox::ListBoxItem")}});
@@ -56,11 +56,11 @@ static void BuildUIFromXml(ui::Window* pWindow)
     auto* p51 = ui::Attach<ui::Control>(p12, {{_T("class"), _T("splitline_hor_level1")}});
     auto* p52 = ui::Attach<ui::HBox>(p12, {{_T("height"), _T("220")}});
     auto* p53 = ui::Attach<ui::VBox>(p52, {{_T("width"), _T("300")}, {_T("margin"), _T("0,0,10")}});
-    auto* p54 = ui::Attach<ui::Combo>(p53, {{_T("class"), _T("combo")}, {_T("name"), _T("combo")}, {_T("combo_type"), _T("drop_list")}, {_T("dropbox_size"), _T("0,150")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,12,0,0")}, {_T("tooltip_text"), _T("ui::Combo")}});
-    auto* p55 = ui::Attach<ui::FilterCombo>(p53, {{_T("class"), _T("filter_combo")}, {_T("name"), _T("filter_combo")}, {_T("dropbox_size"), _T("0,150")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,12,0,0")}, {_T("tooltip_text"), _T("ui::FilterCombo")}});
+    auto* p54 = ui::Attach<ui::Combo>(p53, {{_T("class"), _T("combo")}, {_T("name"), _T("combo")}, {_T("combo_type"), _T("drop_list")}, {_T("dropbox_size"), _T("0,150")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,12,0,0")}, {_T("tooltip_text"), _T("ui::Combo")}, {_T("shadow_type"), _T("system_small_round")}});
+    auto* p55 = ui::Attach<ui::FilterCombo>(p53, {{_T("class"), _T("filter_combo")}, {_T("name"), _T("filter_combo")}, {_T("dropbox_size"), _T("0,150")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,12,0,0")}, {_T("tooltip_text"), _T("ui::FilterCombo")}, {_T("shadow_type"), _T("system_small_round")}});
     auto* p56 = ui::Attach<ui::RichEdit>(p53, {{_T("class"), _T("simple prompt simple_border_bottom")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,3")}, {_T("font"), _T("system_14")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("8,4,8,4")}, {_T("default_context_menu"), _T("true")}, {_T("prompt_text"), _T("ui::RichEdit: 单行文本")}});
-    auto* p57 = ui::Attach<ui::CheckCombo>(p53, {{_T("class"), _T("check_combo")}, {_T("name"), _T("check_combo")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,3")}, {_T("tooltip_text"), _T("nim_comp::CheckCombo")}});
-    auto* p58 = ui::Attach<ui::Button>(p53, {{_T("class"), _T("btn_global_color_gray")}, {_T("text"), _T("全屏显示RichEdit")}, {_T("name"), _T("rich_edit_fullscreen_btn")}, {_T("width"), _T("160")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
+    auto* p57 = ui::Attach<ui::CheckCombo>(p53, {{_T("class"), _T("check_combo")}, {_T("name"), _T("check_combo")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,3")}, {_T("tooltip_text"), _T("nim_comp::CheckCombo")}, {_T("shadow_type"), _T("system_small_round")}});
+    auto* p58 = ui::Attach<ui::Button>(p53, {{_T("class"), _T("btn_global_color_gray")}, {_T("text"), _T("Fullscreen RichEdit")}, {_T("name"), _T("rich_edit_fullscreen_btn")}, {_T("width"), _T("160")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
     auto* p59 = ui::Attach<ui::VBox>(p52, {{_T("height"), _T("240")}});
     auto* p60 = ui::Attach<ui::HBox>(p59, {});
     auto* p61 = ui::Attach<ui::VBox>(p60, {{_T("width"), _T("200")}});
@@ -74,17 +74,17 @@ static void BuildUIFromXml(ui::Window* pWindow)
     auto* p69 = ui::Attach<ui::CircleProgress>(p68, {{_T("name"), _T("circleprogress")}, {_T("circular"), _T("true")}, {_T("height"), _T("80")}, {_T("width"), _T("80")}, {_T("circle_width"), _T("12")}, {_T("bgcolor"), _T("gray")}, {_T("fgcolor"), _T("green")}, {_T("gradient_color"), _T("red")}, {_T("clockwise"), _T("true")}, {_T("min"), _T("0")}, {_T("max"), _T("100")}, {_T("value"), _T("75")}, {_T("margin"), _T("10")}, {_T("text_padding"), _T("10,32,10,10")}, {_T("normal_text_color"), _T("darkcolor")}, {_T("indicator"), _T("file='public/progress/indicator.svg' width='12' height='12'")}, {_T("tooltip_text"), _T("ui::CircleProgress")}});
     auto* p70 = ui::Attach<ui::VBox>(p60, {{_T("margin"), _T("4,8,0,0")}});
     auto* p71 = ui::Attach<ui::HBox>(p70, {{_T("child_margin"), _T("4")}, {_T("width"), _T("300")}});
-    auto* p72 = ui::Attach<ui::Label>(p71, {{_T("text"), _T("日期")}, {_T("height"), _T("24")}, {_T("text_align"), _T("vcenter")}, {_T("hot_text_color"), _T("red")}, {_T("pushed_text_color"), _T("blue")}});
+    auto* p72 = ui::Attach<ui::Label>(p71, {{_T("text"), _T("Date")}, {_T("height"), _T("24")}, {_T("text_align"), _T("vcenter")}, {_T("hot_text_color"), _T("red")}, {_T("pushed_text_color"), _T("blue")}});
     auto* p73 = ui::Attach<ui::DateTime>(p71, {{_T("width"), _T("100%")}, {_T("height"), _T("24")}, {_T("text"), _T("2022-02-01")}});
     auto* p74 = ui::Attach<ui::DateTime>(p71, {{_T("width"), _T("120")}, {_T("height"), _T("24")}, {_T("edit_format"), _T("date_up_down")}});
     auto* p75 = ui::Attach<ui::HBox>(p70, {{_T("child_margin"), _T("4")}, {_T("width"), _T("320")}});
-    auto* p76 = ui::Attach<ui::Label>(p75, {{_T("text"), _T("时间")}, {_T("height"), _T("24")}, {_T("text_align"), _T("vcenter")}});
+    auto* p76 = ui::Attach<ui::Label>(p75, {{_T("text"), _T("Time")}, {_T("height"), _T("24")}, {_T("text_align"), _T("vcenter")}});
     auto* p77 = ui::Attach<ui::DateTime>(p75, {{_T("width"), _T("100%")}, {_T("height"), _T("24")}, {_T("edit_format"), _T("date_time_up_down")}});
     auto* p78 = ui::Attach<ui::DateTime>(p75, {{_T("width"), _T("72")}, {_T("height"), _T("24")}, {_T("edit_format"), _T("minute_up_down")}});
     auto* p79 = ui::Attach<ui::HBox>(p59, {});
     auto* p80 = ui::Attach<ui::VBox>(p79, {{_T("margin"), _T("10,0,0,0")}});
     auto* p81 = ui::Attach<ui::HBox>(p80, {{_T("child_margin"), _T("10")}});
-    auto* p82 = ui::Attach<ui::Label>(p81, {{_T("text"), _T("IP地址")}, {_T("height"), _T("28")}, {_T("text_align"), _T("vcenter")}});
+    auto* p82 = ui::Attach<ui::Label>(p81, {{_T("text"), _T("IP Address")}, {_T("height"), _T("28")}, {_T("text_align"), _T("vcenter")}});
     auto* p83 = ui::Attach<ui::IPAddress>(p81, {{_T("class"), _T("ip_address")}, {_T("ip"), _T("192.168.0.1")}});
     auto* p84 = ui::Attach<ui::HBox>(p80, {{_T("child_margin"), _T("10")}});
     auto* p85 = ui::Attach<ui::Label>(p84, {{_T("text"), _T("RichEdit Spin")}, {_T("height"), _T("28")}, {_T("text_align"), _T("vcenter")}});
@@ -92,15 +92,15 @@ static void BuildUIFromXml(ui::Window* pWindow)
     auto* p87 = ui::Attach<ui::VBox>(p79, {{_T("margin"), _T("10,0,0,0")}});
     auto* p88 = ui::Attach<ui::HBox>(p87, {{_T("child_margin"), _T("10")}});
     auto* p89 = ui::Attach<ui::HotKey>(p88, {{_T("class"), _T("hot_key")}, {_T("name"), _T("set_hot_key")}, {_T("default_text"), _T("无")}});
-    auto* p90 = ui::Attach<ui::Button>(p88, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("btn_set_hot_key")}, {_T("text"), _T("设置窗口热键")}, {_T("width"), _T("100%")}, {_T("height"), _T("28")}, {_T("border_round"), _T("3,3")}, {_T("text_align"), _T("vcenter")}});
+    auto* p90 = ui::Attach<ui::Button>(p88, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("btn_set_hot_key")}, {_T("text"), _T("Set Window HotKey")}, {_T("width"), _T("100%")}, {_T("height"), _T("28")}, {_T("border_round"), _T("3,3")}, {_T("text_align"), _T("vcenter")}});
     auto* p91 = ui::Attach<ui::HBox>(p87, {{_T("child_margin"), _T("10")}});
     auto* p92 = ui::Attach<ui::HotKey>(p91, {{_T("class"), _T("hot_key")}, {_T("name"), _T("set_system_hot_key")}, {_T("default_text"), _T("无")}});
-    auto* p93 = ui::Attach<ui::Button>(p91, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("btn_set_system_hot_key")}, {_T("text"), _T("设置系统热键")}, {_T("width"), _T("100%")}, {_T("height"), _T("28")}, {_T("border_round"), _T("3,3")}, {_T("text_align"), _T("vcenter")}});
+    auto* p93 = ui::Attach<ui::Button>(p91, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("btn_set_system_hot_key")}, {_T("text"), _T("Set System HotKey")}, {_T("width"), _T("100%")}, {_T("height"), _T("28")}, {_T("border_round"), _T("3,3")}, {_T("text_align"), _T("vcenter")}});
     auto* p94 = ui::Attach<ui::HBox>(p59, {{_T("child_margin"), _T("10")}});
     auto* p95 = ui::Attach<ui::HBox>(p94, {{_T("child_margin"), _T("10")}});
     auto* p96 = ui::Attach<ui::RichText>(p95, {{_T("class"), _T("rich_text")}, {_T("name"), _T("rich_text_demo")}, {_T("row_spacing_mul"), _T("1.2")}});
     auto* p97 = ui::Attach<ui::VBox>(p95, {{_T("width"), _T("80")}});
-    auto* p98 = ui::Attach<ui::HyperLink>(p97, {{_T("class"), _T("hyper_link")}, {_T("name"), _T("hyper_link1")}, {_T("text"), _T("百度首页")}, {_T("url"), _T("www.baidu.com")}, {_T("tooltip_text"), _T("这是一个HyperLink控件")}});
+    auto* p98 = ui::Attach<ui::HyperLink>(p97, {{_T("class"), _T("hyper_link")}, {_T("name"), _T("hyper_link1")}, {_T("text"), _T("Baidu Homepage")}, {_T("url"), _T("www.baidu.com")}, {_T("tooltip_text"), _T("这是一个HyperLink控件")}});
     auto* p99 = ui::Attach<ui::HyperLink>(p97, {{_T("class"), _T("hyper_link")}, {_T("name"), _T("hyper_link2")}, {_T("text"), _T("文字按钮")}, {_T("tooltip_text"), _T("这是一个HyperLink控件")}});
     auto* p100 = ui::Attach<ui::HBox>(p94, {{_T("child_margin"), _T("10")}});
     auto* p101 = ui::Attach<ui::Label>(p100, {{_T("text"), _T("Line:")}, {_T("valign"), _T("center")}});
