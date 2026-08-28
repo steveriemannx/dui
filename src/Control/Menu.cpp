@@ -14,6 +14,13 @@ ContextMenuObserver& Menu::GetMenuObserver()
     return s_context_menu_observer;
 }
 
+//Open menus tracked for pointer-outside submenu dismissal.
+static std::vector<Menu*>& GetOpenMenuList()
+{
+    static std::vector<Menu*> s_openMenus;
+    return s_openMenus;
+}
+
 //Managed class for second-level or multi-level submenus
 class SubMenu: public ui::ListBoxItem
 {
@@ -47,6 +54,12 @@ bool Menu::Receive(ContextMenuParam param)
         break;
         case MenuCloseType::eMenuCloseThis:
         {
+#if defined (DUI_BUILD_FOR_MACOS)
+            //Hover-driven "close this submenu" events are too aggressive on
+            //macOS and make submenus flash. Real dismissal is handled by
+            //outside clicks (Menu::CloseAllMenus) and item activation.
+            break;
+#else
             Window* pParentWindow = GetParentWindow();
             while (pParentWindow != nullptr) {
                 if (pParentWindow == param.pWindow) {
@@ -55,6 +68,7 @@ bool Menu::Receive(ContextMenuParam param)
                 }
                 pParentWindow = pParentWindow->GetParentWindow();
             }
+#endif
         }
         break;
     default:
@@ -77,6 +91,118 @@ Menu::Menu(Window* pParentWindow, Control* pRelatedControl, MenuBar* pMenuBar):
     m_skinFolder = DString(_T("public/menu/"));
     m_submenuXml = DString(_T("submenu.xml"));
     m_submenuNodeName = DString(_T("submenu"));
+}
+
+void Menu::CloseAllMenus()
+{
+    ContextMenuParam param;
+    param.pWindow = nullptr;
+    param.wParam = MenuCloseType::eMenuCloseAll;
+    GetMenuObserver().RBroadcast(param);
+}
+
+void Menu::CloseMenusIfHostWindowMoved(WindowBase* pHostWindow)
+{
+    if (pHostWindow == nullptr) {
+        return;
+    }
+    ContextMenuObserver::Iterator<bool, ContextMenuParam> iterator(GetMenuObserver());
+    ReceiverImplBase<bool, ContextMenuParam>* pReceiver = iterator.next();
+    while (pReceiver != nullptr) {
+        Menu* pMenu = dynamic_cast<Menu*>(pReceiver);
+        if ((pMenu != nullptr) && (pMenu->GetParentWindow() == pHostWindow)) {
+            CloseAllMenus();
+            break;
+        }
+        pReceiver = iterator.next();
+    }
+}
+
+void Menu::CloseSubmenusOutsidePointer()
+{
+    const auto& openMenus = GetOpenMenuList();
+    if (openMenus.empty()) {
+        return;
+    }
+    UiPoint pt;
+    openMenus.front()->GetCursorPos(pt);
+    //Copy because closing menus modifies the open list.
+    const std::vector<Menu*> menus = openMenus;
+
+    auto isDescendant = [](Menu* ancestor, Menu* child) -> bool {
+        Menu* cur = child;
+        while ((cur != nullptr) && (cur->m_pOwner != nullptr)) {
+            Menu* parentMenu = dynamic_cast<Menu*>(cur->m_pOwner->GetWindow());
+            if (parentMenu == nullptr) {
+                return false;
+            }
+            if (parentMenu == ancestor) {
+                return true;
+            }
+            cur = parentMenu;
+        }
+        return false;
+    };
+
+    for (Menu* menu : menus) {
+        if ((menu == nullptr) || (menu->m_pOwner == nullptr)) {
+            //Only submenus are dismissed by pointer-leave; the top-level menu
+            //stays until an outside click/activation.
+            continue;
+        }
+
+        bool bKeepOpen = false;
+
+        // Pointer inside the submenu itself keeps it open.
+        UiRect rcSub;
+        menu->GetWindowRect(rcSub);
+        if (rcSub.ContainsPt(pt)) {
+            bKeepOpen = true;
+        }
+
+        // Pointer still on the owning menu item: allows crossing the small gap
+        // from the parent item into the submenu.
+        if (!bKeepOpen) {
+            UiRect rcParentItem = menu->m_pOwner->GetPos();
+            Window* pOwnerWnd = menu->m_pOwner->GetWindow();
+            if (pOwnerWnd != nullptr) {
+                pOwnerWnd->ClientToScreen(rcParentItem);
+                if (rcParentItem.ContainsPt(pt)) {
+                    bKeepOpen = true;
+                }
+            }
+        }
+
+        // Pointer inside a descendant submenu: keep ancestors open so the user
+        // can move from the current level into the next level.
+        if (!bKeepOpen) {
+            for (Menu* other : menus) {
+                if ((other == nullptr) || (other == menu) || (other->m_pOwner == nullptr)) {
+                    continue;
+                }
+                UiRect rcOther;
+                other->GetWindowRect(rcOther);
+                if (rcOther.ContainsPt(pt) && isDescendant(menu, other)) {
+                    bKeepOpen = true;
+                    break;
+                }
+            }
+        }
+
+        if (!bKeepOpen) {
+            menu->CloseMenu();
+        }
+    }
+}
+
+void Menu::CloseSubmenus()
+{
+    const std::vector<Menu*> menus = GetOpenMenuList();
+    for (Menu* menu : menus) {
+        if ((menu != nullptr) && (menu->m_pOwner != nullptr)) {
+            menu->CloseMenu();
+        }
+    }
 }
 
 void Menu::SetSkinFolder(const DString& skinFolder)
@@ -103,6 +229,7 @@ void Menu::ShowMenu(const DString& xml, const UiPoint& point, MenuPopupPosType p
     m_noFocus = noFocus;
     m_pOwner = pOwner;
 
+    GetOpenMenuList().push_back(this);
     Menu::GetMenuObserver().AddReceiver(this);
     WindowCreateParam createWndParam;
     createWndParam.m_dwStyle = kWS_POPUP;
@@ -178,6 +305,13 @@ void Menu::ShowMenu(const DString& xml, const UiPoint& point, MenuPopupPosType p
 
 void Menu::CloseMenu()
 {
+    auto& openMenus = GetOpenMenuList();
+    for (auto it = openMenus.begin(); it != openMenus.end(); ++it) {
+        if (*it == this) {
+            openMenus.erase(it);
+            break;
+        }
+    }
     //Close immediately to avoid mutual interference during continuous operations
     CloseWnd();
 }
@@ -237,6 +371,13 @@ LRESULT Menu::OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& nativ
         }
     }
     if (!bInMenuWindowList) {
+#if defined (DUI_BUILD_FOR_MACOS)
+        //Focus can go to nil just from hovering submenus; that is not a click.
+        //Close only when focus moves to another real window/app.
+        if (pSetFocusWindow == nullptr) {
+            return lResult;
+        }
+#endif
         ContextMenuParam param;
         param.pWindow = this;
         param.wParam = MenuCloseType::eMenuCloseAll;
@@ -244,6 +385,32 @@ LRESULT Menu::OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& nativ
         return 0;
     }
     return lResult;
+}
+
+LRESULT Menu::OnMouseLeaveMsg(const NativeMsg& nativeMsg, bool& bHandled)
+{
+#if defined(DUI_BUILD_FOR_MACOS)
+    //On macOS submenu dismissal is driven by CloseSubmenusOutsidePointer,
+    //which keeps the submenu alive while the pointer is still over the owning
+    //parent menu. A bare MouseLeave here would make submenus flash open/closed.
+#else
+    //Submenus should close as soon as the mouse leaves them.
+    if (m_pOwner != nullptr) {
+        CloseMenu();
+    }
+#endif
+    return BaseClass::OnMouseLeaveMsg(nativeMsg, bHandled);
+}
+
+LRESULT Menu::OnMouseMoveMsg(const UiPoint& pt, uint32_t modifierKey, bool bFromNC, const NativeMsg& nativeMsg, bool& bHandled)
+{
+#if !defined(DUI_BUILD_FOR_MACOS)
+    //When the mouse moves back onto the top-level menu, close any open submenu.
+    if (m_pOwner == nullptr) {
+        Menu::CloseSubmenus();
+    }
+#endif
+    return BaseClass::OnMouseMoveMsg(pt, modifierKey, bFromNC, nativeMsg, bHandled);
 }
 
 LRESULT Menu::OnKeyDownMsg(VirtualKeyCode vkCode, uint32_t modifierKey, const NativeMsg& nativeMsg, bool& bHandled)
@@ -636,6 +803,8 @@ bool Menu::ResizeSubMenu()
 void Menu::PreInitWindow()
 {
     BaseClass::PreInitWindow();
+    //Menu popups should not draw the thin border around their shadow.
+    SetShadowBorderSize(0);
     if (m_xml.empty() && (GetRoot() == nullptr)) {
         //Pure-code mode: when there is no XML template, build the root node layout (consistent with the MenuListBox in the XML template)
         MenuListBox* pListBox = new MenuListBox(this);
@@ -781,7 +950,13 @@ bool Menu::AddMenuItem(MenuItem* pMenuItem)
     ListBox* pLayoutListBox = Menu::GetLayoutListBox();
     ASSERT(pLayoutListBox != nullptr);
     if (pLayoutListBox != nullptr) {
-        return pLayoutListBox->AddItem(pMenuItem);
+        bool ret = pLayoutListBox->AddItem(pMenuItem);
+        if (ret && (m_pOwner == nullptr)) {
+            //Pure-code menus are often populated after ShowMenu(); recalculate
+            //the window size now that content has been added.
+            ResizeMenu();
+        }
+        return ret;
     }
     return false;
 }
@@ -796,7 +971,13 @@ bool Menu::AddMenuControl(Control* pControl)
     ListBox* pLayoutListBox = Menu::GetLayoutListBox();
     ASSERT(pLayoutListBox != nullptr);
     if (pLayoutListBox != nullptr) {
-        return pLayoutListBox->AddItem(pControl);
+        bool ret = pLayoutListBox->AddItem(pControl);
+        if (ret && (m_pOwner == nullptr)) {
+            //Pure-code menus are often populated after ShowMenu(); recalculate
+            //the window size now that content has been added.
+            ResizeMenu();
+        }
+        return ret;
     }
     return false;
 }

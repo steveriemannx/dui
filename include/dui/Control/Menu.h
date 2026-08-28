@@ -142,6 +142,24 @@ public:
     //Get the control associated with the menu
     Control* GetRelatedControl() const;
 
+    /** Close all currently open popup menus.
+    */
+    static void CloseAllMenus();
+
+    /** Close all open popup menus whose owner/host window is the given window.
+    * Used when a host window moves, so transient windows (tooltips, popups,
+    * the menu windows themselves) do not accidentally dismiss menus.
+    */
+    static void CloseMenusIfHostWindowMoved(WindowBase* pHostWindow);
+
+    /** Close submenus whose window no longer contains the mouse pointer.
+    */
+    static void CloseSubmenusOutsidePointer();
+
+    /** Close all currently open submenus (keep top-level menus).
+    */
+    static void CloseSubmenus();
+
 private:
     friend MenuItem; //Needs to access some private member functions
 
@@ -193,6 +211,14 @@ private:
     * @return Returns the processing result of the message; if the application handles this message, it should return zero
     */
     virtual LRESULT OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& nativeMsg, bool& bHandled) override;
+
+    /** Mouse leaves this menu window
+    */
+    virtual LRESULT OnMouseLeaveMsg(const NativeMsg& nativeMsg, bool& bHandled) override;
+
+    /** Mouse moves over this menu window
+    */
+    virtual LRESULT OnMouseMoveMsg(const UiPoint& pt, uint32_t modifierKey, bool bFromNC, const NativeMsg& nativeMsg, bool& bHandled) override;
 
     /** Keyboard key pressed (WM_KEYDOWN or WM_SYSKEYDOWN)
     * @param [in] vkCode The virtual key code
