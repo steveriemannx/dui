@@ -20,6 +20,7 @@ public:
      */
     virtual DString GetSkinFolder() override;
     virtual DString GetSkinFile() override;
+    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
 
 public:
     /** Draw this child window immediately
@@ -38,6 +39,10 @@ public:
     bool PaintNextChildWindow();
 
 protected:
+    /** Called before the Render is created; select the GPU backend.
+    */
+    virtual void PreInitWindow() override;
+
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;
