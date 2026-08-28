@@ -41,6 +41,13 @@ void MoveControlForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attr
 
 void MoveControlForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
@@ -71,4 +78,5 @@ void MoveControlForm::OnInitWindow()
             m_my_app->AddItem(pAppUi);
         }
     }
+    BaseClass::OnInitWindow();
 }
