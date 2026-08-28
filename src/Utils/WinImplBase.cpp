@@ -3,6 +3,10 @@
 #include "dui/Core/Box.h"
 #include "dui/Utils/FilePath.h"
 
+#ifdef DUI_BUILD_FOR_MACOS
+#include "dui/Control/MacTrafficLights.h"
+#endif
+
 namespace ui
 {
 
@@ -119,6 +123,10 @@ void WindowImplBase::OnInitWindow()
     // derived class's OnInitWindow, so PreInitWindow could not find the caption
     // buttons yet. Bind them now (BindCaptionButtons is idempotent).
     BindCaptionButtons();
+
+#ifdef DUI_BUILD_FOR_MACOS
+    ApplyMacCaptionBar();
+#endif
 }
 
 void WindowImplBase::OnInitLayout()
@@ -321,5 +329,112 @@ bool WindowImplBase::IsPtInMaximizeRestoreButton(const UiPoint& pt) const
     return bInButton;
 }
 
+#ifdef DUI_BUILD_FOR_MACOS
+void WindowImplBase::ApplyMacCaptionBar()
+{
+    if (IsUseSystemCaption() || (GetRoot() == nullptr)) {
+        return;
+    }
+    //The self-drawn traffic lights replace the custom window buttons, so hide
+    //the XML/code-declared caption buttons.
+    const DString captionButtonNames[] = {
+        DUI_CTR_BUTTON_CLOSE,
+        DUI_CTR_BUTTON_MIN,
+        DUI_CTR_BUTTON_MAX,
+        DUI_CTR_BUTTON_RESTORE,
+        DUI_CTR_BUTTON_FULLSCREEN,
+    };
+    for (const DString& strButtonName : captionButtonNames) {
+        Control* pButton = FindControl(strButtonName);
+        if (pButton != nullptr) {
+            pButton->SetVisible(false);
+        }
+    }
+    Control* pCaptionBar = FindControl(DUI_CTR_CAPTION_BAR);
+    if (pCaptionBar == nullptr) {
+        return;
+    }
+    //macOS title bar: white background, 3pt thinner than the XML height
+    //(36pt) to match the compact macOS-style caption bar.
+    pCaptionBar->SetBkColor(_T("#FFFFFFFF"));
+    pCaptionBar->SetFixedHeight(UiFixedInt(33), true, true);
+    //No extra macOS title-bar separator line: the examples use a clean
+    //caption bar without a visible border line.
+    pCaptionBar->SetBorderSize(UiRectF(0.0f, 0.0f, 0.0f, 0.0f), true);
+
+    //Match the window caption (drag) region to the thinner bar.
+    UiRect rcCaption = GetCaptionRect();
+    rcCaption.bottom = Dpi().GetScaleInt(33);
+    SetCaptionRect(rcCaption, false);
+
+    //Insert the self-drawn traffic lights at the far left of the caption bar.
+    //The control's fixed 76pt width also acts as the left gutter, so the rest
+    //of the caption content (logo/title/buttons) shifts right like a native
+    //macOS title bar.
+    Box* pCaptionBox = dynamic_cast<Box*>(pCaptionBar);
+    if (pCaptionBox != nullptr) {
+        MacTrafficLights* pTrafficLights = new MacTrafficLights(this);
+        pTrafficLights->SetName(_T("mac_traffic_lights"));
+        pTrafficLights->SetFixedWidth(UiFixedInt(76), true, true);
+        pTrafficLights->SetFixedHeight(UiFixedInt(33), true, true);
+        if (pCaptionBox->AddItemAt(pTrafficLights, 0)) {
+            pTrafficLights->AttachClick(
+                UiBind(&WindowImplBase::OnMacTrafficLightsClick, this, std::placeholders::_1));
+            m_pMacTrafficLights = pTrafficLights;
+        }
+        else {
+            delete pTrafficLights;
+        }
+    }
+}
+
+bool WindowImplBase::OnMacTrafficLightsClick(const EventArgs& args)
+{
+    Control* pSender = args.GetSender();
+    MacTrafficLights* pTrafficLights = dynamic_cast<MacTrafficLights*>(pSender);
+    if (pTrafficLights == nullptr) {
+        return false;
+    }
+    switch (pTrafficLights->GetClickedZone()) {
+    case MacTrafficLights::ClickZone::kClose:
+        CloseWnd();
+        break;
+    case MacTrafficLights::ClickZone::kMinimize:
+        ShowWindow(kSW_MINIMIZE);
+        break;
+    case MacTrafficLights::ClickZone::kZoom:
+        //macOS behavior: the green traffic light toggles fullscreen
+        //(not maximize/restore)
+        if (IsWindowFullscreen()) {
+            ExitFullscreen();
+        }
+        else {
+            EnterFullscreen();
+        }
+        break;
+    default:
+        break;
+    }
+    return true;
+}
+
+LRESULT WindowImplBase::OnSetFocusMsg(WindowBase* /*pLostFocusWindow*/, const NativeMsg& nativeMsg, bool& bHandled)
+{
+    LRESULT lResult = BaseClass::OnSetFocusMsg(nullptr, nativeMsg, bHandled);
+    if (m_pMacTrafficLights != nullptr) {
+        m_pMacTrafficLights->SetWindowActive(true);
+    }
+    return lResult;
+}
+
+LRESULT WindowImplBase::OnKillFocusMsg(WindowBase* /*pSetFocusWindow*/, const NativeMsg& nativeMsg, bool& bHandled)
+{
+    LRESULT lResult = BaseClass::OnKillFocusMsg(nullptr, nativeMsg, bHandled);
+    if (m_pMacTrafficLights != nullptr) {
+        m_pMacTrafficLights->SetWindowActive(false);
+    }
+    return lResult;
+}
+#endif
 
 }

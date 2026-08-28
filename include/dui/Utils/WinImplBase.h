@@ -144,6 +144,20 @@ private:
     */
     void BindCaptionButtons();
 
+#ifdef DUI_BUILD_FOR_MACOS
+    /** On macOS only: restyle the caption bar to match the native macOS title
+     *  bar — hide the custom window buttons (replaced by the self-drawn
+     *  traffic lights), use the macOS title bar color and leave a gutter for
+     *  the traffic lights. Called from OnInitWindow; no-op on other platforms.
+     */
+    void ApplyMacCaptionBar();
+
+    /** Handle a click on the self-drawn macOS traffic lights
+     *  (close/minimize/green-fullscreen).
+     */
+    bool OnMacTrafficLightsClick(const EventArgs& args);
+#endif
+
 private:
     /** The interface of the maximize button
     */
@@ -161,8 +175,22 @@ private:
     std::weak_ptr<WeakFlag> m_restoreButtonFlag;
 
     /** Whether the caption buttons have been bound
-    */
+     */
     bool m_bCaptionButtonsBound = false;
+
+#ifdef DUI_BUILD_FOR_MACOS
+    /** The self-drawn macOS traffic lights (macOS only; nullptr elsewhere).
+     */
+    class MacTrafficLights* m_pMacTrafficLights = nullptr;
+
+protected:
+    /** Track the window activation state so the self-drawn traffic lights
+     *  gray out like the native macOS buttons when the window is inactive.
+     *  Protected: subclasses such as Menu call these through the base class.
+     */
+    LRESULT OnSetFocusMsg(WindowBase* pLostFocusWindow, const NativeMsg& nativeMsg, bool& bHandled) override;
+    LRESULT OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& nativeMsg, bool& bHandled) override;
+#endif
 };
 }
 

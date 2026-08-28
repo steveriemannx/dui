@@ -1099,6 +1099,11 @@ private:
     //Whether the layout has been initialized
     bool m_bFirstLayout;
 
+    //Pure-code windows (UI built in OnInitWindow, after PostInitWindow) defer
+    //the initial centering until the root box exists and AutoResizeWindow has
+    //fitted the final window size (see PreparePaint)
+    bool m_bCenterPendingAfterAutoSize;
+
     //Whether the layout initialization callback has been called
     bool m_bInitLayout;
 

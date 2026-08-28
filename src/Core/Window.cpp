@@ -26,6 +26,7 @@ Window::Window() :
     m_bFirstLayout(false),
     m_bInitLayout(false),
     m_bIsArranged(false),
+    m_bCenterPendingAfterAutoSize(false),
     m_bPostQuitMsgWhenClosed(false),
     m_renderBackendType(RenderBackendType::kRaster_BackendType),
     m_bWindowAttributesApplied(false),
@@ -128,7 +129,8 @@ Window* Window::GetParentWindow() const
 
 bool Window::SetRenderBackendType(RenderBackendType backendType)
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if (defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)) || defined (DUI_BUILD_FOR_MACOS)
+    //Windows native and macOS native both support the GPU (GL) backend
     m_renderBackendType = backendType;
 #else
     backendType = RenderBackendType::kRaster_BackendType;
@@ -251,6 +253,15 @@ void Window::ParseWindowXml()
     SetResourcePath(skinFolder);
     SetXmlPath(FilePath());
 
+    if (xmlFile.empty()) {
+        //Pure-code window (no layout XML): the control tree is built in code.
+        //Keep the skin folder as the window's resource path so that image
+        //paths relative to the skin folder can still be resolved, and do not
+        //attempt to parse an XML file (the parse would fail and clear the
+        //resource path, breaking those relative image paths).
+        return;
+    }
+
     //The path of the XML file; it should be a relative path    
     DString skinXmlFileData;
     FilePath skinXmlFilePath;
@@ -364,6 +375,19 @@ void Window::PostInitWindow()
     if (AutoResizeWindow(false)) {
         //After resizing, the window needs to be centered again
         if (NativeWnd()->NeedCenterWindowAfterCreated()) {
+            CenterWindow();
+        }
+    }
+    else if (NativeWnd()->NeedCenterWindowAfterCreated()) {
+        if (GetRoot() == nullptr) {
+            //Pure-code windows build their control tree in OnInitWindow (called
+            //after PostInitWindow); defer centering until PreparePaint fits the
+            //final window size via AutoResizeWindow
+            m_bCenterPendingAfterAutoSize = true;
+        }
+        else {
+            //Center with the final size (XML <Window size> may have been applied by
+            //the Resize above); centering at creation used the default fallback size.
             CenterWindow();
         }
     }
@@ -2004,11 +2028,7 @@ void Window::OnWindowPosSnapped(bool bLeftSnap, bool bRightSnap, bool bTopSnap, 
     if (rcSizeBox.bottom <= 0) {
         bBottomSnap = false;
     }
-    // 快速保护：避免在 m_shadow 为 nullptr 时断言/访问
-    Shadow* pShadow = nullptr;
-    if (m_shadow != nullptr) {
-        pShadow = m_shadow.get();
-    }
+    Shadow* pShadow = GetShadow();
     if (pShadow != nullptr) {
         pShadow->SetWindowPosSnap(bLeftSnap, bRightSnap, bTopSnap, bBottomSnap);
     }
@@ -2367,8 +2387,15 @@ bool Window::PreparePaint(bool bArrange)
     bool bUpdated = false;
     if (m_bIsArranged && pRoot->IsArranged()) {
         //If the width and height configured on the root are auto type, automatically adjust the window size
-        AutoResizeWindow(true);
+        bool bAutoResized = AutoResizeWindow(true);
         bUpdated = true;
+        if (bAutoResized && m_bCenterPendingAfterAutoSize) {
+            //The deferred initial centering: center with the final window size
+            m_bCenterPendingAfterAutoSize = false;
+            if (NativeWnd()->NeedCenterWindowAfterCreated()) {
+                CenterWindow();
+            }
+        }
     }
 
     //Lays out the control
@@ -2735,6 +2762,16 @@ void Window::ProcessWindowExitFullscreen()
         pFullscreenBox->ExitControlFullscreen();
         if (m_pRoot != nullptr) {
             m_pRoot->SetVisible(true);
+            //The restored root was hidden while the fullscreen control was active;
+            //Arrange it again so controls (and native child windows) return to
+            //their pre-fullscreen cells even when the native window size does not
+            //change (e.g. exiting a control-fullscreen while the window itself
+            //remains fullscreen).
+            m_pRoot->Arrange();
+            //ArrangeRoot actually applies the layout (SetPos on controls) right
+            //away; just marking controls arranged is not enough to move the
+            //native child windows back out of the fullscreen layer.
+            ArrangeRoot();
         }
         delete pFullscreenBox;
         pFullscreenBox = nullptr;
@@ -2818,16 +2855,20 @@ bool Window::SetFullscreenControl(Control* pFullscreenControl, const DString& ex
 
 void Window::ExitControlFullscreen()
 {
-    if (m_bControlFullscreen) {
-        FullscreenBox* pFullscreenBox = dynamic_cast<FullscreenBox*>(m_pRoot.get());
-        if (pFullscreenBox != nullptr) {
-            //Exits the control fullscreen
-            bool bWindowOldFullscreen = pFullscreenBox->IsWindowOldFullscreen();
-            ProcessWindowExitFullscreen();
-            if (bWindowOldFullscreen) {
-                //The window was already fullscreen, no need to exit the window fullscreen state
-                return;
-            }
+    if (!m_bControlFullscreen) {
+        //No control is fullscreen; this is not a request to exit the whole
+        //window's native fullscreen state.
+        return;
+    }
+
+    FullscreenBox* pFullscreenBox = dynamic_cast<FullscreenBox*>(m_pRoot.get());
+    if (pFullscreenBox != nullptr) {
+        //Exits the control fullscreen
+        bool bWindowOldFullscreen = pFullscreenBox->IsWindowOldFullscreen();
+        ProcessWindowExitFullscreen();
+        if (bWindowOldFullscreen) {
+            //The window was already fullscreen, no need to exit the window fullscreen state
+            return;
         }
     }
 

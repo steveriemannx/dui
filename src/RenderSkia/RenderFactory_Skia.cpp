@@ -18,6 +18,9 @@
 
 #elif defined (DUI_BUILD_FOR_WIN)
     #include "dui/RenderSkia/Render_Skia_Windows.h"
+
+#elif defined (DUI_BUILD_FOR_MACOS)
+    #include "dui/RenderSkia/Render_Skia_MacOS.h"
 #endif
 
 namespace ui {
@@ -89,6 +92,9 @@ IRender* RenderFactory_Skia::CreateRender(const IRenderDpiPtr& spRenderDpi, void
 #elif defined(DUI_BUILD_FOR_WIN)
     HWND hWnd = (HWND)platformData;
     IRender* pRender = new Render_Skia_Windows(hWnd, backendType);
+#elif defined(DUI_BUILD_FOR_MACOS)
+    void* nsView = platformData;
+    IRender* pRender = new Render_Skia_MacOS(nsView, backendType);
 #else
     UNUSED_VARIABLE(platformData);
     UNUSED_VARIABLE(backendType);

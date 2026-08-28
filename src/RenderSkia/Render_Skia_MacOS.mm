@@ -1,6 +1,8 @@
 #include "dui/RenderSkia/Render_Skia_MacOS.h"
 #include "dui/RenderSkia/SkGLWindowContext_MacOS.h"
+#if defined(SK_METAL)
 #include "dui/RenderSkia/SkMetalWindowContext_MacOS.h"
+#endif
 #include "dui/RenderSkia/SkRasterWindowContext_MacOS.h"
 
 #if defined(DUI_BUILD_FOR_MACOS)
@@ -24,6 +26,7 @@ static std::unique_ptr<skwindow::WindowContext> MakeRasterForMac(void* nsView, s
     return ctx;
 }
 
+#if defined(SK_METAL)
 /** Create a WindowContext implemented with GPU (Metal)
 * @param [in] nsView The associated NSView*, can be nullptr
 * @param [in] params Parameters related to display
@@ -37,6 +40,7 @@ static std::unique_ptr<skwindow::WindowContext> MakeMetalForMac(void* nsView, st
     }
     return ctx;
 }
+#endif
 
 /** Create a WindowContext implemented with GPU (OpenGL)
 * @param [in] nsView The associated NSView*, can be nullptr
@@ -64,6 +68,7 @@ Render_Skia_MacOS::Render_Skia_MacOS(void* nsView, RenderBackendType backendType
         }
     }
     //Create the WindowContext
+#if defined(SK_METAL)
     if (backendType == RenderBackendType::kMetal_BackendType) {
         //GPU drawing (Metal)
         m_pWindowContext = MakeMetalForMac(m_nsView, std::make_unique<skwindow::DisplayParams>());
@@ -72,7 +77,9 @@ Render_Skia_MacOS::Render_Skia_MacOS(void* nsView, RenderBackendType backendType
             m_backendType = RenderBackendType::kMetal_BackendType;
         }
     }
-    else if (backendType == RenderBackendType::kNativeGL_BackendType) {
+    else
+#endif
+    if (backendType == RenderBackendType::kNativeGL_BackendType) {
         //GPU drawing (OpenGL)
         m_pWindowContext = MakeGLForMac(m_nsView, std::make_unique<skwindow::DisplayParams>());
         ASSERT(m_pWindowContext != nullptr);
@@ -149,6 +156,7 @@ bool Render_Skia_MacOS::PaintAndSwapBuffers(IRenderPaint* pRenderPaint)
     ASSERT(pRenderPaint != nullptr);
     ASSERT(m_pWindowContext != nullptr);
     if ((m_pWindowContext != nullptr) && (pRenderPaint != nullptr)) {
+#if defined(SK_METAL)
         if (m_backendType == RenderBackendType::kMetal_BackendType) {
             SkMetalWindowContext_MacOS* pWindowContext = dynamic_cast<SkMetalWindowContext_MacOS*>(m_pWindowContext.get());
             ASSERT(pWindowContext != nullptr);
@@ -156,7 +164,9 @@ bool Render_Skia_MacOS::PaintAndSwapBuffers(IRenderPaint* pRenderPaint)
                 return pWindowContext->PaintAndSwapBuffers(this, pRenderPaint);
             }
         }
-        else if (m_backendType == RenderBackendType::kNativeGL_BackendType) {
+        else
+#endif
+        if (m_backendType == RenderBackendType::kNativeGL_BackendType) {
             SkGLWindowContext_MacOS* pWindowContext = dynamic_cast<SkGLWindowContext_MacOS*>(m_pWindowContext.get());
             ASSERT(pWindowContext != nullptr);
             if (pWindowContext != nullptr) {

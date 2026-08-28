@@ -223,7 +223,14 @@ Shadow::Shadow(Window* pWindow):
     m_nShadowBorderSize(2),
     m_shadowBorderColor(_T("#FFA3A3A3"))
 {
+#if defined(DUI_BUILD_FOR_MACOS)
+    //macOS native: the OS provides the window shadow (rounded corners + system
+    //drop shadow). The self-drawn shadow relies on window transparency, which
+    //does not composite with the legacy GL surface (renders as a black box).
+    SetShadowType(Shadow::ShadowType::kShadowSystemDefault);
+#else
     SetShadowType(Shadow::ShadowType::kShadowDefault);
+#endif
 }
 
 bool Shadow::IsUseDefaultShadowAttached() const
@@ -370,6 +377,12 @@ bool Shadow::IsSystemShadowEnabled(ShadowType nShadowType) const
 
 Shadow::ShadowType Shadow::GetDefaultShadowType(const Window* pWindow)
 {
+#if defined(DUI_BUILD_FOR_MACOS)
+    //macOS native: always prefer the OS-provided shadow. The self-drawn shadow
+    //relies on window transparency, which does not composite with the legacy
+    //GL surface (the shadow area renders black).
+    return ShadowType::kShadowSystemDefault;
+#else
     if (pWindow != nullptr) {
         if (pWindow->IsLayeredWindow()) {
             //Layered window: self-drawn shadow with rounded corners
@@ -391,6 +404,7 @@ Shadow::ShadowType Shadow::GetDefaultShadowType(const Window* pWindow)
 #else
     //Other platforms: self-drawn shadow with rounded corners
     return ShadowType::kShadowBigRound;
+#endif
 #endif
 }
 
@@ -419,6 +433,25 @@ Shadow::ShadowType Shadow::GetSupportedShadowType(const Window* pWindow, ShadowT
             }
         }
     }
+#if defined (DUI_BUILD_FOR_MACOS)
+    else if ((nShadowType == ShadowType::kShadowBig) ||
+             (nShadowType == ShadowType::kShadowBigRound) ||
+             (nShadowType == ShadowType::kShadowSmall) ||
+             (nShadowType == ShadowType::kShadowSmallRound) ||
+             (nShadowType == ShadowType::kShadowMenu) ||
+             (nShadowType == ShadowType::kShadowMenuRound)) {
+        //macOS: self-drawn shadows rely on per-pixel window transparency, which
+        //does not composite (the shadow margin renders black, see
+        //GetDefaultShadowType). Remap these types to the OS-provided shadow.
+        if ((nShadowType == ShadowType::kShadowBig) ||
+            (nShadowType == ShadowType::kShadowBigRound)) {
+            nShadowType = ShadowType::kShadowSystemDefault;
+        }
+        else {
+            nShadowType = ShadowType::kShadowSystemSmallRound;
+        }
+    }
+#endif
     return nShadowType;
 }
 
@@ -623,6 +656,15 @@ void Shadow::OnShadowAttached(Shadow::ShadowType nShadowType)
             SetShadowImage(shadowImage);
         }
     }
+    else if (IsSystemShadowType(nShadowType)) {
+        //OS-provided shadow: discard self-drawn shadow parameters that were set
+        //previously (e.g. the XML declared "menu_round" and the platform remapped
+        //it to a system shadow), otherwise the stale corner padding keeps an
+        //empty margin around the window content.
+        SetShadowCorner(UiPadding(0, 0, 0, 0));
+        SetShadowBorderRound(UiSize(0, 0));
+        SetShadowImage(DString());
+    }
     UpdateShadow();
 
     //OS-provided shadows: forward the type to the native window (macOS
@@ -725,11 +767,6 @@ UiPadding Shadow::GetShadowCorner() const
 
 UiPadding Shadow::GetCurrentShadowCorner() const
 {
-    if (IsSystemShadowEnabled()) {
-        //OS-provided shadow: no self-drawn shadow margin; the hit-test/snap
-        //logic must not reserve any edge for a shadow box
-        return UiPadding(0, 0, 0, 0);
-    }
     if (m_bShadowAttached && !m_isMaximized) {
         UiPadding rcShadowCorner = m_rcShadowCorner;
         ASSERT(m_pWindow != nullptr);
