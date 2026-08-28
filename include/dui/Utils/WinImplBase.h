@@ -144,14 +144,23 @@ private:
     */
     void BindCaptionButtons();
 
-#ifdef DUI_BUILD_FOR_MACOS
-    /** On macOS only: restyle the caption bar to match the native macOS title
-     *  bar — hide the custom window buttons (replaced by the self-drawn
-     *  traffic lights), use the macOS title bar color and leave a gutter for
-     *  the traffic lights. Called from OnInitWindow; no-op on other platforms.
+    /** Common caption-button binding shared by all non-macOS platforms.
      */
-    void ApplyMacCaptionBar();
+    void BindCaptionButtons_Default();
 
+#if defined(DUI_BUILD_FOR_WIN)
+    void BindCaptionButtons_Windows();
+#elif defined(DUI_BUILD_FOR_MACOS)
+    /** macOS version also inserts the self-drawn traffic lights.
+     */
+    void BindCaptionButtons_MacOS();
+#elif defined(DUI_BUILD_FOR_LINUX)
+    void BindCaptionButtons_Linux();
+#elif defined(DUI_BUILD_FOR_FREEBSD)
+    void BindCaptionButtons_FreeBSD();
+#endif
+
+#ifdef DUI_BUILD_FOR_MACOS
     /** Handle a click on the self-drawn macOS traffic lights
      *  (close/minimize/green-fullscreen).
      */

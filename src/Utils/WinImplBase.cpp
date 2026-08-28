@@ -29,6 +29,21 @@ void WindowImplBase::PreInitWindow()
 
 void WindowImplBase::BindCaptionButtons()
 {
+#if defined(DUI_BUILD_FOR_WIN)
+    BindCaptionButtons_Windows();
+#elif defined(DUI_BUILD_FOR_MACOS)
+    BindCaptionButtons_MacOS();
+#elif defined(DUI_BUILD_FOR_LINUX)
+    BindCaptionButtons_Linux();
+#elif defined(DUI_BUILD_FOR_FREEBSD)
+    BindCaptionButtons_FreeBSD();
+#else
+    BindCaptionButtons_Default();
+#endif
+}
+
+void WindowImplBase::BindCaptionButtons_Default()
+{
     if (m_bCaptionButtonsBound || IsUseSystemCaption()) {
         return;
     }
@@ -100,6 +115,86 @@ void WindowImplBase::BindCaptionButtons()
     }
 }
 
+#if defined(DUI_BUILD_FOR_WIN)
+void WindowImplBase::BindCaptionButtons_Windows()
+{
+    BindCaptionButtons_Default();
+}
+#elif defined(DUI_BUILD_FOR_MACOS)
+void WindowImplBase::BindCaptionButtons_MacOS()
+{
+    BindCaptionButtons_Default();
+    if (IsUseSystemCaption() || (GetRoot() == nullptr)) {
+        return;
+    }
+    if (m_pMacTrafficLights != nullptr) {
+        //Already applied (called from OnInitLayout and/or OnInitWindow).
+        return;
+    }
+    //The self-drawn traffic lights replace the custom window buttons, so hide
+    //the XML/code-declared caption buttons.
+    const DString captionButtonNames[] = {
+        DUI_CTR_BUTTON_CLOSE,
+        DUI_CTR_BUTTON_MIN,
+        DUI_CTR_BUTTON_MAX,
+        DUI_CTR_BUTTON_RESTORE,
+        DUI_CTR_BUTTON_FULLSCREEN,
+    };
+    for (const DString& strButtonName : captionButtonNames) {
+        Control* pButton = FindControl(strButtonName);
+        if (pButton != nullptr) {
+            pButton->SetVisible(false);
+        }
+    }
+    Control* pCaptionBar = FindControl(DUI_CTR_CAPTION_BAR);
+    if (pCaptionBar == nullptr) {
+        return;
+    }
+    //macOS title bar: white background, 3pt thinner than the XML height
+    //(36pt) to match the compact macOS-style caption bar.
+    pCaptionBar->SetBkColor(_T("#FFFFFFFF"));
+    pCaptionBar->SetFixedHeight(UiFixedInt(33), true, true);
+    //No extra macOS title-bar separator line: the examples use a clean
+    //caption bar without a visible border line.
+    pCaptionBar->SetBorderSize(UiRectF(0.0f, 0.0f, 0.0f, 0.0f), true);
+
+    //Match the window caption (drag) region to the thinner bar.
+    UiRect rcCaption = GetCaptionRect();
+    rcCaption.bottom = Dpi().GetScaleInt(33);
+    SetCaptionRect(rcCaption, false);
+
+    //Insert the self-drawn traffic lights at the far left of the caption bar.
+    //The control's fixed 76pt width also acts as the left gutter, so the rest
+    //of the caption content (logo/title/buttons) shifts right like a native
+    //macOS title bar.
+    Box* pCaptionBox = dynamic_cast<Box*>(pCaptionBar);
+    if (pCaptionBox != nullptr) {
+        MacTrafficLights* pTrafficLights = new MacTrafficLights(this);
+        pTrafficLights->SetName(_T("mac_traffic_lights"));
+        pTrafficLights->SetFixedWidth(UiFixedInt(76), true, true);
+        pTrafficLights->SetFixedHeight(UiFixedInt(33), true, true);
+        if (pCaptionBox->AddItemAt(pTrafficLights, 0)) {
+            pTrafficLights->AttachClick(
+                UiBind(&WindowImplBase::OnMacTrafficLightsClick, this, std::placeholders::_1));
+            m_pMacTrafficLights = pTrafficLights;
+        }
+        else {
+            delete pTrafficLights;
+        }
+    }
+}
+#elif defined(DUI_BUILD_FOR_LINUX)
+void WindowImplBase::BindCaptionButtons_Linux()
+{
+    BindCaptionButtons_Default();
+}
+#elif defined(DUI_BUILD_FOR_FREEBSD)
+void WindowImplBase::BindCaptionButtons_FreeBSD()
+{
+    BindCaptionButtons_Default();
+}
+#endif
+
 DString WindowImplBase::GetSkinFolder()
 {
     return BaseClass::GetSkinFolder();
@@ -123,10 +218,6 @@ void WindowImplBase::OnInitWindow()
     // derived class's OnInitWindow, so PreInitWindow could not find the caption
     // buttons yet. Bind them now (BindCaptionButtons is idempotent).
     BindCaptionButtons();
-
-#ifdef DUI_BUILD_FOR_MACOS
-    ApplyMacCaptionBar();
-#endif
 }
 
 void WindowImplBase::OnInitLayout()
@@ -134,12 +225,9 @@ void WindowImplBase::OnInitLayout()
     BaseClass::OnInitLayout();
 
     // Some win-adjusted example overrides do not call WindowImplBase::OnInitWindow(),
-    // so also bind/apply the macOS title-bar style from OnInitLayout. This is
-    // idempotent: BindCaptionButtons and ApplyMacCaptionBar both no-op when done.
+    // so also bind/apply the platform title-bar style from OnInitLayout. This is
+    // idempotent: BindCaptionButtons no-ops once the work is done.
     BindCaptionButtons();
-#ifdef DUI_BUILD_FOR_MACOS
-    ApplyMacCaptionBar();
-#endif
 }
 
 void WindowImplBase::OnPreCloseWindow()
@@ -338,68 +426,6 @@ bool WindowImplBase::IsPtInMaximizeRestoreButton(const UiPoint& pt) const
 }
 
 #ifdef DUI_BUILD_FOR_MACOS
-void WindowImplBase::ApplyMacCaptionBar()
-{
-    if (IsUseSystemCaption() || (GetRoot() == nullptr)) {
-        return;
-    }
-    if (m_pMacTrafficLights != nullptr) {
-        //Already applied (called from OnInitLayout and/or OnInitWindow).
-        return;
-    }
-    //The self-drawn traffic lights replace the custom window buttons, so hide
-    //the XML/code-declared caption buttons.
-    const DString captionButtonNames[] = {
-        DUI_CTR_BUTTON_CLOSE,
-        DUI_CTR_BUTTON_MIN,
-        DUI_CTR_BUTTON_MAX,
-        DUI_CTR_BUTTON_RESTORE,
-        DUI_CTR_BUTTON_FULLSCREEN,
-    };
-    for (const DString& strButtonName : captionButtonNames) {
-        Control* pButton = FindControl(strButtonName);
-        if (pButton != nullptr) {
-            pButton->SetVisible(false);
-        }
-    }
-    Control* pCaptionBar = FindControl(DUI_CTR_CAPTION_BAR);
-    if (pCaptionBar == nullptr) {
-        return;
-    }
-    //macOS title bar: white background, 3pt thinner than the XML height
-    //(36pt) to match the compact macOS-style caption bar.
-    pCaptionBar->SetBkColor(_T("#FFFFFFFF"));
-    pCaptionBar->SetFixedHeight(UiFixedInt(33), true, true);
-    //No extra macOS title-bar separator line: the examples use a clean
-    //caption bar without a visible border line.
-    pCaptionBar->SetBorderSize(UiRectF(0.0f, 0.0f, 0.0f, 0.0f), true);
-
-    //Match the window caption (drag) region to the thinner bar.
-    UiRect rcCaption = GetCaptionRect();
-    rcCaption.bottom = Dpi().GetScaleInt(33);
-    SetCaptionRect(rcCaption, false);
-
-    //Insert the self-drawn traffic lights at the far left of the caption bar.
-    //The control's fixed 76pt width also acts as the left gutter, so the rest
-    //of the caption content (logo/title/buttons) shifts right like a native
-    //macOS title bar.
-    Box* pCaptionBox = dynamic_cast<Box*>(pCaptionBar);
-    if (pCaptionBox != nullptr) {
-        MacTrafficLights* pTrafficLights = new MacTrafficLights(this);
-        pTrafficLights->SetName(_T("mac_traffic_lights"));
-        pTrafficLights->SetFixedWidth(UiFixedInt(76), true, true);
-        pTrafficLights->SetFixedHeight(UiFixedInt(33), true, true);
-        if (pCaptionBox->AddItemAt(pTrafficLights, 0)) {
-            pTrafficLights->AttachClick(
-                UiBind(&WindowImplBase::OnMacTrafficLightsClick, this, std::placeholders::_1));
-            m_pMacTrafficLights = pTrafficLights;
-        }
-        else {
-            delete pTrafficLights;
-        }
-    }
-}
-
 bool WindowImplBase::OnMacTrafficLightsClick(const EventArgs& args)
 {
     Control* pSender = args.GetSender();
