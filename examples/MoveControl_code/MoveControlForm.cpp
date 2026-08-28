@@ -14,7 +14,9 @@ MoveControlForm::~MoveControlForm()
 
 DString MoveControlForm::GetSkinFolder()
 {
-    return _T("");
+    // Pure code mode: no layout XML is loaded, but the skin folder is kept as
+    // the window's resource path so that image paths can still be resolved.
+    return _T("move_control");
 }
 
 DString MoveControlForm::GetSkinFile()
@@ -132,6 +134,13 @@ void MoveControlForm::BuildUI()
 
 void MoveControlForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
@@ -161,4 +170,5 @@ void MoveControlForm::OnInitWindow()
             m_my_app->AddItem(pAppUi);
         }
     }
+    BaseClass::OnInitWindow();
 }
