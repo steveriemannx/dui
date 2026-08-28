@@ -47,7 +47,80 @@ void MainForm::OnInitWindow()
             pXmlFileLoadResult->SetText(_T("OK"));
         }
     }
-    pXmlBox->AddLoadXmlCallback([this, pXmlBox, pXmlFilePath, pXmlFileLoadResult](const ui::FilePath& xmlPath, bool bSuccess) {
+
+    auto FillSourceEdits = [pXmlBox]() {
+        std::vector<uint8_t> xmlData;
+        if (ui::FileUtil::ReadFileData(pXmlBox->GetXmlFileFullPath(), xmlData) && !xmlData.empty()) {
+            std::wstring xmlTextW;
+            if (ui::StringCharset::GetDataAsString((const char*)xmlData.data(), (uint32_t)xmlData.size(), xmlTextW)) {
+                DString xmlText = ui::StringConvert::WStringToT(xmlTextW);
+                ui::RichEdit* pSourceEdit = dynamic_cast<ui::RichEdit*>(pXmlBox->FindSubControl(_T("edit")));
+                if (pSourceEdit != nullptr) {
+                    pSourceEdit->SetText(xmlText);
+                }
+                pSourceEdit = dynamic_cast<ui::RichEdit*>(pXmlBox->FindSubControl(_T("edit2")));
+                if (pSourceEdit != nullptr) {
+                    pSourceEdit->SetText(xmlText);
+                }
+            }
+        }
+    };
+    FillSourceEdits();
+
+    auto FillDemoCombos = [pXmlBox]() {
+        ui::Combo* pCombo = dynamic_cast<ui::Combo*>(pXmlBox->FindSubControl(_T("combo")));
+        if ((pCombo != nullptr) && (pCombo->GetCount() == 0)) {
+            ui::TreeView* pTreeView = pCombo->GetTreeView();
+            ui::TreeNode* pTreeNode = pTreeView->GetRootNode();
+            for (int32_t i = 0; i < 10; ++i) {
+                ui::TreeNode* node = new ui::TreeNode(pXmlBox->GetWindow());
+                node->SetClass(_T("tree_node"));
+                node->SetText(ui::StringUtil::Printf(_T("ui::Combo::TreeNode %d"), i));
+                pTreeNode->AddChildNode(node);
+            }
+            // Adding items can create a hidden popup window; make sure it is
+            // closed so it does not linger behind the preview and intercept
+            // clicks.
+            if (pCombo->GetComboWnd() != nullptr) {
+                pCombo->GetComboWnd()->CloseWnd();
+            }
+        }
+
+        ui::FilterCombo* pFilterCombo = dynamic_cast<ui::FilterCombo*>(pXmlBox->FindSubControl(_T("filter_combo")));
+        if ((pFilterCombo != nullptr) && (pFilterCombo->GetCount() == 0)) {
+            for (int32_t i = 0; i < 10; ++i) {
+                pFilterCombo->AddTextItem(ui::StringUtil::Printf(_T("Item %d FilterCombo"), i));
+            }
+        }
+
+        ui::CheckCombo* pCheckCombo = dynamic_cast<ui::CheckCombo*>(pXmlBox->FindSubControl(_T("check_combo")));
+        if ((pCheckCombo != nullptr) && (pCheckCombo->GetItemCount() == 0)) {
+            pCheckCombo->AddTextItem(_T("Monday"));
+            pCheckCombo->AddTextItem(_T("Tuesday"));
+            pCheckCombo->AddTextItem(_T("Wednesday"));
+            pCheckCombo->AddTextItem(_T("Thursday"));
+            pCheckCombo->AddTextItem(_T("Friday"));
+            pCheckCombo->AddTextItem(_T("Saturday"));
+            pCheckCombo->AddTextItem(_T("Sunday"));
+        }
+    };
+    FillDemoCombos();
+
+    auto FillDemoList = [pXmlBox]() {
+        ui::ListBox* pList = dynamic_cast<ui::ListBox*>(pXmlBox->FindSubControl(_T("list")));
+        if ((pList != nullptr) && (pList->GetItemCount() <= 1)) {
+            for (int32_t i = 0; i < 30; ++i) {
+                ui::ListBoxItem* item = new ui::ListBoxItem(pXmlBox->GetWindow());
+                item->SetClass(_T("listitem"));
+                item->SetText(ui::StringUtil::Printf(_T("ui::VListBox::ListBoxItem %d"), i));
+                item->SetFixedHeight(ui::UiFixedInt(20), true, true);
+                pList->AddItem(item);
+            }
+        }
+    };
+    FillDemoList();
+
+    pXmlBox->AddLoadXmlCallback([this, pXmlBox, pXmlFilePath, pXmlFileLoadResult, FillSourceEdits, FillDemoCombos, FillDemoList](const ui::FilePath& xmlPath, bool bSuccess) {
             if (bSuccess) {
                 m_xmlFilePath = pXmlBox->GetXmlFileFullPath();
                 if (pXmlFilePath != nullptr) {
@@ -56,6 +129,9 @@ void MainForm::OnInitWindow()
                 if (pXmlFileLoadResult != nullptr) {
                     pXmlFileLoadResult->SetText(_T("OK"));
                 }
+                FillSourceEdits();
+                FillDemoCombos();
+                FillDemoList();
             }
             else {
                 if (pXmlFileLoadResult != nullptr) {
