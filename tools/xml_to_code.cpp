@@ -246,6 +246,21 @@ static void genAttrs(std::ostream& out, const std::string& var,
     }
 }
 
+// Format XML attributes as a ui::Create/ui::Attach initializer list.
+static std::string genAttrList(const pugi::xml_node& node) {
+    std::string s;
+    for (const auto& a : node.attributes()) {
+        std::string name = a.name();
+        std::string value = a.value();
+        if (name.empty() || value.empty()) continue;
+        if (name == "on_click" || name == "on_select" || name == "on_change") continue;
+        if (name == "class") trackClass(value);  // Track class usage for image embedding
+        if (!s.empty()) s += ", ";
+        s += "{_T(\"" + escapeCStr(name) + "\"), _T(\"" + escapeCStr(value) + "\")}";
+    }
+    return s;
+}
+
 static void genNode(std::ostream& out, const pugi::xml_node& node,
                     const std::string& parentVar, const std::string& parentTag, int depth) {
     std::string tag = nodeName(node);
@@ -307,24 +322,38 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
     }
 
     std::string var = "p" + std::to_string(g_varId++);
+    bool bAlreadyAttached = false;
 
     // Handle Virtual*ListBox variants (need Layout* in constructor)
     if (cls == "virtual_vtile") {
         out << "    ui::VirtualListBox* " << var
             << " = new ui::VirtualListBox(pWindow, new ui::VirtualVTileLayout);\n";
+        genAttrs(out, var, node);
     } else if (cls == "virtual_htile") {
         out << "    ui::VirtualListBox* " << var
             << " = new ui::VirtualListBox(pWindow, new ui::VirtualHTileLayout);\n";
+        genAttrs(out, var, node);
     } else if (cls == "virtual_v") {
         out << "    ui::VirtualListBox* " << var
             << " = new ui::VirtualListBox(pWindow, new ui::VirtualVLayout);\n";
+        genAttrs(out, var, node);
     } else if (cls == "virtual_h") {
         out << "    ui::VirtualListBox* " << var
             << " = new ui::VirtualListBox(pWindow, new ui::VirtualHLayout);\n";
+        genAttrs(out, var, node);
     } else {
-        out << "    " << cls << "* " << var << " = new " << cls << "(pWindow);\n";
+        std::string attrs = genAttrList(node);
+        bool bSpecialAdd = (tag == "TreeNode" || parentTag == "TreeView" ||
+                            parentTag == "TreeNode" || parentTag == "Combo");
+        if (parentVar.empty() || bSpecialAdd) {
+            out << "    auto* " << var << " = ui::Create<" << cls
+                << ">(pWindow, {" << attrs << "});\n";
+        } else {
+            out << "    auto* " << var << " = ui::Attach<" << cls
+                << ">(" << parentVar << ", {" << attrs << "});\n";
+            bAlreadyAttached = true;
+        }
     }
-    genAttrs(out, var, node);
 
     if (tag == "RichText") {
         // <RichText> content: inline XML parsed at runtime via the public
@@ -344,8 +373,9 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
         }
     }
 
-    // Add to parent (TreeNode nodes are added via AddChildNode, see WindowBuilder.cpp)
-    if (!parentVar.empty()) {
+    // Add to parent (TreeNode nodes are added via AddChildNode, see WindowBuilder.cpp).
+    // Nodes created with ui::Attach are already attached and must not be added again.
+    if (!parentVar.empty() && !bAlreadyAttached) {
         if (tag == "TreeNode") {
             if (parentTag == "TreeView") {
                 out << "        " << parentVar << "->GetRootNode()->AddChildNode(" << var << ");\n";
@@ -485,7 +515,8 @@ int main(int argc, char** argv) {
     out << "//   Other functions (templates, items) do NOT call AttachBox - the\n";
     out << "//   caller must add the root control to a parent container.\n";
     out << "///////////////////////////////////////////////////////////////////////////\n\n";
-    out << "#include \"dui/dui.h\"\n\n";
+    out << "#include \"dui/dui.h\"\n";
+    out << "#include \"dui/Utils/UiBuilder.h\"\n\n";
 
     bool hasWindowFunc = false;
     for (const auto& xmlFile : xmlFiles) {
