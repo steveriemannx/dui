@@ -79,6 +79,11 @@ public:
      */
     const FilePath& GetResourcePath() const;
 
+    /** Get the default theme resource path, used as the fallback when an overlay
+    *   theme is active (absolute path; empty when the active theme IS the default theme)
+     */
+    const FilePath& GetThemeDefaultPath() const;
+
     /** Reload the skin resources (dynamic skin changing can be implemented through this interface)
     * @param [in] resParam The resource related parameter, with the following options depending on the resource type
      *                      1. In the form of local files, all resources exist as local files
@@ -408,6 +413,12 @@ private:
     /** The global resource path, modified when changing the skin (absolute path)
     */
     FilePath m_resourcePath;
+
+    /** The default theme resource path; used as a fallback when an overlay theme
+    *   is active (e.g. "themes\macos26") and a resource is not present in it
+    *   (absolute path; empty when the active theme IS the default theme)
+    */
+    FilePath m_themeDefaultPath;
 
     /** Platform related data (an optional parameter; if not filled in, the default value nullptr is used)
     *   Windows platform: the module handle (HMODULE) where the resources are located; if nullptr, the handle of the current exe is used (optional parameter)

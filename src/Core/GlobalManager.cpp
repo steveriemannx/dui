@@ -28,7 +28,7 @@
 
 #include <filesystem>
 
-namespace ui 
+namespace ui
 {
 /** The worker thread inside the library
 */
@@ -304,6 +304,11 @@ const FilePath& GlobalManager::GetResourcePath() const
     return m_resourcePath;
 }
 
+const FilePath& GlobalManager::GetThemeDefaultPath() const
+{
+    return m_themeDefaultPath;
+}
+
 void GlobalManager::SetResourcePath(const FilePath& strPath)
 {
     m_resourcePath = strPath;
@@ -404,6 +409,24 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
 
     //Save the resource path
     SetResourcePath(FilePathUtil::JoinFilePath(strResourcePath, resParam.themePath));
+
+    //Overlay theme: remember the default theme root as the fallback when the
+    //active theme differs from the built-in default theme (e.g. "themes/macos26"
+    //falls back to "themes/default" for resources it does not override)
+    m_themeDefaultPath.Clear();
+    {
+#if defined (DUI_BUILD_FOR_WIN)
+        const DString defaultThemeName = _T("themes\\default");
+#else
+        const DString defaultThemeName = _T("themes/default");
+#endif
+        DString activeThemeName = resParam.themePath.ToString();
+        StringUtil::ReplaceAll(_T("\\"), _T("/"), activeThemeName);
+        if (activeThemeName != defaultThemeName) {
+            m_themeDefaultPath = FilePathUtil::JoinFilePath(strResourcePath, FilePath(defaultThemeName));
+            m_themeDefaultPath.NormalizeDirectoryPath();
+        }
+    }
 
     //Save the path of the font files
     SetFontFilePath(FilePathUtil::JoinFilePath(strResourcePath, resParam.fontFilePath));
@@ -671,34 +694,44 @@ FilePath GlobalManager::FindExistsResFullPath(const FilePath& windowResPath,
         }
     }
     else {
-        //A relative path: first search the resource directory of the window (high hit rate)
-        const FilePath windowResFullPath = FilePathUtil::JoinFilePath(GlobalManager::GetResourcePath(), windowResPath);        
-        if (IsResInPublicPath(resPath)) {
-            //Match from the public directory first
-            imageFullPath = FilePathUtil::JoinFilePath(GlobalManager::GetResourcePath(), resPath);
-            CheckImagePath(imageFullPath, bLocalPath);
-        }
-        if (imageFullPath.IsEmpty()) {
-            //Search the directory specified by the window
-            imageFullPath = FilePathUtil::JoinFilePath(windowResFullPath, resPath);
-            CheckImagePath(imageFullPath, bLocalPath);
-        }
-        if (imageFullPath.IsEmpty()) {
-            //Then search the public directory (high hit rate)
-            imageFullPath = FilePathUtil::JoinFilePath(GlobalManager::GetResourcePath(), resPath);
-            CheckImagePath(imageFullPath, bLocalPath);
-        }
-        if (imageFullPath.IsEmpty() && !windowXmlPath.IsEmpty()) {
-            //Finally search the directory where the XML file is located
-            const FilePath windowXmlFullPath = FilePathUtil::JoinFilePath(windowResFullPath, windowXmlPath);
-            imageFullPath = FilePathUtil::JoinFilePath(windowXmlFullPath, resPath);
-            CheckImagePath(imageFullPath, bLocalPath);
-
-            if (imageFullPath.IsEmpty()) {
-                const FilePath xmlFullPath = FilePathUtil::JoinFilePath(GlobalManager::GetResourcePath(), windowXmlPath);
-                imageFullPath = FilePathUtil::JoinFilePath(xmlFullPath, resPath);
+        //A relative path: first search the resource directory of the window (high hit rate);
+        // for an overlay theme, retry the same search against the default theme root
+        const FilePath resRoot = GlobalManager::GetResourcePath();
+        const FilePath defaultResRoot = GlobalManager::GetThemeDefaultPath();
+        auto searchInRoot = [&](const FilePath& root) -> FilePath {
+            const FilePath windowResFullPath = FilePathUtil::JoinFilePath(root, windowResPath);
+            if (IsResInPublicPath(resPath)) {
+                //Match from the public directory first
+                imageFullPath = FilePathUtil::JoinFilePath(root, resPath);
                 CheckImagePath(imageFullPath, bLocalPath);
             }
+            if (imageFullPath.IsEmpty()) {
+                //Search the directory specified by the window
+                imageFullPath = FilePathUtil::JoinFilePath(windowResFullPath, resPath);
+                CheckImagePath(imageFullPath, bLocalPath);
+            }
+            if (imageFullPath.IsEmpty()) {
+                //Then search the public directory (high hit rate)
+                imageFullPath = FilePathUtil::JoinFilePath(root, resPath);
+                CheckImagePath(imageFullPath, bLocalPath);
+            }
+            if (imageFullPath.IsEmpty() && !windowXmlPath.IsEmpty()) {
+                //Finally search the directory where the XML file is located
+                const FilePath windowXmlFullPath = FilePathUtil::JoinFilePath(windowResFullPath, windowXmlPath);
+                imageFullPath = FilePathUtil::JoinFilePath(windowXmlFullPath, resPath);
+                CheckImagePath(imageFullPath, bLocalPath);
+
+                if (imageFullPath.IsEmpty()) {
+                    const FilePath xmlFullPath = FilePathUtil::JoinFilePath(root, windowXmlPath);
+                    imageFullPath = FilePathUtil::JoinFilePath(xmlFullPath, resPath);
+                    CheckImagePath(imageFullPath, bLocalPath);
+                }
+            }
+            return imageFullPath;
+        };
+        imageFullPath = searchInRoot(resRoot);
+        if (imageFullPath.IsEmpty() && !defaultResRoot.IsEmpty() && defaultResRoot != resRoot) {
+            imageFullPath = searchInRoot(defaultResRoot);
         }
         if (!bWindows && imageFullPath.IsEmpty() && resPath.IsAbsolutePath()) {
             //Note: non-Windows absolute paths have the same form as relative paths, both starting with '/', so this check is placed last
