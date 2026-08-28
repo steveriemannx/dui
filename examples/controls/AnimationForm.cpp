@@ -85,6 +85,7 @@ void AnimationForm::OnInitWindow()
             return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 void AnimationForm::OnAnimationEvents(ui::EventType eventType, const ui::ImageAnimationStatus& status)

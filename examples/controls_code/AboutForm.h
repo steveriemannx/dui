@@ -6,6 +6,7 @@
 
 class AboutForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     AboutForm();
     virtual ~AboutForm() override;

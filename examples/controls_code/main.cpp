@@ -20,9 +20,9 @@ private:
         resourcePath += _T("resources\\");
         ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
-        // Create a centered window matching controls.xml
+        // Create a centered window with a default shadow
         ControlForm* window = new ControlForm();
-        ui::WindowCreateParam createParam(_T("controls"), true);
+                ui::WindowCreateParam createParam(_T("controls"), true);
         createParam.m_nWidth = 1100;
         createParam.m_nHeight = 800;
         window->CreateWnd(nullptr, createParam);

@@ -26,12 +26,29 @@ public:
     */
     virtual void OnCloseWindow() override;
 
+    /** Called when the window is minimized; close popup menus so they don't float.
+    */
+    virtual void OnWindowMinimized() override;
+
+    /** Close popup menus when clicking outside them.
+    */
+    virtual LRESULT OnMouseLButtonDownMsg(const ui::UiPoint& pt, uint32_t modifierKey, const ui::NativeMsg& nativeMsg, bool& bHandled) override;
+    virtual LRESULT OnMouseRButtonDownMsg(const ui::UiPoint& pt, uint32_t modifierKey, const ui::NativeMsg& nativeMsg, bool& bHandled) override;
+
 private:
 
     /** Show the menu
     * @param [in] point Display position coordinates, in screen coordinates
     */
     void ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedControl);
+
+    /** Show the About window (used by the native settings menu).
+    */
+    void ShowAboutWindow();
+
+    /** C callback used by the native menu's About item.
+    */
+    static void OnNativeMenuAbout(void* userData);
 
     /** Register edit box events
     */

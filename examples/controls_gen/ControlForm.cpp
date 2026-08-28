@@ -38,6 +38,7 @@ void ControlForm::OnInitWindow()
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
@@ -209,7 +210,11 @@ void ControlForm::OnInitWindow()
         pRichText->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-                ui::SystemUtil::ShowMessageBox(this, url, _T("RichText Click HyperLink"));
+                DString link(url);
+                if (link.find(_T("://")) == DString::npos) {
+                    link = _T("http://") + link;
+                }
+                ui::SystemUtil::OpenUrl(link);
             }
             return true;
             });
@@ -221,7 +226,11 @@ void ControlForm::OnInitWindow()
         pHyperLink->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-                ui::SystemUtil::ShowMessageBox(this, url, _T("HyperLink Click HyperLink"));
+                DString link(url);
+                if (link.find(_T("://")) == DString::npos) {
+                    link = _T("http://") + link;
+                }
+                ui::SystemUtil::OpenUrl(link);
             }
             return true;
             });
@@ -323,6 +332,7 @@ void ControlForm::OnInitWindow()
             return true;
         });
     }
+    BaseClass::OnInitWindow();
 }
 
 void ControlForm::OnCloseWindow()
@@ -503,18 +513,20 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
 {
     ui::Menu* menu = new ui::Menu(this, pRelatedControl);//A parent window is required, otherwise the program status bar becomes inactive when the menu pops up
     //Pure code menu: no XML template, menu items are added by code (corresponds to settings_menu.xml)
-    menu->ShowMenu(_T(""), point);
+    menu->ShowMenu(_T(""), point, ui::MenuPopupPosType::LEFT_TOP, true);
+    menu->SetResourcePath(GetResourcePath());
+    menu->SetSkinFolder(GetResourcePath().ToString());
     {
         //First-level menu item 1
         ui::MenuItem* pFirst = new ui::MenuItem(menu);
         pFirst->SetClass(_T("menu_element"));
         pFirst->SetName(_T("first"));
-        pFirst->SetFixedWidth(ui::UiFixedInt(180), true, true);
+        pFirst->SetFixedWidth(ui::UiFixedInt(240), true, true);
         ui::Button* pBtn01 = new ui::Button(menu);
         pBtn01->SetName(_T("button_01"));
         pBtn01->SetAttribute(_T("width"), _T("auto"));
         pBtn01->SetAttribute(_T("height"), _T("auto"));
-        pBtn01->SetBkImage(_T("file='menu_settings.svg'valign='center' halign='center'"));
+        pBtn01->SetBkImage(_T("file='menu/menu_settings.svg'valign='center' halign='center'"));
         pBtn01->SetAttribute(_T("valign"), _T("center"));
         pBtn01->SetAttribute(_T("mouse_enabled"), _T("false"));
         pBtn01->SetAttribute(_T("keyboard_enabled"), _T("false"));
@@ -532,7 +544,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
         ui::MenuItem* pSecond = new ui::MenuItem(menu);
         pSecond->SetClass(_T("menu_element"));
         pSecond->SetName(_T("second"));
-        pSecond->SetFixedWidth(ui::UiFixedInt(180), true, true);
+        pSecond->SetFixedWidth(ui::UiFixedInt(240), true, true);
         ui::Label* pLbl02 = new ui::Label(menu);
         pLbl02->SetClass(_T("menu_text"));
         pLbl02->SetText(_T("Menu Item 2 (Level 1)"));
@@ -556,7 +568,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
         ui::Control* pSpeaker = new ui::Control(menu);
         pSpeaker->SetAttribute(_T("width"), _T("auto"));
         pSpeaker->SetAttribute(_T("height"), _T("auto"));
-        pSpeaker->SetBkImage(_T("file='menu_speaker.svg' valign='center' halign='center'"));
+        pSpeaker->SetBkImage(_T("file='menu/menu_speaker.svg' valign='center' halign='center'"));
         pSpeaker->SetAttribute(_T("valign"), _T("center"));
         pSpeaker->SetAttribute(_T("mouse_enabled"), _T("false"));
         pSpeaker->SetAttribute(_T("keyboard_enabled"), _T("false"));
@@ -580,7 +592,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
         ui::MenuItem* pThird = new ui::MenuItem(menu);
         pThird->SetClass(_T("menu_element"));
         pThird->SetName(_T("third"));
-        pThird->SetFixedWidth(ui::UiFixedInt(180), true, true);
+        pThird->SetFixedWidth(ui::UiFixedInt(240), true, true);
         ui::Label* pLbl03 = new ui::Label(menu);
         pLbl03->SetClass(_T("menu_text"));
         pLbl03->SetText(_T("Menu Item 3 (Level 1)"));
@@ -594,12 +606,12 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
         ui::MenuItem* pFourth = new ui::MenuItem(menu);
         pFourth->SetClass(_T("menu_element"));
         pFourth->SetName(_T("fourth"));
-        pFourth->SetFixedWidth(ui::UiFixedInt(180), true, true);
+        pFourth->SetFixedWidth(ui::UiFixedInt(240), true, true);
         ui::Button* pBtn04 = new ui::Button(menu);
         pBtn04->SetName(_T("button_04"));
         pBtn04->SetAttribute(_T("width"), _T("auto"));
         pBtn04->SetAttribute(_T("height"), _T("auto"));
-        pBtn04->SetBkImage(_T("sub_menu.svg"));
+        pBtn04->SetBkImage(_T("menu/sub_menu.svg"));
         pBtn04->SetAttribute(_T("valign"), _T("center"));
         pBtn04->SetAttribute(_T("mouse_enabled"), _T("false"));
         pBtn04->SetAttribute(_T("keyboard_enabled"), _T("false"));
@@ -615,12 +627,12 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
         ui::MenuItem* pSub0 = new ui::MenuItem(menu);
         pSub0->SetClass(_T("menu_element"));
         pSub0->SetName(_T("sub_menu0"));
-        pSub0->SetFixedWidth(ui::UiFixedInt(180), true, true);
+        pSub0->SetFixedWidth(ui::UiFixedInt(240), true, true);
         ui::Button* pBtn44 = new ui::Button(menu);
         pBtn44->SetName(_T("button_44"));
         pBtn44->SetAttribute(_T("width"), _T("auto"));
         pBtn44->SetAttribute(_T("height"), _T("auto"));
-        pBtn44->SetBkImage(_T("menu_item.svg"));
+        pBtn44->SetBkImage(_T("menu/menu_item.svg"));
         pBtn44->SetAttribute(_T("valign"), _T("center"));
         pBtn44->SetAttribute(_T("mouse_enabled"), _T("false"));
         pBtn44->SetAttribute(_T("keyboard_enabled"), _T("false"));
@@ -638,13 +650,13 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
             ui::MenuItem* pSub = new ui::MenuItem(menu);
             pSub->SetClass(_T("menu_element"));
             pSub->SetName(ui::StringUtil::Printf(_T("sub_menu%d"), i));
-            pSub->SetFixedWidth(ui::UiFixedInt(180), true, true);
+            pSub->SetFixedWidth(ui::UiFixedInt(240), true, true);
             if (i == 4) {
                 ui::Button* pBtn05 = new ui::Button(menu);
                 pBtn05->SetName(_T("button_05"));
                 pBtn05->SetAttribute(_T("width"), _T("auto"));
                 pBtn05->SetAttribute(_T("height"), _T("auto"));
-                pBtn05->SetBkImage(_T("sub_menu.svg"));
+                pBtn05->SetBkImage(_T("menu/sub_menu.svg"));
                 pBtn05->SetAttribute(_T("valign"), _T("center"));
                 pBtn05->SetAttribute(_T("mouse_enabled"), _T("false"));
                 pBtn05->SetAttribute(_T("keyboard_enabled"), _T("false"));
@@ -652,7 +664,11 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
             }
             ui::Label* pLblSub = new ui::Label(menu);
             pLblSub->SetClass(_T("menu_text"));
-            pLblSub->SetText(ui::StringUtil::Printf(_T("Menu Item %d (Level 2)"), i));
+            if (i == 4) {
+                pLblSub->SetText(_T("Sub Menu"));
+            } else {
+                pLblSub->SetText(ui::StringUtil::Printf(_T("Menu Item %d (Level 2)"), i));
+            }
             pLblSub->SetAttribute(_T("margin"), _T("30,0,0,0"));
             pLblSub->SetAttribute(_T("mouse_enabled"), _T("false"));
             pLblSub->SetAttribute(_T("keyboard_enabled"), _T("false"));
@@ -663,7 +679,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
                     ui::MenuItem* pSubSub = new ui::MenuItem(menu);
                     pSubSub->SetClass(_T("menu_element"));
                     pSubSub->SetName(ui::StringUtil::Printf(_T("sub_sub_menu%d"), j));
-                    pSubSub->SetFixedWidth(ui::UiFixedInt(180), true, true);
+                    pSubSub->SetFixedWidth(ui::UiFixedInt(240), true, true);
                     ui::Label* pLblSubSub = new ui::Label(menu);
                     pLblSubSub->SetClass(_T("menu_text"));
                     pLblSubSub->SetText(ui::StringUtil::Printf(_T("Menu Item %d (Level 3)"), j));
@@ -692,7 +708,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
             ui::MenuItem* pCheck = new ui::MenuItem(menu);
             pCheck->SetClass(_T("menu_element"));
             pCheck->SetName(ui::StringUtil::Printf(_T("menu_check_%02d"), i));
-            pCheck->SetFixedWidth(ui::UiFixedInt(180), true, true);
+            pCheck->SetFixedWidth(ui::UiFixedInt(240), true, true);
             ui::CheckBox* pCheckBox = new ui::CheckBox(menu);
             pCheckBox->SetClass(_T("menu_checkbox"));
             pCheckBox->SetName(ui::StringUtil::Printf(_T("menu_checkbox_%02d"), i));
@@ -725,7 +741,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
         pBtn06->SetName(_T("button_06"));
         pBtn06->SetAttribute(_T("width"), _T("auto"));
         pBtn06->SetAttribute(_T("height"), _T("auto"));
-        pBtn06->SetBkImage(_T("menu_about.svg"));
+        pBtn06->SetBkImage(_T("menu/menu_about.svg"));
         pBtn06->SetAttribute(_T("valign"), _T("center"));
         pBtn06->SetAttribute(_T("mouse_enabled"), _T("false"));
         pBtn06->SetAttribute(_T("keyboard_enabled"), _T("false"));
@@ -746,7 +762,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
         ui::MenuItem* menu_item = new ui::MenuItem(menu);
         menu_item->SetText(_T("Dynamically created"));
         menu_item->SetClass(_T("menu_element"));
-        menu_item->SetFixedWidth(ui::UiFixedInt(180), true, true);
+        menu_item->SetFixedWidth(ui::UiFixedInt(240), true, true);
         menu_item->SetFontId(_T("system_14"));
         menu_item->SetTextPadding({ 20, 0, 20, 0 }, true);
         menu_fourth->AddSubMenuItemAt(menu_item, 1);//After adding, the resource is managed by the menu
@@ -817,7 +833,7 @@ void ControlForm::LoadRichEditData()
     
     ui::FilePath controls_xml = ui::GlobalManager::Instance().GetResourcePath();
     controls_xml += GetResourcePath();
-    controls_xml += GetSkinFile();
+    controls_xml += _T("controls.xml");
 
     //XML files are loaded in UTF-8 encoding
     std::string xml;
@@ -937,7 +953,7 @@ void ControlForm::ShowTrayMenu(int32_t x, int32_t y)
     ui::Window* pParentWnd = IsWindowVisible() ? this : nullptr;//When the window is hidden, do not set the parent window to avoid the menu not being displayed
     ui::Menu* menu = new ui::Menu(pParentWnd, nullptr);
     //Pure code menu: no XML template, menu items are added by code (corresponds to tray_menu.xml)
-    menu->ShowMenu(_T(""), ui::UiPoint(x, y));
+    menu->ShowMenu(_T(""), ui::UiPoint(x, y), ui::MenuPopupPosType::LEFT_TOP, true);
     {
         struct TrayItem { DString name; DString text; };
         const TrayItem items[] = {

@@ -27,6 +27,7 @@ void TestForm::OnInitWindow()
                 OnTimer();
             }),
         100);
+    BaseClass::OnInitWindow();
 }
 
 void TestForm::OnTimer()

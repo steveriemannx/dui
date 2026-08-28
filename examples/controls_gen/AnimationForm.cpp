@@ -172,6 +172,14 @@ void AnimationForm::BuildUI()
 
 void AnimationForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
+
     BuildUI();
 
     //Bind animation playback related events
@@ -238,6 +246,7 @@ void AnimationForm::OnInitWindow()
             return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 void AnimationForm::OnAnimationEvents(ui::EventType eventType, const ui::ImageAnimationStatus& status)
