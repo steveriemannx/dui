@@ -224,6 +224,14 @@ enum VirtualKeyCode
         static SDL_Keycode GetSDLKeyCode(VirtualKeyCode vkCode);
     };
 
+#elif defined(DUI_BUILD_FOR_MACOS)
+
+    /** macOS native: convert an AppKit (Carbon) virtual keycode to ui::VirtualKeyCode
+    * @param [in] nativeKeyCode The keyCode from NSEvent
+    * @return The corresponding ui::VirtualKeyCode, or kVK_None if unmapped
+    */
+    DUI_API VirtualKeyCode GetVirtualKeyCodeFromNativeKeyCode(uint16_t nativeKeyCode);
+
 #endif
 
 } // namespace ui
