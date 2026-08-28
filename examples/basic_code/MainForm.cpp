@@ -38,18 +38,9 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_rcCaption = UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
 
-    // Shadow nine-patch parameters, corresponding to shadow_type="default" in
-    // basic.xml (WindowBuilder adds the shadow corner to the size).
-    Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDefault;
-    UiSize szBorderRound;
-    UiPadding rcShadowCorner;
-    DString shadowImage;
-    if (Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage)) {
-        attrs.m_rcShadowCorner = rcShadowCorner;
-        attrs.m_szInitSize.cx += rcShadowCorner.left + rcShadowCorner.right;
-        attrs.m_szInitSize.cy += rcShadowCorner.top + rcShadowCorner.bottom;
-    }
-
+    // The XML basic.xml uses size="75%,75%" with a system shadow, so no
+    // self-drawn shadow corner should be added here. Keeping the size exactly
+    // in sync with the XML window is what main-mac expects.
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 

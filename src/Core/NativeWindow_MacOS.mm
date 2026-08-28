@@ -753,6 +753,18 @@ bool NativeWindow_MacOS::CreateWnd(NativeWindow_MacOS* pParentWindow,
         m_createParam.m_dwStyle = kWS_OVERLAPPEDWINDOW;
     }
 
+    // Honor the initial size from WindowCreateAttributes (set by pure-code and
+    // generated-code forms). Without this, macOS would fall back to 800x600
+    // instead of the XML-matched size.
+    if (createAttributes.m_bInitSizeDefined) {
+        if (createAttributes.m_szInitSize.cx > 0) {
+            m_createParam.m_nWidth = createAttributes.m_szInitSize.cx;
+        }
+        if (createAttributes.m_szInitSize.cy > 0) {
+            m_createParam.m_nHeight = createAttributes.m_szInitSize.cy;
+        }
+    }
+
     if (!CreateWindowAndRender(nullptr, createAttributes)) {
         return false;
     }
