@@ -162,9 +162,5 @@ const ui::DpiInitParam& App::GetDpiInitParam() const
 
 // On macOS the entry point is provided by main_macos.mm (Objective-C++ for CEF)
 #if !defined(__APPLE__)
-int main(int argc, char** argv)
-{
-    return App::Instance().Run(argc, argv);
-}
-
+DUI_APP_ENTRY_ARGS(App)
 #endif

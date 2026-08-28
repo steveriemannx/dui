@@ -1,4 +1,4 @@
-﻿#include "Item.h"
+#include "Item.h"
 #include "DataProvider.h"
 #include <chrono>
 
@@ -15,7 +15,9 @@ Item::Item(ui::Window* pWindow):
     //Build the subtree bottom-up, matching how item.xml is loaded: a container is
     //attached only after its children are populated, and the item root's own
     //class/height attributes are applied last.
-    auto* pRow = ui::Create<ui::HBox>(pWindow, {{_T("mouse_enabled"), _T("false")}, {_T("padding"), _T("10,5,10,5")}});
+    ui::HBox* pRow = new ui::HBox(pWindow);
+    pRow->SetAttribute(_T("mouse_enabled"), _T("false"));
+    pRow->SetAttribute(_T("padding"), _T("10,5,10,5"));
 
     // Build the child controls, but keep the member pointers null until
     // InitSubControls() finds them, exactly like the item.xml-loaded Item:

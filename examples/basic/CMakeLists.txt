@@ -18,5 +18,4 @@ set(DUI_WINRES_FILE_NAME "${PROJECT_NAME}.rc")
 
 # Include the common implementation
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
-
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

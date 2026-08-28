@@ -214,6 +214,7 @@ void BrowserForm::OnInitWindow()
     if (pButton != nullptr) {
         pButton->SetVisible(false);
     }
+    BaseClass::OnInitWindow();
 }
 
 void BrowserForm::OnCloseWindow()

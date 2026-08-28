@@ -58,7 +58,8 @@ void MainForm::PreInitWindow()
 
     // No layout XML is loaded, so Window::ParseWindowXml attempted to load an
     // empty XML and reset the window resource sub-path; restore it now so image
-    // paths resolve from the "dpi_aware" folder.
+    // paths resolve from the "dpi_aware" folder (themes/<theme>/dpi_aware/...,
+    // falling back to themes/default/dpi_aware/).
     SetResourcePath(ui::FilePath(_T("dpi_aware")));
     SetWindowMinimumSize(ui::UiSize(80, 50), true);
 }
@@ -71,6 +72,7 @@ void MainForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
+
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);

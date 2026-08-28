@@ -5,6 +5,7 @@
 
 class MoveControlForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     MoveControlForm(const DString& theme_directory, const DString& layout_xml);
     virtual ~MoveControlForm() override;

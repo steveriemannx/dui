@@ -1,4 +1,4 @@
-﻿#include "MainForm.h"
+#include "MainForm.h"
 #include "ChildWindowPaint.h"
 #include "MyChildWindowEvents.h"
 
@@ -62,109 +62,160 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
-void MainForm::PreInitWindow()
-{
-    BaseClass::PreInitWindow();
-    //Use the GPU (Metal) render backend on macOS, matching the XML example.
-    SetRenderBackendType(ui::RenderBackendType::kMetal_BackendType);
-}
-
 void MainForm::BuildUI()
 {
     // Corresponding to the child_window.xml layout
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
+    ui::VBox* pRoot = new ui::VBox(this);
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
+    ui::HBox* pCaption = new ui::HBox(this);
+    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
+    pCaption->SetAttribute(_T("width"), _T("stretch"));
+    pCaption->SetAttribute(_T("height"), _T("36"));
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    auto* pCaptionLeft = ui::Create<ui::HBox>(this, {{_T("margin"), _T("0,0,30,0")}, {_T("valign"), _T("center")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}});
+    ui::HBox* pCaptionLeft = new ui::HBox(this);
+    pCaptionLeft->SetAttribute(_T("margin"), _T("0,0,30,0"));
+    pCaptionLeft->SetAttribute(_T("valign"), _T("center"));
+    pCaptionLeft->SetAttribute(_T("width"), _T("auto"));
+    pCaptionLeft->SetAttribute(_T("height"), _T("auto"));
+    pCaptionLeft->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pCaptionLeft);
 
-    auto* pLogo = ui::Create<ui::Control>(this, {{_T("width"), _T("18")}, {_T("height"), _T("18")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}});
+    ui::Control* pLogo = new ui::Control(this);
+    pLogo->SetAttribute(_T("width"), _T("18"));
+    pLogo->SetAttribute(_T("height"), _T("18"));
     pLogo->SetBkImage(_T("public/caption/logo.svg"));
+    pLogo->SetAttribute(_T("valign"), _T("center"));
+    pLogo->SetAttribute(_T("margin"), _T("8,0,0,0"));
     pCaptionLeft->AddItem(pLogo);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("mouse_enabled"), _T("false")}});
+    ui::Label* pTitle = new ui::Label(this);
     pTitle->SetText(_T("ChildWindow Control Test Program"));
+    pTitle->SetAttribute(_T("valign"), _T("center"));
+    pTitle->SetAttribute(_T("margin"), _T("8,0,0,0"));
+    pTitle->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaptionLeft->AddItem(pTitle);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
+    ui::Control* pSpacer = new ui::Control(this);
+    pSpacer->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pSpacer);
 
-    auto* pCaptionRight = ui::Create<ui::HBox>(this, {{_T("margin"), _T("0,0,0,0")}, {_T("valign"), _T("center")}, {_T("width"), _T("auto")}, {_T("height"), _T("36")}});
+    ui::HBox* pCaptionRight = new ui::HBox(this);
+    pCaptionRight->SetAttribute(_T("margin"), _T("0,0,0,0"));
+    pCaptionRight->SetAttribute(_T("valign"), _T("center"));
+    pCaptionRight->SetAttribute(_T("width"), _T("auto"));
+    pCaptionRight->SetAttribute(_T("height"), _T("36"));
     pCaption->AddItem(pCaptionRight);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Button* pMinBtn = new ui::Button(this);
     pMinBtn->SetClass(_T("btn_wnd_min_11"));
+    pMinBtn->SetAttribute(_T("height"), _T("32"));
+    pMinBtn->SetAttribute(_T("width"), _T("40"));
     pMinBtn->SetName(_T("minbtn"));
+    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pMinBtn->SetToolTipText(_T("Minimize"));
     pCaptionRight->AddItem(pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Box* pMaxBox = new ui::Box(this);
+    pMaxBox->SetAttribute(_T("height"), _T("stretch"));
+    pMaxBox->SetAttribute(_T("width"), _T("40"));
+    pMaxBox->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pCaptionRight->AddItem(pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
+    ui::Button* pMaxBtn = new ui::Button(this);
     pMaxBtn->SetClass(_T("btn_wnd_max_11"));
+    pMaxBtn->SetAttribute(_T("height"), _T("32"));
+    pMaxBtn->SetAttribute(_T("width"), _T("stretch"));
     pMaxBtn->SetName(_T("maxbtn"));
     pMaxBtn->SetToolTipText(_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
+    ui::Button* pRestoreBtn = new ui::Button(this);
     pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
+    pRestoreBtn->SetAttribute(_T("height"), _T("32"));
+    pRestoreBtn->SetAttribute(_T("width"), _T("stretch"));
     pRestoreBtn->SetName(_T("restorebtn"));
     pRestoreBtn->SetVisible(false);
     pRestoreBtn->SetToolTipText(_T("Restore"));
     pMaxBox->AddItem(pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
+    ui::Button* pCloseBtn = new ui::Button(this);
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
+    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
+    pCloseBtn->SetAttribute(_T("width"), _T("40"));
     pCloseBtn->SetName(_T("closebtn"));
+    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
     pCloseBtn->SetToolTipText(_T("Close"));
     pCaptionRight->AddItem(pCloseBtn);
 
     // Work area: a 3x3 GridBox holding 9 child windows (corresponding to <Include count="9"/>)
-    auto* pContent = ui::Create<ui::Box>(this, {});
+    ui::Box* pContent = new ui::Box(this);
     pRoot->AddItem(pContent);
 
-    auto* pGridBox = ui::Create<ui::GridBox>(this, {{_T("valign"), _T("center")}, {_T("rows"), _T("3")}, {_T("columns"), _T("3")}});
+    ui::GridBox* pGridBox = new ui::GridBox(this);
     pGridBox->SetName(_T("child_window_box"));
+    pGridBox->SetAttribute(_T("valign"), _T("center"));
+    pGridBox->SetAttribute(_T("rows"), _T("3"));
+    pGridBox->SetAttribute(_T("columns"), _T("3"));
     pGridBox->SetBkColor(_T("#FFF0F0F0"));
     pContent->AddItem(pGridBox);
 
     for (int32_t i = 0; i < 9; ++i) {
-    auto* pChild = ui::Create<ui::ChildWindow>(this, {{_T("valign"), _T("center")}, {_T("halign"), _T("center")}, {_T("child_window_margin"), _T("12,36,12,12")}});
+        ui::ChildWindow* pChild = new ui::ChildWindow(this);
+        pChild->SetAttribute(_T("valign"), _T("center"));
+        pChild->SetAttribute(_T("halign"), _T("center"));
+        pChild->SetAttribute(_T("child_window_margin"), _T("12,36,12,12"));
 
-    auto* pChildCaption = ui::Create<ui::HBox>(this, {{_T("padding"), _T("12,0,0,0")}, {_T("valign"), _T("top")}, {_T("height"), _T("36")}});
+        ui::HBox* pChildCaption = new ui::HBox(this);
+        pChildCaption->SetAttribute(_T("padding"), _T("12,0,0,0"));
+        pChildCaption->SetAttribute(_T("valign"), _T("top"));
+        pChildCaption->SetAttribute(_T("height"), _T("36"));
         pChild->AddItem(pChildCaption);
 
-    auto* pChildName = ui::Create<ui::Label>(this, {{_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}});
+        ui::Label* pChildName = new ui::Label(this);
         pChildName->SetName(_T("child_window_name"));
         pChildName->SetText(ui::StringUtil::Printf(_T("ChildWindow%d"), i + 1));
+        pChildName->SetAttribute(_T("margin"), _T("2,0,2,0"));
+        pChildName->SetAttribute(_T("valign"), _T("center"));
+        pChildName->SetAttribute(_T("mouse_enabled"), _T("false"));
         pChildCaption->AddItem(pChildName);
 
-    auto* pFpsText = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}});
+        ui::Label* pFpsText = new ui::Label(this);
         pFpsText->SetText(_T("Frame Rate FPS:"));
+        pFpsText->SetAttribute(_T("valign"), _T("center"));
+        pFpsText->SetAttribute(_T("mouse_enabled"), _T("false"));
         pChildCaption->AddItem(pFpsText);
 
-    auto* pFpsValue = ui::Create<ui::Label>(this, {{_T("width"), _T("42")}, {_T("margin"), _T("4,0,4,0")}, {_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}});
+        ui::Label* pFpsValue = new ui::Label(this);
         pFpsValue->SetName(_T("label_fps"));
         pFpsValue->SetText(_T("0000"));
+        pFpsValue->SetAttribute(_T("width"), _T("42"));
+        pFpsValue->SetAttribute(_T("margin"), _T("4,0,4,0"));
+        pFpsValue->SetAttribute(_T("valign"), _T("center"));
+        pFpsValue->SetAttribute(_T("mouse_enabled"), _T("false"));
         pChildCaption->AddItem(pFpsValue);
 
-    auto* pFpsPaint = ui::Create<ui::CheckBox>(this, {{_T("height"), _T("28")}, {_T("width"), _T("auto")}, {_T("valign"), _T("center")}});
+        ui::CheckBox* pFpsPaint = new ui::CheckBox(this);
         pFpsPaint->SetClass(_T("checkbox_1"));
         pFpsPaint->SetName(_T("fps_paint"));
+        pFpsPaint->SetAttribute(_T("height"), _T("28"));
+        pFpsPaint->SetAttribute(_T("width"), _T("auto"));
         pFpsPaint->SetText(_T("Draw"));
+        pFpsPaint->SetAttribute(_T("valign"), _T("center"));
         pFpsPaint->Selected(true);
         pChildCaption->AddItem(pFpsPaint);
 
-    auto* pFullscreen = ui::Create<ui::CheckBox>(this, {{_T("height"), _T("28")}, {_T("width"), _T("auto")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}});
+        ui::CheckBox* pFullscreen = new ui::CheckBox(this);
         pFullscreen->SetClass(_T("checkbox_1"));
         pFullscreen->SetName(_T("child_fullscreen"));
+        pFullscreen->SetAttribute(_T("height"), _T("28"));
+        pFullscreen->SetAttribute(_T("width"), _T("auto"));
         pFullscreen->SetText(_T("Fullscreen"));
+        pFullscreen->SetAttribute(_T("valign"), _T("center"));
+        pFullscreen->SetAttribute(_T("margin"), _T("8,0,0,0"));
         pChildCaption->AddItem(pFullscreen);
 
         pGridBox->AddItem(pChild);
@@ -174,6 +225,13 @@ void MainForm::BuildUI()
 }
 
 
+void MainForm::PreInitWindow()
+{
+    BaseClass::PreInitWindow();
+    //Use the GPU (OpenGL) render backend on macOS, matching the XML example.
+    SetRenderBackendType(ui::RenderBackendType::kMetal_BackendType);
+}
+
 void MainForm::OnInitWindow()
 {
     // Use the OS-provided system shadow on all platforms.
@@ -182,6 +240,7 @@ void MainForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
+
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
@@ -266,7 +325,16 @@ bool MainForm::PaintNextChildWindow(ui::ChildWindow* pChildWindow)
 
 bool MainForm::PaintNextChildWindow()
 {
-    return DoPaintNextChildWindow(m_pChildWindow);
+    // Paint every visible child window on each idle pass so the FPS demo can
+    // reach high rates on macOS as well; a strict round-robin makes each child
+    // only get a fraction of the idle-loop frequency.
+    for (MyChildWindowEvents* pEvents : m_childWindowEvents) {
+        if ((pEvents != nullptr) && (pEvents->GetChildWindow() != nullptr) &&
+            pEvents->GetChildWindow()->IsVisible()) {
+            PaintChildWindow(pEvents->GetChildWindow());
+        }
+    }
+    return true;
 }
 
 bool MainForm::DoPaintNextChildWindow(ui::ChildWindow * pChildWindow)

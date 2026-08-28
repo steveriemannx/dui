@@ -92,6 +92,7 @@ void ReplaceForm::OnInitWindow()
                 return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 void ReplaceForm::OnFindNext()

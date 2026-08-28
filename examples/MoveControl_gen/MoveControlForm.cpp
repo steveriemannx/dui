@@ -15,6 +15,8 @@ MoveControlForm::~MoveControlForm()
 
 DString MoveControlForm::GetSkinFolder()
 {
+    // Generated-code mode: no layout XML is loaded, but the skin folder is kept
+    // as the window's resource path so that image paths can still be resolved.
     return _T("move_control");
 }
 
@@ -36,6 +38,7 @@ void MoveControlForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attr
     attrs.m_bIsLayeredWindowDefined = true;
     attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
+
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
@@ -47,6 +50,7 @@ void MoveControlForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
+
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);

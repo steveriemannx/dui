@@ -226,6 +226,7 @@ void BrowserForm::OnInitWindow()
     DString logMsg = ui::StringUtil::Printf(_T("[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
     std::cout << logMsg << std::endl;
 #endif
+    BaseClass::OnInitWindow();
 }
 
 void BrowserForm::OnPreCloseWindow()

@@ -22,7 +22,10 @@ private:
 
         // Create a default centered window with shadow
         ListBoxForm* window = new ListBoxForm();
-        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("ListBox"), true));
+                ui::WindowCreateParam createParam(_T("ListBox"), true);
+        createParam.m_nWidth = 540;
+        createParam.m_nHeight = 720;
+        window->CreateWnd(nullptr, createParam);
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -33,9 +36,4 @@ private:
     }
 };
 
-int main()
-{
-    App app;
-    app.Run();
-    return 0;
-}
+DUI_APP_ENTRY(App)

@@ -188,6 +188,7 @@ void MainForm::OnInitWindow()
 
     // Test the virtual list events
     TestVirtualListBoxEvents(m_pTileList);
+    BaseClass::OnInitWindow();
 }
 
 bool MainForm::OnClicked(const ui::EventArgs& args)

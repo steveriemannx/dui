@@ -67,6 +67,7 @@ void MainForm::OnInitWindow()
     //    }        
     //    return true;
     //    });
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnInitLayout()

@@ -68,10 +68,12 @@ void ChatForm::PreInitWindow()
     BaseClass::PreInitWindow();
 
     //No layout XML is loaded, so Window::ParseWindowXml failed and reset the
-    //window resource path; restore it now so image paths resolve from the
-    //"chat" folder.
+    //window resource path (both in GetCreateWindowAttributes and again above);
+    //restore it now, after that reparse, so image paths resolve from the
+    //"chat" folder (themes/<theme>/chat/..., falling back to themes/default/chat/)
     SetResourcePath(ui::FilePath(_T("chat")));
 }
+
 void ChatForm::OnInitWindow()
 {
     // Use the OS-provided system shadow on all platforms.
@@ -80,6 +82,7 @@ void ChatForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
+
 
     if (m_layoutType == kWechat) {
         SetCaptionRect(ui::UiRect(0, 0, 0, 35), false);

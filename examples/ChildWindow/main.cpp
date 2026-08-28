@@ -48,9 +48,4 @@ private:
     ui::ControlPtrT<MainForm> m_pMainForm;
 };
 
-int main()
-{
-    App app;
-    app.Run();
-    return 0;
-}
+DUI_APP_ENTRY(App)

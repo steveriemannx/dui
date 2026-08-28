@@ -1,4 +1,4 @@
-﻿#include "FindForm.h"
+#include "FindForm.h"
 #include "MainForm.h"
 
 FindForm::FindForm(MainForm* pMainForm):
@@ -28,96 +28,140 @@ DString FindForm::GetSkinFile()
 void FindForm::BuildUI()
 {
     // Corresponds to the find.xml layout
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
+    ui::VBox* pRoot = new ui::VBox(this);
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("35")}});
+    ui::HBox* pCaption = new ui::HBox(this);
+    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
+    pCaption->SetAttribute(_T("width"), _T("stretch"));
+    pCaption->SetAttribute(_T("height"), _T("35"));
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    auto* pLogo = ui::Create<ui::Control>(this, {{_T("width"), _T("18")}, {_T("height"), _T("18")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8")}});
+    ui::Control* pLogo = new ui::Control(this);
+    pLogo->SetAttribute(_T("width"), _T("18"));
+    pLogo->SetAttribute(_T("height"), _T("18"));
     pLogo->SetBkImage(_T("public/caption/logo.svg"));
+    pLogo->SetAttribute(_T("valign"), _T("center"));
+    pLogo->SetAttribute(_T("margin"), _T("8"));
     pCaption->AddItem(pLogo);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8")}});
+    ui::Label* pTitle = new ui::Label(this);
     pTitle->SetText(_T("Find"));
+    pTitle->SetAttribute(_T("valign"), _T("center"));
+    pTitle->SetAttribute(_T("margin"), _T("8"));
     pCaption->AddItem(pTitle);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {});
+    ui::Control* pSpacer = new ui::Control(this);
     pCaption->AddItem(pSpacer);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("40")}, {_T("height"), _T("32")}, {_T("margin"), _T("4,0,0,0")}});
+    ui::Button* pCloseBtn = new ui::Button(this);
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
     pCloseBtn->SetName(_T("closebtn"));
+    pCloseBtn->SetAttribute(_T("width"), _T("40"));
+    pCloseBtn->SetAttribute(_T("height"), _T("32"));
+    pCloseBtn->SetAttribute(_T("margin"), _T("4,0,0,0"));
     pCaption->AddItem(pCloseBtn);
 
     // Find content row
-    auto* pContent = ui::Create<ui::VBox>(this, {});
+    ui::VBox* pContent = new ui::VBox(this);
     pRoot->AddItem(pContent);
 
-    auto* pFindRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
+    ui::HBox* pFindRow = new ui::HBox(this);
+    pFindRow->SetAttribute(_T("height"), _T("auto"));
     pContent->AddItem(pFindRow);
 
-    auto* pFindLabel = ui::Create<ui::Label>(this, {{_T("height"), _T("28")}, {_T("text_align"), _T("vcenter")}, {_T("margin"), _T("8,8,0,0")}});
+    ui::Label* pFindLabel = new ui::Label(this);
     pFindLabel->SetText(_T("Find What:"));
+    pFindLabel->SetAttribute(_T("height"), _T("28"));
+    pFindLabel->SetAttribute(_T("text_align"), _T("vcenter"));
+    pFindLabel->SetAttribute(_T("margin"), _T("8,8,0,0"));
     pFindRow->AddItem(pFindLabel);
 
-    auto* pFindText = ui::Create<ui::RichEdit>(this, {{_T("width"), _T("stretch")}, {_T("height"), _T("28")}, {_T("prompttext"), _T("Find")}, {_T("text_padding"), _T("2,0,0,0")}, {_T("text_align"), _T("vcenter")}, {_T("margin"), _T("2,8,4,0")}});
+    ui::RichEdit* pFindText = new ui::RichEdit(this);
     pFindText->SetClass(_T("simple prompt simple_border"));
     pFindText->SetName(_T("btn_find_text"));
+    pFindText->SetAttribute(_T("width"), _T("stretch"));
+    pFindText->SetAttribute(_T("height"), _T("28"));
+    pFindText->SetAttribute(_T("prompttext"), _T("Find"));
+    pFindText->SetAttribute(_T("text_padding"), _T("2,0,0,0"));
+    pFindText->SetAttribute(_T("text_align"), _T("vcenter"));
     pFindText->SetBkColor(_T("white"));
+    pFindText->SetAttribute(_T("margin"), _T("2,8,4,0"));
     pFindRow->AddItem(pFindText);
 
-    auto* pFindNextBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("80")}, {_T("height"), _T("28")}, {_T("margin"), _T("4,8,8,0")}});
+    ui::Button* pFindNextBtn = new ui::Button(this);
     pFindNextBtn->SetClass(_T("btn_global_white_80x30"));
     pFindNextBtn->SetName(_T("btn_find_next"));
     pFindNextBtn->SetText(_T("Find Next"));
+    pFindNextBtn->SetAttribute(_T("width"), _T("80"));
+    pFindNextBtn->SetAttribute(_T("height"), _T("28"));
+    pFindNextBtn->SetAttribute(_T("margin"), _T("4,8,8,0"));
     pFindRow->AddItem(pFindNextBtn);
 
     // Search direction
-    auto* pDirectionGroup = ui::Create<ui::GroupVBox>(this, {{_T("margin"), _T("10,6,10,6")}, {_T("text"), _T(" Search Direction ")}, {_T("height"), _T("auto")}, {_T("corner_size"), _T("4,4")}});
+    ui::GroupVBox* pDirectionGroup = new ui::GroupVBox(this);
+    pDirectionGroup->SetAttribute(_T("margin"), _T("10,6,10,6"));
+    pDirectionGroup->SetAttribute(_T("text"), _T(" Search Direction "));
+    pDirectionGroup->SetAttribute(_T("height"), _T("auto"));
+    pDirectionGroup->SetAttribute(_T("corner_size"), _T("4,4"));
     pContent->AddItem(pDirectionGroup);
 
-    auto* pDirectionRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("40")}, {_T("margin"), _T("24,12,8,4")}, {_T("padding"), _T("12,0,0,0")}});
+    ui::HBox* pDirectionRow = new ui::HBox(this);
+    pDirectionRow->SetAttribute(_T("height"), _T("40"));
+    pDirectionRow->SetAttribute(_T("margin"), _T("24,12,8,4"));
+    pDirectionRow->SetAttribute(_T("padding"), _T("12,0,0,0"));
     pDirectionGroup->AddItem(pDirectionRow);
 
-    auto* pOptionUp = ui::Create<ui::Option>(this, {{_T("group"), _T("option_direction_group")}, {_T("margin"), _T("0,6,0,0")}});
+    ui::Option* pOptionUp = new ui::Option(this);
     pOptionUp->SetClass(_T("option_1"));
+    pOptionUp->SetAttribute(_T("group"), _T("option_direction_group"));
     pOptionUp->SetText(_T("Search Up"));
+    pOptionUp->SetAttribute(_T("margin"), _T("0,6,0,0"));
     pDirectionRow->AddItem(pOptionUp);
 
-    auto* pOptionDown = ui::Create<ui::Option>(this, {{_T("group"), _T("option_direction_group")}, {_T("margin"), _T("16,6,0,0")}});
+    ui::Option* pOptionDown = new ui::Option(this);
     pOptionDown->SetClass(_T("option_1"));
+    pOptionDown->SetAttribute(_T("group"), _T("option_direction_group"));
     pOptionDown->SetText(_T("Search Down"));
     pOptionDown->SetName(_T("option_direction_down"));
+    pOptionDown->SetAttribute(_T("margin"), _T("16,6,0,0"));
     pOptionDown->Selected(true);
     pDirectionRow->AddItem(pOptionDown);
 
     // Options row
-    auto* pOptionRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
+    ui::HBox* pOptionRow = new ui::HBox(this);
+    pOptionRow->SetAttribute(_T("height"), _T("auto"));
     pContent->AddItem(pOptionRow);
 
-    auto* pCaseSensitive = ui::Create<ui::CheckBox>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8,8,8,0")}});
+    ui::CheckBox* pCaseSensitive = new ui::CheckBox(this);
     pCaseSensitive->SetClass(_T("checkbox_1"));
     pCaseSensitive->SetName(_T("check_box_case_sensitive"));
     pCaseSensitive->SetText(_T("Case Sensitive"));
+    pCaseSensitive->SetAttribute(_T("valign"), _T("center"));
+    pCaseSensitive->SetAttribute(_T("margin"), _T("8,8,8,0"));
     pCaseSensitive->Selected(true);
     pOptionRow->AddItem(pCaseSensitive);
 
-    auto* pMatchWholeWord = ui::Create<ui::CheckBox>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8,8,8,0")}});
+    ui::CheckBox* pMatchWholeWord = new ui::CheckBox(this);
     pMatchWholeWord->SetClass(_T("checkbox_1"));
     pMatchWholeWord->SetName(_T("check_box_match_whole_word"));
     pMatchWholeWord->SetText(_T("Match Whole Word"));
+    pMatchWholeWord->SetAttribute(_T("valign"), _T("center"));
+    pMatchWholeWord->SetAttribute(_T("margin"), _T("8,8,8,0"));
     pOptionRow->AddItem(pMatchWholeWord);
 
-    auto* pOptionSpacer = ui::Create<ui::Control>(this, {});
+    ui::Control* pOptionSpacer = new ui::Control(this);
     pOptionRow->AddItem(pOptionSpacer);
 
-    auto* pCancelBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("80")}, {_T("height"), _T("28")}, {_T("margin"), _T("4,8,8,0")}});
+    ui::Button* pCancelBtn = new ui::Button(this);
     pCancelBtn->SetClass(_T("btn_global_white_80x30"));
     pCancelBtn->SetName(_T("btn_cancel"));
     pCancelBtn->SetText(_T("Cancel"));
+    pCancelBtn->SetAttribute(_T("width"), _T("80"));
+    pCancelBtn->SetAttribute(_T("height"), _T("28"));
+    pCancelBtn->SetAttribute(_T("margin"), _T("4,8,8,0"));
     pOptionRow->AddItem(pCancelBtn);
 
     AttachBox(pRoot);
@@ -125,6 +169,14 @@ void FindForm::BuildUI()
 
 void FindForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
+
     // Hand-written pure code UI (corresponds to the find.xml layout, equivalent to the generator output)
     BuildUI();
 
@@ -172,6 +224,7 @@ void FindForm::OnInitWindow()
                 return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 void FindForm::OnFindNext()

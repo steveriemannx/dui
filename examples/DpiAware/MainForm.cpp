@@ -64,6 +64,7 @@ void MainForm::OnInitWindow()
             return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnWindowDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nNewScaleFactor)

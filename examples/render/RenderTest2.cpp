@@ -22,6 +22,9 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     BaseClass::Paint(pRender, rcPaint);
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
     ASSERT(pRenderFactory != nullptr);
+    if (pRenderFactory == nullptr) {
+        return;
+    }
 
     int marginLeft = 8;
     int marginTop = 4;

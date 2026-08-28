@@ -33,6 +33,7 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_bSizeBoxDefined = true;
     attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
+
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
@@ -45,71 +46,102 @@ void MainForm::OnInitWindow()
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
 
     // Build the UI in handwritten pure code (corresponding to the hello.xml layout)
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
+    ui::VBox* pRoot = new ui::VBox(this);
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
+    ui::HBox* pCaption = new ui::HBox(this);
+    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
+    pCaption->SetAttribute(_T("width"), _T("stretch"));
+    pCaption->SetAttribute(_T("height"), _T("36"));
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
+    ui::Control* pSpacer = new ui::Control(this);
+    pSpacer->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pSpacer);
 
-    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Button* pFullscreenBtn = new ui::Button(this);
     pFullscreenBtn->SetClass(_T("btn_wnd_fullscreen_11"));
+    pFullscreenBtn->SetAttribute(_T("height"), _T("32"));
+    pFullscreenBtn->SetAttribute(_T("width"), _T("40"));
     pFullscreenBtn->SetName(_T("fullscreenbtn"));
+    pFullscreenBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pFullscreenBtn->SetToolTipText(_T("Fullscreen, press ESC to exit fullscreen"));
     pCaption->AddItem(pFullscreenBtn);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Button* pMinBtn = new ui::Button(this);
     pMinBtn->SetClass(_T("btn_wnd_min_11"));
+    pMinBtn->SetAttribute(_T("height"), _T("32"));
+    pMinBtn->SetAttribute(_T("width"), _T("40"));
     pMinBtn->SetName(_T("minbtn"));
+    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pMinBtn->SetToolTipText(_T("Minimize"));
     pCaption->AddItem(pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Box* pMaxBox = new ui::Box(this);
+    pMaxBox->SetAttribute(_T("height"), _T("stretch"));
+    pMaxBox->SetAttribute(_T("width"), _T("40"));
+    pMaxBox->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pCaption->AddItem(pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
+    ui::Button* pMaxBtn = new ui::Button(this);
     pMaxBtn->SetClass(_T("btn_wnd_max_11"));
+    pMaxBtn->SetAttribute(_T("height"), _T("32"));
+    pMaxBtn->SetAttribute(_T("width"), _T("stretch"));
     pMaxBtn->SetName(_T("maxbtn"));
     pMaxBtn->SetToolTipText(_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
+    ui::Button* pRestoreBtn = new ui::Button(this);
     pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
+    pRestoreBtn->SetAttribute(_T("height"), _T("32"));
+    pRestoreBtn->SetAttribute(_T("width"), _T("stretch"));
     pRestoreBtn->SetName(_T("restorebtn"));
     pRestoreBtn->SetVisible(false);
     pRestoreBtn->SetToolTipText(_T("Restore"));
     pMaxBox->AddItem(pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
+    ui::Button* pCloseBtn = new ui::Button(this);
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
+    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
+    pCloseBtn->SetAttribute(_T("width"), _T("40"));
     pCloseBtn->SetName(_T("closebtn"));
+    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
     pCloseBtn->SetToolTipText(_T("Close"));
     pCaption->AddItem(pCloseBtn);
 
     // Work area
-    auto* pContent = ui::Create<ui::Box>(this, {});
+    ui::Box* pContent = new ui::Box(this);
     pRoot->AddItem(pContent);
 
-    auto* pCenter = ui::Create<ui::VBox>(this, {{_T("valign"), _T("center")}, {_T("halign"), _T("center")}, {_T("height"), _T("100")}});
+    ui::VBox* pCenter = new ui::VBox(this);
+    pCenter->SetAttribute(_T("valign"), _T("center"));
+    pCenter->SetAttribute(_T("halign"), _T("center"));
+    pCenter->SetAttribute(_T("height"), _T("100"));
     pContent->AddItem(pCenter);
 
-    auto* pLabel = ui::Create<ui::Label>(this, {{_T("height"), _T("40")}, {_T("width"), _T("100%")}, {_T("text_align"), _T("hcenter,vcenter")}, {_T("margin"), _T("0,0,0,16")}});
+    ui::Label* pLabel = new ui::Label(this);
     pLabel->SetName(_T("hello_label"));
     pLabel->SetText(_T("Hello, dui!"));
+    pLabel->SetAttribute(_T("height"), _T("40"));
+    pLabel->SetAttribute(_T("width"), _T("100%"));
+    pLabel->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
+    pLabel->SetAttribute(_T("margin"), _T("0,0,0,16"));
     pCenter->AddItem(pLabel);
 
-    auto* pButton = ui::Create<ui::Button>(this, {{_T("halign"), _T("center")}, {_T("width"), _T("90")}, {_T("height"), _T("32")}});
+    ui::Button* pButton = new ui::Button(this);
     pButton->SetName(_T("hello_btn"));
     pButton->SetClass(_T("btn_global_blue_80x30"));
     pButton->SetText(_T("Click Me"));
+    pButton->SetAttribute(_T("halign"), _T("center"));
+    pButton->SetAttribute(_T("width"), _T("90"));
+    pButton->SetAttribute(_T("height"), _T("32"));
     pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
         ui::Label* pLabel = dynamic_cast<ui::Label*>(FindControl(_T("hello_label")));
         if (pLabel != nullptr) {

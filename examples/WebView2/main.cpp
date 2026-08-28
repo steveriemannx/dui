@@ -39,9 +39,4 @@ private:
     }
 };
 
-int main()
-{
-    App app;
-    app.Run();
-    return 0;
-}
+DUI_APP_ENTRY(App)

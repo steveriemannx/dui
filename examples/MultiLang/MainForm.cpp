@@ -31,13 +31,17 @@ void MainForm::OnInitWindow()
     select->AttachClick([this](const ui::EventArgs& args) {
         ui::UiRect rect = args.GetSender()->GetPos();
         ui::UiPoint point;
-        point.x = rect.left;
+        //Pop up the menu right below the language button: align the menu's
+        //right edge with the button's right edge (RIGHT_TOP alignment)
+        point.x = rect.right;
         point.y = rect.bottom;
         ClientToScreen(point);
 
         ShowPopupMenu(point);
         return true;
         });
+
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::ShowPopupMenu(const ui::UiPoint& point)

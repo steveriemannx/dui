@@ -1,4 +1,4 @@
-﻿#include "ChatForm.h"
+#include "ChatForm.h"
 
 ChatForm::ChatForm(LayoutType layoutType):
     m_layoutType(layoutType)
@@ -11,7 +11,7 @@ ChatForm::~ChatForm()
 
 DString ChatForm::GetSkinFolder()
 {
-    return _T("chat");
+    return _T("");
 }
 
 DString ChatForm::GetSkinFile()
@@ -68,61 +68,123 @@ void ChatForm::PreInitWindow()
 
     //No layout XML is loaded, so Window::ParseWindowXml cannot establish the
     //window resource sub-path; set it explicitly so image paths resolve from
-    //the "chat" folder.
+    //the "chat" folder (themes/<theme>/chat/..., falling back to themes/default/chat/)
     SetResourcePath(ui::FilePath(_T("chat")));
 }
 
 void ChatForm::BuildWechatUI()
 {
     // Corresponds to the wechat.xml layout
-    auto* pRoot = ui::Create<ui::HBox>(this, {{_T("width"), _T("304")}, {_T("height"), _T("auto")}});
+    ui::VBox* pRoot = new ui::VBox(this);
+
+    // Window caption bar (native macOS traffic lights are drawn by the framework)
+    ui::HBox* pCaptionBar = new ui::HBox(this);
+    pCaptionBar->SetName(_T("window_caption_bar"));
+    pCaptionBar->SetAttribute(_T("width"), _T("stretch"));
+    pCaptionBar->SetAttribute(_T("height"), _T("36"));
+    pCaptionBar->SetBkColor(_T("bk_wnd_lightcolor"));
+    pRoot->AddItem(pCaptionBar);
+
+    ui::Control* pCaptionFiller = new ui::Control(this);
+    pCaptionFiller->SetMouseEnabled(false);
+    pCaptionBar->AddItem(pCaptionFiller);
+
+    ui::Button* pFullscreenBtn = new ui::Button(this);
+    pFullscreenBtn->SetClass(_T("btn_wnd_fullscreen_11"));
+    pFullscreenBtn->SetName(_T("fullscreenbtn"));
+    pFullscreenBtn->SetAttribute(_T("height"), _T("32"));
+    pFullscreenBtn->SetAttribute(_T("width"), _T("40"));
+    pFullscreenBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
+    pFullscreenBtn->SetAttribute(_T("tooltip_text"), _T("Fullscreen, press ESC to exit fullscreen"));
+    pCaptionBar->AddItem(pFullscreenBtn);
+
+    ui::Button* pMinBtn = new ui::Button(this);
+    pMinBtn->SetClass(_T("btn_wnd_min_11"));
+    pMinBtn->SetName(_T("minbtn"));
+    pMinBtn->SetAttribute(_T("height"), _T("32"));
+    pMinBtn->SetAttribute(_T("width"), _T("40"));
+    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
+    pMinBtn->SetAttribute(_T("tooltip_text"), _T("Minimize"));
+    pCaptionBar->AddItem(pMinBtn);
+
+    ui::Button* pCloseBtn = new ui::Button(this);
+    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
+    pCloseBtn->SetName(_T("closebtn"));
+    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
+    pCloseBtn->SetAttribute(_T("width"), _T("40"));
+    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
+    pCloseBtn->SetAttribute(_T("tooltip_text"), _T("Close"));
+    pCaptionBar->AddItem(pCloseBtn);
+
+    // Main content area
+    ui::HBox* pContent = new ui::HBox(this);
+    pRoot->AddItem(pContent);
 
     // Left menu bar
-    auto* pLeftMenu = ui::Create<ui::VBox>(this, {{_T("width"), _T("60")}});
+    ui::VBox* pLeftMenu = new ui::VBox(this);
+    pLeftMenu->SetAttribute(_T("width"), _T("60"));
     pLeftMenu->SetBkColor(_T("darkcolor"));
-    pRoot->AddItem(pLeftMenu);
+    pContent->AddItem(pLeftMenu);
 
-    auto* pHead = ui::Create<ui::Control>(this, {{_T("width"), _T("40")}, {_T("height"), _T("40")}, {_T("margin"), _T("10,10")}});
+    ui::Control* pHead = new ui::Control(this);
     pHead->SetBkImage(_T("head.png"));
+    pHead->SetAttribute(_T("width"), _T("40"));
+    pHead->SetAttribute(_T("height"), _T("40"));
+    pHead->SetAttribute(_T("margin"), _T("10,10"));
     pLeftMenu->AddItem(pHead);
 
     // Friend list
-    auto* pFriendList = ui::Create<ui::VBox>(this, {{_T("width"), _T("270")}});
+    ui::VBox* pFriendList = new ui::VBox(this);
+    pFriendList->SetAttribute(_T("width"), _T("270"));
     pFriendList->SetBkColor(_T("light_gray"));
-    pRoot->AddItem(pFriendList);
+    pContent->AddItem(pFriendList);
 
-    auto* pSearchBox = ui::Create<ui::Box>(this, {{_T("padding"), _T("10,8,10,8")}, {_T("height"), _T("auto")}});
+    ui::Box* pSearchBox = new ui::Box(this);
+    pSearchBox->SetAttribute(_T("padding"), _T("10,8,10,8"));
+    pSearchBox->SetAttribute(_T("height"), _T("auto"));
     pFriendList->AddItem(pSearchBox);
 
-    auto* pNickname = ui::Create<ui::RichEdit>(this, {{_T("width"), _T("stretch")}, {_T("height"), _T("35")}, {_T("font"), _T("system_14")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("25,8,8,8")}, {_T("borderround"), _T("5,5")}, {_T("prompttext"), _T("Search")}, {_T("width"), _T("stretch")}, {_T("height"), _T("auto")}, {_T("margin"), _T("10,0,10,0")}, {_T("valign"), _T("center")}, {_T("font"), _T("system_14")}, {_T("prompttext"), _T("Nickname")}});
+    ui::RichEdit* pNickname = new ui::RichEdit(this);
     pNickname->SetClass(_T("simple simple_border prompt"));
     pNickname->SetName(_T("nickname"));
+    pNickname->SetAttribute(_T("width"), _T("stretch"));
+    pNickname->SetAttribute(_T("height"), _T("35"));
+    pNickname->SetAttribute(_T("font"), _T("system_14"));
+    pNickname->SetAttribute(_T("text_align"), _T("vcenter"));
+    pNickname->SetAttribute(_T("text_padding"), _T("25,8,8,8"));
+    pNickname->SetAttribute(_T("borderround"), _T("5,5"));
+    pNickname->SetAttribute(_T("prompttext"), _T("Search"));
     pSearchBox->AddItem(pNickname);
 
-    auto* pSearchIcon = ui::Create<ui::Control>(this, {{_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("margin"), _T("6,9")}});
+    ui::Control* pSearchIcon = new ui::Control(this);
+    pSearchIcon->SetAttribute(_T("width"), _T("auto"));
+    pSearchIcon->SetAttribute(_T("height"), _T("auto"));
+    pSearchIcon->SetAttribute(_T("margin"), _T("6,9"));
     pSearchIcon->SetBkImage(_T("search_icon.png"));
     pSearchBox->AddItem(pSearchIcon);
 
-    auto* pFriendContent = ui::Create<ui::VBox>(this, {});
+    ui::VBox* pFriendContent = new ui::VBox(this);
     pFriendList->AddItem(pFriendContent);
 
     // Chat area
-    auto* pChatArea = ui::Create<ui::VBox>(this, {});
-    pRoot->AddItem(pChatArea);
+    ui::VBox* pChatArea = new ui::VBox(this);
+    pContent->AddItem(pChatArea);
 
-    auto* pChatTitle = ui::Create<ui::HBox>(this, {{_T("height"), _T("80")}});
+    ui::HBox* pChatTitle = new ui::HBox(this);
+    pChatTitle->SetAttribute(_T("height"), _T("80"));
     pChatTitle->SetBkColor(_T("bk_wnd_darkcolor"));
     pChatArea->AddItem(pChatTitle);
 
-    auto* pSplitLine = ui::Create<ui::Control>(this, {});
+    ui::Control* pSplitLine = new ui::Control(this);
     pSplitLine->SetClass(_T("splitline_hor_level1"));
     pChatArea->AddItem(pSplitLine);
 
-    auto* pChatContent = ui::Create<ui::VBox>(this, {});
+    ui::VBox* pChatContent = new ui::VBox(this);
     pChatContent->SetBkColor(_T("bk_wnd_darkcolor"));
     pChatArea->AddItem(pChatContent);
 
-    auto* pChatInput = ui::Create<ui::VBox>(this, {{_T("height"), _T("150")}});
+    ui::VBox* pChatInput = new ui::VBox(this);
+    pChatInput->SetAttribute(_T("height"), _T("150"));
     pChatInput->SetBkColor(_T("bk_wnd_lightcolor"));
     pChatArea->AddItem(pChatInput);
 
@@ -132,161 +194,303 @@ void ChatForm::BuildWechatUI()
 void ChatForm::BuildLoginUI()
 {
     // Corresponds to the login.xml layout
-    auto* pRoot = ui::Create<ui::Box>(this, {{_T("width"), _T("304")}, {_T("height"), _T("auto")}});
+    // Root: opaque white background over the whole window (macOS renders
+    // never-painted pixels black), fitted to the content size
+    ui::VBox* pOuter = new ui::VBox(this);
+    pOuter->SetAttribute(_T("width"), _T("304"));
+    pOuter->SetAttribute(_T("height"), _T("auto"));
+    pOuter->SetBkColor(_T("bk_wnd_lightcolor"));
 
-    auto* pHeadBox = ui::Create<ui::Box>(this, {{_T("width"), _T("130")}, {_T("height"), _T("130")}, {_T("margin"), _T("0,10,0,0")}, {_T("halign"), _T("center")}});
+    // Window caption bar (native macOS traffic lights are drawn by the framework)
+    ui::HBox* pCaptionBar = new ui::HBox(this);
+    pCaptionBar->SetName(_T("window_caption_bar"));
+    pCaptionBar->SetAttribute(_T("width"), _T("stretch"));
+    pCaptionBar->SetAttribute(_T("height"), _T("36"));
+    pCaptionBar->SetBkColor(_T("bk_wnd_lightcolor"));
+    pOuter->AddItem(pCaptionBar);
+
+    ui::Control* pCaptionFiller = new ui::Control(this);
+    pCaptionFiller->SetMouseEnabled(false);
+    pCaptionBar->AddItem(pCaptionFiller);
+
+    ui::Button* pMinBtn = new ui::Button(this);
+    pMinBtn->SetClass(_T("btn_wnd_min_11"));
+    pMinBtn->SetName(_T("minbtn"));
+    pMinBtn->SetAttribute(_T("height"), _T("32"));
+    pMinBtn->SetAttribute(_T("width"), _T("40"));
+    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
+    pMinBtn->SetAttribute(_T("tooltip_text"), _T("Minimize"));
+    pCaptionBar->AddItem(pMinBtn);
+
+    ui::Button* pCloseBtn = new ui::Button(this);
+    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
+    pCloseBtn->SetName(_T("closebtn"));
+    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
+    pCloseBtn->SetAttribute(_T("width"), _T("40"));
+    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
+    pCloseBtn->SetAttribute(_T("tooltip_text"), _T("Close"));
+    pCaptionBar->AddItem(pCloseBtn);
+
+    // Card area (as in login.xml: avatar glow + rounded panel with fields)
+    ui::Box* pRoot = new ui::Box(this);
+    pRoot->SetAttribute(_T("width"), _T("304"));
+    pRoot->SetAttribute(_T("height"), _T("auto"));
+    pOuter->AddItem(pRoot);
+
+    ui::Box* pHeadBox = new ui::Box(this);
+    pHeadBox->SetAttribute(_T("width"), _T("130"));
+    pHeadBox->SetAttribute(_T("height"), _T("130"));
+    pHeadBox->SetAttribute(_T("margin"), _T("0,10,0,0"));
+    pHeadBox->SetAttribute(_T("halign"), _T("center"));
     pRoot->AddItem(pHeadBox);
 
-    auto* pHeadShadow = ui::Create<ui::Control>(this, {{_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}});
+    ui::Control* pHeadShadow = new ui::Control(this);
+    pHeadShadow->SetAttribute(_T("width"), _T("auto"));
+    pHeadShadow->SetAttribute(_T("height"), _T("auto"));
+    pHeadShadow->SetAttribute(_T("halign"), _T("center"));
+    pHeadShadow->SetAttribute(_T("valign"), _T("center"));
     pHeadShadow->SetBkImage(_T("head_shadow.png"));
+    pHeadShadow->SetAttribute(_T("mouse_enabled"), _T("false"));
     pHeadBox->AddItem(pHeadShadow);
 
     // Login panel
-    auto* pLoginPanel = ui::Create<ui::Box>(this, {{_T("height"), _T("auto")}, {_T("margin"), _T("0,50,0,0")}, {_T("padding"), _T("14,14,14,14")}});
+    ui::Box* pLoginPanel = new ui::Box(this);
+    pLoginPanel->SetAttribute(_T("height"), _T("auto"));
+    pLoginPanel->SetAttribute(_T("margin"), _T("0,50,0,0"));
+    pLoginPanel->SetAttribute(_T("padding"), _T("14,14,14,14"));
     pLoginPanel->SetBkImage(_T("file='bk_shadow.png' corner='30,30,30,30'"));
     pRoot->AddItem(pLoginPanel);
 
-    auto* pLoginContent = ui::Create<ui::VBox>(this, {{_T("height"), _T("auto")}, {_T("borderround"), _T("3,3,3,3")}});
+    ui::VBox* pLoginContent = new ui::VBox(this);
+    pLoginContent->SetAttribute(_T("height"), _T("auto"));
     pLoginContent->SetBkColor(_T("bk_wnd_lightcolor"));
+    pLoginContent->SetAttribute(_T("borderround"), _T("3,3,3,3"));
     pLoginPanel->AddItem(pLoginContent);
 
-    auto* pLoginVBox = ui::Create<ui::VBox>(this, {{_T("height"), _T("auto")}});
+    ui::VBox* pLoginVBox = new ui::VBox(this);
+    pLoginVBox->SetAttribute(_T("height"), _T("auto"));
     pLoginContent->AddItem(pLoginVBox);
 
-    // Title bar (minimize/close)
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("height"), _T("40")}, {_T("margin"), _T("0,6,5,40")}});
+    // Spacer below the macOS traffic lights (window controls live in the
+    // caption bar at the top of the window)
+    ui::HBox* pCaption = new ui::HBox(this);
+    pCaption->SetAttribute(_T("height"), _T("40"));
+    pCaption->SetAttribute(_T("margin"), _T("0,6,5,40"));
     pLoginVBox->AddItem(pCaption);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {});
+    ui::Control* pSpacer = new ui::Control(this);
     pCaption->AddItem(pSpacer);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("32")}, {_T("margin"), _T("4,0,4,0")}});
-    pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetName(_T("minbtn"));
-    pCaption->AddItem(pMinBtn);
-
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("32")}});
-    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetName(_T("closebtn"));
-    pCaption->AddItem(pCloseBtn);
-
     // Register/Login toggle
-    auto* pRegBox = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
+    ui::HBox* pRegBox = new ui::HBox(this);
+    pRegBox->SetAttribute(_T("height"), _T("auto"));
     pLoginVBox->AddItem(pRegBox);
 
-    auto* pSpacer2 = ui::Create<ui::Control>(this, {});
+    ui::Control* pSpacer2 = new ui::Control(this);
     pRegBox->AddItem(pSpacer2);
 
-    auto* pRegisterBtn = ui::Create<ui::Button>(this, {{_T("margin"), _T("0,5,15,10")}, {_T("halign"), _T("right")}, {_T("cursortype"), _T("hand")}, {_T("font"), _T("system_underline_12")}, {_T("normaltextcolor"), _T("light_green")}});
+    ui::Button* pRegisterBtn = new ui::Button(this);
     pRegisterBtn->SetName(_T("register_account"));
+    pRegisterBtn->SetAttribute(_T("margin"), _T("0,5,15,10"));
+    pRegisterBtn->SetAttribute(_T("halign"), _T("right"));
     pRegisterBtn->SetText(_T("Register"));
+    pRegisterBtn->SetAttribute(_T("cursortype"), _T("hand"));
+    pRegisterBtn->SetAttribute(_T("font"), _T("system_underline_12"));
+    pRegisterBtn->SetAttribute(_T("normaltextcolor"), _T("light_green"));
     pRegBox->AddItem(pRegisterBtn);
 
-    auto* pEnterLoginBtn = ui::Create<ui::Button>(this, {{_T("margin"), _T("0,5,15,10")}, {_T("halign"), _T("right")}, {_T("cursortype"), _T("hand")}, {_T("font"), _T("system_underline_12")}, {_T("normaltextcolor"), _T("light_green")}});
+    ui::Button* pEnterLoginBtn = new ui::Button(this);
     pEnterLoginBtn->SetName(_T("enter_login"));
+    pEnterLoginBtn->SetAttribute(_T("margin"), _T("0,5,15,10"));
+    pEnterLoginBtn->SetAttribute(_T("halign"), _T("right"));
     pEnterLoginBtn->SetText(_T("Login Directly"));
+    pEnterLoginBtn->SetAttribute(_T("cursortype"), _T("hand"));
+    pEnterLoginBtn->SetAttribute(_T("font"), _T("system_underline_12"));
+    pEnterLoginBtn->SetAttribute(_T("normaltextcolor"), _T("light_green"));
     pEnterLoginBtn->SetVisible(false);
     pRegBox->AddItem(pEnterLoginBtn);
 
     // Account and password
-    auto* pEnterPanel = ui::Create<ui::VBox>(this, {{_T("width"), _T("240")}, {_T("height"), _T("auto")}, {_T("margin"), _T("20,0,20,0")}});
+    ui::VBox* pEnterPanel = new ui::VBox(this);
     pEnterPanel->SetName(_T("enter_panel"));
+    pEnterPanel->SetAttribute(_T("width"), _T("240"));
+    pEnterPanel->SetAttribute(_T("height"), _T("auto"));
+    pEnterPanel->SetAttribute(_T("margin"), _T("20,0,20,0"));
     pEnterPanel->SetBkImage(_T("user_password.png"));
     pLoginVBox->AddItem(pEnterPanel);
 
-    auto* pUserRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("41")}, {_T("padding"), _T("14,1,10,0")}});
+    ui::HBox* pUserRow = new ui::HBox(this);
+    pUserRow->SetAttribute(_T("height"), _T("41"));
+    pUserRow->SetAttribute(_T("padding"), _T("14,1,10,0"));
     pEnterPanel->AddItem(pUserRow);
 
-    auto* pUserIcon = ui::Create<ui::Control>(this, {{_T("width"), _T("16")}, {_T("height"), _T("16")}, {_T("valign"), _T("center")}, {_T("normalimage"), _T("user_1.png")}, {_T("disabledimage"), _T("user_2.png")}});
+    ui::Control* pUserIcon = new ui::Control(this);
     pUserIcon->SetName(_T("usericon"));
+    pUserIcon->SetAttribute(_T("width"), _T("16"));
+    pUserIcon->SetAttribute(_T("height"), _T("16"));
+    pUserIcon->SetAttribute(_T("valign"), _T("center"));
+    pUserIcon->SetAttribute(_T("normalimage"), _T("user_1.png"));
+    pUserIcon->SetAttribute(_T("disabledimage"), _T("user_2.png"));
     pUserRow->AddItem(pUserIcon);
 
-    auto* pUsername = ui::Create<ui::RichEdit>(this, {{_T("width"), _T("stretch")}, {_T("height"), _T("auto")}, {_T("margin"), _T("10,0,10,0")}, {_T("valign"), _T("center")}, {_T("font"), _T("system_14")}, {_T("prompttext"), _T("Account")}});
+    ui::RichEdit* pUsername = new ui::RichEdit(this);
     pUsername->SetClass(_T("simple prompt"));
     pUsername->SetName(_T("username"));
+    pUsername->SetAttribute(_T("width"), _T("stretch"));
+    pUsername->SetAttribute(_T("height"), _T("auto"));
+    pUsername->SetAttribute(_T("margin"), _T("10,0,10,0"));
+    pUsername->SetAttribute(_T("valign"), _T("center"));
+    pUsername->SetAttribute(_T("font"), _T("system_14"));
+    pUsername->SetAttribute(_T("prompttext"), _T("Account"));
     pUserRow->AddItem(pUsername);
 
     // Nickname row (shown during registration)
-    auto* pNickRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("40")}, {_T("padding"), _T("14,1,0,0")}});
+    ui::HBox* pNickRow = new ui::HBox(this);
     pNickRow->SetName(_T("nick_name_panel"));
+    pNickRow->SetAttribute(_T("height"), _T("40"));
+    pNickRow->SetAttribute(_T("padding"), _T("14,1,0,0"));
     pNickRow->SetVisible(false);
     pEnterPanel->AddItem(pNickRow);
 
-    auto* pNickIcon = ui::Create<ui::Control>(this, {{_T("width"), _T("16")}, {_T("height"), _T("16")}, {_T("valign"), _T("center")}, {_T("normalimage"), _T("nickname.png")}, {_T("disabledimage"), _T("nickname.png")}});
+    ui::Control* pNickIcon = new ui::Control(this);
     pNickIcon->SetName(_T("nick_name_icon"));
+    pNickIcon->SetAttribute(_T("width"), _T("16"));
+    pNickIcon->SetAttribute(_T("height"), _T("16"));
+    pNickIcon->SetAttribute(_T("valign"), _T("center"));
+    pNickIcon->SetAttribute(_T("normalimage"), _T("nickname.png"));
+    pNickIcon->SetAttribute(_T("disabledimage"), _T("nickname.png"));
     pNickRow->AddItem(pNickIcon);
 
-    auto* pNickname = ui::Create<ui::RichEdit>(this, {{_T("width"), _T("stretch")}, {_T("height"), _T("35")}, {_T("font"), _T("system_14")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("25,8,8,8")}, {_T("borderround"), _T("5,5")}, {_T("prompttext"), _T("Search")}, {_T("width"), _T("stretch")}, {_T("height"), _T("auto")}, {_T("margin"), _T("10,0,10,0")}, {_T("valign"), _T("center")}, {_T("font"), _T("system_14")}, {_T("prompttext"), _T("Nickname")}});
+    ui::RichEdit* pNickname = new ui::RichEdit(this);
     pNickname->SetClass(_T("simple prompt"));
     pNickname->SetName(_T("nickname"));
+    pNickname->SetAttribute(_T("width"), _T("stretch"));
+    pNickname->SetAttribute(_T("height"), _T("auto"));
+    pNickname->SetAttribute(_T("margin"), _T("10,0,10,0"));
+    pNickname->SetAttribute(_T("valign"), _T("center"));
+    pNickname->SetAttribute(_T("font"), _T("system_14"));
+    pNickname->SetAttribute(_T("prompttext"), _T("Nickname"));
     pNickRow->AddItem(pNickname);
 
     // Password row
-    auto* pPwdRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("41")}, {_T("padding"), _T("14,0,10,1")}, {_T("margin"), _T("0,2,0,0")}});
+    ui::HBox* pPwdRow = new ui::HBox(this);
+    pPwdRow->SetAttribute(_T("height"), _T("41"));
+    pPwdRow->SetAttribute(_T("padding"), _T("14,0,10,1"));
+    pPwdRow->SetAttribute(_T("margin"), _T("0,2,0,0"));
     pEnterPanel->AddItem(pPwdRow);
 
-    auto* pPwdIcon = ui::Create<ui::Control>(this, {{_T("width"), _T("16")}, {_T("height"), _T("16")}, {_T("valign"), _T("center")}, {_T("normalimage"), _T("password_1.png")}, {_T("disabledimage"), _T("password_2.png")}});
+    ui::Control* pPwdIcon = new ui::Control(this);
     pPwdIcon->SetName(_T("passwordicon"));
+    pPwdIcon->SetAttribute(_T("width"), _T("16"));
+    pPwdIcon->SetAttribute(_T("height"), _T("16"));
+    pPwdIcon->SetAttribute(_T("valign"), _T("center"));
+    pPwdIcon->SetAttribute(_T("normalimage"), _T("password_1.png"));
+    pPwdIcon->SetAttribute(_T("disabledimage"), _T("password_2.png"));
     pPwdRow->AddItem(pPwdIcon);
 
-    auto* pPassword = ui::Create<ui::RichEdit>(this, {{_T("width"), _T("stretch")}, {_T("height"), _T("auto")}, {_T("margin"), _T("10,0,10,0")}, {_T("valign"), _T("center")}, {_T("font"), _T("system_14")}, {_T("password"), _T("true")}, {_T("prompttext"), _T("Password")}});
+    ui::RichEdit* pPassword = new ui::RichEdit(this);
     pPassword->SetClass(_T("simple prompt"));
     pPassword->SetName(_T("password"));
+    pPassword->SetAttribute(_T("width"), _T("stretch"));
+    pPassword->SetAttribute(_T("height"), _T("auto"));
+    pPassword->SetAttribute(_T("margin"), _T("10,0,10,0"));
+    pPassword->SetAttribute(_T("valign"), _T("center"));
+    pPassword->SetAttribute(_T("font"), _T("system_14"));
+    pPassword->SetAttribute(_T("password"), _T("true"));
+    pPassword->SetAttribute(_T("prompttext"), _T("Password"));
     pPwdRow->AddItem(pPassword);
 
     // Login hint
-    auto* pLoginIngTip = ui::Create<ui::Label>(this, {{_T("margin"), _T("20,20,20,0")}, {_T("font"), _T("system_12")}});
+    ui::Label* pLoginIngTip = new ui::Label(this);
     pLoginIngTip->SetName(_T("login_ing_tip"));
+    pLoginIngTip->SetAttribute(_T("margin"), _T("20,20,20,0"));
+    pLoginIngTip->SetAttribute(_T("font"), _T("system_12"));
     pLoginIngTip->SetText(_T("Logging in..."));
     pLoginIngTip->SetVisible(false);
     pLoginContent->AddItem(pLoginIngTip);
 
-    auto* pLoginErrorTip = ui::Create<ui::Label>(this, {{_T("margin"), _T("20,20,20,0")}, {_T("font"), _T("system_12")}, {_T("normaltextcolor"), _T("obvious_tip")}});
+    ui::Label* pLoginErrorTip = new ui::Label(this);
     pLoginErrorTip->SetName(_T("login_error_tip"));
+    pLoginErrorTip->SetAttribute(_T("margin"), _T("20,20,20,0"));
+    pLoginErrorTip->SetAttribute(_T("font"), _T("system_12"));
+    pLoginErrorTip->SetAttribute(_T("normaltextcolor"), _T("obvious_tip"));
     pLoginErrorTip->SetVisible(false);
     pLoginContent->AddItem(pLoginErrorTip);
 
     // Login/Register/Cancel buttons
-    auto* pBtnBox = ui::Create<ui::Box>(this, {{_T("width"), _T("240")}, {_T("height"), _T("40")}, {_T("margin"), _T("20,20,20,20")}});
+    ui::Box* pBtnBox = new ui::Box(this);
+    pBtnBox->SetAttribute(_T("width"), _T("240"));
+    pBtnBox->SetAttribute(_T("height"), _T("40"));
+    pBtnBox->SetAttribute(_T("margin"), _T("20,20,20,20"));
     pLoginContent->AddItem(pBtnBox);
 
-    auto* pLoginBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("240")}, {_T("height"), _T("40")}, {_T("font"), _T("system_bold_16")}});
+    ui::Button* pLoginBtn = new ui::Button(this);
     pLoginBtn->SetClass(_T("btn_global_blue_80x30"));
     pLoginBtn->SetName(_T("btn_login"));
+    pLoginBtn->SetAttribute(_T("width"), _T("240"));
+    pLoginBtn->SetAttribute(_T("height"), _T("40"));
+    pLoginBtn->SetAttribute(_T("font"), _T("system_bold_16"));
     pLoginBtn->SetText(_T("Login"));
     pBtnBox->AddItem(pLoginBtn);
 
-    auto* pRegisterMainBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("240")}, {_T("height"), _T("40")}, {_T("font"), _T("system_bold_16")}});
+    ui::Button* pRegisterMainBtn = new ui::Button(this);
     pRegisterMainBtn->SetClass(_T("btn_global_blue_80x30"));
     pRegisterMainBtn->SetName(_T("btn_register"));
+    pRegisterMainBtn->SetAttribute(_T("width"), _T("240"));
+    pRegisterMainBtn->SetAttribute(_T("height"), _T("40"));
+    pRegisterMainBtn->SetAttribute(_T("font"), _T("system_bold_16"));
     pRegisterMainBtn->SetText(_T("Register"));
     pRegisterMainBtn->SetVisible(false);
     pBtnBox->AddItem(pRegisterMainBtn);
 
-    auto* pCancelBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("240")}, {_T("height"), _T("40")}, {_T("font"), _T("system_bold_16")}});
+    ui::Button* pCancelBtn = new ui::Button(this);
     pCancelBtn->SetClass(_T("btn_global_red_80x30"));
     pCancelBtn->SetName(_T("btn_cancel"));
+    pCancelBtn->SetAttribute(_T("width"), _T("240"));
+    pCancelBtn->SetAttribute(_T("height"), _T("40"));
+    pCancelBtn->SetAttribute(_T("font"), _T("system_bold_16"));
     pCancelBtn->SetText(_T("Cancel Login"));
     pCancelBtn->SetVisible(false);
     pBtnBox->AddItem(pCancelBtn);
 
     // Avatar
-    auto* pAvatarBox = ui::Create<ui::Box>(this, {{_T("margin"), _T("0,10,0,0")}, {_T("mouse_enabled"), _T("false")}, {_T("width"), _T("130")}, {_T("height"), _T("130")}, {_T("halign"), _T("center")}});
+    ui::Box* pAvatarBox = new ui::Box(this);
+    pAvatarBox->SetAttribute(_T("margin"), _T("0,10,0,0"));
+    pAvatarBox->SetAttribute(_T("mouse_enabled"), _T("false"));
+    pAvatarBox->SetAttribute(_T("width"), _T("130"));
+    pAvatarBox->SetAttribute(_T("height"), _T("130"));
+    pAvatarBox->SetAttribute(_T("halign"), _T("center"));
     pRoot->AddItem(pAvatarBox);
 
-    auto* pLogo = ui::Create<ui::Control>(this, {{_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
+    ui::Control* pLogo = new ui::Control(this);
+    pLogo->SetAttribute(_T("width"), _T("auto"));
+    pLogo->SetAttribute(_T("height"), _T("auto"));
+    pLogo->SetAttribute(_T("halign"), _T("center"));
+    pLogo->SetAttribute(_T("valign"), _T("center"));
     pLogo->SetBkImage(_T("logo.png"));
     pAvatarBox->AddItem(pLogo);
 
-    auto* pHeadIcon = ui::Create<ui::Button>(this, {{_T("width"), _T("106")}, {_T("height"), _T("106")}, {_T("border_round"), _T("106,106,106,106")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}, {_T("fade_alpha"), _T("true")}});
+    ui::Button* pHeadIcon = new ui::Button(this);
     pHeadIcon->SetName(_T("headicon"));
+    pHeadIcon->SetAttribute(_T("width"), _T("106"));
+    pHeadIcon->SetAttribute(_T("height"), _T("106"));
+    pHeadIcon->SetAttribute(_T("border_round"), _T("106,106,106,106"));
+    pHeadIcon->SetAttribute(_T("halign"), _T("center"));
+    pHeadIcon->SetAttribute(_T("valign"), _T("center"));
+    pHeadIcon->SetAttribute(_T("mouse_enabled"), _T("false"));
+    pHeadIcon->SetAttribute(_T("fade_alpha"), _T("true"));
     pAvatarBox->AddItem(pHeadIcon);
 
-    auto* pMask = ui::Create<ui::Control>(this, {{_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}});
+    ui::Control* pMask = new ui::Control(this);
+    pMask->SetAttribute(_T("width"), _T("auto"));
+    pMask->SetAttribute(_T("height"), _T("auto"));
     pMask->SetBkImage(_T("mask.png"));
+    pMask->SetAttribute(_T("halign"), _T("center"));
+    pMask->SetAttribute(_T("valign"), _T("center"));
+    pMask->SetAttribute(_T("mouse_enabled"), _T("false"));
     pAvatarBox->AddItem(pMask);
 
-    AttachBox(pRoot);
+    AttachBox(pOuter);
 }
 
 void ChatForm::OnInitWindow()
@@ -297,6 +501,7 @@ void ChatForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
+
 
     if (m_layoutType == kWechat) {
         SetCaptionRect(ui::UiRect(0, 0, 0, 35), false);
@@ -312,7 +517,14 @@ void ChatForm::OnInitWindow()
 void ChatForm::ShowCustomWindow(LayoutType layoutType)
 {
     ChatForm* window = new ChatForm(layoutType);
-    window->CreateWnd(nullptr, ui::WindowCreateParam(_T("chat (Pure Code)"), true));
+    ui::WindowCreateParam createParam(_T("chat (Pure Code)"), true);
+    if (layoutType == kWechat) {
+        //Match wechat.xml: size="1024,768".
+        createParam.m_nWidth = 1024;
+        createParam.m_nHeight = 768;
+    }
+    //login.xml has no explicit size; the root auto-resizes to its content.
+    window->CreateWnd(nullptr, createParam);
     window->PostQuitMsgWhenClosed(true);
     window->ShowWindow(ui::kSW_SHOW_NORMAL);
 }

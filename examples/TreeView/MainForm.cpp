@@ -149,6 +149,7 @@ void MainForm::OnInitWindow()
     if (pComputerNode != nullptr) {
         m_pTree->SelectTreeNode(pComputerNode);
     }
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::Refresh()

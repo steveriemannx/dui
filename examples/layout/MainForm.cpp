@@ -20,6 +20,7 @@ DString MainForm::GetSkinFile()
 
 void MainForm::OnInitWindow()
 {
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnCloseWindow()

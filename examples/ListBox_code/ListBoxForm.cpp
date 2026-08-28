@@ -33,56 +33,82 @@ void ListBoxForm::BuildUI()
              _T(" height=\"20\" text_padding=\"20,0,0,0\" font=\"system_14\" normal_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'\" disabled_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'\" selected_normal_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'\" selected_disabled_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'\""));
 
     // Corresponding to the list_box.xml layout
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
+    ui::VBox* pRoot = new ui::VBox(this);
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
+    ui::HBox* pCaption = new ui::HBox(this);
+    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
+    pCaption->SetAttribute(_T("width"), _T("stretch"));
+    pCaption->SetAttribute(_T("height"), _T("36"));
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{_T("font"), _T("system_14")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8")}, {_T("width"), _T("stretch")}, {_T("mouse_enabled"), _T("false")}});
+    ui::Label* pTitle = new ui::Label(this);
     pTitle->SetText(_T("List (VTileListBox | HTileListBox | VListBox | HListBox)"));
+    pTitle->SetAttribute(_T("font"), _T("system_14"));
+    pTitle->SetAttribute(_T("valign"), _T("center"));
+    pTitle->SetAttribute(_T("margin"), _T("8"));
+    pTitle->SetAttribute(_T("width"), _T("stretch"));
+    pTitle->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pTitle);
 
-    auto* pCaptionBtns = ui::Create<ui::HBox>(this, {{_T("width"), _T("auto")}});
+    ui::HBox* pCaptionBtns = new ui::HBox(this);
+    pCaptionBtns->SetAttribute(_T("width"), _T("auto"));
     pCaption->AddItem(pCaptionBtns);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Button* pMinBtn = new ui::Button(this);
     pMinBtn->SetClass(_T("btn_wnd_min_11"));
+    pMinBtn->SetAttribute(_T("height"), _T("32"));
+    pMinBtn->SetAttribute(_T("width"), _T("40"));
     pMinBtn->SetName(_T("minbtn"));
+    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pMinBtn->SetToolTipText(_T("Minimize"));
     pCaptionBtns->AddItem(pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Box* pMaxBox = new ui::Box(this);
+    pMaxBox->SetAttribute(_T("height"), _T("stretch"));
+    pMaxBox->SetAttribute(_T("width"), _T("40"));
+    pMaxBox->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pCaptionBtns->AddItem(pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
+    ui::Button* pMaxBtn = new ui::Button(this);
     pMaxBtn->SetClass(_T("btn_wnd_max_11"));
+    pMaxBtn->SetAttribute(_T("height"), _T("32"));
+    pMaxBtn->SetAttribute(_T("width"), _T("stretch"));
     pMaxBtn->SetName(_T("maxbtn"));
     pMaxBtn->SetToolTipText(_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
+    ui::Button* pRestoreBtn = new ui::Button(this);
     pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
+    pRestoreBtn->SetAttribute(_T("height"), _T("32"));
+    pRestoreBtn->SetAttribute(_T("width"), _T("stretch"));
     pRestoreBtn->SetName(_T("restorebtn"));
     pRestoreBtn->SetVisible(false);
     pRestoreBtn->SetToolTipText(_T("Restore"));
     pMaxBox->AddItem(pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
+    ui::Button* pCloseBtn = new ui::Button(this);
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
+    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
+    pCloseBtn->SetAttribute(_T("width"), _T("40"));
     pCloseBtn->SetName(_T("closebtn"));
+    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
     pCloseBtn->SetToolTipText(_T("Close"));
     pCaptionBtns->AddItem(pCloseBtn);
 
     // List area
-    auto* pContent = ui::Create<ui::Box>(this, {});
+    ui::Box* pContent = new ui::Box(this);
     pRoot->AddItem(pContent);
 
-    auto* pListBox = ui::Create<ui::VListBox>(this, {{_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("multi_select"), _T("false")}, {_T("scroll_select"), _T("false")}});
+    ui::VListBox* pListBox = new ui::VListBox(this);
     pListBox->SetName(_T("list"));
     pListBox->SetBkColor(_T("bk_wnd_lightcolor"));
+    pListBox->SetAttribute(_T("vscrollbar"), _T("true"));
+    pListBox->SetAttribute(_T("hscrollbar"), _T("true"));
+    pListBox->SetAttribute(_T("multi_select"), _T("false"));
+    pListBox->SetAttribute(_T("scroll_select"), _T("false"));
     pContent->AddItem(pListBox);
 
     AttachBox(pRoot);
@@ -96,6 +122,7 @@ void ListBoxForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
+
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);

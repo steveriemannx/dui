@@ -90,6 +90,11 @@ MyChildWindowEvents::MyChildWindowEvents(ui::ChildWindow* pChildWindow,
         pFullscreen->AttachUnSelect([this](const ui::EventArgs&) {
             if (m_pChildWindow != nullptr) {
                 ui::Window* pWindow = m_pChildWindow->GetWindow();
+                //Only this child's own control-fullscreen should be torn down
+                //when its checkbox is unchecked. Checking only IsWindowFullscreen()
+                //is wrong: if the control fullscreen was already detached (for
+                //example after ESC/native exit) while the window itself is still
+                //fullscreen, unchecking must not exit the whole window's fullscreen.
                 if ((pWindow != nullptr) && (pWindow->GetFullscreenControl() == m_pChildWindow.get())) {
                     pWindow->ExitControlFullscreen();
                 }

@@ -3,7 +3,7 @@
 
 #include "dui/Render/IRender.h"
 
-#if (defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)) && !defined(DUI_BUILD_FOR_WIN)
+#if (defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_MACOS)) && !defined(DUI_BUILD_FOR_WIN)
 
 namespace ui 
 {

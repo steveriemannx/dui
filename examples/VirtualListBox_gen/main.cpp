@@ -22,7 +22,19 @@ private:
 
         // Create a default centered window with shadow
         MainForm* window = new MainForm();
-        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("VirtualListBox (Generated Code)"), true));
+        ui::WindowCreateParam createParam(_T("VirtualListBox (Generated Code)"), true);
+        ui::UiRect rcWork;
+        ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
+        createParam.m_nWidth = (int32_t)(rcWork.Width() * 0.75f);
+        createParam.m_nHeight = (int32_t)(rcWork.Height() * 0.75f);
+        // Match the XML min_size="750,500" clamp applied by WindowBuilder.
+        if (createParam.m_nWidth < 750) {
+            createParam.m_nWidth = 750;
+        }
+        if (createParam.m_nHeight < 500) {
+            createParam.m_nHeight = 500;
+        }
+        window->CreateWnd(nullptr, createParam);
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -33,9 +45,4 @@ private:
     }
 };
 
-int main()
-{
-    App app;
-    app.Run();
-    return 0;
-}
+DUI_APP_ENTRY(App)

@@ -22,7 +22,12 @@ private:
 
         // Create a default centered window with shadow
         MainForm* window = new MainForm();
-        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("layout"), true));
+                ui::WindowCreateParam createParam(_T("layout"), true);
+        ui::UiRect rcWork;
+        ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
+        createParam.m_nWidth = (int32_t)(rcWork.Width() * 0.75f);
+        createParam.m_nHeight = (int32_t)(rcWork.Height() * 0.75f);
+        window->CreateWnd(nullptr, createParam);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
 
@@ -32,9 +37,4 @@ private:
     }
 };
 
-int main()
-{
-    App app;
-    app.Run();
-    return 0;
-}
+DUI_APP_ENTRY(App)

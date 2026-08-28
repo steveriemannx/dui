@@ -11,7 +11,7 @@ get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
 # Embed bin/resources into the executable as a custom binary archive (Qt qrc style, no zip)
-set(EMBED_RES_DIR "${DUI_ROOT}/resources")
+set(EMBED_RES_DIR "${DUI_ROOT}/bin/resources")
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

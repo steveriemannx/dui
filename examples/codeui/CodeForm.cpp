@@ -40,6 +40,13 @@ void CodeForm::OnInitWindow()
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     // Define inline button classes using pre-registered font IDs (from ThemeInit.h)
     AddClass(_T("codeui_close"), _T(" text=\"X\" font=\"system_bold_12\" text_align=\"hcenter,vcenter\"")
         _T(" textcolor=\"#FFFFFFFF\" hottextcolor=\"#FFFFFFFF\" pushedtextcolor=\"#FFFFFFFF\"")
@@ -75,7 +82,9 @@ void CodeForm::OnInitWindow()
     // Title
     ui::Label* pTitle = new ui::Label(this);
     pTitle->SetAttribute(_T("text"), _T("  Code UI Demo"));
-    pTitle->SetAttribute(_T("font"), _T("system_12"));
+    pTitle->SetAttribute(_T("font"), _T("system_bold_14"));
+    pTitle->SetAttribute(_T("height"), _T("stretch"));
+    pTitle->SetAttribute(_T("valign"), _T("center"));
     pTitle->SetAttribute(_T("text_align"), _T("vcenter"));
     pTitle->SetAttribute(_T("textcolor"), _T("darkcolor"));
     pTitle->SetAttribute(_T("mouse_enabled"), _T("false"));
@@ -126,21 +135,24 @@ void CodeForm::OnInitWindow()
     // Content area
     ui::VBox* pContent = new ui::VBox(this);
     pContent->SetBkColor(_T("bk_wnd_darkcolor"));
-    pContent->SetAttribute(_T("valign"), _T("center"));
-    pContent->SetAttribute(_T("halign"), _T("center"));
+    pContent->SetAttribute(_T("width"), _T("stretch"));
+    pContent->SetAttribute(_T("height"), _T("stretch"));
+    pContent->SetAttribute(_T("child_valign"), _T("center"));
+    pContent->SetAttribute(_T("child_halign"), _T("center"));
     pRoot->AddItem(pContent);
 
     ui::Label* pMain = new ui::Label(this);
     pMain->SetAttribute(_T("text"), _T("Standalone Pure C++ UI"));
-    pMain->SetAttribute(_T("font"), _T("system_bold_16"));
+    pMain->SetAttribute(_T("font"), _T("system_bold_20"));
+    pMain->SetAttribute(_T("width"), _T("stretch"));
     pMain->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
-    pMain->SetAttribute(_T("text_padding"), _T("0,0,0,10"));
+    pMain->SetAttribute(_T("text_padding"), _T("0,0,0,18"));
     pMain->SetAttribute(_T("textcolor"), _T("darkcolor"));
     pContent->AddItem(pMain);
 
     ui::Label* pSub = new ui::Label(this);
     pSub->SetAttribute(_T("text"), _T("Zero external dependencies.\nAll theme data and layout defined in C++.\nCopy to any machine and run directly."));
-    pSub->SetAttribute(_T("font"), _T("system_12"));
+    pSub->SetAttribute(_T("font"), _T("system_14"));
     pSub->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
     pSub->SetAttribute(_T("width"), _T("stretch"));
     pSub->SetAttribute(_T("textcolor"), _T("gray"));

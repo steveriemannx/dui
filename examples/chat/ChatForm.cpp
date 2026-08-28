@@ -23,7 +23,7 @@ DString ChatForm::GetSkinFile()
 
 void ChatForm::OnInitWindow()
 {
-
+    BaseClass::OnInitWindow();
 }
 
 void ChatForm::ShowCustomWindow(const DString& class_name, const DString& theme_directory, const DString& layout_xml)

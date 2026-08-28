@@ -34,6 +34,7 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
     attrs.m_bSizeBoxDefined = true;
     attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
     attrs.m_bCaptionDefined = true;
+
     BaseClass::GetCreateWindowAttributes(attrs);
 }
 
@@ -45,6 +46,7 @@ void MainForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
+
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);

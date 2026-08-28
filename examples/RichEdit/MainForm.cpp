@@ -481,6 +481,7 @@ void MainForm::OnInitWindow()
             return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 uint32_t MainForm::GetNextZoomPercent(uint32_t nOldZoomPercent, bool bZoomIn) const

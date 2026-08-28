@@ -79,6 +79,7 @@ void ListBoxForm::OnInitWindow()
 
     //Test the ListBox events
     TestListBoxEvents(m_pListBox);
+    BaseClass::OnInitWindow();
 }
 
 void ListBoxForm::TestListBoxEvents(ui::ListBox* pListBox)

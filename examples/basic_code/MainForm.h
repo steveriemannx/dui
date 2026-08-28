@@ -3,9 +3,8 @@
 
 #include "dui/dui.h"
 
-/** Mode 3 (pure code): the window layout is built entirely with C++ code, with no layout XML.
- *  The concise ui::Make / ui::Add helpers make the pure-code style feel much closer to Qt/gtkmm.
- */
+/** Mode 3 (pure code): the window layout is built entirely with C++ code, with no layout XML
+*/
 class MainForm : public ui::WindowImplBase
 {
     typedef ui::WindowImplBase BaseClass;
@@ -17,6 +16,9 @@ public:
     virtual DString GetSkinFile() override;
     virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
     virtual void OnInitWindow() override;
+
+private:
+    bool OnButtonClick(const ui::EventArgs& msg);
 };
 
 #endif

@@ -83,10 +83,9 @@ void BrowserBox::InitBrowserBox(const DString& url)
     // Load the default web page
     DString html_path = url;
     if (html_path.empty()) {
-        // The resource root already includes the active theme (default/windows11)
-        ui::FilePath resourcePath = ui::GlobalManager::Instance().GetResourcePath();
+        ui::FilePath resourcePath = ui::GlobalManager::GetDefaultResourcePath(true);
         resourcePath.NormalizeDirectoryPath();
-        resourcePath += _T("cef_browser/cef.html");
+        resourcePath += _T("themes/default/cef_browser/cef.html");
         html_path = resourcePath.ToString();
         html_path = _T("file:///") + html_path;
     }

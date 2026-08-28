@@ -20,7 +20,10 @@ private:
         ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
         MainForm* window = new MainForm();
-        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("Generated Code Demo"), true));
+                ui::WindowCreateParam createParam(_T("Generated Code Demo"), true);
+        createParam.m_nWidth = 1000;
+        createParam.m_nHeight = 600;
+        window->CreateWnd(nullptr, createParam);
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -31,9 +34,4 @@ private:
     }
 };
 
-int main()
-{
-    App app;
-    app.Run();
-    return 0;
-}
+DUI_APP_ENTRY(App)

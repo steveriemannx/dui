@@ -13,7 +13,7 @@ MainForm::~MainForm()
 
 DString MainForm::GetSkinFolder()
 {
-    return _T("");
+    return _T("xml_preview");
 }
 
 DString MainForm::GetSkinFile()
@@ -22,139 +22,253 @@ DString MainForm::GetSkinFile()
     return _T("");
 }
 
+void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
+{
+    // Corresponding to the <Window> attributes in xml_preview.xml
+    ui::UiRect rcWork;
+    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
+    attrs.m_bInitSizeDefined = true;
+    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.75f);
+    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.75f);
+    attrs.m_bShadowAttached = true;
+    attrs.m_bShadowAttachedDefined = true;
+    attrs.m_bIsLayeredWindow = true;
+    attrs.m_bIsLayeredWindowDefined = true;
+    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
+    attrs.m_bSizeBoxDefined = true;
+    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
+    attrs.m_bCaptionDefined = true;
+
+    // WindowBuilder clamps the initial size to the XML min_size at parse time.
+    if (attrs.m_szInitSize.cx < 750) {
+        attrs.m_szInitSize.cx = 750;
+    }
+    if (attrs.m_szInitSize.cy < 500) {
+        attrs.m_szInitSize.cy = 500;
+    }
+
+    BaseClass::GetCreateWindowAttributes(attrs);
+}
+
+void MainForm::PreInitWindow()
+{
+    BaseClass::PreInitWindow();
+
+    // No layout XML is loaded, so Window::ParseWindowXml cannot establish the
+    // window resource sub-path; set it explicitly so resources resolve from
+    // the "xml_preview" folder.
+    SetResourcePath(ui::FilePath(_T("xml_preview")));
+    SetWindowMinimumSize(ui::UiSize(750, 500), true);
+}
+
 void MainForm::BuildUI()
 {
     // Corresponding to the xml_preview.xml layout
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
+    ui::VBox* pRoot = new ui::VBox(this);
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
+    ui::HBox* pCaption = new ui::HBox(this);
+    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
+    pCaption->SetAttribute(_T("width"), _T("stretch"));
+    pCaption->SetAttribute(_T("height"), _T("36"));
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    auto* pCaptionLeft = ui::Create<ui::HBox>(this, {{_T("margin"), _T("0,0,30,0")}, {_T("valign"), _T("center")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}});
+    ui::HBox* pCaptionLeft = new ui::HBox(this);
+    pCaptionLeft->SetAttribute(_T("margin"), _T("0,0,30,0"));
+    pCaptionLeft->SetAttribute(_T("valign"), _T("center"));
+    pCaptionLeft->SetAttribute(_T("width"), _T("auto"));
+    pCaptionLeft->SetAttribute(_T("height"), _T("auto"));
+    pCaptionLeft->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pCaptionLeft);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("mouse_enabled"), _T("false")}});
+    ui::Label* pTitle = new ui::Label(this);
     pTitle->SetText(_T("XML File UI Preview Test"));
+    pTitle->SetAttribute(_T("valign"), _T("center"));
+    pTitle->SetAttribute(_T("margin"), _T("8,0,0,0"));
+    pTitle->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaptionLeft->AddItem(pTitle);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
+    ui::Control* pSpacer = new ui::Control(this);
+    pSpacer->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pSpacer);
 
-    auto* pCaptionRight = ui::Create<ui::HBox>(this, {{_T("margin"), _T("0,0,0,0")}, {_T("valign"), _T("center")}, {_T("width"), _T("auto")}, {_T("height"), _T("36")}});
+    ui::HBox* pCaptionRight = new ui::HBox(this);
+    pCaptionRight->SetAttribute(_T("margin"), _T("0,0,0,0"));
+    pCaptionRight->SetAttribute(_T("valign"), _T("center"));
+    pCaptionRight->SetAttribute(_T("width"), _T("auto"));
+    pCaptionRight->SetAttribute(_T("height"), _T("36"));
     pCaption->AddItem(pCaptionRight);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Button* pMinBtn = new ui::Button(this);
     pMinBtn->SetClass(_T("btn_wnd_min_11"));
+    pMinBtn->SetAttribute(_T("height"), _T("32"));
+    pMinBtn->SetAttribute(_T("width"), _T("40"));
     pMinBtn->SetName(_T("minbtn"));
+    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pMinBtn->SetToolTipText(_T("Minimize"));
     pCaptionRight->AddItem(pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
+    ui::Box* pMaxBox = new ui::Box(this);
+    pMaxBox->SetAttribute(_T("height"), _T("stretch"));
+    pMaxBox->SetAttribute(_T("width"), _T("40"));
+    pMaxBox->SetAttribute(_T("margin"), _T("0,2,0,2"));
     pCaptionRight->AddItem(pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
+    ui::Button* pMaxBtn = new ui::Button(this);
     pMaxBtn->SetClass(_T("btn_wnd_max_11"));
+    pMaxBtn->SetAttribute(_T("height"), _T("32"));
+    pMaxBtn->SetAttribute(_T("width"), _T("stretch"));
     pMaxBtn->SetName(_T("maxbtn"));
     pMaxBtn->SetToolTipText(_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
+    ui::Button* pRestoreBtn = new ui::Button(this);
     pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
+    pRestoreBtn->SetAttribute(_T("height"), _T("32"));
+    pRestoreBtn->SetAttribute(_T("width"), _T("stretch"));
     pRestoreBtn->SetName(_T("restorebtn"));
     pRestoreBtn->SetVisible(false);
     pRestoreBtn->SetToolTipText(_T("Restore"));
     pMaxBox->AddItem(pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
+    ui::Button* pCloseBtn = new ui::Button(this);
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
+    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
+    pCloseBtn->SetAttribute(_T("width"), _T("40"));
     pCloseBtn->SetName(_T("closebtn"));
+    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
     pCloseBtn->SetToolTipText(_T("Close"));
     pCaptionRight->AddItem(pCloseBtn);
 
     // Work area
-    auto* pContent = ui::Create<ui::VBox>(this, {{_T("padding"), _T("10,10,10,10")}});
+    ui::VBox* pContent = new ui::VBox(this);
+    pContent->SetAttribute(_T("padding"), _T("10,10,10,10"));
     pRoot->AddItem(pContent);
 
-    auto* pToolArea = ui::Create<ui::VBox>(this, {{_T("height"), _T("auto")}});
+    ui::VBox* pToolArea = new ui::VBox(this);
+    pToolArea->SetAttribute(_T("height"), _T("auto"));
     pContent->AddItem(pToolArea);
 
     // XML file path row
-    auto* pPathRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
+    ui::HBox* pPathRow = new ui::HBox(this);
+    pPathRow->SetAttribute(_T("height"), _T("auto"));
     pToolArea->AddItem(pPathRow);
 
-    auto* pPathLabel = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}});
+    ui::Label* pPathLabel = new ui::Label(this);
     pPathLabel->SetText(_T("XML File Path:"));
+    pPathLabel->SetAttribute(_T("valign"), _T("center"));
     pPathRow->AddItem(pPathLabel);
 
-    auto* pPathValue = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("width"), _T("100%")}, {_T("path_ellipsis"), _T("true")}, {_T("single_line"), _T("true")}, {_T("auto_tooltip"), _T("true")}});
+    ui::Label* pPathValue = new ui::Label(this);
     pPathValue->SetName(_T("xml_file_path"));
+    pPathValue->SetAttribute(_T("valign"), _T("center"));
+    pPathValue->SetAttribute(_T("width"), _T("100%"));
+    pPathValue->SetAttribute(_T("path_ellipsis"), _T("true"));
+    pPathValue->SetAttribute(_T("single_line"), _T("true"));
+    pPathValue->SetAttribute(_T("auto_tooltip"), _T("true"));
     pPathRow->AddItem(pPathValue);
 
     // Load result row
-    auto* pResultRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
+    ui::HBox* pResultRow = new ui::HBox(this);
+    pResultRow->SetAttribute(_T("height"), _T("auto"));
     pToolArea->AddItem(pResultRow);
 
-    auto* pResultLabel = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}});
+    ui::Label* pResultLabel = new ui::Label(this);
     pResultLabel->SetText(_T("XML Load Result:"));
+    pResultLabel->SetAttribute(_T("valign"), _T("center"));
     pResultRow->AddItem(pResultLabel);
 
-    auto* pResultValue = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("width"), _T("100%")}});
+    ui::Label* pResultValue = new ui::Label(this);
     pResultValue->SetName(_T("xml_file_load_result"));
+    pResultValue->SetAttribute(_T("valign"), _T("center"));
+    pResultValue->SetAttribute(_T("width"), _T("100%"));
     pResultRow->AddItem(pResultValue);
 
     // Toolbar row
-    auto* pToolRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
+    ui::HBox* pToolRow = new ui::HBox(this);
+    pToolRow->SetAttribute(_T("height"), _T("auto"));
     pToolArea->AddItem(pToolRow);
 
-    auto* pHint = ui::Create<ui::Label>(this, {{_T("text_align"), _T("vcenter")}, {_T("valign"), _T("center")}, {_T("height"), _T("30")}});
+    ui::Label* pHint = new ui::Label(this);
     pHint->SetName(_T("xml_file_path"));
     pHint->SetText(_T("You can drag an XML file into the display area below to preview it"));
+    pHint->SetAttribute(_T("text_align"), _T("vcenter"));
+    pHint->SetAttribute(_T("valign"), _T("center"));
+    pHint->SetAttribute(_T("height"), _T("30"));
     pToolRow->AddItem(pHint);
 
-    auto* pToolSpacer = ui::Create<ui::Control>(this, {});
+    ui::Control* pToolSpacer = new ui::Control(this);
     pToolRow->AddItem(pToolSpacer);
 
-    auto* pAutoRefresh = ui::Create<ui::CheckBox>(this, {{_T("margin"), _T("0,0,8,0")}});
+    ui::CheckBox* pAutoRefresh = new ui::CheckBox(this);
     pAutoRefresh->SetClass(_T("checkbox_2"));
     pAutoRefresh->SetName(_T("checkbox_auto_refresh"));
     pAutoRefresh->SetText(_T("Auto Refresh"));
+    pAutoRefresh->SetAttribute(_T("margin"), _T("0,0,8,0"));
     pAutoRefresh->Selected(false);
     pToolRow->AddItem(pAutoRefresh);
 
-    auto* pIntervalLabel = ui::Create<ui::Label>(this, {{_T("text_align"), _T("vcenter")}, {_T("valign"), _T("center")}});
+    ui::Label* pIntervalLabel = new ui::Label(this);
     pIntervalLabel->SetText(_T("Interval (seconds):"));
+    pIntervalLabel->SetAttribute(_T("text_align"), _T("vcenter"));
+    pIntervalLabel->SetAttribute(_T("valign"), _T("center"));
     pToolRow->AddItem(pIntervalLabel);
 
-    auto* pIntervalEdit = ui::Create<ui::RichEdit>(this, {{_T("min_number"), _T("1")}, {_T("max_number"), _T("60")}, {_T("limit_text"), _T("2")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,0,8,0")}});
+    ui::RichEdit* pIntervalEdit = new ui::RichEdit(this);
     pIntervalEdit->SetClass(_T("simple simple_border rich_edit_spin"));
     pIntervalEdit->SetName(_T("auto_refresh_interval"));
+    pIntervalEdit->SetAttribute(_T("min_number"), _T("1"));
+    pIntervalEdit->SetAttribute(_T("max_number"), _T("60"));
+    pIntervalEdit->SetAttribute(_T("limit_text"), _T("2"));
     pIntervalEdit->SetText(_T("5"));
+    pIntervalEdit->SetAttribute(_T("height"), _T("30"));
+    pIntervalEdit->SetAttribute(_T("margin"), _T("0,0,8,0"));
     pToolRow->AddItem(pIntervalEdit);
 
-    auto* pClearBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("120")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,0,8,0")}});
+    ui::Button* pClearBtn = new ui::Button(this);
     pClearBtn->SetClass(_T("btn_global_color_gray"));
     pClearBtn->SetName(_T("btn_clear_xml_file"));
     pClearBtn->SetText(_T("Clear Preview"));
+    pClearBtn->SetAttribute(_T("width"), _T("120"));
+    pClearBtn->SetAttribute(_T("height"), _T("30"));
+    pClearBtn->SetAttribute(_T("border_round"), _T("3,3"));
+    pClearBtn->SetAttribute(_T("margin"), _T("0,0,8,0"));
     pToolRow->AddItem(pClearBtn);
 
-    auto* pBrowseBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("120")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,0,10,0")}});
+    ui::Button* pBrowseBtn = new ui::Button(this);
     pBrowseBtn->SetClass(_T("btn_global_color_gray"));
     pBrowseBtn->SetName(_T("btn_browse_xml_file"));
     pBrowseBtn->SetText(_T("Open XML File..."));
+    pBrowseBtn->SetAttribute(_T("width"), _T("120"));
+    pBrowseBtn->SetAttribute(_T("height"), _T("30"));
+    pBrowseBtn->SetAttribute(_T("border_round"), _T("3,3"));
+    pBrowseBtn->SetAttribute(_T("margin"), _T("0,0,10,0"));
     pToolRow->AddItem(pBrowseBtn);
 
     // XML preview area (inside a scroll container so controls.xml can scroll)
-    auto* pScroll = ui::Create<ui::VScrollBox>(this, {{_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("margin"), _T("4,4,4,4")}});
+    ui::VScrollBox* pScroll = new ui::VScrollBox(this);
     pScroll->SetName(_T("xml_preview_scroll"));
-    pContent->AddItem(pScroll);
-
-    auto* pXmlBox = ui::Create<ui::XmlBox>(this, {{_T("border_color"), _T("splitline_level1")}, {_T("border_size"), _T("1")}, {_T("border_dash_style"), _T("dash")}, {_T("margin"), _T("0")}, {_T("width"), _T("1100")}, {_T("height"), _T("800")}, {_T("mouse_child"), _T("true")}, {_T("res_path"), _T("controls")}, {_T("xml_file_path"), _T("controls.xml")}});
+    pScroll->SetAttribute(_T("vscrollbar"), _T("true"));
+    pScroll->SetAttribute(_T("hscrollbar"), _T("true"));
+    pScroll->SetAttribute(_T("width"), _T("stretch"));
+    pScroll->SetAttribute(_T("height"), _T("stretch"));
+    pScroll->SetAttribute(_T("margin"), _T("4,4,4,4"));
+    ui::XmlBox* pXmlBox = new ui::XmlBox(this);
     pXmlBox->SetName(_T("xml_box_test"));
     pXmlBox->SetBkColor(_T("white"));
+    pXmlBox->SetAttribute(_T("border_color"), _T("splitline_level1"));
+    pXmlBox->SetAttribute(_T("border_size"), _T("1"));
+    pXmlBox->SetAttribute(_T("border_dash_style"), _T("dash"));
+    pXmlBox->SetAttribute(_T("margin"), _T("0"));
+    pXmlBox->SetAttribute(_T("width"), _T("1100"));
+    pXmlBox->SetAttribute(_T("height"), _T("800"));
+    pXmlBox->SetAttribute(_T("mouse_child"), _T("true"));
+    pXmlBox->SetAttribute(_T("res_path"), _T("controls"));
+    pXmlBox->SetAttribute(_T("xml_file_path"), _T("controls.xml"));
     pScroll->AddItem(pXmlBox);
+    pContent->AddItem(pScroll);
 
     AttachBox(pRoot);
 }
@@ -162,8 +276,15 @@ void MainForm::BuildUI()
 
 void MainForm::OnInitWindow()
 {
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
+
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
 
     BuildUI();
 
@@ -183,7 +304,6 @@ void MainForm::OnInitWindow()
             pXmlFileLoadResult->SetText(_T("OK"));
         }
     }
-
     auto FillSourceEdits = [pXmlBox]() {
         std::vector<uint8_t> xmlData;
         if (ui::FileUtil::ReadFileData(pXmlBox->GetXmlFileFullPath(), xmlData) && !xmlData.empty()) {
@@ -255,6 +375,7 @@ void MainForm::OnInitWindow()
         }
     };
     FillDemoList();
+
 
     pXmlBox->AddLoadXmlCallback([this, pXmlBox, pXmlFilePath, pXmlFileLoadResult, FillSourceEdits, FillDemoCombos, FillDemoList](const ui::FilePath& xmlPath, bool bSuccess) {
             if (bSuccess) {

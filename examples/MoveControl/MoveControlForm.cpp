@@ -50,4 +50,5 @@ void MoveControlForm::OnInitWindow()
             m_my_app->AddItem(pAppUi);
         }
     }
+    BaseClass::OnInitWindow();
 }

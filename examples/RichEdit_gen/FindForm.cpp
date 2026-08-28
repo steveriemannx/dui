@@ -169,6 +169,14 @@ void FindForm::BuildUI()
 
 void FindForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
+
     // Hand-written pure code UI (corresponds to the find.xml layout, equivalent to the generator output)
     BuildUI();
 
@@ -216,6 +224,7 @@ void FindForm::OnInitWindow()
                 return true;
             });
     }
+    BaseClass::OnInitWindow();
 }
 
 void FindForm::OnFindNext()

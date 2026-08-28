@@ -31,6 +31,7 @@ void RenderForm::OnInitWindow()
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
@@ -85,9 +86,7 @@ void RenderForm::OnInitWindow()
             (void)nItemIndex;
             int ii = 0;
         };
-    if (pMenuBar != nullptr) {
-        pMenuBar->AttachMenuBarItemActivated(callback);
-    }
+    pMenuBar->AttachMenuBarItemActivated(callback);
     BaseClass::OnInitWindow();
 }
 

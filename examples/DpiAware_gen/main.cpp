@@ -24,7 +24,10 @@ private:
         //
         // Create a default centered window with a shadow
         MainForm* window = new MainForm();
-        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("DpiAware (Generated Code)"), true));
+                ui::WindowCreateParam createParam(_T("DpiAware (Generated Code)"), true);
+        createParam.m_nWidth = 800;
+        createParam.m_nHeight = 600;
+        window->CreateWnd(nullptr, createParam);
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -35,9 +38,4 @@ private:
     }
 };
 
-int main()
-{
-    App app;
-    app.Run();
-    return 0;
-}
+DUI_APP_ENTRY(App)

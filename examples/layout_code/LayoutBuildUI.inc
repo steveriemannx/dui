@@ -1,640 +1,4827 @@
-﻿// 简化后的纯代码 UI：使用 ui::Make / ui::Add 构建，替代逐行 SetAttribute。
-static void BuildUIFromXml(ui::Window* pWindow)
-{
-    auto* p0 = ui::Create<ui::VBox>(pWindow, {{_T("bkcolor"), _T("bk_wnd_darkcolor")}});
-    auto* p1 = ui::Attach<ui::HBox>(p0, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}, {_T("bkcolor"), _T("bk_wnd_lightcolor")}});
-    auto* p2 = ui::Attach<ui::HBox>(p1, {{_T("margin"), _T("0,0,30,0")}, {_T("valign"), _T("center")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}});
-    auto* p3 = ui::Attach<ui::Control>(p2, {{_T("width"), _T("18")}, {_T("height"), _T("18")}, {_T("bkimage"), _T("public/caption/logo.svg")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}});
-    auto* p4 = ui::Attach<ui::Label>(p2, {{_T("text"), _T("容器布局测试")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("mouse_enabled"), _T("false")}});
-    auto* p5 = ui::Attach<ui::Control>(p1, {{_T("mouse_enabled"), _T("false")}});
-    auto* p6 = ui::Attach<ui::HBox>(p1, {{_T("margin"), _T("0,0,0,0")}, {_T("valign"), _T("center")}, {_T("width"), _T("auto")}, {_T("height"), _T("36")}});
-    auto* p7 = ui::Attach<ui::Button>(p6, {{_T("class"), _T("btn_wnd_min_11")}, {_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("name"), _T("minbtn")}, {_T("margin"), _T("0,2,0,2")}, {_T("tooltip_text"), _T("最小化")}});
-    auto* p8 = ui::Attach<ui::Box>(p6, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    auto* p9 = ui::Attach<ui::Button>(p8, {{_T("class"), _T("btn_wnd_max_11")}, {_T("height"), _T("32")}, {_T("width"), _T("stretch")}, {_T("name"), _T("maxbtn")}, {_T("tooltip_text"), _T("最大化")}});
-    auto* p10 = ui::Attach<ui::Button>(p8, {{_T("class"), _T("btn_wnd_restore_11")}, {_T("height"), _T("32")}, {_T("width"), _T("stretch")}, {_T("name"), _T("restorebtn")}, {_T("visible"), _T("false")}, {_T("tooltip_text"), _T("还原")}});
-    auto* p11 = ui::Attach<ui::Button>(p6, {{_T("class"), _T("btn_wnd_close_11")}, {_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("name"), _T("closebtn")}, {_T("margin"), _T("0,0,0,2")}, {_T("tooltip_text"), _T("关闭")}});
-    auto* p12 = ui::Attach<ui::VBox>(p0, {});
-    auto* p13 = ui::Attach<ui::TabCtrl>(p12, {{_T("class"), _T("tab_ctrl")}, {_T("tab_box_name"), _T("main_view_tab")}, {_T("selected_id"), _T("0")}});
-    auto* p14 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("Box")}, {_T("tab_box_item_index"), _T("0")}});
-    auto* p15 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("HBox")}, {_T("tab_box_item_index"), _T("1")}});
-    auto* p16 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("VBox")}, {_T("tab_box_item_index"), _T("2")}});
-    auto* p17 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("HFlowBox")}, {_T("tab_box_item_index"), _T("3")}});
-    auto* p18 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("VFlowBox")}, {_T("tab_box_item_index"), _T("4")}});
-    auto* p19 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("TileBox")}, {_T("tab_box_item_index"), _T("5")}});
-    auto* p20 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("ScrollBox")}, {_T("tab_box_item_index"), _T("6")}});
-    auto* p21 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("HScrollBox")}, {_T("tab_box_item_index"), _T("7")}});
-    auto* p22 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("VScrollBox")}, {_T("tab_box_item_index"), _T("8")}});
-    auto* p23 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("HFlowScrollBox")}, {_T("tab_box_item_index"), _T("9")}});
-    auto* p24 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("VFlowScrollBox")}, {_T("tab_box_item_index"), _T("10")}});
-    auto* p25 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("TileScrollBox")}, {_T("tab_box_item_index"), _T("11")}});
-    auto* p26 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("ListBox")}, {_T("tab_box_item_index"), _T("12")}});
-    auto* p27 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("Layout")}, {_T("tab_box_item_index"), _T("13")}});
-    auto* p28 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("TabBox")}, {_T("tab_box_item_index"), _T("14")}});
-    auto* p29 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("GridBox")}, {_T("tab_box_item_index"), _T("15")}});
-    auto* p30 = ui::Attach<ui::TabCtrlItem>(p13, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("GridScrollBox")}, {_T("tab_box_item_index"), _T("16")}});
-    auto* p31 = ui::Attach<ui::TabBox>(p12, {{_T("name"), _T("main_view_tab")}, {_T("bkcolor"), _T("white")}, {_T("selected_id"), _T("0")}, {_T("fade_switch_type"), _T("FadeInOutX")}, {_T("fade_switch_frame_interval_ms"), _T("16")}, {_T("fade_switch_total_ms"), _T("220")}, {_T("fade_switch_easing_function"), _T("EaseOutCubic")}});
-    auto* p32 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_00")}});
-    auto* p33 = ui::Attach<ui::Box>(p32, {{_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}});
-    auto* p34 = ui::Attach<ui::Control>(p33, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p35 = ui::Attach<ui::Label>(p33, {{_T("text"), _T("minwidth/minheight: 300*300")}, {_T("float"), _T("true")}, {_T("text_align"), _T("top")}, {_T("width"), _T("200")}, {_T("height"), _T("100")}, {_T("minwidth"), _T("300")}, {_T("minheight"), _T("300")}, {_T("margin"), _T("64,160,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Olive")}});
-    auto* p36 = ui::Attach<ui::Label>(p33, {{_T("text"), _T("maxwidth/maxheight: 80*80")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("200")}, {_T("height"), _T("100")}, {_T("maxwidth"), _T("80")}, {_T("maxheight"), _T("80")}, {_T("margin"), _T("600,160,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p37 = ui::Attach<ui::LabelBox>(p33, {{_T("text"), _T("布局测试")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("200")}, {_T("height"), _T("200")}, {_T("margin"), _T("800,160,6,6")}, {_T("padding"), _T("6,6,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p38 = ui::Attach<ui::Control>(p37, {{_T("margin"), _T("6,6,6,6")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("2")}, {_T("border_color"), _T("red")}, {_T("bkcolor"), _T("Sienna")}});
-    auto* p39 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("1 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("300")}, {_T("maxheight"), _T("60")}});
-    auto* p40 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p41 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("3 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p42 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("4 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p43 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("5 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p44 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("51 width: 70%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("width"), _T("70%")}, {_T("height"), _T("40")}, {_T("alpha"), _T("128")}, {_T("margin"), _T("10,200,10,10")}});
-    auto* p45 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("52 height: 70%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("width"), _T("200")}, {_T("height"), _T("70%")}, {_T("alpha"), _T("128")}, {_T("margin"), _T("300,10,10,10")}});
-    auto* p46 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("6 center,bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p47 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("7 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p48 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("8 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p49 = ui::Attach<ui::Label>(p33, {{_T("class"), _T("page_box")}, {_T("text"), _T("9 right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}});
-    auto* p50 = ui::Attach<ui::Label>(p32, {{_T("text"), _T("Box容器布局测试：容器本身不支持设置对齐方式（child_halign/child_valign），子控件的对齐方式需要在自身设置（halign/valign）")}});
-    auto* p51 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_01")}});
-    auto* p52 = ui::Attach<ui::VBox>(p51, {});
-    auto* p53 = ui::Attach<ui::HBox>(p52, {{_T("name"), _T("hbox_test")}, {_T("child_halign"), _T("left")}, {_T("child_valign"), _T("top")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("height"), _T("60%")}});
-    auto* p54 = ui::Attach<ui::Control>(p53, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p55 = ui::Attach<ui::Label>(p53, {{_T("text"), _T("minwidth/minheight: 200*200")}, {_T("float"), _T("true")}, {_T("text_align"), _T("top")}, {_T("width"), _T("100")}, {_T("height"), _T("100")}, {_T("minwidth"), _T("200")}, {_T("minheight"), _T("200")}, {_T("margin"), _T("64,60,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Olive")}});
-    auto* p56 = ui::Attach<ui::Label>(p53, {{_T("text"), _T("maxwidth/maxheight: 80*80")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("200")}, {_T("height"), _T("100")}, {_T("maxwidth"), _T("80")}, {_T("maxheight"), _T("80")}, {_T("margin"), _T("600,70,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p57 = ui::Attach<ui::LabelBox>(p53, {{_T("text"), _T("布局测试")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("200")}, {_T("height"), _T("200")}, {_T("margin"), _T("800,50,6,6")}, {_T("padding"), _T("6,6,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p58 = ui::Attach<ui::Control>(p57, {{_T("margin"), _T("6,6,6,6")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("2")}, {_T("border_color"), _T("red")}, {_T("bkcolor"), _T("Sienna")}});
-    auto* p59 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("1 left,top minwidth:200")}, {_T("multi_line"), _T("true")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("max_height"), _T("44")}});
-    auto* p60 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p61 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("3 left,bottom 50%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("50%")}, {_T("width"), _T("150")}});
-    auto* p62 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("4 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p63 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("5 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p64 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("6 center,bottom")}, {_T("halign"), _T("center")}, {_T("height"), _T("120")}, {_T("valign"), _T("bottom")}});
-    auto* p65 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("7 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p66 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("8 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p67 = ui::Attach<ui::Label>(p53, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("9 right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}});
-    auto* p68 = ui::Attach<ui::HBox>(p52, {{_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("margin"), _T("0,4,0,0")}, {_T("height"), _T("15%")}});
-    auto* p69 = ui::Attach<ui::Label>(p68, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("1 left,top minwidth:200")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("max_height"), _T("44")}});
-    auto* p70 = ui::Attach<ui::Label>(p68, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("80")}});
-    auto* p71 = ui::Attach<ui::Label>(p68, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("3 left,bottom height:70%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("70%")}});
-    auto* p72 = ui::Attach<ui::Label>(p68, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("4 right,bottom 20%")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("20%")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p73 = ui::Attach<ui::Label>(p68, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("5 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("width"), _T("80")}});
-    auto* p74 = ui::Attach<ui::Label>(p68, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("6 right,bottom 30%")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("30%")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p75 = ui::Attach<ui::Label>(p68, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("7 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}, {_T("width"), _T("80")}});
-    auto* p76 = ui::Attach<ui::Label>(p68, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("8 right,bottom 40%")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("40%")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p77 = ui::Attach<ui::HBox>(p52, {{_T("bkcolor"), _T("gray")}, {_T("child_margin_x"), _T("8")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("margin"), _T("0,4,0,0")}, {_T("height"), _T("10%")}});
-    auto* p78 = ui::Attach<ui::Label>(p77, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("1 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("width"), _T("stretch")}, {_T("height"), _T("100%")}, {_T("margin"), _T("0,6,0,6")}});
-    auto* p79 = ui::Attach<ui::Label>(p77, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("stretch")}, {_T("height"), _T("100%")}, {_T("margin"), _T("0,6,0,6")}});
-    auto* p80 = ui::Attach<ui::Label>(p77, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("3 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("stretch")}, {_T("height"), _T("100%")}, {_T("margin"), _T("0,6,0,6")}});
-    auto* p81 = ui::Attach<ui::HBox>(p52, {{_T("child_margin_x"), _T("2")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("margin"), _T("0,4,0,0")}, {_T("height"), _T("15%")}});
-    auto* p82 = ui::Attach<ui::Label>(p81, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("1 left,top minwidth:100")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("width"), _T("100%")}, {_T("height"), _T("70")}, {_T("min_width"), _T("100")}, {_T("max_height"), _T("60")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p83 = ui::Attach<ui::Label>(p81, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("2 left,center maxwidth:100")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("100%")}, {_T("height"), _T("50")}, {_T("max_width"), _T("100")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p84 = ui::Attach<ui::Label>(p81, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("3 left,bottom fixed")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("140")}, {_T("height"), _T("40")}});
-    auto* p85 = ui::Attach<ui::Label>(p81, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("4 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("width"), _T("100%")}, {_T("height"), _T("50")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p86 = ui::Attach<ui::Label>(p81, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("5 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}, {_T("width"), _T("100%")}, {_T("height"), _T("40")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p87 = ui::Attach<ui::Label>(p81, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("6 right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("100%")}, {_T("height"), _T("50")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p88 = ui::Attach<ui::VBox>(p51, {{_T("height"), _T("auto")}, {_T("padding"), _T("6,0,6,6")}});
-    auto* p89 = ui::Attach<ui::Label>(p88, {{_T("text"), _T("HBox容器布局测试")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}});
-    auto* p90 = ui::Attach<ui::HBox>(p88, {{_T("height"), _T("28")}});
-    auto* p91 = ui::Attach<ui::Label>(p90, {{_T("text"), _T("容器内容水平对齐方式（child_halign）: ")}, {_T("valign"), _T("center")}});
-    auto* p92 = ui::Attach<ui::Option>(p90, {{_T("class"), _T("option_1")}, {_T("group"), _T("hbox_group_halign")}, {_T("text"), _T("靠左对齐(left)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p93 = ui::Attach<ui::Option>(p90, {{_T("class"), _T("option_1")}, {_T("group"), _T("hbox_group_halign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p94 = ui::Attach<ui::Option>(p90, {{_T("class"), _T("option_1")}, {_T("group"), _T("hbox_group_halign")}, {_T("text"), _T("靠右对齐(right)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p95 = ui::Attach<ui::Label>(p90, {{_T("text"), _T("（仅当子控件总宽度小于容器宽度时生效）")}, {_T("valign"), _T("center")}});
-    auto* p96 = ui::Attach<ui::HBox>(p88, {{_T("height"), _T("28")}});
-    auto* p97 = ui::Attach<ui::Label>(p96, {{_T("text"), _T("容器内容垂直对齐方式（child_valign）: 不支持，垂直对齐方式需要在子控件本身设置")}, {_T("valign"), _T("center")}});
-    auto* p98 = ui::Attach<ui::Label>(p88, {{_T("text"), _T("子控件自身设置的对齐方式: 水平对齐方式（halign）：不支持，垂直对齐方式（valign）：支持")}, {_T("valign"), _T("center")}});
-    auto* p99 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_02")}});
-    auto* p100 = ui::Attach<ui::HBox>(p99, {});
-    auto* p101 = ui::Attach<ui::VBox>(p100, {{_T("name"), _T("vbox_test")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("width"), _T("60%")}});
-    auto* p102 = ui::Attach<ui::Control>(p101, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p103 = ui::Attach<ui::Label>(p101, {{_T("text"), _T("minwidth/minheight: 100*100")}, {_T("float"), _T("true")}, {_T("text_align"), _T("top")}, {_T("width"), _T("50")}, {_T("height"), _T("50")}, {_T("minwidth"), _T("100")}, {_T("minheight"), _T("100")}, {_T("margin"), _T("64,60,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Olive")}});
-    auto* p104 = ui::Attach<ui::Label>(p101, {{_T("text"), _T("maxwidth/maxheight: 80*80")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("200")}, {_T("height"), _T("100")}, {_T("maxwidth"), _T("80")}, {_T("maxheight"), _T("80")}, {_T("margin"), _T("600,160,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p105 = ui::Attach<ui::LabelBox>(p101, {{_T("text"), _T("布局测试")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("100")}, {_T("height"), _T("100")}, {_T("margin"), _T("300,100,6,6")}, {_T("padding"), _T("6,6,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p106 = ui::Attach<ui::Control>(p105, {{_T("margin"), _T("6,6,6,6")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("2")}, {_T("border_color"), _T("red")}, {_T("bkcolor"), _T("Sienna")}});
-    auto* p107 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("1 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("min_width"), _T("400")}, {_T("max_height"), _T("30")}});
-    auto* p108 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("max_height"), _T("30")}});
-    auto* p109 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("3 left,bottom: width=stretch")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("stretch")}});
-    auto* p110 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("4 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p111 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("5 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("min_height"), _T("70")}});
-    auto* p112 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("6 center,bottom width=50%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("50%")}});
-    auto* p113 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("7 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p114 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("8 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p115 = ui::Attach<ui::Label>(p101, {{_T("class"), _T("page_vbox")}, {_T("text"), _T("9 right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("max_height"), _T("50")}});
-    auto* p116 = ui::Attach<ui::VBox>(p100, {{_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("width"), _T("20%")}});
-    auto* p117 = ui::Attach<ui::Label>(p116, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("1 left,top min_height:80")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("max_height"), _T("80")}});
-    auto* p118 = ui::Attach<ui::Label>(p116, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("height"), _T("80")}});
-    auto* p119 = ui::Attach<ui::Label>(p116, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("3 left,bottom width 70%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("70%")}});
-    auto* p120 = ui::Attach<ui::Label>(p116, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("4 right,bottom height 20%")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("20%")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p121 = ui::Attach<ui::Label>(p116, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("5 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("width"), _T("80")}});
-    auto* p122 = ui::Attach<ui::Label>(p116, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("6 right,bottom 30%")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("30%")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p123 = ui::Attach<ui::Label>(p116, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("7 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}, {_T("height"), _T("20%")}});
-    auto* p124 = ui::Attach<ui::Label>(p116, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("8 right,bottom 40%")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40%")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p125 = ui::Attach<ui::VBox>(p100, {{_T("bkcolor"), _T("gray")}, {_T("child_margin_y"), _T("8")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("width"), _T("20%")}});
-    auto* p126 = ui::Attach<ui::Label>(p125, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("1 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("width"), _T("stretch")}, {_T("height"), _T("100%")}, {_T("margin"), _T("6,6,6,0")}});
-    auto* p127 = ui::Attach<ui::Label>(p125, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("stretch")}, {_T("height"), _T("100%")}, {_T("margin"), _T("6,0,6,0")}});
-    auto* p128 = ui::Attach<ui::Label>(p125, {{_T("class"), _T("page_hbox")}, {_T("text"), _T("3 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("stretch")}, {_T("height"), _T("100%")}, {_T("margin"), _T("6,0,6,6")}});
-    auto* p129 = ui::Attach<ui::VBox>(p99, {{_T("height"), _T("auto")}, {_T("padding"), _T("6,0,6,6")}});
-    auto* p130 = ui::Attach<ui::Label>(p129, {{_T("text"), _T("VBox容器布局测试")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}});
-    auto* p131 = ui::Attach<ui::HBox>(p129, {{_T("height"), _T("28")}});
-    auto* p132 = ui::Attach<ui::Label>(p131, {{_T("text"), _T("容器内容垂直对齐方式（child_valign）: ")}, {_T("valign"), _T("center")}});
-    auto* p133 = ui::Attach<ui::Option>(p131, {{_T("class"), _T("option_1")}, {_T("group"), _T("vbox_group_valign")}, {_T("text"), _T("靠上对齐(top)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p134 = ui::Attach<ui::Option>(p131, {{_T("class"), _T("option_1")}, {_T("group"), _T("vbox_group_valign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p135 = ui::Attach<ui::Option>(p131, {{_T("class"), _T("option_1")}, {_T("group"), _T("vbox_group_valign")}, {_T("text"), _T("靠下对齐(bottom)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p136 = ui::Attach<ui::Label>(p131, {{_T("text"), _T("（仅当子控件总高度小于容器高度时生效）")}, {_T("valign"), _T("center")}});
-    auto* p137 = ui::Attach<ui::HBox>(p129, {{_T("height"), _T("28")}});
-    auto* p138 = ui::Attach<ui::Label>(p137, {{_T("text"), _T("容器内容水平对齐方式（child_halign）: 不支持，水平对齐方式需要在子控件本身设置")}, {_T("valign"), _T("center")}});
-    auto* p139 = ui::Attach<ui::Label>(p129, {{_T("text"), _T("子控件自身设置的对齐方式: 水平对齐方式（halign）：支持，垂直对齐方式（valign）：不支持")}, {_T("valign"), _T("center")}});
-    auto* p140 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_03")}});
-    auto* p141 = ui::Attach<ui::VBox>(p140, {});
-    auto* p142 = ui::Attach<ui::HFlowBox>(p141, {{_T("name"), _T("hflowbox_test")}, {_T("child_halign"), _T("left")}, {_T("child_valign"), _T("top")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("height"), _T("100%")}});
-    auto* p143 = ui::Attach<ui::Control>(p142, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p144 = ui::Attach<ui::Label>(p142, {{_T("text"), _T("minwidth/minheight: 200*200")}, {_T("float"), _T("true")}, {_T("text_align"), _T("top")}, {_T("width"), _T("100")}, {_T("height"), _T("100")}, {_T("minwidth"), _T("200")}, {_T("minheight"), _T("200")}, {_T("margin"), _T("64,60,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Olive")}});
-    auto* p145 = ui::Attach<ui::Label>(p142, {{_T("text"), _T("maxwidth/maxheight: 80*80")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("200")}, {_T("height"), _T("100")}, {_T("maxwidth"), _T("80")}, {_T("maxheight"), _T("80")}, {_T("margin"), _T("600,70,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p146 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("1 top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("300")}, {_T("maxheight"), _T("60")}});
-    auto* p147 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("2 center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p148 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("3 bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40")}});
-    auto* p149 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("4 top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p150 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("5 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("40")}});
-    auto* p151 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("6 bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p152 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("7 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p153 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("8 center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p154 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("9 bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("300")}});
-    auto* p155 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("10 top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("300")}, {_T("maxheight"), _T("60")}});
-    auto* p156 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("11 center stretch: 100%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("stretch")}});
-    auto* p157 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("12 bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40")}});
-    auto* p158 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("13 top stretch: 50%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("width"), _T("50%")}});
-    auto* p159 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("12 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("40")}});
-    auto* p160 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("15 bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p161 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("16 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p162 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("17 center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p163 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("18 bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("300")}});
-    auto* p164 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("19 center, width: 1600")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}, {_T("width"), _T("1600")}});
-    auto* p165 = ui::Attach<ui::Label>(p142, {{_T("class"), _T("page_hflowbox")}, {_T("text"), _T("20 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p166 = ui::Attach<ui::VBox>(p140, {{_T("height"), _T("84")}, {_T("padding"), _T("6,0,6,0")}});
-    auto* p167 = ui::Attach<ui::Label>(p166, {{_T("text"), _T("HFlowBox容器布局测试")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}});
-    auto* p168 = ui::Attach<ui::HBox>(p166, {{_T("height"), _T("28")}});
-    auto* p169 = ui::Attach<ui::Label>(p168, {{_T("text"), _T("容器内容水平对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p170 = ui::Attach<ui::Option>(p168, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflowbox_group_halign")}, {_T("text"), _T("靠左对齐(left)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p171 = ui::Attach<ui::Option>(p168, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflowbox_group_halign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p172 = ui::Attach<ui::Option>(p168, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflowbox_group_halign")}, {_T("text"), _T("靠右对齐(right)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p173 = ui::Attach<ui::Label>(p168, {{_T("text"), _T("（在同一行内对齐）")}, {_T("valign"), _T("center")}});
-    auto* p174 = ui::Attach<ui::HBox>(p166, {{_T("height"), _T("28")}});
-    auto* p175 = ui::Attach<ui::Label>(p174, {{_T("text"), _T("容器内容垂直对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p176 = ui::Attach<ui::Option>(p174, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflowbox_group_valign")}, {_T("text"), _T("靠上对齐(top)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p177 = ui::Attach<ui::Option>(p174, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflowbox_group_valign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p178 = ui::Attach<ui::Option>(p174, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflowbox_group_valign")}, {_T("text"), _T("靠下对齐(bottom)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p179 = ui::Attach<ui::Label>(p174, {{_T("text"), _T("（仅当子控件总高度小于显示区域高度时生效）")}, {_T("valign"), _T("center")}});
-    auto* p180 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_04")}});
-    auto* p181 = ui::Attach<ui::VBox>(p180, {});
-    auto* p182 = ui::Attach<ui::VFlowBox>(p181, {{_T("name"), _T("vflowbox_test")}, {_T("child_halign"), _T("left")}, {_T("child_valign"), _T("top")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("height"), _T("100%")}});
-    auto* p183 = ui::Attach<ui::Control>(p182, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p184 = ui::Attach<ui::Label>(p182, {{_T("text"), _T("minwidth/minheight: 200*200")}, {_T("float"), _T("true")}, {_T("text_align"), _T("top")}, {_T("width"), _T("100")}, {_T("height"), _T("100")}, {_T("minwidth"), _T("200")}, {_T("minheight"), _T("200")}, {_T("margin"), _T("64,60,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Olive")}});
-    auto* p185 = ui::Attach<ui::Label>(p182, {{_T("text"), _T("maxwidth/maxheight: 80*80")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("200")}, {_T("height"), _T("100")}, {_T("maxwidth"), _T("80")}, {_T("maxheight"), _T("80")}, {_T("margin"), _T("600,70,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p186 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("1 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("300")}, {_T("maxheight"), _T("60")}});
-    auto* p187 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("2 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p188 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("3 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p189 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("4 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p190 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("5 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("40")}});
-    auto* p191 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("6 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p192 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("7 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40")}});
-    auto* p193 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("8 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p194 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("9 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("200")}});
-    auto* p195 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("10 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("200")}, {_T("maxheight"), _T("60")}});
-    auto* p196 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("11 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("100")}, {_T("width"), _T("100")}});
-    auto* p197 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("12 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40")}});
-    auto* p198 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("13 left stretch: 50%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("height"), _T("50%")}, {_T("width"), _T("120")}});
-    auto* p199 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("12 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("40")}});
-    auto* p200 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("15 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p201 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("16 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p202 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("17 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p203 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("18 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("200")}});
-    auto* p204 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("19 center, height: 500")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("500")}, {_T("width"), _T("100")}});
-    auto* p205 = ui::Attach<ui::Label>(p182, {{_T("class"), _T("page_vflowbox")}, {_T("text"), _T("20 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p206 = ui::Attach<ui::VBox>(p180, {{_T("height"), _T("84")}, {_T("padding"), _T("6,0,6,0")}});
-    auto* p207 = ui::Attach<ui::Label>(p206, {{_T("text"), _T("VFlowBox容器布局测试")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}});
-    auto* p208 = ui::Attach<ui::HBox>(p206, {{_T("height"), _T("28")}});
-    auto* p209 = ui::Attach<ui::Label>(p208, {{_T("text"), _T("容器内容水平对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p210 = ui::Attach<ui::Option>(p208, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflowbox_group_halign")}, {_T("text"), _T("靠左对齐(left)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p211 = ui::Attach<ui::Option>(p208, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflowbox_group_halign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p212 = ui::Attach<ui::Option>(p208, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflowbox_group_halign")}, {_T("text"), _T("靠右对齐(right)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p213 = ui::Attach<ui::Label>(p208, {{_T("text"), _T("（仅当子控件总宽度小于显示区域宽度时生效）")}, {_T("valign"), _T("center")}});
-    auto* p214 = ui::Attach<ui::HBox>(p206, {{_T("height"), _T("28")}});
-    auto* p215 = ui::Attach<ui::Label>(p214, {{_T("text"), _T("容器内容垂直对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p216 = ui::Attach<ui::Option>(p214, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflowbox_group_valign")}, {_T("text"), _T("靠上对齐(top)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p217 = ui::Attach<ui::Option>(p214, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflowbox_group_valign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p218 = ui::Attach<ui::Option>(p214, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflowbox_group_valign")}, {_T("text"), _T("靠下对齐(bottom)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p219 = ui::Attach<ui::Label>(p214, {{_T("text"), _T("（在同一列内对齐）")}, {_T("valign"), _T("center")}});
-    auto* p220 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_05")}});
-    auto* p221 = ui::Attach<ui::HTileBox>(p220, {{_T("child_valign"), _T("top")}, {_T("rows"), _T("0")}, {_T("item_size"), _T("200,0")}, {_T("scale_down"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("padding"), _T("10,10,10,10")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}});
-    auto* p222 = ui::Attach<ui::Control>(p221, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p223 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("1 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}});
-    auto* p224 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p225 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("3 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p226 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("4 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p227 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("5 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p228 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("6 center,bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p229 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("7 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p230 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("8 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p231 = ui::Attach<ui::Label>(p221, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("9 right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}});
-    auto* p232 = ui::Attach<ui::Label>(p220, {{_T("text"), _T("HTileBox容器布局测试（横向布局）")}, {_T("margin"), _T("0,4,0,4")}});
-    auto* p233 = ui::Attach<ui::VTileBox>(p220, {{_T("child_halign"), _T("left")}, {_T("columns"), _T("0")}, {_T("item_size"), _T("0,0")}, {_T("scale_down"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("auto")}, {_T("padding"), _T("10,10,10,10")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}});
-    auto* p234 = ui::Attach<ui::Control>(p233, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p235 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("1 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}});
-    auto* p236 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("2 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p237 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("3 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p238 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("4 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p239 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("5 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p240 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("6 center,bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p241 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("7 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p242 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("8 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p243 = ui::Attach<ui::Label>(p233, {{_T("class"), _T("page_tile_box")}, {_T("text"), _T("9 right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}});
-    auto* p244 = ui::Attach<ui::Label>(p220, {{_T("text"), _T("VTileBox容器布局测试（纵向布局）")}});
-    auto* p245 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_06")}});
-    auto* p246 = ui::Attach<ui::ScrollBox>(p245, {{_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("bkcolor"), _T("white")}, {_T("border_size"), _T("2")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("20,20,20,20")}});
-    auto* p247 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("1 default left,top")}, {_T("text_align"), _T("left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("width"), _T("5000")}, {_T("height"), _T("2500")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p248 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("2 right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("100")}, {_T("height"), _T("80")}, {_T("margin"), _T("0,0,10,10")}});
-    auto* p249 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("3 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("100")}, {_T("height"), _T("80")}});
-    auto* p250 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("4 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("120")}, {_T("height"), _T("80")}, {_T("margin"), _T("10,0,0,10")}});
-    auto* p251 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("5 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("width"), _T("80")}, {_T("height"), _T("80")}});
-    auto* p252 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("6 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("width"), _T("100")}, {_T("height"), _T("256")}});
-    auto* p253 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("7 center,bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("100")}, {_T("height"), _T("80")}});
-    auto* p254 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("8 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("width"), _T("100")}, {_T("height"), _T("80")}, {_T("margin"), _T("0,10,10,0")}});
-    auto* p255 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("9 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}, {_T("width"), _T("100")}, {_T("height"), _T("80")}});
-    auto* p256 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("10 width:70%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("width"), _T("70%")}, {_T("height"), _T("40")}, {_T("alpha"), _T("128")}, {_T("margin"), _T("10,200,10,10")}});
-    auto* p257 = ui::Attach<ui::Label>(p246, {{_T("class"), _T("page_scroll_box")}, {_T("text"), _T("11 height:70%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("width"), _T("200")}, {_T("height"), _T("70%")}, {_T("alpha"), _T("128")}, {_T("margin"), _T("300,10,10,10")}});
-    auto* p258 = ui::Attach<ui::Label>(p246, {{_T("text"), _T("float 300*300 center,top")}, {_T("float"), _T("true")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("text_align"), _T("top")}, {_T("width"), _T("300")}, {_T("height"), _T("300")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Olive")}});
-    auto* p259 = ui::Attach<ui::Label>(p246, {{_T("text"), _T("float 301*301 center,center")}, {_T("float"), _T("true")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("single_line"), _T("false")}, {_T("width"), _T("301")}, {_T("height"), _T("301")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p260 = ui::Attach<ui::Label>(p246, {{_T("text"), _T("float 302*302 center,bottom")}, {_T("float"), _T("true")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}, {_T("single_line"), _T("false")}, {_T("width"), _T("302")}, {_T("height"), _T("302")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p261 = ui::Attach<ui::Label>(p245, {{_T("text"), _T("ScrollBox容器布局测试（容器内容不支持设置对齐方式，子控件的对齐方式需要在自身设置）")}});
-    auto* p262 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_07")}});
-    auto* p263 = ui::Attach<ui::HScrollBox>(p262, {{_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("bkcolor"), _T("white")}, {_T("border_size"), _T("2")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("20,20,20,20")}});
-    auto* p264 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("1 right,top")}, {_T("text_align"), _T("right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("width"), _T("100")}, {_T("height"), _T("80")}});
-    auto* p265 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("2 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p266 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("3 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p267 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("4 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p268 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("5 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p269 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("6 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("width"), _T("500")}, {_T("height"), _T("256")}});
-    auto* p270 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("7 center,bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p271 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("8 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p272 = ui::Attach<ui::Label>(p263, {{_T("class"), _T("page_hscroll_box")}, {_T("text"), _T("9 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}, {_T("width"), _T("500")}, {_T("height"), _T("4000")}});
-    auto* p273 = ui::Attach<ui::Label>(p262, {{_T("text"), _T("HScrollBox容器布局测试")}});
-    auto* p274 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_08")}});
-    auto* p275 = ui::Attach<ui::VScrollBox>(p274, {{_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("bkcolor"), _T("white")}, {_T("border_size"), _T("2")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("20,20,20,20")}});
-    auto* p276 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("1 right,top")}, {_T("text_align"), _T("right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("width"), _T("100")}, {_T("height"), _T("80")}});
-    auto* p277 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("2 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p278 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("3 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p279 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("4 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p280 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("5 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p281 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("6 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("width"), _T("500")}, {_T("height"), _T("256")}});
-    auto* p282 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("7 center,bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p283 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("8 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("width"), _T("500")}, {_T("height"), _T("280")}});
-    auto* p284 = ui::Attach<ui::Label>(p275, {{_T("class"), _T("page_vscroll_box")}, {_T("text"), _T("9 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}, {_T("width"), _T("5000")}, {_T("height"), _T("400")}});
-    auto* p285 = ui::Attach<ui::VListBox>(p275, {{_T("class"), _T("list")}, {_T("height"), _T("100")}, {_T("width"), _T("200")}, {_T("margin"), _T("0,4,0,0")}, {_T("padding"), _T("5,3,5,3")}, {_T("border_color"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("tooltiptext"), _T("ui::VListBox")}});
-    auto* p286 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p287 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p288 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p289 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p290 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p291 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p292 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p293 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p294 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p295 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p296 = ui::Attach<ui::ListBoxItem>(p285, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p297 = ui::Attach<ui::HBox>(p275, {{_T("height"), _T("120")}, {_T("margin"), _T("0,4,0,0")}, {_T("child_margin"), _T("2")}});
-    auto* p298 = ui::Attach<ui::VListBox>(p297, {{_T("class"), _T("list")}, {_T("height"), _T("100")}, {_T("width"), _T("200")}, {_T("padding"), _T("5,3,5,3")}, {_T("border_color"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("tooltiptext"), _T("ui::VListBox")}});
-    auto* p299 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p300 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p301 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p302 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p303 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p304 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p305 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p306 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p307 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p308 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p309 = ui::Attach<ui::ListBoxItem>(p298, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("VListBox::ListBoxItem")}});
-    auto* p310 = ui::Attach<ui::HListBox>(p297, {{_T("class"), _T("list")}, {_T("height"), _T("50")}, {_T("width"), _T("600")}, {_T("hscrollbar"), _T("true")}, {_T("padding"), _T("5,3,5,3")}, {_T("border_color"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("tooltiptext"), _T("ui::HListBox")}});
-    auto* p311 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p312 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p313 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p314 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p315 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p316 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p317 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p318 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p319 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p320 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p321 = ui::Attach<ui::ListBoxItem>(p310, {{_T("class"), _T("listitem")}, {_T("height"), _T("40")}, {_T("width"), _T("100")}, {_T("text"), _T("HListBox::ListBoxItem")}});
-    auto* p322 = ui::Attach<ui::Label>(p274, {{_T("text"), _T("VScrollBox容器布局测试")}});
-    auto* p323 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_09")}});
-    auto* p324 = ui::Attach<ui::VBox>(p323, {});
-    auto* p325 = ui::Attach<ui::HFlowScrollBox>(p324, {{_T("name"), _T("hflow_scrollbox_test")}, {_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("child_halign"), _T("left")}, {_T("child_valign"), _T("top")}, {_T("bkcolor"), _T("Cornsilk")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("margin"), _T("8,8,8,8")}, {_T("height"), _T("70%")}});
-    auto* p326 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("1 top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("300")}, {_T("maxheight"), _T("60")}});
-    auto* p327 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("2 enter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p328 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("3 bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40")}});
-    auto* p329 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("4 top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p330 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("5 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("40")}});
-    auto* p331 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("6 bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p332 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("7 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p333 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("8 center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p334 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("9 bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("300")}});
-    auto* p335 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("10 top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("300")}, {_T("maxheight"), _T("60")}});
-    auto* p336 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("11 center stretch: 100%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("width"), _T("stretch")}});
-    auto* p337 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("12 bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40")}});
-    auto* p338 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("13 top stretch: 50%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("width"), _T("50%")}});
-    auto* p339 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("12 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("40")}});
-    auto* p340 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("15 bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p341 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("16 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p342 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("17 center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p343 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("18 bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("300")}});
-    auto* p344 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("19 center, width: 1600")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}, {_T("width"), _T("1600")}});
-    auto* p345 = ui::Attach<ui::Label>(p325, {{_T("class"), _T("page_hflow_scrollbox")}, {_T("text"), _T("20 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p346 = ui::Attach<ui::VBox>(p323, {{_T("height"), _T("84")}, {_T("padding"), _T("6,0,6,0")}});
-    auto* p347 = ui::Attach<ui::Label>(p346, {{_T("text"), _T("HFlowScrollBox容器布局测试")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}});
-    auto* p348 = ui::Attach<ui::HBox>(p346, {{_T("height"), _T("28")}});
-    auto* p349 = ui::Attach<ui::Label>(p348, {{_T("text"), _T("容器内容水平对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p350 = ui::Attach<ui::Option>(p348, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflow_scrollbox_group_halign")}, {_T("text"), _T("靠左对齐(left)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p351 = ui::Attach<ui::Option>(p348, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflow_scrollbox_group_halign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p352 = ui::Attach<ui::Option>(p348, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflow_scrollbox_group_halign")}, {_T("text"), _T("靠右对齐(right)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p353 = ui::Attach<ui::Label>(p348, {{_T("text"), _T("（在同一行内对齐）")}, {_T("valign"), _T("center")}});
-    auto* p354 = ui::Attach<ui::HBox>(p346, {{_T("height"), _T("28")}});
-    auto* p355 = ui::Attach<ui::Label>(p354, {{_T("text"), _T("容器内容垂直对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p356 = ui::Attach<ui::Option>(p354, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflow_scrollbox_group_valign")}, {_T("text"), _T("靠上对齐(top)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p357 = ui::Attach<ui::Option>(p354, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflow_scrollbox_group_valign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p358 = ui::Attach<ui::Option>(p354, {{_T("class"), _T("option_1")}, {_T("group"), _T("hflow_scrollbox_group_valign")}, {_T("text"), _T("靠下对齐(bottom)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p359 = ui::Attach<ui::Label>(p354, {{_T("text"), _T("（仅当不出现滚动条时生效）")}, {_T("valign"), _T("center")}});
-    auto* p360 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_10")}});
-    auto* p361 = ui::Attach<ui::VBox>(p360, {});
-    auto* p362 = ui::Attach<ui::VFlowScrollBox>(p361, {{_T("name"), _T("vflow_scrollbox_test")}, {_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("child_halign"), _T("left")}, {_T("child_valign"), _T("top")}, {_T("bkcolor"), _T("Cornsilk")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("8,8,8,8")}, {_T("margin"), _T("8,8,8,8")}, {_T("height"), _T("70%")}});
-    auto* p363 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("1 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("300")}, {_T("maxheight"), _T("60")}});
-    auto* p364 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("2 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p365 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("3 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p366 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("4 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p367 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("5 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("40")}});
-    auto* p368 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("6 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p369 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("7 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40")}});
-    auto* p370 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("8 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p371 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("9 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("300")}});
-    auto* p372 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("10 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("minwidth"), _T("300")}, {_T("maxheight"), _T("60")}});
-    auto* p373 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("11 center stretch: 100%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("stretch")}, {_T("width"), _T("180")}});
-    auto* p374 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("12 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}, {_T("height"), _T("40")}});
-    auto* p375 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("13 left stretch: 50%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}, {_T("height"), _T("50%")}, {_T("width"), _T("180")}});
-    auto* p376 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("12 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("40")}});
-    auto* p377 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("15 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p378 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("16 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p379 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("17 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p380 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("18 left")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("width"), _T("300")}});
-    auto* p381 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("19 center, height: 600")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("height"), _T("600")}, {_T("width"), _T("180")}});
-    auto* p382 = ui::Attach<ui::Label>(p362, {{_T("class"), _T("page_vflow_scrollbox")}, {_T("text"), _T("20 right")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("height"), _T("40")}});
-    auto* p383 = ui::Attach<ui::VBox>(p360, {{_T("height"), _T("84")}, {_T("padding"), _T("6,0,6,0")}});
-    auto* p384 = ui::Attach<ui::Label>(p383, {{_T("text"), _T("VFlowScrollBox容器布局测试")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}});
-    auto* p385 = ui::Attach<ui::HBox>(p383, {{_T("height"), _T("28")}});
-    auto* p386 = ui::Attach<ui::Label>(p385, {{_T("text"), _T("容器内容水平对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p387 = ui::Attach<ui::Option>(p385, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflow_scrollbox_group_halign")}, {_T("text"), _T("靠左对齐(left)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p388 = ui::Attach<ui::Option>(p385, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflow_scrollbox_group_halign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p389 = ui::Attach<ui::Option>(p385, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflow_scrollbox_group_halign")}, {_T("text"), _T("靠右对齐(right)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p390 = ui::Attach<ui::Label>(p385, {{_T("text"), _T("（仅当不出现滚动条时生效）")}, {_T("valign"), _T("center")}});
-    auto* p391 = ui::Attach<ui::HBox>(p383, {{_T("height"), _T("28")}});
-    auto* p392 = ui::Attach<ui::Label>(p391, {{_T("text"), _T("容器内容垂直对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p393 = ui::Attach<ui::Option>(p391, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflow_scrollbox_group_valign")}, {_T("text"), _T("靠上对齐(top)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p394 = ui::Attach<ui::Option>(p391, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflow_scrollbox_group_valign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p395 = ui::Attach<ui::Option>(p391, {{_T("class"), _T("option_1")}, {_T("group"), _T("vflow_scrollbox_group_valign")}, {_T("text"), _T("靠下对齐(bottom)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p396 = ui::Attach<ui::Label>(p391, {{_T("text"), _T("（在同一列内对齐）")}, {_T("valign"), _T("center")}});
-    auto* p397 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_11")}});
-    auto* p398 = ui::Attach<ui::HTileScrollBox>(p397, {{_T("hscrollbar"), _T("true")}, {_T("vscrollbar"), _T("false")}, {_T("width"), _T("stretch")}, {_T("height"), _T("380")}, {_T("bkcolor"), _T("white")}, {_T("border_size"), _T("2")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("20,20,20,20")}});
-    auto* p399 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("1 right,top")}, {_T("text_align"), _T("right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p400 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("2 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}});
-    auto* p401 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("3 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p402 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("4 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p403 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("5 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p404 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("6 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p405 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("7 center,bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p406 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("8 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p407 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("9 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p408 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("10 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p409 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("11 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p410 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("12 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p411 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("13 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p412 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("14 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p413 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("15 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p414 = ui::Attach<ui::Label>(p398, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("16 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p415 = ui::Attach<ui::Label>(p397, {{_T("text"), _T("HTileScrollBox容器布局测试")}, {_T("margin"), _T("0,4,0,4")}});
-    auto* p416 = ui::Attach<ui::VTileScrollBox>(p397, {{_T("hscrollbar"), _T("true")}, {_T("vscrollbar"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("400")}, {_T("bkcolor"), _T("white")}, {_T("border_size"), _T("2")}, {_T("border_color"), _T("red")}, {_T("padding"), _T("20,20,20,20")}});
-    auto* p417 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("1 right,top")}, {_T("text_align"), _T("right,bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p418 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("2 left,top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}});
-    auto* p419 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("3 left,center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p420 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("4 left,bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p421 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("5 center,top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p422 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("6 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p423 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("7 center,bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p424 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("8 right,top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p425 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("9 right,center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p426 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("10 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p427 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("11 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p428 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("12 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p429 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("13 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p430 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("14 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p431 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("15 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p432 = ui::Attach<ui::Label>(p416, {{_T("class"), _T("page_tile_scroll_box")}, {_T("text"), _T("16 center,center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p433 = ui::Attach<ui::Label>(p397, {{_T("text"), _T("VTileScrollBox容器布局测试")}});
-    auto* p434 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_12")}});
-    auto* p435 = ui::Attach<ui::HBox>(p434, {{_T("width"), _T("auto")}});
-    auto* p436 = ui::Attach<ui::VBox>(p435, {{_T("width"), _T("auto")}, {_T("height"), _T("240")}});
-    auto* p437 = ui::Attach<ui::Label>(p436, {{_T("text"), _T(" VListBox容器布局测试")}});
-    auto* p438 = ui::Attach<ui::VListBox>(p436, {{_T("class"), _T("page_list_box")}, {_T("width"), _T("auto")}, {_T("height"), _T("200")}});
-    auto* p439 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试01")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p440 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试02")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p441 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试03")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p442 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试04")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p443 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试05")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p444 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试06")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p445 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试07")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p446 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试08")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p447 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试09")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p448 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试10")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p449 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试11")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p450 = ui::Attach<ui::ListBoxItem>(p438, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试12")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p451 = ui::Attach<ui::VBox>(p435, {{_T("width"), _T("auto")}});
-    auto* p452 = ui::Attach<ui::Label>(p451, {{_T("text"), _T(" VTileListBox容器布局测试")}});
-    auto* p453 = ui::Attach<ui::VTileListBox>(p451, {{_T("class"), _T("page_list_box")}, {_T("columns"), _T("1")}, {_T("width"), _T("auto")}, {_T("height"), _T("200")}});
-    auto* p454 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试01")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p455 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试02")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p456 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试03")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p457 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试04")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p458 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试05")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p459 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试06")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p460 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试07")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p461 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试08")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p462 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试09")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p463 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试10")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p464 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试11")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p465 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试12")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p466 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试13")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p467 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试14")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p468 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试15")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p469 = ui::Attach<ui::ListBoxItem>(p453, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("VListBox测试16")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p470 = ui::Attach<ui::VBox>(p434, {{_T("height"), _T("auto")}});
-    auto* p471 = ui::Attach<ui::Label>(p470, {{_T("text"), _T(" HListBox容器布局测试")}});
-    auto* p472 = ui::Attach<ui::HListBox>(p470, {{_T("class"), _T("page_list_box")}, {_T("vscrollbar"), _T("false")}, {_T("hscrollbar"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("50")}});
-    auto* p473 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试01")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p474 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试02")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p475 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试03")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p476 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试04")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p477 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试05")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p478 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试06")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p479 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试07")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p480 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试08")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p481 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试09")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p482 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试10")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p483 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试11")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p484 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试12")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p485 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试13")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p486 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试14")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p487 = ui::Attach<ui::ListBoxItem>(p472, {{_T("class"), _T("page_list_box_item")}, {_T("text"), _T("HListBox测试15")}, {_T("text_align"), _T("left,vcenter")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p488 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_13")}});
-    auto* p489 = ui::Attach<ui::VBox>(p488, {});
-    auto* p490 = ui::Attach<ui::Box>(p489, {{_T("bkcolor"), _T("red")}, {_T("padding"), _T("1,1,1,1")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("white")}});
-    auto* p491 = ui::Attach<ui::Label>(p490, {{_T("width"), _T("80%")}, {_T("height"), _T("80%")}, {_T("text"), _T("Box: Label 1 width='80%' height='80%'")}, {_T("bkcolor"), _T("yellow")}, {_T("text_align"), _T("bottom")}});
-    auto* p492 = ui::Attach<ui::Label>(p490, {{_T("width"), _T("50%")}, {_T("height"), _T("50%")}, {_T("text"), _T("Box: Label 2 width='50%' height='50%'")}, {_T("bkcolor"), _T("orange")}});
-    auto* p493 = ui::Attach<ui::VBox>(p489, {{_T("bkcolor"), _T("green")}, {_T("padding"), _T("1,1,1,1")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("white")}});
-    auto* p494 = ui::Attach<ui::Label>(p493, {{_T("width"), _T("80%")}, {_T("height"), _T("30%")}, {_T("text"), _T("VBox: Label 1 width='80%' height='30%'")}, {_T("bkcolor"), _T("yellow")}, {_T("text_align"), _T("bottom")}});
-    auto* p495 = ui::Attach<ui::Label>(p493, {{_T("width"), _T("50%")}, {_T("height"), _T("70%")}, {_T("text"), _T("VBox: Label 2 width='50%' height='70%'")}, {_T("bkcolor"), _T("orange")}});
-    auto* p496 = ui::Attach<ui::Label>(p493, {{_T("width"), _T("100%")}, {_T("height"), _T("80")}, {_T("text"), _T("VBox: Label 3 width='100%' height='80'")}, {_T("bkcolor"), _T("light_gray")}});
-    auto* p497 = ui::Attach<ui::HBox>(p489, {{_T("bkcolor"), _T("blue")}, {_T("padding"), _T("1,1,1,1")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("white")}});
-    auto* p498 = ui::Attach<ui::Label>(p497, {{_T("width"), _T("70%")}, {_T("height"), _T("80%")}, {_T("text"), _T("HBox: Label 1 width='70%' height='80%'")}, {_T("bkcolor"), _T("yellow")}, {_T("text_align"), _T("bottom")}});
-    auto* p499 = ui::Attach<ui::Label>(p497, {{_T("width"), _T("30%")}, {_T("height"), _T("50%")}, {_T("text"), _T("HBox: Label 2 width='30%' height='50%'")}, {_T("bkcolor"), _T("orange")}});
-    auto* p500 = ui::Attach<ui::Label>(p497, {{_T("width"), _T("300")}, {_T("height"), _T("100%")}, {_T("text"), _T("VBox: Label 3 width='300' height='100%'")}, {_T("bkcolor"), _T("light_gray")}});
-    auto* p501 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_14")}});
-    auto* p502 = ui::Attach<ui::TabBox>(p501, {{_T("name"), _T("main_view_tab_test")}, {_T("bkcolor"), _T("white")}, {_T("selected_id"), _T("0")}});
-    auto* p503 = ui::Attach<ui::VBox>(p502, {{_T("bkcolor"), _T("white")}});
-    auto* p504 = ui::Attach<ui::Label>(p503, {{_T("text"), _T("页面1：这里是页面1")}});
-    auto* p505 = ui::Attach<ui::Label>(p503, {{_T("text"), _T("窗口阴影的功能测试：")}, {_T("valign"), _T("center")}, {_T("margin"), _T("12,30,10,0")}});
-    auto* p506 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：default, 默认阴影")}, {_T("selected"), _T("true")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p507 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：big, 阴影(大)，直角（适合普通窗口）")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p508 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：big_round, 阴影(大)，圆角（适合普通窗口）")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p509 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：small, 阴影(小)，直角（适合普通窗口）")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p510 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：small_round, 阴影(小)，圆角（适合普通窗口）")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p511 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：menu, 阴影(小)，直角（适合弹出式窗口，比如菜单等）")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p512 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：menu_round, 阴影(小)，圆角（适合弹出式窗口，比如菜单等）")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p513 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：none, 无阴影, 有边框, 直角")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p514 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("阴影类型：none_round, 无阴影, 有边框, 圆角")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p515 = ui::Attach<ui::Option>(p503, {{_T("class"), _T("checkbox_2")}, {_T("group"), _T("shadow_type")}, {_T("text"), _T("关闭阴影功能")}, {_T("selected"), _T("false")}, {_T("valign"), _T("center")}, {_T("margin"), _T("30,4,0,2")}});
-    auto* p516 = ui::Attach<ui::VBox>(p502, {{_T("bkcolor"), _T("blue")}});
-    auto* p517 = ui::Attach<ui::Label>(p516, {{_T("text"), _T("页面2：这里是页面2")}});
-    auto* p518 = ui::Attach<ui::VBox>(p502, {{_T("bkcolor"), _T("green")}});
-    auto* p519 = ui::Attach<ui::Label>(p518, {{_T("text"), _T("页面3：这里是页面3")}});
-    auto* p520 = ui::Attach<ui::TabBox>(p518, {{_T("name"), _T("sub_view_tab")}, {_T("selected_id"), _T("2")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p521 = ui::Attach<ui::VBox>(p520, {{_T("name"), _T("sub_view_tab_page1")}, {_T("height"), _T("200")}, {_T("bkcolor"), _T("LightBlue")}});
-    auto* p522 = ui::Attach<ui::Label>(p521, {{_T("text"), _T("内嵌页面1：这里是内嵌页面1")}});
-    auto* p523 = ui::Attach<ui::VBox>(p520, {{_T("name"), _T("sub_view_tab_page2")}, {_T("height"), _T("400")}, {_T("bkcolor"), _T("LightCoral")}});
-    auto* p524 = ui::Attach<ui::Label>(p523, {{_T("text"), _T("内嵌页面2：这里是内嵌页面2")}});
-    auto* p525 = ui::Attach<ui::Label>(p523, {{_T("text"), _T("内嵌页面2：这里是内嵌页面2")}});
-    auto* p526 = ui::Attach<ui::VBox>(p520, {{_T("name"), _T("sub_view_tab_page3")}, {_T("height"), _T("600")}, {_T("bkcolor"), _T("LightCyan")}});
-    auto* p527 = ui::Attach<ui::Label>(p526, {{_T("text"), _T("内嵌页面3：这里是内嵌页面3")}});
-    auto* p528 = ui::Attach<ui::Label>(p526, {{_T("text"), _T("内嵌页面3：这里是内嵌页面3")}});
-    auto* p529 = ui::Attach<ui::Label>(p526, {{_T("text"), _T("内嵌页面3：这里是内嵌页面3")}});
-    auto* p530 = ui::Attach<ui::TabCtrl>(p501, {{_T("class"), _T("tab_ctrl")}, {_T("tab_box_name"), _T("main_view_tab_test")}, {_T("selected_id"), _T("0")}});
-    auto* p531 = ui::Attach<ui::TabCtrlItem>(p530, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("标签1")}, {_T("tab_box_item_index"), _T("0")}});
-    auto* p532 = ui::Attach<ui::TabCtrlItem>(p530, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("标签2")}, {_T("tab_box_item_index"), _T("1")}});
-    auto* p533 = ui::Attach<ui::TabCtrlItem>(p530, {{_T("class"), _T("tab_ctrl_item")}, {_T("title"), _T("标签3")}, {_T("tab_box_item_index"), _T("2")}});
-    auto* p534 = ui::Attach<ui::Label>(p501, {{_T("text"), _T("TabBox测试: TabBox中包含了一个内嵌的TabBox控件")}});
-    auto* p535 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_15")}});
-    auto* p536 = ui::Attach<ui::HBox>(p535, {{_T("child_margin"), _T("2")}});
-    auto* p537 = ui::Attach<ui::GridBox>(p536, {{_T("name"), _T("gridbox_test")}, {_T("padding"), _T("8,8,8,8")}, {_T("width"), _T("70%")}, {_T("height"), _T("100%")}, {_T("grid_width"), _T("120")}, {_T("grid_height"), _T("90")}, {_T("rows"), _T("0")}, {_T("columns"), _T("0")}, {_T("scale_down"), _T("false")}, {_T("child_margin_x"), _T("1")}, {_T("child_margin_y"), _T("1")}, {_T("child_halign"), _T("center")}, {_T("child_valign"), _T("top")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}});
-    auto* p538 = ui::Attach<ui::Control>(p537, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p539 = ui::Attach<ui::Label>(p537, {{_T("text"), _T("minwidth/minheight: 200*200")}, {_T("float"), _T("true")}, {_T("text_align"), _T("top")}, {_T("width"), _T("100")}, {_T("height"), _T("100")}, {_T("minwidth"), _T("200")}, {_T("minheight"), _T("200")}, {_T("margin"), _T("64,60,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Olive")}});
-    auto* p540 = ui::Attach<ui::Label>(p537, {{_T("text"), _T("maxwidth/maxheight: 80*80")}, {_T("float"), _T("true")}, {_T("single_line"), _T("false")}, {_T("width"), _T("200")}, {_T("height"), _T("100")}, {_T("maxwidth"), _T("80")}, {_T("maxheight"), _T("80")}, {_T("margin"), _T("600,70,6,6")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("LemonChiffon")}});
-    auto* p541 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("1 top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}});
-    auto* p542 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("2 center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("row_span"), _T("2")}});
-    auto* p543 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("3 bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("col_span"), _T("2")}});
-    auto* p544 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("4 top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p545 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("5 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p546 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("6 bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p547 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("7 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p548 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("8 center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p549 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("9 bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}});
-    auto* p550 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("10 center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p551 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("11 center stretch: 100%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("col_span"), _T("3")}});
-    auto* p552 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("12 bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p553 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("13 top stretch: 50%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("row_span"), _T("3")}});
-    auto* p554 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("12 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p555 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("15 bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p556 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("16 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p557 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("17 center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p558 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("18 bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}});
-    auto* p559 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("19 center, width: 200")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p560 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("20 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("col_span"), _T("3")}});
-    auto* p561 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("21 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p562 = ui::Attach<ui::Label>(p537, {{_T("class"), _T("page_gridbox")}, {_T("text"), _T("22 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p563 = ui::Attach<ui::GridBox>(p536, {{_T("width"), _T("30%")}, {_T("height"), _T("100%")}, {_T("bkcolor"), _T("Cornsilk")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("child_halign"), _T("center")}, {_T("child_valign"), _T("center")}, {_T("grid_width"), _T("80")}, {_T("grid_height"), _T("60")}, {_T("rows"), _T("6")}, {_T("columns"), _T("4")}, {_T("child_margin_x"), _T("1")}, {_T("child_margin_y"), _T("1")}});
-    auto* p564 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("0")}, {_T("col_span"), _T("4")}, {_T("text_align"), _T("center,right")}, {_T("text_padding"), _T("0,0,6,0")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p565 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("清空")}, {_T("col_span"), _T("2")}});
-    auto* p566 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("回退")}, {_T("col_span"), _T("1")}});
-    auto* p567 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("=")}, {_T("col_span"), _T("1")}});
-    auto* p568 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("1")}, {_T("col_span"), _T("1")}});
-    auto* p569 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("2")}, {_T("col_span"), _T("1")}});
-    auto* p570 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("3")}, {_T("col_span"), _T("1")}});
-    auto* p571 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("+")}, {_T("col_span"), _T("1")}});
-    auto* p572 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("4")}, {_T("col_span"), _T("1")}});
-    auto* p573 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("5")}, {_T("col_span"), _T("1")}});
-    auto* p574 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("6")}, {_T("col_span"), _T("1")}});
-    auto* p575 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("-")}, {_T("col_span"), _T("1")}});
-    auto* p576 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("7")}, {_T("col_span"), _T("1")}});
-    auto* p577 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("8")}, {_T("col_span"), _T("1")}});
-    auto* p578 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("9")}, {_T("col_span"), _T("1")}});
-    auto* p579 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("*")}, {_T("col_span"), _T("1")}});
-    auto* p580 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("0")}, {_T("col_span"), _T("2")}});
-    auto* p581 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T(".")}, {_T("col_span"), _T("1")}});
-    auto* p582 = ui::Attach<ui::Label>(p563, {{_T("class"), _T("page_gridbox_calculator")}, {_T("text"), _T("/")}, {_T("col_span"), _T("1")}});
-    auto* p583 = ui::Attach<ui::VBox>(p535, {{_T("height"), _T("84")}, {_T("padding"), _T("6,0,6,0")}});
-    auto* p584 = ui::Attach<ui::Label>(p583, {{_T("text"), _T("GridBox容器布局测试")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}});
-    auto* p585 = ui::Attach<ui::HBox>(p583, {{_T("height"), _T("28")}});
-    auto* p586 = ui::Attach<ui::Label>(p585, {{_T("text"), _T("容器内容水平对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p587 = ui::Attach<ui::Option>(p585, {{_T("class"), _T("option_1")}, {_T("group"), _T("gridbox_group_halign")}, {_T("text"), _T("靠左对齐(left)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p588 = ui::Attach<ui::Option>(p585, {{_T("class"), _T("option_1")}, {_T("group"), _T("gridbox_group_halign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p589 = ui::Attach<ui::Option>(p585, {{_T("class"), _T("option_1")}, {_T("group"), _T("gridbox_group_halign")}, {_T("text"), _T("靠右对齐(right)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p590 = ui::Attach<ui::Label>(p585, {{_T("text"), _T("（仅当容器内容总宽度小于显示区域宽度时生效）")}, {_T("valign"), _T("center")}});
-    auto* p591 = ui::Attach<ui::HBox>(p583, {{_T("height"), _T("28")}});
-    auto* p592 = ui::Attach<ui::Label>(p591, {{_T("text"), _T("容器内容垂直对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p593 = ui::Attach<ui::Option>(p591, {{_T("class"), _T("option_1")}, {_T("group"), _T("gridbox_group_valign")}, {_T("text"), _T("靠上对齐(top)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p594 = ui::Attach<ui::Option>(p591, {{_T("class"), _T("option_1")}, {_T("group"), _T("gridbox_group_valign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p595 = ui::Attach<ui::Option>(p591, {{_T("class"), _T("option_1")}, {_T("group"), _T("gridbox_group_valign")}, {_T("text"), _T("靠下对齐(bottom)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p596 = ui::Attach<ui::Label>(p591, {{_T("text"), _T("（仅当容器内容总高度小于显示区域高度时生效）")}, {_T("valign"), _T("center")}});
-    auto* p597 = ui::Attach<ui::VBox>(p31, {{_T("name"), _T("main_view_page_16")}});
-    auto* p598 = ui::Attach<ui::GridScrollBox>(p597, {{_T("name"), _T("grid_scrollbox_test")}, {_T("padding"), _T("8,8,8,8")}, {_T("width"), _T("100%")}, {_T("height"), _T("100%")}, {_T("grid_width"), _T("180")}, {_T("grid_height"), _T("120")}, {_T("rows"), _T("0")}, {_T("columns"), _T("0")}, {_T("scale_down"), _T("false")}, {_T("child_margin_x"), _T("1")}, {_T("child_margin_y"), _T("1")}, {_T("child_halign"), _T("center")}, {_T("child_valign"), _T("top")}, {_T("bkcolor"), _T("gray")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}, {_T("hscrollbar"), _T("true")}, {_T("vscrollbar"), _T("true")}});
-    auto* p599 = ui::Attach<ui::Control>(p598, {{_T("float"), _T("true")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("green")}, {_T("bkcolor"), _T("Cornsilk")}});
-    auto* p600 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("1 top")}, {_T("halign"), _T("left")}, {_T("valign"), _T("top")}});
-    auto* p601 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("2 center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("row_span"), _T("2")}});
-    auto* p602 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("3 bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}, {_T("col_span"), _T("2")}});
-    auto* p603 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("4 top")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}});
-    auto* p604 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("5 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p605 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("6 bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p606 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("7 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p607 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("8 center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p608 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("9 bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}});
-    auto* p609 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("10 center")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}});
-    auto* p610 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("11 center stretch: 100%")}, {_T("halign"), _T("left")}, {_T("valign"), _T("center")}, {_T("col_span"), _T("3")}});
-    auto* p611 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("12 bottom")}, {_T("halign"), _T("left")}, {_T("valign"), _T("bottom")}});
-    auto* p612 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("13 top stretch: 50%")}, {_T("halign"), _T("center")}, {_T("valign"), _T("top")}, {_T("row_span"), _T("3")}});
-    auto* p613 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("12 center")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
-    auto* p614 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("15 bottom")}, {_T("halign"), _T("center")}, {_T("valign"), _T("bottom")}});
-    auto* p615 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("16 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p616 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("17 center")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p617 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("18 bottom")}, {_T("halign"), _T("right")}, {_T("valign"), _T("bottom")}});
-    auto* p618 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("19 center, width: 200")}, {_T("halign"), _T("right")}, {_T("valign"), _T("center")}});
-    auto* p619 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("20 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}, {_T("col_span"), _T("3")}});
-    auto* p620 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("21 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p621 = ui::Attach<ui::Label>(p598, {{_T("class"), _T("page_grid_scrollbox")}, {_T("text"), _T("22 top")}, {_T("halign"), _T("right")}, {_T("valign"), _T("top")}});
-    auto* p622 = ui::Attach<ui::VBox>(p597, {{_T("height"), _T("84")}, {_T("padding"), _T("6,0,6,0")}});
-    auto* p623 = ui::Attach<ui::Label>(p622, {{_T("text"), _T("GridScrollBox容器布局测试")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}});
-    auto* p624 = ui::Attach<ui::HBox>(p622, {{_T("height"), _T("28")}});
-    auto* p625 = ui::Attach<ui::Label>(p624, {{_T("text"), _T("容器内容水平对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p626 = ui::Attach<ui::Option>(p624, {{_T("class"), _T("option_1")}, {_T("group"), _T("grid_scrollbox_group_halign")}, {_T("text"), _T("靠左对齐(left)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p627 = ui::Attach<ui::Option>(p624, {{_T("class"), _T("option_1")}, {_T("group"), _T("grid_scrollbox_group_halign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p628 = ui::Attach<ui::Option>(p624, {{_T("class"), _T("option_1")}, {_T("group"), _T("grid_scrollbox_group_halign")}, {_T("text"), _T("靠右对齐(right)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p629 = ui::Attach<ui::Label>(p624, {{_T("text"), _T("（仅当容器内容总宽度小于显示区域宽度时生效）")}, {_T("valign"), _T("center")}});
-    auto* p630 = ui::Attach<ui::HBox>(p622, {{_T("height"), _T("28")}});
-    auto* p631 = ui::Attach<ui::Label>(p630, {{_T("text"), _T("容器内容垂直对齐方式：")}, {_T("valign"), _T("center")}});
-    auto* p632 = ui::Attach<ui::Option>(p630, {{_T("class"), _T("option_1")}, {_T("group"), _T("grid_scrollbox_group_valign")}, {_T("text"), _T("靠上对齐(top)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("true")}});
-    auto* p633 = ui::Attach<ui::Option>(p630, {{_T("class"), _T("option_1")}, {_T("group"), _T("grid_scrollbox_group_valign")}, {_T("text"), _T("居中对齐(center)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p634 = ui::Attach<ui::Option>(p630, {{_T("class"), _T("option_1")}, {_T("group"), _T("grid_scrollbox_group_valign")}, {_T("text"), _T("靠下对齐(bottom)")}, {_T("height"), _T("28")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("selected"), _T("false")}});
-    auto* p635 = ui::Attach<ui::Label>(p630, {{_T("text"), _T("（仅当容器内容总高度小于显示区域高度时生效）")}, {_T("valign"), _T("center")}});
+///////////////////////////////////////////////////////////////////////////
+//   AUTO-GENERATED by xml_to_code - DO NOT EDIT BY HAND
+//
+//   Source XML files:
+//     /Users/steveriemannx/projects-main/dui-dev-mac/resources/themes/macos26/layout/layout.xml
+//
+//   Each XML file produces one function:
+//     Init + FileStem
+//     InitLayout(ui::Window* pWindow)
+//
+//   Functions ending in 'Window' call AttachBox() automatically.
+//   Other functions (templates, items) do NOT call AttachBox - the
+//   caller must add the root control to a parent container.
+///////////////////////////////////////////////////////////////////////////
+
+#include "dui/dui.h"
+
+static void BuildUIFromXml(ui::Window* pWindow) {
+    ui::VBox* p0 = new ui::VBox(pWindow);
+        p0->SetAttribute(_T("bkcolor"), _T("bk_wnd_darkcolor"));
+    ui::HBox* p1 = new ui::HBox(pWindow);
+        p1->SetAttribute(_T("name"), _T("window_caption_bar"));
+        p1->SetAttribute(_T("width"), _T("stretch"));
+        p1->SetAttribute(_T("height"), _T("36"));
+        p1->SetAttribute(_T("bkcolor"), _T("bk_wnd_lightcolor"));
+    ui::HBox* p2 = new ui::HBox(pWindow);
+        p2->SetAttribute(_T("margin"), _T("0,0,30,0"));
+        p2->SetAttribute(_T("valign"), _T("center"));
+        p2->SetAttribute(_T("width"), _T("auto"));
+        p2->SetAttribute(_T("height"), _T("auto"));
+        p2->SetAttribute(_T("mouse_enabled"), _T("false"));
+    ui::Control* p3 = new ui::Control(pWindow);
+        p3->SetAttribute(_T("width"), _T("18"));
+        p3->SetAttribute(_T("height"), _T("18"));
+        p3->SetAttribute(_T("bkimage"), _T("public/caption/logo.svg"));
+        p3->SetAttribute(_T("valign"), _T("center"));
+        p3->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p2->AddItem(p3);
+
+    ui::Label* p4 = new ui::Label(pWindow);
+        p4->SetAttribute(_T("text"), _T("Container Layout Test"));
+        p4->SetAttribute(_T("valign"), _T("center"));
+        p4->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p4->SetAttribute(_T("mouse_enabled"), _T("false"));
+        p2->AddItem(p4);
+
+        p1->AddItem(p2);
+
+    ui::Control* p5 = new ui::Control(pWindow);
+        p5->SetAttribute(_T("mouse_enabled"), _T("false"));
+        p1->AddItem(p5);
+
+    ui::HBox* p6 = new ui::HBox(pWindow);
+        p6->SetAttribute(_T("margin"), _T("0,0,0,0"));
+        p6->SetAttribute(_T("valign"), _T("center"));
+        p6->SetAttribute(_T("width"), _T("auto"));
+        p6->SetAttribute(_T("height"), _T("36"));
+    ui::Button* p7 = new ui::Button(pWindow);
+        p7->SetAttribute(_T("class"), _T("btn_wnd_min_11"));
+        p7->SetAttribute(_T("height"), _T("32"));
+        p7->SetAttribute(_T("width"), _T("40"));
+        p7->SetAttribute(_T("name"), _T("minbtn"));
+        p7->SetAttribute(_T("margin"), _T("0,2,0,2"));
+        p7->SetAttribute(_T("tooltip_text"), _T("Minimize"));
+        p6->AddItem(p7);
+
+    ui::Box* p8 = new ui::Box(pWindow);
+        p8->SetAttribute(_T("height"), _T("stretch"));
+        p8->SetAttribute(_T("width"), _T("40"));
+        p8->SetAttribute(_T("margin"), _T("0,2,0,2"));
+    ui::Button* p9 = new ui::Button(pWindow);
+        p9->SetAttribute(_T("class"), _T("btn_wnd_max_11"));
+        p9->SetAttribute(_T("height"), _T("32"));
+        p9->SetAttribute(_T("width"), _T("stretch"));
+        p9->SetAttribute(_T("name"), _T("maxbtn"));
+        p9->SetAttribute(_T("tooltip_text"), _T("Maximize"));
+        p8->AddItem(p9);
+
+    ui::Button* p10 = new ui::Button(pWindow);
+        p10->SetAttribute(_T("class"), _T("btn_wnd_restore_11"));
+        p10->SetAttribute(_T("height"), _T("32"));
+        p10->SetAttribute(_T("width"), _T("stretch"));
+        p10->SetAttribute(_T("name"), _T("restorebtn"));
+        p10->SetAttribute(_T("visible"), _T("false"));
+        p10->SetAttribute(_T("tooltip_text"), _T("Restore"));
+        p8->AddItem(p10);
+
+        p6->AddItem(p8);
+
+    ui::Button* p11 = new ui::Button(pWindow);
+        p11->SetAttribute(_T("class"), _T("btn_wnd_close_11"));
+        p11->SetAttribute(_T("height"), _T("stretch"));
+        p11->SetAttribute(_T("width"), _T("40"));
+        p11->SetAttribute(_T("name"), _T("closebtn"));
+        p11->SetAttribute(_T("margin"), _T("0,0,0,2"));
+        p11->SetAttribute(_T("tooltip_text"), _T("Close"));
+        p6->AddItem(p11);
+
+        p1->AddItem(p6);
+
+        p0->AddItem(p1);
+
+    ui::VBox* p12 = new ui::VBox(pWindow);
+    ui::TabCtrl* p13 = new ui::TabCtrl(pWindow);
+        p13->SetAttribute(_T("class"), _T("tab_ctrl"));
+        p13->SetAttribute(_T("tab_box_name"), _T("main_view_tab"));
+        p13->SetAttribute(_T("selected_id"), _T("0"));
+    ui::TabCtrlItem* p14 = new ui::TabCtrlItem(pWindow);
+        p14->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p14->SetAttribute(_T("title"), _T("Box"));
+        p14->SetAttribute(_T("tooltip_text"), _T("Box"));
+        p14->SetAttribute(_T("tab_box_item_index"), _T("0"));
+        p13->AddItem(p14);
+
+    ui::TabCtrlItem* p15 = new ui::TabCtrlItem(pWindow);
+        p15->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p15->SetAttribute(_T("title"), _T("HBox"));
+        p15->SetAttribute(_T("tooltip_text"), _T("HBox"));
+        p15->SetAttribute(_T("tab_box_item_index"), _T("1"));
+        p13->AddItem(p15);
+
+    ui::TabCtrlItem* p16 = new ui::TabCtrlItem(pWindow);
+        p16->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p16->SetAttribute(_T("title"), _T("VBox"));
+        p16->SetAttribute(_T("tooltip_text"), _T("VBox"));
+        p16->SetAttribute(_T("tab_box_item_index"), _T("2"));
+        p13->AddItem(p16);
+
+    ui::TabCtrlItem* p17 = new ui::TabCtrlItem(pWindow);
+        p17->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p17->SetAttribute(_T("title"), _T("HFlowBox"));
+        p17->SetAttribute(_T("tooltip_text"), _T("HFlowBox"));
+        p17->SetAttribute(_T("tab_box_item_index"), _T("3"));
+        p13->AddItem(p17);
+
+    ui::TabCtrlItem* p18 = new ui::TabCtrlItem(pWindow);
+        p18->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p18->SetAttribute(_T("title"), _T("VFlowBox"));
+        p18->SetAttribute(_T("tooltip_text"), _T("VFlowBox"));
+        p18->SetAttribute(_T("tab_box_item_index"), _T("4"));
+        p13->AddItem(p18);
+
+    ui::TabCtrlItem* p19 = new ui::TabCtrlItem(pWindow);
+        p19->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p19->SetAttribute(_T("title"), _T("TileBox"));
+        p19->SetAttribute(_T("tooltip_text"), _T("TileBox"));
+        p19->SetAttribute(_T("tab_box_item_index"), _T("5"));
+        p13->AddItem(p19);
+
+    ui::TabCtrlItem* p20 = new ui::TabCtrlItem(pWindow);
+        p20->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p20->SetAttribute(_T("title"), _T("ScrollBox"));
+        p20->SetAttribute(_T("tooltip_text"), _T("ScrollBox"));
+        p20->SetAttribute(_T("tab_box_item_index"), _T("6"));
+        p13->AddItem(p20);
+
+    ui::TabCtrlItem* p21 = new ui::TabCtrlItem(pWindow);
+        p21->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p21->SetAttribute(_T("title"), _T("HScrollBox"));
+        p21->SetAttribute(_T("tooltip_text"), _T("HScrollBox"));
+        p21->SetAttribute(_T("tab_box_item_index"), _T("7"));
+        p13->AddItem(p21);
+
+    ui::TabCtrlItem* p22 = new ui::TabCtrlItem(pWindow);
+        p22->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p22->SetAttribute(_T("title"), _T("VScrollBox"));
+        p22->SetAttribute(_T("tooltip_text"), _T("VScrollBox"));
+        p22->SetAttribute(_T("tab_box_item_index"), _T("8"));
+        p13->AddItem(p22);
+
+    ui::TabCtrlItem* p23 = new ui::TabCtrlItem(pWindow);
+        p23->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p23->SetAttribute(_T("title"), _T("HFlowScrollBox"));
+        p23->SetAttribute(_T("tooltip_text"), _T("HFlowScrollBox"));
+        p23->SetAttribute(_T("tab_box_item_index"), _T("9"));
+        p13->AddItem(p23);
+
+    ui::TabCtrlItem* p24 = new ui::TabCtrlItem(pWindow);
+        p24->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p24->SetAttribute(_T("title"), _T("VFlowScrollBox"));
+        p24->SetAttribute(_T("tooltip_text"), _T("VFlowScrollBox"));
+        p24->SetAttribute(_T("tab_box_item_index"), _T("10"));
+        p13->AddItem(p24);
+
+    ui::TabCtrlItem* p25 = new ui::TabCtrlItem(pWindow);
+        p25->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p25->SetAttribute(_T("title"), _T("TileScrollBox"));
+        p25->SetAttribute(_T("tooltip_text"), _T("TileScrollBox"));
+        p25->SetAttribute(_T("tab_box_item_index"), _T("11"));
+        p13->AddItem(p25);
+
+    ui::TabCtrlItem* p26 = new ui::TabCtrlItem(pWindow);
+        p26->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p26->SetAttribute(_T("title"), _T("ListBox"));
+        p26->SetAttribute(_T("tooltip_text"), _T("ListBox"));
+        p26->SetAttribute(_T("tab_box_item_index"), _T("12"));
+        p13->AddItem(p26);
+
+    ui::TabCtrlItem* p27 = new ui::TabCtrlItem(pWindow);
+        p27->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p27->SetAttribute(_T("title"), _T("Layout"));
+        p27->SetAttribute(_T("tooltip_text"), _T("Layout"));
+        p27->SetAttribute(_T("tab_box_item_index"), _T("13"));
+        p13->AddItem(p27);
+
+    ui::TabCtrlItem* p28 = new ui::TabCtrlItem(pWindow);
+        p28->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p28->SetAttribute(_T("title"), _T("TabBox"));
+        p28->SetAttribute(_T("tooltip_text"), _T("TabBox"));
+        p28->SetAttribute(_T("tab_box_item_index"), _T("14"));
+        p13->AddItem(p28);
+
+    ui::TabCtrlItem* p29 = new ui::TabCtrlItem(pWindow);
+        p29->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p29->SetAttribute(_T("title"), _T("GridBox"));
+        p29->SetAttribute(_T("tooltip_text"), _T("GridBox"));
+        p29->SetAttribute(_T("tab_box_item_index"), _T("15"));
+        p13->AddItem(p29);
+
+    ui::TabCtrlItem* p30 = new ui::TabCtrlItem(pWindow);
+        p30->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p30->SetAttribute(_T("title"), _T("GridScrollBox"));
+        p30->SetAttribute(_T("tooltip_text"), _T("GridScrollBox"));
+        p30->SetAttribute(_T("tab_box_item_index"), _T("16"));
+        p13->AddItem(p30);
+
+        p12->AddItem(p13);
+
+    ui::TabBox* p31 = new ui::TabBox(pWindow);
+        p31->SetAttribute(_T("name"), _T("main_view_tab"));
+        p31->SetAttribute(_T("bkcolor"), _T("white"));
+        p31->SetAttribute(_T("selected_id"), _T("0"));
+        p31->SetAttribute(_T("fade_switch_type"), _T("FadeInOutX"));
+        p31->SetAttribute(_T("fade_switch_frame_interval_ms"), _T("16"));
+        p31->SetAttribute(_T("fade_switch_total_ms"), _T("220"));
+        p31->SetAttribute(_T("fade_switch_easing_function"), _T("EaseOutCubic"));
+    ui::VBox* p32 = new ui::VBox(pWindow);
+        p32->SetAttribute(_T("name"), _T("main_view_page_00"));
+    pWindow->AddClass(_T("page_box"), _T(" margin=\"6,6,6,6\" width=\"200\" height=\"100\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::Label* p33 = new ui::Label(pWindow);
+        p33->SetAttribute(_T("text"), _T("Box Container Layout Test: the container does not support alignment (child_halign/child_valign); set alignment on the child controls (halign/valign)"));
+        p32->AddItem(p33);
+
+    ui::Box* p34 = new ui::Box(pWindow);
+        p34->SetAttribute(_T("bkcolor"), _T("gray"));
+        p34->SetAttribute(_T("border_size"), _T("1"));
+        p34->SetAttribute(_T("border_color"), _T("red"));
+        p34->SetAttribute(_T("padding"), _T("8,8,8,8"));
+    ui::Control* p35 = new ui::Control(pWindow);
+        p35->SetAttribute(_T("float"), _T("true"));
+        p35->SetAttribute(_T("width"), _T("stretch"));
+        p35->SetAttribute(_T("height"), _T("stretch"));
+        p35->SetAttribute(_T("border_size"), _T("1"));
+        p35->SetAttribute(_T("border_color"), _T("green"));
+        p35->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p34->AddItem(p35);
+
+    ui::Label* p36 = new ui::Label(pWindow);
+        p36->SetAttribute(_T("text"), _T("minwidth/minheight: 300*300"));
+        p36->SetAttribute(_T("float"), _T("true"));
+        p36->SetAttribute(_T("text_align"), _T("top"));
+        p36->SetAttribute(_T("width"), _T("200"));
+        p36->SetAttribute(_T("height"), _T("100"));
+        p36->SetAttribute(_T("minwidth"), _T("300"));
+        p36->SetAttribute(_T("minheight"), _T("300"));
+        p36->SetAttribute(_T("margin"), _T("64,160,6,6"));
+        p36->SetAttribute(_T("border_size"), _T("1"));
+        p36->SetAttribute(_T("border_color"), _T("green"));
+        p36->SetAttribute(_T("bkcolor"), _T("Olive"));
+        p34->AddItem(p36);
+
+    ui::Label* p37 = new ui::Label(pWindow);
+        p37->SetAttribute(_T("text"), _T("maxwidth/maxheight: 80*80"));
+        p37->SetAttribute(_T("float"), _T("true"));
+        p37->SetAttribute(_T("single_line"), _T("false"));
+        p37->SetAttribute(_T("width"), _T("200"));
+        p37->SetAttribute(_T("height"), _T("100"));
+        p37->SetAttribute(_T("maxwidth"), _T("80"));
+        p37->SetAttribute(_T("maxheight"), _T("80"));
+        p37->SetAttribute(_T("margin"), _T("600,160,6,6"));
+        p37->SetAttribute(_T("border_size"), _T("1"));
+        p37->SetAttribute(_T("border_color"), _T("green"));
+        p37->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+        p34->AddItem(p37);
+
+    ui::LabelBox* p38 = new ui::LabelBox(pWindow);
+        p38->SetAttribute(_T("text"), _T("Layout Test"));
+        p38->SetAttribute(_T("float"), _T("true"));
+        p38->SetAttribute(_T("single_line"), _T("false"));
+        p38->SetAttribute(_T("width"), _T("200"));
+        p38->SetAttribute(_T("height"), _T("200"));
+        p38->SetAttribute(_T("margin"), _T("800,160,6,6"));
+        p38->SetAttribute(_T("padding"), _T("6,6,6,6"));
+        p38->SetAttribute(_T("border_size"), _T("1"));
+        p38->SetAttribute(_T("border_color"), _T("green"));
+        p38->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+    ui::Control* p39 = new ui::Control(pWindow);
+        p39->SetAttribute(_T("margin"), _T("6,6,6,6"));
+        p39->SetAttribute(_T("width"), _T("stretch"));
+        p39->SetAttribute(_T("height"), _T("stretch"));
+        p39->SetAttribute(_T("border_size"), _T("2"));
+        p39->SetAttribute(_T("border_color"), _T("red"));
+        p39->SetAttribute(_T("bkcolor"), _T("Sienna"));
+        p38->AddItem(p39);
+
+        p34->AddItem(p38);
+
+    ui::Label* p40 = new ui::Label(pWindow);
+        p40->SetAttribute(_T("class"), _T("page_box"));
+        p40->SetAttribute(_T("text"), _T("1 left,top"));
+        p40->SetAttribute(_T("halign"), _T("left"));
+        p40->SetAttribute(_T("valign"), _T("top"));
+        p40->SetAttribute(_T("minwidth"), _T("300"));
+        p40->SetAttribute(_T("maxheight"), _T("60"));
+        p34->AddItem(p40);
+
+    ui::Label* p41 = new ui::Label(pWindow);
+        p41->SetAttribute(_T("class"), _T("page_box"));
+        p41->SetAttribute(_T("text"), _T("2 left,center"));
+        p41->SetAttribute(_T("halign"), _T("left"));
+        p41->SetAttribute(_T("valign"), _T("center"));
+        p34->AddItem(p41);
+
+    ui::Label* p42 = new ui::Label(pWindow);
+        p42->SetAttribute(_T("class"), _T("page_box"));
+        p42->SetAttribute(_T("text"), _T("3 left,bottom"));
+        p42->SetAttribute(_T("halign"), _T("left"));
+        p42->SetAttribute(_T("valign"), _T("bottom"));
+        p34->AddItem(p42);
+
+    ui::Label* p43 = new ui::Label(pWindow);
+        p43->SetAttribute(_T("class"), _T("page_box"));
+        p43->SetAttribute(_T("text"), _T("4 center,top"));
+        p43->SetAttribute(_T("halign"), _T("center"));
+        p43->SetAttribute(_T("valign"), _T("top"));
+        p34->AddItem(p43);
+
+    ui::Label* p44 = new ui::Label(pWindow);
+        p44->SetAttribute(_T("class"), _T("page_box"));
+        p44->SetAttribute(_T("text"), _T("5 center,center"));
+        p44->SetAttribute(_T("halign"), _T("center"));
+        p44->SetAttribute(_T("valign"), _T("center"));
+        p34->AddItem(p44);
+
+    ui::Label* p45 = new ui::Label(pWindow);
+        p45->SetAttribute(_T("class"), _T("page_box"));
+        p45->SetAttribute(_T("text"), _T("51 width: 70%"));
+        p45->SetAttribute(_T("halign"), _T("center"));
+        p45->SetAttribute(_T("valign"), _T("center"));
+        p45->SetAttribute(_T("width"), _T("70%"));
+        p45->SetAttribute(_T("height"), _T("40"));
+        p45->SetAttribute(_T("alpha"), _T("128"));
+        p45->SetAttribute(_T("margin"), _T("10,200,10,10"));
+        p34->AddItem(p45);
+
+    ui::Label* p46 = new ui::Label(pWindow);
+        p46->SetAttribute(_T("class"), _T("page_box"));
+        p46->SetAttribute(_T("text"), _T("52 height: 70%"));
+        p46->SetAttribute(_T("halign"), _T("center"));
+        p46->SetAttribute(_T("valign"), _T("center"));
+        p46->SetAttribute(_T("width"), _T("200"));
+        p46->SetAttribute(_T("height"), _T("70%"));
+        p46->SetAttribute(_T("alpha"), _T("128"));
+        p46->SetAttribute(_T("margin"), _T("300,10,10,10"));
+        p34->AddItem(p46);
+
+    ui::Label* p47 = new ui::Label(pWindow);
+        p47->SetAttribute(_T("class"), _T("page_box"));
+        p47->SetAttribute(_T("text"), _T("6 center,bottom"));
+        p47->SetAttribute(_T("halign"), _T("center"));
+        p47->SetAttribute(_T("valign"), _T("bottom"));
+        p34->AddItem(p47);
+
+    ui::Label* p48 = new ui::Label(pWindow);
+        p48->SetAttribute(_T("class"), _T("page_box"));
+        p48->SetAttribute(_T("text"), _T("7 right,top"));
+        p48->SetAttribute(_T("halign"), _T("right"));
+        p48->SetAttribute(_T("valign"), _T("top"));
+        p34->AddItem(p48);
+
+    ui::Label* p49 = new ui::Label(pWindow);
+        p49->SetAttribute(_T("class"), _T("page_box"));
+        p49->SetAttribute(_T("text"), _T("8 right,center"));
+        p49->SetAttribute(_T("halign"), _T("right"));
+        p49->SetAttribute(_T("valign"), _T("center"));
+        p34->AddItem(p49);
+
+    ui::Label* p50 = new ui::Label(pWindow);
+        p50->SetAttribute(_T("class"), _T("page_box"));
+        p50->SetAttribute(_T("text"), _T("9 right,bottom"));
+        p50->SetAttribute(_T("halign"), _T("right"));
+        p50->SetAttribute(_T("valign"), _T("bottom"));
+        p34->AddItem(p50);
+
+        p32->AddItem(p34);
+
+        p31->AddItem(p32);
+
+    ui::VBox* p51 = new ui::VBox(pWindow);
+        p51->SetAttribute(_T("name"), _T("main_view_page_01"));
+    pWindow->AddClass(_T("page_hbox"), _T(" margin=\"6,6,6,6\" width=\"110\" height=\"auto\" multi_line=\"true\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::VBox* p52 = new ui::VBox(pWindow);
+        p52->SetAttribute(_T("height"), _T("auto"));
+        p52->SetAttribute(_T("padding"), _T("6,0,6,6"));
+    ui::Label* p53 = new ui::Label(pWindow);
+        p53->SetAttribute(_T("text"), _T("HBox Container Layout Test"));
+        p53->SetAttribute(_T("height"), _T("28"));
+        p53->SetAttribute(_T("valign"), _T("center"));
+        p52->AddItem(p53);
+
+    ui::HBox* p54 = new ui::HBox(pWindow);
+        p54->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p55 = new ui::Label(pWindow);
+        p55->SetAttribute(_T("text"), _T("Container content horizontal alignment (child_halign): "));
+        p55->SetAttribute(_T("valign"), _T("center"));
+        p54->AddItem(p55);
+
+    ui::Option* p56 = new ui::Option(pWindow);
+        p56->SetAttribute(_T("class"), _T("option_1"));
+        p56->SetAttribute(_T("group"), _T("hbox_group_halign"));
+        p56->SetAttribute(_T("text"), _T("Align Left (left)"));
+        p56->SetAttribute(_T("height"), _T("28"));
+        p56->SetAttribute(_T("valign"), _T("center"));
+        p56->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p56->SetAttribute(_T("selected"), _T("true"));
+        p54->AddItem(p56);
+
+    ui::Option* p57 = new ui::Option(pWindow);
+        p57->SetAttribute(_T("class"), _T("option_1"));
+        p57->SetAttribute(_T("group"), _T("hbox_group_halign"));
+        p57->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p57->SetAttribute(_T("height"), _T("28"));
+        p57->SetAttribute(_T("valign"), _T("center"));
+        p57->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p57->SetAttribute(_T("selected"), _T("false"));
+        p54->AddItem(p57);
+
+    ui::Option* p58 = new ui::Option(pWindow);
+        p58->SetAttribute(_T("class"), _T("option_1"));
+        p58->SetAttribute(_T("group"), _T("hbox_group_halign"));
+        p58->SetAttribute(_T("text"), _T("Align Right (right)"));
+        p58->SetAttribute(_T("height"), _T("28"));
+        p58->SetAttribute(_T("valign"), _T("center"));
+        p58->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p58->SetAttribute(_T("selected"), _T("false"));
+        p54->AddItem(p58);
+
+    ui::Label* p59 = new ui::Label(pWindow);
+        p59->SetAttribute(_T("text"), _T("(effective only when total child width is smaller than the container width)"));
+        p59->SetAttribute(_T("valign"), _T("center"));
+        p54->AddItem(p59);
+
+        p52->AddItem(p54);
+
+    ui::HBox* p60 = new ui::HBox(pWindow);
+        p60->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p61 = new ui::Label(pWindow);
+        p61->SetAttribute(_T("text"), _T("Container content vertical alignment (child_valign): not supported, set it on the child controls"));
+        p61->SetAttribute(_T("valign"), _T("center"));
+        p60->AddItem(p61);
+
+        p52->AddItem(p60);
+
+    ui::Label* p62 = new ui::Label(pWindow);
+        p62->SetAttribute(_T("text"), _T("Child control alignment: halign not supported, valign supported"));
+        p62->SetAttribute(_T("valign"), _T("center"));
+        p52->AddItem(p62);
+
+        p51->AddItem(p52);
+
+    ui::VBox* p63 = new ui::VBox(pWindow);
+    ui::HBox* p64 = new ui::HBox(pWindow);
+        p64->SetAttribute(_T("name"), _T("hbox_test"));
+        p64->SetAttribute(_T("child_halign"), _T("left"));
+        p64->SetAttribute(_T("child_valign"), _T("top"));
+        p64->SetAttribute(_T("bkcolor"), _T("gray"));
+        p64->SetAttribute(_T("border_size"), _T("1"));
+        p64->SetAttribute(_T("border_color"), _T("red"));
+        p64->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p64->SetAttribute(_T("height"), _T("60%"));
+    ui::Control* p65 = new ui::Control(pWindow);
+        p65->SetAttribute(_T("float"), _T("true"));
+        p65->SetAttribute(_T("width"), _T("stretch"));
+        p65->SetAttribute(_T("height"), _T("stretch"));
+        p65->SetAttribute(_T("border_size"), _T("1"));
+        p65->SetAttribute(_T("border_color"), _T("green"));
+        p65->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p64->AddItem(p65);
+
+    ui::Label* p66 = new ui::Label(pWindow);
+        p66->SetAttribute(_T("text"), _T("minwidth/minheight: 200*200"));
+        p66->SetAttribute(_T("float"), _T("true"));
+        p66->SetAttribute(_T("text_align"), _T("top"));
+        p66->SetAttribute(_T("width"), _T("100"));
+        p66->SetAttribute(_T("height"), _T("100"));
+        p66->SetAttribute(_T("minwidth"), _T("200"));
+        p66->SetAttribute(_T("minheight"), _T("200"));
+        p66->SetAttribute(_T("margin"), _T("64,60,6,6"));
+        p66->SetAttribute(_T("border_size"), _T("1"));
+        p66->SetAttribute(_T("border_color"), _T("green"));
+        p66->SetAttribute(_T("bkcolor"), _T("Olive"));
+        p64->AddItem(p66);
+
+    ui::Label* p67 = new ui::Label(pWindow);
+        p67->SetAttribute(_T("text"), _T("maxwidth/maxheight: 80*80"));
+        p67->SetAttribute(_T("float"), _T("true"));
+        p67->SetAttribute(_T("single_line"), _T("false"));
+        p67->SetAttribute(_T("width"), _T("200"));
+        p67->SetAttribute(_T("height"), _T("100"));
+        p67->SetAttribute(_T("maxwidth"), _T("80"));
+        p67->SetAttribute(_T("maxheight"), _T("80"));
+        p67->SetAttribute(_T("margin"), _T("600,70,6,6"));
+        p67->SetAttribute(_T("border_size"), _T("1"));
+        p67->SetAttribute(_T("border_color"), _T("green"));
+        p67->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+        p64->AddItem(p67);
+
+    ui::LabelBox* p68 = new ui::LabelBox(pWindow);
+        p68->SetAttribute(_T("text"), _T("Layout Test"));
+        p68->SetAttribute(_T("float"), _T("true"));
+        p68->SetAttribute(_T("single_line"), _T("false"));
+        p68->SetAttribute(_T("width"), _T("200"));
+        p68->SetAttribute(_T("height"), _T("200"));
+        p68->SetAttribute(_T("margin"), _T("800,50,6,6"));
+        p68->SetAttribute(_T("padding"), _T("6,6,6,6"));
+        p68->SetAttribute(_T("border_size"), _T("1"));
+        p68->SetAttribute(_T("border_color"), _T("green"));
+        p68->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+    ui::Control* p69 = new ui::Control(pWindow);
+        p69->SetAttribute(_T("margin"), _T("6,6,6,6"));
+        p69->SetAttribute(_T("width"), _T("stretch"));
+        p69->SetAttribute(_T("height"), _T("stretch"));
+        p69->SetAttribute(_T("border_size"), _T("2"));
+        p69->SetAttribute(_T("border_color"), _T("red"));
+        p69->SetAttribute(_T("bkcolor"), _T("Sienna"));
+        p68->AddItem(p69);
+
+        p64->AddItem(p68);
+
+    ui::Label* p70 = new ui::Label(pWindow);
+        p70->SetAttribute(_T("class"), _T("page_hbox"));
+        p70->SetAttribute(_T("text"), _T("1 left,top minwidth:200"));
+        p70->SetAttribute(_T("multi_line"), _T("true"));
+        p70->SetAttribute(_T("halign"), _T("left"));
+        p70->SetAttribute(_T("valign"), _T("top"));
+        p70->SetAttribute(_T("max_height"), _T("44"));
+        p64->AddItem(p70);
+
+    ui::Label* p71 = new ui::Label(pWindow);
+        p71->SetAttribute(_T("class"), _T("page_hbox"));
+        p71->SetAttribute(_T("text"), _T("2 left,center"));
+        p71->SetAttribute(_T("halign"), _T("left"));
+        p71->SetAttribute(_T("valign"), _T("center"));
+        p64->AddItem(p71);
+
+    ui::Label* p72 = new ui::Label(pWindow);
+        p72->SetAttribute(_T("class"), _T("page_hbox"));
+        p72->SetAttribute(_T("text"), _T("3 left,bottom 50%"));
+        p72->SetAttribute(_T("halign"), _T("left"));
+        p72->SetAttribute(_T("valign"), _T("bottom"));
+        p72->SetAttribute(_T("height"), _T("50%"));
+        p72->SetAttribute(_T("width"), _T("150"));
+        p64->AddItem(p72);
+
+    ui::Label* p73 = new ui::Label(pWindow);
+        p73->SetAttribute(_T("class"), _T("page_hbox"));
+        p73->SetAttribute(_T("text"), _T("4 center,top"));
+        p73->SetAttribute(_T("halign"), _T("center"));
+        p73->SetAttribute(_T("valign"), _T("top"));
+        p64->AddItem(p73);
+
+    ui::Label* p74 = new ui::Label(pWindow);
+        p74->SetAttribute(_T("class"), _T("page_hbox"));
+        p74->SetAttribute(_T("text"), _T("5 center,center"));
+        p74->SetAttribute(_T("halign"), _T("center"));
+        p74->SetAttribute(_T("valign"), _T("center"));
+        p64->AddItem(p74);
+
+    ui::Label* p75 = new ui::Label(pWindow);
+        p75->SetAttribute(_T("class"), _T("page_hbox"));
+        p75->SetAttribute(_T("text"), _T("6 center,bottom"));
+        p75->SetAttribute(_T("halign"), _T("center"));
+        p75->SetAttribute(_T("height"), _T("120"));
+        p75->SetAttribute(_T("valign"), _T("bottom"));
+        p64->AddItem(p75);
+
+    ui::Label* p76 = new ui::Label(pWindow);
+        p76->SetAttribute(_T("class"), _T("page_hbox"));
+        p76->SetAttribute(_T("text"), _T("7 right,top"));
+        p76->SetAttribute(_T("halign"), _T("right"));
+        p76->SetAttribute(_T("valign"), _T("top"));
+        p64->AddItem(p76);
+
+    ui::Label* p77 = new ui::Label(pWindow);
+        p77->SetAttribute(_T("class"), _T("page_hbox"));
+        p77->SetAttribute(_T("text"), _T("8 right,center"));
+        p77->SetAttribute(_T("halign"), _T("right"));
+        p77->SetAttribute(_T("valign"), _T("center"));
+        p64->AddItem(p77);
+
+    ui::Label* p78 = new ui::Label(pWindow);
+        p78->SetAttribute(_T("class"), _T("page_hbox"));
+        p78->SetAttribute(_T("text"), _T("9 right,bottom"));
+        p78->SetAttribute(_T("halign"), _T("right"));
+        p78->SetAttribute(_T("valign"), _T("bottom"));
+        p64->AddItem(p78);
+
+        p63->AddItem(p64);
+
+    ui::HBox* p79 = new ui::HBox(pWindow);
+        p79->SetAttribute(_T("bkcolor"), _T("gray"));
+        p79->SetAttribute(_T("border_size"), _T("1"));
+        p79->SetAttribute(_T("border_color"), _T("red"));
+        p79->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p79->SetAttribute(_T("margin"), _T("0,4,0,0"));
+        p79->SetAttribute(_T("height"), _T("15%"));
+    ui::Label* p80 = new ui::Label(pWindow);
+        p80->SetAttribute(_T("class"), _T("page_hbox"));
+        p80->SetAttribute(_T("text"), _T("1 left,top minwidth:200"));
+        p80->SetAttribute(_T("halign"), _T("left"));
+        p80->SetAttribute(_T("valign"), _T("top"));
+        p80->SetAttribute(_T("max_height"), _T("44"));
+        p79->AddItem(p80);
+
+    ui::Label* p81 = new ui::Label(pWindow);
+        p81->SetAttribute(_T("class"), _T("page_hbox"));
+        p81->SetAttribute(_T("text"), _T("2 left,center"));
+        p81->SetAttribute(_T("halign"), _T("left"));
+        p81->SetAttribute(_T("valign"), _T("center"));
+        p81->SetAttribute(_T("width"), _T("80"));
+        p79->AddItem(p81);
+
+    ui::Label* p82 = new ui::Label(pWindow);
+        p82->SetAttribute(_T("class"), _T("page_hbox"));
+        p82->SetAttribute(_T("text"), _T("3 left,bottom height:70%"));
+        p82->SetAttribute(_T("halign"), _T("left"));
+        p82->SetAttribute(_T("valign"), _T("bottom"));
+        p82->SetAttribute(_T("height"), _T("70%"));
+        p79->AddItem(p82);
+
+    ui::Label* p83 = new ui::Label(pWindow);
+        p83->SetAttribute(_T("class"), _T("page_hbox"));
+        p83->SetAttribute(_T("text"), _T("4 right,bottom 20%"));
+        p83->SetAttribute(_T("halign"), _T("right"));
+        p83->SetAttribute(_T("valign"), _T("bottom"));
+        p83->SetAttribute(_T("width"), _T("20%"));
+        p83->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p79->AddItem(p83);
+
+    ui::Label* p84 = new ui::Label(pWindow);
+        p84->SetAttribute(_T("class"), _T("page_hbox"));
+        p84->SetAttribute(_T("text"), _T("5 right,top"));
+        p84->SetAttribute(_T("halign"), _T("right"));
+        p84->SetAttribute(_T("valign"), _T("top"));
+        p84->SetAttribute(_T("width"), _T("80"));
+        p79->AddItem(p84);
+
+    ui::Label* p85 = new ui::Label(pWindow);
+        p85->SetAttribute(_T("class"), _T("page_hbox"));
+        p85->SetAttribute(_T("text"), _T("6 right,bottom 30%"));
+        p85->SetAttribute(_T("halign"), _T("right"));
+        p85->SetAttribute(_T("valign"), _T("bottom"));
+        p85->SetAttribute(_T("width"), _T("30%"));
+        p85->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p79->AddItem(p85);
+
+    ui::Label* p86 = new ui::Label(pWindow);
+        p86->SetAttribute(_T("class"), _T("page_hbox"));
+        p86->SetAttribute(_T("text"), _T("7 right,center"));
+        p86->SetAttribute(_T("halign"), _T("right"));
+        p86->SetAttribute(_T("valign"), _T("center"));
+        p86->SetAttribute(_T("width"), _T("80"));
+        p79->AddItem(p86);
+
+    ui::Label* p87 = new ui::Label(pWindow);
+        p87->SetAttribute(_T("class"), _T("page_hbox"));
+        p87->SetAttribute(_T("text"), _T("8 right,bottom 40%"));
+        p87->SetAttribute(_T("halign"), _T("right"));
+        p87->SetAttribute(_T("valign"), _T("bottom"));
+        p87->SetAttribute(_T("width"), _T("40%"));
+        p87->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p79->AddItem(p87);
+
+        p63->AddItem(p79);
+
+    ui::HBox* p88 = new ui::HBox(pWindow);
+        p88->SetAttribute(_T("bkcolor"), _T("gray"));
+        p88->SetAttribute(_T("child_margin_x"), _T("8"));
+        p88->SetAttribute(_T("border_size"), _T("1"));
+        p88->SetAttribute(_T("border_color"), _T("red"));
+        p88->SetAttribute(_T("margin"), _T("0,4,0,0"));
+        p88->SetAttribute(_T("height"), _T("10%"));
+    ui::Label* p89 = new ui::Label(pWindow);
+        p89->SetAttribute(_T("class"), _T("page_hbox"));
+        p89->SetAttribute(_T("text"), _T("1 left,top"));
+        p89->SetAttribute(_T("halign"), _T("left"));
+        p89->SetAttribute(_T("valign"), _T("top"));
+        p89->SetAttribute(_T("width"), _T("stretch"));
+        p89->SetAttribute(_T("height"), _T("100%"));
+        p89->SetAttribute(_T("margin"), _T("0,6,0,6"));
+        p88->AddItem(p89);
+
+    ui::Label* p90 = new ui::Label(pWindow);
+        p90->SetAttribute(_T("class"), _T("page_hbox"));
+        p90->SetAttribute(_T("text"), _T("2 left,center"));
+        p90->SetAttribute(_T("halign"), _T("left"));
+        p90->SetAttribute(_T("valign"), _T("center"));
+        p90->SetAttribute(_T("width"), _T("stretch"));
+        p90->SetAttribute(_T("height"), _T("100%"));
+        p90->SetAttribute(_T("margin"), _T("0,6,0,6"));
+        p88->AddItem(p90);
+
+    ui::Label* p91 = new ui::Label(pWindow);
+        p91->SetAttribute(_T("class"), _T("page_hbox"));
+        p91->SetAttribute(_T("text"), _T("3 left,bottom"));
+        p91->SetAttribute(_T("halign"), _T("left"));
+        p91->SetAttribute(_T("valign"), _T("bottom"));
+        p91->SetAttribute(_T("width"), _T("stretch"));
+        p91->SetAttribute(_T("height"), _T("100%"));
+        p91->SetAttribute(_T("margin"), _T("0,6,0,6"));
+        p88->AddItem(p91);
+
+        p63->AddItem(p88);
+
+    ui::HBox* p92 = new ui::HBox(pWindow);
+        p92->SetAttribute(_T("child_margin_x"), _T("2"));
+        p92->SetAttribute(_T("bkcolor"), _T("gray"));
+        p92->SetAttribute(_T("border_size"), _T("1"));
+        p92->SetAttribute(_T("border_color"), _T("red"));
+        p92->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p92->SetAttribute(_T("margin"), _T("0,4,0,0"));
+        p92->SetAttribute(_T("height"), _T("15%"));
+    ui::Label* p93 = new ui::Label(pWindow);
+        p93->SetAttribute(_T("class"), _T("page_hbox"));
+        p93->SetAttribute(_T("text"), _T("1 left,top minwidth:100"));
+        p93->SetAttribute(_T("halign"), _T("left"));
+        p93->SetAttribute(_T("valign"), _T("top"));
+        p93->SetAttribute(_T("width"), _T("100%"));
+        p93->SetAttribute(_T("height"), _T("70"));
+        p93->SetAttribute(_T("min_width"), _T("100"));
+        p93->SetAttribute(_T("max_height"), _T("60"));
+        p93->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p92->AddItem(p93);
+
+    ui::Label* p94 = new ui::Label(pWindow);
+        p94->SetAttribute(_T("class"), _T("page_hbox"));
+        p94->SetAttribute(_T("text"), _T("2 left,center maxwidth:100"));
+        p94->SetAttribute(_T("halign"), _T("left"));
+        p94->SetAttribute(_T("valign"), _T("center"));
+        p94->SetAttribute(_T("width"), _T("100%"));
+        p94->SetAttribute(_T("height"), _T("50"));
+        p94->SetAttribute(_T("max_width"), _T("100"));
+        p94->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p92->AddItem(p94);
+
+    ui::Label* p95 = new ui::Label(pWindow);
+        p95->SetAttribute(_T("class"), _T("page_hbox"));
+        p95->SetAttribute(_T("text"), _T("3 left,bottom fixed"));
+        p95->SetAttribute(_T("halign"), _T("left"));
+        p95->SetAttribute(_T("valign"), _T("bottom"));
+        p95->SetAttribute(_T("width"), _T("140"));
+        p95->SetAttribute(_T("height"), _T("40"));
+        p92->AddItem(p95);
+
+    ui::Label* p96 = new ui::Label(pWindow);
+        p96->SetAttribute(_T("class"), _T("page_hbox"));
+        p96->SetAttribute(_T("text"), _T("4 center,top"));
+        p96->SetAttribute(_T("halign"), _T("center"));
+        p96->SetAttribute(_T("valign"), _T("top"));
+        p96->SetAttribute(_T("width"), _T("100%"));
+        p96->SetAttribute(_T("height"), _T("50"));
+        p96->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p92->AddItem(p96);
+
+    ui::Label* p97 = new ui::Label(pWindow);
+        p97->SetAttribute(_T("class"), _T("page_hbox"));
+        p97->SetAttribute(_T("text"), _T("5 right,center"));
+        p97->SetAttribute(_T("halign"), _T("right"));
+        p97->SetAttribute(_T("valign"), _T("center"));
+        p97->SetAttribute(_T("width"), _T("100%"));
+        p97->SetAttribute(_T("height"), _T("40"));
+        p97->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p92->AddItem(p97);
+
+    ui::Label* p98 = new ui::Label(pWindow);
+        p98->SetAttribute(_T("class"), _T("page_hbox"));
+        p98->SetAttribute(_T("text"), _T("6 right,bottom"));
+        p98->SetAttribute(_T("halign"), _T("right"));
+        p98->SetAttribute(_T("valign"), _T("bottom"));
+        p98->SetAttribute(_T("width"), _T("100%"));
+        p98->SetAttribute(_T("height"), _T("50"));
+        p98->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p92->AddItem(p98);
+
+        p63->AddItem(p92);
+
+        p51->AddItem(p63);
+
+        p31->AddItem(p51);
+
+    ui::VBox* p99 = new ui::VBox(pWindow);
+        p99->SetAttribute(_T("name"), _T("main_view_page_02"));
+    pWindow->AddClass(_T("page_vbox"), _T(" margin=\"6,6,6,6\" width=\"auto\" height=\"40\" multi_line=\"true\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::VBox* p100 = new ui::VBox(pWindow);
+        p100->SetAttribute(_T("height"), _T("auto"));
+        p100->SetAttribute(_T("padding"), _T("6,0,6,6"));
+    ui::Label* p101 = new ui::Label(pWindow);
+        p101->SetAttribute(_T("text"), _T("VBox Container Layout Test"));
+        p101->SetAttribute(_T("height"), _T("28"));
+        p101->SetAttribute(_T("valign"), _T("center"));
+        p100->AddItem(p101);
+
+    ui::HBox* p102 = new ui::HBox(pWindow);
+        p102->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p103 = new ui::Label(pWindow);
+        p103->SetAttribute(_T("text"), _T("Container content vertical alignment (child_valign): "));
+        p103->SetAttribute(_T("valign"), _T("center"));
+        p102->AddItem(p103);
+
+    ui::Option* p104 = new ui::Option(pWindow);
+        p104->SetAttribute(_T("class"), _T("option_1"));
+        p104->SetAttribute(_T("group"), _T("vbox_group_valign"));
+        p104->SetAttribute(_T("text"), _T("Align Top (top)"));
+        p104->SetAttribute(_T("height"), _T("28"));
+        p104->SetAttribute(_T("valign"), _T("center"));
+        p104->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p104->SetAttribute(_T("selected"), _T("true"));
+        p102->AddItem(p104);
+
+    ui::Option* p105 = new ui::Option(pWindow);
+        p105->SetAttribute(_T("class"), _T("option_1"));
+        p105->SetAttribute(_T("group"), _T("vbox_group_valign"));
+        p105->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p105->SetAttribute(_T("height"), _T("28"));
+        p105->SetAttribute(_T("valign"), _T("center"));
+        p105->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p105->SetAttribute(_T("selected"), _T("false"));
+        p102->AddItem(p105);
+
+    ui::Option* p106 = new ui::Option(pWindow);
+        p106->SetAttribute(_T("class"), _T("option_1"));
+        p106->SetAttribute(_T("group"), _T("vbox_group_valign"));
+        p106->SetAttribute(_T("text"), _T("Align Bottom (bottom)"));
+        p106->SetAttribute(_T("height"), _T("28"));
+        p106->SetAttribute(_T("valign"), _T("center"));
+        p106->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p106->SetAttribute(_T("selected"), _T("false"));
+        p102->AddItem(p106);
+
+    ui::Label* p107 = new ui::Label(pWindow);
+        p107->SetAttribute(_T("text"), _T("(effective only when total child height is smaller than the container height)"));
+        p107->SetAttribute(_T("valign"), _T("center"));
+        p102->AddItem(p107);
+
+        p100->AddItem(p102);
+
+    ui::HBox* p108 = new ui::HBox(pWindow);
+        p108->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p109 = new ui::Label(pWindow);
+        p109->SetAttribute(_T("text"), _T("Container content horizontal alignment (child_halign): not supported, set it on the child controls"));
+        p109->SetAttribute(_T("valign"), _T("center"));
+        p108->AddItem(p109);
+
+        p100->AddItem(p108);
+
+    ui::Label* p110 = new ui::Label(pWindow);
+        p110->SetAttribute(_T("text"), _T("Child control alignment: halign supported, valign not supported"));
+        p110->SetAttribute(_T("valign"), _T("center"));
+        p100->AddItem(p110);
+
+        p99->AddItem(p100);
+
+    ui::HBox* p111 = new ui::HBox(pWindow);
+    ui::VBox* p112 = new ui::VBox(pWindow);
+        p112->SetAttribute(_T("name"), _T("vbox_test"));
+        p112->SetAttribute(_T("bkcolor"), _T("gray"));
+        p112->SetAttribute(_T("border_size"), _T("1"));
+        p112->SetAttribute(_T("border_color"), _T("red"));
+        p112->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p112->SetAttribute(_T("width"), _T("60%"));
+    ui::Control* p113 = new ui::Control(pWindow);
+        p113->SetAttribute(_T("float"), _T("true"));
+        p113->SetAttribute(_T("width"), _T("stretch"));
+        p113->SetAttribute(_T("height"), _T("stretch"));
+        p113->SetAttribute(_T("border_size"), _T("1"));
+        p113->SetAttribute(_T("border_color"), _T("green"));
+        p113->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p112->AddItem(p113);
+
+    ui::Label* p114 = new ui::Label(pWindow);
+        p114->SetAttribute(_T("text"), _T("minwidth/minheight: 100*100"));
+        p114->SetAttribute(_T("float"), _T("true"));
+        p114->SetAttribute(_T("text_align"), _T("top"));
+        p114->SetAttribute(_T("width"), _T("50"));
+        p114->SetAttribute(_T("height"), _T("50"));
+        p114->SetAttribute(_T("minwidth"), _T("100"));
+        p114->SetAttribute(_T("minheight"), _T("100"));
+        p114->SetAttribute(_T("margin"), _T("64,60,6,6"));
+        p114->SetAttribute(_T("border_size"), _T("1"));
+        p114->SetAttribute(_T("border_color"), _T("green"));
+        p114->SetAttribute(_T("bkcolor"), _T("Olive"));
+        p112->AddItem(p114);
+
+    ui::Label* p115 = new ui::Label(pWindow);
+        p115->SetAttribute(_T("text"), _T("maxwidth/maxheight: 80*80"));
+        p115->SetAttribute(_T("float"), _T("true"));
+        p115->SetAttribute(_T("single_line"), _T("false"));
+        p115->SetAttribute(_T("width"), _T("200"));
+        p115->SetAttribute(_T("height"), _T("100"));
+        p115->SetAttribute(_T("maxwidth"), _T("80"));
+        p115->SetAttribute(_T("maxheight"), _T("80"));
+        p115->SetAttribute(_T("margin"), _T("600,160,6,6"));
+        p115->SetAttribute(_T("border_size"), _T("1"));
+        p115->SetAttribute(_T("border_color"), _T("green"));
+        p115->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+        p112->AddItem(p115);
+
+    ui::LabelBox* p116 = new ui::LabelBox(pWindow);
+        p116->SetAttribute(_T("text"), _T("Layout Test"));
+        p116->SetAttribute(_T("float"), _T("true"));
+        p116->SetAttribute(_T("single_line"), _T("false"));
+        p116->SetAttribute(_T("width"), _T("100"));
+        p116->SetAttribute(_T("height"), _T("100"));
+        p116->SetAttribute(_T("margin"), _T("300,100,6,6"));
+        p116->SetAttribute(_T("padding"), _T("6,6,6,6"));
+        p116->SetAttribute(_T("border_size"), _T("1"));
+        p116->SetAttribute(_T("border_color"), _T("green"));
+        p116->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+    ui::Control* p117 = new ui::Control(pWindow);
+        p117->SetAttribute(_T("margin"), _T("6,6,6,6"));
+        p117->SetAttribute(_T("width"), _T("stretch"));
+        p117->SetAttribute(_T("height"), _T("stretch"));
+        p117->SetAttribute(_T("border_size"), _T("2"));
+        p117->SetAttribute(_T("border_color"), _T("red"));
+        p117->SetAttribute(_T("bkcolor"), _T("Sienna"));
+        p116->AddItem(p117);
+
+        p112->AddItem(p116);
+
+    ui::Label* p118 = new ui::Label(pWindow);
+        p118->SetAttribute(_T("class"), _T("page_vbox"));
+        p118->SetAttribute(_T("text"), _T("1 left,top"));
+        p118->SetAttribute(_T("halign"), _T("left"));
+        p118->SetAttribute(_T("valign"), _T("top"));
+        p118->SetAttribute(_T("min_width"), _T("400"));
+        p118->SetAttribute(_T("max_height"), _T("30"));
+        p112->AddItem(p118);
+
+    ui::Label* p119 = new ui::Label(pWindow);
+        p119->SetAttribute(_T("class"), _T("page_vbox"));
+        p119->SetAttribute(_T("text"), _T("2 left,center"));
+        p119->SetAttribute(_T("halign"), _T("left"));
+        p119->SetAttribute(_T("valign"), _T("center"));
+        p119->SetAttribute(_T("max_height"), _T("30"));
+        p112->AddItem(p119);
+
+    ui::Label* p120 = new ui::Label(pWindow);
+        p120->SetAttribute(_T("class"), _T("page_vbox"));
+        p120->SetAttribute(_T("text"), _T("3 left,bottom: width=stretch"));
+        p120->SetAttribute(_T("halign"), _T("left"));
+        p120->SetAttribute(_T("valign"), _T("bottom"));
+        p120->SetAttribute(_T("width"), _T("stretch"));
+        p112->AddItem(p120);
+
+    ui::Label* p121 = new ui::Label(pWindow);
+        p121->SetAttribute(_T("class"), _T("page_vbox"));
+        p121->SetAttribute(_T("text"), _T("4 center,top"));
+        p121->SetAttribute(_T("halign"), _T("center"));
+        p121->SetAttribute(_T("valign"), _T("top"));
+        p112->AddItem(p121);
+
+    ui::Label* p122 = new ui::Label(pWindow);
+        p122->SetAttribute(_T("class"), _T("page_vbox"));
+        p122->SetAttribute(_T("text"), _T("5 center,center"));
+        p122->SetAttribute(_T("halign"), _T("center"));
+        p122->SetAttribute(_T("valign"), _T("center"));
+        p122->SetAttribute(_T("min_height"), _T("70"));
+        p112->AddItem(p122);
+
+    ui::Label* p123 = new ui::Label(pWindow);
+        p123->SetAttribute(_T("class"), _T("page_vbox"));
+        p123->SetAttribute(_T("text"), _T("6 center,bottom width=50%"));
+        p123->SetAttribute(_T("halign"), _T("center"));
+        p123->SetAttribute(_T("valign"), _T("bottom"));
+        p123->SetAttribute(_T("width"), _T("50%"));
+        p112->AddItem(p123);
+
+    ui::Label* p124 = new ui::Label(pWindow);
+        p124->SetAttribute(_T("class"), _T("page_vbox"));
+        p124->SetAttribute(_T("text"), _T("7 right,top"));
+        p124->SetAttribute(_T("halign"), _T("right"));
+        p124->SetAttribute(_T("valign"), _T("top"));
+        p112->AddItem(p124);
+
+    ui::Label* p125 = new ui::Label(pWindow);
+        p125->SetAttribute(_T("class"), _T("page_vbox"));
+        p125->SetAttribute(_T("text"), _T("8 right,center"));
+        p125->SetAttribute(_T("halign"), _T("right"));
+        p125->SetAttribute(_T("valign"), _T("center"));
+        p112->AddItem(p125);
+
+    ui::Label* p126 = new ui::Label(pWindow);
+        p126->SetAttribute(_T("class"), _T("page_vbox"));
+        p126->SetAttribute(_T("text"), _T("9 right,bottom"));
+        p126->SetAttribute(_T("halign"), _T("right"));
+        p126->SetAttribute(_T("valign"), _T("bottom"));
+        p126->SetAttribute(_T("width"), _T("stretch"));
+        p126->SetAttribute(_T("height"), _T("stretch"));
+        p126->SetAttribute(_T("max_height"), _T("50"));
+        p112->AddItem(p126);
+
+        p111->AddItem(p112);
+
+    ui::VBox* p127 = new ui::VBox(pWindow);
+        p127->SetAttribute(_T("bkcolor"), _T("gray"));
+        p127->SetAttribute(_T("border_size"), _T("1"));
+        p127->SetAttribute(_T("border_color"), _T("red"));
+        p127->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p127->SetAttribute(_T("width"), _T("20%"));
+    ui::Label* p128 = new ui::Label(pWindow);
+        p128->SetAttribute(_T("class"), _T("page_hbox"));
+        p128->SetAttribute(_T("text"), _T("1 left,top min_height:80"));
+        p128->SetAttribute(_T("halign"), _T("left"));
+        p128->SetAttribute(_T("valign"), _T("top"));
+        p128->SetAttribute(_T("max_height"), _T("80"));
+        p127->AddItem(p128);
+
+    ui::Label* p129 = new ui::Label(pWindow);
+        p129->SetAttribute(_T("class"), _T("page_hbox"));
+        p129->SetAttribute(_T("text"), _T("2 left,center"));
+        p129->SetAttribute(_T("halign"), _T("left"));
+        p129->SetAttribute(_T("valign"), _T("center"));
+        p129->SetAttribute(_T("height"), _T("80"));
+        p127->AddItem(p129);
+
+    ui::Label* p130 = new ui::Label(pWindow);
+        p130->SetAttribute(_T("class"), _T("page_hbox"));
+        p130->SetAttribute(_T("text"), _T("3 left,bottom width 70%"));
+        p130->SetAttribute(_T("halign"), _T("left"));
+        p130->SetAttribute(_T("valign"), _T("bottom"));
+        p130->SetAttribute(_T("width"), _T("70%"));
+        p127->AddItem(p130);
+
+    ui::Label* p131 = new ui::Label(pWindow);
+        p131->SetAttribute(_T("class"), _T("page_hbox"));
+        p131->SetAttribute(_T("text"), _T("4 right,bottom height 20%"));
+        p131->SetAttribute(_T("halign"), _T("right"));
+        p131->SetAttribute(_T("valign"), _T("bottom"));
+        p131->SetAttribute(_T("height"), _T("20%"));
+        p131->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p127->AddItem(p131);
+
+    ui::Label* p132 = new ui::Label(pWindow);
+        p132->SetAttribute(_T("class"), _T("page_hbox"));
+        p132->SetAttribute(_T("text"), _T("5 right,top"));
+        p132->SetAttribute(_T("halign"), _T("right"));
+        p132->SetAttribute(_T("valign"), _T("top"));
+        p132->SetAttribute(_T("width"), _T("80"));
+        p127->AddItem(p132);
+
+    ui::Label* p133 = new ui::Label(pWindow);
+        p133->SetAttribute(_T("class"), _T("page_hbox"));
+        p133->SetAttribute(_T("text"), _T("6 right,bottom 30%"));
+        p133->SetAttribute(_T("halign"), _T("right"));
+        p133->SetAttribute(_T("valign"), _T("bottom"));
+        p133->SetAttribute(_T("height"), _T("30%"));
+        p133->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p127->AddItem(p133);
+
+    ui::Label* p134 = new ui::Label(pWindow);
+        p134->SetAttribute(_T("class"), _T("page_hbox"));
+        p134->SetAttribute(_T("text"), _T("7 right,center"));
+        p134->SetAttribute(_T("halign"), _T("right"));
+        p134->SetAttribute(_T("valign"), _T("center"));
+        p134->SetAttribute(_T("height"), _T("20%"));
+        p127->AddItem(p134);
+
+    ui::Label* p135 = new ui::Label(pWindow);
+        p135->SetAttribute(_T("class"), _T("page_hbox"));
+        p135->SetAttribute(_T("text"), _T("8 right,bottom 40%"));
+        p135->SetAttribute(_T("halign"), _T("right"));
+        p135->SetAttribute(_T("valign"), _T("bottom"));
+        p135->SetAttribute(_T("height"), _T("40%"));
+        p135->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p127->AddItem(p135);
+
+        p111->AddItem(p127);
+
+    ui::VBox* p136 = new ui::VBox(pWindow);
+        p136->SetAttribute(_T("bkcolor"), _T("gray"));
+        p136->SetAttribute(_T("child_margin_y"), _T("8"));
+        p136->SetAttribute(_T("border_size"), _T("1"));
+        p136->SetAttribute(_T("border_color"), _T("red"));
+        p136->SetAttribute(_T("width"), _T("20%"));
+    ui::Label* p137 = new ui::Label(pWindow);
+        p137->SetAttribute(_T("class"), _T("page_hbox"));
+        p137->SetAttribute(_T("text"), _T("1 left,top"));
+        p137->SetAttribute(_T("halign"), _T("left"));
+        p137->SetAttribute(_T("valign"), _T("top"));
+        p137->SetAttribute(_T("width"), _T("stretch"));
+        p137->SetAttribute(_T("height"), _T("100%"));
+        p137->SetAttribute(_T("margin"), _T("6,6,6,0"));
+        p136->AddItem(p137);
+
+    ui::Label* p138 = new ui::Label(pWindow);
+        p138->SetAttribute(_T("class"), _T("page_hbox"));
+        p138->SetAttribute(_T("text"), _T("2 left,center"));
+        p138->SetAttribute(_T("halign"), _T("left"));
+        p138->SetAttribute(_T("valign"), _T("center"));
+        p138->SetAttribute(_T("width"), _T("stretch"));
+        p138->SetAttribute(_T("height"), _T("100%"));
+        p138->SetAttribute(_T("margin"), _T("6,0,6,0"));
+        p136->AddItem(p138);
+
+    ui::Label* p139 = new ui::Label(pWindow);
+        p139->SetAttribute(_T("class"), _T("page_hbox"));
+        p139->SetAttribute(_T("text"), _T("3 left,bottom"));
+        p139->SetAttribute(_T("halign"), _T("left"));
+        p139->SetAttribute(_T("valign"), _T("bottom"));
+        p139->SetAttribute(_T("width"), _T("stretch"));
+        p139->SetAttribute(_T("height"), _T("100%"));
+        p139->SetAttribute(_T("margin"), _T("6,0,6,6"));
+        p136->AddItem(p139);
+
+        p111->AddItem(p136);
+
+        p99->AddItem(p111);
+
+        p31->AddItem(p99);
+
+    ui::VBox* p140 = new ui::VBox(pWindow);
+        p140->SetAttribute(_T("name"), _T("main_view_page_03"));
+    pWindow->AddClass(_T("page_hflowbox"), _T(" multi_line=\"true\" margin=\"6,6,6,6\" width=\"100\" height=\"60\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::VBox* p141 = new ui::VBox(pWindow);
+        p141->SetAttribute(_T("height"), _T("84"));
+        p141->SetAttribute(_T("padding"), _T("6,0,6,0"));
+    ui::Label* p142 = new ui::Label(pWindow);
+        p142->SetAttribute(_T("text"), _T("HFlowBox Container Layout Test"));
+        p142->SetAttribute(_T("height"), _T("28"));
+        p142->SetAttribute(_T("valign"), _T("center"));
+        p141->AddItem(p142);
+
+    ui::HBox* p143 = new ui::HBox(pWindow);
+        p143->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p144 = new ui::Label(pWindow);
+        p144->SetAttribute(_T("text"), _T("Container content horizontal alignment:"));
+        p144->SetAttribute(_T("valign"), _T("center"));
+        p143->AddItem(p144);
+
+    ui::Option* p145 = new ui::Option(pWindow);
+        p145->SetAttribute(_T("class"), _T("option_1"));
+        p145->SetAttribute(_T("group"), _T("hflowbox_group_halign"));
+        p145->SetAttribute(_T("text"), _T("Align Left (left)"));
+        p145->SetAttribute(_T("height"), _T("28"));
+        p145->SetAttribute(_T("valign"), _T("center"));
+        p145->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p145->SetAttribute(_T("selected"), _T("true"));
+        p143->AddItem(p145);
+
+    ui::Option* p146 = new ui::Option(pWindow);
+        p146->SetAttribute(_T("class"), _T("option_1"));
+        p146->SetAttribute(_T("group"), _T("hflowbox_group_halign"));
+        p146->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p146->SetAttribute(_T("height"), _T("28"));
+        p146->SetAttribute(_T("valign"), _T("center"));
+        p146->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p146->SetAttribute(_T("selected"), _T("false"));
+        p143->AddItem(p146);
+
+    ui::Option* p147 = new ui::Option(pWindow);
+        p147->SetAttribute(_T("class"), _T("option_1"));
+        p147->SetAttribute(_T("group"), _T("hflowbox_group_halign"));
+        p147->SetAttribute(_T("text"), _T("Align Right (right)"));
+        p147->SetAttribute(_T("height"), _T("28"));
+        p147->SetAttribute(_T("valign"), _T("center"));
+        p147->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p147->SetAttribute(_T("selected"), _T("false"));
+        p143->AddItem(p147);
+
+    ui::Label* p148 = new ui::Label(pWindow);
+        p148->SetAttribute(_T("text"), _T("(aligned within the same row)"));
+        p148->SetAttribute(_T("valign"), _T("center"));
+        p143->AddItem(p148);
+
+        p141->AddItem(p143);
+
+    ui::HBox* p149 = new ui::HBox(pWindow);
+        p149->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p150 = new ui::Label(pWindow);
+        p150->SetAttribute(_T("text"), _T("Container content vertical alignment:"));
+        p150->SetAttribute(_T("valign"), _T("center"));
+        p149->AddItem(p150);
+
+    ui::Option* p151 = new ui::Option(pWindow);
+        p151->SetAttribute(_T("class"), _T("option_1"));
+        p151->SetAttribute(_T("group"), _T("hflowbox_group_valign"));
+        p151->SetAttribute(_T("text"), _T("Align Top (top)"));
+        p151->SetAttribute(_T("height"), _T("28"));
+        p151->SetAttribute(_T("valign"), _T("center"));
+        p151->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p151->SetAttribute(_T("selected"), _T("true"));
+        p149->AddItem(p151);
+
+    ui::Option* p152 = new ui::Option(pWindow);
+        p152->SetAttribute(_T("class"), _T("option_1"));
+        p152->SetAttribute(_T("group"), _T("hflowbox_group_valign"));
+        p152->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p152->SetAttribute(_T("height"), _T("28"));
+        p152->SetAttribute(_T("valign"), _T("center"));
+        p152->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p152->SetAttribute(_T("selected"), _T("false"));
+        p149->AddItem(p152);
+
+    ui::Option* p153 = new ui::Option(pWindow);
+        p153->SetAttribute(_T("class"), _T("option_1"));
+        p153->SetAttribute(_T("group"), _T("hflowbox_group_valign"));
+        p153->SetAttribute(_T("text"), _T("Align Bottom (bottom)"));
+        p153->SetAttribute(_T("height"), _T("28"));
+        p153->SetAttribute(_T("valign"), _T("center"));
+        p153->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p153->SetAttribute(_T("selected"), _T("false"));
+        p149->AddItem(p153);
+
+    ui::Label* p154 = new ui::Label(pWindow);
+        p154->SetAttribute(_T("text"), _T("(effective only when total child height is smaller than the display area height)"));
+        p154->SetAttribute(_T("valign"), _T("center"));
+        p149->AddItem(p154);
+
+        p141->AddItem(p149);
+
+        p140->AddItem(p141);
+
+    ui::VBox* p155 = new ui::VBox(pWindow);
+    ui::HFlowBox* p156 = new ui::HFlowBox(pWindow);
+        p156->SetAttribute(_T("name"), _T("hflowbox_test"));
+        p156->SetAttribute(_T("child_halign"), _T("left"));
+        p156->SetAttribute(_T("child_valign"), _T("top"));
+        p156->SetAttribute(_T("bkcolor"), _T("gray"));
+        p156->SetAttribute(_T("border_size"), _T("1"));
+        p156->SetAttribute(_T("border_color"), _T("red"));
+        p156->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p156->SetAttribute(_T("height"), _T("100%"));
+    ui::Control* p157 = new ui::Control(pWindow);
+        p157->SetAttribute(_T("float"), _T("true"));
+        p157->SetAttribute(_T("width"), _T("stretch"));
+        p157->SetAttribute(_T("height"), _T("stretch"));
+        p157->SetAttribute(_T("border_size"), _T("1"));
+        p157->SetAttribute(_T("border_color"), _T("green"));
+        p157->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p156->AddItem(p157);
+
+    ui::Label* p158 = new ui::Label(pWindow);
+        p158->SetAttribute(_T("text"), _T("minwidth/minheight: 200*200"));
+        p158->SetAttribute(_T("float"), _T("true"));
+        p158->SetAttribute(_T("text_align"), _T("top"));
+        p158->SetAttribute(_T("width"), _T("100"));
+        p158->SetAttribute(_T("height"), _T("100"));
+        p158->SetAttribute(_T("minwidth"), _T("200"));
+        p158->SetAttribute(_T("minheight"), _T("200"));
+        p158->SetAttribute(_T("margin"), _T("64,60,6,6"));
+        p158->SetAttribute(_T("border_size"), _T("1"));
+        p158->SetAttribute(_T("border_color"), _T("green"));
+        p158->SetAttribute(_T("bkcolor"), _T("Olive"));
+        p156->AddItem(p158);
+
+    ui::Label* p159 = new ui::Label(pWindow);
+        p159->SetAttribute(_T("text"), _T("maxwidth/maxheight: 80*80"));
+        p159->SetAttribute(_T("float"), _T("true"));
+        p159->SetAttribute(_T("single_line"), _T("false"));
+        p159->SetAttribute(_T("width"), _T("200"));
+        p159->SetAttribute(_T("height"), _T("100"));
+        p159->SetAttribute(_T("maxwidth"), _T("80"));
+        p159->SetAttribute(_T("maxheight"), _T("80"));
+        p159->SetAttribute(_T("margin"), _T("600,70,6,6"));
+        p159->SetAttribute(_T("border_size"), _T("1"));
+        p159->SetAttribute(_T("border_color"), _T("green"));
+        p159->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+        p156->AddItem(p159);
+
+    ui::Label* p160 = new ui::Label(pWindow);
+        p160->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p160->SetAttribute(_T("text"), _T("1 top"));
+        p160->SetAttribute(_T("halign"), _T("left"));
+        p160->SetAttribute(_T("valign"), _T("top"));
+        p160->SetAttribute(_T("minwidth"), _T("300"));
+        p160->SetAttribute(_T("maxheight"), _T("60"));
+        p156->AddItem(p160);
+
+    ui::Label* p161 = new ui::Label(pWindow);
+        p161->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p161->SetAttribute(_T("text"), _T("2 center"));
+        p161->SetAttribute(_T("halign"), _T("left"));
+        p161->SetAttribute(_T("valign"), _T("center"));
+        p156->AddItem(p161);
+
+    ui::Label* p162 = new ui::Label(pWindow);
+        p162->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p162->SetAttribute(_T("text"), _T("3 bottom"));
+        p162->SetAttribute(_T("halign"), _T("left"));
+        p162->SetAttribute(_T("valign"), _T("bottom"));
+        p162->SetAttribute(_T("height"), _T("40"));
+        p156->AddItem(p162);
+
+    ui::Label* p163 = new ui::Label(pWindow);
+        p163->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p163->SetAttribute(_T("text"), _T("4 top"));
+        p163->SetAttribute(_T("halign"), _T("center"));
+        p163->SetAttribute(_T("valign"), _T("top"));
+        p156->AddItem(p163);
+
+    ui::Label* p164 = new ui::Label(pWindow);
+        p164->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p164->SetAttribute(_T("text"), _T("5 center"));
+        p164->SetAttribute(_T("halign"), _T("center"));
+        p164->SetAttribute(_T("valign"), _T("center"));
+        p164->SetAttribute(_T("height"), _T("40"));
+        p156->AddItem(p164);
+
+    ui::Label* p165 = new ui::Label(pWindow);
+        p165->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p165->SetAttribute(_T("text"), _T("6 bottom"));
+        p165->SetAttribute(_T("halign"), _T("center"));
+        p165->SetAttribute(_T("valign"), _T("bottom"));
+        p156->AddItem(p165);
+
+    ui::Label* p166 = new ui::Label(pWindow);
+        p166->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p166->SetAttribute(_T("text"), _T("7 top"));
+        p166->SetAttribute(_T("halign"), _T("right"));
+        p166->SetAttribute(_T("valign"), _T("top"));
+        p166->SetAttribute(_T("height"), _T("40"));
+        p156->AddItem(p166);
+
+    ui::Label* p167 = new ui::Label(pWindow);
+        p167->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p167->SetAttribute(_T("text"), _T("8 center"));
+        p167->SetAttribute(_T("halign"), _T("right"));
+        p167->SetAttribute(_T("valign"), _T("center"));
+        p156->AddItem(p167);
+
+    ui::Label* p168 = new ui::Label(pWindow);
+        p168->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p168->SetAttribute(_T("text"), _T("9 bottom"));
+        p168->SetAttribute(_T("halign"), _T("right"));
+        p168->SetAttribute(_T("valign"), _T("bottom"));
+        p168->SetAttribute(_T("width"), _T("300"));
+        p156->AddItem(p168);
+
+    ui::Label* p169 = new ui::Label(pWindow);
+        p169->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p169->SetAttribute(_T("text"), _T("10 top"));
+        p169->SetAttribute(_T("halign"), _T("left"));
+        p169->SetAttribute(_T("valign"), _T("top"));
+        p169->SetAttribute(_T("minwidth"), _T("300"));
+        p169->SetAttribute(_T("maxheight"), _T("60"));
+        p156->AddItem(p169);
+
+    ui::Label* p170 = new ui::Label(pWindow);
+        p170->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p170->SetAttribute(_T("text"), _T("11 center stretch: 100%"));
+        p170->SetAttribute(_T("halign"), _T("left"));
+        p170->SetAttribute(_T("valign"), _T("center"));
+        p170->SetAttribute(_T("width"), _T("stretch"));
+        p156->AddItem(p170);
+
+    ui::Label* p171 = new ui::Label(pWindow);
+        p171->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p171->SetAttribute(_T("text"), _T("12 bottom"));
+        p171->SetAttribute(_T("halign"), _T("left"));
+        p171->SetAttribute(_T("valign"), _T("bottom"));
+        p171->SetAttribute(_T("height"), _T("40"));
+        p156->AddItem(p171);
+
+    ui::Label* p172 = new ui::Label(pWindow);
+        p172->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p172->SetAttribute(_T("text"), _T("13 top stretch: 50%"));
+        p172->SetAttribute(_T("halign"), _T("center"));
+        p172->SetAttribute(_T("valign"), _T("top"));
+        p172->SetAttribute(_T("width"), _T("50%"));
+        p156->AddItem(p172);
+
+    ui::Label* p173 = new ui::Label(pWindow);
+        p173->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p173->SetAttribute(_T("text"), _T("12 center"));
+        p173->SetAttribute(_T("halign"), _T("center"));
+        p173->SetAttribute(_T("valign"), _T("center"));
+        p173->SetAttribute(_T("height"), _T("40"));
+        p156->AddItem(p173);
+
+    ui::Label* p174 = new ui::Label(pWindow);
+        p174->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p174->SetAttribute(_T("text"), _T("15 bottom"));
+        p174->SetAttribute(_T("halign"), _T("center"));
+        p174->SetAttribute(_T("valign"), _T("bottom"));
+        p156->AddItem(p174);
+
+    ui::Label* p175 = new ui::Label(pWindow);
+        p175->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p175->SetAttribute(_T("text"), _T("16 top"));
+        p175->SetAttribute(_T("halign"), _T("right"));
+        p175->SetAttribute(_T("valign"), _T("top"));
+        p175->SetAttribute(_T("height"), _T("40"));
+        p156->AddItem(p175);
+
+    ui::Label* p176 = new ui::Label(pWindow);
+        p176->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p176->SetAttribute(_T("text"), _T("17 center"));
+        p176->SetAttribute(_T("halign"), _T("right"));
+        p176->SetAttribute(_T("valign"), _T("center"));
+        p156->AddItem(p176);
+
+    ui::Label* p177 = new ui::Label(pWindow);
+        p177->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p177->SetAttribute(_T("text"), _T("18 bottom"));
+        p177->SetAttribute(_T("halign"), _T("right"));
+        p177->SetAttribute(_T("valign"), _T("bottom"));
+        p177->SetAttribute(_T("width"), _T("300"));
+        p156->AddItem(p177);
+
+    ui::Label* p178 = new ui::Label(pWindow);
+        p178->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p178->SetAttribute(_T("text"), _T("19 center, width: 1600"));
+        p178->SetAttribute(_T("halign"), _T("right"));
+        p178->SetAttribute(_T("valign"), _T("center"));
+        p178->SetAttribute(_T("width"), _T("1600"));
+        p156->AddItem(p178);
+
+    ui::Label* p179 = new ui::Label(pWindow);
+        p179->SetAttribute(_T("class"), _T("page_hflowbox"));
+        p179->SetAttribute(_T("text"), _T("20 top"));
+        p179->SetAttribute(_T("halign"), _T("right"));
+        p179->SetAttribute(_T("valign"), _T("top"));
+        p179->SetAttribute(_T("height"), _T("40"));
+        p156->AddItem(p179);
+
+        p155->AddItem(p156);
+
+        p140->AddItem(p155);
+
+        p31->AddItem(p140);
+
+    ui::VBox* p180 = new ui::VBox(pWindow);
+        p180->SetAttribute(_T("name"), _T("main_view_page_04"));
+    pWindow->AddClass(_T("page_vflowbox"), _T(" multi_line=\"true\" margin=\"6,6,6,6\" width=\"80\" height=\"60\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::VBox* p181 = new ui::VBox(pWindow);
+        p181->SetAttribute(_T("height"), _T("84"));
+        p181->SetAttribute(_T("padding"), _T("6,0,6,0"));
+    ui::Label* p182 = new ui::Label(pWindow);
+        p182->SetAttribute(_T("text"), _T("VFlowBox Container Layout Test"));
+        p182->SetAttribute(_T("height"), _T("28"));
+        p182->SetAttribute(_T("valign"), _T("center"));
+        p181->AddItem(p182);
+
+    ui::HBox* p183 = new ui::HBox(pWindow);
+        p183->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p184 = new ui::Label(pWindow);
+        p184->SetAttribute(_T("text"), _T("Container content horizontal alignment:"));
+        p184->SetAttribute(_T("valign"), _T("center"));
+        p183->AddItem(p184);
+
+    ui::Option* p185 = new ui::Option(pWindow);
+        p185->SetAttribute(_T("class"), _T("option_1"));
+        p185->SetAttribute(_T("group"), _T("vflowbox_group_halign"));
+        p185->SetAttribute(_T("text"), _T("Align Left (left)"));
+        p185->SetAttribute(_T("height"), _T("28"));
+        p185->SetAttribute(_T("valign"), _T("center"));
+        p185->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p185->SetAttribute(_T("selected"), _T("true"));
+        p183->AddItem(p185);
+
+    ui::Option* p186 = new ui::Option(pWindow);
+        p186->SetAttribute(_T("class"), _T("option_1"));
+        p186->SetAttribute(_T("group"), _T("vflowbox_group_halign"));
+        p186->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p186->SetAttribute(_T("height"), _T("28"));
+        p186->SetAttribute(_T("valign"), _T("center"));
+        p186->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p186->SetAttribute(_T("selected"), _T("false"));
+        p183->AddItem(p186);
+
+    ui::Option* p187 = new ui::Option(pWindow);
+        p187->SetAttribute(_T("class"), _T("option_1"));
+        p187->SetAttribute(_T("group"), _T("vflowbox_group_halign"));
+        p187->SetAttribute(_T("text"), _T("Align Right (right)"));
+        p187->SetAttribute(_T("height"), _T("28"));
+        p187->SetAttribute(_T("valign"), _T("center"));
+        p187->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p187->SetAttribute(_T("selected"), _T("false"));
+        p183->AddItem(p187);
+
+    ui::Label* p188 = new ui::Label(pWindow);
+        p188->SetAttribute(_T("text"), _T("(effective only when total child width is smaller than the display area width)"));
+        p188->SetAttribute(_T("valign"), _T("center"));
+        p183->AddItem(p188);
+
+        p181->AddItem(p183);
+
+    ui::HBox* p189 = new ui::HBox(pWindow);
+        p189->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p190 = new ui::Label(pWindow);
+        p190->SetAttribute(_T("text"), _T("Container content vertical alignment:"));
+        p190->SetAttribute(_T("valign"), _T("center"));
+        p189->AddItem(p190);
+
+    ui::Option* p191 = new ui::Option(pWindow);
+        p191->SetAttribute(_T("class"), _T("option_1"));
+        p191->SetAttribute(_T("group"), _T("vflowbox_group_valign"));
+        p191->SetAttribute(_T("text"), _T("Align Top (top)"));
+        p191->SetAttribute(_T("height"), _T("28"));
+        p191->SetAttribute(_T("valign"), _T("center"));
+        p191->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p191->SetAttribute(_T("selected"), _T("true"));
+        p189->AddItem(p191);
+
+    ui::Option* p192 = new ui::Option(pWindow);
+        p192->SetAttribute(_T("class"), _T("option_1"));
+        p192->SetAttribute(_T("group"), _T("vflowbox_group_valign"));
+        p192->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p192->SetAttribute(_T("height"), _T("28"));
+        p192->SetAttribute(_T("valign"), _T("center"));
+        p192->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p192->SetAttribute(_T("selected"), _T("false"));
+        p189->AddItem(p192);
+
+    ui::Option* p193 = new ui::Option(pWindow);
+        p193->SetAttribute(_T("class"), _T("option_1"));
+        p193->SetAttribute(_T("group"), _T("vflowbox_group_valign"));
+        p193->SetAttribute(_T("text"), _T("Align Bottom (bottom)"));
+        p193->SetAttribute(_T("height"), _T("28"));
+        p193->SetAttribute(_T("valign"), _T("center"));
+        p193->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p193->SetAttribute(_T("selected"), _T("false"));
+        p189->AddItem(p193);
+
+    ui::Label* p194 = new ui::Label(pWindow);
+        p194->SetAttribute(_T("text"), _T("(aligned within the same column)"));
+        p194->SetAttribute(_T("valign"), _T("center"));
+        p189->AddItem(p194);
+
+        p181->AddItem(p189);
+
+        p180->AddItem(p181);
+
+    ui::VBox* p195 = new ui::VBox(pWindow);
+    ui::VFlowBox* p196 = new ui::VFlowBox(pWindow);
+        p196->SetAttribute(_T("name"), _T("vflowbox_test"));
+        p196->SetAttribute(_T("child_halign"), _T("left"));
+        p196->SetAttribute(_T("child_valign"), _T("top"));
+        p196->SetAttribute(_T("bkcolor"), _T("gray"));
+        p196->SetAttribute(_T("border_size"), _T("1"));
+        p196->SetAttribute(_T("border_color"), _T("red"));
+        p196->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p196->SetAttribute(_T("height"), _T("100%"));
+    ui::Control* p197 = new ui::Control(pWindow);
+        p197->SetAttribute(_T("float"), _T("true"));
+        p197->SetAttribute(_T("width"), _T("stretch"));
+        p197->SetAttribute(_T("height"), _T("stretch"));
+        p197->SetAttribute(_T("border_size"), _T("1"));
+        p197->SetAttribute(_T("border_color"), _T("green"));
+        p197->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p196->AddItem(p197);
+
+    ui::Label* p198 = new ui::Label(pWindow);
+        p198->SetAttribute(_T("text"), _T("minwidth/minheight: 200*200"));
+        p198->SetAttribute(_T("float"), _T("true"));
+        p198->SetAttribute(_T("text_align"), _T("top"));
+        p198->SetAttribute(_T("width"), _T("100"));
+        p198->SetAttribute(_T("height"), _T("100"));
+        p198->SetAttribute(_T("minwidth"), _T("200"));
+        p198->SetAttribute(_T("minheight"), _T("200"));
+        p198->SetAttribute(_T("margin"), _T("64,60,6,6"));
+        p198->SetAttribute(_T("border_size"), _T("1"));
+        p198->SetAttribute(_T("border_color"), _T("green"));
+        p198->SetAttribute(_T("bkcolor"), _T("Olive"));
+        p196->AddItem(p198);
+
+    ui::Label* p199 = new ui::Label(pWindow);
+        p199->SetAttribute(_T("text"), _T("maxwidth/maxheight: 80*80"));
+        p199->SetAttribute(_T("float"), _T("true"));
+        p199->SetAttribute(_T("single_line"), _T("false"));
+        p199->SetAttribute(_T("width"), _T("200"));
+        p199->SetAttribute(_T("height"), _T("100"));
+        p199->SetAttribute(_T("maxwidth"), _T("80"));
+        p199->SetAttribute(_T("maxheight"), _T("80"));
+        p199->SetAttribute(_T("margin"), _T("600,70,6,6"));
+        p199->SetAttribute(_T("border_size"), _T("1"));
+        p199->SetAttribute(_T("border_color"), _T("green"));
+        p199->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+        p196->AddItem(p199);
+
+    ui::Label* p200 = new ui::Label(pWindow);
+        p200->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p200->SetAttribute(_T("text"), _T("1 left"));
+        p200->SetAttribute(_T("halign"), _T("left"));
+        p200->SetAttribute(_T("valign"), _T("top"));
+        p200->SetAttribute(_T("minwidth"), _T("300"));
+        p200->SetAttribute(_T("maxheight"), _T("60"));
+        p196->AddItem(p200);
+
+    ui::Label* p201 = new ui::Label(pWindow);
+        p201->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p201->SetAttribute(_T("text"), _T("2 center"));
+        p201->SetAttribute(_T("halign"), _T("center"));
+        p201->SetAttribute(_T("valign"), _T("top"));
+        p196->AddItem(p201);
+
+    ui::Label* p202 = new ui::Label(pWindow);
+        p202->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p202->SetAttribute(_T("text"), _T("3 right"));
+        p202->SetAttribute(_T("halign"), _T("right"));
+        p202->SetAttribute(_T("valign"), _T("top"));
+        p202->SetAttribute(_T("height"), _T("40"));
+        p196->AddItem(p202);
+
+    ui::Label* p203 = new ui::Label(pWindow);
+        p203->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p203->SetAttribute(_T("text"), _T("4 left"));
+        p203->SetAttribute(_T("halign"), _T("left"));
+        p203->SetAttribute(_T("valign"), _T("center"));
+        p196->AddItem(p203);
+
+    ui::Label* p204 = new ui::Label(pWindow);
+        p204->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p204->SetAttribute(_T("text"), _T("5 center"));
+        p204->SetAttribute(_T("halign"), _T("center"));
+        p204->SetAttribute(_T("valign"), _T("center"));
+        p204->SetAttribute(_T("height"), _T("40"));
+        p196->AddItem(p204);
+
+    ui::Label* p205 = new ui::Label(pWindow);
+        p205->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p205->SetAttribute(_T("text"), _T("6 right"));
+        p205->SetAttribute(_T("halign"), _T("right"));
+        p205->SetAttribute(_T("valign"), _T("center"));
+        p196->AddItem(p205);
+
+    ui::Label* p206 = new ui::Label(pWindow);
+        p206->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p206->SetAttribute(_T("text"), _T("7 left"));
+        p206->SetAttribute(_T("halign"), _T("left"));
+        p206->SetAttribute(_T("valign"), _T("bottom"));
+        p206->SetAttribute(_T("height"), _T("40"));
+        p196->AddItem(p206);
+
+    ui::Label* p207 = new ui::Label(pWindow);
+        p207->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p207->SetAttribute(_T("text"), _T("8 center"));
+        p207->SetAttribute(_T("halign"), _T("center"));
+        p207->SetAttribute(_T("valign"), _T("bottom"));
+        p196->AddItem(p207);
+
+    ui::Label* p208 = new ui::Label(pWindow);
+        p208->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p208->SetAttribute(_T("text"), _T("9 right"));
+        p208->SetAttribute(_T("halign"), _T("right"));
+        p208->SetAttribute(_T("valign"), _T("bottom"));
+        p208->SetAttribute(_T("width"), _T("200"));
+        p196->AddItem(p208);
+
+    ui::Label* p209 = new ui::Label(pWindow);
+        p209->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p209->SetAttribute(_T("text"), _T("10 left"));
+        p209->SetAttribute(_T("halign"), _T("left"));
+        p209->SetAttribute(_T("valign"), _T("top"));
+        p209->SetAttribute(_T("minwidth"), _T("200"));
+        p209->SetAttribute(_T("maxheight"), _T("60"));
+        p196->AddItem(p209);
+
+    ui::Label* p210 = new ui::Label(pWindow);
+        p210->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p210->SetAttribute(_T("text"), _T("11 center"));
+        p210->SetAttribute(_T("halign"), _T("center"));
+        p210->SetAttribute(_T("valign"), _T("center"));
+        p210->SetAttribute(_T("height"), _T("100"));
+        p210->SetAttribute(_T("width"), _T("100"));
+        p196->AddItem(p210);
+
+    ui::Label* p211 = new ui::Label(pWindow);
+        p211->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p211->SetAttribute(_T("text"), _T("12 right"));
+        p211->SetAttribute(_T("halign"), _T("right"));
+        p211->SetAttribute(_T("valign"), _T("bottom"));
+        p211->SetAttribute(_T("height"), _T("40"));
+        p196->AddItem(p211);
+
+    ui::Label* p212 = new ui::Label(pWindow);
+        p212->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p212->SetAttribute(_T("text"), _T("13 left stretch: 50%"));
+        p212->SetAttribute(_T("halign"), _T("left"));
+        p212->SetAttribute(_T("valign"), _T("top"));
+        p212->SetAttribute(_T("height"), _T("50%"));
+        p212->SetAttribute(_T("width"), _T("120"));
+        p196->AddItem(p212);
+
+    ui::Label* p213 = new ui::Label(pWindow);
+        p213->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p213->SetAttribute(_T("text"), _T("12 center"));
+        p213->SetAttribute(_T("halign"), _T("center"));
+        p213->SetAttribute(_T("valign"), _T("center"));
+        p213->SetAttribute(_T("height"), _T("40"));
+        p196->AddItem(p213);
+
+    ui::Label* p214 = new ui::Label(pWindow);
+        p214->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p214->SetAttribute(_T("text"), _T("15 left"));
+        p214->SetAttribute(_T("halign"), _T("left"));
+        p214->SetAttribute(_T("valign"), _T("bottom"));
+        p196->AddItem(p214);
+
+    ui::Label* p215 = new ui::Label(pWindow);
+        p215->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p215->SetAttribute(_T("text"), _T("16 center"));
+        p215->SetAttribute(_T("halign"), _T("center"));
+        p215->SetAttribute(_T("valign"), _T("top"));
+        p215->SetAttribute(_T("height"), _T("40"));
+        p196->AddItem(p215);
+
+    ui::Label* p216 = new ui::Label(pWindow);
+        p216->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p216->SetAttribute(_T("text"), _T("17 right"));
+        p216->SetAttribute(_T("halign"), _T("right"));
+        p216->SetAttribute(_T("valign"), _T("center"));
+        p196->AddItem(p216);
+
+    ui::Label* p217 = new ui::Label(pWindow);
+        p217->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p217->SetAttribute(_T("text"), _T("18 left"));
+        p217->SetAttribute(_T("halign"), _T("left"));
+        p217->SetAttribute(_T("valign"), _T("bottom"));
+        p217->SetAttribute(_T("width"), _T("200"));
+        p196->AddItem(p217);
+
+    ui::Label* p218 = new ui::Label(pWindow);
+        p218->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p218->SetAttribute(_T("text"), _T("19 center, height: 500"));
+        p218->SetAttribute(_T("halign"), _T("center"));
+        p218->SetAttribute(_T("valign"), _T("center"));
+        p218->SetAttribute(_T("height"), _T("500"));
+        p218->SetAttribute(_T("width"), _T("100"));
+        p196->AddItem(p218);
+
+    ui::Label* p219 = new ui::Label(pWindow);
+        p219->SetAttribute(_T("class"), _T("page_vflowbox"));
+        p219->SetAttribute(_T("text"), _T("20 right"));
+        p219->SetAttribute(_T("halign"), _T("right"));
+        p219->SetAttribute(_T("valign"), _T("top"));
+        p219->SetAttribute(_T("height"), _T("40"));
+        p196->AddItem(p219);
+
+        p195->AddItem(p196);
+
+        p180->AddItem(p195);
+
+        p31->AddItem(p180);
+
+    ui::VBox* p220 = new ui::VBox(pWindow);
+        p220->SetAttribute(_T("name"), _T("main_view_page_05"));
+    pWindow->AddClass(_T("page_tile_box"), _T(" margin=\"10,10,10,10\" width=\"200\" height=\"100\" text_padding=\"4,0,0,0\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::Label* p221 = new ui::Label(pWindow);
+        p221->SetAttribute(_T("text"), _T("VTileBox Container Layout Test (Vertical)"));
+        p220->AddItem(p221);
+
+    ui::VTileBox* p222 = new ui::VTileBox(pWindow);
+        p222->SetAttribute(_T("child_halign"), _T("left"));
+        p222->SetAttribute(_T("columns"), _T("0"));
+        p222->SetAttribute(_T("item_size"), _T("0,0"));
+        p222->SetAttribute(_T("scale_down"), _T("true"));
+        p222->SetAttribute(_T("width"), _T("stretch"));
+        p222->SetAttribute(_T("height"), _T("auto"));
+        p222->SetAttribute(_T("padding"), _T("10,10,10,10"));
+        p222->SetAttribute(_T("bkcolor"), _T("gray"));
+        p222->SetAttribute(_T("border_size"), _T("1"));
+        p222->SetAttribute(_T("border_color"), _T("red"));
+    ui::Control* p223 = new ui::Control(pWindow);
+        p223->SetAttribute(_T("float"), _T("true"));
+        p223->SetAttribute(_T("width"), _T("stretch"));
+        p223->SetAttribute(_T("height"), _T("stretch"));
+        p223->SetAttribute(_T("border_size"), _T("1"));
+        p223->SetAttribute(_T("border_color"), _T("green"));
+        p223->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p222->AddItem(p223);
+
+    ui::Label* p224 = new ui::Label(pWindow);
+        p224->SetAttribute(_T("class"), _T("page_tile_box"));
+        p224->SetAttribute(_T("text"), _T("1 left,top"));
+        p224->SetAttribute(_T("halign"), _T("left"));
+        p224->SetAttribute(_T("valign"), _T("top"));
+        p222->AddItem(p224);
+
+    ui::Label* p225 = new ui::Label(pWindow);
+        p225->SetAttribute(_T("class"), _T("page_tile_box"));
+        p225->SetAttribute(_T("text"), _T("2 left,center"));
+        p225->SetAttribute(_T("halign"), _T("left"));
+        p225->SetAttribute(_T("valign"), _T("center"));
+        p222->AddItem(p225);
+
+    ui::Label* p226 = new ui::Label(pWindow);
+        p226->SetAttribute(_T("class"), _T("page_tile_box"));
+        p226->SetAttribute(_T("text"), _T("3 left,bottom"));
+        p226->SetAttribute(_T("halign"), _T("left"));
+        p226->SetAttribute(_T("valign"), _T("bottom"));
+        p222->AddItem(p226);
+
+    ui::Label* p227 = new ui::Label(pWindow);
+        p227->SetAttribute(_T("class"), _T("page_tile_box"));
+        p227->SetAttribute(_T("text"), _T("4 center,top"));
+        p227->SetAttribute(_T("halign"), _T("center"));
+        p227->SetAttribute(_T("valign"), _T("top"));
+        p222->AddItem(p227);
+
+    ui::Label* p228 = new ui::Label(pWindow);
+        p228->SetAttribute(_T("class"), _T("page_tile_box"));
+        p228->SetAttribute(_T("text"), _T("5 center,center"));
+        p228->SetAttribute(_T("halign"), _T("center"));
+        p228->SetAttribute(_T("valign"), _T("center"));
+        p222->AddItem(p228);
+
+    ui::Label* p229 = new ui::Label(pWindow);
+        p229->SetAttribute(_T("class"), _T("page_tile_box"));
+        p229->SetAttribute(_T("text"), _T("6 center,bottom"));
+        p229->SetAttribute(_T("halign"), _T("center"));
+        p229->SetAttribute(_T("valign"), _T("bottom"));
+        p222->AddItem(p229);
+
+    ui::Label* p230 = new ui::Label(pWindow);
+        p230->SetAttribute(_T("class"), _T("page_tile_box"));
+        p230->SetAttribute(_T("text"), _T("7 right,top"));
+        p230->SetAttribute(_T("halign"), _T("right"));
+        p230->SetAttribute(_T("valign"), _T("top"));
+        p222->AddItem(p230);
+
+    ui::Label* p231 = new ui::Label(pWindow);
+        p231->SetAttribute(_T("class"), _T("page_tile_box"));
+        p231->SetAttribute(_T("text"), _T("8 right,center"));
+        p231->SetAttribute(_T("halign"), _T("right"));
+        p231->SetAttribute(_T("valign"), _T("center"));
+        p222->AddItem(p231);
+
+    ui::Label* p232 = new ui::Label(pWindow);
+        p232->SetAttribute(_T("class"), _T("page_tile_box"));
+        p232->SetAttribute(_T("text"), _T("9 right,bottom"));
+        p232->SetAttribute(_T("halign"), _T("right"));
+        p232->SetAttribute(_T("valign"), _T("bottom"));
+        p222->AddItem(p232);
+
+        p220->AddItem(p222);
+
+    ui::Label* p233 = new ui::Label(pWindow);
+        p233->SetAttribute(_T("text"), _T("HTileBox Container Layout Test (Horizontal)"));
+        p233->SetAttribute(_T("margin"), _T("0,4,0,4"));
+        p220->AddItem(p233);
+
+    ui::HTileBox* p234 = new ui::HTileBox(pWindow);
+        p234->SetAttribute(_T("child_valign"), _T("top"));
+        p234->SetAttribute(_T("rows"), _T("0"));
+        p234->SetAttribute(_T("item_size"), _T("200,0"));
+        p234->SetAttribute(_T("scale_down"), _T("true"));
+        p234->SetAttribute(_T("width"), _T("stretch"));
+        p234->SetAttribute(_T("height"), _T("stretch"));
+        p234->SetAttribute(_T("padding"), _T("10,10,10,10"));
+        p234->SetAttribute(_T("bkcolor"), _T("gray"));
+        p234->SetAttribute(_T("border_size"), _T("1"));
+        p234->SetAttribute(_T("border_color"), _T("red"));
+    ui::Control* p235 = new ui::Control(pWindow);
+        p235->SetAttribute(_T("float"), _T("true"));
+        p235->SetAttribute(_T("width"), _T("stretch"));
+        p235->SetAttribute(_T("height"), _T("stretch"));
+        p235->SetAttribute(_T("border_size"), _T("1"));
+        p235->SetAttribute(_T("border_color"), _T("green"));
+        p235->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p234->AddItem(p235);
+
+    ui::Label* p236 = new ui::Label(pWindow);
+        p236->SetAttribute(_T("class"), _T("page_tile_box"));
+        p236->SetAttribute(_T("text"), _T("1 left,top"));
+        p236->SetAttribute(_T("halign"), _T("left"));
+        p236->SetAttribute(_T("valign"), _T("top"));
+        p234->AddItem(p236);
+
+    ui::Label* p237 = new ui::Label(pWindow);
+        p237->SetAttribute(_T("class"), _T("page_tile_box"));
+        p237->SetAttribute(_T("text"), _T("2 left,center"));
+        p237->SetAttribute(_T("halign"), _T("left"));
+        p237->SetAttribute(_T("valign"), _T("center"));
+        p234->AddItem(p237);
+
+    ui::Label* p238 = new ui::Label(pWindow);
+        p238->SetAttribute(_T("class"), _T("page_tile_box"));
+        p238->SetAttribute(_T("text"), _T("3 left,bottom"));
+        p238->SetAttribute(_T("halign"), _T("left"));
+        p238->SetAttribute(_T("valign"), _T("bottom"));
+        p234->AddItem(p238);
+
+    ui::Label* p239 = new ui::Label(pWindow);
+        p239->SetAttribute(_T("class"), _T("page_tile_box"));
+        p239->SetAttribute(_T("text"), _T("4 center,top"));
+        p239->SetAttribute(_T("halign"), _T("center"));
+        p239->SetAttribute(_T("valign"), _T("top"));
+        p234->AddItem(p239);
+
+    ui::Label* p240 = new ui::Label(pWindow);
+        p240->SetAttribute(_T("class"), _T("page_tile_box"));
+        p240->SetAttribute(_T("text"), _T("5 center,center"));
+        p240->SetAttribute(_T("halign"), _T("center"));
+        p240->SetAttribute(_T("valign"), _T("center"));
+        p234->AddItem(p240);
+
+    ui::Label* p241 = new ui::Label(pWindow);
+        p241->SetAttribute(_T("class"), _T("page_tile_box"));
+        p241->SetAttribute(_T("text"), _T("6 center,bottom"));
+        p241->SetAttribute(_T("halign"), _T("center"));
+        p241->SetAttribute(_T("valign"), _T("bottom"));
+        p234->AddItem(p241);
+
+    ui::Label* p242 = new ui::Label(pWindow);
+        p242->SetAttribute(_T("class"), _T("page_tile_box"));
+        p242->SetAttribute(_T("text"), _T("7 right,top"));
+        p242->SetAttribute(_T("halign"), _T("right"));
+        p242->SetAttribute(_T("valign"), _T("top"));
+        p234->AddItem(p242);
+
+    ui::Label* p243 = new ui::Label(pWindow);
+        p243->SetAttribute(_T("class"), _T("page_tile_box"));
+        p243->SetAttribute(_T("text"), _T("8 right,center"));
+        p243->SetAttribute(_T("halign"), _T("right"));
+        p243->SetAttribute(_T("valign"), _T("center"));
+        p234->AddItem(p243);
+
+    ui::Label* p244 = new ui::Label(pWindow);
+        p244->SetAttribute(_T("class"), _T("page_tile_box"));
+        p244->SetAttribute(_T("text"), _T("9 right,bottom"));
+        p244->SetAttribute(_T("halign"), _T("right"));
+        p244->SetAttribute(_T("valign"), _T("bottom"));
+        p234->AddItem(p244);
+
+        p220->AddItem(p234);
+
+        p31->AddItem(p220);
+
+    ui::VBox* p245 = new ui::VBox(pWindow);
+        p245->SetAttribute(_T("name"), _T("main_view_page_06"));
+    pWindow->AddClass(_T("page_scroll_box"), _T(" text_padding=\"4,4,4,4\" halign=\"center\" valign=\"center\" bkcolor=\"Sienna\" border_size=\"2\" border_color=\"Blue\""));
+    ui::Label* p246 = new ui::Label(pWindow);
+        p246->SetAttribute(_T("text"), _T("ScrollBox Container Layout Test (container content does not support alignment; set alignment on the child controls)"));
+        p245->AddItem(p246);
+
+    ui::ScrollBox* p247 = new ui::ScrollBox(pWindow);
+        p247->SetAttribute(_T("vscrollbar"), _T("true"));
+        p247->SetAttribute(_T("hscrollbar"), _T("true"));
+        p247->SetAttribute(_T("width"), _T("stretch"));
+        p247->SetAttribute(_T("height"), _T("stretch"));
+        p247->SetAttribute(_T("bkcolor"), _T("white"));
+        p247->SetAttribute(_T("border_size"), _T("2"));
+        p247->SetAttribute(_T("border_color"), _T("red"));
+        p247->SetAttribute(_T("padding"), _T("20,20,20,20"));
+    ui::Label* p248 = new ui::Label(pWindow);
+        p248->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p248->SetAttribute(_T("text"), _T("1 default left,top"));
+        p248->SetAttribute(_T("text_align"), _T("left,top"));
+        p248->SetAttribute(_T("halign"), _T("left"));
+        p248->SetAttribute(_T("valign"), _T("top"));
+        p248->SetAttribute(_T("width"), _T("5000"));
+        p248->SetAttribute(_T("height"), _T("2500"));
+        p248->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p247->AddItem(p248);
+
+    ui::Label* p249 = new ui::Label(pWindow);
+        p249->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p249->SetAttribute(_T("text"), _T("2 right,bottom"));
+        p249->SetAttribute(_T("halign"), _T("right"));
+        p249->SetAttribute(_T("valign"), _T("bottom"));
+        p249->SetAttribute(_T("width"), _T("100"));
+        p249->SetAttribute(_T("height"), _T("80"));
+        p249->SetAttribute(_T("margin"), _T("0,0,10,10"));
+        p247->AddItem(p249);
+
+    ui::Label* p250 = new ui::Label(pWindow);
+        p250->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p250->SetAttribute(_T("text"), _T("3 left,center"));
+        p250->SetAttribute(_T("halign"), _T("left"));
+        p250->SetAttribute(_T("valign"), _T("center"));
+        p250->SetAttribute(_T("width"), _T("100"));
+        p250->SetAttribute(_T("height"), _T("80"));
+        p247->AddItem(p250);
+
+    ui::Label* p251 = new ui::Label(pWindow);
+        p251->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p251->SetAttribute(_T("text"), _T("4 left,bottom"));
+        p251->SetAttribute(_T("halign"), _T("left"));
+        p251->SetAttribute(_T("valign"), _T("bottom"));
+        p251->SetAttribute(_T("width"), _T("120"));
+        p251->SetAttribute(_T("height"), _T("80"));
+        p251->SetAttribute(_T("margin"), _T("10,0,0,10"));
+        p247->AddItem(p251);
+
+    ui::Label* p252 = new ui::Label(pWindow);
+        p252->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p252->SetAttribute(_T("text"), _T("5 center,top"));
+        p252->SetAttribute(_T("halign"), _T("center"));
+        p252->SetAttribute(_T("valign"), _T("top"));
+        p252->SetAttribute(_T("width"), _T("80"));
+        p252->SetAttribute(_T("height"), _T("80"));
+        p247->AddItem(p252);
+
+    ui::Label* p253 = new ui::Label(pWindow);
+        p253->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p253->SetAttribute(_T("text"), _T("6 center,center"));
+        p253->SetAttribute(_T("halign"), _T("center"));
+        p253->SetAttribute(_T("valign"), _T("center"));
+        p253->SetAttribute(_T("width"), _T("100"));
+        p253->SetAttribute(_T("height"), _T("256"));
+        p247->AddItem(p253);
+
+    ui::Label* p254 = new ui::Label(pWindow);
+        p254->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p254->SetAttribute(_T("text"), _T("7 center,bottom"));
+        p254->SetAttribute(_T("halign"), _T("center"));
+        p254->SetAttribute(_T("valign"), _T("bottom"));
+        p254->SetAttribute(_T("width"), _T("100"));
+        p254->SetAttribute(_T("height"), _T("80"));
+        p247->AddItem(p254);
+
+    ui::Label* p255 = new ui::Label(pWindow);
+        p255->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p255->SetAttribute(_T("text"), _T("8 right,top"));
+        p255->SetAttribute(_T("halign"), _T("right"));
+        p255->SetAttribute(_T("valign"), _T("top"));
+        p255->SetAttribute(_T("width"), _T("100"));
+        p255->SetAttribute(_T("height"), _T("80"));
+        p255->SetAttribute(_T("margin"), _T("0,10,10,0"));
+        p247->AddItem(p255);
+
+    ui::Label* p256 = new ui::Label(pWindow);
+        p256->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p256->SetAttribute(_T("text"), _T("9 right,center"));
+        p256->SetAttribute(_T("halign"), _T("right"));
+        p256->SetAttribute(_T("valign"), _T("center"));
+        p256->SetAttribute(_T("width"), _T("100"));
+        p256->SetAttribute(_T("height"), _T("80"));
+        p247->AddItem(p256);
+
+    ui::Label* p257 = new ui::Label(pWindow);
+        p257->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p257->SetAttribute(_T("text"), _T("10 width:70%"));
+        p257->SetAttribute(_T("halign"), _T("center"));
+        p257->SetAttribute(_T("valign"), _T("center"));
+        p257->SetAttribute(_T("width"), _T("70%"));
+        p257->SetAttribute(_T("height"), _T("40"));
+        p257->SetAttribute(_T("alpha"), _T("128"));
+        p257->SetAttribute(_T("margin"), _T("10,200,10,10"));
+        p247->AddItem(p257);
+
+    ui::Label* p258 = new ui::Label(pWindow);
+        p258->SetAttribute(_T("class"), _T("page_scroll_box"));
+        p258->SetAttribute(_T("text"), _T("11 height:70%"));
+        p258->SetAttribute(_T("halign"), _T("center"));
+        p258->SetAttribute(_T("valign"), _T("center"));
+        p258->SetAttribute(_T("width"), _T("200"));
+        p258->SetAttribute(_T("height"), _T("70%"));
+        p258->SetAttribute(_T("alpha"), _T("128"));
+        p258->SetAttribute(_T("margin"), _T("300,10,10,10"));
+        p247->AddItem(p258);
+
+    ui::Label* p259 = new ui::Label(pWindow);
+        p259->SetAttribute(_T("text"), _T("float 300*300 center,top"));
+        p259->SetAttribute(_T("float"), _T("true"));
+        p259->SetAttribute(_T("halign"), _T("center"));
+        p259->SetAttribute(_T("valign"), _T("top"));
+        p259->SetAttribute(_T("text_align"), _T("top"));
+        p259->SetAttribute(_T("width"), _T("300"));
+        p259->SetAttribute(_T("height"), _T("300"));
+        p259->SetAttribute(_T("border_size"), _T("1"));
+        p259->SetAttribute(_T("border_color"), _T("green"));
+        p259->SetAttribute(_T("bkcolor"), _T("Olive"));
+        p247->AddItem(p259);
+
+    ui::Label* p260 = new ui::Label(pWindow);
+        p260->SetAttribute(_T("text"), _T("float 301*301 center,center"));
+        p260->SetAttribute(_T("float"), _T("true"));
+        p260->SetAttribute(_T("halign"), _T("center"));
+        p260->SetAttribute(_T("valign"), _T("center"));
+        p260->SetAttribute(_T("single_line"), _T("false"));
+        p260->SetAttribute(_T("width"), _T("301"));
+        p260->SetAttribute(_T("height"), _T("301"));
+        p260->SetAttribute(_T("border_size"), _T("1"));
+        p260->SetAttribute(_T("border_color"), _T("green"));
+        p260->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+        p247->AddItem(p260);
+
+    ui::Label* p261 = new ui::Label(pWindow);
+        p261->SetAttribute(_T("text"), _T("float 302*302 center,bottom"));
+        p261->SetAttribute(_T("float"), _T("true"));
+        p261->SetAttribute(_T("halign"), _T("center"));
+        p261->SetAttribute(_T("valign"), _T("bottom"));
+        p261->SetAttribute(_T("single_line"), _T("false"));
+        p261->SetAttribute(_T("width"), _T("302"));
+        p261->SetAttribute(_T("height"), _T("302"));
+        p261->SetAttribute(_T("border_size"), _T("1"));
+        p261->SetAttribute(_T("border_color"), _T("green"));
+        p261->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+        p247->AddItem(p261);
+
+        p245->AddItem(p247);
+
+        p31->AddItem(p245);
+
+    ui::VBox* p262 = new ui::VBox(pWindow);
+        p262->SetAttribute(_T("name"), _T("main_view_page_07"));
+    pWindow->AddClass(_T("page_hscroll_box"), _T(" text_padding=\"4,4,4,4\" halign=\"center\" valign=\"center\" bkcolor=\"Sienna\" border_size=\"2\" border_color=\"Blue\""));
+    ui::Label* p263 = new ui::Label(pWindow);
+        p263->SetAttribute(_T("text"), _T("HScrollBox Container Layout Test"));
+        p262->AddItem(p263);
+
+    ui::HScrollBox* p264 = new ui::HScrollBox(pWindow);
+        p264->SetAttribute(_T("vscrollbar"), _T("true"));
+        p264->SetAttribute(_T("hscrollbar"), _T("true"));
+        p264->SetAttribute(_T("width"), _T("stretch"));
+        p264->SetAttribute(_T("height"), _T("stretch"));
+        p264->SetAttribute(_T("bkcolor"), _T("white"));
+        p264->SetAttribute(_T("border_size"), _T("2"));
+        p264->SetAttribute(_T("border_color"), _T("red"));
+        p264->SetAttribute(_T("padding"), _T("20,20,20,20"));
+    ui::Label* p265 = new ui::Label(pWindow);
+        p265->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p265->SetAttribute(_T("text"), _T("1 right,top"));
+        p265->SetAttribute(_T("text_align"), _T("right,bottom"));
+        p265->SetAttribute(_T("halign"), _T("right"));
+        p265->SetAttribute(_T("valign"), _T("top"));
+        p265->SetAttribute(_T("width"), _T("100"));
+        p265->SetAttribute(_T("height"), _T("80"));
+        p264->AddItem(p265);
+
+    ui::Label* p266 = new ui::Label(pWindow);
+        p266->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p266->SetAttribute(_T("text"), _T("2 left,top"));
+        p266->SetAttribute(_T("halign"), _T("left"));
+        p266->SetAttribute(_T("valign"), _T("top"));
+        p266->SetAttribute(_T("width"), _T("500"));
+        p266->SetAttribute(_T("height"), _T("280"));
+        p264->AddItem(p266);
+
+    ui::Label* p267 = new ui::Label(pWindow);
+        p267->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p267->SetAttribute(_T("text"), _T("3 left,center"));
+        p267->SetAttribute(_T("halign"), _T("left"));
+        p267->SetAttribute(_T("valign"), _T("center"));
+        p267->SetAttribute(_T("width"), _T("500"));
+        p267->SetAttribute(_T("height"), _T("280"));
+        p264->AddItem(p267);
+
+    ui::Label* p268 = new ui::Label(pWindow);
+        p268->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p268->SetAttribute(_T("text"), _T("4 left,bottom"));
+        p268->SetAttribute(_T("halign"), _T("left"));
+        p268->SetAttribute(_T("valign"), _T("bottom"));
+        p268->SetAttribute(_T("width"), _T("500"));
+        p268->SetAttribute(_T("height"), _T("280"));
+        p264->AddItem(p268);
+
+    ui::Label* p269 = new ui::Label(pWindow);
+        p269->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p269->SetAttribute(_T("text"), _T("5 center,top"));
+        p269->SetAttribute(_T("halign"), _T("center"));
+        p269->SetAttribute(_T("valign"), _T("top"));
+        p269->SetAttribute(_T("width"), _T("500"));
+        p269->SetAttribute(_T("height"), _T("280"));
+        p264->AddItem(p269);
+
+    ui::Label* p270 = new ui::Label(pWindow);
+        p270->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p270->SetAttribute(_T("text"), _T("6 center,center"));
+        p270->SetAttribute(_T("halign"), _T("center"));
+        p270->SetAttribute(_T("valign"), _T("center"));
+        p270->SetAttribute(_T("width"), _T("500"));
+        p270->SetAttribute(_T("height"), _T("256"));
+        p264->AddItem(p270);
+
+    ui::Label* p271 = new ui::Label(pWindow);
+        p271->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p271->SetAttribute(_T("text"), _T("7 center,bottom"));
+        p271->SetAttribute(_T("halign"), _T("center"));
+        p271->SetAttribute(_T("valign"), _T("bottom"));
+        p271->SetAttribute(_T("width"), _T("500"));
+        p271->SetAttribute(_T("height"), _T("280"));
+        p264->AddItem(p271);
+
+    ui::Label* p272 = new ui::Label(pWindow);
+        p272->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p272->SetAttribute(_T("text"), _T("8 right,top"));
+        p272->SetAttribute(_T("halign"), _T("right"));
+        p272->SetAttribute(_T("valign"), _T("top"));
+        p272->SetAttribute(_T("width"), _T("500"));
+        p272->SetAttribute(_T("height"), _T("280"));
+        p264->AddItem(p272);
+
+    ui::Label* p273 = new ui::Label(pWindow);
+        p273->SetAttribute(_T("class"), _T("page_hscroll_box"));
+        p273->SetAttribute(_T("text"), _T("9 right,center"));
+        p273->SetAttribute(_T("halign"), _T("right"));
+        p273->SetAttribute(_T("valign"), _T("center"));
+        p273->SetAttribute(_T("width"), _T("500"));
+        p273->SetAttribute(_T("height"), _T("4000"));
+        p264->AddItem(p273);
+
+        p262->AddItem(p264);
+
+        p31->AddItem(p262);
+
+    ui::VBox* p274 = new ui::VBox(pWindow);
+        p274->SetAttribute(_T("name"), _T("main_view_page_08"));
+    pWindow->AddClass(_T("page_vscroll_box"), _T(" text_padding=\"4,4,4,4\" halign=\"center\" valign=\"center\" bkcolor=\"Sienna\" border_size=\"2\" border_color=\"Blue\""));
+    ui::Label* p275 = new ui::Label(pWindow);
+        p275->SetAttribute(_T("text"), _T("VScrollBox Container Layout Test"));
+        p274->AddItem(p275);
+
+    ui::VScrollBox* p276 = new ui::VScrollBox(pWindow);
+        p276->SetAttribute(_T("vscrollbar"), _T("true"));
+        p276->SetAttribute(_T("hscrollbar"), _T("true"));
+        p276->SetAttribute(_T("width"), _T("stretch"));
+        p276->SetAttribute(_T("height"), _T("stretch"));
+        p276->SetAttribute(_T("bkcolor"), _T("white"));
+        p276->SetAttribute(_T("border_size"), _T("2"));
+        p276->SetAttribute(_T("border_color"), _T("red"));
+        p276->SetAttribute(_T("padding"), _T("20,20,20,20"));
+    ui::Label* p277 = new ui::Label(pWindow);
+        p277->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p277->SetAttribute(_T("text"), _T("1 right,top"));
+        p277->SetAttribute(_T("text_align"), _T("right,bottom"));
+        p277->SetAttribute(_T("halign"), _T("right"));
+        p277->SetAttribute(_T("valign"), _T("top"));
+        p277->SetAttribute(_T("width"), _T("100"));
+        p277->SetAttribute(_T("height"), _T("80"));
+        p276->AddItem(p277);
+
+    ui::Label* p278 = new ui::Label(pWindow);
+        p278->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p278->SetAttribute(_T("text"), _T("2 left,top"));
+        p278->SetAttribute(_T("halign"), _T("left"));
+        p278->SetAttribute(_T("valign"), _T("top"));
+        p278->SetAttribute(_T("width"), _T("500"));
+        p278->SetAttribute(_T("height"), _T("280"));
+        p276->AddItem(p278);
+
+    ui::Label* p279 = new ui::Label(pWindow);
+        p279->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p279->SetAttribute(_T("text"), _T("3 left,center"));
+        p279->SetAttribute(_T("halign"), _T("left"));
+        p279->SetAttribute(_T("valign"), _T("center"));
+        p279->SetAttribute(_T("width"), _T("500"));
+        p279->SetAttribute(_T("height"), _T("280"));
+        p276->AddItem(p279);
+
+    ui::Label* p280 = new ui::Label(pWindow);
+        p280->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p280->SetAttribute(_T("text"), _T("4 left,bottom"));
+        p280->SetAttribute(_T("halign"), _T("left"));
+        p280->SetAttribute(_T("valign"), _T("bottom"));
+        p280->SetAttribute(_T("width"), _T("500"));
+        p280->SetAttribute(_T("height"), _T("280"));
+        p276->AddItem(p280);
+
+    ui::Label* p281 = new ui::Label(pWindow);
+        p281->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p281->SetAttribute(_T("text"), _T("5 center,top"));
+        p281->SetAttribute(_T("halign"), _T("center"));
+        p281->SetAttribute(_T("valign"), _T("top"));
+        p281->SetAttribute(_T("width"), _T("500"));
+        p281->SetAttribute(_T("height"), _T("280"));
+        p276->AddItem(p281);
+
+    ui::Label* p282 = new ui::Label(pWindow);
+        p282->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p282->SetAttribute(_T("text"), _T("6 center,center"));
+        p282->SetAttribute(_T("halign"), _T("center"));
+        p282->SetAttribute(_T("valign"), _T("center"));
+        p282->SetAttribute(_T("width"), _T("500"));
+        p282->SetAttribute(_T("height"), _T("256"));
+        p276->AddItem(p282);
+
+    ui::Label* p283 = new ui::Label(pWindow);
+        p283->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p283->SetAttribute(_T("text"), _T("7 center,bottom"));
+        p283->SetAttribute(_T("halign"), _T("center"));
+        p283->SetAttribute(_T("valign"), _T("bottom"));
+        p283->SetAttribute(_T("width"), _T("500"));
+        p283->SetAttribute(_T("height"), _T("280"));
+        p276->AddItem(p283);
+
+    ui::Label* p284 = new ui::Label(pWindow);
+        p284->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p284->SetAttribute(_T("text"), _T("8 right,top"));
+        p284->SetAttribute(_T("halign"), _T("right"));
+        p284->SetAttribute(_T("valign"), _T("top"));
+        p284->SetAttribute(_T("width"), _T("500"));
+        p284->SetAttribute(_T("height"), _T("280"));
+        p276->AddItem(p284);
+
+    ui::Label* p285 = new ui::Label(pWindow);
+        p285->SetAttribute(_T("class"), _T("page_vscroll_box"));
+        p285->SetAttribute(_T("text"), _T("9 right,center"));
+        p285->SetAttribute(_T("halign"), _T("right"));
+        p285->SetAttribute(_T("valign"), _T("center"));
+        p285->SetAttribute(_T("width"), _T("5000"));
+        p285->SetAttribute(_T("height"), _T("400"));
+        p276->AddItem(p285);
+
+    ui::VListBox* p286 = new ui::VListBox(pWindow);
+        p286->SetAttribute(_T("class"), _T("list"));
+        p286->SetAttribute(_T("height"), _T("100"));
+        p286->SetAttribute(_T("width"), _T("200"));
+        p286->SetAttribute(_T("margin"), _T("0,4,0,0"));
+        p286->SetAttribute(_T("padding"), _T("5,3,5,3"));
+        p286->SetAttribute(_T("border_color"), _T("gray"));
+        p286->SetAttribute(_T("border_size"), _T("1"));
+        p286->SetAttribute(_T("tooltiptext"), _T("ui::VListBox"));
+    ui::ListBoxItem* p287 = new ui::ListBoxItem(pWindow);
+        p287->SetAttribute(_T("class"), _T("listitem"));
+        p287->SetAttribute(_T("height"), _T("20"));
+        p287->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p287);
+
+    ui::ListBoxItem* p288 = new ui::ListBoxItem(pWindow);
+        p288->SetAttribute(_T("class"), _T("listitem"));
+        p288->SetAttribute(_T("height"), _T("20"));
+        p288->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p288);
+
+    ui::ListBoxItem* p289 = new ui::ListBoxItem(pWindow);
+        p289->SetAttribute(_T("class"), _T("listitem"));
+        p289->SetAttribute(_T("height"), _T("20"));
+        p289->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p289);
+
+    ui::ListBoxItem* p290 = new ui::ListBoxItem(pWindow);
+        p290->SetAttribute(_T("class"), _T("listitem"));
+        p290->SetAttribute(_T("height"), _T("20"));
+        p290->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p290);
+
+    ui::ListBoxItem* p291 = new ui::ListBoxItem(pWindow);
+        p291->SetAttribute(_T("class"), _T("listitem"));
+        p291->SetAttribute(_T("height"), _T("20"));
+        p291->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p291);
+
+    ui::ListBoxItem* p292 = new ui::ListBoxItem(pWindow);
+        p292->SetAttribute(_T("class"), _T("listitem"));
+        p292->SetAttribute(_T("height"), _T("20"));
+        p292->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p292);
+
+    ui::ListBoxItem* p293 = new ui::ListBoxItem(pWindow);
+        p293->SetAttribute(_T("class"), _T("listitem"));
+        p293->SetAttribute(_T("height"), _T("20"));
+        p293->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p293);
+
+    ui::ListBoxItem* p294 = new ui::ListBoxItem(pWindow);
+        p294->SetAttribute(_T("class"), _T("listitem"));
+        p294->SetAttribute(_T("height"), _T("20"));
+        p294->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p294);
+
+    ui::ListBoxItem* p295 = new ui::ListBoxItem(pWindow);
+        p295->SetAttribute(_T("class"), _T("listitem"));
+        p295->SetAttribute(_T("height"), _T("20"));
+        p295->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p295);
+
+    ui::ListBoxItem* p296 = new ui::ListBoxItem(pWindow);
+        p296->SetAttribute(_T("class"), _T("listitem"));
+        p296->SetAttribute(_T("height"), _T("20"));
+        p296->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p296);
+
+    ui::ListBoxItem* p297 = new ui::ListBoxItem(pWindow);
+        p297->SetAttribute(_T("class"), _T("listitem"));
+        p297->SetAttribute(_T("height"), _T("20"));
+        p297->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p286->AddItem(p297);
+
+        p276->AddItem(p286);
+
+    ui::HBox* p298 = new ui::HBox(pWindow);
+        p298->SetAttribute(_T("height"), _T("120"));
+        p298->SetAttribute(_T("margin"), _T("0,4,0,0"));
+        p298->SetAttribute(_T("child_margin"), _T("2"));
+    ui::VListBox* p299 = new ui::VListBox(pWindow);
+        p299->SetAttribute(_T("class"), _T("list"));
+        p299->SetAttribute(_T("height"), _T("100"));
+        p299->SetAttribute(_T("width"), _T("200"));
+        p299->SetAttribute(_T("padding"), _T("5,3,5,3"));
+        p299->SetAttribute(_T("border_color"), _T("gray"));
+        p299->SetAttribute(_T("border_size"), _T("1"));
+        p299->SetAttribute(_T("tooltiptext"), _T("ui::VListBox"));
+    ui::ListBoxItem* p300 = new ui::ListBoxItem(pWindow);
+        p300->SetAttribute(_T("class"), _T("listitem"));
+        p300->SetAttribute(_T("height"), _T("20"));
+        p300->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p300);
+
+    ui::ListBoxItem* p301 = new ui::ListBoxItem(pWindow);
+        p301->SetAttribute(_T("class"), _T("listitem"));
+        p301->SetAttribute(_T("height"), _T("20"));
+        p301->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p301);
+
+    ui::ListBoxItem* p302 = new ui::ListBoxItem(pWindow);
+        p302->SetAttribute(_T("class"), _T("listitem"));
+        p302->SetAttribute(_T("height"), _T("20"));
+        p302->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p302);
+
+    ui::ListBoxItem* p303 = new ui::ListBoxItem(pWindow);
+        p303->SetAttribute(_T("class"), _T("listitem"));
+        p303->SetAttribute(_T("height"), _T("20"));
+        p303->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p303);
+
+    ui::ListBoxItem* p304 = new ui::ListBoxItem(pWindow);
+        p304->SetAttribute(_T("class"), _T("listitem"));
+        p304->SetAttribute(_T("height"), _T("20"));
+        p304->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p304);
+
+    ui::ListBoxItem* p305 = new ui::ListBoxItem(pWindow);
+        p305->SetAttribute(_T("class"), _T("listitem"));
+        p305->SetAttribute(_T("height"), _T("20"));
+        p305->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p305);
+
+    ui::ListBoxItem* p306 = new ui::ListBoxItem(pWindow);
+        p306->SetAttribute(_T("class"), _T("listitem"));
+        p306->SetAttribute(_T("height"), _T("20"));
+        p306->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p306);
+
+    ui::ListBoxItem* p307 = new ui::ListBoxItem(pWindow);
+        p307->SetAttribute(_T("class"), _T("listitem"));
+        p307->SetAttribute(_T("height"), _T("20"));
+        p307->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p307);
+
+    ui::ListBoxItem* p308 = new ui::ListBoxItem(pWindow);
+        p308->SetAttribute(_T("class"), _T("listitem"));
+        p308->SetAttribute(_T("height"), _T("20"));
+        p308->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p308);
+
+    ui::ListBoxItem* p309 = new ui::ListBoxItem(pWindow);
+        p309->SetAttribute(_T("class"), _T("listitem"));
+        p309->SetAttribute(_T("height"), _T("20"));
+        p309->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p309);
+
+    ui::ListBoxItem* p310 = new ui::ListBoxItem(pWindow);
+        p310->SetAttribute(_T("class"), _T("listitem"));
+        p310->SetAttribute(_T("height"), _T("20"));
+        p310->SetAttribute(_T("text"), _T("VListBox::ListBoxItem"));
+        p299->AddItem(p310);
+
+        p298->AddItem(p299);
+
+    ui::HListBox* p311 = new ui::HListBox(pWindow);
+        p311->SetAttribute(_T("class"), _T("list"));
+        p311->SetAttribute(_T("height"), _T("50"));
+        p311->SetAttribute(_T("width"), _T("600"));
+        p311->SetAttribute(_T("hscrollbar"), _T("true"));
+        p311->SetAttribute(_T("padding"), _T("5,3,5,3"));
+        p311->SetAttribute(_T("border_color"), _T("gray"));
+        p311->SetAttribute(_T("border_size"), _T("1"));
+        p311->SetAttribute(_T("tooltiptext"), _T("ui::HListBox"));
+    ui::ListBoxItem* p312 = new ui::ListBoxItem(pWindow);
+        p312->SetAttribute(_T("class"), _T("listitem"));
+        p312->SetAttribute(_T("height"), _T("40"));
+        p312->SetAttribute(_T("width"), _T("100"));
+        p312->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p312);
+
+    ui::ListBoxItem* p313 = new ui::ListBoxItem(pWindow);
+        p313->SetAttribute(_T("class"), _T("listitem"));
+        p313->SetAttribute(_T("height"), _T("40"));
+        p313->SetAttribute(_T("width"), _T("100"));
+        p313->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p313);
+
+    ui::ListBoxItem* p314 = new ui::ListBoxItem(pWindow);
+        p314->SetAttribute(_T("class"), _T("listitem"));
+        p314->SetAttribute(_T("height"), _T("40"));
+        p314->SetAttribute(_T("width"), _T("100"));
+        p314->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p314);
+
+    ui::ListBoxItem* p315 = new ui::ListBoxItem(pWindow);
+        p315->SetAttribute(_T("class"), _T("listitem"));
+        p315->SetAttribute(_T("height"), _T("40"));
+        p315->SetAttribute(_T("width"), _T("100"));
+        p315->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p315);
+
+    ui::ListBoxItem* p316 = new ui::ListBoxItem(pWindow);
+        p316->SetAttribute(_T("class"), _T("listitem"));
+        p316->SetAttribute(_T("height"), _T("40"));
+        p316->SetAttribute(_T("width"), _T("100"));
+        p316->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p316);
+
+    ui::ListBoxItem* p317 = new ui::ListBoxItem(pWindow);
+        p317->SetAttribute(_T("class"), _T("listitem"));
+        p317->SetAttribute(_T("height"), _T("40"));
+        p317->SetAttribute(_T("width"), _T("100"));
+        p317->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p317);
+
+    ui::ListBoxItem* p318 = new ui::ListBoxItem(pWindow);
+        p318->SetAttribute(_T("class"), _T("listitem"));
+        p318->SetAttribute(_T("height"), _T("40"));
+        p318->SetAttribute(_T("width"), _T("100"));
+        p318->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p318);
+
+    ui::ListBoxItem* p319 = new ui::ListBoxItem(pWindow);
+        p319->SetAttribute(_T("class"), _T("listitem"));
+        p319->SetAttribute(_T("height"), _T("40"));
+        p319->SetAttribute(_T("width"), _T("100"));
+        p319->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p319);
+
+    ui::ListBoxItem* p320 = new ui::ListBoxItem(pWindow);
+        p320->SetAttribute(_T("class"), _T("listitem"));
+        p320->SetAttribute(_T("height"), _T("40"));
+        p320->SetAttribute(_T("width"), _T("100"));
+        p320->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p320);
+
+    ui::ListBoxItem* p321 = new ui::ListBoxItem(pWindow);
+        p321->SetAttribute(_T("class"), _T("listitem"));
+        p321->SetAttribute(_T("height"), _T("40"));
+        p321->SetAttribute(_T("width"), _T("100"));
+        p321->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p321);
+
+    ui::ListBoxItem* p322 = new ui::ListBoxItem(pWindow);
+        p322->SetAttribute(_T("class"), _T("listitem"));
+        p322->SetAttribute(_T("height"), _T("40"));
+        p322->SetAttribute(_T("width"), _T("100"));
+        p322->SetAttribute(_T("text"), _T("HListBox::ListBoxItem"));
+        p311->AddItem(p322);
+
+        p298->AddItem(p311);
+
+        p276->AddItem(p298);
+
+        p274->AddItem(p276);
+
+        p31->AddItem(p274);
+
+    ui::VBox* p323 = new ui::VBox(pWindow);
+        p323->SetAttribute(_T("name"), _T("main_view_page_09"));
+    pWindow->AddClass(_T("page_hflow_scrollbox"), _T(" margin=\"6,6,6,6\" width=\"100\" height=\"80\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::VBox* p324 = new ui::VBox(pWindow);
+        p324->SetAttribute(_T("height"), _T("84"));
+        p324->SetAttribute(_T("padding"), _T("6,0,6,0"));
+    ui::Label* p325 = new ui::Label(pWindow);
+        p325->SetAttribute(_T("text"), _T("HFlowScrollBox Container Layout Test"));
+        p325->SetAttribute(_T("height"), _T("28"));
+        p325->SetAttribute(_T("valign"), _T("center"));
+        p324->AddItem(p325);
+
+    ui::HBox* p326 = new ui::HBox(pWindow);
+        p326->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p327 = new ui::Label(pWindow);
+        p327->SetAttribute(_T("text"), _T("Container content horizontal alignment:"));
+        p327->SetAttribute(_T("valign"), _T("center"));
+        p326->AddItem(p327);
+
+    ui::Option* p328 = new ui::Option(pWindow);
+        p328->SetAttribute(_T("class"), _T("option_1"));
+        p328->SetAttribute(_T("group"), _T("hflow_scrollbox_group_halign"));
+        p328->SetAttribute(_T("text"), _T("Align Left (left)"));
+        p328->SetAttribute(_T("height"), _T("28"));
+        p328->SetAttribute(_T("valign"), _T("center"));
+        p328->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p328->SetAttribute(_T("selected"), _T("true"));
+        p326->AddItem(p328);
+
+    ui::Option* p329 = new ui::Option(pWindow);
+        p329->SetAttribute(_T("class"), _T("option_1"));
+        p329->SetAttribute(_T("group"), _T("hflow_scrollbox_group_halign"));
+        p329->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p329->SetAttribute(_T("height"), _T("28"));
+        p329->SetAttribute(_T("valign"), _T("center"));
+        p329->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p329->SetAttribute(_T("selected"), _T("false"));
+        p326->AddItem(p329);
+
+    ui::Option* p330 = new ui::Option(pWindow);
+        p330->SetAttribute(_T("class"), _T("option_1"));
+        p330->SetAttribute(_T("group"), _T("hflow_scrollbox_group_halign"));
+        p330->SetAttribute(_T("text"), _T("Align Right (right)"));
+        p330->SetAttribute(_T("height"), _T("28"));
+        p330->SetAttribute(_T("valign"), _T("center"));
+        p330->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p330->SetAttribute(_T("selected"), _T("false"));
+        p326->AddItem(p330);
+
+    ui::Label* p331 = new ui::Label(pWindow);
+        p331->SetAttribute(_T("text"), _T("(aligned within the same row)"));
+        p331->SetAttribute(_T("valign"), _T("center"));
+        p326->AddItem(p331);
+
+        p324->AddItem(p326);
+
+    ui::HBox* p332 = new ui::HBox(pWindow);
+        p332->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p333 = new ui::Label(pWindow);
+        p333->SetAttribute(_T("text"), _T("Container content vertical alignment:"));
+        p333->SetAttribute(_T("valign"), _T("center"));
+        p332->AddItem(p333);
+
+    ui::Option* p334 = new ui::Option(pWindow);
+        p334->SetAttribute(_T("class"), _T("option_1"));
+        p334->SetAttribute(_T("group"), _T("hflow_scrollbox_group_valign"));
+        p334->SetAttribute(_T("text"), _T("Align Top (top)"));
+        p334->SetAttribute(_T("height"), _T("28"));
+        p334->SetAttribute(_T("valign"), _T("center"));
+        p334->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p334->SetAttribute(_T("selected"), _T("true"));
+        p332->AddItem(p334);
+
+    ui::Option* p335 = new ui::Option(pWindow);
+        p335->SetAttribute(_T("class"), _T("option_1"));
+        p335->SetAttribute(_T("group"), _T("hflow_scrollbox_group_valign"));
+        p335->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p335->SetAttribute(_T("height"), _T("28"));
+        p335->SetAttribute(_T("valign"), _T("center"));
+        p335->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p335->SetAttribute(_T("selected"), _T("false"));
+        p332->AddItem(p335);
+
+    ui::Option* p336 = new ui::Option(pWindow);
+        p336->SetAttribute(_T("class"), _T("option_1"));
+        p336->SetAttribute(_T("group"), _T("hflow_scrollbox_group_valign"));
+        p336->SetAttribute(_T("text"), _T("Align Bottom (bottom)"));
+        p336->SetAttribute(_T("height"), _T("28"));
+        p336->SetAttribute(_T("valign"), _T("center"));
+        p336->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p336->SetAttribute(_T("selected"), _T("false"));
+        p332->AddItem(p336);
+
+    ui::Label* p337 = new ui::Label(pWindow);
+        p337->SetAttribute(_T("text"), _T("(effective only when no scrollbar appears)"));
+        p337->SetAttribute(_T("valign"), _T("center"));
+        p332->AddItem(p337);
+
+        p324->AddItem(p332);
+
+        p323->AddItem(p324);
+
+    ui::VBox* p338 = new ui::VBox(pWindow);
+    ui::HFlowScrollBox* p339 = new ui::HFlowScrollBox(pWindow);
+        p339->SetAttribute(_T("name"), _T("hflow_scrollbox_test"));
+        p339->SetAttribute(_T("vscrollbar"), _T("true"));
+        p339->SetAttribute(_T("hscrollbar"), _T("true"));
+        p339->SetAttribute(_T("child_halign"), _T("left"));
+        p339->SetAttribute(_T("child_valign"), _T("top"));
+        p339->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p339->SetAttribute(_T("border_size"), _T("1"));
+        p339->SetAttribute(_T("border_color"), _T("red"));
+        p339->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p339->SetAttribute(_T("margin"), _T("8,8,8,8"));
+        p339->SetAttribute(_T("height"), _T("70%"));
+    ui::Label* p340 = new ui::Label(pWindow);
+        p340->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p340->SetAttribute(_T("text"), _T("1 top"));
+        p340->SetAttribute(_T("halign"), _T("left"));
+        p340->SetAttribute(_T("valign"), _T("top"));
+        p340->SetAttribute(_T("minwidth"), _T("300"));
+        p340->SetAttribute(_T("maxheight"), _T("60"));
+        p339->AddItem(p340);
+
+    ui::Label* p341 = new ui::Label(pWindow);
+        p341->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p341->SetAttribute(_T("text"), _T("2 enter"));
+        p341->SetAttribute(_T("halign"), _T("left"));
+        p341->SetAttribute(_T("valign"), _T("center"));
+        p339->AddItem(p341);
+
+    ui::Label* p342 = new ui::Label(pWindow);
+        p342->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p342->SetAttribute(_T("text"), _T("3 bottom"));
+        p342->SetAttribute(_T("halign"), _T("left"));
+        p342->SetAttribute(_T("valign"), _T("bottom"));
+        p342->SetAttribute(_T("height"), _T("40"));
+        p339->AddItem(p342);
+
+    ui::Label* p343 = new ui::Label(pWindow);
+        p343->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p343->SetAttribute(_T("text"), _T("4 top"));
+        p343->SetAttribute(_T("halign"), _T("center"));
+        p343->SetAttribute(_T("valign"), _T("top"));
+        p339->AddItem(p343);
+
+    ui::Label* p344 = new ui::Label(pWindow);
+        p344->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p344->SetAttribute(_T("text"), _T("5 center"));
+        p344->SetAttribute(_T("halign"), _T("center"));
+        p344->SetAttribute(_T("valign"), _T("center"));
+        p344->SetAttribute(_T("height"), _T("40"));
+        p339->AddItem(p344);
+
+    ui::Label* p345 = new ui::Label(pWindow);
+        p345->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p345->SetAttribute(_T("text"), _T("6 bottom"));
+        p345->SetAttribute(_T("halign"), _T("center"));
+        p345->SetAttribute(_T("valign"), _T("bottom"));
+        p339->AddItem(p345);
+
+    ui::Label* p346 = new ui::Label(pWindow);
+        p346->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p346->SetAttribute(_T("text"), _T("7 top"));
+        p346->SetAttribute(_T("halign"), _T("right"));
+        p346->SetAttribute(_T("valign"), _T("top"));
+        p346->SetAttribute(_T("height"), _T("40"));
+        p339->AddItem(p346);
+
+    ui::Label* p347 = new ui::Label(pWindow);
+        p347->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p347->SetAttribute(_T("text"), _T("8 center"));
+        p347->SetAttribute(_T("halign"), _T("right"));
+        p347->SetAttribute(_T("valign"), _T("center"));
+        p339->AddItem(p347);
+
+    ui::Label* p348 = new ui::Label(pWindow);
+        p348->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p348->SetAttribute(_T("text"), _T("9 bottom"));
+        p348->SetAttribute(_T("halign"), _T("right"));
+        p348->SetAttribute(_T("valign"), _T("bottom"));
+        p348->SetAttribute(_T("width"), _T("300"));
+        p339->AddItem(p348);
+
+    ui::Label* p349 = new ui::Label(pWindow);
+        p349->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p349->SetAttribute(_T("text"), _T("10 top"));
+        p349->SetAttribute(_T("halign"), _T("left"));
+        p349->SetAttribute(_T("valign"), _T("top"));
+        p349->SetAttribute(_T("minwidth"), _T("300"));
+        p349->SetAttribute(_T("maxheight"), _T("60"));
+        p339->AddItem(p349);
+
+    ui::Label* p350 = new ui::Label(pWindow);
+        p350->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p350->SetAttribute(_T("text"), _T("11 center stretch: 100%"));
+        p350->SetAttribute(_T("halign"), _T("left"));
+        p350->SetAttribute(_T("valign"), _T("center"));
+        p350->SetAttribute(_T("width"), _T("stretch"));
+        p339->AddItem(p350);
+
+    ui::Label* p351 = new ui::Label(pWindow);
+        p351->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p351->SetAttribute(_T("text"), _T("12 bottom"));
+        p351->SetAttribute(_T("halign"), _T("left"));
+        p351->SetAttribute(_T("valign"), _T("bottom"));
+        p351->SetAttribute(_T("height"), _T("40"));
+        p339->AddItem(p351);
+
+    ui::Label* p352 = new ui::Label(pWindow);
+        p352->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p352->SetAttribute(_T("text"), _T("13 top stretch: 50%"));
+        p352->SetAttribute(_T("halign"), _T("center"));
+        p352->SetAttribute(_T("valign"), _T("top"));
+        p352->SetAttribute(_T("width"), _T("50%"));
+        p339->AddItem(p352);
+
+    ui::Label* p353 = new ui::Label(pWindow);
+        p353->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p353->SetAttribute(_T("text"), _T("12 center"));
+        p353->SetAttribute(_T("halign"), _T("center"));
+        p353->SetAttribute(_T("valign"), _T("center"));
+        p353->SetAttribute(_T("height"), _T("40"));
+        p339->AddItem(p353);
+
+    ui::Label* p354 = new ui::Label(pWindow);
+        p354->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p354->SetAttribute(_T("text"), _T("15 bottom"));
+        p354->SetAttribute(_T("halign"), _T("center"));
+        p354->SetAttribute(_T("valign"), _T("bottom"));
+        p339->AddItem(p354);
+
+    ui::Label* p355 = new ui::Label(pWindow);
+        p355->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p355->SetAttribute(_T("text"), _T("16 top"));
+        p355->SetAttribute(_T("halign"), _T("right"));
+        p355->SetAttribute(_T("valign"), _T("top"));
+        p355->SetAttribute(_T("height"), _T("40"));
+        p339->AddItem(p355);
+
+    ui::Label* p356 = new ui::Label(pWindow);
+        p356->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p356->SetAttribute(_T("text"), _T("17 center"));
+        p356->SetAttribute(_T("halign"), _T("right"));
+        p356->SetAttribute(_T("valign"), _T("center"));
+        p339->AddItem(p356);
+
+    ui::Label* p357 = new ui::Label(pWindow);
+        p357->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p357->SetAttribute(_T("text"), _T("18 bottom"));
+        p357->SetAttribute(_T("halign"), _T("right"));
+        p357->SetAttribute(_T("valign"), _T("bottom"));
+        p357->SetAttribute(_T("width"), _T("300"));
+        p339->AddItem(p357);
+
+    ui::Label* p358 = new ui::Label(pWindow);
+        p358->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p358->SetAttribute(_T("text"), _T("19 center, width: 1600"));
+        p358->SetAttribute(_T("halign"), _T("right"));
+        p358->SetAttribute(_T("valign"), _T("center"));
+        p358->SetAttribute(_T("width"), _T("1600"));
+        p339->AddItem(p358);
+
+    ui::Label* p359 = new ui::Label(pWindow);
+        p359->SetAttribute(_T("class"), _T("page_hflow_scrollbox"));
+        p359->SetAttribute(_T("text"), _T("20 top"));
+        p359->SetAttribute(_T("halign"), _T("right"));
+        p359->SetAttribute(_T("valign"), _T("top"));
+        p359->SetAttribute(_T("height"), _T("40"));
+        p339->AddItem(p359);
+
+        p338->AddItem(p339);
+
+        p323->AddItem(p338);
+
+        p31->AddItem(p323);
+
+    ui::VBox* p360 = new ui::VBox(pWindow);
+        p360->SetAttribute(_T("name"), _T("main_view_page_10"));
+    pWindow->AddClass(_T("page_vflow_scrollbox"), _T(" margin=\"6,6,6,6\" width=\"100\" height=\"80\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::VBox* p361 = new ui::VBox(pWindow);
+        p361->SetAttribute(_T("height"), _T("84"));
+        p361->SetAttribute(_T("padding"), _T("6,0,6,0"));
+    ui::Label* p362 = new ui::Label(pWindow);
+        p362->SetAttribute(_T("text"), _T("VFlowScrollBox Container Layout Test"));
+        p362->SetAttribute(_T("height"), _T("28"));
+        p362->SetAttribute(_T("valign"), _T("center"));
+        p361->AddItem(p362);
+
+    ui::HBox* p363 = new ui::HBox(pWindow);
+        p363->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p364 = new ui::Label(pWindow);
+        p364->SetAttribute(_T("text"), _T("Container content horizontal alignment:"));
+        p364->SetAttribute(_T("valign"), _T("center"));
+        p363->AddItem(p364);
+
+    ui::Option* p365 = new ui::Option(pWindow);
+        p365->SetAttribute(_T("class"), _T("option_1"));
+        p365->SetAttribute(_T("group"), _T("vflow_scrollbox_group_halign"));
+        p365->SetAttribute(_T("text"), _T("Align Left (left)"));
+        p365->SetAttribute(_T("height"), _T("28"));
+        p365->SetAttribute(_T("valign"), _T("center"));
+        p365->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p365->SetAttribute(_T("selected"), _T("true"));
+        p363->AddItem(p365);
+
+    ui::Option* p366 = new ui::Option(pWindow);
+        p366->SetAttribute(_T("class"), _T("option_1"));
+        p366->SetAttribute(_T("group"), _T("vflow_scrollbox_group_halign"));
+        p366->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p366->SetAttribute(_T("height"), _T("28"));
+        p366->SetAttribute(_T("valign"), _T("center"));
+        p366->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p366->SetAttribute(_T("selected"), _T("false"));
+        p363->AddItem(p366);
+
+    ui::Option* p367 = new ui::Option(pWindow);
+        p367->SetAttribute(_T("class"), _T("option_1"));
+        p367->SetAttribute(_T("group"), _T("vflow_scrollbox_group_halign"));
+        p367->SetAttribute(_T("text"), _T("Align Right (right)"));
+        p367->SetAttribute(_T("height"), _T("28"));
+        p367->SetAttribute(_T("valign"), _T("center"));
+        p367->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p367->SetAttribute(_T("selected"), _T("false"));
+        p363->AddItem(p367);
+
+    ui::Label* p368 = new ui::Label(pWindow);
+        p368->SetAttribute(_T("text"), _T("(effective only when no scrollbar appears)"));
+        p368->SetAttribute(_T("valign"), _T("center"));
+        p363->AddItem(p368);
+
+        p361->AddItem(p363);
+
+    ui::HBox* p369 = new ui::HBox(pWindow);
+        p369->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p370 = new ui::Label(pWindow);
+        p370->SetAttribute(_T("text"), _T("Container content vertical alignment:"));
+        p370->SetAttribute(_T("valign"), _T("center"));
+        p369->AddItem(p370);
+
+    ui::Option* p371 = new ui::Option(pWindow);
+        p371->SetAttribute(_T("class"), _T("option_1"));
+        p371->SetAttribute(_T("group"), _T("vflow_scrollbox_group_valign"));
+        p371->SetAttribute(_T("text"), _T("Align Top (top)"));
+        p371->SetAttribute(_T("height"), _T("28"));
+        p371->SetAttribute(_T("valign"), _T("center"));
+        p371->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p371->SetAttribute(_T("selected"), _T("true"));
+        p369->AddItem(p371);
+
+    ui::Option* p372 = new ui::Option(pWindow);
+        p372->SetAttribute(_T("class"), _T("option_1"));
+        p372->SetAttribute(_T("group"), _T("vflow_scrollbox_group_valign"));
+        p372->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p372->SetAttribute(_T("height"), _T("28"));
+        p372->SetAttribute(_T("valign"), _T("center"));
+        p372->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p372->SetAttribute(_T("selected"), _T("false"));
+        p369->AddItem(p372);
+
+    ui::Option* p373 = new ui::Option(pWindow);
+        p373->SetAttribute(_T("class"), _T("option_1"));
+        p373->SetAttribute(_T("group"), _T("vflow_scrollbox_group_valign"));
+        p373->SetAttribute(_T("text"), _T("Align Bottom (bottom)"));
+        p373->SetAttribute(_T("height"), _T("28"));
+        p373->SetAttribute(_T("valign"), _T("center"));
+        p373->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p373->SetAttribute(_T("selected"), _T("false"));
+        p369->AddItem(p373);
+
+    ui::Label* p374 = new ui::Label(pWindow);
+        p374->SetAttribute(_T("text"), _T("(aligned within the same column)"));
+        p374->SetAttribute(_T("valign"), _T("center"));
+        p369->AddItem(p374);
+
+        p361->AddItem(p369);
+
+        p360->AddItem(p361);
+
+    ui::VBox* p375 = new ui::VBox(pWindow);
+    ui::VFlowScrollBox* p376 = new ui::VFlowScrollBox(pWindow);
+        p376->SetAttribute(_T("name"), _T("vflow_scrollbox_test"));
+        p376->SetAttribute(_T("vscrollbar"), _T("true"));
+        p376->SetAttribute(_T("hscrollbar"), _T("true"));
+        p376->SetAttribute(_T("child_halign"), _T("left"));
+        p376->SetAttribute(_T("child_valign"), _T("top"));
+        p376->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p376->SetAttribute(_T("border_size"), _T("1"));
+        p376->SetAttribute(_T("border_color"), _T("red"));
+        p376->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p376->SetAttribute(_T("margin"), _T("8,8,8,8"));
+        p376->SetAttribute(_T("height"), _T("70%"));
+    ui::Label* p377 = new ui::Label(pWindow);
+        p377->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p377->SetAttribute(_T("text"), _T("1 left"));
+        p377->SetAttribute(_T("halign"), _T("left"));
+        p377->SetAttribute(_T("valign"), _T("top"));
+        p377->SetAttribute(_T("minwidth"), _T("300"));
+        p377->SetAttribute(_T("maxheight"), _T("60"));
+        p376->AddItem(p377);
+
+    ui::Label* p378 = new ui::Label(pWindow);
+        p378->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p378->SetAttribute(_T("text"), _T("2 center"));
+        p378->SetAttribute(_T("halign"), _T("center"));
+        p378->SetAttribute(_T("valign"), _T("top"));
+        p376->AddItem(p378);
+
+    ui::Label* p379 = new ui::Label(pWindow);
+        p379->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p379->SetAttribute(_T("text"), _T("3 right"));
+        p379->SetAttribute(_T("halign"), _T("right"));
+        p379->SetAttribute(_T("valign"), _T("top"));
+        p379->SetAttribute(_T("height"), _T("40"));
+        p376->AddItem(p379);
+
+    ui::Label* p380 = new ui::Label(pWindow);
+        p380->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p380->SetAttribute(_T("text"), _T("4 left"));
+        p380->SetAttribute(_T("halign"), _T("left"));
+        p380->SetAttribute(_T("valign"), _T("center"));
+        p376->AddItem(p380);
+
+    ui::Label* p381 = new ui::Label(pWindow);
+        p381->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p381->SetAttribute(_T("text"), _T("5 center"));
+        p381->SetAttribute(_T("halign"), _T("center"));
+        p381->SetAttribute(_T("valign"), _T("center"));
+        p381->SetAttribute(_T("height"), _T("40"));
+        p376->AddItem(p381);
+
+    ui::Label* p382 = new ui::Label(pWindow);
+        p382->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p382->SetAttribute(_T("text"), _T("6 right"));
+        p382->SetAttribute(_T("halign"), _T("right"));
+        p382->SetAttribute(_T("valign"), _T("center"));
+        p376->AddItem(p382);
+
+    ui::Label* p383 = new ui::Label(pWindow);
+        p383->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p383->SetAttribute(_T("text"), _T("7 left"));
+        p383->SetAttribute(_T("halign"), _T("left"));
+        p383->SetAttribute(_T("valign"), _T("bottom"));
+        p383->SetAttribute(_T("height"), _T("40"));
+        p376->AddItem(p383);
+
+    ui::Label* p384 = new ui::Label(pWindow);
+        p384->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p384->SetAttribute(_T("text"), _T("8 center"));
+        p384->SetAttribute(_T("halign"), _T("center"));
+        p384->SetAttribute(_T("valign"), _T("bottom"));
+        p376->AddItem(p384);
+
+    ui::Label* p385 = new ui::Label(pWindow);
+        p385->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p385->SetAttribute(_T("text"), _T("9 right"));
+        p385->SetAttribute(_T("halign"), _T("right"));
+        p385->SetAttribute(_T("valign"), _T("bottom"));
+        p385->SetAttribute(_T("width"), _T("300"));
+        p376->AddItem(p385);
+
+    ui::Label* p386 = new ui::Label(pWindow);
+        p386->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p386->SetAttribute(_T("text"), _T("10 left"));
+        p386->SetAttribute(_T("halign"), _T("left"));
+        p386->SetAttribute(_T("valign"), _T("top"));
+        p386->SetAttribute(_T("minwidth"), _T("300"));
+        p386->SetAttribute(_T("maxheight"), _T("60"));
+        p376->AddItem(p386);
+
+    ui::Label* p387 = new ui::Label(pWindow);
+        p387->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p387->SetAttribute(_T("text"), _T("11 center stretch: 100%"));
+        p387->SetAttribute(_T("halign"), _T("center"));
+        p387->SetAttribute(_T("valign"), _T("center"));
+        p387->SetAttribute(_T("height"), _T("stretch"));
+        p387->SetAttribute(_T("width"), _T("180"));
+        p376->AddItem(p387);
+
+    ui::Label* p388 = new ui::Label(pWindow);
+        p388->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p388->SetAttribute(_T("text"), _T("12 right"));
+        p388->SetAttribute(_T("halign"), _T("right"));
+        p388->SetAttribute(_T("valign"), _T("bottom"));
+        p388->SetAttribute(_T("height"), _T("40"));
+        p376->AddItem(p388);
+
+    ui::Label* p389 = new ui::Label(pWindow);
+        p389->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p389->SetAttribute(_T("text"), _T("13 left stretch: 50%"));
+        p389->SetAttribute(_T("halign"), _T("left"));
+        p389->SetAttribute(_T("valign"), _T("top"));
+        p389->SetAttribute(_T("height"), _T("50%"));
+        p389->SetAttribute(_T("width"), _T("180"));
+        p376->AddItem(p389);
+
+    ui::Label* p390 = new ui::Label(pWindow);
+        p390->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p390->SetAttribute(_T("text"), _T("12 center"));
+        p390->SetAttribute(_T("halign"), _T("center"));
+        p390->SetAttribute(_T("valign"), _T("center"));
+        p390->SetAttribute(_T("height"), _T("40"));
+        p376->AddItem(p390);
+
+    ui::Label* p391 = new ui::Label(pWindow);
+        p391->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p391->SetAttribute(_T("text"), _T("15 left"));
+        p391->SetAttribute(_T("halign"), _T("left"));
+        p391->SetAttribute(_T("valign"), _T("bottom"));
+        p376->AddItem(p391);
+
+    ui::Label* p392 = new ui::Label(pWindow);
+        p392->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p392->SetAttribute(_T("text"), _T("16 center"));
+        p392->SetAttribute(_T("halign"), _T("center"));
+        p392->SetAttribute(_T("valign"), _T("top"));
+        p392->SetAttribute(_T("height"), _T("40"));
+        p376->AddItem(p392);
+
+    ui::Label* p393 = new ui::Label(pWindow);
+        p393->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p393->SetAttribute(_T("text"), _T("17 right"));
+        p393->SetAttribute(_T("halign"), _T("right"));
+        p393->SetAttribute(_T("valign"), _T("center"));
+        p376->AddItem(p393);
+
+    ui::Label* p394 = new ui::Label(pWindow);
+        p394->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p394->SetAttribute(_T("text"), _T("18 left"));
+        p394->SetAttribute(_T("halign"), _T("left"));
+        p394->SetAttribute(_T("valign"), _T("bottom"));
+        p394->SetAttribute(_T("width"), _T("300"));
+        p376->AddItem(p394);
+
+    ui::Label* p395 = new ui::Label(pWindow);
+        p395->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p395->SetAttribute(_T("text"), _T("19 center, height: 600"));
+        p395->SetAttribute(_T("halign"), _T("center"));
+        p395->SetAttribute(_T("valign"), _T("center"));
+        p395->SetAttribute(_T("height"), _T("600"));
+        p395->SetAttribute(_T("width"), _T("180"));
+        p376->AddItem(p395);
+
+    ui::Label* p396 = new ui::Label(pWindow);
+        p396->SetAttribute(_T("class"), _T("page_vflow_scrollbox"));
+        p396->SetAttribute(_T("text"), _T("20 right"));
+        p396->SetAttribute(_T("halign"), _T("right"));
+        p396->SetAttribute(_T("valign"), _T("top"));
+        p396->SetAttribute(_T("height"), _T("40"));
+        p376->AddItem(p396);
+
+        p375->AddItem(p376);
+
+        p360->AddItem(p375);
+
+        p31->AddItem(p360);
+
+    ui::VBox* p397 = new ui::VBox(pWindow);
+        p397->SetAttribute(_T("name"), _T("main_view_page_11"));
+    pWindow->AddClass(_T("page_tile_scroll_box"), _T(" width=\"400\" height=\"160\" text_padding=\"4,4,4,4\" halign=\"center\" valign=\"center\" bkcolor=\"Sienna\" border_size=\"2\" border_color=\"Blue\""));
+    ui::Label* p398 = new ui::Label(pWindow);
+        p398->SetAttribute(_T("text"), _T("VTileScrollBox Container Layout Test"));
+        p397->AddItem(p398);
+
+    ui::VTileScrollBox* p399 = new ui::VTileScrollBox(pWindow);
+        p399->SetAttribute(_T("hscrollbar"), _T("true"));
+        p399->SetAttribute(_T("vscrollbar"), _T("true"));
+        p399->SetAttribute(_T("width"), _T("stretch"));
+        p399->SetAttribute(_T("height"), _T("400"));
+        p399->SetAttribute(_T("bkcolor"), _T("white"));
+        p399->SetAttribute(_T("border_size"), _T("2"));
+        p399->SetAttribute(_T("border_color"), _T("red"));
+        p399->SetAttribute(_T("padding"), _T("20,20,20,20"));
+    ui::Label* p400 = new ui::Label(pWindow);
+        p400->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p400->SetAttribute(_T("text"), _T("1 right,top"));
+        p400->SetAttribute(_T("text_align"), _T("right,bottom"));
+        p400->SetAttribute(_T("halign"), _T("right"));
+        p400->SetAttribute(_T("valign"), _T("top"));
+        p399->AddItem(p400);
+
+    ui::Label* p401 = new ui::Label(pWindow);
+        p401->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p401->SetAttribute(_T("text"), _T("2 left,top"));
+        p401->SetAttribute(_T("halign"), _T("left"));
+        p401->SetAttribute(_T("valign"), _T("top"));
+        p399->AddItem(p401);
+
+    ui::Label* p402 = new ui::Label(pWindow);
+        p402->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p402->SetAttribute(_T("text"), _T("3 left,center"));
+        p402->SetAttribute(_T("halign"), _T("left"));
+        p402->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p402);
+
+    ui::Label* p403 = new ui::Label(pWindow);
+        p403->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p403->SetAttribute(_T("text"), _T("4 left,bottom"));
+        p403->SetAttribute(_T("halign"), _T("left"));
+        p403->SetAttribute(_T("valign"), _T("bottom"));
+        p399->AddItem(p403);
+
+    ui::Label* p404 = new ui::Label(pWindow);
+        p404->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p404->SetAttribute(_T("text"), _T("5 center,top"));
+        p404->SetAttribute(_T("halign"), _T("center"));
+        p404->SetAttribute(_T("valign"), _T("top"));
+        p399->AddItem(p404);
+
+    ui::Label* p405 = new ui::Label(pWindow);
+        p405->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p405->SetAttribute(_T("text"), _T("6 center,center"));
+        p405->SetAttribute(_T("halign"), _T("center"));
+        p405->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p405);
+
+    ui::Label* p406 = new ui::Label(pWindow);
+        p406->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p406->SetAttribute(_T("text"), _T("7 center,bottom"));
+        p406->SetAttribute(_T("halign"), _T("center"));
+        p406->SetAttribute(_T("valign"), _T("bottom"));
+        p399->AddItem(p406);
+
+    ui::Label* p407 = new ui::Label(pWindow);
+        p407->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p407->SetAttribute(_T("text"), _T("8 right,top"));
+        p407->SetAttribute(_T("halign"), _T("right"));
+        p407->SetAttribute(_T("valign"), _T("top"));
+        p399->AddItem(p407);
+
+    ui::Label* p408 = new ui::Label(pWindow);
+        p408->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p408->SetAttribute(_T("text"), _T("9 right,center"));
+        p408->SetAttribute(_T("halign"), _T("right"));
+        p408->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p408);
+
+    ui::Label* p409 = new ui::Label(pWindow);
+        p409->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p409->SetAttribute(_T("text"), _T("10 center,center"));
+        p409->SetAttribute(_T("halign"), _T("center"));
+        p409->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p409);
+
+    ui::Label* p410 = new ui::Label(pWindow);
+        p410->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p410->SetAttribute(_T("text"), _T("11 center,center"));
+        p410->SetAttribute(_T("halign"), _T("center"));
+        p410->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p410);
+
+    ui::Label* p411 = new ui::Label(pWindow);
+        p411->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p411->SetAttribute(_T("text"), _T("12 center,center"));
+        p411->SetAttribute(_T("halign"), _T("center"));
+        p411->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p411);
+
+    ui::Label* p412 = new ui::Label(pWindow);
+        p412->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p412->SetAttribute(_T("text"), _T("13 center,center"));
+        p412->SetAttribute(_T("halign"), _T("center"));
+        p412->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p412);
+
+    ui::Label* p413 = new ui::Label(pWindow);
+        p413->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p413->SetAttribute(_T("text"), _T("14 center,center"));
+        p413->SetAttribute(_T("halign"), _T("center"));
+        p413->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p413);
+
+    ui::Label* p414 = new ui::Label(pWindow);
+        p414->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p414->SetAttribute(_T("text"), _T("15 center,center"));
+        p414->SetAttribute(_T("halign"), _T("center"));
+        p414->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p414);
+
+    ui::Label* p415 = new ui::Label(pWindow);
+        p415->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p415->SetAttribute(_T("text"), _T("16 center,center"));
+        p415->SetAttribute(_T("halign"), _T("center"));
+        p415->SetAttribute(_T("valign"), _T("center"));
+        p399->AddItem(p415);
+
+        p397->AddItem(p399);
+
+    ui::Label* p416 = new ui::Label(pWindow);
+        p416->SetAttribute(_T("text"), _T("HTileScrollBox Container Layout Test"));
+        p416->SetAttribute(_T("margin"), _T("0,4,0,4"));
+        p397->AddItem(p416);
+
+    ui::HTileScrollBox* p417 = new ui::HTileScrollBox(pWindow);
+        p417->SetAttribute(_T("hscrollbar"), _T("true"));
+        p417->SetAttribute(_T("vscrollbar"), _T("false"));
+        p417->SetAttribute(_T("width"), _T("stretch"));
+        p417->SetAttribute(_T("height"), _T("380"));
+        p417->SetAttribute(_T("bkcolor"), _T("white"));
+        p417->SetAttribute(_T("border_size"), _T("2"));
+        p417->SetAttribute(_T("border_color"), _T("red"));
+        p417->SetAttribute(_T("padding"), _T("20,20,20,20"));
+    ui::Label* p418 = new ui::Label(pWindow);
+        p418->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p418->SetAttribute(_T("text"), _T("1 right,top"));
+        p418->SetAttribute(_T("text_align"), _T("right,bottom"));
+        p418->SetAttribute(_T("halign"), _T("right"));
+        p418->SetAttribute(_T("valign"), _T("top"));
+        p417->AddItem(p418);
+
+    ui::Label* p419 = new ui::Label(pWindow);
+        p419->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p419->SetAttribute(_T("text"), _T("2 left,top"));
+        p419->SetAttribute(_T("halign"), _T("left"));
+        p419->SetAttribute(_T("valign"), _T("top"));
+        p417->AddItem(p419);
+
+    ui::Label* p420 = new ui::Label(pWindow);
+        p420->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p420->SetAttribute(_T("text"), _T("3 left,center"));
+        p420->SetAttribute(_T("halign"), _T("left"));
+        p420->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p420);
+
+    ui::Label* p421 = new ui::Label(pWindow);
+        p421->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p421->SetAttribute(_T("text"), _T("4 left,bottom"));
+        p421->SetAttribute(_T("halign"), _T("left"));
+        p421->SetAttribute(_T("valign"), _T("bottom"));
+        p417->AddItem(p421);
+
+    ui::Label* p422 = new ui::Label(pWindow);
+        p422->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p422->SetAttribute(_T("text"), _T("5 center,top"));
+        p422->SetAttribute(_T("halign"), _T("center"));
+        p422->SetAttribute(_T("valign"), _T("top"));
+        p417->AddItem(p422);
+
+    ui::Label* p423 = new ui::Label(pWindow);
+        p423->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p423->SetAttribute(_T("text"), _T("6 center,center"));
+        p423->SetAttribute(_T("halign"), _T("center"));
+        p423->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p423);
+
+    ui::Label* p424 = new ui::Label(pWindow);
+        p424->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p424->SetAttribute(_T("text"), _T("7 center,bottom"));
+        p424->SetAttribute(_T("halign"), _T("center"));
+        p424->SetAttribute(_T("valign"), _T("bottom"));
+        p417->AddItem(p424);
+
+    ui::Label* p425 = new ui::Label(pWindow);
+        p425->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p425->SetAttribute(_T("text"), _T("8 right,top"));
+        p425->SetAttribute(_T("halign"), _T("right"));
+        p425->SetAttribute(_T("valign"), _T("top"));
+        p417->AddItem(p425);
+
+    ui::Label* p426 = new ui::Label(pWindow);
+        p426->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p426->SetAttribute(_T("text"), _T("9 right,center"));
+        p426->SetAttribute(_T("halign"), _T("right"));
+        p426->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p426);
+
+    ui::Label* p427 = new ui::Label(pWindow);
+        p427->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p427->SetAttribute(_T("text"), _T("10 center,center"));
+        p427->SetAttribute(_T("halign"), _T("center"));
+        p427->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p427);
+
+    ui::Label* p428 = new ui::Label(pWindow);
+        p428->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p428->SetAttribute(_T("text"), _T("11 center,center"));
+        p428->SetAttribute(_T("halign"), _T("center"));
+        p428->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p428);
+
+    ui::Label* p429 = new ui::Label(pWindow);
+        p429->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p429->SetAttribute(_T("text"), _T("12 center,center"));
+        p429->SetAttribute(_T("halign"), _T("center"));
+        p429->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p429);
+
+    ui::Label* p430 = new ui::Label(pWindow);
+        p430->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p430->SetAttribute(_T("text"), _T("13 center,center"));
+        p430->SetAttribute(_T("halign"), _T("center"));
+        p430->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p430);
+
+    ui::Label* p431 = new ui::Label(pWindow);
+        p431->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p431->SetAttribute(_T("text"), _T("14 center,center"));
+        p431->SetAttribute(_T("halign"), _T("center"));
+        p431->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p431);
+
+    ui::Label* p432 = new ui::Label(pWindow);
+        p432->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p432->SetAttribute(_T("text"), _T("15 center,center"));
+        p432->SetAttribute(_T("halign"), _T("center"));
+        p432->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p432);
+
+    ui::Label* p433 = new ui::Label(pWindow);
+        p433->SetAttribute(_T("class"), _T("page_tile_scroll_box"));
+        p433->SetAttribute(_T("text"), _T("16 center,center"));
+        p433->SetAttribute(_T("halign"), _T("center"));
+        p433->SetAttribute(_T("valign"), _T("center"));
+        p417->AddItem(p433);
+
+        p397->AddItem(p417);
+
+        p31->AddItem(p397);
+
+    ui::VBox* p434 = new ui::VBox(pWindow);
+        p434->SetAttribute(_T("name"), _T("main_view_page_12"));
+    pWindow->AddClass(_T("page_list_box"), _T(" margin=\"4,4,4,4\" padding=\"0,4,0,4\" bkcolor=\"bk_wnd_lightcolor\" vscrollbar=\"true\" hscrollbar=\"true\" scroll_select=\"false\" border_size=\"1\" border_color=\"red\""));
+    pWindow->AddClass(_T("page_list_box_item"), _T(" margin=\"8,2,8,2\" text_padding=\"20,6,10,6\" hot_color=\"bk_listitem_hovered\" pushed_color=\"bk_listitem_selected\" selected_normal_color=\"bk_listitem_selected\" fade_hot=\"false\" width=\"auto\" height=\"auto\" font=\"system_14\" normal_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' valign='center'\" disabled_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' valign='center' fade='80'\" selected_normal_image=\"file='public/CheckBox/checkbox-outline-checked.svg' valign='center'\" selected_disabled_image=\"file='public/CheckBox/checkbox-outline-checked.svg' valign='center' fade='80'\""));
+    ui::VBox* p435 = new ui::VBox(pWindow);
+        p435->SetAttribute(_T("height"), _T("auto"));
+    ui::Label* p436 = new ui::Label(pWindow);
+        p436->SetAttribute(_T("text"), _T(" HListBox Container Layout Test"));
+        p435->AddItem(p436);
+
+    ui::HListBox* p437 = new ui::HListBox(pWindow);
+        p437->SetAttribute(_T("class"), _T("page_list_box"));
+        p437->SetAttribute(_T("vscrollbar"), _T("false"));
+        p437->SetAttribute(_T("hscrollbar"), _T("true"));
+        p437->SetAttribute(_T("width"), _T("stretch"));
+        p437->SetAttribute(_T("height"), _T("50"));
+    ui::ListBoxItem* p438 = new ui::ListBoxItem(pWindow);
+        p438->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p438->SetAttribute(_T("text"), _T("HListBox Test 01"));
+        p438->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p438->SetAttribute(_T("halign"), _T("left"));
+        p438->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p438);
+
+    ui::ListBoxItem* p439 = new ui::ListBoxItem(pWindow);
+        p439->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p439->SetAttribute(_T("text"), _T("HListBox Test 02"));
+        p439->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p439->SetAttribute(_T("halign"), _T("left"));
+        p439->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p439);
+
+    ui::ListBoxItem* p440 = new ui::ListBoxItem(pWindow);
+        p440->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p440->SetAttribute(_T("text"), _T("HListBox Test 03"));
+        p440->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p440->SetAttribute(_T("halign"), _T("left"));
+        p440->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p440);
+
+    ui::ListBoxItem* p441 = new ui::ListBoxItem(pWindow);
+        p441->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p441->SetAttribute(_T("text"), _T("HListBox Test 04"));
+        p441->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p441->SetAttribute(_T("halign"), _T("left"));
+        p441->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p441);
+
+    ui::ListBoxItem* p442 = new ui::ListBoxItem(pWindow);
+        p442->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p442->SetAttribute(_T("text"), _T("HListBox Test 05"));
+        p442->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p442->SetAttribute(_T("halign"), _T("left"));
+        p442->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p442);
+
+    ui::ListBoxItem* p443 = new ui::ListBoxItem(pWindow);
+        p443->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p443->SetAttribute(_T("text"), _T("HListBox Test 06"));
+        p443->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p443->SetAttribute(_T("halign"), _T("left"));
+        p443->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p443);
+
+    ui::ListBoxItem* p444 = new ui::ListBoxItem(pWindow);
+        p444->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p444->SetAttribute(_T("text"), _T("HListBox Test 07"));
+        p444->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p444->SetAttribute(_T("halign"), _T("left"));
+        p444->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p444);
+
+    ui::ListBoxItem* p445 = new ui::ListBoxItem(pWindow);
+        p445->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p445->SetAttribute(_T("text"), _T("HListBox Test 08"));
+        p445->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p445->SetAttribute(_T("halign"), _T("left"));
+        p445->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p445);
+
+    ui::ListBoxItem* p446 = new ui::ListBoxItem(pWindow);
+        p446->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p446->SetAttribute(_T("text"), _T("HListBox Test 09"));
+        p446->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p446->SetAttribute(_T("halign"), _T("left"));
+        p446->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p446);
+
+    ui::ListBoxItem* p447 = new ui::ListBoxItem(pWindow);
+        p447->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p447->SetAttribute(_T("text"), _T("HListBox Test 10"));
+        p447->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p447->SetAttribute(_T("halign"), _T("left"));
+        p447->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p447);
+
+    ui::ListBoxItem* p448 = new ui::ListBoxItem(pWindow);
+        p448->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p448->SetAttribute(_T("text"), _T("HListBox Test 11"));
+        p448->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p448->SetAttribute(_T("halign"), _T("left"));
+        p448->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p448);
+
+    ui::ListBoxItem* p449 = new ui::ListBoxItem(pWindow);
+        p449->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p449->SetAttribute(_T("text"), _T("HListBox Test 12"));
+        p449->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p449->SetAttribute(_T("halign"), _T("left"));
+        p449->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p449);
+
+    ui::ListBoxItem* p450 = new ui::ListBoxItem(pWindow);
+        p450->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p450->SetAttribute(_T("text"), _T("HListBox Test 13"));
+        p450->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p450->SetAttribute(_T("halign"), _T("left"));
+        p450->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p450);
+
+    ui::ListBoxItem* p451 = new ui::ListBoxItem(pWindow);
+        p451->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p451->SetAttribute(_T("text"), _T("HListBox Test 14"));
+        p451->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p451->SetAttribute(_T("halign"), _T("left"));
+        p451->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p451);
+
+    ui::ListBoxItem* p452 = new ui::ListBoxItem(pWindow);
+        p452->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p452->SetAttribute(_T("text"), _T("HListBox Test 15"));
+        p452->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p452->SetAttribute(_T("halign"), _T("left"));
+        p452->SetAttribute(_T("valign"), _T("center"));
+        p437->AddItem(p452);
+
+        p435->AddItem(p437);
+
+        p434->AddItem(p435);
+
+    ui::HBox* p453 = new ui::HBox(pWindow);
+        p453->SetAttribute(_T("width"), _T("auto"));
+    ui::VBox* p454 = new ui::VBox(pWindow);
+        p454->SetAttribute(_T("width"), _T("auto"));
+        p454->SetAttribute(_T("height"), _T("240"));
+    ui::Label* p455 = new ui::Label(pWindow);
+        p455->SetAttribute(_T("text"), _T(" VListBox Container Layout Test"));
+        p454->AddItem(p455);
+
+    ui::VListBox* p456 = new ui::VListBox(pWindow);
+        p456->SetAttribute(_T("class"), _T("page_list_box"));
+        p456->SetAttribute(_T("width"), _T("auto"));
+        p456->SetAttribute(_T("height"), _T("200"));
+    ui::ListBoxItem* p457 = new ui::ListBoxItem(pWindow);
+        p457->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p457->SetAttribute(_T("text"), _T("VListBox Test 01"));
+        p457->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p457->SetAttribute(_T("halign"), _T("left"));
+        p457->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p457);
+
+    ui::ListBoxItem* p458 = new ui::ListBoxItem(pWindow);
+        p458->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p458->SetAttribute(_T("text"), _T("VListBox Test 02"));
+        p458->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p458->SetAttribute(_T("halign"), _T("left"));
+        p458->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p458);
+
+    ui::ListBoxItem* p459 = new ui::ListBoxItem(pWindow);
+        p459->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p459->SetAttribute(_T("text"), _T("VListBox Test 03"));
+        p459->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p459->SetAttribute(_T("halign"), _T("left"));
+        p459->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p459);
+
+    ui::ListBoxItem* p460 = new ui::ListBoxItem(pWindow);
+        p460->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p460->SetAttribute(_T("text"), _T("VListBox Test 04"));
+        p460->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p460->SetAttribute(_T("halign"), _T("left"));
+        p460->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p460);
+
+    ui::ListBoxItem* p461 = new ui::ListBoxItem(pWindow);
+        p461->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p461->SetAttribute(_T("text"), _T("VListBox Test 05"));
+        p461->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p461->SetAttribute(_T("halign"), _T("left"));
+        p461->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p461);
+
+    ui::ListBoxItem* p462 = new ui::ListBoxItem(pWindow);
+        p462->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p462->SetAttribute(_T("text"), _T("VListBox Test 06"));
+        p462->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p462->SetAttribute(_T("halign"), _T("left"));
+        p462->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p462);
+
+    ui::ListBoxItem* p463 = new ui::ListBoxItem(pWindow);
+        p463->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p463->SetAttribute(_T("text"), _T("VListBox Test 07"));
+        p463->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p463->SetAttribute(_T("halign"), _T("left"));
+        p463->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p463);
+
+    ui::ListBoxItem* p464 = new ui::ListBoxItem(pWindow);
+        p464->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p464->SetAttribute(_T("text"), _T("VListBox Test 08"));
+        p464->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p464->SetAttribute(_T("halign"), _T("left"));
+        p464->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p464);
+
+    ui::ListBoxItem* p465 = new ui::ListBoxItem(pWindow);
+        p465->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p465->SetAttribute(_T("text"), _T("VListBox Test 09"));
+        p465->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p465->SetAttribute(_T("halign"), _T("left"));
+        p465->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p465);
+
+    ui::ListBoxItem* p466 = new ui::ListBoxItem(pWindow);
+        p466->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p466->SetAttribute(_T("text"), _T("VListBox Test 10"));
+        p466->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p466->SetAttribute(_T("halign"), _T("left"));
+        p466->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p466);
+
+    ui::ListBoxItem* p467 = new ui::ListBoxItem(pWindow);
+        p467->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p467->SetAttribute(_T("text"), _T("VListBox Test 11"));
+        p467->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p467->SetAttribute(_T("halign"), _T("left"));
+        p467->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p467);
+
+    ui::ListBoxItem* p468 = new ui::ListBoxItem(pWindow);
+        p468->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p468->SetAttribute(_T("text"), _T("VListBox Test 12"));
+        p468->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p468->SetAttribute(_T("halign"), _T("left"));
+        p468->SetAttribute(_T("valign"), _T("center"));
+        p456->AddItem(p468);
+
+        p454->AddItem(p456);
+
+        p453->AddItem(p454);
+
+    ui::VBox* p469 = new ui::VBox(pWindow);
+        p469->SetAttribute(_T("width"), _T("auto"));
+    ui::Label* p470 = new ui::Label(pWindow);
+        p470->SetAttribute(_T("text"), _T(" VTileListBox Container Layout Test"));
+        p469->AddItem(p470);
+
+    ui::VTileListBox* p471 = new ui::VTileListBox(pWindow);
+        p471->SetAttribute(_T("class"), _T("page_list_box"));
+        p471->SetAttribute(_T("columns"), _T("1"));
+        p471->SetAttribute(_T("width"), _T("auto"));
+        p471->SetAttribute(_T("height"), _T("200"));
+    ui::ListBoxItem* p472 = new ui::ListBoxItem(pWindow);
+        p472->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p472->SetAttribute(_T("text"), _T("VListBox Test 01"));
+        p472->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p472->SetAttribute(_T("halign"), _T("left"));
+        p472->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p472);
+
+    ui::ListBoxItem* p473 = new ui::ListBoxItem(pWindow);
+        p473->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p473->SetAttribute(_T("text"), _T("VListBox Test 02"));
+        p473->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p473->SetAttribute(_T("halign"), _T("left"));
+        p473->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p473);
+
+    ui::ListBoxItem* p474 = new ui::ListBoxItem(pWindow);
+        p474->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p474->SetAttribute(_T("text"), _T("VListBox Test 03"));
+        p474->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p474->SetAttribute(_T("halign"), _T("left"));
+        p474->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p474);
+
+    ui::ListBoxItem* p475 = new ui::ListBoxItem(pWindow);
+        p475->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p475->SetAttribute(_T("text"), _T("VListBox Test 04"));
+        p475->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p475->SetAttribute(_T("halign"), _T("left"));
+        p475->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p475);
+
+    ui::ListBoxItem* p476 = new ui::ListBoxItem(pWindow);
+        p476->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p476->SetAttribute(_T("text"), _T("VListBox Test 05"));
+        p476->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p476->SetAttribute(_T("halign"), _T("left"));
+        p476->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p476);
+
+    ui::ListBoxItem* p477 = new ui::ListBoxItem(pWindow);
+        p477->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p477->SetAttribute(_T("text"), _T("VListBox Test 06"));
+        p477->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p477->SetAttribute(_T("halign"), _T("left"));
+        p477->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p477);
+
+    ui::ListBoxItem* p478 = new ui::ListBoxItem(pWindow);
+        p478->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p478->SetAttribute(_T("text"), _T("VListBox Test 07"));
+        p478->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p478->SetAttribute(_T("halign"), _T("left"));
+        p478->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p478);
+
+    ui::ListBoxItem* p479 = new ui::ListBoxItem(pWindow);
+        p479->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p479->SetAttribute(_T("text"), _T("VListBox Test 08"));
+        p479->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p479->SetAttribute(_T("halign"), _T("left"));
+        p479->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p479);
+
+    ui::ListBoxItem* p480 = new ui::ListBoxItem(pWindow);
+        p480->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p480->SetAttribute(_T("text"), _T("VListBox Test 09"));
+        p480->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p480->SetAttribute(_T("halign"), _T("left"));
+        p480->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p480);
+
+    ui::ListBoxItem* p481 = new ui::ListBoxItem(pWindow);
+        p481->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p481->SetAttribute(_T("text"), _T("VListBox Test 10"));
+        p481->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p481->SetAttribute(_T("halign"), _T("left"));
+        p481->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p481);
+
+    ui::ListBoxItem* p482 = new ui::ListBoxItem(pWindow);
+        p482->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p482->SetAttribute(_T("text"), _T("VListBox Test 11"));
+        p482->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p482->SetAttribute(_T("halign"), _T("left"));
+        p482->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p482);
+
+    ui::ListBoxItem* p483 = new ui::ListBoxItem(pWindow);
+        p483->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p483->SetAttribute(_T("text"), _T("VListBox Test 12"));
+        p483->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p483->SetAttribute(_T("halign"), _T("left"));
+        p483->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p483);
+
+    ui::ListBoxItem* p484 = new ui::ListBoxItem(pWindow);
+        p484->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p484->SetAttribute(_T("text"), _T("VListBox Test 13"));
+        p484->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p484->SetAttribute(_T("halign"), _T("left"));
+        p484->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p484);
+
+    ui::ListBoxItem* p485 = new ui::ListBoxItem(pWindow);
+        p485->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p485->SetAttribute(_T("text"), _T("VListBox Test 14"));
+        p485->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p485->SetAttribute(_T("halign"), _T("left"));
+        p485->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p485);
+
+    ui::ListBoxItem* p486 = new ui::ListBoxItem(pWindow);
+        p486->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p486->SetAttribute(_T("text"), _T("VListBox Test 15"));
+        p486->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p486->SetAttribute(_T("halign"), _T("left"));
+        p486->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p486);
+
+    ui::ListBoxItem* p487 = new ui::ListBoxItem(pWindow);
+        p487->SetAttribute(_T("class"), _T("page_list_box_item"));
+        p487->SetAttribute(_T("text"), _T("VListBox Test 16"));
+        p487->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        p487->SetAttribute(_T("halign"), _T("left"));
+        p487->SetAttribute(_T("valign"), _T("center"));
+        p471->AddItem(p487);
+
+        p469->AddItem(p471);
+
+        p453->AddItem(p469);
+
+        p434->AddItem(p453);
+
+        p31->AddItem(p434);
+
+    ui::VBox* p488 = new ui::VBox(pWindow);
+        p488->SetAttribute(_T("name"), _T("main_view_page_13"));
+    ui::VBox* p489 = new ui::VBox(pWindow);
+    ui::Box* p490 = new ui::Box(pWindow);
+        p490->SetAttribute(_T("bkcolor"), _T("red"));
+        p490->SetAttribute(_T("padding"), _T("1,1,1,1"));
+        p490->SetAttribute(_T("border_size"), _T("1"));
+        p490->SetAttribute(_T("border_color"), _T("white"));
+    ui::Label* p491 = new ui::Label(pWindow);
+        p491->SetAttribute(_T("width"), _T("80%"));
+        p491->SetAttribute(_T("height"), _T("80%"));
+        p491->SetAttribute(_T("text"), _T("Box: Label 1 width='80%' height='80%'"));
+        p491->SetAttribute(_T("bkcolor"), _T("yellow"));
+        p491->SetAttribute(_T("text_align"), _T("bottom"));
+        p490->AddItem(p491);
+
+    ui::Label* p492 = new ui::Label(pWindow);
+        p492->SetAttribute(_T("width"), _T("50%"));
+        p492->SetAttribute(_T("height"), _T("50%"));
+        p492->SetAttribute(_T("text"), _T("Box: Label 2 width='50%' height='50%'"));
+        p492->SetAttribute(_T("bkcolor"), _T("orange"));
+        p490->AddItem(p492);
+
+        p489->AddItem(p490);
+
+    ui::VBox* p493 = new ui::VBox(pWindow);
+        p493->SetAttribute(_T("bkcolor"), _T("green"));
+        p493->SetAttribute(_T("padding"), _T("1,1,1,1"));
+        p493->SetAttribute(_T("border_size"), _T("1"));
+        p493->SetAttribute(_T("border_color"), _T("white"));
+    ui::Label* p494 = new ui::Label(pWindow);
+        p494->SetAttribute(_T("width"), _T("80%"));
+        p494->SetAttribute(_T("height"), _T("30%"));
+        p494->SetAttribute(_T("text"), _T("VBox: Label 1 width='80%' height='30%'"));
+        p494->SetAttribute(_T("bkcolor"), _T("yellow"));
+        p494->SetAttribute(_T("text_align"), _T("bottom"));
+        p493->AddItem(p494);
+
+    ui::Label* p495 = new ui::Label(pWindow);
+        p495->SetAttribute(_T("width"), _T("50%"));
+        p495->SetAttribute(_T("height"), _T("70%"));
+        p495->SetAttribute(_T("text"), _T("VBox: Label 2 width='50%' height='70%'"));
+        p495->SetAttribute(_T("bkcolor"), _T("orange"));
+        p493->AddItem(p495);
+
+    ui::Label* p496 = new ui::Label(pWindow);
+        p496->SetAttribute(_T("width"), _T("100%"));
+        p496->SetAttribute(_T("height"), _T("80"));
+        p496->SetAttribute(_T("text"), _T("VBox: Label 3 width='100%' height='80'"));
+        p496->SetAttribute(_T("bkcolor"), _T("light_gray"));
+        p493->AddItem(p496);
+
+        p489->AddItem(p493);
+
+    ui::HBox* p497 = new ui::HBox(pWindow);
+        p497->SetAttribute(_T("bkcolor"), _T("blue"));
+        p497->SetAttribute(_T("padding"), _T("1,1,1,1"));
+        p497->SetAttribute(_T("border_size"), _T("1"));
+        p497->SetAttribute(_T("border_color"), _T("white"));
+    ui::Label* p498 = new ui::Label(pWindow);
+        p498->SetAttribute(_T("width"), _T("70%"));
+        p498->SetAttribute(_T("height"), _T("80%"));
+        p498->SetAttribute(_T("text"), _T("HBox: Label 1 width='70%' height='80%'"));
+        p498->SetAttribute(_T("bkcolor"), _T("yellow"));
+        p498->SetAttribute(_T("text_align"), _T("bottom"));
+        p497->AddItem(p498);
+
+    ui::Label* p499 = new ui::Label(pWindow);
+        p499->SetAttribute(_T("width"), _T("30%"));
+        p499->SetAttribute(_T("height"), _T("50%"));
+        p499->SetAttribute(_T("text"), _T("HBox: Label 2 width='30%' height='50%'"));
+        p499->SetAttribute(_T("bkcolor"), _T("orange"));
+        p497->AddItem(p499);
+
+    ui::Label* p500 = new ui::Label(pWindow);
+        p500->SetAttribute(_T("width"), _T("300"));
+        p500->SetAttribute(_T("height"), _T("100%"));
+        p500->SetAttribute(_T("text"), _T("VBox: Label 3 width='300' height='100%'"));
+        p500->SetAttribute(_T("bkcolor"), _T("light_gray"));
+        p497->AddItem(p500);
+
+        p489->AddItem(p497);
+
+        p488->AddItem(p489);
+
+        p31->AddItem(p488);
+
+    ui::VBox* p501 = new ui::VBox(pWindow);
+        p501->SetAttribute(_T("name"), _T("main_view_page_14"));
+    ui::Label* p502 = new ui::Label(pWindow);
+        p502->SetAttribute(_T("text"), _T("TabBox Test: TabBox contains an embedded TabBox control"));
+        p501->AddItem(p502);
+
+    ui::TabCtrl* p503 = new ui::TabCtrl(pWindow);
+        p503->SetAttribute(_T("class"), _T("tab_ctrl"));
+        p503->SetAttribute(_T("tab_box_name"), _T("main_view_tab_test"));
+        p503->SetAttribute(_T("selected_id"), _T("0"));
+    ui::TabCtrlItem* p504 = new ui::TabCtrlItem(pWindow);
+        p504->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p504->SetAttribute(_T("title"), _T("Label 1"));
+        p504->SetAttribute(_T("tab_box_item_index"), _T("0"));
+        p503->AddItem(p504);
+
+    ui::TabCtrlItem* p505 = new ui::TabCtrlItem(pWindow);
+        p505->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p505->SetAttribute(_T("title"), _T("Label 2"));
+        p505->SetAttribute(_T("tab_box_item_index"), _T("1"));
+        p503->AddItem(p505);
+
+    ui::TabCtrlItem* p506 = new ui::TabCtrlItem(pWindow);
+        p506->SetAttribute(_T("class"), _T("tab_ctrl_item"));
+        p506->SetAttribute(_T("title"), _T("Label 3"));
+        p506->SetAttribute(_T("tab_box_item_index"), _T("2"));
+        p503->AddItem(p506);
+
+        p501->AddItem(p503);
+
+    ui::TabBox* p507 = new ui::TabBox(pWindow);
+        p507->SetAttribute(_T("name"), _T("main_view_tab_test"));
+        p507->SetAttribute(_T("bkcolor"), _T("white"));
+        p507->SetAttribute(_T("selected_id"), _T("0"));
+    ui::VBox* p508 = new ui::VBox(pWindow);
+        p508->SetAttribute(_T("bkcolor"), _T("white"));
+    ui::Label* p509 = new ui::Label(pWindow);
+        p509->SetAttribute(_T("text"), _T("Page 1: This is page 1"));
+        p508->AddItem(p509);
+
+    ui::Label* p510 = new ui::Label(pWindow);
+        p510->SetAttribute(_T("text"), _T("Window Shadow Function Test:"));
+        p510->SetAttribute(_T("valign"), _T("center"));
+        p510->SetAttribute(_T("margin"), _T("12,30,10,0"));
+        p508->AddItem(p510);
+
+    ui::Option* p511 = new ui::Option(pWindow);
+        p511->SetAttribute(_T("class"), _T("checkbox_2"));
+        p511->SetAttribute(_T("group"), _T("shadow_type"));
+        p511->SetAttribute(_T("text"), _T("Shadow type: default, default shadow"));
+        p511->SetAttribute(_T("selected"), _T("true"));
+        p511->SetAttribute(_T("valign"), _T("center"));
+        p511->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p511);
+
+    ui::Option* p512 = new ui::Option(pWindow);
+        p512->SetAttribute(_T("class"), _T("checkbox_2"));
+        p512->SetAttribute(_T("group"), _T("shadow_type"));
+        p512->SetAttribute(_T("text"), _T("Shadow type: big, large shadow, square corners (suitable for normal windows)"));
+        p512->SetAttribute(_T("selected"), _T("false"));
+        p512->SetAttribute(_T("valign"), _T("center"));
+        p512->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p512);
+
+    ui::Option* p513 = new ui::Option(pWindow);
+        p513->SetAttribute(_T("class"), _T("checkbox_2"));
+        p513->SetAttribute(_T("group"), _T("shadow_type"));
+        p513->SetAttribute(_T("text"), _T("Shadow type: big_round, large shadow, rounded corners (suitable for normal windows)"));
+        p513->SetAttribute(_T("selected"), _T("false"));
+        p513->SetAttribute(_T("valign"), _T("center"));
+        p513->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p513);
+
+    ui::Option* p514 = new ui::Option(pWindow);
+        p514->SetAttribute(_T("class"), _T("checkbox_2"));
+        p514->SetAttribute(_T("group"), _T("shadow_type"));
+        p514->SetAttribute(_T("text"), _T("Shadow type: small, small shadow, square corners (suitable for normal windows)"));
+        p514->SetAttribute(_T("selected"), _T("false"));
+        p514->SetAttribute(_T("valign"), _T("center"));
+        p514->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p514);
+
+    ui::Option* p515 = new ui::Option(pWindow);
+        p515->SetAttribute(_T("class"), _T("checkbox_2"));
+        p515->SetAttribute(_T("group"), _T("shadow_type"));
+        p515->SetAttribute(_T("text"), _T("Shadow type: small_round, small shadow, rounded corners (suitable for normal windows)"));
+        p515->SetAttribute(_T("selected"), _T("false"));
+        p515->SetAttribute(_T("valign"), _T("center"));
+        p515->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p515);
+
+    ui::Option* p516 = new ui::Option(pWindow);
+        p516->SetAttribute(_T("class"), _T("checkbox_2"));
+        p516->SetAttribute(_T("group"), _T("shadow_type"));
+        p516->SetAttribute(_T("text"), _T("Shadow type: menu, small shadow, square corners (suitable for popup windows such as menus)"));
+        p516->SetAttribute(_T("selected"), _T("false"));
+        p516->SetAttribute(_T("valign"), _T("center"));
+        p516->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p516);
+
+    ui::Option* p517 = new ui::Option(pWindow);
+        p517->SetAttribute(_T("class"), _T("checkbox_2"));
+        p517->SetAttribute(_T("group"), _T("shadow_type"));
+        p517->SetAttribute(_T("text"), _T("Shadow type: menu_round, small shadow, rounded corners (suitable for popup windows such as menus)"));
+        p517->SetAttribute(_T("selected"), _T("false"));
+        p517->SetAttribute(_T("valign"), _T("center"));
+        p517->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p517);
+
+    ui::Option* p518 = new ui::Option(pWindow);
+        p518->SetAttribute(_T("class"), _T("checkbox_2"));
+        p518->SetAttribute(_T("group"), _T("shadow_type"));
+        p518->SetAttribute(_T("text"), _T("Shadow type: none, no shadow, with border, square corners"));
+        p518->SetAttribute(_T("selected"), _T("false"));
+        p518->SetAttribute(_T("valign"), _T("center"));
+        p518->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p518);
+
+    ui::Option* p519 = new ui::Option(pWindow);
+        p519->SetAttribute(_T("class"), _T("checkbox_2"));
+        p519->SetAttribute(_T("group"), _T("shadow_type"));
+        p519->SetAttribute(_T("text"), _T("Shadow type: none_round, no shadow, with border, rounded corners"));
+        p519->SetAttribute(_T("selected"), _T("false"));
+        p519->SetAttribute(_T("valign"), _T("center"));
+        p519->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p519);
+
+    ui::Option* p520 = new ui::Option(pWindow);
+        p520->SetAttribute(_T("class"), _T("checkbox_2"));
+        p520->SetAttribute(_T("group"), _T("shadow_type"));
+        p520->SetAttribute(_T("text"), _T("Disable Shadow"));
+        p520->SetAttribute(_T("selected"), _T("false"));
+        p520->SetAttribute(_T("valign"), _T("center"));
+        p520->SetAttribute(_T("margin"), _T("30,4,0,2"));
+        p508->AddItem(p520);
+
+        p507->AddItem(p508);
+
+    ui::VBox* p521 = new ui::VBox(pWindow);
+        p521->SetAttribute(_T("bkcolor"), _T("blue"));
+    ui::Label* p522 = new ui::Label(pWindow);
+        p522->SetAttribute(_T("text"), _T("Page 2: This is page 2"));
+        p521->AddItem(p522);
+
+        p507->AddItem(p521);
+
+    ui::VBox* p523 = new ui::VBox(pWindow);
+        p523->SetAttribute(_T("bkcolor"), _T("green"));
+    ui::Label* p524 = new ui::Label(pWindow);
+        p524->SetAttribute(_T("text"), _T("Page 3: This is page 3"));
+        p523->AddItem(p524);
+
+    ui::TabBox* p525 = new ui::TabBox(pWindow);
+        p525->SetAttribute(_T("name"), _T("sub_view_tab"));
+        p525->SetAttribute(_T("selected_id"), _T("2"));
+        p525->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+    ui::VBox* p526 = new ui::VBox(pWindow);
+        p526->SetAttribute(_T("name"), _T("sub_view_tab_page1"));
+        p526->SetAttribute(_T("height"), _T("200"));
+        p526->SetAttribute(_T("bkcolor"), _T("LightBlue"));
+    ui::Label* p527 = new ui::Label(pWindow);
+        p527->SetAttribute(_T("text"), _T("Embedded Page 1: This is embedded page 1"));
+        p526->AddItem(p527);
+
+        p525->AddItem(p526);
+
+    ui::VBox* p528 = new ui::VBox(pWindow);
+        p528->SetAttribute(_T("name"), _T("sub_view_tab_page2"));
+        p528->SetAttribute(_T("height"), _T("400"));
+        p528->SetAttribute(_T("bkcolor"), _T("LightCoral"));
+    ui::Label* p529 = new ui::Label(pWindow);
+        p529->SetAttribute(_T("text"), _T("Embedded Page 2: This is embedded page 2"));
+        p528->AddItem(p529);
+
+    ui::Label* p530 = new ui::Label(pWindow);
+        p530->SetAttribute(_T("text"), _T("Embedded Page 2: This is embedded page 2"));
+        p528->AddItem(p530);
+
+        p525->AddItem(p528);
+
+    ui::VBox* p531 = new ui::VBox(pWindow);
+        p531->SetAttribute(_T("name"), _T("sub_view_tab_page3"));
+        p531->SetAttribute(_T("height"), _T("600"));
+        p531->SetAttribute(_T("bkcolor"), _T("LightCyan"));
+    ui::Label* p532 = new ui::Label(pWindow);
+        p532->SetAttribute(_T("text"), _T("Embedded Page 3: This is embedded page 3"));
+        p531->AddItem(p532);
+
+    ui::Label* p533 = new ui::Label(pWindow);
+        p533->SetAttribute(_T("text"), _T("Embedded Page 3: This is embedded page 3"));
+        p531->AddItem(p533);
+
+    ui::Label* p534 = new ui::Label(pWindow);
+        p534->SetAttribute(_T("text"), _T("Embedded Page 3: This is embedded page 3"));
+        p531->AddItem(p534);
+
+        p525->AddItem(p531);
+
+        p523->AddItem(p525);
+
+        p507->AddItem(p523);
+
+        p501->AddItem(p507);
+
+        p31->AddItem(p501);
+
+    ui::VBox* p535 = new ui::VBox(pWindow);
+        p535->SetAttribute(_T("name"), _T("main_view_page_15"));
+    pWindow->AddClass(_T("page_gridbox"), _T(" multi_line=\"true\" margin=\"0,0,0,0\" width=\"90%\" height=\"90%\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    pWindow->AddClass(_T("page_gridbox_calculator"), _T(" multi_line=\"false\" text_align=\"center,hcenter\" font=\"system_16\" margin=\"0,0,0,0\" width=\"100%\" height=\"100%\" halign=\"center\" valign=\"center\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::VBox* p536 = new ui::VBox(pWindow);
+        p536->SetAttribute(_T("height"), _T("84"));
+        p536->SetAttribute(_T("padding"), _T("6,0,6,0"));
+    ui::Label* p537 = new ui::Label(pWindow);
+        p537->SetAttribute(_T("text"), _T("GridBox Container Layout Test"));
+        p537->SetAttribute(_T("height"), _T("28"));
+        p537->SetAttribute(_T("valign"), _T("center"));
+        p536->AddItem(p537);
+
+    ui::HBox* p538 = new ui::HBox(pWindow);
+        p538->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p539 = new ui::Label(pWindow);
+        p539->SetAttribute(_T("text"), _T("Container content horizontal alignment:"));
+        p539->SetAttribute(_T("valign"), _T("center"));
+        p538->AddItem(p539);
+
+    ui::Option* p540 = new ui::Option(pWindow);
+        p540->SetAttribute(_T("class"), _T("option_1"));
+        p540->SetAttribute(_T("group"), _T("gridbox_group_halign"));
+        p540->SetAttribute(_T("text"), _T("Align Left (left)"));
+        p540->SetAttribute(_T("height"), _T("28"));
+        p540->SetAttribute(_T("valign"), _T("center"));
+        p540->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p540->SetAttribute(_T("selected"), _T("false"));
+        p538->AddItem(p540);
+
+    ui::Option* p541 = new ui::Option(pWindow);
+        p541->SetAttribute(_T("class"), _T("option_1"));
+        p541->SetAttribute(_T("group"), _T("gridbox_group_halign"));
+        p541->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p541->SetAttribute(_T("height"), _T("28"));
+        p541->SetAttribute(_T("valign"), _T("center"));
+        p541->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p541->SetAttribute(_T("selected"), _T("true"));
+        p538->AddItem(p541);
+
+    ui::Option* p542 = new ui::Option(pWindow);
+        p542->SetAttribute(_T("class"), _T("option_1"));
+        p542->SetAttribute(_T("group"), _T("gridbox_group_halign"));
+        p542->SetAttribute(_T("text"), _T("Align Right (right)"));
+        p542->SetAttribute(_T("height"), _T("28"));
+        p542->SetAttribute(_T("valign"), _T("center"));
+        p542->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p542->SetAttribute(_T("selected"), _T("false"));
+        p538->AddItem(p542);
+
+    ui::Label* p543 = new ui::Label(pWindow);
+        p543->SetAttribute(_T("text"), _T("(effective only when total content width is smaller than the display area width)"));
+        p543->SetAttribute(_T("valign"), _T("center"));
+        p538->AddItem(p543);
+
+        p536->AddItem(p538);
+
+    ui::HBox* p544 = new ui::HBox(pWindow);
+        p544->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p545 = new ui::Label(pWindow);
+        p545->SetAttribute(_T("text"), _T("Container content vertical alignment:"));
+        p545->SetAttribute(_T("valign"), _T("center"));
+        p544->AddItem(p545);
+
+    ui::Option* p546 = new ui::Option(pWindow);
+        p546->SetAttribute(_T("class"), _T("option_1"));
+        p546->SetAttribute(_T("group"), _T("gridbox_group_valign"));
+        p546->SetAttribute(_T("text"), _T("Align Top (top)"));
+        p546->SetAttribute(_T("height"), _T("28"));
+        p546->SetAttribute(_T("valign"), _T("center"));
+        p546->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p546->SetAttribute(_T("selected"), _T("true"));
+        p544->AddItem(p546);
+
+    ui::Option* p547 = new ui::Option(pWindow);
+        p547->SetAttribute(_T("class"), _T("option_1"));
+        p547->SetAttribute(_T("group"), _T("gridbox_group_valign"));
+        p547->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p547->SetAttribute(_T("height"), _T("28"));
+        p547->SetAttribute(_T("valign"), _T("center"));
+        p547->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p547->SetAttribute(_T("selected"), _T("false"));
+        p544->AddItem(p547);
+
+    ui::Option* p548 = new ui::Option(pWindow);
+        p548->SetAttribute(_T("class"), _T("option_1"));
+        p548->SetAttribute(_T("group"), _T("gridbox_group_valign"));
+        p548->SetAttribute(_T("text"), _T("Align Bottom (bottom)"));
+        p548->SetAttribute(_T("height"), _T("28"));
+        p548->SetAttribute(_T("valign"), _T("center"));
+        p548->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p548->SetAttribute(_T("selected"), _T("false"));
+        p544->AddItem(p548);
+
+    ui::Label* p549 = new ui::Label(pWindow);
+        p549->SetAttribute(_T("text"), _T("(effective only when total content height is smaller than the display area height)"));
+        p549->SetAttribute(_T("valign"), _T("center"));
+        p544->AddItem(p549);
+
+        p536->AddItem(p544);
+
+        p535->AddItem(p536);
+
+    ui::HBox* p550 = new ui::HBox(pWindow);
+        p550->SetAttribute(_T("child_margin"), _T("2"));
+    ui::GridBox* p551 = new ui::GridBox(pWindow);
+        p551->SetAttribute(_T("name"), _T("gridbox_test"));
+        p551->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p551->SetAttribute(_T("width"), _T("70%"));
+        p551->SetAttribute(_T("height"), _T("100%"));
+        p551->SetAttribute(_T("grid_width"), _T("120"));
+        p551->SetAttribute(_T("grid_height"), _T("90"));
+        p551->SetAttribute(_T("rows"), _T("0"));
+        p551->SetAttribute(_T("columns"), _T("0"));
+        p551->SetAttribute(_T("scale_down"), _T("false"));
+        p551->SetAttribute(_T("child_margin_x"), _T("1"));
+        p551->SetAttribute(_T("child_margin_y"), _T("1"));
+        p551->SetAttribute(_T("child_halign"), _T("center"));
+        p551->SetAttribute(_T("child_valign"), _T("top"));
+        p551->SetAttribute(_T("bkcolor"), _T("gray"));
+        p551->SetAttribute(_T("border_size"), _T("1"));
+        p551->SetAttribute(_T("border_color"), _T("red"));
+    ui::Control* p552 = new ui::Control(pWindow);
+        p552->SetAttribute(_T("float"), _T("true"));
+        p552->SetAttribute(_T("width"), _T("stretch"));
+        p552->SetAttribute(_T("height"), _T("stretch"));
+        p552->SetAttribute(_T("border_size"), _T("1"));
+        p552->SetAttribute(_T("border_color"), _T("green"));
+        p552->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p551->AddItem(p552);
+
+    ui::Label* p553 = new ui::Label(pWindow);
+        p553->SetAttribute(_T("text"), _T("minwidth/minheight: 200*200"));
+        p553->SetAttribute(_T("float"), _T("true"));
+        p553->SetAttribute(_T("text_align"), _T("top"));
+        p553->SetAttribute(_T("width"), _T("100"));
+        p553->SetAttribute(_T("height"), _T("100"));
+        p553->SetAttribute(_T("minwidth"), _T("200"));
+        p553->SetAttribute(_T("minheight"), _T("200"));
+        p553->SetAttribute(_T("margin"), _T("64,60,6,6"));
+        p553->SetAttribute(_T("border_size"), _T("1"));
+        p553->SetAttribute(_T("border_color"), _T("green"));
+        p553->SetAttribute(_T("bkcolor"), _T("Olive"));
+        p551->AddItem(p553);
+
+    ui::Label* p554 = new ui::Label(pWindow);
+        p554->SetAttribute(_T("text"), _T("maxwidth/maxheight: 80*80"));
+        p554->SetAttribute(_T("float"), _T("true"));
+        p554->SetAttribute(_T("single_line"), _T("false"));
+        p554->SetAttribute(_T("width"), _T("200"));
+        p554->SetAttribute(_T("height"), _T("100"));
+        p554->SetAttribute(_T("maxwidth"), _T("80"));
+        p554->SetAttribute(_T("maxheight"), _T("80"));
+        p554->SetAttribute(_T("margin"), _T("600,70,6,6"));
+        p554->SetAttribute(_T("border_size"), _T("1"));
+        p554->SetAttribute(_T("border_color"), _T("green"));
+        p554->SetAttribute(_T("bkcolor"), _T("LemonChiffon"));
+        p551->AddItem(p554);
+
+    ui::Label* p555 = new ui::Label(pWindow);
+        p555->SetAttribute(_T("class"), _T("page_gridbox"));
+        p555->SetAttribute(_T("text"), _T("1 top"));
+        p555->SetAttribute(_T("halign"), _T("left"));
+        p555->SetAttribute(_T("valign"), _T("top"));
+        p551->AddItem(p555);
+
+    ui::Label* p556 = new ui::Label(pWindow);
+        p556->SetAttribute(_T("class"), _T("page_gridbox"));
+        p556->SetAttribute(_T("text"), _T("2 center"));
+        p556->SetAttribute(_T("halign"), _T("left"));
+        p556->SetAttribute(_T("valign"), _T("center"));
+        p556->SetAttribute(_T("row_span"), _T("2"));
+        p551->AddItem(p556);
+
+    ui::Label* p557 = new ui::Label(pWindow);
+        p557->SetAttribute(_T("class"), _T("page_gridbox"));
+        p557->SetAttribute(_T("text"), _T("3 bottom"));
+        p557->SetAttribute(_T("halign"), _T("left"));
+        p557->SetAttribute(_T("valign"), _T("bottom"));
+        p557->SetAttribute(_T("col_span"), _T("2"));
+        p551->AddItem(p557);
+
+    ui::Label* p558 = new ui::Label(pWindow);
+        p558->SetAttribute(_T("class"), _T("page_gridbox"));
+        p558->SetAttribute(_T("text"), _T("4 top"));
+        p558->SetAttribute(_T("halign"), _T("center"));
+        p558->SetAttribute(_T("valign"), _T("top"));
+        p551->AddItem(p558);
+
+    ui::Label* p559 = new ui::Label(pWindow);
+        p559->SetAttribute(_T("class"), _T("page_gridbox"));
+        p559->SetAttribute(_T("text"), _T("5 center"));
+        p559->SetAttribute(_T("halign"), _T("center"));
+        p559->SetAttribute(_T("valign"), _T("center"));
+        p551->AddItem(p559);
+
+    ui::Label* p560 = new ui::Label(pWindow);
+        p560->SetAttribute(_T("class"), _T("page_gridbox"));
+        p560->SetAttribute(_T("text"), _T("6 bottom"));
+        p560->SetAttribute(_T("halign"), _T("center"));
+        p560->SetAttribute(_T("valign"), _T("bottom"));
+        p551->AddItem(p560);
+
+    ui::Label* p561 = new ui::Label(pWindow);
+        p561->SetAttribute(_T("class"), _T("page_gridbox"));
+        p561->SetAttribute(_T("text"), _T("7 top"));
+        p561->SetAttribute(_T("halign"), _T("right"));
+        p561->SetAttribute(_T("valign"), _T("top"));
+        p551->AddItem(p561);
+
+    ui::Label* p562 = new ui::Label(pWindow);
+        p562->SetAttribute(_T("class"), _T("page_gridbox"));
+        p562->SetAttribute(_T("text"), _T("8 center"));
+        p562->SetAttribute(_T("halign"), _T("right"));
+        p562->SetAttribute(_T("valign"), _T("center"));
+        p551->AddItem(p562);
+
+    ui::Label* p563 = new ui::Label(pWindow);
+        p563->SetAttribute(_T("class"), _T("page_gridbox"));
+        p563->SetAttribute(_T("text"), _T("9 bottom"));
+        p563->SetAttribute(_T("halign"), _T("right"));
+        p563->SetAttribute(_T("valign"), _T("bottom"));
+        p551->AddItem(p563);
+
+    ui::Label* p564 = new ui::Label(pWindow);
+        p564->SetAttribute(_T("class"), _T("page_gridbox"));
+        p564->SetAttribute(_T("text"), _T("10 center"));
+        p564->SetAttribute(_T("halign"), _T("left"));
+        p564->SetAttribute(_T("valign"), _T("center"));
+        p551->AddItem(p564);
+
+    ui::Label* p565 = new ui::Label(pWindow);
+        p565->SetAttribute(_T("class"), _T("page_gridbox"));
+        p565->SetAttribute(_T("text"), _T("11 center stretch: 100%"));
+        p565->SetAttribute(_T("halign"), _T("left"));
+        p565->SetAttribute(_T("valign"), _T("center"));
+        p565->SetAttribute(_T("col_span"), _T("3"));
+        p551->AddItem(p565);
+
+    ui::Label* p566 = new ui::Label(pWindow);
+        p566->SetAttribute(_T("class"), _T("page_gridbox"));
+        p566->SetAttribute(_T("text"), _T("12 bottom"));
+        p566->SetAttribute(_T("halign"), _T("left"));
+        p566->SetAttribute(_T("valign"), _T("bottom"));
+        p551->AddItem(p566);
+
+    ui::Label* p567 = new ui::Label(pWindow);
+        p567->SetAttribute(_T("class"), _T("page_gridbox"));
+        p567->SetAttribute(_T("text"), _T("13 top stretch: 50%"));
+        p567->SetAttribute(_T("halign"), _T("center"));
+        p567->SetAttribute(_T("valign"), _T("top"));
+        p567->SetAttribute(_T("row_span"), _T("3"));
+        p551->AddItem(p567);
+
+    ui::Label* p568 = new ui::Label(pWindow);
+        p568->SetAttribute(_T("class"), _T("page_gridbox"));
+        p568->SetAttribute(_T("text"), _T("12 center"));
+        p568->SetAttribute(_T("halign"), _T("center"));
+        p568->SetAttribute(_T("valign"), _T("center"));
+        p551->AddItem(p568);
+
+    ui::Label* p569 = new ui::Label(pWindow);
+        p569->SetAttribute(_T("class"), _T("page_gridbox"));
+        p569->SetAttribute(_T("text"), _T("15 bottom"));
+        p569->SetAttribute(_T("halign"), _T("center"));
+        p569->SetAttribute(_T("valign"), _T("bottom"));
+        p551->AddItem(p569);
+
+    ui::Label* p570 = new ui::Label(pWindow);
+        p570->SetAttribute(_T("class"), _T("page_gridbox"));
+        p570->SetAttribute(_T("text"), _T("16 top"));
+        p570->SetAttribute(_T("halign"), _T("right"));
+        p570->SetAttribute(_T("valign"), _T("top"));
+        p551->AddItem(p570);
+
+    ui::Label* p571 = new ui::Label(pWindow);
+        p571->SetAttribute(_T("class"), _T("page_gridbox"));
+        p571->SetAttribute(_T("text"), _T("17 center"));
+        p571->SetAttribute(_T("halign"), _T("right"));
+        p571->SetAttribute(_T("valign"), _T("center"));
+        p551->AddItem(p571);
+
+    ui::Label* p572 = new ui::Label(pWindow);
+        p572->SetAttribute(_T("class"), _T("page_gridbox"));
+        p572->SetAttribute(_T("text"), _T("18 bottom"));
+        p572->SetAttribute(_T("halign"), _T("right"));
+        p572->SetAttribute(_T("valign"), _T("bottom"));
+        p551->AddItem(p572);
+
+    ui::Label* p573 = new ui::Label(pWindow);
+        p573->SetAttribute(_T("class"), _T("page_gridbox"));
+        p573->SetAttribute(_T("text"), _T("19 center, width: 200"));
+        p573->SetAttribute(_T("halign"), _T("right"));
+        p573->SetAttribute(_T("valign"), _T("center"));
+        p551->AddItem(p573);
+
+    ui::Label* p574 = new ui::Label(pWindow);
+        p574->SetAttribute(_T("class"), _T("page_gridbox"));
+        p574->SetAttribute(_T("text"), _T("20 top"));
+        p574->SetAttribute(_T("halign"), _T("right"));
+        p574->SetAttribute(_T("valign"), _T("top"));
+        p574->SetAttribute(_T("col_span"), _T("3"));
+        p551->AddItem(p574);
+
+    ui::Label* p575 = new ui::Label(pWindow);
+        p575->SetAttribute(_T("class"), _T("page_gridbox"));
+        p575->SetAttribute(_T("text"), _T("21 top"));
+        p575->SetAttribute(_T("halign"), _T("right"));
+        p575->SetAttribute(_T("valign"), _T("top"));
+        p551->AddItem(p575);
+
+    ui::Label* p576 = new ui::Label(pWindow);
+        p576->SetAttribute(_T("class"), _T("page_gridbox"));
+        p576->SetAttribute(_T("text"), _T("22 top"));
+        p576->SetAttribute(_T("halign"), _T("right"));
+        p576->SetAttribute(_T("valign"), _T("top"));
+        p551->AddItem(p576);
+
+        p550->AddItem(p551);
+
+    ui::GridBox* p577 = new ui::GridBox(pWindow);
+        p577->SetAttribute(_T("width"), _T("30%"));
+        p577->SetAttribute(_T("height"), _T("100%"));
+        p577->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p577->SetAttribute(_T("border_size"), _T("1"));
+        p577->SetAttribute(_T("border_color"), _T("red"));
+        p577->SetAttribute(_T("child_halign"), _T("center"));
+        p577->SetAttribute(_T("child_valign"), _T("center"));
+        p577->SetAttribute(_T("grid_width"), _T("80"));
+        p577->SetAttribute(_T("grid_height"), _T("60"));
+        p577->SetAttribute(_T("rows"), _T("6"));
+        p577->SetAttribute(_T("columns"), _T("4"));
+        p577->SetAttribute(_T("child_margin_x"), _T("1"));
+        p577->SetAttribute(_T("child_margin_y"), _T("1"));
+    ui::Label* p578 = new ui::Label(pWindow);
+        p578->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p578->SetAttribute(_T("text"), _T("0"));
+        p578->SetAttribute(_T("col_span"), _T("4"));
+        p578->SetAttribute(_T("text_align"), _T("center,right"));
+        p578->SetAttribute(_T("text_padding"), _T("0,0,6,0"));
+        p578->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p577->AddItem(p578);
+
+    ui::Label* p579 = new ui::Label(pWindow);
+        p579->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p579->SetAttribute(_T("text"), _T("Clear"));
+        p579->SetAttribute(_T("col_span"), _T("2"));
+        p577->AddItem(p579);
+
+    ui::Label* p580 = new ui::Label(pWindow);
+        p580->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p580->SetAttribute(_T("text"), _T("Undo"));
+        p580->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p580);
+
+    ui::Label* p581 = new ui::Label(pWindow);
+        p581->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p581->SetAttribute(_T("text"), _T("="));
+        p581->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p581);
+
+    ui::Label* p582 = new ui::Label(pWindow);
+        p582->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p582->SetAttribute(_T("text"), _T("1"));
+        p582->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p582);
+
+    ui::Label* p583 = new ui::Label(pWindow);
+        p583->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p583->SetAttribute(_T("text"), _T("2"));
+        p583->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p583);
+
+    ui::Label* p584 = new ui::Label(pWindow);
+        p584->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p584->SetAttribute(_T("text"), _T("3"));
+        p584->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p584);
+
+    ui::Label* p585 = new ui::Label(pWindow);
+        p585->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p585->SetAttribute(_T("text"), _T("+"));
+        p585->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p585);
+
+    ui::Label* p586 = new ui::Label(pWindow);
+        p586->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p586->SetAttribute(_T("text"), _T("4"));
+        p586->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p586);
+
+    ui::Label* p587 = new ui::Label(pWindow);
+        p587->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p587->SetAttribute(_T("text"), _T("5"));
+        p587->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p587);
+
+    ui::Label* p588 = new ui::Label(pWindow);
+        p588->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p588->SetAttribute(_T("text"), _T("6"));
+        p588->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p588);
+
+    ui::Label* p589 = new ui::Label(pWindow);
+        p589->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p589->SetAttribute(_T("text"), _T("-"));
+        p589->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p589);
+
+    ui::Label* p590 = new ui::Label(pWindow);
+        p590->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p590->SetAttribute(_T("text"), _T("7"));
+        p590->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p590);
+
+    ui::Label* p591 = new ui::Label(pWindow);
+        p591->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p591->SetAttribute(_T("text"), _T("8"));
+        p591->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p591);
+
+    ui::Label* p592 = new ui::Label(pWindow);
+        p592->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p592->SetAttribute(_T("text"), _T("9"));
+        p592->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p592);
+
+    ui::Label* p593 = new ui::Label(pWindow);
+        p593->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p593->SetAttribute(_T("text"), _T("*"));
+        p593->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p593);
+
+    ui::Label* p594 = new ui::Label(pWindow);
+        p594->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p594->SetAttribute(_T("text"), _T("0"));
+        p594->SetAttribute(_T("col_span"), _T("2"));
+        p577->AddItem(p594);
+
+    ui::Label* p595 = new ui::Label(pWindow);
+        p595->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p595->SetAttribute(_T("text"), _T("."));
+        p595->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p595);
+
+    ui::Label* p596 = new ui::Label(pWindow);
+        p596->SetAttribute(_T("class"), _T("page_gridbox_calculator"));
+        p596->SetAttribute(_T("text"), _T("/"));
+        p596->SetAttribute(_T("col_span"), _T("1"));
+        p577->AddItem(p596);
+
+        p550->AddItem(p577);
+
+        p535->AddItem(p550);
+
+        p31->AddItem(p535);
+
+    ui::VBox* p597 = new ui::VBox(pWindow);
+        p597->SetAttribute(_T("name"), _T("main_view_page_16"));
+    pWindow->AddClass(_T("page_grid_scrollbox"), _T(" multi_line=\"true\" margin=\"0,0,0,0\" width=\"90%\" height=\"90%\" bkcolor=\"Sienna\" border_size=\"1\" border_color=\"green\""));
+    ui::VBox* p598 = new ui::VBox(pWindow);
+        p598->SetAttribute(_T("height"), _T("84"));
+        p598->SetAttribute(_T("padding"), _T("6,0,6,0"));
+    ui::Label* p599 = new ui::Label(pWindow);
+        p599->SetAttribute(_T("text"), _T("GridScrollBox Container Layout Test"));
+        p599->SetAttribute(_T("height"), _T("28"));
+        p599->SetAttribute(_T("valign"), _T("center"));
+        p598->AddItem(p599);
+
+    ui::HBox* p600 = new ui::HBox(pWindow);
+        p600->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p601 = new ui::Label(pWindow);
+        p601->SetAttribute(_T("text"), _T("Container content horizontal alignment:"));
+        p601->SetAttribute(_T("valign"), _T("center"));
+        p600->AddItem(p601);
+
+    ui::Option* p602 = new ui::Option(pWindow);
+        p602->SetAttribute(_T("class"), _T("option_1"));
+        p602->SetAttribute(_T("group"), _T("grid_scrollbox_group_halign"));
+        p602->SetAttribute(_T("text"), _T("Align Left (left)"));
+        p602->SetAttribute(_T("height"), _T("28"));
+        p602->SetAttribute(_T("valign"), _T("center"));
+        p602->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p602->SetAttribute(_T("selected"), _T("false"));
+        p600->AddItem(p602);
+
+    ui::Option* p603 = new ui::Option(pWindow);
+        p603->SetAttribute(_T("class"), _T("option_1"));
+        p603->SetAttribute(_T("group"), _T("grid_scrollbox_group_halign"));
+        p603->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p603->SetAttribute(_T("height"), _T("28"));
+        p603->SetAttribute(_T("valign"), _T("center"));
+        p603->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p603->SetAttribute(_T("selected"), _T("true"));
+        p600->AddItem(p603);
+
+    ui::Option* p604 = new ui::Option(pWindow);
+        p604->SetAttribute(_T("class"), _T("option_1"));
+        p604->SetAttribute(_T("group"), _T("grid_scrollbox_group_halign"));
+        p604->SetAttribute(_T("text"), _T("Align Right (right)"));
+        p604->SetAttribute(_T("height"), _T("28"));
+        p604->SetAttribute(_T("valign"), _T("center"));
+        p604->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p604->SetAttribute(_T("selected"), _T("false"));
+        p600->AddItem(p604);
+
+    ui::Label* p605 = new ui::Label(pWindow);
+        p605->SetAttribute(_T("text"), _T("(effective only when total content width is smaller than the display area width)"));
+        p605->SetAttribute(_T("valign"), _T("center"));
+        p600->AddItem(p605);
+
+        p598->AddItem(p600);
+
+    ui::HBox* p606 = new ui::HBox(pWindow);
+        p606->SetAttribute(_T("height"), _T("28"));
+    ui::Label* p607 = new ui::Label(pWindow);
+        p607->SetAttribute(_T("text"), _T("Container content vertical alignment:"));
+        p607->SetAttribute(_T("valign"), _T("center"));
+        p606->AddItem(p607);
+
+    ui::Option* p608 = new ui::Option(pWindow);
+        p608->SetAttribute(_T("class"), _T("option_1"));
+        p608->SetAttribute(_T("group"), _T("grid_scrollbox_group_valign"));
+        p608->SetAttribute(_T("text"), _T("Align Top (top)"));
+        p608->SetAttribute(_T("height"), _T("28"));
+        p608->SetAttribute(_T("valign"), _T("center"));
+        p608->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p608->SetAttribute(_T("selected"), _T("true"));
+        p606->AddItem(p608);
+
+    ui::Option* p609 = new ui::Option(pWindow);
+        p609->SetAttribute(_T("class"), _T("option_1"));
+        p609->SetAttribute(_T("group"), _T("grid_scrollbox_group_valign"));
+        p609->SetAttribute(_T("text"), _T("Align Center (center)"));
+        p609->SetAttribute(_T("height"), _T("28"));
+        p609->SetAttribute(_T("valign"), _T("center"));
+        p609->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p609->SetAttribute(_T("selected"), _T("false"));
+        p606->AddItem(p609);
+
+    ui::Option* p610 = new ui::Option(pWindow);
+        p610->SetAttribute(_T("class"), _T("option_1"));
+        p610->SetAttribute(_T("group"), _T("grid_scrollbox_group_valign"));
+        p610->SetAttribute(_T("text"), _T("Align Bottom (bottom)"));
+        p610->SetAttribute(_T("height"), _T("28"));
+        p610->SetAttribute(_T("valign"), _T("center"));
+        p610->SetAttribute(_T("margin"), _T("8,0,0,0"));
+        p610->SetAttribute(_T("selected"), _T("false"));
+        p606->AddItem(p610);
+
+    ui::Label* p611 = new ui::Label(pWindow);
+        p611->SetAttribute(_T("text"), _T("(effective only when total content height is smaller than the display area height)"));
+        p611->SetAttribute(_T("valign"), _T("center"));
+        p606->AddItem(p611);
+
+        p598->AddItem(p606);
+
+        p597->AddItem(p598);
+
+    ui::GridScrollBox* p612 = new ui::GridScrollBox(pWindow);
+        p612->SetAttribute(_T("name"), _T("grid_scrollbox_test"));
+        p612->SetAttribute(_T("padding"), _T("8,8,8,8"));
+        p612->SetAttribute(_T("width"), _T("100%"));
+        p612->SetAttribute(_T("height"), _T("100%"));
+        p612->SetAttribute(_T("grid_width"), _T("180"));
+        p612->SetAttribute(_T("grid_height"), _T("120"));
+        p612->SetAttribute(_T("rows"), _T("0"));
+        p612->SetAttribute(_T("columns"), _T("0"));
+        p612->SetAttribute(_T("scale_down"), _T("false"));
+        p612->SetAttribute(_T("child_margin_x"), _T("1"));
+        p612->SetAttribute(_T("child_margin_y"), _T("1"));
+        p612->SetAttribute(_T("child_halign"), _T("center"));
+        p612->SetAttribute(_T("child_valign"), _T("top"));
+        p612->SetAttribute(_T("bkcolor"), _T("gray"));
+        p612->SetAttribute(_T("border_size"), _T("1"));
+        p612->SetAttribute(_T("border_color"), _T("red"));
+        p612->SetAttribute(_T("hscrollbar"), _T("true"));
+        p612->SetAttribute(_T("vscrollbar"), _T("true"));
+    ui::Control* p613 = new ui::Control(pWindow);
+        p613->SetAttribute(_T("float"), _T("true"));
+        p613->SetAttribute(_T("width"), _T("stretch"));
+        p613->SetAttribute(_T("height"), _T("stretch"));
+        p613->SetAttribute(_T("border_size"), _T("1"));
+        p613->SetAttribute(_T("border_color"), _T("green"));
+        p613->SetAttribute(_T("bkcolor"), _T("Cornsilk"));
+        p612->AddItem(p613);
+
+    ui::Label* p614 = new ui::Label(pWindow);
+        p614->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p614->SetAttribute(_T("text"), _T("1 top"));
+        p614->SetAttribute(_T("halign"), _T("left"));
+        p614->SetAttribute(_T("valign"), _T("top"));
+        p612->AddItem(p614);
+
+    ui::Label* p615 = new ui::Label(pWindow);
+        p615->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p615->SetAttribute(_T("text"), _T("2 center"));
+        p615->SetAttribute(_T("halign"), _T("left"));
+        p615->SetAttribute(_T("valign"), _T("center"));
+        p615->SetAttribute(_T("row_span"), _T("2"));
+        p612->AddItem(p615);
+
+    ui::Label* p616 = new ui::Label(pWindow);
+        p616->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p616->SetAttribute(_T("text"), _T("3 bottom"));
+        p616->SetAttribute(_T("halign"), _T("left"));
+        p616->SetAttribute(_T("valign"), _T("bottom"));
+        p616->SetAttribute(_T("col_span"), _T("2"));
+        p612->AddItem(p616);
+
+    ui::Label* p617 = new ui::Label(pWindow);
+        p617->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p617->SetAttribute(_T("text"), _T("4 top"));
+        p617->SetAttribute(_T("halign"), _T("center"));
+        p617->SetAttribute(_T("valign"), _T("top"));
+        p612->AddItem(p617);
+
+    ui::Label* p618 = new ui::Label(pWindow);
+        p618->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p618->SetAttribute(_T("text"), _T("5 center"));
+        p618->SetAttribute(_T("halign"), _T("center"));
+        p618->SetAttribute(_T("valign"), _T("center"));
+        p612->AddItem(p618);
+
+    ui::Label* p619 = new ui::Label(pWindow);
+        p619->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p619->SetAttribute(_T("text"), _T("6 bottom"));
+        p619->SetAttribute(_T("halign"), _T("center"));
+        p619->SetAttribute(_T("valign"), _T("bottom"));
+        p612->AddItem(p619);
+
+    ui::Label* p620 = new ui::Label(pWindow);
+        p620->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p620->SetAttribute(_T("text"), _T("7 top"));
+        p620->SetAttribute(_T("halign"), _T("right"));
+        p620->SetAttribute(_T("valign"), _T("top"));
+        p612->AddItem(p620);
+
+    ui::Label* p621 = new ui::Label(pWindow);
+        p621->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p621->SetAttribute(_T("text"), _T("8 center"));
+        p621->SetAttribute(_T("halign"), _T("right"));
+        p621->SetAttribute(_T("valign"), _T("center"));
+        p612->AddItem(p621);
+
+    ui::Label* p622 = new ui::Label(pWindow);
+        p622->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p622->SetAttribute(_T("text"), _T("9 bottom"));
+        p622->SetAttribute(_T("halign"), _T("right"));
+        p622->SetAttribute(_T("valign"), _T("bottom"));
+        p612->AddItem(p622);
+
+    ui::Label* p623 = new ui::Label(pWindow);
+        p623->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p623->SetAttribute(_T("text"), _T("10 center"));
+        p623->SetAttribute(_T("halign"), _T("left"));
+        p623->SetAttribute(_T("valign"), _T("center"));
+        p612->AddItem(p623);
+
+    ui::Label* p624 = new ui::Label(pWindow);
+        p624->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p624->SetAttribute(_T("text"), _T("11 center stretch: 100%"));
+        p624->SetAttribute(_T("halign"), _T("left"));
+        p624->SetAttribute(_T("valign"), _T("center"));
+        p624->SetAttribute(_T("col_span"), _T("3"));
+        p612->AddItem(p624);
+
+    ui::Label* p625 = new ui::Label(pWindow);
+        p625->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p625->SetAttribute(_T("text"), _T("12 bottom"));
+        p625->SetAttribute(_T("halign"), _T("left"));
+        p625->SetAttribute(_T("valign"), _T("bottom"));
+        p612->AddItem(p625);
+
+    ui::Label* p626 = new ui::Label(pWindow);
+        p626->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p626->SetAttribute(_T("text"), _T("13 top stretch: 50%"));
+        p626->SetAttribute(_T("halign"), _T("center"));
+        p626->SetAttribute(_T("valign"), _T("top"));
+        p626->SetAttribute(_T("row_span"), _T("3"));
+        p612->AddItem(p626);
+
+    ui::Label* p627 = new ui::Label(pWindow);
+        p627->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p627->SetAttribute(_T("text"), _T("12 center"));
+        p627->SetAttribute(_T("halign"), _T("center"));
+        p627->SetAttribute(_T("valign"), _T("center"));
+        p612->AddItem(p627);
+
+    ui::Label* p628 = new ui::Label(pWindow);
+        p628->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p628->SetAttribute(_T("text"), _T("15 bottom"));
+        p628->SetAttribute(_T("halign"), _T("center"));
+        p628->SetAttribute(_T("valign"), _T("bottom"));
+        p612->AddItem(p628);
+
+    ui::Label* p629 = new ui::Label(pWindow);
+        p629->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p629->SetAttribute(_T("text"), _T("16 top"));
+        p629->SetAttribute(_T("halign"), _T("right"));
+        p629->SetAttribute(_T("valign"), _T("top"));
+        p612->AddItem(p629);
+
+    ui::Label* p630 = new ui::Label(pWindow);
+        p630->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p630->SetAttribute(_T("text"), _T("17 center"));
+        p630->SetAttribute(_T("halign"), _T("right"));
+        p630->SetAttribute(_T("valign"), _T("center"));
+        p612->AddItem(p630);
+
+    ui::Label* p631 = new ui::Label(pWindow);
+        p631->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p631->SetAttribute(_T("text"), _T("18 bottom"));
+        p631->SetAttribute(_T("halign"), _T("right"));
+        p631->SetAttribute(_T("valign"), _T("bottom"));
+        p612->AddItem(p631);
+
+    ui::Label* p632 = new ui::Label(pWindow);
+        p632->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p632->SetAttribute(_T("text"), _T("19 center, width: 200"));
+        p632->SetAttribute(_T("halign"), _T("right"));
+        p632->SetAttribute(_T("valign"), _T("center"));
+        p612->AddItem(p632);
+
+    ui::Label* p633 = new ui::Label(pWindow);
+        p633->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p633->SetAttribute(_T("text"), _T("20 top"));
+        p633->SetAttribute(_T("halign"), _T("right"));
+        p633->SetAttribute(_T("valign"), _T("top"));
+        p633->SetAttribute(_T("col_span"), _T("3"));
+        p612->AddItem(p633);
+
+    ui::Label* p634 = new ui::Label(pWindow);
+        p634->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p634->SetAttribute(_T("text"), _T("21 top"));
+        p634->SetAttribute(_T("halign"), _T("right"));
+        p634->SetAttribute(_T("valign"), _T("top"));
+        p612->AddItem(p634);
+
+    ui::Label* p635 = new ui::Label(pWindow);
+        p635->SetAttribute(_T("class"), _T("page_grid_scrollbox"));
+        p635->SetAttribute(_T("text"), _T("22 top"));
+        p635->SetAttribute(_T("halign"), _T("right"));
+        p635->SetAttribute(_T("valign"), _T("top"));
+        p612->AddItem(p635);
+
+        p597->AddItem(p612);
+
+        p31->AddItem(p597);
+
+        p12->AddItem(p31);
+
+        p0->AddItem(p12);
+
+
+    pWindow->AttachBox(p0);
 }
+
