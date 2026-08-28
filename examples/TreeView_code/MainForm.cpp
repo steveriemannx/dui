@@ -37,6 +37,13 @@ DString MainForm::GetSkinFile()
 
 void MainForm::OnInitWindow()
 {
+    // Use the OS-provided system shadow on all platforms.
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(false, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
@@ -157,6 +164,7 @@ void MainForm::OnInitWindow()
     if (pComputerNode != nullptr) {
         m_pTree->SelectTreeNode(pComputerNode);
     }
+    BaseClass::OnInitWindow();
 }
 
 void MainForm::Refresh()
