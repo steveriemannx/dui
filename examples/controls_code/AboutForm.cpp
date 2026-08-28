@@ -1,4 +1,4 @@
-#include "AboutForm.h"
+﻿#include "AboutForm.h"
 
 AboutForm::AboutForm()
 {
@@ -22,71 +22,43 @@ DString AboutForm::GetSkinFile()
 void AboutForm::BuildUI()
 {
     // Corresponds to the about.xml layout
-    ui::VBox* pRoot = new ui::VBox(this);
+    auto* pRoot = ui::Create<ui::VBox>(this, {{_T("width"), _T("100%")}, {_T("height"), _T("100%")}});
     pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
-    pRoot->SetAttribute(_T("width"), _T("100%"));
-    pRoot->SetAttribute(_T("height"), _T("100%"));
 
-    ui::HBox* pCaption = new ui::HBox(this);
-    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
-    pCaption->SetAttribute(_T("width"), _T("stretch"));
-    pCaption->SetAttribute(_T("height"), _T("35"));
+    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("35")}});
     pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    ui::Control* pLogo = new ui::Control(this);
-    pLogo->SetAttribute(_T("width"), _T("18"));
-    pLogo->SetAttribute(_T("height"), _T("18"));
+    auto* pLogo = ui::Create<ui::Control>(this, {{_T("width"), _T("18")}, {_T("height"), _T("18")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8")}});
     pLogo->SetBkImage(_T("public/caption/logo.svg"));
-    pLogo->SetAttribute(_T("valign"), _T("center"));
-    pLogo->SetAttribute(_T("margin"), _T("8"));
     pCaption->AddItem(pLogo);
 
-    ui::Label* pTitle = new ui::Label(this);
+    auto* pTitle = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8")}, {_T("mouse_enabled"), _T("false")}});
     pTitle->SetText(_T("Controls"));
-    pTitle->SetAttribute(_T("valign"), _T("center"));
-    pTitle->SetAttribute(_T("margin"), _T("8"));
-    pTitle->SetAttribute(_T("mouse_enabled"), _T("false"));
     pCaption->AddItem(pTitle);
 
-    ui::Control* pSpacer = new ui::Control(this);
-    pSpacer->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
     pCaption->AddItem(pSpacer);
 
-    ui::Button* pCloseBtn = new ui::Button(this);
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("40")}, {_T("height"), _T("32")}, {_T("margin"), _T("4,0,0,0")}});
     pCloseBtn->SetClass(_T("btn_wnd_close_11"));
     pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetAttribute(_T("width"), _T("40"));
-    pCloseBtn->SetAttribute(_T("height"), _T("32"));
-    pCloseBtn->SetAttribute(_T("margin"), _T("4,0,0,0"));
     pCaption->AddItem(pCloseBtn);
 
-    ui::Box* pContent = new ui::Box(this);
+    auto* pContent = ui::Create<ui::Box>(this, {});
     pRoot->AddItem(pContent);
 
-    ui::VBox* pCenter = new ui::VBox(this);
-    pCenter->SetAttribute(_T("margin"), _T("0,0,0,0"));
-    pCenter->SetAttribute(_T("valign"), _T("center"));
-    pCenter->SetAttribute(_T("halign"), _T("center"));
-    pCenter->SetAttribute(_T("width"), _T("100%"));
-    pCenter->SetAttribute(_T("height"), _T("auto"));
+    auto* pCenter = ui::Create<ui::VBox>(this, {{_T("margin"), _T("0,0,0,0")}, {_T("valign"), _T("center")}, {_T("halign"), _T("center")}, {_T("width"), _T("100%")}, {_T("height"), _T("auto")}});
     pContent->AddItem(pCenter);
 
-    ui::Label* pTooltip = new ui::Label(this);
+    auto* pTooltip = ui::Create<ui::Label>(this, {{_T("width"), _T("stretch")}, {_T("text_align"), _T("center")}});
     pTooltip->SetName(_T("tooltip"));
     pTooltip->SetText(_T("dui controls example."));
-    pTooltip->SetAttribute(_T("width"), _T("stretch"));
-    pTooltip->SetAttribute(_T("text_align"), _T("center"));
     pCenter->AddItem(pTooltip);
 
-    ui::Label* pLink = new ui::Label(this);
+    auto* pLink = ui::Create<ui::Label>(this, {{_T("width"), _T("stretch")}, {_T("normal_text_color"), _T("blue")}, {_T("text_align"), _T("center")}, {_T("cursor_type"), _T("hand")}, {_T("margin"), _T("0,8")}});
     pLink->SetName(_T("link"));
-    pLink->SetAttribute(_T("width"), _T("stretch"));
     pLink->SetText(_T("https://github.com/steveriemannx/dui"));
-    pLink->SetAttribute(_T("normal_text_color"), _T("blue"));
-    pLink->SetAttribute(_T("text_align"), _T("center"));
-    pLink->SetAttribute(_T("cursor_type"), _T("hand"));
-    pLink->SetAttribute(_T("margin"), _T("0,8"));
     pCenter->AddItem(pLink);
 
     AttachBox(pRoot);
@@ -94,14 +66,6 @@ void AboutForm::BuildUI()
 
 void AboutForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-
     BuildUI();
 
     ui::Label* link = static_cast<ui::Label*>(FindControl(_T("link")));
@@ -111,6 +75,5 @@ void AboutForm::OnInitWindow()
             return true;
         });
     }
-    BaseClass::OnInitWindow();
 }
 

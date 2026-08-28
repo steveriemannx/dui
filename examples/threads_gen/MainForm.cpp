@@ -33,7 +33,6 @@ void MainForm::OnInitWindow()
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
-
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 

@@ -6,7 +6,6 @@
 
 class RenderForm : public ui::WindowImplBase
 {
-    typedef ui::WindowImplBase BaseClass;
 public:
     RenderForm();
     virtual ~RenderForm() override;

@@ -28,7 +28,7 @@ void RenderForm::OnInitWindow()
     ui::MenuBar* pMenuBar = dynamic_cast<ui::MenuBar*>(FindControl(_T("menu_bar_test")));
     if (pMenuBar != nullptr) {
         pMenuBar->AddTopMenu(_T("1"), _T("File"),      _T(""), _T("public/menu/rich_edit_menu.xml"));
-        pMenuBar->AddTopMenu(_T("2"), _T("Edit"),      _T(""), _T("controls/menu/settings_menu.xml"));
+        pMenuBar->AddTopMenu(_T("2"), _T("Edit"),      _T(""), _T("controls\\menu\\settings_menu.xml"));
         pMenuBar->AddTopMenu(_T("3"), _T("Selection"), _T(""), _T("public/menu/rich_edit_menu.xml"));
         pMenuBar->AddTopMenu(_T("4"), _T("View"),      _T(""), _T("controls/menu/settings_menu.xml"));
         pMenuBar->AddTopMenu(_T("5"), _T("View"),       _T(""), _T("public/menu/rich_edit_menu.xml"));
@@ -47,7 +47,6 @@ void RenderForm::OnInitWindow()
             int ii = 0;
         };
     pMenuBar->AttachMenuBarItemActivated(callback);
-    BaseClass::OnInitWindow();
 }
 
 void RenderForm::OnCloseWindow()

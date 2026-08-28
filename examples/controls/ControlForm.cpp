@@ -1,8 +1,8 @@
 #include "ControlForm.h"
+#include "dui/Utils/UiBuilder.h"
 #include "AboutForm.h"
 #include "TestForm.h"
 #include "AnimationForm.h"
-#include "dui/Control/Menu.h"
 
 #include <fstream>
 
@@ -30,11 +30,9 @@ DString ControlForm::GetSkinFile()
 
 void ControlForm::OnInitWindow()
 {
-    BaseClass::OnInitWindow();
-
 #ifdef DUI_BUILD_FOR_SDL
     //Display basic SDL information
-    ui::Label* pTitle = dynamic_cast<ui::Label*>(FindControl(_T("window_title")));
+    ui::Label* pTitle = ui::Find<ui::Label>(this, _T("window_title"));
     if (pTitle != nullptr) {
         DString title = pTitle->GetText();
         DString driverName = GetVideoDriverName();
@@ -45,7 +43,7 @@ void ControlForm::OnInitWindow()
 #endif
 
     /* Initialize ListBox data */
-    ui::ListBox* list = dynamic_cast<ui::ListBox*>(FindControl(_T("list")));
+    ui::ListBox* list = ui::Find<ui::ListBox>(this, _T("list"));
     if (list != nullptr) {
         for (auto i = 0; i < 30; i++)
         {
@@ -57,7 +55,7 @@ void ControlForm::OnInitWindow()
         }
     }
 
-    ui::TreeView* pTree = dynamic_cast<ui::TreeView*>(FindControl(_T("tree")));
+    ui::TreeView* pTree = ui::Find<ui::TreeView>(this, _T("tree"));
     if (pTree != nullptr) {
         ui::TreeNode* pRootNode = pTree->GetRootNode();
         ASSERT(pRootNode != nullptr);
@@ -84,7 +82,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Initialize the Combo data
-    ui::Combo* combo = dynamic_cast<ui::Combo*>(FindControl(_T("combo")));
+    ui::Combo* combo = ui::Find<ui::Combo>(this, _T("combo"));
     if (combo != nullptr) {
         ui::TreeView* pTreeView = combo->GetTreeView();
         ui::TreeNode* pTreeNode = pTreeView->GetRootNode();
@@ -118,14 +116,14 @@ void ControlForm::OnInitWindow()
 //    ASSERT(combo->GetText() == _T("Test"));
 //#endif
 
-    ui::FilterCombo* filterCombo = dynamic_cast<ui::FilterCombo*>(FindControl(_T("filter_combo")));
+    ui::FilterCombo* filterCombo = ui::Find<ui::FilterCombo>(this, _T("filter_combo"));
     if (filterCombo != nullptr) {
         for (auto i = 0; i < 100; i++) {
             filterCombo->AddTextItem(ui::StringUtil::Printf(_T("Item %d FilterCombo"), i));
         }
     }
 
-    ui::CheckCombo* check_combo = dynamic_cast<ui::CheckCombo*>(FindControl(_T("check_combo")));
+    ui::CheckCombo* check_combo = ui::Find<ui::CheckCombo>(this, _T("check_combo"));
     if (check_combo != nullptr) {
         check_combo->AddTextItem(_T("Monday"));
         check_combo->AddTextItem(_T("Tuesday"));
@@ -154,7 +152,7 @@ void ControlForm::OnInitWindow()
         300);
 
     /* Show settings menu */
-    ui::Button* settings = dynamic_cast<ui::Button*>(FindControl(_T("settings")));
+    ui::Button* settings = ui::Find<ui::Button>(this, _T("settings"));
     if (settings != nullptr) {
         settings->AttachClick([this, settings](const ui::EventArgs& args) {
             ui::UiRect rect = args.GetSender()->GetPos();
@@ -170,11 +168,11 @@ void ControlForm::OnInitWindow()
     }
 
     //Register a context menu, demonstrating the feature (both methods can register a context menu)
-    AttachRichEditEvents(dynamic_cast<ui::RichEdit*>(FindControl(_T("edit"))));
-    AttachRichEditEvents(dynamic_cast<ui::RichEdit*>(FindControl(_T("edit2"))));
+    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, _T("edit")));
+    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, _T("edit2")));
 
     //Show the color picker of a modal dialog
-    ui::Button* pShowColorPicker = dynamic_cast<ui::Button*>(FindControl(_T("show_color_picker")));
+    ui::Button* pShowColorPicker = ui::Find<ui::Button>(this, _T("show_color_picker"));
     if (pShowColorPicker != nullptr) {
         pShowColorPicker->AttachClick([this](const ui::EventArgs& args) {
             ShowColorPicker(true);
@@ -183,7 +181,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Show a modal dialog
-    ui::Button* pShowModal = dynamic_cast<ui::Button*>(FindControl(_T("domodal2")));
+    ui::Button* pShowModal = ui::Find<ui::Button>(this, _T("domodal2"));
     if (pShowModal != nullptr) {
         pShowModal->AttachClick([this](const ui::EventArgs& args) {
             ShowDoModalDlg();
@@ -192,38 +190,30 @@ void ControlForm::OnInitWindow()
     }
 
     //RichText displays hyperlinks
-    ui::RichText* pRichText = dynamic_cast<ui::RichText*>(FindControl(_T("rich_text_demo")));
+    ui::RichText* pRichText = ui::Find<ui::RichText>(this, _T("rich_text_demo"));
     if (pRichText != nullptr) {
         pRichText->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-                DString link(url);
-                if (link.find(_T("://")) == DString::npos) {
-                    link = _T("http://") + link;
-                }
-                ui::SystemUtil::OpenUrl(link);
+                ui::SystemUtil::ShowMessageBox(this, url, _T("RichText Click HyperLink"));
             }
             return true;
             });
     }
 
     //HyperLink control
-    ui::HyperLink* pHyperLink = dynamic_cast<ui::HyperLink*>(FindControl(_T("hyper_link1")));
+    ui::HyperLink* pHyperLink = ui::Find<ui::HyperLink>(this, _T("hyper_link1"));
     if (pHyperLink != nullptr) {
         pHyperLink->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-                DString link(url);
-                if (link.find(_T("://")) == DString::npos) {
-                    link = _T("http://") + link;
-                }
-                ui::SystemUtil::OpenUrl(link);
+                ui::SystemUtil::ShowMessageBox(this, url, _T("HyperLink Click HyperLink"));
             }
             return true;
             });
     }
 
-    pHyperLink = dynamic_cast<ui::HyperLink*>(FindControl(_T("hyper_link2")));
+    pHyperLink = ui::Find<ui::HyperLink>(this, _T("hyper_link2"));
     if (pHyperLink != nullptr) {
         pHyperLink->AttachLinkClick([this](const ui::EventArgs& /*args*/) {
             ui::SystemUtil::ShowMessageBox(this, _T("Text Button Event Response"), _T("HyperLink Click"));
@@ -232,8 +222,8 @@ void ControlForm::OnInitWindow()
     }
 
     //Hotkey settings
-    ui::HotKey* pHotKey = dynamic_cast<ui::HotKey*>(FindControl(_T("set_hot_key")));
-    ui::Button* pHotKeyButton = dynamic_cast<ui::Button*>(FindControl(_T("btn_set_hot_key")));
+    ui::HotKey* pHotKey = ui::Find<ui::HotKey>(this, _T("set_hot_key"));
+    ui::Button* pHotKeyButton = ui::Find<ui::Button>(this, _T("btn_set_hot_key"));
     if (pHotKey && pHotKeyButton) {
         pHotKeyButton->AttachClick([this, pHotKey](const ui::EventArgs& args) {
             uint8_t wVirtualKeyCode = 0;
@@ -271,8 +261,8 @@ void ControlForm::OnInitWindow()
             });
     }
 
-    pHotKey = dynamic_cast<ui::HotKey*>(FindControl(_T("set_system_hot_key")));
-    pHotKeyButton = dynamic_cast<ui::Button*>(FindControl(_T("btn_set_system_hot_key")));
+    pHotKey = ui::Find<ui::HotKey>(this, _T("set_system_hot_key"));
+    pHotKeyButton = ui::Find<ui::Button>(this, _T("btn_set_system_hot_key"));
     if (pHotKey && pHotKeyButton) {
         pHotKeyButton->AttachClick([this, pHotKey](const ui::EventArgs& args) {
             uint8_t wVirtualKeyCode = 0;
@@ -288,7 +278,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Test page, open a new window
-    ui::Button* pTestBtn = dynamic_cast<ui::Button*>(FindControl(_T("test_btn")));
+    ui::Button* pTestBtn = ui::Find<ui::Button>(this, _T("test_btn"));
     if (pTestBtn != nullptr) {
         pTestBtn->AttachClick([this](const ui::EventArgs&) {
             ShowTestWindow();
@@ -297,7 +287,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Response function of the animation test button
-    ui::Button* pAnimationBtn = dynamic_cast<ui::Button*>(FindControl(_T("animation_btn")));
+    ui::Button* pAnimationBtn = ui::Find<ui::Button>(this, _T("animation_btn"));
     if (pAnimationBtn != nullptr) {
         pAnimationBtn->AttachClick([this](const ui::EventArgs&) {
             ShowAnimationWindow();
@@ -306,7 +296,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Tray icon functionality
-    ui::CheckBox* pTrayIconCheckBox = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_tray_icon")));
+    ui::CheckBox* pTrayIconCheckBox = ui::Find<ui::CheckBox>(this, _T("checkbox_tray_icon"));
     if (pTrayIconCheckBox != nullptr) {
         pTrayIconCheckBox->AttachSelect([this](const ui::EventArgs&) {
             //Enable
@@ -327,27 +317,6 @@ void ControlForm::OnCloseWindow()
     ShowTrayIcon(false);
 
     BaseClass::OnCloseWindow();
-}
-
-void ControlForm::OnWindowMinimized()
-{
-    //Close any open popup menus when the owner window is minimized, so they
-    //don't float over the dock and block restoring the window.
-    ui::Menu::CloseAllMenus();
-    BaseClass::OnWindowMinimized();
-}
-
-LRESULT ControlForm::OnMouseLButtonDownMsg(const ui::UiPoint& pt, uint32_t modifierKey, const ui::NativeMsg& nativeMsg, bool& bHandled)
-{
-    //Clicking outside the menu should dismiss it.
-    ui::Menu::CloseAllMenus();
-    return BaseClass::OnMouseLButtonDownMsg(pt, modifierKey, nativeMsg, bHandled);
-}
-
-LRESULT ControlForm::OnMouseRButtonDownMsg(const ui::UiPoint& pt, uint32_t modifierKey, const ui::NativeMsg& nativeMsg, bool& bHandled)
-{
-    ui::Menu::CloseAllMenus();
-    return BaseClass::OnMouseRButtonDownMsg(pt, modifierKey, nativeMsg, bHandled);
 }
 
 void ControlForm::AttachRichEditEvents(ui::RichEdit* edit)
@@ -409,10 +378,10 @@ void ControlForm::AttachRichEditEvents(ui::RichEdit* edit)
         });
 
     //Display RichEdit in full screen
-    ui::Button* pFullscreenBtn = dynamic_cast<ui::Button*>(FindControl(_T("rich_edit_fullscreen_btn")));
+    ui::Button* pFullscreenBtn = ui::Find<ui::Button>(this, _T("rich_edit_fullscreen_btn"));
     if (pFullscreenBtn != nullptr) {
         pFullscreenBtn->AttachClick([this](const ui::EventArgs&) {
-            ui::Control* pControl = FindControl(_T("edit"));
+            ui::Control* pControl = ui::Find<ui::Control>(this, _T("edit"));
             if (pControl != nullptr) {
                 this->SetFullscreenControl(pControl);
             }
@@ -435,7 +404,7 @@ void ControlForm::ShowColorPicker(bool bDoModal)
 
     //Function executed after the window is created
     auto OnInitColorPicker = [this, pColorPicker](const ui::EventArgs&) {
-        ui::RichEdit* pEdit = dynamic_cast<ui::RichEdit*>(FindControl(_T("edit")));
+        ui::RichEdit* pEdit = ui::Find<ui::RichEdit>(this, _T("edit"));
         if (pEdit != nullptr) {
             DString oldTextColor = pEdit->GetTextColor();
             if (!oldTextColor.empty()) {
@@ -521,7 +490,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
     ui::Menu* menu = new ui::Menu(this, pRelatedControl);//A parent window is required, otherwise the program status bar becomes inactive when the menu pops up
     menu->SetSkinFolder(GetResourcePath().ToString());
     DString xml(_T("menu/settings_menu.xml"));
-    menu->ShowMenu(xml, point, ui::MenuPopupPosType::LEFT_TOP, true);
+    menu->ShowMenu(xml, point);
 
     //Add a submenu item to the second-level menu
     ui::MenuItem* menu_fourth = static_cast<ui::MenuItem*>(menu->FindControl(_T("fourth")));
@@ -594,25 +563,6 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
     }
 }
 
-void ControlForm::ShowAboutWindow()
-{
-    AboutForm* about_form = new AboutForm();
-    ui::WindowCreateParam createParam;
-    createParam.m_dwStyle = ui::kWS_POPUP;
-    createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = _T("AboutForm");
-    createParam.m_bCenterWindow = true;
-    about_form->CreateWnd(this, createParam);
-    about_form->ShowModalFake();
-}
-
-void ControlForm::OnNativeMenuAbout(void* userData)
-{
-    if (userData != nullptr) {
-        static_cast<ControlForm*>(userData)->ShowAboutWindow();
-    }
-}
-
 void ControlForm::LoadRichEditData()
 {
     std::streamoff length = 0;
@@ -620,15 +570,6 @@ void ControlForm::LoadRichEditData()
     ui::FilePath controls_xml = ui::GlobalManager::Instance().GetResourcePath();
     controls_xml += GetResourcePath();
     controls_xml += GetSkinFile();
-    if (!controls_xml.IsExistsFile()) {
-        //Overlay theme: fall back to the default theme root
-        const ui::FilePath themeDefaultPath = ui::GlobalManager::Instance().GetThemeDefaultPath();
-        if (!themeDefaultPath.IsEmpty()) {
-            controls_xml = themeDefaultPath;
-            controls_xml += GetResourcePath();
-            controls_xml += GetSkinFile();
-        }
-    }
 
     //XML files are loaded in UTF-8 encoding
     std::string xml;
@@ -648,12 +589,12 @@ void ControlForm::OnResourceFileLoaded(const DString& xml)
     if (xml.empty()) {
         return;
     }
-    ui::RichEdit* pRichEdit = static_cast<ui::RichEdit*>(FindControl(_T("edit2")));
+    ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, _T("edit2"));
     if (pRichEdit) {
         pRichEdit->SetText(xml);
         pRichEdit->HomeUp();
     }
-    pRichEdit = static_cast<ui::RichEdit*>(FindControl(_T("edit")));
+    pRichEdit = ui::Find<ui::RichEdit>(this, _T("edit"));
     if (pRichEdit) {
         pRichEdit->SetText(xml);
         pRichEdit->SetFocus();
@@ -665,12 +606,12 @@ void ControlForm::OnProgressValueChagned(float value)
 {
     //The progress range given by the callback is [0, 99), convert it to [0, 100]
     value = value * 100 / 99 + 0.5f;
-    auto progress = static_cast<ui::Progress*>(FindControl(_T("progress")));
+    auto progress = ui::Find<ui::Progress>(this, _T("progress"));
     if (progress) {
         progress->SetValue(value);
     }
 
-    auto circleprogress = static_cast<ui::Progress*>(FindControl(_T("circleprogress")));
+    auto circleprogress = ui::Find<ui::Progress>(this, _T("circleprogress"));
     if (circleprogress)    {
         circleprogress->SetValue(value);
         circleprogress->SetText(ui::StringUtil::Printf(_T("%.0f%%"), value));
@@ -749,7 +690,7 @@ void ControlForm::ShowTrayMenu(int32_t x, int32_t y)
     ui::Menu* menu = new ui::Menu(pParentWnd, nullptr);
     menu->SetSkinFolder(GetResourcePath().ToString());
     DString xml(_T("menu/tray_menu.xml"));
-    menu->ShowMenu(xml, ui::UiPoint(x, y), ui::MenuPopupPosType::LEFT_TOP, true);
+    menu->ShowMenu(xml, ui::UiPoint(x, y));
 
     //Menu item click response
     ui::MenuItem* pMenuItem = static_cast<ui::MenuItem*>(menu->FindControl(_T("tray_menu_item_1")));

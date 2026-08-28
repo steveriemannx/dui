@@ -50,7 +50,6 @@ if(WIN32 AND DUI_BUILD_WEBVIEW2_EXAMPLES)
     add_subdirectory(WebView2Browser)
 endif()
 add_subdirectory(XmlPreview)
-add_subdirectory(XmlPreview3)
 endif()
 
 # ---- Added from the code-backend branch (Unix examples: the generation/embedding

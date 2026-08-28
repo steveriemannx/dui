@@ -23,10 +23,7 @@ private:
         ui::MemoryResParam(GetEmbeddedResourcesData(), GetEmbeddedResourcesSize()));
 
         MainForm* window = new MainForm();
-                ui::WindowCreateParam createParam(_T("Hello (Codegen)"), true);
-        createParam.m_nWidth = 800;
-        createParam.m_nHeight = 600;
-        window->CreateWnd(nullptr, createParam);
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("Hello (Codegen)"), true));
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -37,4 +34,9 @@ private:
     }
 };
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

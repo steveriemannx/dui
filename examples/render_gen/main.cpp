@@ -22,12 +22,7 @@ private:
 
         // Create a default centered window with shadow
         RenderForm* window = new RenderForm();
-                ui::WindowCreateParam createParam(_T("render"), true);
-        ui::UiRect rcWork;
-        ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-        createParam.m_nWidth = (int32_t)(rcWork.Width() * 0.85f);
-        createParam.m_nHeight = (int32_t)(rcWork.Height() * 0.95f);
-        window->CreateWnd(nullptr, createParam);
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("render"), true));
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
 
@@ -37,4 +32,9 @@ private:
     }
 };
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

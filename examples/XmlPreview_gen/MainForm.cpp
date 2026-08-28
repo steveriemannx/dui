@@ -23,56 +23,10 @@ DString MainForm::GetSkinFile()
     return _T("");
 }
 
-void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    // Corresponding to the <Window> attributes in xml_preview.xml
-    ui::UiRect rcWork;
-    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.75f);
-    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.75f);
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = true;
-    attrs.m_bIsLayeredWindowDefined = true;
-    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-
-    // WindowBuilder clamps the initial size to the XML min_size at parse time.
-    if (attrs.m_szInitSize.cx < 750) {
-        attrs.m_szInitSize.cx = 750;
-    }
-    if (attrs.m_szInitSize.cy < 500) {
-        attrs.m_szInitSize.cy = 500;
-    }
-
-    BaseClass::GetCreateWindowAttributes(attrs);
-}
-
-void MainForm::PreInitWindow()
-{
-    BaseClass::PreInitWindow();
-
-    // No layout XML is loaded, so Window::ParseWindowXml attempted to load an
-    // empty XML and reset the window resource sub-path; restore it now so
-    // resources resolve from the "xml_preview" folder.
-    SetResourcePath(ui::FilePath(_T("xml_preview")));
-    SetWindowMinimumSize(ui::UiSize(750, 500), true);
-}
-
 void MainForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
     // Build-time generated from xml_preview.xml
     InitXml_preview(this);
@@ -93,6 +47,7 @@ void MainForm::OnInitWindow()
             pXmlFileLoadResult->SetText(_T("OK"));
         }
     }
+
     auto FillSourceEdits = [pXmlBox]() {
         std::vector<uint8_t> xmlData;
         if (ui::FileUtil::ReadFileData(pXmlBox->GetXmlFileFullPath(), xmlData) && !xmlData.empty()) {
@@ -164,7 +119,6 @@ void MainForm::OnInitWindow()
         }
     };
     FillDemoList();
-
 
     pXmlBox->AddLoadXmlCallback([this, pXmlBox, pXmlFilePath, pXmlFileLoadResult, FillSourceEdits, FillDemoCombos, FillDemoList](const ui::FilePath& xmlPath, bool bSuccess) {
             if (bSuccess) {

@@ -25,12 +25,7 @@ private:
 
         // Create a centered window with shadow by default
         MainForm* window = new MainForm();
-                ui::WindowCreateParam createParam(_T("TreeView"), true);
-        ui::UiRect rcWork;
-        ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-        createParam.m_nWidth = (int32_t)(rcWork.Width() * 0.80f);
-        createParam.m_nHeight = (int32_t)(rcWork.Height() * 0.80f);
-        window->CreateWnd(nullptr, createParam);
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("TreeView"), true));
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -41,4 +36,9 @@ private:
     }
 };
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

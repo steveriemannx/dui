@@ -8,15 +8,10 @@ Item::Item(ui::Window* pWindow):
     m_pProgressControl(nullptr),
     m_pDelBtn(nullptr)
 {
-    //The item layout is built with pure code (corresponding to the item.xml template; the template XML is no longer loaded)
-    //The Item style classes are registered by ListBoxForm::OnInitWindow via AddClass
     //Build the subtree bottom-up, matching how item.xml is loaded: a container is
     //attached only after its children are populated, and the item root's own
     //class/height attributes are applied last (FillBoxWithCache does the same).
-    ui::HBox* pRow = new ui::HBox(pWindow);
-    pRow->SetAttribute(_T("height"), _T("auto"));
-    pRow->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pRow->SetAttribute(_T("padding"), _T("18,5,10,5"));
+    auto* pRow = ui::Create<ui::HBox>(pWindow, {{_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}, {_T("padding"), _T("18,5,10,5")}});
 
     m_pImageControl = new ui::Control(pWindow);
     m_pImageControl->SetName(_T("control_img"));
@@ -26,13 +21,9 @@ Item::Item(ui::Window* pWindow):
     m_pImageControl->SetAttribute(_T("mouse_enabled"), _T("false"));
     pRow->AddItem(m_pImageControl);
 
-    ui::VBox* pRight = new ui::VBox(pWindow);
-    pRight->SetAttribute(_T("margin"), _T("0,3,0,5"));
-    pRight->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pRight = ui::Create<ui::VBox>(pWindow, {{_T("margin"), _T("0,3,0,5")}, {_T("mouse_enabled"), _T("false")}});
 
-    ui::HBox* pTitleRow = new ui::HBox(pWindow);
-    pTitleRow->SetAttribute(_T("height"), _T("auto"));
-    pTitleRow->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pTitleRow = ui::Create<ui::HBox>(pWindow, {{_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}});
 
     m_pTitleLabel = new ui::Label(pWindow);
     m_pTitleLabel->SetName(_T("label_title"));
@@ -51,9 +42,7 @@ Item::Item(ui::Window* pWindow):
 
     pRight->AddItem(pTitleRow);
 
-    ui::Control* pStretch = new ui::Control(pWindow);
-    pStretch->SetAttribute(_T("height"), _T("stretch"));
-    pStretch->SetAttribute(_T("mouse_enabled"), _T("false"));
+    auto* pStretch = ui::Create<ui::Control>(pWindow, {{_T("height"), _T("stretch")}, {_T("mouse_enabled"), _T("false")}});
     pRight->AddItem(pStretch);
 
     m_pProgressControl = new ui::Progress(pWindow);

@@ -24,9 +24,8 @@ DString CefForm::GetSkinFile()
 
 void CefForm::OnInitWindow()
 {
-#if !defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_MACOS)
+#if !defined (DUI_BUILD_FOR_WIN)
     //Linux platform: in non-off-screen rendering mode, use the system caption bar
-    //(On macOS dui keeps the self-drawn title bar + traffic lights + system shadow.)
     if (!kEnableOffScreenRendering) {
         SetUseSystemCaption(true);
     }
@@ -119,7 +118,6 @@ void CefForm::OnInitWindow()
     DString logMsg = ui::StringUtil::Printf(_T("[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
     std::cout << logMsg << std::endl;
 #endif
-    BaseClass::OnInitWindow();
 }
 
 void CefForm::OnPreCloseWindow()

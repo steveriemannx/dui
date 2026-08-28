@@ -6,7 +6,6 @@
 
 class AnimationForm : public ui::WindowImplBase
 {
-    typedef ui::WindowImplBase BaseClass;
 public:
     AnimationForm();
     virtual ~AnimationForm() override;

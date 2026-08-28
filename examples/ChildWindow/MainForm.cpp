@@ -104,16 +104,7 @@ bool MainForm::PaintNextChildWindow(ui::ChildWindow* pChildWindow)
 
 bool MainForm::PaintNextChildWindow()
 {
-    // Paint every visible child window on each idle pass so the FPS demo can
-    // reach high rates on macOS as well; a strict round-robin makes each child
-    // only get a fraction of the idle-loop frequency.
-    for (MyChildWindowEvents* pEvents : m_childWindowEvents) {
-        if ((pEvents != nullptr) && (pEvents->GetChildWindow() != nullptr) &&
-            pEvents->GetChildWindow()->IsVisible()) {
-            PaintChildWindow(pEvents->GetChildWindow());
-        }
-    }
-    return true;
+    return DoPaintNextChildWindow(m_pChildWindow);
 }
 
 bool MainForm::DoPaintNextChildWindow(ui::ChildWindow * pChildWindow)

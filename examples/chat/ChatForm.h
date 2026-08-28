@@ -6,7 +6,6 @@
 
 class ChatForm : public ui::WindowImplBase
 {
-    typedef ui::WindowImplBase BaseClass;
 public:
     ChatForm(const DString& class_name, const DString& theme_directory, const DString& layout_xml);
     virtual ~ChatForm() override;

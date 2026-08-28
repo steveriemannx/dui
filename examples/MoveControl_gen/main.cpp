@@ -21,10 +21,7 @@ private:
         ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
         MoveControlForm* window = new MoveControlForm();
-        ui::WindowCreateParam createParam(_T("move_control"), true);
-        createParam.m_nWidth = 540;
-        createParam.m_nHeight = 535;
-        window->CreateWnd(nullptr, createParam);
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("move_control"), true));
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -35,4 +32,9 @@ private:
     }
 };
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

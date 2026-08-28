@@ -214,14 +214,6 @@ void ReplaceForm::BuildUI()
 
 void ReplaceForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-
     // Hand-written pure code UI (corresponds to the replace.xml layout, equivalent to the generator output)
     BuildUI();
 
@@ -289,7 +281,6 @@ void ReplaceForm::OnInitWindow()
                 return true;
             });
     }
-    BaseClass::OnInitWindow();
 }
 
 void ReplaceForm::OnFindNext()

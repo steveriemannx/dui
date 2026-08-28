@@ -20,17 +20,10 @@ private:
         resourcePath += _T("resources\\");
         ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
-        // Create a default centered window with a shadow, sized like the XML
-        // version (child_window.xml uses size="75%,85%").
-        ui::UiRect rcWork;
-        ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-        ui::WindowCreateParam createParam(_T("ChildWindow"), true);
-        createParam.m_nWidth = (int32_t)(rcWork.Width() * 0.85f);
-        createParam.m_nHeight = (int32_t)(rcWork.Height() * 0.90f);
-
+        // Create a default centered window with a shadow
         MainForm* window = new MainForm();
         m_pMainForm = window;
-        window->CreateWnd(nullptr, createParam);
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("ChildWindow"), true));
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -55,4 +48,9 @@ private:
     ui::ControlPtrT<MainForm> m_pMainForm;
 };
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

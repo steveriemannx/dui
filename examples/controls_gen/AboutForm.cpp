@@ -94,14 +94,6 @@ void AboutForm::BuildUI()
 
 void AboutForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-
     BuildUI();
 
     ui::Label* link = static_cast<ui::Label*>(FindControl(_T("link")));
@@ -111,6 +103,5 @@ void AboutForm::OnInitWindow()
             return true;
         });
     }
-    BaseClass::OnInitWindow();
 }
 

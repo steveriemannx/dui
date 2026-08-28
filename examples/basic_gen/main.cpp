@@ -19,15 +19,8 @@ private:
         resourcePath += _T("resources\\");
         ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
-        // Match basic.xml: size="75%,75%".
-        ui::UiRect rcWork;
-        ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-        ui::WindowCreateParam createParam(_T("Basic (Generated Code)"), true);
-        createParam.m_nWidth = (int32_t)(rcWork.Width() * 0.75f);
-        createParam.m_nHeight = (int32_t)(rcWork.Height() * 0.75f);
-
         MainForm* window = new MainForm();
-        window->CreateWnd(nullptr, createParam);
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("Basic (Generated Code)"), true));
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -38,4 +31,9 @@ private:
     }
 };
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

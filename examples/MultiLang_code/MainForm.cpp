@@ -1,4 +1,5 @@
-#include "MainForm.h"
+﻿#include "MainForm.h"
+#include "dui/Utils/UiBuilder.h"
 
 MainForm::MainForm()
 {
@@ -54,132 +55,105 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
 
 void MainForm::BuildUI()
 {
-    // Window-level Class definition (corresponding to <Class name="btn_language"> in MultiLang.xml)
+    using namespace ui;
+
+    // Window-level class definition (corresponding to <Class name="btn_language"> in MultiLang.xml)
     AddClass(_T("btn_language"),
-             _T(" normal_image=\"file='language.svg' width='18' height='18' valign='center' halign='center'\" hot_color=\"AliceBlue\" pushed_color=\"Lavender\""));
+        _T(" normal_image=\"file='language.svg' width='18' height='18' valign='center' halign='center'\" hot_color=\"AliceBlue\" pushed_color=\"Lavender\""));
 
-    ui::VBox* pRoot = new ui::VBox(this);
-    pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
+    auto* root = Create<ui::VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}});
 
-    // Title bar area
-    ui::HBox* pCaption = new ui::HBox(this);
-    pCaption->SetAttribute(_T("name"), _T("window_caption_bar"));
-    pCaption->SetAttribute(_T("width"), _T("stretch"));
-    pCaption->SetAttribute(_T("height"), _T("36"));
-    pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
-    pRoot->AddItem(pCaption);
+    auto* caption = Create<ui::HBox>(this,
+        {{"name", "window_caption_bar"},
+         {"width", "stretch"},
+         {"height", "36"},
+         {"bkcolor", "bk_wnd_lightcolor"}});
 
-    ui::Label* pTitle = new ui::Label(this);
-    pTitle->SetTextId(_T("MULTI_LANG_WINDOW_TEXT"));
-    pTitle->SetAttribute(_T("height"), _T("32"));
-    pTitle->SetAttribute(_T("width"), _T("stretch"));
-    pTitle->SetAttribute(_T("margin"), _T("8,2,0,2"));
-    pTitle->SetAttribute(_T("text_align"), _T("vcenter,left"));
-    pTitle->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pCaption->AddItem(pTitle);
+    auto* title = Attach<ui::Label>(caption,
+        {{"height", "32"}, {"width", "stretch"},
+         {"margin", "8,2,0,2"},
+         {"text_align", "vcenter,left"},
+         {"mouse_enabled", "false"}});
+    title->SetTextId(_T("MULTI_LANG_WINDOW_TEXT"));
 
-    ui::Control* pSpacer = new ui::Control(this);
-    pSpacer->SetAttribute(_T("width"), _T("40"));
-    pSpacer->SetAttribute(_T("mouse_enabled"), _T("false"));
-    pCaption->AddItem(pSpacer);
+    Attach<ui::Control>(caption, {{"width", "40"}, {"mouse_enabled", "false"}});
 
-    ui::Button* pLangBtn = new ui::Button(this);
-    pLangBtn->SetClass(_T("btn_language"));
-    pLangBtn->SetAttribute(_T("height"), _T("32"));
-    pLangBtn->SetAttribute(_T("width"), _T("40"));
-    pLangBtn->SetName(_T("language"));
-    pLangBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
-    pLangBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_LANGUAGE"));
-    pCaption->AddItem(pLangBtn);
+    auto* langBtn = Attach<ui::Button>(caption,
+        {{"class", "btn_language"},
+         {"height", "32"}, {"width", "40"},
+         {"name", "language"},
+         {"margin", "0,2,0,2"}});
+    langBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_LANGUAGE"));
 
-    ui::Button* pMinBtn = new ui::Button(this);
-    pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetAttribute(_T("height"), _T("32"));
-    pMinBtn->SetAttribute(_T("width"), _T("40"));
-    pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetAttribute(_T("margin"), _T("0,2,0,2"));
-    pMinBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_WINDOW_MIN"));
-    pCaption->AddItem(pMinBtn);
+    auto* minBtn = Attach<ui::Button>(caption,
+        {{"class", "btn_wnd_min_11"},
+         {"height", "32"}, {"width", "40"},
+         {"name", "minbtn"},
+         {"margin", "0,2,0,2"}});
+    minBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_WINDOW_MIN"));
 
-    ui::Box* pMaxBox = new ui::Box(this);
-    pMaxBox->SetAttribute(_T("height"), _T("stretch"));
-    pMaxBox->SetAttribute(_T("width"), _T("40"));
-    pMaxBox->SetAttribute(_T("margin"), _T("0,2,0,2"));
-    pCaption->AddItem(pMaxBox);
+    auto* maxBox = Attach<ui::Box>(caption,
+        {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
 
-    ui::Button* pMaxBtn = new ui::Button(this);
-    pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetAttribute(_T("height"), _T("32"));
-    pMaxBtn->SetAttribute(_T("width"), _T("stretch"));
-    pMaxBtn->SetName(_T("maxbtn"));
-    pMaxBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_WINDOW_MAX"));
-    pMaxBox->AddItem(pMaxBtn);
+    auto* maxBtn = Attach<ui::Button>(maxBox,
+        {{"class", "btn_wnd_max_11"},
+         {"height", "32"}, {"width", "stretch"},
+         {"name", "maxbtn"}});
+    maxBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_WINDOW_MAX"));
 
-    ui::Button* pRestoreBtn = new ui::Button(this);
-    pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetAttribute(_T("height"), _T("32"));
-    pRestoreBtn->SetAttribute(_T("width"), _T("stretch"));
-    pRestoreBtn->SetName(_T("restorebtn"));
-    pRestoreBtn->SetVisible(false);
-    pRestoreBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_WINDOW_RESTORE"));
-    pMaxBox->AddItem(pRestoreBtn);
+    auto* restoreBtn = Attach<ui::Button>(maxBox,
+        {{"class", "btn_wnd_restore_11"},
+         {"height", "32"}, {"width", "stretch"},
+         {"name", "restorebtn"}, {"visible", "false"}});
+    restoreBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_WINDOW_RESTORE"));
 
-    ui::Button* pCloseBtn = new ui::Button(this);
-    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetAttribute(_T("height"), _T("stretch"));
-    pCloseBtn->SetAttribute(_T("width"), _T("40"));
-    pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetAttribute(_T("margin"), _T("0,0,0,2"));
-    pCloseBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_WINDOW_CLOSE"));
-    pCaption->AddItem(pCloseBtn);
+    auto* closeBtn = Attach<ui::Button>(caption,
+        {{"class", "btn_wnd_close_11"},
+         {"height", "stretch"}, {"width", "40"},
+         {"name", "closebtn"},
+         {"margin", "0,0,0,2"}});
+    closeBtn->SetToolTipTextId(_T("MULTI_LANG_SELECT_WINDOW_CLOSE"));
 
-    // Work area
-    ui::Box* pContent = new ui::Box(this);
-    pRoot->AddItem(pContent);
+    root->AddItem(caption);
 
-    ui::VBox* pCenter = new ui::VBox(this);
-    pCenter->SetAttribute(_T("margin"), _T("0,0,0,0"));
-    pCenter->SetAttribute(_T("valign"), _T("center"));
-    pCenter->SetAttribute(_T("halign"), _T("center"));
-    pContent->AddItem(pCenter);
+    auto* content = Attach<ui::Box>(root);
+    auto* center = Attach<ui::VBox>(content,
+        {{"margin", "0,0,0,0"},
+         {"valign", "center"},
+         {"halign", "center"}});
 
-    ui::Label* pLabel1 = new ui::Label(this);
-    pLabel1->SetTextId(_T("LANGUAGE_DISPLAY_NAME"));
-    pLabel1->SetAttribute(_T("height"), _T("20%"));
-    pLabel1->SetAttribute(_T("width"), _T("100%"));
-    pLabel1->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
-    pLabel1->SetBkColor(_T("AntiqueWhite"));
-    pCenter->AddItem(pLabel1);
+    auto* label1 = Attach<ui::Label>(center,
+        {{"height", "20%"},
+         {"width", "100%"},
+         {"text_align", "hcenter,vcenter"},
+         {"bkcolor", "AntiqueWhite"}});
+    label1->SetTextId(_T("LANGUAGE_DISPLAY_NAME"));
 
-    ui::Label* pLabel2 = new ui::Label(this);
-    pLabel2->SetTextId(_T("MULTI_LANG_LABEL_TEXT"));
-    pLabel2->SetAttribute(_T("height"), _T("20%"));
-    pLabel2->SetAttribute(_T("width"), _T("100%"));
-    pLabel2->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
-    pLabel2->SetBkColor(_T("LightCyan"));
-    pCenter->AddItem(pLabel2);
+    auto* label2 = Attach<ui::Label>(center,
+        {{"height", "20%"},
+         {"width", "100%"},
+         {"text_align", "hcenter,vcenter"},
+         {"bkcolor", "LightCyan"}});
+    label2->SetTextId(_T("MULTI_LANG_LABEL_TEXT"));
 
-    // RichText rich text (the text_id content is provided by the language file, with no embedded markup)
-    ui::RichText* pRichText = new ui::RichText(this);
-    pRichText->SetTextId(_T("MULTI_LANG_RICH_TEXT"));
-    pRichText->SetAttribute(_T("trim_policy"), _T("none"));
-    pRichText->SetAttribute(_T("height"), _T("20%"));
-    pRichText->SetAttribute(_T("width"), _T("100%"));
-    pRichText->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
-    pRichText->SetBkColor(_T("NavajoWhite"));
-    pCenter->AddItem(pRichText);
+    auto* richText = Attach<ui::RichText>(center,
+        {{"trim_policy", "none"},
+         {"height", "20%"},
+         {"width", "100%"},
+         {"text_align", "hcenter,vcenter"},
+         {"bkcolor", "NavajoWhite"}});
+    richText->SetTextId(_T("MULTI_LANG_RICH_TEXT"));
 
-    ui::Label* pLabel3 = new ui::Label(this);
-    pLabel3->SetAttribute(_T("rich_text"), _T("true"));
-    pLabel3->SetTextId(_T("MULTI_LANG_RICH_TEXT"));
-    pLabel3->SetAttribute(_T("height"), _T("auto"));
-    pLabel3->SetAttribute(_T("width"), _T("auto"));
-    pLabel3->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
-    pLabel3->SetAttribute(_T("text_padding"), _T("10,10,10,10"));
-    pLabel3->SetBkColor(_T("LightCyan"));
-    pCenter->AddItem(pLabel3);
+    auto* label3 = Attach<ui::Label>(center,
+        {{"rich_text", "true"},
+         {"height", "auto"},
+         {"width", "auto"},
+         {"text_align", "hcenter,vcenter"},
+         {"text_padding", "10,10,10,10"},
+         {"bkcolor", "LightCyan"}});
+    label3->SetTextId(_T("MULTI_LANG_RICH_TEXT"));
 
-    AttachBox(pRoot);
+    AttachBox(root);
 }
 
 void MainForm::OnInitWindow()
@@ -191,11 +165,10 @@ void MainForm::OnInitWindow()
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
-
     BuildUI();
 
     /* Show select language menu */
-    ui::Button* select = dynamic_cast<ui::Button*>(FindControl(_T("language")));
+    auto* select = ui::Find<ui::Button>(this, _T("language"));
     ASSERT(select != nullptr);
     if (select == nullptr) {
         return;
@@ -203,9 +176,7 @@ void MainForm::OnInitWindow()
     select->AttachClick([this](const ui::EventArgs& args) {
         ui::UiRect rect = args.GetSender()->GetPos();
         ui::UiPoint point;
-        //Pop up the menu right below the language button: align the menu's
-        //right edge with the button's right edge (RIGHT_TOP alignment)
-        point.x = rect.right;
+        point.x = rect.left;
         point.y = rect.bottom;
         ClientToScreen(point);
 
@@ -218,7 +189,7 @@ void MainForm::OnInitWindow()
 
 void MainForm::ShowPopupMenu(const ui::UiPoint& point)
 {
-    ui::Menu* menu = new ui::Menu(this);// The parent window must be set; otherwise, when the menu pops up, the program status bar becomes inactive
+    ui::Menu* menu = new ui::Menu(this); // The parent window must be set; otherwise, when the menu pops up, the program status bar becomes inactive
     // Pure code menu: no XML template; all menu items are added by code
     menu->ShowMenu(_T(""), point);
 
@@ -232,28 +203,6 @@ void MainForm::ShowPopupMenu(const ui::UiPoint& point)
         languageList.push_back({ currentLangFileName , _T("")});
     }
 
-    // Match the XML lang_menu.xml header row: "选择语言" plus a separator,
-    // before the dynamically added language items.
-    {
-        ui::HBox* pHeader = new ui::HBox(this);
-        pHeader->SetClass(_T("menu_split_box"));
-        pHeader->SetAttribute(_T("height"), _T("36"));
-        pHeader->SetAttribute(_T("width"), _T("256"));
-        ui::Label* pLabel = new ui::Label(this);
-        pLabel->SetClass(_T("menu_text"));
-        pLabel->SetTextId(_T("MULTI_LANG_SELECT_LANGUAGE"));
-        pLabel->SetAttribute(_T("text_padding"), _T("0,0,6,0"));
-        pHeader->AddItem(pLabel);
-        menu->AddMenuControl(pHeader);
-
-        ui::Box* pSeparator = new ui::Box(this);
-        pSeparator->SetClass(_T("menu_split_box"));
-        ui::Control* pLine = new ui::Control(this);
-        pLine->SetClass(_T("menu_split_line"));
-        pSeparator->AddItem(pLine);
-        menu->AddMenuControl(pSeparator);
-    }
-
     // Add menu items dynamically
     for (auto& lang : languageList) {
         const DString fileName = lang.first;
@@ -261,9 +210,6 @@ void MainForm::ShowPopupMenu(const ui::UiPoint& point)
 
         ui::MenuItem* pMenuItem = new ui::MenuItem(this);
         pMenuItem->SetClass(_T("menu_element"));
-        //Pure-code menus have no XML width; give the items the same width as
-        //the XML lang_menu.xml header row (256) so the popup window is visible.
-        pMenuItem->SetFixedWidth(ui::UiFixedInt(256), true, true);
         ui::CheckBox* pCheckBox = new ui::CheckBox(this);
         pCheckBox->SetClass(_T("menu_checkbox"));
         pCheckBox->SetAttribute(_T("margin"), _T("0,5,0,10"));

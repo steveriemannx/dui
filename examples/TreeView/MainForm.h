@@ -13,7 +13,6 @@ class ExplorerView;
 
 class MainForm : public ui::WindowImplBase
 {
-    typedef ui::WindowImplBase BaseClass;
 public:
     MainForm();
     virtual ~MainForm() override;

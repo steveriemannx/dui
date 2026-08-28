@@ -7,7 +7,6 @@
 class MainForm;
 class ReplaceForm : public ui::WindowImplBase
 {
-    typedef ui::WindowImplBase BaseClass;
 public:
     explicit ReplaceForm(MainForm* pMainForm);
     virtual ~ReplaceForm() override;

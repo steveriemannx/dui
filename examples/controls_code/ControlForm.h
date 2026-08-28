@@ -18,6 +18,10 @@ public:
     virtual DString GetSkinFolder() override;
     virtual DString GetSkinFile() override;
 
+    /** Window attributes corresponding to controls.xml
+    */
+    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
+
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;

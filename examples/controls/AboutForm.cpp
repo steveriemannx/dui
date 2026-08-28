@@ -27,6 +27,5 @@ void AboutForm::OnInitWindow()
             return true;
         });
     }
-    BaseClass::OnInitWindow();
 }
 

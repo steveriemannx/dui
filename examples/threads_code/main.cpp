@@ -50,10 +50,7 @@ void App::OnInit()
 
     // Create a default centered window with a shadow
     m_pMainForm = new MainForm(this);
-            ui::WindowCreateParam createParam(_T("threads (Pure Code)"), true);
-        createParam.m_nWidth = 1000;
-        createParam.m_nHeight = 700;
-        m_pMainForm->CreateWnd(nullptr, createParam);
+    m_pMainForm->CreateWnd(nullptr, ui::WindowCreateParam(_T("threads (Pure Code)"), true));
     m_pMainForm->PostQuitMsgWhenClosed(true);
     m_pMainForm->ShowWindow(ui::kSW_SHOW_NORMAL);
 
@@ -124,4 +121,9 @@ void App::PrintLog(const DString& log)
     }
 }
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

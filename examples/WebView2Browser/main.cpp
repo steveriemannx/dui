@@ -78,4 +78,7 @@ void App::OnCleanup()
     ui::GlobalManager::Instance().Shutdown();
 }
 
-DUI_APP_ENTRY_ARGS(App)
+int main(int argc, char** argv)
+{
+    return App::Instance().Run(argc, argv);
+}

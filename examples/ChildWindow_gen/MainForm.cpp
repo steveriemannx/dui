@@ -66,7 +66,7 @@ void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
 void MainForm::PreInitWindow()
 {
     BaseClass::PreInitWindow();
-    //Use the GPU (OpenGL) render backend on macOS, matching the XML example.
+    //Use the GPU (Metal) render backend on macOS, matching the XML example.
     SetRenderBackendType(ui::RenderBackendType::kMetal_BackendType);
 }
 
@@ -78,7 +78,6 @@ void MainForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
-
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);

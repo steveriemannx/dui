@@ -1,4 +1,4 @@
-#include "SimpleFileView.h"
+﻿#include "SimpleFileView.h"
 #include "MainForm.h"
 #include "MainForm.h"
 
@@ -14,9 +14,7 @@ public:
         // Pure code node layout construction (corresponds to the tree_node.xml template, no longer loads the template XML)
         SetClass(_T("listitem"));
 
-        ui::HBox* pRow = new ui::HBox(pWindow);
-        pRow->SetAttribute(_T("mouse_enabled"), _T("false"));
-        pRow->SetAttribute(_T("padding"), _T("4,4,4,4"));
+    auto* pRow = ui::Create<ui::HBox>(pWindow, {{_T("mouse_enabled"), _T("false")}, {_T("padding"), _T("4,4,4,4")}});
         AddItem(pRow);
 
         m_pIconControl = new ui::Control(pWindow);

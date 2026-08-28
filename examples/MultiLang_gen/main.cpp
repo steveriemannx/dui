@@ -20,10 +20,7 @@ private:
         ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
         MainForm* window = new MainForm();
-                ui::WindowCreateParam createParam(_T("MultiLang (Generated Code)"), true);
-        createParam.m_nWidth = 600;
-        createParam.m_nHeight = 400;
-        window->CreateWnd(nullptr, createParam);
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("MultiLang (Generated Code)"), true));
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -34,4 +31,9 @@ private:
     }
 };
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

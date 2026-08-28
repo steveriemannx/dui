@@ -70,7 +70,6 @@ void FindForm::OnInitWindow()
                 return true;
             });
     }
-    BaseClass::OnInitWindow();
 }
 
 void FindForm::OnFindNext()

@@ -24,10 +24,7 @@ private:
         InitThemeCompileTime();
 
         MainForm* window = new MainForm();
-                ui::WindowCreateParam createParam(_T("Generated List Demo"), true);
-        createParam.m_nWidth = 900;
-        createParam.m_nHeight = 600;
-        window->CreateWnd(nullptr, createParam);
+        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("Generated List Demo"), true));
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -38,4 +35,9 @@ private:
     }
 };
 
-DUI_APP_ENTRY(App)
+int main()
+{
+    App app;
+    app.Run();
+    return 0;
+}

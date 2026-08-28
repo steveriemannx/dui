@@ -7,7 +7,6 @@
 class MainForm;
 class FindForm : public ui::WindowImplBase
 {
-    typedef ui::WindowImplBase BaseClass;
 public:
     explicit FindForm(MainForm* pMainForm);
     virtual ~FindForm() override;

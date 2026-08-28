@@ -65,9 +65,9 @@ void MainForm::PreInitWindow()
 {
     BaseClass::PreInitWindow();
 
-    // No layout XML is loaded, so Window::ParseWindowXml attempted to load an
-    // empty XML and reset the window resource sub-path; restore it now so image
-    // paths resolve from the "virtual_list_box" folder.
+    // No layout XML is loaded, so Window::ParseWindowXml cannot establish the
+    // window resource sub-path; set it explicitly so image paths resolve from
+    // the "virtual_list_box" folder.
     SetResourcePath(ui::FilePath(_T("virtual_list_box")));
     SetWindowMinimumSize(ui::UiSize(750, 500), true);
 }
@@ -81,9 +81,8 @@ void MainForm::OnInitWindow()
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
-
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
 
     // Build-time generated from main.xml
     InitMain(this);

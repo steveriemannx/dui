@@ -2,7 +2,7 @@
 
 #if defined (DUI_BUILD_FOR_WIN)
     #include "dui/Utils/BitmapHelper_Windows.h"
-#elif defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_MACOS)
+#elif defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
     #include "dui/Utils/BitmapHelper_SDL.h"
 #endif
 
@@ -52,10 +52,7 @@ void RenderTest1::Paint(IRender* pRender, const UiRect& rcPaint)
         LoadImageInfo(*m_pImage);
     }
     const Image& image = *m_pImage;
-    if (image.GetImageInfo() == nullptr) {
-        return;
-    }
-
+    
     rect.right = rect.left + image.GetImageInfo()->GetWidth();
     rect.bottom = rect.top + image.GetImageInfo()->GetHeight();
 
@@ -63,9 +60,6 @@ void RenderTest1::Paint(IRender* pRender, const UiRect& rcPaint)
     UiRect rcImageSource(0, 0, image.GetImageInfo()->GetWidth(), image.GetImageInfo()->GetHeight());
 
     std::shared_ptr<IBitmap> pBitmap = image.GetCurrentBitmap(false, rect, rcImageSource, rcSourceCorner, nullptr);
-    if (pBitmap == nullptr) {
-        return;
-    }
     pRender->DrawImage(rcPaint, pBitmap.get(), rect, UiRect(), rcImageSource, UiRect());
 
     //Draw the image semi-transparently
@@ -84,9 +78,6 @@ void RenderTest1::Paint(IRender* pRender, const UiRect& rcPaint)
     //The three drawing functions: BitBlt/StretchBlt/AlphaBlend
     IRender* pSrcRender = BitmapHelper::CreateRenderObject(pBitmap.get());
     ASSERT(pSrcRender != nullptr);
-    if (pSrcRender == nullptr) {
-        return;
-    }
 
     rect.left = rect.right + marginLeft;
     rect.right = rect.left + image.GetImageInfo()->GetWidth();

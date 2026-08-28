@@ -1,4 +1,4 @@
-#include "MainForm.h"
+﻿#include "MainForm.h"
 #include "RichEditBuildUI.inc"  // Pure code UI construction (transcribed from rich_edit.xml, see RichEditBuildUI.inc)
 #include "FindForm.h"
 #include "ReplaceForm.h"
@@ -43,7 +43,6 @@ void MainForm::OnInitWindow()
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
-
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
@@ -598,29 +597,18 @@ void MainForm::InitColorCombo()
     // The color combo box template is built by code (no longer loads color_combox.xml)
     AddClass(_T("color_combo_picker_btn"),
              _T(" font=\"system_14\" normal_text_color=\"black\" disabled_text_color=\"gray\" text_align=\"hcenter,vcenter\" border_size=\"1\" hot_border_color=\"#FFB3D0EE\" pushed_border_color=\"#FF82B4E8\" hot_color=\"#FFE8EFF7\" pushed_color=\"#FFC9E0F7\""));
-    ui::VBox* pColorBox = new ui::VBox(this);
+    auto* pColorBox = ui::Create<ui::VBox>(this, {});
     pColorBox->SetBkColor(_T("bk_wnd_darkcolor"));
     pComboBox->AddItem(pColorBox);
 
-    ui::ColorPickerRegular* pNewColorPicker = new ui::ColorPickerRegular(this);
+    auto* pNewColorPicker = ui::Create<ui::ColorPickerRegular>(this, {{_T("color_type"), _T("default")}, {_T("item_size"), _T("40,20")}, {_T("columns"), _T("10")}, {_T("child_margin"), _T("2")}, {_T("padding"), _T("2,2,2,2")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}});
     pNewColorPicker->SetName(_T("color_combo_picker"));
-    pNewColorPicker->SetAttribute(_T("color_type"), _T("default"));
-    pNewColorPicker->SetAttribute(_T("item_size"), _T("40,20"));
-    pNewColorPicker->SetAttribute(_T("columns"), _T("10"));
-    pNewColorPicker->SetAttribute(_T("child_margin"), _T("2"));
-    pNewColorPicker->SetAttribute(_T("padding"), _T("2,2,2,2"));
-    pNewColorPicker->SetAttribute(_T("halign"), _T("center"));
-    pNewColorPicker->SetAttribute(_T("valign"), _T("center"));
     pColorBox->AddItem(pNewColorPicker);
 
-    ui::Button* pNewMoreColorButton = new ui::Button(this);
+    auto* pNewMoreColorButton = ui::Create<ui::Button>(this, {{_T("width"), _T("auto")}, {_T("height"), _T("30")}, {_T("margin"), _T("2,0,2,2")}, {_T("halign"), _T("center")}});
     pNewMoreColorButton->SetClass(_T("color_combo_picker_btn"));
     pNewMoreColorButton->SetName(_T("color_combo_picker_more"));
     pNewMoreColorButton->SetText(_T("  More Colors ...  "));
-    pNewMoreColorButton->SetAttribute(_T("width"), _T("auto"));
-    pNewMoreColorButton->SetAttribute(_T("height"), _T("30"));
-    pNewMoreColorButton->SetAttribute(_T("margin"), _T("2,0,2,2"));
-    pNewMoreColorButton->SetAttribute(_T("halign"), _T("center"));
     pColorBox->AddItem(pNewMoreColorButton);
     ui::ColorPickerRegular* pColorPicker = dynamic_cast<ui::ColorPickerRegular*>(pComboBox->FindSubControl(_T("color_combo_picker")));
     if (pColorPicker != nullptr) {
