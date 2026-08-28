@@ -4,10 +4,6 @@
 
 #if defined(DUI_BUILD_FOR_MACOS)
 
-// SDL3 headers are only included for the SDL_WindowID return type of
-// ShadowWndBase::GetWindowID(), so the method signature stays source-compatible
-// with the SDL implementation. No SDL API is called in the native backend.
-#include <SDL3/SDL.h>
 
 namespace ui {
 
@@ -28,7 +24,7 @@ public:
 
     /** Get the ID of the associated window
     */
-    SDL_WindowID GetWindowID() const
+    uint32_t GetWindowID() const
     {
         // Stub: the SDL implementation maps the native window handle to an SDL
         // window ID via SDL_GetWindowID(); that mapping is meaningless in the

@@ -1,4 +1,5 @@
 #include "dui/Utils/ScreenCapture.h"
+#include "dui/dui_config.h"
 #include "dui/Core/GlobalManager.h"
 #include "dui/Core/NativeWindow_MacOS.h"
 
