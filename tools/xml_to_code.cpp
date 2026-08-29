@@ -284,17 +284,32 @@ static bool canNestNode(const pugi::xml_node& node, const std::string& parentTag
 }
 
 // Build a nested ui::Create<T>(pWindow, attrs, child1, child2, ...) expression.
+static std::string genIndent(int depth) {
+    return std::string(depth * 4, ' ');
+}
+
 static std::string genNodeExpr(const pugi::xml_node& node, const std::string& parentTag, int depth) {
     std::string tag = nodeName(node);
     std::string cls = cppClass(tag);
     std::string attrs = genAttrList(node);
     std::string expr = "ui::Create<" + cls + ">(pWindow, {" + attrs + "}";
+    bool hasChildren = false;
     for (auto child : node.children()) {
         if (child.type() == pugi::node_element) {
-            expr += ", " + genNodeExpr(child, tag, depth + 1);
+            hasChildren = true;
+            break;
         }
     }
-    expr += ")";
+    if (hasChildren) {
+        for (auto child : node.children()) {
+            if (child.type() == pugi::node_element) {
+                expr += ",\n" + genIndent(depth + 1) + genNodeExpr(child, tag, depth + 1);
+            }
+        }
+        expr += "\n" + genIndent(depth) + ")";
+    } else {
+        expr += ")";
+    }
     return expr;
 }
 
