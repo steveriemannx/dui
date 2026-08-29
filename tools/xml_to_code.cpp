@@ -288,11 +288,35 @@ static std::string genIndent(int depth) {
     return std::string(depth * 4, ' ');
 }
 
+// Format XML attributes as a multi-line initializer list when there are many,
+// matching the handwritten code style; short lists stay inline.
+static std::string genAttrBlock(const pugi::xml_node& node, int depth) {
+    std::vector<std::string> items;
+    for (const auto& a : node.attributes()) {
+        std::string name = a.name();
+        std::string value = a.value();
+        if (name.empty() || value.empty()) continue;
+        if (name == "on_click" || name == "on_select" || name == "on_change") continue;
+        if (name == "class") trackClass(value);
+        items.push_back("{_T(\"" + escapeCStr(name) + "\"), _T(\"" + escapeCStr(value) + "\")}");
+    }
+    if (items.empty()) return "{}";
+    if (items.size() == 1) return "{" + items[0] + "}";
+    std::string s = "{\n";
+    for (size_t i = 0; i < items.size(); ++i) {
+        s += genIndent(depth + 1) + items[i];
+        if (i + 1 < items.size()) s += ",";
+        s += "\n";
+    }
+    s += genIndent(depth) + "}";
+    return s;
+}
+
 static std::string genNodeExpr(const pugi::xml_node& node, const std::string& parentTag, int depth) {
     std::string tag = nodeName(node);
     std::string cls = cppClass(tag);
-    std::string attrs = genAttrList(node);
-    std::string expr = "ui::Create<" + cls + ">(pWindow, {" + attrs + "}";
+    std::string attrs = genAttrBlock(node, depth);
+    std::string expr = "ui::Create<" + cls + ">(pWindow, " + attrs;
     bool hasChildren = false;
     for (auto child : node.children()) {
         if (child.type() == pugi::node_element) {
@@ -301,11 +325,14 @@ static std::string genNodeExpr(const pugi::xml_node& node, const std::string& pa
         }
     }
     if (hasChildren) {
+        expr += ",";
         for (auto child : node.children()) {
             if (child.type() == pugi::node_element) {
-                expr += ",\n" + genIndent(depth + 1) + genNodeExpr(child, tag, depth + 1);
+                expr += "\n" + genIndent(depth + 1) + genNodeExpr(child, tag, depth + 1) + ",";
             }
         }
+        // Remove the trailing comma after the last child.
+        if (!expr.empty() && expr.back() == ',') expr.pop_back();
         expr += "\n" + genIndent(depth) + ")";
     } else {
         expr += ")";
