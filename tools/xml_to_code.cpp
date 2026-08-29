@@ -261,6 +261,43 @@ static std::string genAttrList(const pugi::xml_node& node) {
     return s;
 }
 
+// Whether a node can be emitted as one nested ui::Create expression.
+// TreeView/TreeNode, RichText and window-resource nodes stay on the
+// sequential path because they need special add/parse handling.
+static bool canNestNode(const pugi::xml_node& node, const std::string& parentTag) {
+    std::string tag = nodeName(node);
+    if (tag.empty()) return false;
+    if (tag == "TreeNode" || tag == "RichText" || tag == "Class" ||
+        tag == "TextColor" || tag == "Font" || tag == "DefaultFontFamilyNames") {
+        return false;
+    }
+    if (cppClass(tag).empty()) return false;
+    if (parentTag == "TreeView" || parentTag == "TreeNode" || parentTag == "Combo") {
+        return false;
+    }
+    for (auto child : node.children()) {
+        if (child.type() == pugi::node_element) {
+            if (!canNestNode(child, tag)) return false;
+        }
+    }
+    return true;
+}
+
+// Build a nested ui::Create<T>(pWindow, attrs, child1, child2, ...) expression.
+static std::string genNodeExpr(const pugi::xml_node& node, const std::string& parentTag, int depth) {
+    std::string tag = nodeName(node);
+    std::string cls = cppClass(tag);
+    std::string attrs = genAttrList(node);
+    std::string expr = "ui::Create<" + cls + ">(pWindow, {" + attrs + "}";
+    for (auto child : node.children()) {
+        if (child.type() == pugi::node_element) {
+            expr += ", " + genNodeExpr(child, tag, depth + 1);
+        }
+    }
+    expr += ")";
+    return expr;
+}
+
 static void genNode(std::ostream& out, const pugi::xml_node& node,
                     const std::string& parentVar, const std::string& parentTag, int depth) {
     std::string tag = nodeName(node);
@@ -302,6 +339,13 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
     if (tag == "DefaultFontFamilyNames") {
         out << "    ui::GlobalManager::Instance().Font().SetDefaultFontFamilyNames(_T(\""
             << escapeCStr(attr(node, "value")) << "\"));\n";
+        return;
+    }
+
+    if (parentVar.empty() && canNestNode(node, parentTag)) {
+        std::string var = "p" + std::to_string(g_varId++);
+        out << "    auto* " << var << " = " << genNodeExpr(node, parentTag, depth) << ";\n";
+        out << "\n";
         return;
     }
 
