@@ -1,4 +1,4 @@
-﻿#include "ChatForm.h"
+#include "ChatForm.h"
 
 ChatForm::ChatForm(LayoutType layoutType):
     m_layoutType(layoutType)
@@ -62,12 +62,32 @@ void ChatForm::PreInitWindow()
 void ChatForm::BuildWechatUI()
 {
     // Corresponds to the wechat.xml layout
-    auto* pRoot = ui::Create<ui::HBox>(this, {{_T("width"), _T("304")}, {_T("height"), _T("auto")}});
+    auto* pRoot = ui::Create<ui::VBox>(this, {});
+
+    // Window caption bar (macOS traffic lights are inserted by the framework)
+    auto* pCaptionBar = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}, {_T("bkcolor"), _T("bk_wnd_lightcolor")}});
+    pRoot->AddItem(pCaptionBar);
+
+    auto* pCaptionFiller = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
+    pCaptionBar->AddItem(pCaptionFiller);
+
+    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{_T("class"), _T("btn_wnd_fullscreen_11")}, {_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("name"), _T("fullscreenbtn")}, {_T("margin"), _T("0,2,0,2")}, {_T("tooltip_text"), _T("Fullscreen, press ESC to exit fullscreen")}});
+    pCaptionBar->AddItem(pFullscreenBtn);
+
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("class"), _T("btn_wnd_min_11")}, {_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("name"), _T("minbtn")}, {_T("margin"), _T("0,2,0,2")}, {_T("tooltip_text"), _T("Minimize")}});
+    pCaptionBar->AddItem(pMinBtn);
+
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("class"), _T("btn_wnd_close_11")}, {_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("name"), _T("closebtn")}, {_T("margin"), _T("0,0,0,2")}, {_T("tooltip_text"), _T("Close")}});
+    pCaptionBar->AddItem(pCloseBtn);
+
+    // Main content area
+    auto* pContent = ui::Create<ui::HBox>(this, {});
+    pRoot->AddItem(pContent);
 
     // Left menu bar
     auto* pLeftMenu = ui::Create<ui::VBox>(this, {{_T("width"), _T("60")}});
     pLeftMenu->SetBkColor(_T("darkcolor"));
-    pRoot->AddItem(pLeftMenu);
+    pContent->AddItem(pLeftMenu);
 
     auto* pHead = ui::Create<ui::Control>(this, {{_T("width"), _T("40")}, {_T("height"), _T("40")}, {_T("margin"), _T("10,10")}});
     pHead->SetBkImage(_T("head.png"));
@@ -76,7 +96,7 @@ void ChatForm::BuildWechatUI()
     // Friend list
     auto* pFriendList = ui::Create<ui::VBox>(this, {{_T("width"), _T("270")}});
     pFriendList->SetBkColor(_T("light_gray"));
-    pRoot->AddItem(pFriendList);
+    pContent->AddItem(pFriendList);
 
     auto* pSearchBox = ui::Create<ui::Box>(this, {{_T("padding"), _T("10,8,10,8")}, {_T("height"), _T("auto")}});
     pFriendList->AddItem(pSearchBox);
@@ -95,7 +115,7 @@ void ChatForm::BuildWechatUI()
 
     // Chat area
     auto* pChatArea = ui::Create<ui::VBox>(this, {});
-    pRoot->AddItem(pChatArea);
+    pContent->AddItem(pChatArea);
 
     auto* pChatTitle = ui::Create<ui::HBox>(this, {{_T("height"), _T("80")}});
     pChatTitle->SetBkColor(_T("bk_wnd_darkcolor"));
