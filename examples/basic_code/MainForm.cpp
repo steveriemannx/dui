@@ -112,3 +112,21 @@ void MainForm::OnInitWindow()
     AttachBox(root);
     BaseClass::OnInitWindow();
 }
+
+bool MainForm::OnButtonClick(const ui::EventArgs& msg)
+{
+    ui::Control* pSender = msg.GetSender();
+    if (pSender == nullptr) return false;
+    DString sName = pSender->GetName();
+    if (sName == DUI_CTR_BUTTON_CLOSE) {
+        CloseWnd();
+    } else if (sName == DUI_CTR_BUTTON_MIN) {
+        ShowWindow(ui::kSW_MINIMIZE);
+    } else if (sName == DUI_CTR_BUTTON_MAX) {
+        ShowWindow(ui::kSW_SHOW_MAXIMIZED);
+    } else if (sName == DUI_CTR_BUTTON_RESTORE) {
+        ShowWindow(ui::kSW_RESTORE);
+    }
+    // The full-screen button is handled automatically by the WindowImplBase framework
+    return true;
+}

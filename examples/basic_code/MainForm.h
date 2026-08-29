@@ -17,6 +17,9 @@ public:
     virtual DString GetSkinFile() override;
     virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
     virtual void OnInitWindow() override;
+
+private:
+    bool OnButtonClick(const ui::EventArgs& msg);
 };
 
 #endif
