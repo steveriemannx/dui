@@ -46,7 +46,7 @@ void ControlForm::SetupWindow()
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
-    SetSizeBox(ui::UiRect(2, 2, 2, 2), true);
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
     SetUseSystemCaption(false);
     SetEnableSnapLayoutMenu(true);

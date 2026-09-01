@@ -15,7 +15,7 @@ void MainForm::SetupWindow()
     SetWindowMinimumSize(ui::UiSize(80, 50), true);
     SetUseSystemCaption(false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
-    SetLayeredWindow(true, false);
+    SetLayeredWindow(false, false);
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetShadowBorderSize(0);

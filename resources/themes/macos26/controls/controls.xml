@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="1000,760" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" use_system_caption="false" shadow_attached="true" size_box="2,2,2,2" min_size="400,320" icon="public/caption/logo.ico">
+<Window size="1000,760" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" use_system_caption="false" shadow_type="system_default" shadow_attached="true" shadow_snap="true" shadow_border_size="0" size_box="4,4,4,4" min_size="400,320" icon="public/caption/logo.ico">
     <Class name="check_combo" bordersize="1" bordercolor="splitline_level1"
            dropbox="padding='0,0,0,0' bkcolor='bk_wnd_lightcolor' border_color='splitline_level1' border_size='0,0,0,0' vscrollbar='true'"
            dropbox_item_class="width={stretch} height={24} text_padding={20,0,2,1} text_align={left,vcenter}

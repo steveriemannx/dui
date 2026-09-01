@@ -35,11 +35,7 @@ void MainForm::SetupWindow()
 
     SetShadowAttached(true);
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-#if defined(DUI_BUILD_FOR_MACOS)
-    SetLayeredWindow(true, false);
-#else
     SetLayeredWindow(false, false);
-#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);

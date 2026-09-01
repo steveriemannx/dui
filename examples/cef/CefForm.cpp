@@ -34,8 +34,13 @@ void CefForm::OnInitWindow()
 
     if (!IsUseSystemCaption()) {
         if (ui::CefManager::GetInstance()->IsEnableOffScreenRendering()) {
-            //Off-screen rendering: enable the layered window attribute
+            //OSR needs a layered window on Windows. On macOS, keep the window
+            //opaque so the system shadow does not draw a translucent edge.
+#if defined(DUI_BUILD_FOR_WIN)
             SetLayeredWindow(true, true);
+#else
+            SetLayeredWindow(false, true);
+#endif
         }
         else {
             //Window mode: disable the layered window attribute

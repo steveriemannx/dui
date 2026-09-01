@@ -9,7 +9,7 @@ void MainForm::SetupWindow()
     }
     SetShadowAttached(true);
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(true, false);
+    SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);

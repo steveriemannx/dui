@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Window size="700,320" min_size="400,300"
         caption="0,0,0,36" use_system_caption="false"
-        shadow_type="system_default" shadow_attached="true"
+        shadow_type="system_default" shadow_attached="true" shadow_snap="true" shadow_border_size="0"
         alpha="255" icon="public/caption/logo.ico">
     <VBox bkcolor="bk_wnd_darkcolor">
         <!-- Title bar area -->

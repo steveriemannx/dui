@@ -19,14 +19,12 @@ void MainForm::SetupWindow()
 
     SetShadowAttached(true);
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(true, false);
+    SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
     SetEnableSnapLayoutMenu(true);
     SetEnableSysMenu(true);
     SetSysMenuRect(ui::UiRect(0, 0, 36, 36), true);
-    SetLayeredWindowAlpha(255);
-
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
     SetWindowIcon("public/caption/logo.ico");

@@ -280,7 +280,7 @@ void BuildUIFromXmlRender(ui::Window* pWindow) {
     w.SetEnableSysMenu(true);
     w.SetSysMenuRect(ui::UiRect(0, 0, 36, 36), true);
     w.SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
-    w.SetLayeredWindow(true, false);
+    w.SetLayeredWindow(false, false);
     w.SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     w.SetText("Render Engine Test Program");
     w.SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
@@ -4601,4 +4601,3 @@ void BuildUIFromXmlRender(ui::Window* pWindow) {
 
     ui::Attach(pWindow, p0);
 }
-

@@ -1,4 +1,4 @@
-<Window size="80%,80%" shadow_attached="true" layered_window="true" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" size_box="4,4,4,4" text="TreeView Control Test Program" shadow_type="system_default" shadow_border_size="0">
+<Window size="80%,80%" shadow_attached="true" shadow_snap="true" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" size_box="4,4,4,4" text="TreeView Control Test Program" shadow_type="system_default" shadow_border_size="0">
     <!-- Class definitions under this window --> 
     <Class name="btn_view_common" width="32" height="24" border_round="4,4" valign="center" 
                                   normal_color="" hot_color="#FFE4E7EB" pushed_color="#FFB0B4B8"/>
