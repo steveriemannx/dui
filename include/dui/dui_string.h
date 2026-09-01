@@ -20,7 +20,7 @@
     #endif
 #endif
 
-// Keep the legacy spelling available to bundled third-party code.
+// Compatibility for generated code and bundled third-party sources.
 #if !defined(_T)
     #define _T(x) DUI_T(x)
 #endif

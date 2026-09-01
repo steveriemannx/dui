@@ -117,6 +117,14 @@ typedef void*      HRGN;
     #endif
 #endif
 
+#ifndef _T
+    #ifdef DUI_UNICODE
+        #define _T(x) L##x
+    #else
+        #define _T(x) x
+    #endif
+#endif
+
 typedef struct tagRECT
 {
     int32_t    left;
