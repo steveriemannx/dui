@@ -243,8 +243,8 @@ static void genAttrs(std::ostream& out, const std::string& var,
         if (name.empty() || value.empty()) continue;
         if (name == "on_click" || name == "on_select" || name == "on_change") continue;
         if (name == "class") trackClass(value);  // Track class usage for image embedding
-        out << "        " << var << "->SetAttribute(\"" << escapeCStr(name)
-            << "\", \"" << escapeCStr(value) << "\");\n";
+        out << "        " << var << "->SetAttribute(" << "DUI_T(\"" << escapeCStr(name) << "\")"
+            << ", " << "DUI_T(\"" << escapeCStr(value) << "\")" << ");\n";
     }
 }
 
@@ -258,7 +258,7 @@ static std::string genAttrList(const pugi::xml_node& node) {
         if (name == "on_click" || name == "on_select" || name == "on_change") continue;
         if (name == "class") trackClass(value);  // Track class usage for image embedding
         if (!s.empty()) s += ", ";
-        s += "{\"" + escapeCStr(name) + "\", \"" + escapeCStr(value) + "\"}";
+        s += std::string("{") + "DUI_T(\"" + escapeCStr(name) + "\")" + ", " + "DUI_T(\"" + escapeCStr(value) + "\")" + "}";
     }
     return s;
 }
@@ -329,8 +329,8 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
             else {
                 out << "    { ui::UiSize size; bool scaledCX = false; bool scaledCY = false;\n"
                     << "      bool percentCX = false; bool percentCY = false;\n"
-                    << "      ui::AttributeUtil::ParseWindowSize(pWindow, \"" << escapeCStr(value)
-                    << "\", size, &scaledCX, &scaledCY, &percentCX, &percentCY);\n"
+                    << "      ui::AttributeUtil::ParseWindowSize(pWindow, " << "DUI_T(\"" << escapeCStr(value) << "\")"
+                    << ", size, &scaledCX, &scaledCY, &percentCX, &percentCY);\n"
                      << "      w.SetWindowSize(size.cx, size.cy); }\n";
             }
         }
@@ -367,7 +367,7 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
         else if (name == "icon" || name == "text" || name == "text_id" || name == "textid") {
             const char* setter = name == "icon" ? "SetWindowIcon" :
                                  (name == "text" ? "SetText" : "SetTextId");
-            out << "    w." << setter << "(\"" << escapeCStr(value) << "\");\n";
+            out << "    w." << setter << "(" << "DUI_T(\"" << escapeCStr(value) << "\")" << ");\n";
         }
         else if (name == "round_corner" || name == "roundcorner") {
             std::vector<int> size = parseIntList(value);
@@ -393,7 +393,7 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
         }
         else if (name == "shadow_image" || name == "shadow_border_color") {
             out << "    w." << (name == "shadow_image" ? "SetShadowImage" : "SetShadowBorderColor")
-                << "(\"" << escapeCStr(value) << "\");\n";
+                << "(" << "DUI_T(\"" << escapeCStr(value) << "\")" << ");\n";
         }
         else if (name == "shadow_corner") {
             std::vector<int> padding = parseIntList(value);
@@ -480,33 +480,33 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
             if (name == "name") continue;
             attrs += " " + name + "=\"" + a.value() + "\"";
         }
-        out << "    pWindow->AddClass(\"" << escapeCStr(clsName) << "\", \""
-            << escapeCStr(attrs) << "\");\n";
+        out << "    pWindow->AddClass(" << "DUI_T(\"" << escapeCStr(clsName) << "\")" << ", "
+            << "DUI_T(\"" << escapeCStr(attrs) << "\")" << ");\n";
         return;
     }
     if (tag == "TextColor") {
         std::string colorName = attr(node, "name");
         std::string colorValue = attr(node, "value");
-        out << "    pWindow->AddTextColor(\"" << escapeCStr(colorName) << "\", \""
-            << escapeCStr(colorValue) << "\");\n";
+        out << "    pWindow->AddTextColor(" << "DUI_T(\"" << escapeCStr(colorName) << "\")" << ", "
+            << "DUI_T(\"" << escapeCStr(colorValue) << "\")" << ");\n";
         return;
     }
     if (tag == "Font") {
         // <Font id="..." name="..." size="12" bold="true" italic="true" default="true"/>
-        out << "    { ui::UiFont f; f.m_fontName = \"" << escapeCStr(attr(node, "name")) << "\";\n";
+        out << "    { ui::UiFont f; f.m_fontName = " << "DUI_T(\"" << escapeCStr(attr(node, "name")) << "\")" << ";\n";
         int fontSize = node.attribute("size").as_int(12);
         out << "      f.m_fontSize = " << fontSize << ";";
         if (attr(node, "bold") == "true")     out << " f.m_bBold = true;";
         if (attr(node, "underline") == "true") out << " f.m_bUnderline = true;";
         if (attr(node, "italic") == "true")   out << " f.m_bItalic = true;";
         bool isDefault = (attr(node, "default") == "true");
-        out << "\n      ui::GlobalManager::Instance().Font().AddFont(\""
-            << escapeCStr(attr(node, "id")) << "\", f, " << (isDefault ? "true" : "false") << "); }\n";
+        out << "\n      ui::GlobalManager::Instance().Font().AddFont("
+            << "DUI_T(\"" << escapeCStr(attr(node, "id")) << "\")" << ", f, " << (isDefault ? "true" : "false") << "); }\n";
         return;
     }
     if (tag == "DefaultFontFamilyNames") {
-        out << "    ui::GlobalManager::Instance().Font().SetDefaultFontFamilyNames(\""
-            << escapeCStr(attr(node, "value")) << "\");\n";
+        out << "    ui::GlobalManager::Instance().Font().SetDefaultFontFamilyNames("
+            << "DUI_T(\"" << escapeCStr(attr(node, "value")) << "\")" << ");\n";
         return;
     }
 
