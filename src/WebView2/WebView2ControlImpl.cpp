@@ -104,7 +104,7 @@ HRESULT WebView2Control::Impl::CallCreateCoreWebView2EnvironmentWithOptions(PCWS
     if (m_hWebView2Loader == nullptr) {
         FilePath runPath = FilePathUtil::GetCurrentModuleDirectory();
         runPath.NormalizeDirectoryPath();
-        runPath += _T("WebView2Loader.dll");
+        runPath += DUI_T("WebView2Loader.dll");
         if (runPath.IsExistsFile()) {
             m_hWebView2Loader = ::LoadLibrary(runPath.NativePath().c_str());
         }        
@@ -1178,7 +1178,7 @@ HRESULT WebView2Control::Impl::CapturePreview(const DString& filePath,
     // Determine the image format based on the extension of the saved file name
     COREWEBVIEW2_CAPTURE_PREVIEW_IMAGE_FORMAT imageFormat;
     DString ext = FilePath(filePathW).GetFileExtension();
-    if (StringUtil::IsEqualNoCase(ext, _T(".png"))) {
+    if (StringUtil::IsEqualNoCase(ext, DUI_T(".png"))) {
         imageFormat = COREWEBVIEW2_CAPTURE_PREVIEW_IMAGE_FORMAT_PNG;
     }
     else {
@@ -1209,7 +1209,7 @@ bool WebView2Control::Impl::IsInitialized() const
 DString WebView2Control::Impl::GetUrl() const
 {
     if (m_spWebView2 == nullptr) {
-        return _T("");
+        return DUI_T("");
     }
     DString retUrl;
     LPWSTR url = nullptr;
@@ -1225,7 +1225,7 @@ DString WebView2Control::Impl::GetUrl() const
 DString WebView2Control::Impl::GetTitle() const
 {
     if (m_spWebView2 == nullptr) {
-        return _T("");
+        return DUI_T("");
     }
     DString retTitle;
     LPWSTR title = nullptr;
@@ -1566,7 +1566,7 @@ bool WebView2Control::Impl::DownloadFavIconImage()
                     nWindowScaleFactor = m_pControl->Dpi().GetDisplayScaleFactor();
                 }
                 DString fileName = StringConvert::WStringToT(strUrl);
-                size_t pos = fileName.rfind(_T("/"));
+                size_t pos = fileName.rfind(DUI_T("/"));
                 if (pos != DString::npos) {
                     fileName = fileName.substr(pos + 1);
                 }

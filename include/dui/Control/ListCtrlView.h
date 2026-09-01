@@ -15,7 +15,7 @@ public:
     ListCtrlView(Window* pWindow, Layout* pLayout);
     virtual ~ListCtrlView() override;
 
-    virtual DString GetType() const override { return _T("ListCtrlView"); }
+    virtual DString GetType() const override { return DUI_T("ListCtrlView"); }
     virtual void HandleEvent(const EventArgs& msg) override;
 
     /** Select a child item

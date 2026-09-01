@@ -45,7 +45,7 @@ void ImageDecoderFactory::Clear()
 
 std::unique_ptr<IImage> ImageDecoderFactory::LoadImageData(const ImageDecodeParam& decodeParam)
 {
-    PerformanceStat statPerformance(_T("ImageDecoderFactory::LoadImageData"));
+    PerformanceStat statPerformance(DUI_T("ImageDecoderFactory::LoadImageData"));
     const bool bHasFileData = (decodeParam.m_pFileData != nullptr) && !decodeParam.m_pFileData->empty(); //Image file data
     const DString imageFilePath = decodeParam.m_imageFilePath.NativePath(); //Image file path
     ASSERT(!imageFilePath.empty() || bHasFileData);

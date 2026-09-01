@@ -115,7 +115,7 @@ public:
     * @param[in] frame_name The name of the frame whose methods are to be called; the main frame is used by default
     * @return Returns true on a successful call, false on failure; the method may not exist
     */
-    bool CallJSFunction(const DString& js_function_name, const DString& params, CallJsFunctionCallback callback, const DString& frame_name = _T(""));
+    bool CallJSFunction(const DString& js_function_name, const DString& params, CallJsFunctionCallback callback, const DString& frame_name = DUI_T(""));
 
     /** Calls a method already registered by the frontend
     * @param[in] js_function_name The method name provided by the frontend

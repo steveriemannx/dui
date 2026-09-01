@@ -117,18 +117,18 @@ uint64_t FilePath::GetFileSize() const noexcept
 DString::value_type FilePath::GetPathSeparator()
 {
 #ifdef DUI_BUILD_FOR_WIN
-    return _T('\\');
+    return DUI_T('\\');
 #else
-    return _T('/');
+    return DUI_T('/');
 #endif
 }
 
 DString FilePath::GetPathSeparatorStr()
 {
 #ifdef DUI_BUILD_FOR_WIN
-    return _T("\\");
+    return DUI_T("\\");
 #else
-    return _T("/");
+    return DUI_T("/");
 #endif
 }
 
@@ -274,7 +274,7 @@ void FilePath::TrimRightPathSeparator()
 #ifdef DUI_BUILD_FOR_WIN
     if (str == L"/") {
 #else
-    if (str == _T("/")) {
+    if (str == DUI_T("/")) {
 #endif
         return;
     }
@@ -301,9 +301,9 @@ void FilePath::NormalizeFilePath()
         //Only normalize absolute paths; normalizing relative paths can produce incorrect results
         if (m_filePath.is_absolute()) {
 #ifndef DUI_BUILD_FOR_WIN
-            if (m_filePath.native().find(_T('\\')) != std::filesystem::path::string_type::npos) {
+            if (m_filePath.native().find(DUI_T('\\')) != std::filesystem::path::string_type::npos) {
                 std::filesystem::path::string_type oldValue = m_filePath.native();
-                StringUtil::ReplaceAll(_T("\\"), _T("/"), oldValue);
+                StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), oldValue);
                 m_filePath = oldValue;
             }
 #endif

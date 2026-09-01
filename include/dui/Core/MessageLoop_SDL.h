@@ -85,7 +85,7 @@ public:
       Windows platform: "windows"
       Linux platform: "X11" or "wayland" or "wayland,X11" or "X11,wayland"
     */
-    static bool CheckInitSDL(const DString& videoDriverName = _T(""));
+    static bool CheckInitSDL(const DString& videoDriverName = DUI_T(""));
 
     /** Return the current VideoDriver name
     */

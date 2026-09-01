@@ -74,7 +74,7 @@ public:
     * @return Returns true if the drawing succeeds, otherwise false
     */
     bool PaintStateImage(IRender* pRender, ControlStateType stateType,
-                         const DString& sImageModify = _T(""),
+                         const DString& sImageModify = DUI_T(""),
                          UiRect* pDestRect = nullptr);
 
     /** Get the image interface used to estimate the Control control size (width and height)

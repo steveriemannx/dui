@@ -29,73 +29,73 @@ DString BitmapControl::GetType() const { return DUI_CTR_BITMAP_CONTROL; }
 
 void BitmapControl::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("bitmap_halign")) {
-        ASSERT((strValue == _T("left")) || (strValue == _T("center")) || (strValue == _T("right")));
-        if (strValue == _T("center")) {
+    if (strName == DUI_T("bitmap_halign")) {
+        ASSERT((strValue == DUI_T("left")) || (strValue == DUI_T("center")) || (strValue == DUI_T("right")));
+        if (strValue == DUI_T("center")) {
             SetBitmapHAlignType(HorAlignType::kAlignCenter);
         }
-        else if (strValue == _T("right")) {
+        else if (strValue == DUI_T("right")) {
             SetBitmapHAlignType(HorAlignType::kAlignRight);
         }
         else {
             SetBitmapHAlignType(HorAlignType::kAlignLeft);
         }
     }
-    else if (strName == _T("bitmap_valign")) {
-        ASSERT((strValue == _T("top")) || (strValue == _T("center")) || (strValue == _T("bottom")));
-        if (strValue == _T("center")) {
+    else if (strName == DUI_T("bitmap_valign")) {
+        ASSERT((strValue == DUI_T("top")) || (strValue == DUI_T("center")) || (strValue == DUI_T("bottom")));
+        if (strValue == DUI_T("center")) {
             SetBitmapVAlignType(VerAlignType::kAlignCenter);
         }
-        else if (strValue == _T("bottom")) {
+        else if (strValue == DUI_T("bottom")) {
             SetBitmapVAlignType(VerAlignType::kAlignBottom);
         }
         else {
             SetBitmapVAlignType(VerAlignType::kAlignTop);
         }
     }
-    else if (strName == _T("bitmap_alpha")) {
+    else if (strName == DUI_T("bitmap_alpha")) {
         SetBitmapAlpha((uint8_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("bitmap_dest")) {
+    else if (strName == DUI_T("bitmap_dest")) {
         UiRect rcDest;
         DString::value_type* pstr = nullptr;
         rcDest.left = StringUtil::StringToInt32(strValue.c_str(), &pstr, 10); ASSERT(pstr);
         AttributeUtil::SkipSepChar(pstr);
-        if (*pstr != _T('\0')) {
+        if (*pstr != DUI_T('\0')) {
             rcDest.top = StringUtil::StringToInt32(pstr, &pstr, 10); ASSERT(pstr);
             AttributeUtil::SkipSepChar(pstr);
         }
-        if (*pstr != _T('\0')) {
+        if (*pstr != DUI_T('\0')) {
             rcDest.right = StringUtil::StringToInt32(pstr, &pstr, 10); ASSERT(pstr);
             AttributeUtil::SkipSepChar(pstr);
         }
-        if (*pstr != _T('\0')) {
+        if (*pstr != DUI_T('\0')) {
             rcDest.bottom = StringUtil::StringToInt32(pstr, &pstr, 10); ASSERT(pstr);
         }
         SetBitmapDest(rcDest, true);
     }
-    else if (strName == _T("bitmap_src")) {
+    else if (strName == DUI_T("bitmap_src")) {
         UiRect rcSource;
         AttributeUtil::ParseRectValue(strValue.c_str(), rcSource);
         rcSource.left = std::max(rcSource.left, 0);
         rcSource.top = std::max(rcSource.top, 0);
         SetBitmapSource(rcSource, true);
     }
-    else if (strName == _T("bitmap_margin")) {
+    else if (strName == DUI_T("bitmap_margin")) {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetBitmapMargin(rcMargin, true);
     }
-    else if (strName == _T("bitmap_adaptive_dest_rect")) {
-        SetAdaptiveDestRect(strValue == _T("true"));
+    else if (strName == DUI_T("bitmap_adaptive_dest_rect")) {
+        SetAdaptiveDestRect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("bitmap_stretch")) {
-        SetStretchedDrawing(strValue == _T("true"));
+    else if (strName == DUI_T("bitmap_stretch")) {
+        SetStretchedDrawing(strValue == DUI_T("true"));
     }
-    else if (strName == _T("bitmap_multi_thread")) {
-        SetSupportMultiThread(strValue == _T("true"));
+    else if (strName == DUI_T("bitmap_multi_thread")) {
+        SetSupportMultiThread(strValue == DUI_T("true"));
     }
-    else if (strName == _T("bitmap_file")) {
+    else if (strName == DUI_T("bitmap_file")) {
         //Set the associated image file: mainly used for testing
         m_bitmapFile = strValue;
         if (m_pBitmap != nullptr) {
@@ -196,19 +196,19 @@ UiSize BitmapControl::EstimateImage(UiSize szAvailable, EstimateImageType estIma
                                       szAvailable.cy - rcControlPadding.top - rcControlPadding.bottom);
         rcControlDest.Validate();
         if (rcControlDest.Width() > 0 && rcControlDest.Height() > 0) {
-            DString hAlign = _T("left");
+            DString hAlign = DUI_T("left");
             if (m_hAlignType == HorAlignType::kAlignCenter) {
-                hAlign = _T("center");
+                hAlign = DUI_T("center");
             }
             else if (m_hAlignType == HorAlignType::kAlignRight) {
-                hAlign = _T("right");
+                hAlign = DUI_T("right");
             }
-            DString vAlign = _T("top");
+            DString vAlign = DUI_T("top");
             if (m_vAlignType == VerAlignType::kAlignCenter) {
-                vAlign = _T("center");
+                vAlign = DUI_T("center");
             }
             else if (m_vAlignType == VerAlignType::kAlignBottom) {
-                vAlign = _T("bottom");
+                vAlign = DUI_T("bottom");
             }
             rcControlDest = ImageAttribute::CalculateAdaptiveRect(nImageWidth, nImageHeight, rcControlDest, hAlign, vAlign);
             imageSize.cx = rcControlDest.Width();
@@ -570,7 +570,7 @@ void BitmapControl::PaintBitmap(IRender* pRender, const UiRect& rcPaint)
     CheckLoadBitmapFile();
 
     //Measure the performance of drawing the image
-    PerformanceStat statPerformance(_T("BitmapControl::Paint"));
+    PerformanceStat statPerformance(DUI_T("BitmapControl::Paint"));
 
     //When multi-threading is supported, lock before operating on m_pBitmap
     std::unique_ptr<std::unique_lock<std::mutex>> spMutexLock;
@@ -658,19 +658,19 @@ void BitmapControl::PaintBitmap(IRender* pRender, const UiRect& rcPaint)
     }
     if (bAdaptiveDestRect) {
         //Automatically adapt to the destination area (scale the image proportionally): adjust the drawing area based on the image size
-        DString hAlign = _T("left");
+        DString hAlign = DUI_T("left");
         if (m_hAlignType == HorAlignType::kAlignCenter) {
-            hAlign = _T("center");
+            hAlign = DUI_T("center");
         }
         else if (m_hAlignType == HorAlignType::kAlignRight) {
-            hAlign = _T("right");
+            hAlign = DUI_T("right");
         }
-        DString vAlign = _T("top");
+        DString vAlign = DUI_T("top");
         if (m_vAlignType == VerAlignType::kAlignCenter) {
-            vAlign = _T("center");
+            vAlign = DUI_T("center");
         }
         else if (m_vAlignType == VerAlignType::kAlignBottom) {
-            vAlign = _T("bottom");
+            vAlign = DUI_T("bottom");
         }
         rcDest = ImageAttribute::CalculateAdaptiveRect(nImageWidth, nImageHeight, rcDest, hAlign, vAlign);
     }

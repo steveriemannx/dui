@@ -154,7 +154,7 @@ public:
     * @param [in] pNode Node interface
     * @param [in] lineClassName Class name of the horizontal separator line (optional)
     */
-    bool InsertLineBeforeNode(TreeNode* pNode, const DString& lineClassName = _T(""));
+    bool InsertLineBeforeNode(TreeNode* pNode, const DString& lineClassName = DUI_T(""));
 
     /** Add a node to the tree and return the interface of the newly added node (completed synchronously)
     * @param [in] pParentTreeNode Interface of the parent node; if nullptr, the new node is added under the root node

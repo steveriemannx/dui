@@ -62,7 +62,7 @@ bool ImageLoadParam::IsSvgImageFile() const
     }
     DString fileExt = FilePathUtil::GetFileExtension(m_srcImageLoadPath.m_imageFullPath.ToString());
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == _T("SVG")) {
+    if (fileExt == DUI_T("SVG")) {
         return true;
     }
     return false;
@@ -75,14 +75,14 @@ DString ImageLoadParam::GetLoadKey(uint32_t nLoadDpiScale) const
     DString fullPath = m_srcImageLoadPath.m_imageFullPath.ToString();
     if ((nLoadDpiScale != 0) && (nLoadDpiScale != 100)) {
         //Append the scaling percentage
-        fullPath += _T("@");
+        fullPath += DUI_T("@");
         fullPath += StringUtil::UInt32ToString(nLoadDpiScale);
     }
-    fullPath += IsImageDpiScaleEnabled() ? _T("#1") : _T("#0");
+    fullPath += IsImageDpiScaleEnabled() ? DUI_T("#1") : DUI_T("#0");
     if (!m_srcWidth.empty() || !m_srcHeight.empty()) {
-        fullPath += _T("$");
+        fullPath += DUI_T("$");
         fullPath += m_srcWidth.c_str();
-        fullPath += _T(":");
+        fullPath += DUI_T(":");
         fullPath += m_srcHeight.c_str();
     }
     return fullPath;
@@ -163,7 +163,7 @@ bool ImageLoadParam::GetScaledFixedSize(const DString& srcSize, uint32_t& nScale
 {
     nScaledSize = 0;
     if (!srcSize.empty()) {
-        if (srcSize.back() == _T('%')) {
+        if (srcSize.back() == DUI_T('%')) {
             //Scale according to the percentage
             nScaledSize = 0;
         }
@@ -209,7 +209,7 @@ bool ImageLoadParam::GetScaledFixedPercent(const DString& srcSize, float& fScale
     bool bRet = false;
     fScaledPercent = 1.0f;
     if (!srcSize.empty()) {
-        if (srcSize.back() == _T('%')) {
+        if (srcSize.back() == DUI_T('%')) {
             //Scale according to the percentage (the actual value needs to be divided by 100)
             double fRatio = StringUtil::StringToDouble(srcSize);            
             if (fRatio > 1) {//The minimum value is 1%

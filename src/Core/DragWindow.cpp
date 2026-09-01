@@ -77,15 +77,15 @@ void DragWindow::Release()
 
 DString DragWindow::GetSkinFolder()
 {
-    return _T("");
+    return DUI_T("");
 }
 
 DString DragWindow::GetSkinFile()
 {
-    return _T("<?xml version = \"1.0\" encoding=\"utf-8\"?>")
-           _T("<Window size=\"90,90\" shadow_snap=\"false\">")
-           _T("    <VBox width=\"stretch\" height=\"stretch\" visible=\"true\" bkcolor=\"white\"/>")
-           _T("</Window>");
+    return DUI_T("<?xml version = \"1.0\" encoding=\"utf-8\"?>")
+           DUI_T("<Window size=\"90,90\" shadow_snap=\"false\">")
+           DUI_T("    <VBox width=\"stretch\" height=\"stretch\" visible=\"true\" bkcolor=\"white\"/>")
+           DUI_T("</Window>");
 }
 
 void DragWindow::OnFinalMessage()
@@ -133,9 +133,9 @@ void DragWindow::SetDragImage(const std::shared_ptr<IBitmap>& pBitmap)
 
     DragWindowBitmap* pBitmapControl = new DragWindowBitmap(this);
     pBitmapControl->SetBitmap(pBitmap);
-    pBitmapControl->SetAttribute(_T("width"), _T("100%"));
-    pBitmapControl->SetAttribute(_T("height"), _T("100%"));
-    pBitmapControl->SetAttribute(_T("bkcolor"), _T("white"));
+    pBitmapControl->SetAttribute(DUI_T("width"), DUI_T("100%"));
+    pBitmapControl->SetAttribute(DUI_T("height"), DUI_T("100%"));
+    pBitmapControl->SetAttribute(DUI_T("bkcolor"), DUI_T("white"));
     pBox->AddItem(pBitmapControl);
 
     //Adjust the window size according to the size of the bitmap

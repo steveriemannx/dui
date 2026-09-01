@@ -589,7 +589,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
     }
     menu->AttachMenuItemActivated([this](const DString& menuName, int32_t menuLevel,
                                           const DString& itemName, size_t itemIndex) {
-        if (itemName == _T("about")) {
+        if (itemName == DUI_T("about")) {
             ui::GlobalManager::Instance().Thread().PostTask(ui::kThreadUI,
                 [this]() {
                     AboutForm* about_form = new AboutForm();

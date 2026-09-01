@@ -22,8 +22,8 @@ GridLayout::GridLayout():
 bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, const DpiManager& dpiManager)
 {
     bool hasAttribute = true;
-    if (strName == _T("rows")) {
-        if (strValue == _T("auto")) {
+    if (strName == DUI_T("rows")) {
+        if (strValue == DUI_T("auto")) {
             // Auto-calculate
             SetRows(0);
         }
@@ -31,8 +31,8 @@ bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, c
             SetRows(StringUtil::StringToInt32(strValue));
         }
     }
-    else if (strName == _T("columns")) {
-        if (strValue == _T("auto")) {
+    else if (strName == DUI_T("columns")) {
+        if (strValue == DUI_T("auto")) {
             // Auto-calculate
             SetColumns(0);
         }
@@ -40,8 +40,8 @@ bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, c
             SetColumns(StringUtil::StringToInt32(strValue));
         }
     }
-    else if (strName == _T("grid_width")) {
-        if (strValue == _T("auto")) {
+    else if (strName == DUI_T("grid_width")) {
+        if (strValue == DUI_T("auto")) {
             // Auto-calculate
             SetGridWidth(0, false);
         }
@@ -51,8 +51,8 @@ bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, c
             SetGridWidth(nGridWidth, false);
         }
     }
-    else if (strName == _T("grid_height")) {
-        if (strValue == _T("auto")) {
+    else if (strName == DUI_T("grid_height")) {
+        if (strValue == DUI_T("auto")) {
             // Auto-calculate
             SetGridHeight(0, false);
         }
@@ -62,8 +62,8 @@ bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, c
             SetGridHeight(nGridHeight, false);
         }
     }
-    else if (strName == _T("scale_down")) {
-        SetScaleDown(strValue == _T("true"));
+    else if (strName == DUI_T("scale_down")) {
+        SetScaleDown(strValue == DUI_T("true"));
     }
     else {
         hasAttribute = BaseClass::SetAttribute(strName, strValue, dpiManager);

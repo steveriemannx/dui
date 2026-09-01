@@ -88,9 +88,9 @@ Menu::Menu(Window* pParentWindow, Control* pRelatedControl, MenuBar* pMenuBar):
     m_pOwner(nullptr),
     m_pListBox(nullptr)
 {
-    m_skinFolder = DString(_T("public/menu/"));
-    m_submenuXml = DString(_T("submenu.xml"));
-    m_submenuNodeName = DString(_T("submenu"));
+    m_skinFolder = DString(DUI_T("public/menu/"));
+    m_submenuXml = DString(DUI_T("submenu.xml"));
+    m_submenuNodeName = DString(DUI_T("submenu"));
 }
 
 void Menu::CloseAllMenus()
@@ -246,7 +246,7 @@ void Menu::ShowMenu(const DString& xml, const UiPoint& point, MenuPopupPosType p
 
     if (xml.empty()) {
         //Pure-code mode: no XML template, all menu items are added by code
-        m_skinFolder = _T("");
+        m_skinFolder = DUI_T("");
     }
     m_xml = xml;
     m_noFocus = noFocus;
@@ -832,8 +832,8 @@ void Menu::PreInitWindow()
         //Pure-code mode: when there is no XML template, build the root node layout (consistent with the MenuListBox in the XML template)
         SetShadowAttached(true);
         MenuListBox* pListBox = new MenuListBox(this);
-        pListBox->SetClass(_T("menu"));
-        pListBox->SetAttribute(_T("name"), _T("main_menu"));
+        pListBox->SetClass(DUI_T("menu"));
+        pListBox->SetAttribute(DUI_T("name"), DUI_T("main_menu"));
         AttachBox(pListBox);
     }
 }
@@ -1481,7 +1481,7 @@ void MenuItem::CreateMenuWnd()
         DString subMenuXml;
         if (pParentWindow->m_xml.empty()) {
             //Pure-code mode: the submenu has no XML template, menu items are added by code
-            subMenuXml = _T("");
+            subMenuXml = DUI_T("");
         }
         else {
             FilePath xmlPath = pParentWindow->GetXmlPath();

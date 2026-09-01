@@ -276,7 +276,7 @@ bool SkRasterWindowContext_Wayland::PaintAndSwapBuffers(IRender* pRender, IRende
 
 bool SkRasterWindowContext_Wayland::SwapPaintBuffers(const UiRect& rcPaint, uint8_t nLayeredWindowAlpha)
 {
-    PerformanceStat statPerformance(_T("PaintWindow, SkRasterWindowContext_Wayland::SwapPaintBuffers"));
+    PerformanceStat statPerformance(DUI_T("PaintWindow, SkRasterWindowContext_Wayland::SwapPaintBuffers"));
     (void)nLayeredWindowAlpha;
 
     if (rcPaint.IsEmpty() || !m_wlSurface) return false;

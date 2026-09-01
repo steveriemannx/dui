@@ -53,24 +53,24 @@ bool Keyboard::IsCapsLockOn()
 DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
 {
     switch (nVirtKey) {
-    case kVK_RETURN: return _T("Enter");
-    case kVK_ESCAPE: return _T("Esc");
-    case kVK_TAB:    return _T("Tab");
-    case kVK_SPACE:  return _T("Space");
-    case kVK_BACK:   return _T("Backspace");
-    case kVK_DELETE: return _T("Del");
-    case kVK_LEFT:   return _T("Left");
-    case kVK_RIGHT:  return _T("Right");
-    case kVK_UP:     return _T("Up");
-    case kVK_DOWN:   return _T("Down");
-    case kVK_HOME:   return _T("Home");
-    case kVK_END:    return _T("End");
-    case kVK_PRIOR:  return _T("PageUp");
-    case kVK_NEXT:   return _T("PageDown");
-    case kVK_SHIFT:  return _T("Shift");
-    case kVK_CONTROL:return _T("Ctrl");
-    case kVK_MENU:   return _T("Alt");
-    case kVK_LWIN:   return _T("Cmd");
+    case kVK_RETURN: return DUI_T("Enter");
+    case kVK_ESCAPE: return DUI_T("Esc");
+    case kVK_TAB:    return DUI_T("Tab");
+    case kVK_SPACE:  return DUI_T("Space");
+    case kVK_BACK:   return DUI_T("Backspace");
+    case kVK_DELETE: return DUI_T("Del");
+    case kVK_LEFT:   return DUI_T("Left");
+    case kVK_RIGHT:  return DUI_T("Right");
+    case kVK_UP:     return DUI_T("Up");
+    case kVK_DOWN:   return DUI_T("Down");
+    case kVK_HOME:   return DUI_T("Home");
+    case kVK_END:    return DUI_T("End");
+    case kVK_PRIOR:  return DUI_T("PageUp");
+    case kVK_NEXT:   return DUI_T("PageDown");
+    case kVK_SHIFT:  return DUI_T("Shift");
+    case kVK_CONTROL:return DUI_T("Ctrl");
+    case kVK_MENU:   return DUI_T("Alt");
+    case kVK_LWIN:   return DUI_T("Cmd");
     default: break;
     }
     if ((nVirtKey >= kVK_A) && (nVirtKey <= kVK_Z)) {
@@ -80,7 +80,7 @@ DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
         return DString(1, (wchar_t)('0' + (nVirtKey - kVK_0)));
     }
     if ((nVirtKey >= kVK_F1) && (nVirtKey <= kVK_F24)) {
-        DString str = _T("F");
+        DString str = DUI_T("F");
 #ifdef DUI_UNICODE
         str += std::to_wstring((int32_t)(nVirtKey - kVK_F1 + 1));
 #else

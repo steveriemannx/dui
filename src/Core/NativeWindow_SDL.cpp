@@ -852,7 +852,7 @@ SDL_Window* NativeWindow_SDL::CreateSdlWindow(NativeWindow_SDL* pParentWindow, c
     if (!renderNames.empty()) {
         firstRenderName = renderNames.front();
     }
-    if (bSupportTransparent && (firstRenderName == _T("opengles2"))) {
+    if (bSupportTransparent && (firstRenderName == DUI_T("opengles2"))) {
         //Set the flag to create a Render that supports transparent windows
         bool bOldValue = SDL_GetHintBoolean(SDL_HINT_VIDEO_FORCE_EGL, false);
         if (!bOldValue) {
@@ -1029,7 +1029,7 @@ bool NativeWindow_SDL::CreateChildWnd(NativeWindow_SDL* pParentWindow, int32_t n
     HWND hChild = nullptr;
     HWND hParent = (HWND)SDL_GetPointerProperty(propID, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
     if (hParent != nullptr) {
-        const DString className = _T("dui_child_window");
+        const DString className = DUI_T("dui_child_window");
         WNDCLASS wc = { 0 };
         wc.lpfnWndProc = ::DefWindowProc;
         wc.hInstance = hModule;
@@ -1066,7 +1066,7 @@ bool NativeWindow_SDL::CreateChildWnd(NativeWindow_SDL* pParentWindow, int32_t n
 
     if (m_sdlWindow != nullptr) {
         //Create the SDL render interface (this is necessary; otherwise the child window may fail to display properly on Linux)
-        m_sdlRenderer = CreateSdlRenderer(_T(""));
+        m_sdlRenderer = CreateSdlRenderer(DUI_T(""));
         ASSERT(m_sdlRenderer != nullptr);
         if (m_sdlRenderer == nullptr) {
             SDL_DestroyWindow(m_sdlWindow);
@@ -1172,7 +1172,7 @@ void NativeWindow_SDL::GetRenderNameList(const DString& externalRenderName, std:
 
     //The externally set Render name takes priority
     if (!externalRenderName.empty()) {
-        std::list<DString> renderNameList = StringUtil::Split(externalRenderName, _T(","));
+        std::list<DString> renderNameList = StringUtil::Split(externalRenderName, DUI_T(","));
         for (auto iter = renderNameList.begin(); iter != renderNameList.end(); ++iter) {
             DString name = *iter;
             StringUtil::Trim(name);
@@ -1185,14 +1185,14 @@ void NativeWindow_SDL::GetRenderNameList(const DString& externalRenderName, std:
     //Lowest priority: default values, ordered by priority
 #ifdef DUI_BUILD_FOR_WIN
     //Note: currently, those supporting transparency on the Windows platform (attribute: SDL_WINDOW_TRANSPARENT) are: "direct3d11", "opengl", "vulkan"
-    renderNames.push_back(_T("direct3d11"));
-    renderNames.push_back(_T("opengl"));
-    renderNames.push_back(_T("vulkan"));
+    renderNames.push_back(DUI_T("direct3d11"));
+    renderNames.push_back(DUI_T("opengl"));
+    renderNames.push_back(DUI_T("vulkan"));
 #else
     //Linux platform: currently, those supporting transparency (attribute: SDL_WINDOW_TRANSPARENT) are: "opengles2", "vulkan"
-    renderNames.push_back(_T("opengles2"));
-    renderNames.push_back(_T("vulkan"));
-    renderNames.push_back(_T("opengl"));
+    renderNames.push_back(DUI_T("opengles2"));
+    renderNames.push_back(DUI_T("vulkan"));
+    renderNames.push_back(DUI_T("opengl"));
 #endif
 
     //Remove those that do not exist
@@ -1254,14 +1254,14 @@ void NativeWindow_SDL::QueryRenderProperties(const DString& externalRenderName, 
         if (name.empty()) {
             continue;
         }
-        if (name == _T("opengles2")) {
+        if (name == DUI_T("opengles2")) {
             bOpenGL = true;
             bOpenGLES2 = true;
         }
-        else if (name == _T("opengl")) {
+        else if (name == DUI_T("opengl")) {
             bOpenGL = true;
         }
-        else if (name == _T("vulkan")) {
+        else if (name == DUI_T("vulkan")) {
             //The SDL_WINDOW_OPENGL flag needs to be added, otherwise vulkan cannot work; the reason is unknown
             bOpenGL = true;
         }
@@ -1277,23 +1277,23 @@ bool NativeWindow_SDL::IsRenderSupportTransparent(const DString& renderName) con
 {
     bool bSupportTransparent = false;
 #ifdef DUI_BUILD_FOR_WIN
-    if (renderName == _T("direct3d11")) {
+    if (renderName == DUI_T("direct3d11")) {
         bSupportTransparent = true;
     }
-    else if (renderName == _T("opengl")) {
+    else if (renderName == DUI_T("opengl")) {
         bSupportTransparent = true;
     }
-    else if (renderName == _T("vulkan")) {
+    else if (renderName == DUI_T("vulkan")) {
         bSupportTransparent = true;
     }
 #else
-    if (renderName == _T("opengles2")) {
+    if (renderName == DUI_T("opengles2")) {
         bSupportTransparent = true;
     }
-    else if (renderName == _T("opengl")) {
+    else if (renderName == DUI_T("opengl")) {
         bSupportTransparent = true;
     }
-    else if (renderName == _T("vulkan")) {
+    else if (renderName == DUI_T("vulkan")) {
         bSupportTransparent = true;
     }
 #endif
@@ -1755,13 +1755,13 @@ HDC NativeWindow_SDL::GetPaintDC() const
 bool NativeWindow_SDL::IsVideoDriverX11() const
 {
     DString videoDriverName = StringUtil::MakeLowerString(GetVideoDriverName());
-    return videoDriverName == _T("x11");
+    return videoDriverName == DUI_T("x11");
 }
 
 bool NativeWindow_SDL::IsVideoDriverWayland() const
 {
     DString videoDriverName = StringUtil::MakeLowerString(GetVideoDriverName());
-    return videoDriverName == _T("wayland");
+    return videoDriverName == DUI_T("wayland");
 }
 
 size_t NativeWindow_SDL::GetX11DisplayPointer() const
@@ -2029,7 +2029,7 @@ void NativeWindow_SDL::SetUseSystemCaption(bool bUseSystemCaption)
     bool bHasOpenGL = false;
     bool bOpenGLES2 = false;
     bool bSupportTransparent = false;
-    QueryRenderProperties(_T(""), bHasOpenGL, bOpenGLES2, bSupportTransparent);
+    QueryRenderProperties(DUI_T(""), bHasOpenGL, bOpenGLES2, bSupportTransparent);
     if (!bSupportTransparent) {
         m_bUseSystemCaption = true;
     }
@@ -2761,7 +2761,7 @@ void NativeWindow_SDL::Invalidate(const UiRect& rcItem)
 
 void NativeWindow_SDL::PaintWindow(bool bPaintAll)
 {
-    PerformanceStat statPerformance(_T("PaintWindow, NativeWindow_SDL::PaintWindow(Total)"));
+    PerformanceStat statPerformance(DUI_T("PaintWindow, NativeWindow_SDL::PaintWindow(Total)"));
     if (bPaintAll) {
         //Draw everything
         m_rcUpdateRect.Clear();

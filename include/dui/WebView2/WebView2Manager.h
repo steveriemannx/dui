@@ -29,11 +29,11 @@ public:
     * @param [in] additionalBrowserArguments Additional browser arguments
     * @param [in] browserExecutableFolder The directory where the WebView2 module is located
     */
-    bool Initialize(const DString& userDataFolder = _T(""),
-                    const DString& language = _T(""),
-                    const DString& userAgent = _T(""),
-                    const DString& additionalBrowserArguments = _T(""),
-                    const DString& browserExecutableFolder = _T(""));
+    bool Initialize(const DString& userDataFolder = DUI_T(""),
+                    const DString& language = DUI_T(""),
+                    const DString& userAgent = DUI_T(""),
+                    const DString& additionalBrowserArguments = DUI_T(""),
+                    const DString& browserExecutableFolder = DUI_T(""));
 
     /** Clean up
     */

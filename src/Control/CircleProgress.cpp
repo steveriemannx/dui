@@ -28,26 +28,26 @@ DString CircleProgress::GetType() const { return DUI_CTR_CIRCLEPROGRESS; }
 
 void CircleProgress::SetAttribute(const DString& srName, const DString& strValue)
 {
-    if (srName == _T("circular")) {
-        SetCircular(strValue == _T("true"));
+    if (srName == DUI_T("circular")) {
+        SetCircular(strValue == DUI_T("true"));
     }
-    else if ((srName == _T("circle_width")) || (srName == _T("circlewidth"))) {
+    else if ((srName == DUI_T("circle_width")) || (srName == DUI_T("circlewidth"))) {
         int32_t iValue = StringUtil::StringToInt32(strValue);
         SetCircleWidth((float)iValue, true);
     }
-    else if (srName == _T("indicator")) {
+    else if (srName == DUI_T("indicator")) {
         SetIndicator(strValue);
     }
-    else if (srName == _T("clockwise")) {
-        SetClockwiseRotation(strValue == _T("true"));
+    else if (srName == DUI_T("clockwise")) {
+        SetClockwiseRotation(strValue == DUI_T("true"));
     }
-    else if (srName == _T("bgcolor")) {
+    else if (srName == DUI_T("bgcolor")) {
         SetBackgroudColor(strValue);
     }
-    else if (srName == _T("fgcolor")) {
+    else if (srName == DUI_T("fgcolor")) {
         SetForegroudColor(strValue);
     }
-    else if ((srName == _T("gradient_color")) || (srName == _T("gradientcolor"))) {
+    else if ((srName == DUI_T("gradient_color")) || (srName == DUI_T("gradientcolor"))) {
         SetCircleGradientColor(strValue);
     }
     else {
@@ -179,7 +179,7 @@ void CircleProgress::PaintStateImages(IRender* pRender)
         imageRect.right = imageRect.left + pIndicatorImageInfo->GetWidth();
         imageRect.bottom = imageRect.top + pIndicatorImageInfo->GetHeight();
         imageRect.Offset(-GetRect().left, -GetRect().top);
-        DString imageModify = StringUtil::Printf(_T("destscale='false' dest='%d,%d,%d,%d'"), 
+        DString imageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), 
             imageRect.left, imageRect.top, imageRect.right, imageRect.bottom);
         PaintImage(pRender, m_pIndicatorImage, imageModify, -1, spMatrix.get());
     }

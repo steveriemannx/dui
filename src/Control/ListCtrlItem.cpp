@@ -18,11 +18,11 @@ ListCtrlItem::~ListCtrlItem()
 {
 }
 
-DString ListCtrlItem::GetType() const { return _T("ListCtrlItem"); }
+DString ListCtrlItem::GetType() const { return DUI_T("ListCtrlItem"); }
 
 void ListCtrlItem::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("icon_spacing")) {
+    if (strName == DUI_T("icon_spacing")) {
         SetIconSpacing(StringUtil::StringToInt32(strValue), true);
     }
     else {
@@ -251,7 +251,7 @@ void ListCtrlItem::Paint(IRender* pRender, const UiRect& rcPaint)
         rc.Validate();
         rc.right = rc.left + imageSize.cx;
         VAlignRect(rc, TEXT_VCENTER, imageSize.cy);
-        PaintImage(pRender, pItemImage.get(), _T(""), -1, nullptr, &rc, nullptr);
+        PaintImage(pRender, pItemImage.get(), DUI_T(""), -1, nullptr, &rc, nullptr);
     }
 }
 

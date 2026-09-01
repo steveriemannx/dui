@@ -13,7 +13,7 @@ namespace ui {
 static Control* DuiCreateWebView2Control(const DString& className)
 {
     Control* pControl = nullptr;
-    if (className == _T("WebView2Control")) {
+    if (className == DUI_T("WebView2Control")) {
         pControl = new WebView2Control(nullptr);
     }
     return pControl;
@@ -64,7 +64,7 @@ void WebView2Manager::UnInitialize()
 
 DString WebView2Manager::GetDefaultUserDataFolder(const DString& appName) const
 {
-    DString defaultCachePath = _T("webview2_cache");
+    DString defaultCachePath = DUI_T("webview2_cache");
     defaultCachePath += ui::FilePath::GetPathSeparatorStr();
     defaultCachePath += appName;
     defaultCachePath += ui::FilePath::GetPathSeparatorStr();

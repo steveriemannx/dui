@@ -18,16 +18,16 @@ ImageDecoder_JPEG::~ImageDecoder_JPEG()
 
 DString ImageDecoder_JPEG::GetFormatName() const
 {
-    return _T("JPEG");
+    return DUI_T("JPEG");
 }
 
 bool ImageDecoder_JPEG::CanDecode(const DString& imageFilePath) const
 {
-    DString fileExtentions = _T("JPG;JPEG;JPE;JIF;JFIF;JFI");
+    DString fileExtentions = DUI_T("JPG;JPEG;JPE;JIF;JFIF;JFI");
     DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
 
-    std::list<DString> fileExtList = StringUtil::Split(fileExtentions, _T(";"));
+    std::list<DString> fileExtList = StringUtil::Split(fileExtentions, DUI_T(";"));
     for (DString& ext : fileExtList) {
         StringUtil::MakeUpperString(ext);
         if (fileExt == ext) {

@@ -17,14 +17,14 @@ class ToolTipWindow: public Window
 public:
     ToolTipWindow()
     {
-        InitSkin(_T("public/tooltip/"), _T("tooltip.xml"));
+        InitSkin(DUI_T("public/tooltip/"), DUI_T("tooltip.xml"));
     }
 
     /** Called after the window has been created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override
     {
-        m_pToolTipText = dynamic_cast<Label*>(FindControl(_T("tooltip_text")));
+        m_pToolTipText = dynamic_cast<Label*>(FindControl(DUI_T("tooltip_text")));
         if (!m_text.empty() && (m_pToolTipText != nullptr)) {
             m_pToolTipText->SetText(m_text);
         }

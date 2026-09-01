@@ -49,7 +49,7 @@ bool DiskUtils::GetLogicalDriveList(std::vector<DString>& driveList)
 
 bool DiskUtils::GetLogicalDriveInfo(const DString& driveString, DiskInfo& diskInfo)
 {
-    HMODULE hShell32Dll = ::LoadLibrary(_T("Shell32.dll"));
+    HMODULE hShell32Dll = ::LoadLibrary(DUI_T("Shell32.dll"));
     ASSERT(hShell32Dll != nullptr);
     if (hShell32Dll == nullptr) {
         return false;
@@ -122,7 +122,7 @@ DString DiskUtils::GetDriveFromDirectoryPath(const DString& path)
     if ( (path.size() < 2)) {
         return DString();
     }
-    if ( (path[1] != _T(':'))) {
+    if ( (path[1] != DUI_T(':'))) {
         return DString();
     }    
     return path.substr(0, 3);

@@ -17,14 +17,14 @@ ImageDecoder_WEBP::~ImageDecoder_WEBP()
 
 DString ImageDecoder_WEBP::GetFormatName() const
 {
-    return _T("WEBP");
+    return DUI_T("WEBP");
 }
 
 bool ImageDecoder_WEBP::CanDecode(const DString& imageFilePath) const
 {
     DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == _T("WEBP")) {
+    if (fileExt == DUI_T("WEBP")) {
         return true;
     }
     return false;

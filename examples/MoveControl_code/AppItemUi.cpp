@@ -18,24 +18,24 @@ AppItemUi::AppItemUi(ui::Window* pWindow) :
     ui::ControlDragableT<ui::VBox>(pWindow)
 {
     // Build the item layout in pure code (corresponding to the app_item.xml template)
-    SetAttribute(_T("height"), _T("90"));
-    SetAttribute(_T("width"), _T("90"));
-    SetAttribute(_T("mousechild"), _T("false"));
-    SetBkColor(_T("white"));
+    SetAttribute(DUI_T("height"), DUI_T("90"));
+    SetAttribute(DUI_T("width"), DUI_T("90"));
+    SetAttribute(DUI_T("mousechild"), DUI_T("false"));
+    SetBkColor(DUI_T("white"));
 
     m_app_icon = new ui::Control(pWindow);
-    m_app_icon->SetName(_T("app_icon"));
-    m_app_icon->SetAttribute(_T("halign"), _T("center"));
-    m_app_icon->SetAttribute(_T("width"), _T("35"));
-    m_app_icon->SetAttribute(_T("height"), _T("35"));
-    m_app_icon->SetAttribute(_T("margin"), _T("0,10"));
+    m_app_icon->SetName(DUI_T("app_icon"));
+    m_app_icon->SetAttribute(DUI_T("halign"), DUI_T("center"));
+    m_app_icon->SetAttribute(DUI_T("width"), DUI_T("35"));
+    m_app_icon->SetAttribute(DUI_T("height"), DUI_T("35"));
+    m_app_icon->SetAttribute(DUI_T("margin"), DUI_T("0,10"));
     AddItem(m_app_icon);
 
     m_app_name = new ui::Label(pWindow);
-    m_app_name->SetName(_T("app_name"));
-    m_app_name->SetAttribute(_T("font"), _T("system_14"));
-    m_app_name->SetAttribute(_T("halign"), _T("center"));
-    m_app_name->SetAttribute(_T("margin"), _T("0,5"));
+    m_app_name->SetName(DUI_T("app_name"));
+    m_app_name->SetAttribute(DUI_T("font"), DUI_T("system_14"));
+    m_app_name->SetAttribute(DUI_T("halign"), DUI_T("center"));
+    m_app_name->SetAttribute(DUI_T("margin"), DUI_T("0,5"));
     AddItem(m_app_name);
 }
 
@@ -45,11 +45,11 @@ void AppItemUi::OnInit()
         return;
     }
     BaseClass::OnInit();
-    m_app_icon = static_cast<ui::Control*>(FindSubControl(_T("app_icon")));
+    m_app_icon = static_cast<ui::Control*>(FindSubControl(DUI_T("app_icon")));
     if (m_app_icon) {
         m_app_icon->SetBkImage(m_app_data.m_icon);
     }
-    m_app_name = static_cast<ui::Label*>(FindSubControl(_T("app_name")));
+    m_app_name = static_cast<ui::Label*>(FindSubControl(DUI_T("app_name")));
     if (m_app_name) {
         m_app_name->SetText(m_app_data.m_name);
     }
@@ -74,7 +74,7 @@ ui::Control* AppItemUi::CreateDestControl(Box* pTargetBox)
 {
     Control* pControl = BaseClass::CreateDestControl(pTargetBox);
     if (pControl != nullptr) {
-        pControl->SetBkImage(_T("file='move_control/1.png'"));
+        pControl->SetBkImage(DUI_T("file='move_control/1.png'"));
     }
     return pControl;
 }

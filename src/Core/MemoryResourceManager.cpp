@@ -143,9 +143,9 @@ bool MemoryResourceManager::GetFileList(const FilePath& dirPath, std::vector<DSt
     GlobalManager::Instance().AssertUIThread();
     DString filePath = dirPath.NativePath();
     if (!filePath.empty() &&
-        (filePath[filePath.size() - 1] != _T('\\')) &&
-        (filePath[filePath.size() - 1] != _T('/'))) {
-        filePath += _T("/");
+        (filePath[filePath.size() - 1] != DUI_T('\\')) &&
+        (filePath[filePath.size() - 1] != DUI_T('/'))) {
+        filePath += DUI_T("/");
     }
     DString innerPath = FilePathUtil::NormalizeFilePath(filePath);
     if (innerPath.empty()) {

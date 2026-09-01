@@ -61,8 +61,8 @@ public:
                        bool bOpenFileDialog, 
                        const std::vector<FileType>& fileTypes = std::vector<FileType>(),
                        int32_t nFileTypeIndex = -1,
-                       const DString& defaultExt = _T(""),
-                       const DString& fileName = _T(""),
+                       const DString& defaultExt = DUI_T(""),
+                       const DString& fileName = DUI_T(""),
                        const FilePath& defaultFilePath = FilePath());
 
     /** Select files (multiple selection)
@@ -77,7 +77,7 @@ public:
                         std::vector<FilePath>& filePaths,
                         const std::vector<FileType>& fileTypes = std::vector<FileType>(),
                         int32_t nFileTypeIndex = -1,
-                        const DString& defaultExt = _T(""),
+                        const DString& defaultExt = DUI_T(""),
                         const FilePath& defaultLocation = FilePath());
 
 };

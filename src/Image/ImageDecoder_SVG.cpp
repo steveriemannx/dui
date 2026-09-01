@@ -188,14 +188,14 @@ ImageDecoder_SVG::~ImageDecoder_SVG()
 
 DString ImageDecoder_SVG::GetFormatName() const
 {
-    return _T("SVG");
+    return DUI_T("SVG");
 }
 
 bool ImageDecoder_SVG::CanDecode(const DString& imageFilePath) const
 {
     DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == _T("SVG")) {
+    if (fileExt == DUI_T("SVG")) {
         return true;
     }
     return false;

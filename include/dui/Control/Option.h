@@ -84,7 +84,7 @@ void OptionTemplate<InheritType>::SetWindow(Window* pWindow)
 template<typename InheritType>
 void OptionTemplate<InheritType>::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("group")) {
+    if (strName == DUI_T("group")) {
         SetGroup(strValue);
     }
     else {

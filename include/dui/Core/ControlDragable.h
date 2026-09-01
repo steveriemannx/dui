@@ -299,16 +299,16 @@ inline DString ControlDragableT<VBox>::GetType() const { return DUI_CTR_VBOX_DRA
 template<typename T>
 void ControlDragableT<T>::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("drag_order")) {
+    if (strName == DUI_T("drag_order")) {
         // Whether dragging to adjust the order is supported (within the same container)
-        SetEnableDragOrder(strValue == _T("true"));
+        SetEnableDragOrder(strValue == DUI_T("true"));
     }
-    else if (strName == _T("drag_alpha")) {
+    else if (strName == DUI_T("drag_alpha")) {
         SetDragAlpha((uint8_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("drag_out")) {
+    else if (strName == DUI_T("drag_out")) {
         // Whether the drag-out operation is supported (between different containers in the same window)
-        SetEnableDragOut(strValue == _T("true"));
+        SetEnableDragOut(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -896,9 +896,9 @@ template<typename T>
 Control* ControlDragableT<T>::CreateDestControl(Box* pTargetBox)
 {
     Control* pDestControl = new Control(this->GetWindow());
-    pDestControl->SetAttribute(_T("bkcolor"), _T("#FF5D6B99"));
-    pDestControl->SetAttribute(_T("valign"), _T("center"));
-    pDestControl->SetAttribute(_T("halign"), _T("center"));
+    pDestControl->SetAttribute(DUI_T("bkcolor"), DUI_T("#FF5D6B99"));
+    pDestControl->SetAttribute(DUI_T("valign"), DUI_T("center"));
+    pDestControl->SetAttribute(DUI_T("halign"), DUI_T("center"));
 
     Layout* pLayout = nullptr;
     if (pTargetBox != nullptr) {
@@ -918,12 +918,12 @@ Control* ControlDragableT<T>::CreateDestControl(Box* pTargetBox)
     }
     if (!bInited) {        
         if ((pLayout != nullptr) && pLayout->IsVLayout()) {
-            pDestControl->SetAttribute(_T("height"), _T("4"));
-            pDestControl->SetAttribute(_T("width"), _T("80%"));
+            pDestControl->SetAttribute(DUI_T("height"), DUI_T("4"));
+            pDestControl->SetAttribute(DUI_T("width"), DUI_T("80%"));
         }
         else {
-            pDestControl->SetAttribute(_T("width"), _T("4"));
-            pDestControl->SetAttribute(_T("height"), _T("80%"));
+            pDestControl->SetAttribute(DUI_T("width"), DUI_T("4"));
+            pDestControl->SetAttribute(DUI_T("height"), DUI_T("80%"));
         }
     }
     return pDestControl;

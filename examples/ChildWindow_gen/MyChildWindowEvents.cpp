@@ -44,18 +44,18 @@ MyChildWindowEvents::MyChildWindowEvents(ui::ChildWindow* pChildWindow,
     m_childWindowPaint = std::make_unique<ChildWindowPaint>(pChildWindow);
     m_fps = std::make_unique<FPSCounter>();
     m_lastPaintTime = std::chrono::high_resolution_clock::now();
-    m_pFpsLabel = dynamic_cast<ui::Label*>(pChildWindow->FindSubControl(_T("label_fps")));
+    m_pFpsLabel = dynamic_cast<ui::Label*>(pChildWindow->FindSubControl(DUI_T("label_fps")));
     m_bPaintFps = true;
 
     // Update the child window name
-    ui::Label* pChildWindowName = dynamic_cast<ui::Label*>(pChildWindow->FindSubControl(_T("child_window_name")));
+    ui::Label* pChildWindowName = dynamic_cast<ui::Label*>(pChildWindow->FindSubControl(DUI_T("child_window_name")));
     if (pChildWindowName != nullptr) {
-        DString childWindowName = ui::StringUtil::Printf(_T("ChildWnd%d"), (int32_t)nChildWindowIndex);
+        DString childWindowName = ui::StringUtil::Printf(DUI_T("ChildWnd%d"), (int32_t)nChildWindowIndex);
         pChildWindowName->SetText(childWindowName);
     }
 
     // Dynamic drawing
-    ui::CheckBox* pStartFpsPaint = dynamic_cast<ui::CheckBox*>(pChildWindow->FindSubControl(_T("fps_paint")));
+    ui::CheckBox* pStartFpsPaint = dynamic_cast<ui::CheckBox*>(pChildWindow->FindSubControl(DUI_T("fps_paint")));
     if (pStartFpsPaint != nullptr) {
         pStartFpsPaint->AttachSelect([this](const ui::EventArgs&) {
             m_bPaintFps = true;
@@ -76,7 +76,7 @@ MyChildWindowEvents::MyChildWindowEvents(ui::ChildWindow* pChildWindow,
     }
 
     // Full-screen display
-    ui::CheckBox* pFullscreen = dynamic_cast<ui::CheckBox*>(pChildWindow->FindSubControl(_T("child_fullscreen")));
+    ui::CheckBox* pFullscreen = dynamic_cast<ui::CheckBox*>(pChildWindow->FindSubControl(DUI_T("child_fullscreen")));
     if (pFullscreen != nullptr) {
         pFullscreen->AttachSelect([this](const ui::EventArgs&) {
             if (m_pChildWindow != nullptr) {
@@ -104,7 +104,7 @@ MyChildWindowEvents::MyChildWindowEvents(ui::ChildWindow* pChildWindow,
         if (pWindow != nullptr) {
             pWindow->AttachWindowExitFullscreenMsg([this](const ui::EventArgs&) {
                 if (m_pChildWindow != nullptr) {
-                    ui::CheckBox* pFullscreen = dynamic_cast<ui::CheckBox*>(m_pChildWindow->FindSubControl(_T("child_fullscreen")));
+                    ui::CheckBox* pFullscreen = dynamic_cast<ui::CheckBox*>(m_pChildWindow->FindSubControl(DUI_T("child_fullscreen")));
                     if (pFullscreen != nullptr) {
                         pFullscreen->SetSelected(false);
                     }
@@ -146,7 +146,7 @@ LRESULT MyChildWindowEvents::OnPaintMsg(const ui::UiRect& rcPaint, const ui::Nat
         if (duration.count() >= 500) {
             // Update twice per second
             m_lastPaintTime = currentTime;
-            DString fps = ui::StringUtil::Printf(_T("%d"), (int32_t)m_fps->GetFPS());
+            DString fps = ui::StringUtil::Printf(DUI_T("%d"), (int32_t)m_fps->GetFPS());
             if (m_pFpsLabel != nullptr) {
                 m_pFpsLabel->SetText(fps);
             }
@@ -154,7 +154,7 @@ LRESULT MyChildWindowEvents::OnPaintMsg(const ui::UiRect& rcPaint, const ui::Nat
     }
     else {
         if (m_pFpsLabel != nullptr) {
-            const DString empty = _T("0");
+            const DString empty = DUI_T("0");
             if (empty != m_pFpsLabel->GetText()) {
                 // Clear
                 m_pFpsLabel->SetText(empty);

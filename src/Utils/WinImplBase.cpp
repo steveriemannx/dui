@@ -155,7 +155,7 @@ void WindowImplBase::BindCaptionButtons_MacOS()
     }
     //macOS title bar: white background, 3pt thinner than the XML height
     //(36pt) to match the compact macOS-style caption bar.
-    pCaptionBar->SetBkColor(_T("#FFFFFFFF"));
+    pCaptionBar->SetBkColor(DUI_T("#FFFFFFFF"));
     pCaptionBar->SetFixedHeight(UiFixedInt(33), true, true);
     //No extra macOS title-bar separator line: the examples use a clean
     //caption bar without a visible border line.
@@ -173,7 +173,7 @@ void WindowImplBase::BindCaptionButtons_MacOS()
     Box* pCaptionBox = dynamic_cast<Box*>(pCaptionBar);
     if (pCaptionBox != nullptr) {
         MacTrafficLights* pTrafficLights = new MacTrafficLights(this);
-        pTrafficLights->SetName(_T("mac_traffic_lights"));
+        pTrafficLights->SetName(DUI_T("mac_traffic_lights"));
         pTrafficLights->SetFixedWidth(UiFixedInt(76), true, true);
         pTrafficLights->SetFixedHeight(UiFixedInt(33), true, true);
         if (pCaptionBox->AddItemAt(pTrafficLights, 0)) {

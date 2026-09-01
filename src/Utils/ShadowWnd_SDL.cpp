@@ -47,12 +47,12 @@ ShadowWndBase::ShadowWndBase():
 
 DString ShadowWndBase::GetSkinFolder()
 {
-    return _T("");
+    return DUI_T("");
 }
 
 DString ShadowWndBase::GetSkinFile()
 {
-    return _T("public/shadow/shadow.xml");
+    return DUI_T("public/shadow/shadow.xml");
 }
 //
 //int SDLCALL ShadowWndBaseEventFilter(void* userdata, SDL_Event* event)
@@ -75,8 +75,8 @@ bool ShadowWndBase::Create(Window* window)
     WindowCreateParam createParam;
     createParam.m_dwStyle = kWS_POPUP;
     createParam.m_dwExStyle = kWS_EX_TRANSPARENT | kWS_EX_LAYERED | kWS_EX_NOACTIVATE | kWS_EX_TOOLWINDOW;
-    createParam.m_className = _T("ShadowWnd");
-    createParam.m_windowTitle = _T("ShadowWnd");
+    createParam.m_className = DUI_T("ShadowWnd");
+    createParam.m_windowTitle = DUI_T("ShadowWnd");
 
     //Support the shadow-following effect when the window is moved by dragging the title bar with the mouse
     //Due to the current SDL message loop mechanism, when the window is moved by dragging the title bar with the mouse, the SDL events corresponding to the window messages are not processed by the application layer.

@@ -312,52 +312,52 @@ DString ComboButton::GetType() const { return DUI_CTR_COMBO_BUTTON; }
 
 void ComboButton::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if ((strName == _T("dropbox_size")) || (strName == _T("dropboxsize")) ) {
+    if ((strName == DUI_T("dropbox_size")) || (strName == DUI_T("dropboxsize")) ) {
         //Set the size of the drop-down list (width and height)
         UiSize szDropBoxSize;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szDropBoxSize);
         SetDropBoxSize(szDropBoxSize, true);
     }
-    else if ((strName == _T("popup_top")) || (strName == _T("popuptop"))) {
+    else if ((strName == DUI_T("popup_top")) || (strName == DUI_T("popuptop"))) {
         //Whether the drop-down list pops up upward
-        SetPopupTop(strValue == _T("true"));
+        SetPopupTop(strValue == DUI_T("true"));
     }
-    else if (strName == _T("combo_box_class")) {
+    else if (strName == DUI_T("combo_box_class")) {
         SetComboBoxClass(strValue);
     }
-    else if (strName == _T("left_button_class")) {
+    else if (strName == DUI_T("left_button_class")) {
         SetLeftButtonClass(strValue);
     }
-    else if (strName == _T("left_button_top_label_class")) {
+    else if (strName == DUI_T("left_button_top_label_class")) {
         SetLeftButtonTopLabelClass(strValue);
     }
-    else if (strName == _T("left_button_bottom_label_class")) {
+    else if (strName == DUI_T("left_button_bottom_label_class")) {
         SetLeftButtonBottomLabelClass(strValue);
     }
-    else if (strName == _T("left_button_top_label_text")) {
+    else if (strName == DUI_T("left_button_top_label_text")) {
         if (m_pLabelTop != nullptr) {
             m_pLabelTop->SetText(strValue);
         }
     }
-    else if (strName == _T("left_button_bottom_label_text")) {
+    else if (strName == DUI_T("left_button_bottom_label_text")) {
         if (m_pLabelBottom != nullptr) {
             m_pLabelBottom->SetText(strValue);
         }
     }
-    else if (strName == _T("left_button_top_label_bkcolor")) {
+    else if (strName == DUI_T("left_button_top_label_bkcolor")) {
         if (m_pLabelTop != nullptr) {
             m_pLabelTop->SetBkColor(strValue);
         }
     }
-    else if (strName == _T("left_button_bottom_label_bkcolor")) {
+    else if (strName == DUI_T("left_button_bottom_label_bkcolor")) {
         if (m_pLabelBottom != nullptr) {
             m_pLabelBottom->SetBkColor(strValue);
         }
     }
-    else if (strName == _T("right_button_class")) {
+    else if (strName == DUI_T("right_button_class")) {
         SetRightButtonClass(strValue);
     }
-    else if (strName == _T("shadow_type")) {
+    else if (strName == DUI_T("shadow_type")) {
         //Set the shadow type of the drop-down window
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
         if (Shadow::GetShadowType(strValue, nShadowType)) {
@@ -494,13 +494,13 @@ void ComboButton::ParseAttributeList(const DString& strList,
     }
     DString strValue = strList;
     //These are hand-written attributes; curly braces {} are used instead of double quotes, so no escape characters are needed when writing them;
-    StringUtil::ReplaceAll(_T("{"), _T("\""), strValue);
-    StringUtil::ReplaceAll(_T("}"), _T("\""), strValue);
-    if (strValue.find(_T("\"")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, _T('\"'), attributeList);
+    StringUtil::ReplaceAll(DUI_T("{"), DUI_T("\""), strValue);
+    StringUtil::ReplaceAll(DUI_T("}"), DUI_T("\""), strValue);
+    if (strValue.find(DUI_T("\"")) != DString::npos) {
+        AttributeUtil::ParseAttributeList(strValue, DUI_T('\"'), attributeList);
     }
-    else if (strValue.find(_T("\'")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, _T('\''), attributeList);
+    else if (strValue.find(DUI_T("\'")) != DString::npos) {
+        AttributeUtil::ParseAttributeList(strValue, DUI_T('\''), attributeList);
     }
 }
 

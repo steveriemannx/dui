@@ -1007,7 +1007,7 @@ void MainForm::LoadRichEditData()
 {
     std::string xml;
     ui::FilePath controls_xml = ui::GlobalManager::Instance().GetResourcePath();
-    controls_xml += _T("rich_edit/rich_edit.xml");
+    controls_xml += DUI_T("rich_edit/rich_edit.xml");
 
     // Try embedded resources first (code/gen versions)
     std::vector<unsigned char> fileData;

@@ -222,12 +222,12 @@ void CFHtmlToHtml(const std::string& cf_html,
 }
 
 DWORD GetMozUrlFormat() {
-  static DWORD moz_url_format = ::RegisterClipboardFormat(_T("text/x-moz-url"));
+  static DWORD moz_url_format = ::RegisterClipboardFormat(DUI_T("text/x-moz-url"));
   return moz_url_format;
 }
 
 DWORD GetHtmlFormat() {
-  static DWORD html_format = ::RegisterClipboardFormat(_T("HTML Format"));
+  static DWORD html_format = ::RegisterClipboardFormat(DUI_T("HTML Format"));
   return html_format;
 }
 

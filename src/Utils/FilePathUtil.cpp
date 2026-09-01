@@ -119,16 +119,16 @@ DString FilePathUtil::GetFileExtension(const DString& filePath)
 {
     DString path = filePath;
 #ifdef DUI_BUILD_FOR_WIN
-    size_t pos = filePath.find_last_of(_T("/\\"));
+    size_t pos = filePath.find_last_of(DUI_T("/\\"));
 #else
-    size_t pos = filePath.find_last_of(_T("/"));
+    size_t pos = filePath.find_last_of(DUI_T("/"));
 #endif
     if ((pos != DString::npos) && ((pos + 1) < filePath.size())) {
         path = filePath.substr(pos + 1, DString::npos);
     }
 
     DString fileExt;
-    pos = path.rfind(_T("."));
+    pos = path.rfind(DUI_T("."));
     if ((pos != DString::npos) && ((pos + 1) < path.size())) {
         fileExt = path.substr(pos + 1, DString::npos);
         fileExt = StringUtil::MakeUpperString(fileExt);

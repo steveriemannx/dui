@@ -13,7 +13,7 @@ ListCtrlIcon::ListCtrlIcon(Window* pWindow) :
     SetKeyboardEnabled(false);
 }
 
-DString ListCtrlIcon::GetType() const { return _T("ListCtrlIcon"); }
+DString ListCtrlIcon::GetType() const { return DUI_T("ListCtrlIcon"); }
 
 void ListCtrlIcon::HandleEvent(const EventArgs& msg)
 {

@@ -179,7 +179,7 @@ public:
     }
     /** Get the control type
     */
-    virtual DString GetType() const override { return _T("ListCtrlIconViewItem"); }
+    virtual DString GetType() const override { return DUI_T("ListCtrlIconViewItem"); }
 
     /** Event handling function
     */
@@ -259,7 +259,7 @@ public:
     }
     /** Get the control type
     */
-    virtual DString GetType() const override { return _T("ListCtrlListViewItem"); }
+    virtual DString GetType() const override { return DUI_T("ListCtrlListViewItem"); }
 
     /** Event handling function
     */

@@ -53,7 +53,7 @@ bool Keyboard::IsCapsLockOn()
 DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
 {
     (void)nVirtKey;
-    return _T("");
+    return DUI_T("");
 }
 
 } // namespace ui

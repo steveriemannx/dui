@@ -49,26 +49,26 @@ Window::~Window()
 
 void Window::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("shadow_type")) {
+    if (strName == DUI_T("shadow_type")) {
         //Sets the shadow type of the window
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
         if (Shadow::GetShadowType(strValue, nShadowType)) {
             SetShadowType(nShadowType);
         }
     }
-    else if (strName == _T("shadow_attached")) {
+    else if (strName == DUI_T("shadow_attached")) {
         //Whether the shadow is enabled
-        SetShadowAttached(strValue == _T("true"));
+        SetShadowAttached(strValue == DUI_T("true"));
     }
-    else if (strName == _T("drag_drop")) {
+    else if (strName == DUI_T("drag_drop")) {
         //Whether drag-and-drop is allowed
-        SetEnableDragDrop(strValue == _T("true"));
+        SetEnableDragDrop(strValue == DUI_T("true"));
     }
-    else if (strName == _T("layered_window")) {
+    else if (strName == DUI_T("layered_window")) {
         //Whether it is a layered window
-        SetLayeredWindow(strValue == _T("true"), true);
+        SetLayeredWindow(strValue == DUI_T("true"), true);
     }
-    else if (strName == _T("layered_window_alpha")) {
+    else if (strName == DUI_T("layered_window_alpha")) {
         //The opacity of the layered window
         SetLayeredWindowAlpha(StringUtil::StringToInt32(strValue));
     }
@@ -89,7 +89,7 @@ void Window::SetClass(const DString& strClass)
     if (strClass.empty()) {
         return;
     }
-    std::list<DString> splitList = StringUtil::Split(strClass, _T(" "));
+    std::list<DString> splitList = StringUtil::Split(strClass, DUI_T(" "));
     for (auto it = splitList.begin(); it != splitList.end(); it++) {
         DString pDefaultAttributes = GlobalManager::Instance().GetClassAttributes((*it));
         if (pDefaultAttributes.empty()) {
@@ -110,11 +110,11 @@ void Window::ApplyAttributeList(const DString& strList)
         return;
     }
     std::vector<std::pair<DString, DString>> attributeList;
-    if (strList.find(_T('\"')) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strList, _T('\"'), attributeList);
+    if (strList.find(DUI_T('\"')) != DString::npos) {
+        AttributeUtil::ParseAttributeList(strList, DUI_T('\"'), attributeList);
     }
-    else if (strList.find(_T('\'')) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strList, _T('\''), attributeList);
+    else if (strList.find(DUI_T('\'')) != DString::npos) {
+        AttributeUtil::ParseAttributeList(strList, DUI_T('\''), attributeList);
     }
     for (const auto& attribute : attributeList) {
         SetAttribute(attribute.first, attribute.second);
@@ -275,7 +275,7 @@ void Window::ParseWindowXml()
     //The path of the XML file; it should be a relative path    
     DString skinXmlFileData;
     FilePath skinXmlFilePath;
-    if (!xmlFile.empty() && xmlFile.front() == _T('<')) {
+    if (!xmlFile.empty() && xmlFile.front() == DUI_T('<')) {
         //The returned content is the XML file content, not a file path
         skinXmlFileData = std::move(xmlFile);
     }
@@ -287,7 +287,7 @@ void Window::ParseWindowXml()
         }
 
         //Saves the path of the XML file
-        size_t nPos = xmlFile.find_last_of(_T("/\\"));
+        size_t nPos = xmlFile.find_last_of(DUI_T("/\\"));
         if (nPos != DString::npos) {
             DString xmlPath = xmlFile.substr(0, nPos);
             if (!xmlPath.empty()) {
@@ -618,7 +618,7 @@ DString Window::GetClassAttributes(const DString& strClassName) const
     if (it != m_defaultAttrHash.end()) {
         return it->second;
     }
-    return _T("");
+    return DUI_T("");
 }
 
 bool Window::RemoveClass(const DString& strClassName)
@@ -1271,7 +1271,7 @@ bool Window::OnPreparePaint()
 
 LRESULT Window::OnPaintMsg(const UiRect& rcPaint, const NativeMsg& /*nativeMsg*/, bool& bHandled)
 {
-    PerformanceStat statPerformance(_T("PaintWindow, Window::OnPaintMsg"));
+    PerformanceStat statPerformance(DUI_T("PaintWindow, Window::OnPaintMsg"));
     bHandled = false;
     if (!IsWindowFirstShown()) {
         //On the first draw, draw the full area (to avoid the incomplete display when the initial window is partially off-screen and then dragged to the center of the screen)
@@ -1297,7 +1297,7 @@ bool Window::Paint(const UiRect& rcPaint)
 
     //Before drawing, remove the alpha channel
     if (IsLayeredWindow()) {
-        PerformanceStat statPerformance(_T("PaintWindow, Window::Paint ClearAlpha"));
+        PerformanceStat statPerformance(DUI_T("PaintWindow, Window::Paint ClearAlpha"));
         pRender->ClearAlpha(rcPaint);
     }
 
@@ -1307,7 +1307,7 @@ bool Window::Paint(const UiRect& rcPaint)
         return false;
     }
     if (pRoot->IsVisible()) {
-        PerformanceStat statPerformance(_T("PaintWindow, Window::Paint Paint/PaintChild"));
+        PerformanceStat statPerformance(DUI_T("PaintWindow, Window::Paint Paint/PaintChild"));
         AutoClip rectClip(pRender, rcPaint, true);
         UiPoint ptOldWindOrg = pRender->OffsetWindowOrg(m_renderOffset);
         pRoot->AlphaPaint(pRender, rcPaint);
@@ -1324,7 +1324,7 @@ bool Window::Paint(const UiRect& rcPaint)
 #if defined (DUI_BUILD_FOR_WIN) && !defined(DUI_RICH_EDIT_DRAW_OPT)
     //Before drawing, repair the alpha channel
     if (IsLayeredWindow()) {
-        PerformanceStat statPerformance(_T("PaintWindow, Window::Paint RestoreAlpha"));
+        PerformanceStat statPerformance(DUI_T("PaintWindow, Window::Paint RestoreAlpha"));
         Shadow* pShadow = GetShadow();
         if ((pShadow != nullptr) && pShadow->IsShadowAttached() &&
             (m_renderOffset.x == 0) && (m_renderOffset.y == 0)) {

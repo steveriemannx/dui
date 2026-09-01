@@ -26,10 +26,10 @@ DString XmlBox::GetType() const { return DUI_CTR_XMLBOX; }
 
 void XmlBox::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("xml_file_path")) {
+    if (strName == DUI_T("xml_file_path")) {
         SetXmlFilePath(FilePath(strValue));
     }
-    else if (strName == _T("res_path")) {
+    else if (strName == DUI_T("res_path")) {
         SetResPath(FilePath(strValue));
     }
     else {
@@ -161,14 +161,14 @@ bool XmlBox::LoadXmlData(const FilePath& xmlPath)
         //Check whether a shadow is present
         DString shadowTypeString;
         const std::map<DString, DString>& windowAttributesMap = xmlPreviewAttributes.m_windowAttributes;
-        auto iter = windowAttributesMap.find(_T("shadow_type"));
+        auto iter = windowAttributesMap.find(DUI_T("shadow_type"));
         if (iter != windowAttributesMap.end()) {
             shadowTypeString = iter->second;
         }
         bool bShadowAttached = true;
-        iter = windowAttributesMap.find(_T("shadow_attached"));
+        iter = windowAttributesMap.find(DUI_T("shadow_attached"));
         if (iter != windowAttributesMap.end()) {
-            bShadowAttached = (iter->second == _T("true")) ? true : false;
+            bShadowAttached = (iter->second == DUI_T("true")) ? true : false;
         }
 
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDefault;

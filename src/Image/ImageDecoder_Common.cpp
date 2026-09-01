@@ -29,7 +29,7 @@ bool ImageDecoder_Common::CanDecode(const DString& imageFilePath) const
     DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
 
-    std::list<DString> fileExtList = StringUtil::Split(fileExtentions, _T(";"));
+    std::list<DString> fileExtList = StringUtil::Split(fileExtentions, DUI_T(";"));
     for (DString& ext : fileExtList) {
         StringUtil::MakeUpperString(ext);
         if (fileExt == ext) {

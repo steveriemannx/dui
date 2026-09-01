@@ -18,16 +18,16 @@ DateTime::DateTime(Window* pWindow):
     m_dateTime({0,}),
     m_pDateWindow(nullptr),
     m_editFormat(EditFormat::kDateCalendar),
-    m_dateSeparator(_T('-'))
+    m_dateSeparator(DUI_T('-'))
 {
     //Set the default attributes
-    SetAttribute(_T("border_size"), _T("1"));
-    SetAttribute(_T("border_color"), _T("gray"));
-    SetAttribute(_T("text_align"), _T("vcenter"));
-    SetAttribute(_T("text_padding"), _T("2,0,0,0"));
+    SetAttribute(DUI_T("border_size"), DUI_T("1"));
+    SetAttribute(DUI_T("border_color"), DUI_T("gray"));
+    SetAttribute(DUI_T("text_align"), DUI_T("vcenter"));
+    SetAttribute(DUI_T("text_padding"), DUI_T("2,0,0,0"));
 #ifdef DUI_BUILD_FOR_SDL
-    SetAttribute(_T("padding"), _T("1,1,1,1"));
-    SetAttribute(_T("spin_class"), _T("rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down"));
+    SetAttribute(DUI_T("padding"), DUI_T("1,1,1,1"));
+    SetAttribute(DUI_T("spin_class"), DUI_T("rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down"));
 #endif
 }
 
@@ -39,33 +39,33 @@ DString DateTime::GetType() const { return DUI_CTR_DATETIME; }
 
 void DateTime::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("format")) {
+    if (strName == DUI_T("format")) {
         SetStringFormat(strValue);
     }
-    else if (strName == _T("edit_format")) {
-        if (strValue == _T("date_calendar")) {
+    else if (strName == DUI_T("edit_format")) {
+        if (strValue == DUI_T("date_calendar")) {
             SetEditFormat(EditFormat::kDateCalendar);
         }
-        else if (strValue == _T("date_up_down")) {
+        else if (strValue == DUI_T("date_up_down")) {
             SetEditFormat(EditFormat::kDateUpDown);
         }
-        else if (strValue == _T("date_time_up_down")) {
+        else if (strValue == DUI_T("date_time_up_down")) {
             SetEditFormat(EditFormat::kDateTimeUpDown);
         }
-        else if (strValue == _T("date_minute_up_down")) {
+        else if (strValue == DUI_T("date_minute_up_down")) {
             SetEditFormat(EditFormat::kDateMinuteUpDown);
         }
-        else if (strValue == _T("time_up_down")) {
+        else if (strValue == DUI_T("time_up_down")) {
             SetEditFormat(EditFormat::kTimeUpDown);
         }
-        else if (strValue == _T("minute_up_down")) {
+        else if (strValue == DUI_T("minute_up_down")) {
             SetEditFormat(EditFormat::kMinuteUpDown);
         }
         else {
             ASSERT(0);
         }
     }
-    else if (strName == _T("spin_class")) {
+    else if (strName == DUI_T("spin_class")) {
         SetSpinClass(strValue);
     }
     else {
@@ -138,8 +138,8 @@ bool DateTime::SetDateTimeString(const DString& dateTime)
     ss >> std::get_time(&t, sFormat.c_str());
     if (ss.fail()) {
         //After failure, intelligently recognize the separators of the year, month and day
-        if (dateTime.find(_T('-')) != DString::npos) {
-            StringUtil::ReplaceAll(_T("/"), _T("-"), sFormat);
+        if (dateTime.find(DUI_T('-')) != DString::npos) {
+            StringUtil::ReplaceAll(DUI_T("/"), DUI_T("-"), sFormat);
 #ifdef DUI_UNICODE
             std::wistringstream ss2(dateTime);
 #else
@@ -149,11 +149,11 @@ bool DateTime::SetDateTimeString(const DString& dateTime)
             if (!ss2.fail()) {
                 m_dateTime = t;
                 bRet = true;
-                m_dateSeparator = _T('-');
+                m_dateSeparator = DUI_T('-');
             }
         }
-        else if (dateTime.find(_T('/')) != DString::npos) {
-            StringUtil::ReplaceAll(_T("-"), _T("/"), sFormat);
+        else if (dateTime.find(DUI_T('/')) != DString::npos) {
+            StringUtil::ReplaceAll(DUI_T("-"), DUI_T("/"), sFormat);
 #ifdef DUI_UNICODE
             std::wistringstream ss2(dateTime);
 #else
@@ -163,7 +163,7 @@ bool DateTime::SetDateTimeString(const DString& dateTime)
             if (!ss2.fail()) {
                 m_dateTime = t;
                 bRet = true;
-                m_dateSeparator = _T('/');
+                m_dateSeparator = DUI_T('/');
             }
         }
     }
@@ -268,28 +268,28 @@ DString DateTime::GetStringFormat() const
         switch (editFormat) {
         case EditFormat::kDateCalendar:
         case EditFormat::kDateUpDown:
-            sFormat = _T("%Y-%m-%d");
+            sFormat = DUI_T("%Y-%m-%d");
             break;
         case EditFormat::kDateTimeUpDown:
-            sFormat = _T("%Y-%m-%d %H:%M:%S");
+            sFormat = DUI_T("%Y-%m-%d %H:%M:%S");
             break;
         case EditFormat::kDateMinuteUpDown:
-            sFormat = _T("%Y-%m-%d %H:%M");
+            sFormat = DUI_T("%Y-%m-%d %H:%M");
             break;
         case EditFormat::kTimeUpDown:
-            sFormat = _T("%H:%M:%S");
+            sFormat = DUI_T("%H:%M:%S");
             break;
         case EditFormat::kMinuteUpDown:
-            sFormat = _T("%H:%M");
+            sFormat = DUI_T("%H:%M");
             break;
         default:
-            sFormat = _T("%Y-%m-%d");
+            sFormat = DUI_T("%Y-%m-%d");
             break;
         }
-        if (m_dateSeparator != _T('-')) {
+        if (m_dateSeparator != DUI_T('-')) {
             DString separator;
             separator = m_dateSeparator;
-            StringUtil::ReplaceAll(_T("-"), separator, sFormat);
+            StringUtil::ReplaceAll(DUI_T("-"), separator, sFormat);
         }        
     }
     return sFormat;

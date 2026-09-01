@@ -48,13 +48,13 @@ LabelImpl::~LabelImpl()
 
 bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("text_align")) {
+    if (strName == DUI_T("text_align")) {
         bool bHCenter = false;        
-        size_t centerPos = strValue.find(_T("center"));
+        size_t centerPos = strValue.find(DUI_T("center"));
         if (centerPos != DString::npos) {
             //The "center" attribute is ambiguous; it is kept for compatibility, the new attribute is "hcenter"
             bHCenter = true;
-            size_t vCenterPos = strValue.find(_T("vcenter"));
+            size_t vCenterPos = strValue.find(DUI_T("vcenter"));
             if (vCenterPos != DString::npos) {
                 if ((vCenterPos + 1) == centerPos) {
                     bHCenter = false;
@@ -63,7 +63,7 @@ bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
         }
 
         //Horizontal alignment
-        if (strValue.find(_T("hcenter")) != DString::npos) {            
+        if (strValue.find(DUI_T("hcenter")) != DString::npos) {            
             bHCenter = true;
         }
         if (bHCenter) {
@@ -71,100 +71,100 @@ bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
             m_uTextStyle &= ~TEXT_HALIGN_ALL;
             m_uTextStyle |= TEXT_HCENTER;
         }
-        else if (strValue.find(_T("right")) != DString::npos) {
+        else if (strValue.find(DUI_T("right")) != DString::npos) {
             //Horizontal alignment: right
             m_uTextStyle &= ~TEXT_HALIGN_ALL;
             m_uTextStyle |= TEXT_RIGHT;
         }
-        else if (strValue.find(_T("left")) != DString::npos) {
+        else if (strValue.find(DUI_T("left")) != DString::npos) {
             //Horizontal alignment: left
             m_uTextStyle &= ~TEXT_HALIGN_ALL;
             m_uTextStyle |= TEXT_LEFT;
         }
-        else if (strValue.find(_T("hjustify")) != DString::npos) {
+        else if (strValue.find(DUI_T("hjustify")) != DString::npos) {
             //Horizontal alignment: justified
             m_uTextStyle &= ~TEXT_HALIGN_ALL;
             m_uTextStyle |= TEXT_HJUSTIFY;
         }
 
         //Vertical alignment
-        if (strValue.find(_T("top")) != DString::npos) {
+        if (strValue.find(DUI_T("top")) != DString::npos) {
             //Vertical alignment: top
             m_uTextStyle &= ~TEXT_VALIGN_ALL;
             m_uTextStyle |= TEXT_TOP;
         }
-        else if (strValue.find(_T("vcenter")) != DString::npos) {
+        else if (strValue.find(DUI_T("vcenter")) != DString::npos) {
             //Vertical alignment: center
             m_uTextStyle &= ~TEXT_VALIGN_ALL;
             m_uTextStyle |= TEXT_VCENTER;
         }
-        else if (strValue.find(_T("bottom")) != DString::npos) {
+        else if (strValue.find(DUI_T("bottom")) != DString::npos) {
             //Vertical alignment: bottom
             m_uTextStyle &= ~TEXT_VALIGN_ALL;
             m_uTextStyle |= TEXT_BOTTOM;
         }
-        else if (strValue.find(_T("vjustify")) != DString::npos) {
+        else if (strValue.find(DUI_T("vjustify")) != DString::npos) {
             //Vertical alignment: bottom
             m_uTextStyle &= ~TEXT_VALIGN_ALL;
             m_uTextStyle |= TEXT_VJUSTIFY;
         }
     }
-    else if ((strName == _T("end_ellipsis")) || (strName == _T("endellipsis"))) {
-        if (strValue == _T("true")) {
+    else if ((strName == DUI_T("end_ellipsis")) || (strName == DUI_T("endellipsis"))) {
+        if (strValue == DUI_T("true")) {
             m_uTextStyle |= TEXT_END_ELLIPSIS;
         }
         else {
             m_uTextStyle &= ~TEXT_END_ELLIPSIS;
         }
     }
-    else if ((strName == _T("path_ellipsis")) || (strName == _T("pathellipsis"))) {
-        if (strValue == _T("true")) {
+    else if ((strName == DUI_T("path_ellipsis")) || (strName == DUI_T("pathellipsis"))) {
+        if (strValue == DUI_T("true")) {
             m_uTextStyle |= TEXT_PATH_ELLIPSIS;
         }
         else {
             m_uTextStyle &= ~TEXT_PATH_ELLIPSIS;
         }
     }
-    else if ((strName == _T("single_line")) || (strName == _T("singleline"))) {
-        SetSingleLine(strValue == _T("true"));
+    else if ((strName == DUI_T("single_line")) || (strName == DUI_T("singleline"))) {
+        SetSingleLine(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("multi_line")) || (strName == _T("multiline"))) {
-        SetSingleLine(strValue != _T("true"));
+    else if ((strName == DUI_T("multi_line")) || (strName == DUI_T("multiline"))) {
+        SetSingleLine(strValue != DUI_T("true"));
     }
-    else if (strName == _T("text")) {
+    else if (strName == DUI_T("text")) {
         SetText(strValue);
     }
-    else if ((strName == _T("text_id")) || (strName == _T("textid"))){
+    else if ((strName == DUI_T("text_id")) || (strName == DUI_T("textid"))){
         SetTextId(strValue);
     }
-    else if ((strName == _T("auto_tooltip")) || (strName == _T("autotooltip"))) {
-        SetAutoShowToolTipEnabled(strValue == _T("true"));
+    else if ((strName == DUI_T("auto_tooltip")) || (strName == DUI_T("autotooltip"))) {
+        SetAutoShowToolTipEnabled(strValue == DUI_T("true"));
     }
-    else if (strName == _T("font")) {
+    else if (strName == DUI_T("font")) {
         SetFontId(strValue);
     }
-    else if ((strName == _T("normal_text_color")) || (strName == _T("normaltextcolor"))) {
+    else if ((strName == DUI_T("normal_text_color")) || (strName == DUI_T("normaltextcolor"))) {
         SetStateTextColor(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("hot_text_color")) || (strName == _T("hottextcolor"))) {
+    else if ((strName == DUI_T("hot_text_color")) || (strName == DUI_T("hottextcolor"))) {
         SetStateTextColor(kControlStateHot, strValue);
     }
-    else if ((strName == _T("pushed_text_color")) || (strName == _T("pushedtextcolor"))) {
+    else if ((strName == DUI_T("pushed_text_color")) || (strName == DUI_T("pushedtextcolor"))) {
         SetStateTextColor(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("disabled_text_color")) || (strName == _T("disabledtextcolor"))) {
+    else if ((strName == DUI_T("disabled_text_color")) || (strName == DUI_T("disabledtextcolor"))) {
         SetStateTextColor(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("text_padding")) || (strName == _T("textpadding"))) {
+    else if ((strName == DUI_T("text_padding")) || (strName == DUI_T("textpadding"))) {
         UiPadding rcTextPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcTextPadding);
         SetTextPadding(rcTextPadding, true);
     }
-    else if (strName == _T("replace_newline")) {
+    else if (strName == DUI_T("replace_newline")) {
         // Set whether to replace newline characters (replace the string "\\n" with the newline character "\n"
-        SetReplaceNewline(strValue == _T("true"));
+        SetReplaceNewline(strValue == DUI_T("true"));
     }
-    else if (strName == _T("spacing_mul")) {
+    else if (strName == DUI_T("spacing_mul")) {
         // Set the line spacing multiplier
         float mul = 1.0f;
         float add = 0;
@@ -172,7 +172,7 @@ bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
         mul = StringUtil::StringToFloat(strValue.c_str(), nullptr);
         SetLineSpacing(mul, add, false);
     }
-    else if (strName == _T("spacing_add")) {
+    else if (strName == DUI_T("spacing_add")) {
         // Set the fixed additional pixel value of the line spacing
         float mul = 1.0f;
         float add = 0;
@@ -180,25 +180,25 @@ bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
         add = StringUtil::StringToFloat(strValue.c_str(), nullptr);
         SetLineSpacing(mul, add, true);
     }
-    else if (strName == _T("vertical_text")) {
+    else if (strName == DUI_T("vertical_text")) {
         // Set whether the text is vertical
-        SetVerticalText(strValue == _T("true"));
+        SetVerticalText(strValue == DUI_T("true"));
     }
-    else if (strName == _T("word_spacing")) {
+    else if (strName == DUI_T("word_spacing")) {
         // Set the spacing between two adjacent characters (pixels)
         SetWordSpacing(StringUtil::StringToFloat(strValue.c_str(), nullptr), true);
     }
-    else if (strName == _T("use_font_height")) {
+    else if (strName == DUI_T("use_font_height")) {
         // Set whether, when drawing text vertically, the font's default height is used instead of each font's height (all fonts are displayed at equal height)
-        SetUseFontHeight(strValue == _T("true"));
+        SetUseFontHeight(strValue == DUI_T("true"));
     }
-    else if (strName == _T("ascii_rotate_90")) {
+    else if (strName == DUI_T("ascii_rotate_90")) {
         // Set whether, when drawing text vertically, characters such as letters and digits are displayed rotated 90 degrees clockwise
-        SetRotate90ForAscii(strValue == _T("true"));
+        SetRotate90ForAscii(strValue == DUI_T("true"));
     }
-    else if (strName == _T("rich_text")) {
+    else if (strName == DUI_T("rich_text")) {
         // Set whether the text content is RichText
-        SetRichText(strValue == _T("true"));
+        SetRichText(strValue == DUI_T("true"));
     }
     else {
         return false;
@@ -302,7 +302,7 @@ DString LabelImpl::GetText() const
 
     if (IsReplaceNewline()) {
         //Replace the two characters backslash + n with a newline character
-        StringUtil::ReplaceAll(_T("\\n"), _T("\n"), strText);
+        StringUtil::ReplaceAll(DUI_T("\\n"), DUI_T("\n"), strText);
     }
     return strText;
 }

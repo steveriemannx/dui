@@ -20,14 +20,14 @@ HTileLayout::HTileLayout():
 bool HTileLayout::SetAttribute(const DString& strName, const DString& strValue, const DpiManager& dpiManager)
 {
     bool hasAttribute = true;
-    if ((strName == _T("item_size")) || (strName == _T("itemsize"))) {
+    if ((strName == DUI_T("item_size")) || (strName == DUI_T("itemsize"))) {
         UiSize szItem;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szItem);
         dpiManager.ScaleSize(szItem);
         SetItemSize(szItem, true);
     }
-    else if ((strName == _T("columns")) || (strName == _T("rows"))) {
-        if (strValue == _T("auto")) {
+    else if ((strName == DUI_T("columns")) || (strName == DUI_T("rows"))) {
+        if (strValue == DUI_T("auto")) {
             // Auto-calculate the number of columns
             SetAutoCalcRows(true);
         }
@@ -36,11 +36,11 @@ bool HTileLayout::SetAttribute(const DString& strName, const DString& strValue, 
             SetRows(StringUtil::StringToInt32(strValue));
         }
     }
-    else if (strName == _T("auto_calc_item_size")) {
-        SetAutoCalcItemHeight(strValue == _T("true"));
+    else if (strName == DUI_T("auto_calc_item_size")) {
+        SetAutoCalcItemHeight(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("scale_down")) || (strName == _T("scaledown"))) {
-        SetScaleDown(strValue == _T("true"));
+    else if ((strName == DUI_T("scale_down")) || (strName == DUI_T("scaledown"))) {
+        SetScaleDown(strValue == DUI_T("true"));
     }
     else {
         hasAttribute = BaseClass::SetAttribute(strName, strValue, dpiManager);

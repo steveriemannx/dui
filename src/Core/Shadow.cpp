@@ -20,7 +20,7 @@ public:
         // Disable the control's own padding, otherwise the shadow cannot be drawn
         SetEnableControlPadding(false);
     }
-    virtual DString GetType() const override { return _T("ShadowBox"); }
+    virtual DString GetType() const override { return DUI_T("ShadowBox"); }
 
     // Draw the child controls inside the container
     virtual void PaintChild(IRender* pRender, const UiRect& rcPaint) override
@@ -133,7 +133,7 @@ public:
                         destRect.bottom += rcRealCorner.bottom;
                     }
                 }
-                PaintImage(pRender, pBkImage, _T(""), DUI_NOSET_VALUE, nullptr, &destRect);
+                PaintImage(pRender, pBkImage, DUI_T(""), DUI_NOSET_VALUE, nullptr, &destRect);
             }
 
             // Draw the border
@@ -221,7 +221,7 @@ Shadow::Shadow(Window* pWindow):
     m_bRightSnap(false),
     m_bBottomSnap(false),
     m_nShadowBorderSize(2),
-    m_shadowBorderColor(_T("#FFA3A3A3"))
+    m_shadowBorderColor(DUI_T("#FFA3A3A3"))
 {
 #if defined(DUI_BUILD_FOR_MACOS)
     //macOS native: the OS provides the window shadow (rounded corners + system
@@ -486,46 +486,46 @@ Shadow::ShadowType Shadow::GetShadowType() const
 
 bool Shadow::GetShadowType(const DString& typeString, ShadowType& nShadowType)
 {
-    if (typeString == _T("big")) {
+    if (typeString == DUI_T("big")) {
         nShadowType = Shadow::ShadowType::kShadowBig;
     }
-    else if (typeString == _T("big_round")) {
+    else if (typeString == DUI_T("big_round")) {
         nShadowType = Shadow::ShadowType::kShadowBigRound;
     }
-    else if (typeString == _T("small")) {
+    else if (typeString == DUI_T("small")) {
         nShadowType = Shadow::ShadowType::kShadowSmall;
     }
-    else if (typeString == _T("small_round")) {
+    else if (typeString == DUI_T("small_round")) {
         nShadowType = Shadow::ShadowType::kShadowSmallRound;
     }
-    else if (typeString == _T("menu")) {
+    else if (typeString == DUI_T("menu")) {
         nShadowType = Shadow::ShadowType::kShadowMenu;
     }
-    else if (typeString == _T("menu_round")) {
+    else if (typeString == DUI_T("menu_round")) {
         nShadowType = Shadow::ShadowType::kShadowMenuRound;
     }
-    else if (typeString == _T("none")) {
+    else if (typeString == DUI_T("none")) {
         nShadowType = Shadow::ShadowType::kShadowNone;
     }
-    else if (typeString == _T("none_round")) {
+    else if (typeString == DUI_T("none_round")) {
         nShadowType = Shadow::ShadowType::kShadowNoneRound;
     }
-    else if (typeString == _T("custom")) {
+    else if (typeString == DUI_T("custom")) {
         nShadowType = Shadow::ShadowType::kShadowCustom;
     }
-    else if (typeString == _T("default")) {
+    else if (typeString == DUI_T("default")) {
         nShadowType = Shadow::ShadowType::kShadowDefault;
     }
-    else if (typeString == _T("system_default")) {
+    else if (typeString == DUI_T("system_default")) {
         nShadowType = Shadow::ShadowType::kShadowSystemDefault;
     }
-    else if (typeString == _T("system_not_round")) {
+    else if (typeString == DUI_T("system_not_round")) {
         nShadowType = Shadow::ShadowType::kShadowSystemDoNotRound;
     }
-    else if (typeString == _T("system_round")) {
+    else if (typeString == DUI_T("system_round")) {
         nShadowType = Shadow::ShadowType::kShadowSystemRound;
     }
-    else if (typeString == _T("system_small_round")) {
+    else if (typeString == DUI_T("system_small_round")) {
         nShadowType = Shadow::ShadowType::kShadowSystemSmallRound;
     }
     else {
@@ -546,7 +546,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(30, 30, 34, 36);
-        shadowImage = StringUtil::Printf(_T("file='public/shadow/shadow_big.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_big.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
                                              rcShadowCorner.left + szBorderRound.cx,
                                              rcShadowCorner.top + szBorderRound.cx,
                                              rcShadowCorner.right + szBorderRound.cx,
@@ -556,7 +556,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(30, 30, 34, 36);
-        shadowImage = StringUtil::Printf(_T("file='public/shadow/shadow_big_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_big_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
                                          rcShadowCorner.left + szBorderRound.cx,
                                          rcShadowCorner.top + szBorderRound.cx,
                                          rcShadowCorner.right + szBorderRound.cx,
@@ -566,7 +566,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
-        shadowImage = StringUtil::Printf(_T("file='public/shadow/shadow_small.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_small.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
                                              rcShadowCorner.left + szBorderRound.cx,
                                              rcShadowCorner.top + szBorderRound.cx,
                                              rcShadowCorner.right + szBorderRound.cx,
@@ -576,7 +576,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
-        shadowImage = StringUtil::Printf(_T("file='public/shadow/shadow_small_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_small_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
                                          rcShadowCorner.left + szBorderRound.cx,
                                          rcShadowCorner.top + szBorderRound.cx,
                                          rcShadowCorner.right + szBorderRound.cx,
@@ -586,7 +586,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
-        shadowImage = StringUtil::Printf(_T("file='public/shadow/shadow_menu.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_menu.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
                                              rcShadowCorner.left + szBorderRound.cx,
                                              rcShadowCorner.top + szBorderRound.cx,
                                              rcShadowCorner.right + szBorderRound.cx,
@@ -596,7 +596,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
-        shadowImage = StringUtil::Printf(_T("file='public/shadow/shadow_menu_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_menu_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
                                          rcShadowCorner.left + szBorderRound.cx,
                                          rcShadowCorner.top + szBorderRound.cx,
                                          rcShadowCorner.right + szBorderRound.cx,
@@ -836,7 +836,7 @@ void Shadow::ChangeDpiScale(const DpiManager& dpi, uint32_t /*nOldDpiScale*/, ui
     // Update the shadow image (trigger image reloading, adapting to the image responsive to the DPI value according to the DPI)
     DString shadowImage = GetShadowImage();
     if (!shadowImage.empty()) {
-        SetShadowImage(_T(""));
+        SetShadowImage(DUI_T(""));
         SetShadowImage(shadowImage);
     }
 }

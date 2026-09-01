@@ -3438,12 +3438,12 @@ void BuildUIFromXmlRender(ui::Window* pWindow) {
 
     auto* p1051 = ui::Create<ui::VBox>(pWindow, {{"width", "260"}, {"margin", "4"}});
     auto* p1052 = ui::Create<ui::RichText>(pWindow, {{"class", "rich_text"}, {"bkcolor", "green"}, {"row_spacing_mul", "1.5"}, {"width", "100%"}, {"height", "auto"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText>\n                RichText text<br/>Content 1\n                <b>\n                    Bold\n                    <bgcolor color=\"#FFFFFF\"><u><a href=\"www.baidu.com\">This is a hyperlink: click to visit Baidu</a></u></bgcolor><font color=\"#FF0000\">bold red</font></b><font face=\"SimSun\" size=\"12\">\n                    SimSun 12pt demo 1\n                    <font face=\"KaiTi\" size=\"18\">\n                        KaiTi effect demo: 18pt\n                    </font>\n                    SimSun 12pt demo 2\n                </font><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a><font face=\"SimSun\" size=\"8\">\n                    SimSun 8pt demo\n                </font><i>italic demo</i><b>bold demo</b><s>strikethrough demo</s><u>underline demo</u><font face=\"Microsoft YaHei\" size=\"14\">\n                    Microsoft YaHei 14pt demo\n                </font><bgcolor color=\"#802378\">Background Color Demo</bgcolor>                \n                RichText content 2 content 3 content 4 content 5 content 6 content 7 content 8 content 9 content 10\n            </RichText>"), p1052);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText>\n                RichText text<br/>Content 1\n                <b>\n                    Bold\n                    <bgcolor color=\"#FFFFFF\"><u><a href=\"www.baidu.com\">This is a hyperlink: click to visit Baidu</a></u></bgcolor><font color=\"#FF0000\">bold red</font></b><font face=\"SimSun\" size=\"12\">\n                    SimSun 12pt demo 1\n                    <font face=\"KaiTi\" size=\"18\">\n                        KaiTi effect demo: 18pt\n                    </font>\n                    SimSun 12pt demo 2\n                </font><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a><font face=\"SimSun\" size=\"8\">\n                    SimSun 8pt demo\n                </font><i>italic demo</i><b>bold demo</b><s>strikethrough demo</s><u>underline demo</u><font face=\"Microsoft YaHei\" size=\"14\">\n                    Microsoft YaHei 14pt demo\n                </font><bgcolor color=\"#802378\">Background Color Demo</bgcolor>                \n                RichText content 2 content 3 content 4 content 5 content 6 content 7 content 8 content 9 content 10\n            </RichText>"), p1052);
     ui::Attach(p1051, p1052);
 
     auto* p1053 = ui::Create<ui::ScrollBox>(pWindow, {{"vscrollbar", "true"}, {"hscrollbar", "true"}, {"width", "260"}, {"height", "100"}, {"bkcolor", "white"}, {"border_size", "2"}, {"border_color", "red"}, {"padding", "4,4,4,4"}});
     auto* p1054 = ui::Create<ui::RichText>(pWindow, {{"class", "rich_text"}, {"bkcolor", "green"}, {"row_spacing_mul", "1.5"}, {"width", "auto"}, {"height", "auto"}, {"word_wrap", "false"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText>\n                    Line 1: RichText in ScrollBox<br/>\n                    Line 2: RichText text<br/>\n                    Line 3: RichText text<br/>\n                    Line 4: RichText text<br/>\n                    Line 5: RichText text<br/>\n                    Line 6: RichText text<br/>\n                    Line 7: RichText text<br/>\n                    Line 8: RichText text<br/>\n                    Line 9: RichText text<br/>\n                    Line 10: RichText content 2 content 3 content 4 content 5 content 6 content 7 content 8 content 9 content 10<br/></RichText>"), p1054);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText>\n                    Line 1: RichText in ScrollBox<br/>\n                    Line 2: RichText text<br/>\n                    Line 3: RichText text<br/>\n                    Line 4: RichText text<br/>\n                    Line 5: RichText text<br/>\n                    Line 6: RichText text<br/>\n                    Line 7: RichText text<br/>\n                    Line 8: RichText text<br/>\n                    Line 9: RichText text<br/>\n                    Line 10: RichText content 2 content 3 content 4 content 5 content 6 content 7 content 8 content 9 content 10<br/></RichText>"), p1054);
     ui::Attach(p1053, p1054);
 
     ui::Attach(p1051, p1053);
@@ -3471,63 +3471,63 @@ void BuildUIFromXmlRender(ui::Window* pWindow) {
     auto* p1061 = ui::Create<ui::VBox>(pWindow, {{"width", "300"}, {"margin", "4"}});
     auto* p1062 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "blue"}});
     auto* p1063 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Left, V: Top)"}, {"text_align", "left,top"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1063);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1063);
     ui::Attach(p1062, p1063);
 
     ui::Attach(p1061, p1062);
 
     auto* p1064 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "dark_gray"}});
     auto* p1065 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Left, V: Center)"}, {"text_align", "left,vcenter"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1065);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1065);
     ui::Attach(p1064, p1065);
 
     ui::Attach(p1061, p1064);
 
     auto* p1066 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "blue"}});
     auto* p1067 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Left, V: Bottom)"}, {"text_align", "left,bottom"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1067);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1067);
     ui::Attach(p1066, p1067);
 
     ui::Attach(p1061, p1066);
 
     auto* p1068 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "dark_gray"}});
     auto* p1069 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Center, V: Top)"}, {"text_align", "center,top"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1069);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1069);
     ui::Attach(p1068, p1069);
 
     ui::Attach(p1061, p1068);
 
     auto* p1070 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "blue"}});
     auto* p1071 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Center, V: Center)"}, {"text_align", "center,vcenter"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1071);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1071);
     ui::Attach(p1070, p1071);
 
     ui::Attach(p1061, p1070);
 
     auto* p1072 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "dark_gray"}});
     auto* p1073 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Center, V: Bottom)"}, {"text_align", "center,bottom"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1073);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1073);
     ui::Attach(p1072, p1073);
 
     ui::Attach(p1061, p1072);
 
     auto* p1074 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "blue"}});
     auto* p1075 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Right, V: Top)"}, {"text_align", "right,top"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1075);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1075);
     ui::Attach(p1074, p1075);
 
     ui::Attach(p1061, p1074);
 
     auto* p1076 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "dark_gray"}});
     auto* p1077 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Right, V: Center)"}, {"text_align", "right,vcenter"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1077);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1077);
     ui::Attach(p1076, p1077);
 
     ui::Attach(p1061, p1076);
 
     auto* p1078 = ui::Create<ui::HBox>(pWindow, {{"height", "60"}, {"bkcolor", "blue"}});
     auto* p1079 = ui::Create<ui::RichText>(pWindow, {{"height", "stretch"}, {"width", "stretch"}, {"text", "RichText text (H: Right, V: Bottom)"}, {"text_align", "right,bottom"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1079);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText><b><a href=\"www.sohu.com\">This is a hyperlink: click to visit Sohu</a></b></RichText>"), p1079);
     ui::Attach(p1078, p1079);
 
     ui::Attach(p1061, p1078);

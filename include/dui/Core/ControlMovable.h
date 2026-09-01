@@ -237,33 +237,33 @@ inline DString ControlMovableT<VBox>::GetType() const { return DUI_CTR_VBOX_MOVA
 template<typename T>
 void ControlMovableT<T>::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("enable_move_pos")) {
-        SetEnableMovePos(strValue == _T("true"));
+    if (strName == DUI_T("enable_move_pos")) {
+        SetEnableMovePos(strValue == DUI_T("true"));
     }
-    else if (strName == _T("move_parent_pos")) {
-        SetMoveParentPos(strValue == _T("true"));
+    else if (strName == DUI_T("move_parent_pos")) {
+        SetMoveParentPos(strValue == DUI_T("true"));
     }
-    else if (strName == _T("move_pos_alpha")) {
+    else if (strName == DUI_T("move_pos_alpha")) {
         SetMovePosAlpha((uint8_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("move_pos_non_draggable_margin")) {
+    else if (strName == DUI_T("move_pos_non_draggable_margin")) {
         UiMargin rcNonDraggableMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcNonDraggableMargin);
         SetNonDraggableMargin(rcNonDraggableMargin);
     }
-    else if (strName == _T("move_pos_draggable_border")) {
+    else if (strName == DUI_T("move_pos_draggable_border")) {
         UiPadding rcDraggableBorder;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcDraggableBorder);
         SetDraggableBorder(rcDraggableBorder);
     }
-    else if (strName == _T("move_pos_reserve_width")) {
+    else if (strName == DUI_T("move_pos_reserve_width")) {
         SetMovePosReserveWidth(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("move_pos_reserve_height")) {
+    else if (strName == DUI_T("move_pos_reserve_height")) {
         SetMovePosReserveHeight(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("move_pos_keep_within_parent")) {
-        SetMovePosKeepWithinParent(strValue == _T("true"));
+    else if (strName == DUI_T("move_pos_keep_within_parent")) {
+        SetMovePosKeepWithinParent(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);

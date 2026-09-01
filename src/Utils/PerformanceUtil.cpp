@@ -15,7 +15,7 @@ PerformanceUtil::~PerformanceUtil()
         if (iter.second.totalCount == 0) {
             continue;
         }
-        DString log = StringUtil::Printf(_T("%s(%d): %d ms, average: %d ms, max: %d ms"), 
+        DString log = StringUtil::Printf(DUI_T("%s(%d): %d ms, average: %d ms, max: %d ms"), 
                                         iter.first.c_str(),
                                         (int32_t)iter.second.totalCount, 
                                         (int32_t)(iter.second.totalTimes.count() / 1000),

@@ -43,9 +43,9 @@ public:
     static LPCTSTR GetLibraryName()
     {
 #if (_RICHEDIT_VER >= 0x0500)
-        return _T("MSFTEDIT.DLL");
+        return DUI_T("MSFTEDIT.DLL");
 #else
-        return _T("RICHED20.DLL");
+        return DUI_T("RICHED20.DLL");
 #endif
     }
 

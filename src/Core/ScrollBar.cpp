@@ -69,89 +69,89 @@ DString ScrollBar::GetType() const { return DUI_CTR_SCROLLBAR; }
 
 void ScrollBar::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if ((strName == _T("button1_normal_image")) || (strName == _T("button1normalimage"))) {
+    if ((strName == DUI_T("button1_normal_image")) || (strName == DUI_T("button1normalimage"))) {
         SetButton1StateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("button1_hot_image")) || (strName == _T("button1hotimage"))) {
+    else if ((strName == DUI_T("button1_hot_image")) || (strName == DUI_T("button1hotimage"))) {
         SetButton1StateImage(kControlStateHot, strValue);
     }
-    else if ((strName == _T("button1_pushed_image")) || (strName == _T("button1pushedimage"))) {
+    else if ((strName == DUI_T("button1_pushed_image")) || (strName == DUI_T("button1pushedimage"))) {
         SetButton1StateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("button1_disabled_image")) || (strName == _T("button1disabledimage"))) {
+    else if ((strName == DUI_T("button1_disabled_image")) || (strName == DUI_T("button1disabledimage"))) {
         SetButton1StateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("button2_normal_image")) || (strName == _T("button2normalimage"))) {
+    else if ((strName == DUI_T("button2_normal_image")) || (strName == DUI_T("button2normalimage"))) {
         SetButton2StateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("button2_hot_image")) || (strName == _T("button2hotimage"))) {
+    else if ((strName == DUI_T("button2_hot_image")) || (strName == DUI_T("button2hotimage"))) {
         SetButton2StateImage(kControlStateHot, strValue);
     }
-    else if ((strName == _T("button2_pushed_image")) || (strName == _T("button2pushedimage"))) {
+    else if ((strName == DUI_T("button2_pushed_image")) || (strName == DUI_T("button2pushedimage"))) {
         SetButton2StateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("button2_disabled_image")) || (strName == _T("button2disabledimage"))) {
+    else if ((strName == DUI_T("button2_disabled_image")) || (strName == DUI_T("button2disabledimage"))) {
         SetButton2StateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("thumb_normal_image")) || (strName == _T("thumbnormalimage"))) {
+    else if ((strName == DUI_T("thumb_normal_image")) || (strName == DUI_T("thumbnormalimage"))) {
         SetThumbStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("thumb_hot_image")) || (strName == _T("thumbhotimage"))) {
+    else if ((strName == DUI_T("thumb_hot_image")) || (strName == DUI_T("thumbhotimage"))) {
         SetThumbStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == _T("thumb_pushed_image")) || (strName == _T("thumbpushedimage"))) {
+    else if ((strName == DUI_T("thumb_pushed_image")) || (strName == DUI_T("thumbpushedimage"))) {
         SetThumbStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("thumb_disabled_image")) || (strName == _T("thumbdisabledimage"))) {
+    else if ((strName == DUI_T("thumb_disabled_image")) || (strName == DUI_T("thumbdisabledimage"))) {
         SetThumbStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("rail_normal_image")) || (strName == _T("railnormalimage"))) {
+    else if ((strName == DUI_T("rail_normal_image")) || (strName == DUI_T("railnormalimage"))) {
         SetRailStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("rail_hot_image")) || (strName == _T("railhotimage"))) {
+    else if ((strName == DUI_T("rail_hot_image")) || (strName == DUI_T("railhotimage"))) {
         SetRailStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == _T("rail_pushed_image")) || (strName == _T("railpushedimage"))) {
+    else if ((strName == DUI_T("rail_pushed_image")) || (strName == DUI_T("railpushedimage"))) {
         SetRailStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("rail_disabled_image")) || (strName == _T("raildisabledimage"))) {
+    else if ((strName == DUI_T("rail_disabled_image")) || (strName == DUI_T("raildisabledimage"))) {
         SetRailStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("bk_normal_image")) || (strName == _T("bknormalimage"))) {
+    else if ((strName == DUI_T("bk_normal_image")) || (strName == DUI_T("bknormalimage"))) {
         SetBkStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("bk_hot_image")) || (strName == _T("bkhotimage"))) {
+    else if ((strName == DUI_T("bk_hot_image")) || (strName == DUI_T("bkhotimage"))) {
         SetBkStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == _T("bk_pushed_image")) || (strName == _T("bkpushedimage"))) {
+    else if ((strName == DUI_T("bk_pushed_image")) || (strName == DUI_T("bkpushedimage"))) {
         SetBkStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("bk_disabled_image")) || (strName == _T("bkdisabledimage"))) {
+    else if ((strName == DUI_T("bk_disabled_image")) || (strName == DUI_T("bkdisabledimage"))) {
         SetBkStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("horizontal")) || (strName == _T("hor"))) {
-        SetHorizontal(strValue == _T("true"));
+    else if ((strName == DUI_T("horizontal")) || (strName == DUI_T("hor"))) {
+        SetHorizontal(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("line_size")) || (strName == _T("linesize"))) {
+    else if ((strName == DUI_T("line_size")) || (strName == DUI_T("linesize"))) {
         SetLineSize(StringUtil::StringToInt32(strValue), true);
     }
-    else if ((strName == _T("thumb_min_length")) || (strName == _T("thumbminlength"))) {
+    else if ((strName == DUI_T("thumb_min_length")) || (strName == DUI_T("thumbminlength"))) {
         SetThumbMinLength(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("range")) {
+    else if (strName == DUI_T("range")) {
         SetScrollRange(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("value")) {
+    else if (strName == DUI_T("value")) {
         SetScrollPos(StringUtil::StringToInt32(strValue));
     }
-    else if ((strName == _T("show_button1")) || (strName == _T("showbutton1"))) {
-        SetShowButton1(strValue == _T("true"));
+    else if ((strName == DUI_T("show_button1")) || (strName == DUI_T("showbutton1"))) {
+        SetShowButton1(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("show_button2")) || (strName == _T("showbutton2"))) {
-        SetShowButton2(strValue == _T("true"));
+    else if ((strName == DUI_T("show_button2")) || (strName == DUI_T("showbutton2"))) {
+        SetShowButton2(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("auto_hide_scroll")) || (strName == _T("autohidescroll"))) {
-        SetAutoHideScroll(strValue == _T("true"));
+    else if ((strName == DUI_T("auto_hide_scroll")) || (strName == DUI_T("autohidescroll"))) {
+        SetAutoHideScroll(strValue == DUI_T("true"));
     }
     else {
         Control::SetAttribute(strName, strValue);
@@ -1081,7 +1081,7 @@ void ScrollBar::PaintButton1(IRender* pRender)
     }
 
     m_sImageModify.clear();
-    m_sImageModify = StringUtil::Printf(_T("destscale='false' dest='%d,%d,%d,%d'"), m_rcButton1.left - GetRect().left, \
+    m_sImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), m_rcButton1.left - GetRect().left, \
         m_rcButton1.top - GetRect().top, m_rcButton1.right - GetRect().left, m_rcButton1.bottom - GetRect().top);
 
     if (m_uButton1State == kControlStateDisabled) {
@@ -1112,7 +1112,7 @@ void ScrollBar::PaintButton2(IRender* pRender)
         return;
     }
     m_sImageModify.clear();
-    m_sImageModify = StringUtil::Printf(_T("destscale='false' dest='%d,%d,%d,%d'"), m_rcButton2.left - GetRect().left, \
+    m_sImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), m_rcButton2.left - GetRect().left, \
         m_rcButton2.top - GetRect().top, m_rcButton2.right - GetRect().left, m_rcButton2.bottom - GetRect().top);
 
     if (m_uButton2State == kControlStateDisabled) {
@@ -1143,7 +1143,7 @@ void ScrollBar::PaintThumb(IRender* pRender)
     }
 
     m_sImageModify.clear();
-    m_sImageModify = StringUtil::Printf(_T("destscale='false' dest='%d,%d,%d,%d'"), 
+    m_sImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), 
                                           m_rcThumb.left - GetRect().left, 
                                           m_rcThumb.top - GetRect().top, 
                                           m_rcThumb.right - GetRect().left, 
@@ -1159,13 +1159,13 @@ void ScrollBar::PaintRail(IRender* pRender)
 
     m_sImageModify.clear();
     if (!m_bHorizontal) {
-        m_sImageModify = StringUtil::Printf(_T("destscale='false' dest='%d,%d,%d,%d'"), m_rcThumb.left - GetRect().left, \
+        m_sImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), m_rcThumb.left - GetRect().left, \
             (m_rcThumb.top + m_rcThumb.bottom) / 2 - GetRect().top - GetFixedWidth().GetInt32() / 2, \
             m_rcThumb.right - GetRect().left, \
             (m_rcThumb.top + m_rcThumb.bottom) / 2 - GetRect().top + GetFixedWidth().GetInt32() - GetFixedWidth().GetInt32() / 2);
     }
     else {
-        m_sImageModify = StringUtil::Printf(_T("destscale='false' dest='%d,%d,%d,%d'"), \
+        m_sImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), \
             (m_rcThumb.left + m_rcThumb.right) / 2 - GetRect().left - GetFixedHeight().GetInt32() / 2, \
             m_rcThumb.top - GetRect().top, \
             (m_rcThumb.left + m_rcThumb.right) / 2 - GetRect().left + GetFixedHeight().GetInt32() - GetFixedHeight().GetInt32() / 2, \

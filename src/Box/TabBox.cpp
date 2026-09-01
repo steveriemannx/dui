@@ -21,7 +21,7 @@ DString TabBox::GetType() const { return DUI_CTR_TABBOX; }
 
 void TabBox::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if ((strName == _T("selected_id")) || (strName == _T("selectedid"))) {
+    if ((strName == DUI_T("selected_id")) || (strName == DUI_T("selectedid"))) {
         size_t iSel = (size_t)StringUtil::StringToInt32(strValue);
         if (IsInited()) {
             SelectItem(iSel);
@@ -30,27 +30,27 @@ void TabBox::SetAttribute(const DString& strName, const DString& strValue)
             m_nInitSel = iSel;
         }
     }
-    else if ((strName == _T("fade_switch")) || (strName == _T("fadeswitch"))) {
-        if (strValue == _T("true")) {
+    else if ((strName == DUI_T("fade_switch")) || (strName == DUI_T("fadeswitch"))) {
+        if (strValue == DUI_T("true")) {
             SetFadeSwitch(true);
         }
-        else if (strValue == _T("false")) {
+        else if (strValue == DUI_T("false")) {
             SetFadeSwitch(false);
         }
         else {
             SetFadeSwitchTypeByString(strValue);
         }
     }
-    else if (strName == _T("fade_switch_type")) {
+    else if (strName == DUI_T("fade_switch_type")) {
         SetFadeSwitchTypeByString(strValue);
     }
-    else if (strName == _T("fade_switch_frame_interval_ms")) {
+    else if (strName == DUI_T("fade_switch_frame_interval_ms")) {
         SetFadeSwitchFrameIntervalMillSeconds(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("fade_switch_total_ms")) {
+    else if (strName == DUI_T("fade_switch_total_ms")) {
         SetFadeSwitchTotalMillSeconds(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("fade_switch_easing_function")) {
+    else if (strName == DUI_T("fade_switch_easing_function")) {
         SetFadeSwitchEasingFunctionType(EasingFunctions::GetEasingFunctionType(strValue));
     }
     else {
@@ -349,10 +349,10 @@ TabBox::FadeSwitchType TabBox::GetFadeSwitchType() const
 
 void TabBox::SetFadeSwitchTypeByString(const DString& fadeSwitchType)
 {
-    if (fadeSwitchType == _T("FadeInOutX")) {
+    if (fadeSwitchType == DUI_T("FadeInOutX")) {
         SetFadeSwitchType(FadeSwitchType::kFadeInOutX);
     }
-    else if (fadeSwitchType == _T("FadeInOut")) {
+    else if (fadeSwitchType == DUI_T("FadeInOut")) {
         SetFadeSwitchType(FadeSwitchType::kFadeInOut);
     }
 }

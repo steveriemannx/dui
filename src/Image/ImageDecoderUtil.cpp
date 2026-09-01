@@ -328,7 +328,7 @@ namespace CxImageLoader
 DString ImageDecoderUtil::GetSupportedFileExtentions()
 {
     //Bitmap format extensions: BMP;DIB
-    return DString(_T("BMP;DIB"));
+    return DString(DUI_T("BMP;DIB"));
 }
 
 bool ImageDecoderUtil::CanDecode(const uint8_t* data, size_t dataLen)

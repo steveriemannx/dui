@@ -14,7 +14,7 @@ FullscreenBox::FullscreenBox(Window* pWindow) :
     SetEnableControlPadding(false);
 
     //The background color defaults to white (if no background color is set, the window may appear transparent in some cases, e.g. when the WebView2 control's web page is fullscreen)
-    SetBkColor(_T("white"));
+    SetBkColor(DUI_T("white"));
 
     //Save the original state of the window
     if (pWindow != nullptr) {
@@ -33,7 +33,7 @@ FullscreenBox::~FullscreenBox()
     }
 }
 
-DString FullscreenBox::GetType() const { return _T("FullscreenBox"); }
+DString FullscreenBox::GetType() const { return DUI_T("FullscreenBox"); }
 
 bool FullscreenBox::EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenControl, const DString& exitButtonClass)
 {

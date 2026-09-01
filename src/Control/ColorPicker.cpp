@@ -70,12 +70,12 @@ ColorPicker::~ColorPicker()
 
 DString ColorPicker::GetSkinFolder()
 {
-    return _T("public");
+    return DUI_T("public");
 }
 
 DString ColorPicker::GetSkinFile()
 {
-    return _T("color/color_picker.xml");
+    return DUI_T("color/color_picker.xml");
 }
 
 LRESULT ColorPicker::OnWindowCloseMsg(uint32_t wParam, const NativeMsg& nativeMsg, bool& bHandled)
@@ -106,7 +106,7 @@ void ColorPicker::AttachWindowClose(const EventCallback& callback)
 
 Control* ColorPicker::CreateControl(const DString& strClass)
 {
-    if (strClass == _T("ColorPreviewLabel")) {
+    if (strClass == DUI_T("ColorPreviewLabel")) {
         return new ColorPreviewLabel(this);
     }
     return nullptr;
@@ -114,16 +114,16 @@ Control* ColorPicker::CreateControl(const DString& strClass)
 
 void ColorPicker::OnInitWindow()
 {
-    m_pNewColor = dynamic_cast<Label*>(FindControl(_T("color_picker_new_color")));
-    m_pOldColor = dynamic_cast<Label*>(FindControl(_T("color_picker_old_color")));
+    m_pNewColor = dynamic_cast<Label*>(FindControl(DUI_T("color_picker_new_color")));
+    m_pOldColor = dynamic_cast<Label*>(FindControl(DUI_T("color_picker_old_color")));
 
     ASSERT(m_pNewColor != nullptr);
     ASSERT(m_pOldColor != nullptr);
 
-    m_pRegularPicker = dynamic_cast<ColorPickerRegular*>(FindControl(_T("color_picker_regular")));
-    m_pStatardPicker = dynamic_cast<ColorPickerStatard*>(FindControl(_T("color_picker_standard")));
-    m_pStatardGrayPicker = dynamic_cast<ColorPickerStatardGray*>(FindControl(_T("color_picker_standard_gray")));
-    m_pCustomPicker = dynamic_cast<ColorPickerCustom*>(FindControl(_T("color_picker_custom")));
+    m_pRegularPicker = dynamic_cast<ColorPickerRegular*>(FindControl(DUI_T("color_picker_regular")));
+    m_pStatardPicker = dynamic_cast<ColorPickerStatard*>(FindControl(DUI_T("color_picker_standard")));
+    m_pStatardGrayPicker = dynamic_cast<ColorPickerStatardGray*>(FindControl(DUI_T("color_picker_standard_gray")));
+    m_pCustomPicker = dynamic_cast<ColorPickerCustom*>(FindControl(DUI_T("color_picker_custom")));
 
     if (m_pRegularPicker != nullptr) {
         m_pRegularPicker->AttachSelectColor([this](const ui::EventArgs& args) {
@@ -160,7 +160,7 @@ void ColorPicker::OnInitWindow()
             });
     }
 
-    TabBox* pTabBox = dynamic_cast<TabBox*>(FindControl(_T("color_picker_tab")));
+    TabBox* pTabBox = dynamic_cast<TabBox*>(FindControl(DUI_T("color_picker_tab")));
     if (pTabBox != nullptr) {
         pTabBox->AttachTabSelect([this](const ui::EventArgs& args) {
             UiColor selectedColor;
@@ -196,7 +196,7 @@ void ColorPicker::OnInitWindow()
     }
 
     //OK button
-    Button* pButton = dynamic_cast<Button*>(FindControl(_T("color_picker_ok")));
+    Button* pButton = dynamic_cast<Button*>(FindControl(DUI_T("color_picker_ok")));
     if (pButton != nullptr) {
         pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
             this->CloseWnd(kWindowCloseOK);
@@ -204,7 +204,7 @@ void ColorPicker::OnInitWindow()
             });
     }
     //Cancel button
-    pButton = dynamic_cast<Button*>(FindControl(_T("color_picker_cancel")));
+    pButton = dynamic_cast<Button*>(FindControl(DUI_T("color_picker_cancel")));
     if (pButton != nullptr) {
         pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
             this->CloseWnd(kWindowCloseCancel);
@@ -213,7 +213,7 @@ void ColorPicker::OnInitWindow()
     }
 
     //Selection: pick a color from the screen
-    pButton = dynamic_cast<Button*>(FindControl(_T("color_picker_choose")));
+    pButton = dynamic_cast<Button*>(FindControl(DUI_T("color_picker_choose")));
     if (pButton != nullptr) {
         pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
             OnPickColorFromScreen();
@@ -390,7 +390,7 @@ public:
      */
     virtual void SetAttribute(const DString& strName, const DString& strValue) override
     {
-        if (strName == _T("cursor_file")) {
+        if (strName == DUI_T("cursor_file")) {
             m_cursorFile = strValue;
         }
         else {
@@ -529,7 +529,7 @@ private:
             //Set the text
             DString text = m_pColorPreview->GetColorString(selColor);
             m_pColorPreview->SetText(text);
-            m_pColorPreview->SetAttribute(_T("text_align"), _T("hcenter,vcenter"));
+            m_pColorPreview->SetAttribute(DUI_T("text_align"), DUI_T("hcenter,vcenter"));
             m_pColorPreview->SetTextPadding(UiPadding(0, m_pColorPreview->GetHeight() / 2, 0, 0), false);
             //Set the text color
             UiColor textColor = UiColor(255 - selColor.GetR(), 255 - selColor.GetG(), 255 - selColor.GetB());
@@ -684,8 +684,8 @@ public:
      * GetSkinFolder        The interface sets the window skin resource path to be drawn
      * GetSkinFile            The interface sets the xml description file of the window to be drawn
      */
-    virtual DString GetSkinFolder() override { return _T("public");}
-    virtual DString GetSkinFile() override { return _T("color/screen_color_picker.xml"); }
+    virtual DString GetSkinFolder() override { return DUI_T("public");}
+    virtual DString GetSkinFile() override { return DUI_T("color/screen_color_picker.xml"); }
 
     /** Called when the control to be created is not a standard control name
     * @param [in] strClass The control name
@@ -693,7 +693,7 @@ public:
     */
     virtual Control* CreateControl(const DString& strClass) override
     {
-        if (strClass == _T("ScreenColorPicker")) {
+        if (strClass == DUI_T("ScreenColorPicker")) {
             if (m_pScreenColorPicker == nullptr) {
                 m_pScreenColorPicker = new ScreenColorPicker(this);
                 if (m_spBitmap != nullptr) {
@@ -703,7 +703,7 @@ public:
             }
             return m_pScreenColorPicker;
         }
-        else if (strClass == _T("ScreenColorPreview")) {
+        else if (strClass == DUI_T("ScreenColorPreview")) {
             ScreenColorPreview* pScreenColorPreview = new ScreenColorPreview(this);
             if (m_pScreenColorPicker != nullptr) {
                 m_pScreenColorPicker->SetColorPreview(pScreenColorPreview);
@@ -752,7 +752,7 @@ private:
 void ColorPicker::OnPickColorFromScreen()
 {
     bool bHideWindow = true;
-    CheckBox* pCheckBox = dynamic_cast<CheckBox*>(FindControl(_T("color_picker_choose_hide")));
+    CheckBox* pCheckBox = dynamic_cast<CheckBox*>(FindControl(DUI_T("color_picker_choose_hide")));
     if (pCheckBox != nullptr) {
         bHideWindow = pCheckBox->IsSelected();
     }

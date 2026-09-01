@@ -26,7 +26,7 @@ public:
     explicit ListCtrlReportView(Window* pWindow);
     virtual ~ListCtrlReportView() override;
 
-    virtual DString GetType() const override { return _T("ListCtrlReportView"); }
+    virtual DString GetType() const override { return DUI_T("ListCtrlReportView"); }
     virtual void HandleEvent(const EventArgs& msg) override;
 
     /** Set the ListCtrl control interface

@@ -184,10 +184,10 @@ static SDL_Cursor* LoadCursorFromData(const Window* pWindow, std::vector<uint8_t
     int hot_x = 0;
     int hot_y = 0;
     DString imagePath = imageFilePath.ToString();
-    size_t nDot = imagePath.rfind(_T('.'));
+    size_t nDot = imagePath.rfind(DUI_T('.'));
     if ((nDot != DString::npos) && (fileData.size() > 16)) {
         DString ext = imagePath.substr(nDot);
-        if (StringUtil::IsEqualNoCase(ext, _T(".cur"))) {
+        if (StringUtil::IsEqualNoCase(ext, DUI_T(".cur"))) {
             //hot_x is located at 0x0A, 2 bytes
             hot_x = (fileData[0x0B] << 8) | fileData[0x0A];
             //hot_y is located at 0x0C, 2 bytes

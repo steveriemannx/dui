@@ -99,22 +99,22 @@ bool DateTimeWnd::Init(DateTime* pOwner)
     switch (editFormat) {
     case DateTime::EditFormat::kDateCalendar:
     case DateTime::EditFormat::kDateUpDown:
-        sEditFormat = _T("yyy-MM-dd");
+        sEditFormat = DUI_T("yyy-MM-dd");
         break;
     case DateTime::EditFormat::kDateTimeUpDown:
-        sEditFormat = _T("yyy-MM-dd HH:mm:ss");
+        sEditFormat = DUI_T("yyy-MM-dd HH:mm:ss");
         break;
     case DateTime::EditFormat::kDateMinuteUpDown:
-        sEditFormat = _T("yyy-MM-dd HH:mm");
+        sEditFormat = DUI_T("yyy-MM-dd HH:mm");
         break;
     case DateTime::EditFormat::kTimeUpDown:
-        sEditFormat = _T("HH:mm:ss");
+        sEditFormat = DUI_T("HH:mm:ss");
         break;
     case DateTime::EditFormat::kMinuteUpDown:
-        sEditFormat = _T("HH:mm");
+        sEditFormat = DUI_T("HH:mm");
         break;
     default:
-        sEditFormat = _T("yyy-MM-dd");
+        sEditFormat = DUI_T("yyy-MM-dd");
         break;
     }
     ::SendMessage(m_hDateTimeWnd, DTM_SETFORMAT, 0, (LPARAM)sEditFormat.c_str());
@@ -165,7 +165,7 @@ bool DateTimeWnd::RegisterSuperClass()
 
 DString DateTimeWnd::GetWindowClassName() const
 {
-    return _T("DateTimeWnd");
+    return DUI_T("DateTimeWnd");
 }
 
 static const DStringW::value_type* sPropName = L"DuiDateTimeWndX"; // Property name
@@ -314,9 +314,9 @@ UiRect DateTimeWnd::CalPos()
 HFONT DateTimeWnd::CreateHFont() const
 {
     //First, get the default font
-    IFont* pFont = GlobalManager::Instance().Font().GetIFont(_T(""), m_pOwner->Dpi());
+    IFont* pFont = GlobalManager::Instance().Font().GetIFont(DUI_T(""), m_pOwner->Dpi());
     if (pFont == nullptr) {
-        pFont = GlobalManager::Instance().Font().GetIFont(_T("system_12"), m_pOwner->Dpi());
+        pFont = GlobalManager::Instance().Font().GetIFont(DUI_T("system_12"), m_pOwner->Dpi());
     }
     ASSERT(pFont != nullptr);
     if (pFont == nullptr) {

@@ -98,7 +98,7 @@ void MenuBar::AddTopMenuToUI(const TopMenuData& menuData, size_t nInsertItem)
         }
         else {
             //Use the default value
-            pNewItem->SetClass(_T("menu_bar_button"));
+            pNewItem->SetClass(DUI_T("menu_bar_button"));
         }
         if (!menuData.m_menuTextButtonAttributes.empty()) {
             pNewItem->ApplyAttributeList(menuData.m_menuTextButtonAttributes.c_str());
@@ -156,7 +156,7 @@ int32_t MenuBar::AddTopMenu(const DString& menuItemId,
     TopMenuData menuData;
     menuData.m_menuItemId = menuItemId;
     menuData.m_menuText = menuText;
-    menuData.m_menuXmlPath = _T("");
+    menuData.m_menuXmlPath = DUI_T("");
     menuData.m_menuTextButtonClass = menuTextButtonClass;
     menuData.m_menuTextButtonAttributes = menuTextButtonAttributes;
     menuData.m_menuBuilder = menuBuilder;
@@ -413,7 +413,7 @@ void MenuBar::ShowPopupMenu(MenuBarButton* pButton)
 
     if (topMenuData.m_menuBuilder) {
         //Pure-code mode: no XML template, menu items are added by the callback function
-        pMenu->ShowMenu(_T(""), point);
+        pMenu->ShowMenu(DUI_T(""), point);
         topMenuData.m_menuBuilder(pMenu);
     }
     else {

@@ -93,7 +93,7 @@ void ControlDropTargetImpl_Windows::ParseWindowsDataObject(void* pDataObj, std::
                         text = StringConvert::UTF8ToT(rawText);
                     }
                     if (!text.empty()) {
-                        std::list<DString> lines = StringUtil::Split(text, _T("\r\n"));
+                        std::list<DString> lines = StringUtil::Split(text, DUI_T("\r\n"));
                         for (const DString& line : lines) {
                             if (!line.empty()) {
                                 ansiTextList.push_back(line);

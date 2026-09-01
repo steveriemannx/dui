@@ -27,7 +27,7 @@ public:
 
     /** Control type
     */
-    virtual DString GetType() const override { return _T("BrowserBox_Windows"); }
+    virtual DString GetType() const override { return DUI_T("BrowserBox_Windows"); }
 
     /** Initialize the browser box
     * @param [in] url the initial URL

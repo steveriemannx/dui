@@ -756,8 +756,8 @@ bool RichEditHost::IsReadOnly() const
 
 void RichEditHost::SetPasswordChar(WCHAR chPasswordChar)
 {
-    ASSERT(chPasswordChar != _T('\0'));
-    if (chPasswordChar == _T('\0')) {
+    ASSERT(chPasswordChar != DUI_T('\0'));
+    if (chPasswordChar == DUI_T('\0')) {
         return;
     }
     //Enable password

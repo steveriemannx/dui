@@ -133,7 +133,7 @@ private:
     bool IsImageFile(const DString& filePath) const
     {
         DString fileExt;
-        size_t pos = filePath.rfind(_T('.'));
+        size_t pos = filePath.rfind(DUI_T('.'));
         if (pos != DString::npos) {
             fileExt = filePath.substr(pos);
         }

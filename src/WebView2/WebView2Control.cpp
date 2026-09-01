@@ -25,25 +25,25 @@ DString WebView2Control::GetType() const { return DUI_CTR_WEBVIEW2; }
 
 void WebView2Control::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("url")) {
+    if (strName == DUI_T("url")) {
         //URL to load during initialization
         SetInitURL(strValue);
     }
-    else if (strName == _T("url_is_local_file")) {
+    else if (strName == DUI_T("url_is_local_file")) {
         //Whether the URL loaded during initialization is a local file
-        SetInitUrlIsLocalFile(strValue == _T("true"));
+        SetInitUrlIsLocalFile(strValue == DUI_T("true"));
     }
-    else if (strName == _T("devtools_enabled")) {
+    else if (strName == DUI_T("devtools_enabled")) {
         //Whether developer tools are allowed to be opened
-        SetAreDevToolsEnabled(strValue == _T("true"));
+        SetAreDevToolsEnabled(strValue == DUI_T("true"));
     }
-    else if (strName == _T("F12")) {
+    else if (strName == DUI_T("F12")) {
         //Whether pressing F12 to open developer tools is allowed
-        SetEnableF12(strValue == _T("true"));
+        SetEnableF12(strValue == DUI_T("true"));
     }
-    else if (strName == _T("F11")) {
+    else if (strName == DUI_T("F11")) {
         //Whether the F11 shortcut key is allowed (enter fullscreen page / exit fullscreen page)
-        SetEnableF11(strValue == _T("true"));
+        SetEnableF11(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -93,15 +93,15 @@ DString WebView2Control::GetInitURL() const
     if (IsInitUrlIsLocalFile() && !initUrl.empty()) {
         //This URL is a local path
         DString url = StringUtil::MakeLowerString(initUrl);
-        if ((url.find(_T("http://")) != 0) && (url.find(_T("https://")) != 0) && (url.find(_T("file:///")) != 0)) {
+        if ((url.find(DUI_T("http://")) != 0) && (url.find(DUI_T("https://")) != 0) && (url.find(DUI_T("file:///")) != 0)) {
             //When there is an explicit protocol prefix, no conversion is done; otherwise, load it as a resource file relative to the directory of the local exe
             FilePath webViewHtml = GlobalManager::GetDefaultResourcePath(true);
             webViewHtml.NormalizeDirectoryPath();
             webViewHtml += initUrl;
             webViewHtml.NormalizeFilePath();
-            initUrl = _T("file:///");
+            initUrl = DUI_T("file:///");
             initUrl += webViewHtml.ToString();
-            StringUtil::ReplaceAll(_T("\\"), _T("/"), initUrl);
+            StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), initUrl);
         }
     }
     return initUrl;
@@ -173,8 +173,8 @@ bool WebView2Control::InitializeAsync(const DString& userDataFolder, InitializeC
 bool WebView2Control::Navigate(const DString& url)
 {
     DString navUrl = url;
-    if (navUrl.find(_T("://")) == DString::npos) {
-        navUrl = _T("https://") + navUrl;
+    if (navUrl.find(DUI_T("://")) == DString::npos) {
+        navUrl = DUI_T("https://") + navUrl;
     }
     if (!IsInitializing() && !IsInitialized()) {
         //Automatically initialize (using default parameters)

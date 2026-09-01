@@ -19,14 +19,14 @@ ImageDecoder_PAG::~ImageDecoder_PAG()
 
 DString ImageDecoder_PAG::GetFormatName() const
 {
-    return _T("PAG");
+    return DUI_T("PAG");
 }
 
 bool ImageDecoder_PAG::CanDecode(const DString& imageFilePath) const
 {
     DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == _T("PAG")) {
+    if (fileExt == DUI_T("PAG")) {
         return true;
     }
     return false;

@@ -20,12 +20,12 @@ AddressBar::AddressBar(Window* pWindow):
     m_bEscUpdateUI(true),
     m_bKillFocusUpdateUI(true),
     m_bUpdatingUI(false),
-    m_editClass(_T("address_bar_edit")),
-    m_editClearBtnClass(_T("rich_edit_clear_btn")),
-    m_subPathHBoxClass(_T("address_bar_sub_path_hbox")),
-    m_subPathBtnClass(_T("address_bar_sub_path_button")),
-    m_subPathRootClass(_T("address_bar_sub_path_root")),
-    m_pathSeparatorClass(_T("address_bar_path_separator"))
+    m_editClass(DUI_T("address_bar_edit")),
+    m_editClearBtnClass(DUI_T("rich_edit_clear_btn")),
+    m_subPathHBoxClass(DUI_T("address_bar_sub_path_hbox")),
+    m_subPathBtnClass(DUI_T("address_bar_sub_path_button")),
+    m_subPathRootClass(DUI_T("address_bar_sub_path_root")),
+    m_pathSeparatorClass(DUI_T("address_bar_path_separator"))
 {
 }
 
@@ -33,34 +33,34 @@ DString AddressBar::GetType() const { return DUI_CTR_ADDRESS_BAR; }
 
 void AddressBar::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("path_tooltip")) {
-        SetEnablePathTooltip(strValue == _T("true"));
+    if (strName == DUI_T("path_tooltip")) {
+        SetEnablePathTooltip(strValue == DUI_T("true"));
     }
-    else if (strName == _T("return_update_ui")) {
-        SetReturnUpdateUI(strValue == _T("true"));
+    else if (strName == DUI_T("return_update_ui")) {
+        SetReturnUpdateUI(strValue == DUI_T("true"));
     }
-    else if (strName == _T("esc_update_ui")) {
-        SetEscUpdateUI(strValue == _T("true"));
+    else if (strName == DUI_T("esc_update_ui")) {
+        SetEscUpdateUI(strValue == DUI_T("true"));
     }
-    else if (strName == _T("kill_focus_update_ui")) {
-        SetKillFocusUpdateUI(strValue == _T("true"));
+    else if (strName == DUI_T("kill_focus_update_ui")) {
+        SetKillFocusUpdateUI(strValue == DUI_T("true"));
     }
-    else if (strName == _T("rich_edit_class")) {
+    else if (strName == DUI_T("rich_edit_class")) {
         SetRichEditClass(strValue);
     }
-    else if (strName == _T("rich_edit_clear_btn_class")) {
+    else if (strName == DUI_T("rich_edit_clear_btn_class")) {
         SetRichEditClearBtnClass(strValue);
     }
-    else if (strName == _T("sub_path_hbox_class")) {
+    else if (strName == DUI_T("sub_path_hbox_class")) {
         SetSubPathHBoxClass(strValue);
     }
-    else if (strName == _T("sub_path_button_class")) {
+    else if (strName == DUI_T("sub_path_button_class")) {
         SetSubPathBtnClass(strValue);
     }
-    else if (strName == _T("sub_path_root_class")) {
+    else if (strName == DUI_T("sub_path_root_class")) {
         SetSubPathRootClass(strValue);
     }
-    else if (strName == _T("path_separator_class")) {
+    else if (strName == DUI_T("path_separator_class")) {
         SetPathSeparatorClass(strValue);
     }
     else {
@@ -298,7 +298,7 @@ bool AddressBar::AddSubPath(const DString& displayName, const DString& filePath)
 
     Button* pDisplayNameBtn = new Button(GetWindow());
     pBox->AddItem(pDisplayNameBtn);    
-    if (filePath == _T("/")) {
+    if (filePath == DUI_T("/")) {
         //Root directory
         pDisplayNameBtn->SetClass(GetSubPathBtnClass());
         pDisplayNameBtn->SetClass(GetSubPathRootClass());

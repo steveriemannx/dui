@@ -69,7 +69,7 @@ public:
 public:
     /** Set the path where the skin resources are located
      *   If resType == kLocalFiles, the local path (absolute path) where the resources are located needs to be set
-     *   If resType == kMemoryRes, the resource path is the embedded theme path (e.g. _T("themes/macos26"))
+     *   If resType == kMemoryRes, the resource path is the embedded theme path (e.g. DUI_T("themes/macos26"))
      */
     void SetResourcePath(const FilePath& strPath);
 
@@ -132,7 +132,7 @@ public:
      * @param [in] bInvalidate Whether to refresh the UI display: true means refresh the UI display after updating the language file, false means do not refresh the UI display
      */
     bool ReloadLanguage(const FilePath& languagePath = FilePath(),
-                        const DString& languageFileName = _T("zh_CN.txt"),
+                        const DString& languageFileName = DUI_T("zh_CN.txt"),
                         bool bInvalidate = false);
 
     /** Get the language file list and display names (to support multi-language switching)
@@ -140,7 +140,7 @@ public:
     * @param [out] languageList Returns the list of language files and display names
     */
     bool GetLanguageList(std::vector<std::pair<DString, DString>>& languageList,
-                         const DString& languageNameID = _T("LANGUAGE_DISPLAY_NAME")) const;
+                         const DString& languageNameID = DUI_T("LANGUAGE_DISPLAY_NAME")) const;
 
 public:
     /** Add a global Class attribute

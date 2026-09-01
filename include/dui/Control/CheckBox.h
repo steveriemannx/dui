@@ -403,137 +403,137 @@ inline DString CheckBoxTemplate<VBox>::GetType() const { return DUI_CTR_CHECKBOX
 template<typename InheritType>
 void CheckBoxTemplate<InheritType>::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("selected")) {
-        Selected(strValue == _T("true"), true);
+    if (strName == DUI_T("selected")) {
+        Selected(strValue == DUI_T("true"), true);
     }
-    else if ((strName == _T("switch_select")) || (strName == _T("switchselect"))) {
+    else if ((strName == DUI_T("switch_select")) || (strName == DUI_T("switchselect"))) {
         Selected(!IsSelected());
     }
-    else if (strName == _T("support_check_Mode")) {
-        SetSupportCheckMode(strValue == _T("true"));
+    else if (strName == DUI_T("support_check_Mode")) {
+        SetSupportCheckMode(strValue == DUI_T("true"));
     }
-    else if (strName == _T("auto_check_select")) {
+    else if (strName == DUI_T("auto_check_select")) {
         //Set whether a change of the selection state is automatically synced to the check state, keeping the check state consistent with the selection state (Select->Check)
-        SetAutoCheckSelect(strValue == _T("true"));
+        SetAutoCheckSelect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("auto_select_check")) {
+    else if (strName == DUI_T("auto_select_check")) {
         //Set whether a change of the check state is automatically synced to the selection state, keeping the selection state consistent with the check state (Check -> Select)
-        SetAutoSelectCheck(strValue == _T("true"));
+        SetAutoSelectCheck(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("normal_first")) || (strName == _T("normalfirst"))) {
-        SetPaintNormalFirst(strValue == _T("true"));
+    else if ((strName == DUI_T("normal_first")) || (strName == DUI_T("normalfirst"))) {
+        SetPaintNormalFirst(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("selected_normal_image")) || (strName == _T("selectednormalimage"))) {
+    else if ((strName == DUI_T("selected_normal_image")) || (strName == DUI_T("selectednormalimage"))) {
         SetSelectedStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("selected_hot_image")) || (strName == _T("selectedhotimage"))) {
+    else if ((strName == DUI_T("selected_hot_image")) || (strName == DUI_T("selectedhotimage"))) {
         SetSelectedStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == _T("selected_pushed_image")) || (strName == _T("selectedpushedimage"))) {
+    else if ((strName == DUI_T("selected_pushed_image")) || (strName == DUI_T("selectedpushedimage"))) {
         SetSelectedStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("selected_disabled_image")) || (strName == _T("selecteddisabledimage"))) {
+    else if ((strName == DUI_T("selected_disabled_image")) || (strName == DUI_T("selecteddisabledimage"))) {
         SetSelectedStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("selected_fore_normal_image")) || (strName == _T("selectedforenormalimage"))) {
+    else if ((strName == DUI_T("selected_fore_normal_image")) || (strName == DUI_T("selectedforenormalimage"))) {
         SetSelectedForeStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("selected_fore_hot_image")) || (strName == _T("selectedforehotimage"))) {
+    else if ((strName == DUI_T("selected_fore_hot_image")) || (strName == DUI_T("selectedforehotimage"))) {
         SetSelectedForeStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == _T("selected_fore_pushed_image")) || (strName == _T("selectedforepushedimage"))) {
+    else if ((strName == DUI_T("selected_fore_pushed_image")) || (strName == DUI_T("selectedforepushedimage"))) {
         SetSelectedForeStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("selected_fore_disabled_image")) || (strName == _T("selectedforedisabledimage"))) {
+    else if ((strName == DUI_T("selected_fore_disabled_image")) || (strName == DUI_T("selectedforedisabledimage"))) {
         SetSelectedForeStateImage(kControlStateDisabled, strValue);
     }
-    else if (strName == _T("part_selected_normal_image")) {
+    else if (strName == DUI_T("part_selected_normal_image")) {
         SetPartSelectedStateImage(kControlStateNormal, strValue);
     }
-    else if (strName == _T("part_selected_hot_image")) {
+    else if (strName == DUI_T("part_selected_hot_image")) {
         SetPartSelectedStateImage(kControlStateHot, strValue);
     }
-    else if (strName == _T("part_selected_pushed_image")) {
+    else if (strName == DUI_T("part_selected_pushed_image")) {
         SetPartSelectedStateImage(kControlStatePushed, strValue);
     }
-    else if (strName == _T("part_selected_disabled_image")) {
+    else if (strName == DUI_T("part_selected_disabled_image")) {
         SetPartSelectedStateImage(kControlStateDisabled, strValue);
     }
-    else if (strName == _T("part_selected_fore_normal_image")) {
+    else if (strName == DUI_T("part_selected_fore_normal_image")) {
         SetPartSelectedForeStateImage(kControlStateNormal, strValue);
     }
-    else if (strName == _T("part_selected_fore_hot_image")) {
+    else if (strName == DUI_T("part_selected_fore_hot_image")) {
         SetPartSelectedForeStateImage(kControlStateHot, strValue);
     }
-    else if (strName == _T("part_selected_fore_pushed_image")) {
+    else if (strName == DUI_T("part_selected_fore_pushed_image")) {
         SetPartSelectedForeStateImage(kControlStatePushed, strValue);
     }
-    else if (strName == _T("part_selected_fore_disabled_image")) {
+    else if (strName == DUI_T("part_selected_fore_disabled_image")) {
         SetPartSelectedForeStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("selected_text_color")) || (strName == _T("selectedtextcolor"))) {
+    else if ((strName == DUI_T("selected_text_color")) || (strName == DUI_T("selectedtextcolor"))) {
         SetSelectedTextColor(strValue);
     }
-    else if ((strName == _T("selected_normal_text_color")) || (strName == _T("selectednormaltextcolor"))) {
+    else if ((strName == DUI_T("selected_normal_text_color")) || (strName == DUI_T("selectednormaltextcolor"))) {
         SetSelectedStateTextColor(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("selected_hot_text_color")) || (strName == _T("selectedhottextcolor"))) {
+    else if ((strName == DUI_T("selected_hot_text_color")) || (strName == DUI_T("selectedhottextcolor"))) {
         SetSelectedStateTextColor(kControlStateHot, strValue);
     }
-    else if ((strName == _T("selected_pushed_text_color")) || (strName == _T("selectedpushedtextcolor"))) {
+    else if ((strName == DUI_T("selected_pushed_text_color")) || (strName == DUI_T("selectedpushedtextcolor"))) {
         SetSelectedStateTextColor(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("selected_disabled_text_color")) || (strName == _T("selecteddisabledtextcolor"))) {
+    else if ((strName == DUI_T("selected_disabled_text_color")) || (strName == DUI_T("selecteddisabledtextcolor"))) {
         SetSelectedStateTextColor(kControlStateDisabled, strValue);
     }
-    else if ((strName == _T("selected_normal_color")) || (strName == _T("selectednormalcolor"))) {
+    else if ((strName == DUI_T("selected_normal_color")) || (strName == DUI_T("selectednormalcolor"))) {
         SetSelectedStateColor(kControlStateNormal, strValue);
     }
-    else if ((strName == _T("selected_hot_color")) || (strName == _T("selectedhotcolor"))) {
+    else if ((strName == DUI_T("selected_hot_color")) || (strName == DUI_T("selectedhotcolor"))) {
         SetSelectedStateColor(kControlStateHot, strValue);
     }
-    else if ((strName == _T("selected_pushed_color")) || (strName == _T("selectedpushedcolor"))) {
+    else if ((strName == DUI_T("selected_pushed_color")) || (strName == DUI_T("selectedpushedcolor"))) {
         SetSelectedStateColor(kControlStatePushed, strValue);
     }
-    else if ((strName == _T("selected_disabled_color")) || (strName == _T("selecteddisabledcolor"))) {
+    else if ((strName == DUI_T("selected_disabled_color")) || (strName == DUI_T("selecteddisabledcolor"))) {
         SetSelectedStateColor(kControlStateDisabled, strValue);
     }
-    else if (strName == _T("selected_normal_color_margin")) {
+    else if (strName == DUI_T("selected_normal_color_margin")) {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetSelectedStateColorMargin(kControlStateNormal, rcMargin, true);
     }
-    else if (strName == _T("selected_hot_color_margin")) {
+    else if (strName == DUI_T("selected_hot_color_margin")) {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetSelectedStateColorMargin(kControlStateHot, rcMargin, true);
     }
-    else if (strName == _T("selected_pushed_color_margin")) {
+    else if (strName == DUI_T("selected_pushed_color_margin")) {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetSelectedStateColorMargin(kControlStatePushed, rcMargin, true);
     }
-    else if (strName == _T("selected_disabled_color_margin")) {
+    else if (strName == DUI_T("selected_disabled_color_margin")) {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetSelectedStateColorMargin(kControlStateDisabled, rcMargin, true);
     }
-    else if (strName == _T("selected_normal_color_round")) {
+    else if (strName == DUI_T("selected_normal_color_round")) {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetSelectedStateColorRound(kControlStateNormal, szRound, true);
     }
-    else if (strName == _T("selected_hot_color_round")) {
+    else if (strName == DUI_T("selected_hot_color_round")) {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetSelectedStateColorRound(kControlStateHot, szRound, true);
     }
-    else if (strName == _T("selected_pushed_color_round")) {
+    else if (strName == DUI_T("selected_pushed_color_round")) {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetSelectedStateColorRound(kControlStatePushed, szRound, true);
     }
-    else if (strName == _T("selected_disabled_color_round")) {
+    else if (strName == DUI_T("selected_disabled_color_round")) {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetSelectedStateColorRound(kControlStateDisabled, szRound, true);
@@ -867,8 +867,8 @@ void CheckBoxTemplate<InheritType>::PaintStateImages(IRender* pRender)
 
     if (isSelectNone) {
         //Unselected state
-        this->PaintStateImage(pRender, kStateImageBk, this->GetState(), _T(""), m_pCheckBoxImageRect);
-        this->PaintStateImage(pRender, kStateImageFore, this->GetState(), _T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageBk, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageFore, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
         return;
     }
     bool bPartSelected = bCheckMode ? this->IsPartChecked() : this->IsPartSelected();
@@ -876,11 +876,11 @@ void CheckBoxTemplate<InheritType>::PaintStateImages(IRender* pRender)
         //Part selected state
         bool bPainted = false;
         if (this->HasStateImage(kStateImagePartSelectedBk)) {
-            this->PaintStateImage(pRender, kStateImagePartSelectedBk, this->GetState(), _T(""), m_pCheckBoxImageRect);
+            this->PaintStateImage(pRender, kStateImagePartSelectedBk, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
             bPainted = true;
         }
         if (this->HasStateImage(kStateImagePartSelectedFore)) {
-            this->PaintStateImage(pRender, kStateImagePartSelectedFore, this->GetState(), _T(""), m_pCheckBoxImageRect);
+            this->PaintStateImage(pRender, kStateImagePartSelectedFore, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
             bPainted = true;
         }
         if (bPainted) {
@@ -891,17 +891,17 @@ void CheckBoxTemplate<InheritType>::PaintStateImages(IRender* pRender)
 
     //All selected state
     if (IsPaintNormalFirst() && !this->HasStateImage(kStateImageSelectedBk)) {
-        this->PaintStateImage(pRender, kStateImageBk, this->GetState(), _T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageBk, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
     }
     else {
-        this->PaintStateImage(pRender, kStateImageSelectedBk, this->GetState(), _T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageSelectedBk, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
     }
 
     if (IsPaintNormalFirst() && !this->HasStateImage(kStateImageSelectedFore)) {
-        this->PaintStateImage(pRender, kStateImageFore, this->GetState(), _T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageFore, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
     }
     else {
-        this->PaintStateImage(pRender, kStateImageSelectedFore, this->GetState(), _T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageSelectedFore, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
     }
 }
 

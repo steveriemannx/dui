@@ -316,11 +316,11 @@ bool NativeWindow_SDL::IsWindowVisible() const {
 }
 
 DString NativeWindow_SDL::GetVideoDriverName() const {
-    return _T("wayland");
+    return DUI_T("wayland");
 }
 
 DString NativeWindow_SDL::GetWindowRenderName() const {
-    return _T("software");
+    return DUI_T("software");
 }
 
 bool NativeWindow_SDL::IsVideoDriverX11() const { return false; }
@@ -471,7 +471,7 @@ void NativeWindow_SDL::SetText(const DString& s) {
         xdg_toplevel_set_title(m_pXdgToplevel, title.c_str());
     }
 }
-DString NativeWindow_SDL::GetText() const { return _T(""); }
+DString NativeWindow_SDL::GetText() const { return DUI_T(""); }
 void NativeWindow_SDL::SetWindowMaximumSize(const UiSize& s) { (void)s; }
 const UiSize& NativeWindow_SDL::GetWindowMaximumSize() const { static UiSize s; return s; }
 void NativeWindow_SDL::SetWindowMinimumSize(const UiSize& s) { (void)s; }

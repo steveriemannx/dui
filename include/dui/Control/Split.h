@@ -118,8 +118,8 @@ inline DString SplitTemplate<Box>::GetType() const { return DUI_CTR_SPLITBOX; }
 template<typename InheritType>
 void SplitTemplate<InheritType>::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("enable_split_single")) {
-        SetEnableSplitSingle(strValue == _T("true"));
+    if (strName == DUI_T("enable_split_single")) {
+        SetEnableSplitSingle(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);

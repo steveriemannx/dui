@@ -11,8 +11,8 @@ public:
     MainForm() = default;
     virtual ~MainForm() override = default;
 
-    virtual DString GetSkinFolder() override { return _T("combo"); }
-    virtual DString GetSkinFile() override { return _T("combo.xml"); }
+    virtual DString GetSkinFolder() override { return DUI_T("combo"); }
+    virtual DString GetSkinFile() override { return DUI_T("combo.xml"); }
     virtual void OnInitWindow() override;
 };
 

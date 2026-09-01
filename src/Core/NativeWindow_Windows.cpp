@@ -433,7 +433,7 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
     //Handle IsDialogMessage to support text input in RichEdit controls
     {
         FARPROC targetFunc = nullptr;
-        HMODULE hModule = ::GetModuleHandle(_T("User32.dll"));
+        HMODULE hModule = ::GetModuleHandle(DUI_T("User32.dll"));
         if (hModule != nullptr) {
 #if defined(UNICODE) || defined(_UNICODE)
             targetFunc = ::GetProcAddress(hModule, "IsDialogMessageW");
@@ -1411,7 +1411,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     int32_t cxIcon = GetSystemMetricsForDpiWrapper(SM_CXICON, uDpi);
     int32_t cyIcon = GetSystemMetricsForDpiWrapper(SM_CYICON, uDpi);
     HICON hIcon = (HICON)::LoadImage(nullptr, iconFilePath.NativePath().c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
-    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), _T(".ico"))) {
+    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), DUI_T(".ico"))) {
         ASSERT(hIcon != nullptr);
     }    
     if (hIcon != nullptr) {
@@ -1425,7 +1425,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     cxIcon = GetSystemMetricsForDpiWrapper(SM_CXSMICON, uDpi);
     cyIcon = GetSystemMetricsForDpiWrapper(SM_CYSMICON, uDpi);
     hIcon = (HICON)::LoadImage(nullptr, iconFilePath.NativePath().c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
-    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), _T(".ico"))) {
+    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), DUI_T(".ico"))) {
         ASSERT(hIcon != nullptr);
     }
     if (hIcon != nullptr) {

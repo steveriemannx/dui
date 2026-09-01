@@ -17,14 +17,14 @@ ImageDecoder_GIF::~ImageDecoder_GIF()
 
 DString ImageDecoder_GIF::GetFormatName() const
 {
-    return _T("GIF");
+    return DUI_T("GIF");
 }
 
 bool ImageDecoder_GIF::CanDecode(const DString& imageFilePath) const
 {
     DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == _T("GIF")) {
+    if (fileExt == DUI_T("GIF")) {
         return true;
     }
     return false;

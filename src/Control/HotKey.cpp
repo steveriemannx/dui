@@ -119,7 +119,7 @@ public:
         DString sKeyName;
         uint8_t wCode = 0;
         uint8_t wModifiers = 0;
-        const DString::value_type szPlus[] = _T("+");
+        const DString::value_type szPlus[] = DUI_T("+");
         GetHotKey(wCode, wModifiers);
         if (wModifiers == 0) {
             // A hotkey is valid only with modifier keys
@@ -194,10 +194,10 @@ HotKey::HotKey(Window* pWindow):
 {
     ASSERT(pWindow != nullptr);
     m_pRichEdit = new HotKeyRichEdit(pWindow);
-    m_pRichEdit->SetAttribute(_T("text_align"), _T("vcenter,hcenter"));
-    m_pRichEdit->SetAttribute(_T("want_tab"), _T("false"));
-    m_pRichEdit->SetAttribute(_T("width"), _T("100%"));
-    m_pRichEdit->SetAttribute(_T("height"), _T("100%"));
+    m_pRichEdit->SetAttribute(DUI_T("text_align"), DUI_T("vcenter,hcenter"));
+    m_pRichEdit->SetAttribute(DUI_T("want_tab"), DUI_T("false"));
+    m_pRichEdit->SetAttribute(DUI_T("width"), DUI_T("100%"));
+    m_pRichEdit->SetAttribute(DUI_T("height"), DUI_T("100%"));
 }
 
 HotKey::~HotKey()
@@ -214,7 +214,7 @@ DString HotKey::GetType() const { return DUI_CTR_HOTKEY; }
 
 void HotKey::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("default_text")) {
+    if (strName == DUI_T("default_text")) {
         if (m_pRichEdit != nullptr) {
             m_pRichEdit->SetDefaultText(strValue);
             m_pRichEdit->SetText(strValue);
@@ -309,7 +309,7 @@ DString HotKey::GetHotKeyName() const
 
 bool HotKey::SetHotKeyName(const DString& hotKeyName)
 {
-    std::list<DString> hotKeyList = StringUtil::Split(hotKeyName, _T("+"));
+    std::list<DString> hotKeyList = StringUtil::Split(hotKeyName, DUI_T("+"));
     for (DString& hotKey : hotKeyList) {
         StringUtil::Trim(hotKey);
         hotKey = StringUtil::MakeLowerString(hotKey);

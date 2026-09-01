@@ -8,7 +8,7 @@
 #include "dui/Utils/AppEntry.h"
 
 App::App() :
-    FrameworkThread(_T("App"), ui::kThreadUI)
+    FrameworkThread(DUI_T("App"), ui::kThreadUI)
 {
 }
 
@@ -40,7 +40,7 @@ int App::Run(int argc, char** argv)
     if (processType != ui::CefManager::BrowserProcess) {
         //Non-Browser process: should not include Browser process code
         int32_t nExitCode = 1;
-        if (!ui::CefManager::GetInstance()->Initialize(bEnableOSR, _T("cef_browser"), argc, argv, nullptr, nExitCode)) {
+        if (!ui::CefManager::GetInstance()->Initialize(bEnableOSR, DUI_T("cef_browser"), argc, argv, nullptr, nExitCode)) {
             return nExitCode;
         }
         return 0;
@@ -54,7 +54,7 @@ int App::Run(int argc, char** argv)
 
     //Initialize CEF: must be done after GlobalManager is initialized, because GlobalManager is used during CEF initialization
     int32_t nExitCode = 1;
-    if (!ui::CefManager::GetInstance()->Initialize(bEnableOSR, _T("cef_browser"), argc, argv, nullptr, nExitCode)) {
+    if (!ui::CefManager::GetInstance()->Initialize(bEnableOSR, DUI_T("cef_browser"), argc, argv, nullptr, nExitCode)) {
         return nExitCode;
     }
 
@@ -127,7 +127,7 @@ void App::OnInit()
 
     //Create the first window
     std::string id = BrowserManager::GetInstance()->CreateBrowserID();
-    BrowserManager::GetInstance()->CreateBorwserBox(nullptr, id, _T(""));
+    BrowserManager::GetInstance()->CreateBorwserBox(nullptr, id, DUI_T(""));
 }
 
 void App::OnCleanup()

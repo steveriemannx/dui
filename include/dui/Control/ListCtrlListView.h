@@ -23,7 +23,7 @@ public:
     explicit ListCtrlListView(Window* pWindow);
     virtual ~ListCtrlListView() override;
 
-    virtual DString GetType() const override { return _T("ListCtrlListView"); }
+    virtual DString GetType() const override { return DUI_T("ListCtrlListView"); }
     virtual void SetAttribute(const DString& strName, const DString& strValue) override;
     virtual void HandleEvent(const EventArgs& msg) override;
 

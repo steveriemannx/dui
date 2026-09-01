@@ -770,12 +770,12 @@ bool NativeWindow_MacOS::SetParentWindow(NativeWindow_MacOS* pParentWindow)
 
 DString NativeWindow_MacOS::GetVideoDriverName() const
 {
-    return _T("cocoa");
+    return DUI_T("cocoa");
 }
 
 DString NativeWindow_MacOS::GetWindowRenderName() const
 {
-    return _T("skia");
+    return DUI_T("skia");
 }
 
 // ---------------------------------------------------------------------------
@@ -1561,7 +1561,7 @@ void NativeWindow_MacOS::PaintWindow(bool bPaintAll)
     m_bPainting = true;
     m_bPendingPaint = false;
 
-    PerformanceStat statPerformance(_T("PaintWindow, NativeWindow_MacOS::PaintWindow(Total)"));
+    PerformanceStat statPerformance(DUI_T("PaintWindow, NativeWindow_MacOS::PaintWindow(Total)"));
     if (bPaintAll) {
         m_rcUpdateRect.Clear();
     }

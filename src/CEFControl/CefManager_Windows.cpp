@@ -36,14 +36,14 @@ DString CefManager_Windows::GetCefMoudlePath() const
 #if CEF_VERSION_MAJOR <= 109
     //CEF 109 version
     #ifdef _WIN64
-        cefMoudlePath = _T("libcef_win_109\\x64");
+        cefMoudlePath = DUI_T("libcef_win_109\\x64");
     #else
-        cefMoudlePath = _T("libcef_win_109\\Win32");
+        cefMoudlePath = DUI_T("libcef_win_109\\Win32");
     #endif
 #else
     //CEF higher versions: the runtime files are staged into the program dir's
     //cef_binary directory (one copy, same name on Windows and Linux).
-    cefMoudlePath = _T("cef_binary");
+    cefMoudlePath = DUI_T("cef_binary");
 #endif
     }
     return cefMoudlePath;
@@ -182,7 +182,7 @@ void CefManager_Windows::AddCefDllToPath()
     }
 
     TCHAR path_envirom[4096] = { 0 };
-    ::GetEnvironmentVariable(_T("path"), path_envirom, 4096);
+    ::GetEnvironmentVariable(DUI_T("path"), path_envirom, 4096);
 
     FilePath cefDllDir = ui::FilePathUtil::GetCurrentModuleDirectory();
     cefDllDir /= FilePath(cefMoudlePath);
@@ -196,8 +196,8 @@ void CefManager_Windows::AddCefDllToPath()
         exit(0);
     }
     DString new_envirom(cefDllDir.NativePath());
-    new_envirom.append(_T(";")).append(path_envirom);
-    ::SetEnvironmentVariable(_T("path"), new_envirom.c_str());
+    new_envirom.append(DUI_T(";")).append(path_envirom);
+    ::SetEnvironmentVariable(DUI_T("path"), new_envirom.c_str());
 }
 
 #if CEF_VERSION_MAJOR <= 109

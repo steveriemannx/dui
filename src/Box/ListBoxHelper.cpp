@@ -14,8 +14,8 @@ ListBoxHelper::ListBoxHelper(ListBox* pListBox) :
     m_bMouseDownInView(false),
     m_bEnableFrameSelection(false),
     m_frameSelectionBorderSize(1),
-    m_frameSelectionBorderColor(_T("#FF0078D7")),
-    m_frameSelectionColor(_T("#FFAACCEE")),
+    m_frameSelectionBorderColor(DUI_T("#FF0078D7")),
+    m_frameSelectionColor(DUI_T("#FFAACCEE")),
     m_frameSelectionAlpha(128),
     m_nNormalItemTop(-1)
 {

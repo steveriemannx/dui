@@ -40,7 +40,7 @@ public:
     /** Parse an attribute list; the format is like: font="system_bold_14" normaltextcolor="white" bkcolor="red"
     *                  or: color='black' offset='1,1' blur_radius='2' spread_radius='2'
     *   The separator can be double quotes or single quotes, passed in via the parameter
-    * @param [in] seperateChar The string separator, which can be _T('\"') or _T('\')'
+    * @param [in] seperateChar The string separator, which can be DUI_T('\"') or DUI_T('\')'
     */
     static void ParseAttributeList(const DString& strList,
                                    DString::value_type seperateChar,

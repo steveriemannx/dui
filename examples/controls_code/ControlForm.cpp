@@ -1135,7 +1135,7 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
     auto* p90 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
     auto* p91 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
     auto* p92 = ui::Create<ui::RichText>(pWindow, {{"class", "rich_text"}, {"name", "rich_text_demo"}, {"width", "300"}, {"height", "60"}, {"row_spacing_mul", "1.2"}});
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText>\n                                RichText:　<a href=\"www.baidu.com\">Click to visit Baidu</a><br/>\n                                RichText:　<a href=\"www.sohu.com\">Click to visit Sohu</a></RichText>"), p92);
+    ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText>\n                                RichText:　<a href=\"www.baidu.com\">Click to visit Baidu</a><br/>\n                                RichText:　<a href=\"www.sohu.com\">Click to visit Sohu</a></RichText>"), p92);
     ui::Attach(p91, p92);
 
     auto* p93 = ui::Create<ui::VBox>(pWindow, {{"width", "80"}});

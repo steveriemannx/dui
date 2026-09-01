@@ -15,12 +15,12 @@ class ToolTipWindow: public Window
 public:
     ToolTipWindow()
     {
-        InitSkin(_T("public/tooltip/"), _T("tooltip.xml"));
+        InitSkin(DUI_T("public/tooltip/"), DUI_T("tooltip.xml"));
     }
 
     virtual void OnInitWindow() override
     {
-        m_pToolTipText = dynamic_cast<Label*>(FindControl(_T("tooltip_text")));
+        m_pToolTipText = dynamic_cast<Label*>(FindControl(DUI_T("tooltip_text")));
         if (!m_text.empty() && (m_pToolTipText != nullptr)) {
             m_pToolTipText->SetText(m_text);
         }
@@ -133,7 +133,7 @@ void ToolTip::TImpl::ShowToolTip(WindowBase* pParentWnd, const UiRect& rect, uin
         m_pTooltipWnd = new ToolTipWindow;
         WindowCreateParam createParam;
         
-        createParam.m_className = _T("tooltip");
+        createParam.m_className = DUI_T("tooltip");
         m_pTooltipWnd->CreateWnd(pParentWnd, createParam);
     }
     if (m_pTooltipWnd != nullptr) {

@@ -73,14 +73,14 @@ public:
     * @param [in] windowTitle Window title
     * @param [in] windowId Window ID; if empty, a window ID is generated internally
     */
-    explicit WindowCreateParam(const DString& windowTitle, const DString& windowId = _T(""));
+    explicit WindowCreateParam(const DString& windowTitle, const DString& windowId = DUI_T(""));
 
     /** Constructor providing the window title and window centering
     * @param [in] windowTitle Window title
     * @param [in] bCenterWindow The initial position of the window is centered
     * @param [in] windowId Window ID; if empty, a window ID is generated internally
     */
-    WindowCreateParam(const DString& windowTitle, bool bCenterWindow, const DString& windowId = _T(""));
+    WindowCreateParam(const DString& windowTitle, bool bCenterWindow, const DString& windowId = DUI_T(""));
 
 public:
     /** Window class name (optional parameter; if not provided, the default value is used)

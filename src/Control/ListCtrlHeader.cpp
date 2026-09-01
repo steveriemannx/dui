@@ -18,11 +18,11 @@ ListCtrlHeader::~ListCtrlHeader()
 {
 }
 
-DString ListCtrlHeader::GetType() const { return _T("ListCtrlHeader"); }
+DString ListCtrlHeader::GetType() const { return DUI_T("ListCtrlHeader"); }
 
 void ListCtrlHeader::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("icon_spacing")) {
+    if (strName == DUI_T("icon_spacing")) {
         SetIconSpacing(StringUtil::StringToInt32(strValue), true);
     }
     else {

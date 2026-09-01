@@ -83,7 +83,7 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
     if (iterImageData != m_imageDataMap.end()) {
         spImageData = iterImageData->second.m_pImage.lock();
 #ifdef OUTPUT_IMAGE_LOG
-        DString log = _T("Lock ImageData(reuse): ") + imageKey + _T("\n");
+        DString log = DUI_T("Lock ImageData(reuse): ") + imageKey + DUI_T("\n");
         ::OutputDebugString(log.c_str());
 #endif
         if (spImageData != nullptr) {
@@ -174,7 +174,7 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
         if (pImageData == nullptr) {
             DString fileExt = FilePathUtil::GetFileExtension(decodeParam.m_imageFilePath.ToString());
             StringUtil::MakeUpperString(fileExt);
-            if (fileExt == _T("PAG")) {
+            if (fileExt == DUI_T("PAG")) {
                 //When PAG is not supported, disable the assertion error
                 bEnableAssert = false;
             }
@@ -238,7 +238,7 @@ void ImageManager::OnImageInfoCreate(std::shared_ptr<ImageInfo>& pImageInfo)
         if (!loadKey.empty()) {
             m_imageInfoMap[loadKey] = pImageInfo;
 #ifdef OUTPUT_IMAGE_LOG
-            DString log = _T("Created ImageInfo: ") + loadKey + _T("\n");
+            DString log = DUI_T("Created ImageInfo: ") + loadKey + DUI_T("\n");
             ::OutputDebugString(log.c_str());
 #endif
         }
@@ -260,7 +260,7 @@ void ImageManager::OnImageInfoDestroy(ImageInfo* pImageInfo)
         }
         delete pImageInfo;
 #ifdef OUTPUT_IMAGE_LOG
-        DString log = _T("Removed ImageInfo: ") + loadKey + _T("\n");
+        DString log = DUI_T("Removed ImageInfo: ") + loadKey + DUI_T("\n");
         ::OutputDebugString(log.c_str());
 #endif
     }
@@ -272,7 +272,7 @@ void ImageManager::OnImageDataCreate(const DString& imageKey, std::shared_ptr<II
     if (!imageKey.empty() && (pImage != nullptr)) {
         m_imageDataMap[imageKey] = TImageData(pImage, fImageSizeScale);
 #ifdef OUTPUT_IMAGE_LOG
-        DString log = _T("Created ImageData: ") + imageKey + _T("\n");
+        DString log = DUI_T("Created ImageData: ") + imageKey + DUI_T("\n");
         ::OutputDebugString(log.c_str());
 #endif
     }
@@ -287,7 +287,7 @@ void ImageManager::OnImageDataDestroy(IImage* pImage)
         while (iter != m_imageDataMap.end()) {
             if (iter->second.m_pImage.expired()) {
 #ifdef OUTPUT_IMAGE_LOG
-                DString log = _T("Removed ImageData: ") + iter->first + _T("\n");
+                DString log = DUI_T("Removed ImageData: ") + iter->first + DUI_T("\n");
                 ::OutputDebugString(log.c_str());
 #endif
                 iter = m_imageDataMap.erase(iter);
@@ -485,14 +485,14 @@ DString ImageManager::GetDpiScaledPath(uint32_t dpiScale, const DString& imageFu
 {
     DString strPathDir;
     DString strPathFileName;
-    std::list<DString> strPathList = StringUtil::Split(imageFullPath, _T("\\"));
+    std::list<DString> strPathList = StringUtil::Split(imageFullPath, DUI_T("\\"));
     for (auto it = strPathList.begin(); it != strPathList.end(); ++it) {
         auto itTemp = it;
         if (++itTemp == strPathList.end()) {
             strPathFileName = *it;
         }
         else {
-            strPathDir += *it + _T("\\");
+            strPathDir += *it + DUI_T("\\");
         }
     }
 
@@ -504,7 +504,7 @@ DString ImageManager::GetDpiScaledPath(uint32_t dpiScale, const DString& imageFu
     DString strFileExtension = strPathFileName.substr(iPointPos, strPathFileName.size() - iPointPos);
     DString strFile = strPathFileName.substr(0, iPointPos);
     //Return the image for the specified DPI; for example, an image with a DPI scale of 120 (i.e., scaled up to 120%): "image.png" corresponds to "image@120.png"
-    strPathFileName = StringUtil::Printf(_T("%s%s%d%s"), strFile.c_str(), _T("@"), dpiScale, strFileExtension.c_str());
+    strPathFileName = StringUtil::Printf(DUI_T("%s%s%d%s"), strFile.c_str(), DUI_T("@"), dpiScale, strFileExtension.c_str());
     DString strNewFilePath = strPathDir + strPathFileName;
     return strNewFilePath;
 }

@@ -69,7 +69,7 @@ UiColor ColorManager::ConvertToUiColor(const DString& strColor)
     if (strColor.empty()) {
         return color;
     }
-    if (strColor.at(0) != _T('#')) {
+    if (strColor.at(0) != DUI_T('#')) {
         // Get by the standard color value
         color = GlobalManager::Instance().Color().GetStandardColor(strColor);
         if (!color.IsEmpty()) {
@@ -82,15 +82,15 @@ UiColor ColorManager::ConvertToUiColor(const DString& strColor)
     if ((strColor.size() != 9) && (strColor.size() != 7)) {
         return color;
     }
-    ASSERT(strColor.at(0) == _T('#'));
-    if (strColor.at(0) != _T('#')) {
+    ASSERT(strColor.at(0) == DUI_T('#'));
+    if (strColor.at(0) != DUI_T('#')) {
         return color;
     }
     for (size_t i = 1; i < strColor.size(); ++i) {
         DString::value_type ch = strColor.at(i);
-        bool isValid = (((ch >= _T('0')) && (ch <= _T('9'))) ||
-            ((ch >= _T('a')) && (ch <= _T('f'))) ||
-            ((ch >= _T('A')) && (ch <= _T('F'))));
+        bool isValid = (((ch >= DUI_T('0')) && (ch <= DUI_T('9'))) ||
+            ((ch >= DUI_T('a')) && (ch <= DUI_T('f'))) ||
+            ((ch >= DUI_T('A')) && (ch <= DUI_T('F'))));
         ASSERT(isValid);
         if (!isValid) {
             return color;
@@ -99,7 +99,7 @@ UiColor ColorManager::ConvertToUiColor(const DString& strColor)
     DString colorValue = strColor.substr(1);
     if (colorValue.size() == 6) {
         // If it is in the #FFFFFF format, add the Alpha value automatically
-        colorValue = _T("FF") + colorValue;
+        colorValue = DUI_T("FF") + colorValue;
     }
     UiColor::ARGB argb = StringUtil::StringToUInt32(colorValue.c_str(), nullptr, 16);
     return UiColor(argb);

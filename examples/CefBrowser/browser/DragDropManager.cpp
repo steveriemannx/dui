@@ -145,7 +145,7 @@ void DragDropManager::EndDragBorwserBox(bool bSuccess)
             dragBrowserForm->OnAfterDragBoxCallback(true);
             if (dragBrowserForm->DetachBox(m_pDragingBox)) {
                 BrowserForm* newBrowserForm = BrowserManager::GetInstance()->CreateBrowserForm();
-                if (newBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam(_T("CefBrowser")))) {
+                if (newBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("CefBrowser")))) {
                     if (newBrowserForm->AttachBox(m_pDragingBox)) {
                         // Set the position of the new browser window here, offset by 100,20 from the mouse coordinates
                         ui::UiPoint pt_mouse;

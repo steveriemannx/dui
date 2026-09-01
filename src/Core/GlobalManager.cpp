@@ -92,7 +92,7 @@ FilePath GlobalManager::GetDefaultResourcePath(bool bMacOsAppBundle)
         resourcePath = ui::FilePathUtil::GetBundleResourcesPath();
         if (!resourcePath.IsEmpty()) {
             resourcePath.NormalizeDirectoryPath();
-            resourcePath += _T("dui/");
+            resourcePath += DUI_T("dui/");
             if (!resourcePath.IsExistsDirectory()) {
                 resourcePath.Clear();
             }
@@ -103,7 +103,7 @@ FilePath GlobalManager::GetDefaultResourcePath(bool bMacOsAppBundle)
 #endif
     if (resourcePath.IsEmpty()) {
         resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-        resourcePath += _T("resources/");
+        resourcePath += DUI_T("resources/");
     }
     resourcePath.NormalizeDirectoryPath();
     return resourcePath;
@@ -281,10 +281,10 @@ bool GlobalManager::StartInnerThread(int32_t nThreadIdentifier)
     }
     if (!bRet) {
         //Initialize the thread pool
-        std::vector<UiWorkerThread::Param> threadParams = { {_T("Worker"), ThreadIdentifier::kThreadWorker},
-                                                            {_T("Network"), ThreadIdentifier::kThreadNetwork},
-                                                            {_T("Image1"), ThreadIdentifier::kThreadImage1},
-                                                            {_T("Image2"), ThreadIdentifier::kThreadImage2} };
+        std::vector<UiWorkerThread::Param> threadParams = { {DUI_T("Worker"), ThreadIdentifier::kThreadWorker},
+                                                            {DUI_T("Network"), ThreadIdentifier::kThreadNetwork},
+                                                            {DUI_T("Image1"), ThreadIdentifier::kThreadImage1},
+                                                            {DUI_T("Image2"), ThreadIdentifier::kThreadImage2} };
         for (const UiWorkerThread::Param& param : threadParams) {
             if (param.nIdentifier != nThreadIdentifier) {
                 continue;
@@ -395,9 +395,9 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
     m_themeDefaultPath.Clear();
 #if !defined(DUI_BUILD_FOR_WIN) && !defined(DUI_BUILD_FOR_MACOS)
     {
-        const DString defaultThemeName = _T("themes/default");
+        const DString defaultThemeName = DUI_T("themes/default");
         DString activeThemeName = resParam.themePath.ToString();
-        StringUtil::ReplaceAll(_T("\\"), _T("/"), activeThemeName);
+        StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), activeThemeName);
         if (activeThemeName != defaultThemeName) {
             m_themeDefaultPath = FilePathUtil::JoinFilePath(strResourcePath, FilePath(defaultThemeName));
             m_themeDefaultPath.NormalizeDirectoryPath();
@@ -529,7 +529,7 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& la
         //An absolute path, the language files are on the local disk
         for (auto const& dir_entry : std::filesystem::directory_iterator{ path }) {
             if (dir_entry.is_regular_file()) {
-                languageList.push_back({ FilePath(dir_entry.path().filename()).ToString(), _T("")});
+                languageList.push_back({ FilePath(dir_entry.path().filename()).ToString(), DUI_T("")});
             }
         }
         if (!languageNameID.empty()) {
@@ -550,7 +550,7 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& la
         std::vector<DString> fileList;
         m_memoryResourceManager.GetFileList(languagePath, fileList);
         for (auto const& file : fileList) {
-            languageList.push_back({ file, _T("") });
+            languageList.push_back({ file, DUI_T("") });
         }
 
         if (!languageNameID.empty()) {
@@ -594,8 +594,8 @@ void GlobalManager::CheckImagePath(FilePath& imageFullPath, bool& bLocalPath)
 bool GlobalManager::IsResInPublicPath(const FilePath& resPath) const
 {
     DString resPathString = resPath.ToString();
-    StringUtil::ReplaceAll(_T("\\"), _T("/"), resPathString);
-    if ((resPathString.find(_T("public/")) == 0) || ((resPathString.find(_T("/public/")) == 0))) {
+    StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), resPathString);
+    if ((resPathString.find(DUI_T("public/")) == 0) || ((resPathString.find(DUI_T("/public/")) == 0))) {
         return true;
     }
     return false;

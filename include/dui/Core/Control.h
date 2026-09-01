@@ -633,7 +633,7 @@ public:
      */
     bool PaintImage(IRender* pRender,
                     Image* pImage,
-                    const DString& strModify = _T(""),
+                    const DString& strModify = DUI_T(""),
                     int32_t nFade = DUI_NOSET_VALUE,
                     IMatrix* pMatrix = nullptr,
                     const UiRect* pDestRect = nullptr,
@@ -769,7 +769,7 @@ public:
                     0: no valid play count, use the default value of the image (or a preset value)
                    >0: a concrete play count, stop playing after reaching the count
      */
-    bool StartImageAnimation(const DString& imageName = _T(""),
+    bool StartImageAnimation(const DString& imageName = DUI_T(""),
                              AnimationImagePos nStartFrame = AnimationImagePos::kFrameCurrent,
                              int32_t nPlayCount = 0);
 
@@ -778,7 +778,7 @@ public:
      * @param [in] nStopFrame Which frame to stop at when the playback ends; the first frame, current frame, and last frame can be set. Refer to the AnimationImagePos enum
      * @param [in] bTriggerEvent Whether to notify subscribers of the stop event, refer to the AttachImageAnimationStop method
      */
-    bool StopImageAnimation(const DString& imageName = _T(""),
+    bool StopImageAnimation(const DString& imageName = DUI_T(""),
                             AnimationImagePos nStopFrame = AnimationImagePos::kFrameCurrent,
                             bool bTriggerEvent = true);
 
@@ -1397,7 +1397,7 @@ protected:
     bool PaintStateImage(IRender* pRender, 
                          StateImageType stateImageType, 
                          ControlStateType stateType, 
-                         const DString& sImageModify = _T(""),
+                         const DString& sImageModify = DUI_T(""),
                          UiRect* pDestRect = nullptr);
 
     /** Clear all state image attributes

@@ -13,11 +13,11 @@ ListCtrlSubItem::ListCtrlSubItem(Window* pWindow):
     SetIconSpacing(2, true);
 }
 
-DString ListCtrlSubItem::GetType() const { return _T("ListCtrlSubItem"); }
+DString ListCtrlSubItem::GetType() const { return DUI_T("ListCtrlSubItem"); }
 
 void ListCtrlSubItem::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("icon_spacing")) {
+    if (strName == DUI_T("icon_spacing")) {
         SetIconSpacing(StringUtil::StringToInt32(strValue), true);
     }
     else {
@@ -242,7 +242,7 @@ void ListCtrlSubItem::PaintText(IRender* pRender)
 
     UiRect imageRect = rc;
     VAlignRect(imageRect, GetTextStyle(), imageSize.cy);
-    PaintImage(pRender, pItemImage.get(), _T(""), -1, nullptr, &imageRect, nullptr);
+    PaintImage(pRender, pItemImage.get(), DUI_T(""), -1, nullptr, &imageRect, nullptr);
     rc.left += imageSize.cx;
     rc.left += nIconTextSpacing;
 

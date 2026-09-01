@@ -42,47 +42,47 @@ ListBox::~ListBox()
     }
 }
 
-DString ListBox::GetType() const { return _T("ListBox"); }
+DString ListBox::GetType() const { return DUI_T("ListBox"); }
 
 void ListBox::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("multi_select")) {
-        SetMultiSelect(strValue == _T("true"));
+    if (strName == DUI_T("multi_select")) {
+        SetMultiSelect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("paint_selected_colors")) {
-        if (strValue == _T("true")) {
+    else if (strName == DUI_T("paint_selected_colors")) {
+        if (strValue == DUI_T("true")) {
             m_uPaintSelectedColors = PAINT_SELECTED_COLORS_YES;
         }
         else {
             m_uPaintSelectedColors = PAINT_SELECTED_COLORS_NO;
         }
     }
-    else if ((strName == _T("scroll_select")) || (strName == _T("scrollselect"))) {
-        SetScrollSelect(strValue == _T("true"));
+    else if ((strName == DUI_T("scroll_select")) || (strName == DUI_T("scrollselect"))) {
+        SetScrollSelect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("select_next_when_active_removed")) {
-        SetSelectNextWhenActiveRemoved(strValue == _T("true"));
+    else if (strName == DUI_T("select_next_when_active_removed")) {
+        SetSelectNextWhenActiveRemoved(strValue == DUI_T("true"));
     }
-    else if (strName == _T("frame_selection")) {
-        SetEnableFrameSelection(strValue == _T("true"));
+    else if (strName == DUI_T("frame_selection")) {
+        SetEnableFrameSelection(strValue == DUI_T("true"));
     }
-    else if (strName == _T("frame_selection_color")) {
+    else if (strName == DUI_T("frame_selection_color")) {
         SetFrameSelectionColor(strValue);
     }
-    else if (strName == _T("frame_selection_alpha")) {
+    else if (strName == DUI_T("frame_selection_alpha")) {
         SetframeSelectionAlpha((uint8_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("frame_selection_border_size")) {
+    else if (strName == DUI_T("frame_selection_border_size")) {
         SetFrameSelectionBorderSize(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("frame_selection_border_color")) {
+    else if (strName == DUI_T("frame_selection_border_color")) {
         SetFrameSelectionBorderColor(strValue);
     }
-    else if (strName == _T("select_none_when_click_blank")) {
-        SetSelectNoneWhenClickBlank(strValue == _T("true"));
+    else if (strName == DUI_T("select_none_when_click_blank")) {
+        SetSelectNoneWhenClickBlank(strValue == DUI_T("true"));
     }
-    else if (strName == _T("select_like_list_ctrl")) {
-        SetSelectLikeListCtrl(strValue == _T("true"));
+    else if (strName == DUI_T("select_like_list_ctrl")) {
+        SetSelectLikeListCtrl(strValue == DUI_T("true"));
     }
     else {
         ScrollBox::SetAttribute(strName, strValue);
@@ -406,7 +406,7 @@ bool ListBox::OnListCtrlKeyDown(const EventArgs& msg)
     //This function only implements the shortcut key logic for the non-virtual-list case; the corresponding logic for virtual list mode is implemented in the subclass
     ASSERT(msg.eventType == kEventKeyDown);
     bool bHandled = false;
-    bool bCtrlADown = (msg.eventType == kEventKeyDown) && ((msg.vkCode == _T('A')) || (msg.vkCode == _T('a')));
+    bool bCtrlADown = (msg.eventType == kEventKeyDown) && ((msg.vkCode == DUI_T('A')) || (msg.vkCode == DUI_T('a')));
     if (bCtrlADown) {
         //Ctrl + A select all operation
         bHandled = true;

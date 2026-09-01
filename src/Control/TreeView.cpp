@@ -45,39 +45,39 @@ DString TreeNode::GetType() const { return DUI_CTR_TREENODE; }
 
 void TreeNode::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("expand_normal_image")) {
+    if (strName == DUI_T("expand_normal_image")) {
         SetExpandStateImage(kControlStateNormal, strValue);
     }
-    else if (strName == _T("expand_hot_image")) {
+    else if (strName == DUI_T("expand_hot_image")) {
         SetExpandStateImage(kControlStateHot, strValue);
     }
-    else if (strName == _T("expand_pushed_image")) {
+    else if (strName == DUI_T("expand_pushed_image")) {
         SetExpandStateImage(kControlStatePushed, strValue);
     }
-    else if (strName == _T("expand_disabled_image")) {
+    else if (strName == DUI_T("expand_disabled_image")) {
         SetExpandStateImage(kControlStateDisabled, strValue);
     }
-    else if (strName == _T("collapse_normal_image")) {
+    else if (strName == DUI_T("collapse_normal_image")) {
         SetCollapseStateImage(kControlStateNormal, strValue);
     }
-    else if (strName == _T("collapse_hot_image")) {
+    else if (strName == DUI_T("collapse_hot_image")) {
         SetCollapseStateImage(kControlStateHot, strValue);
     }
-    else if (strName == _T("collapse_pushed_image")) {
+    else if (strName == DUI_T("collapse_pushed_image")) {
         SetCollapseStateImage(kControlStatePushed, strValue);
     }
-    else if (strName == _T("collapse_disabled_image")) {
+    else if (strName == DUI_T("collapse_disabled_image")) {
         SetCollapseStateImage(kControlStateDisabled, strValue);
     }
-    else if (strName == _T("expand_image_right_space")) {
+    else if (strName == DUI_T("expand_image_right_space")) {
         int32_t iValue = StringUtil::StringToInt32(strValue);
         SetExpandIndent(iValue, true);
     }
-    else if (strName == _T("check_box_image_right_space")) {
+    else if (strName == DUI_T("check_box_image_right_space")) {
         int32_t iValue = StringUtil::StringToInt32(strValue);
         SetCheckBoxIndent(iValue, true);
     }
-    else if (strName == _T("icon_image_right_space")) {
+    else if (strName == DUI_T("icon_image_right_space")) {
         int32_t iValue = StringUtil::StringToInt32(strValue);
         SetIconIndent(iValue, true);
     }
@@ -224,7 +224,7 @@ void TreeNode::PaintStateImages(IRender* pRender)
             if (m_pExpandImageRect == nullptr) {
                 m_pExpandImageRect = new UiRect;
             }
-            m_expandImage->PaintStateImage(pRender, GetState(), _T(""), m_pExpandImageRect);
+            m_expandImage->PaintStateImage(pRender, GetState(), DUI_T(""), m_pExpandImageRect);
         }
     }
     else {
@@ -233,7 +233,7 @@ void TreeNode::PaintStateImages(IRender* pRender)
             if (m_pCollapseImageRect == nullptr) {
                 m_pCollapseImageRect = new UiRect;
             }
-            m_collapseImage->PaintStateImage(pRender, GetState(), _T(""), m_pCollapseImageRect);
+            m_collapseImage->PaintStateImage(pRender, GetState(), DUI_T(""), m_pCollapseImageRect);
         }
     }
 }
@@ -511,8 +511,8 @@ void TreeNode::SetBkIconID(uint32_t nIconID, uint32_t nIconSize, bool bNeedDpiSc
     }
 
     if (nIconSize > 0) {        
-        DString dpiScale = bNeedDpiScale ? _T("true") : _T("false");
-        iconString = StringUtil::Printf(_T("file='%s' width='%d' height='%d' halign='left' valign='center' dpi_scale='%s'"),
+        DString dpiScale = bNeedDpiScale ? DUI_T("true") : DUI_T("false");
+        iconString = StringUtil::Printf(DUI_T("file='%s' width='%d' height='%d' halign='left' valign='center' dpi_scale='%s'"),
                                         iconString.c_str(), nIconSize, nIconSize, dpiScale.c_str());
 
     }
@@ -523,7 +523,7 @@ void TreeNode::SetBkIconID(uint32_t nIconID, uint32_t nIconSize, bool bNeedDpiSc
         }
         else {
             //Image data: use the original image size
-            iconString = StringUtil::Printf(_T("file='%s' halign='left' valign='center'"), iconString.c_str());
+            iconString = StringUtil::Printf(DUI_T("file='%s' halign='left' valign='center'"), iconString.c_str());
         }
     }
 
@@ -548,7 +548,7 @@ void TreeNode::SetBkIconID(uint32_t nIconID, uint32_t nIconSize, bool bNeedDpiSc
 
 void TreeNode::ClearBkIcon()
 {
-    SetBkImage(_T(""));
+    SetBkImage(DUI_T(""));
     m_expandIconPadding = 0;
     m_checkBoxIconPadding = 0;
     AdjustIconPadding();
@@ -1152,25 +1152,25 @@ DString TreeView::GetType() const { return DUI_CTR_TREEVIEW; }
 void TreeView::SetAttribute(const DString& strName, const DString& strValue)
 {
     //List of supported attributes: those implemented by the base class are forwarded directly
-    if (strName == _T("indent")) {
+    if (strName == DUI_T("indent")) {
         //The indent of the tree node (each level of nodes is indented by one indent unit)
         SetIndent(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("multi_select")) {
+    else if (strName == DUI_T("multi_select")) {
         //Multi-select; the default is single-select, implemented in the base class
-        SetMultiSelect(strValue == _T("true"));
+        SetMultiSelect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("check_box_class")) {
+    else if (strName == DUI_T("check_box_class")) {
         //Whether to display the CheckBox
         SetCheckBoxClass(strValue);
     }
-    else if (strName == _T("expand_image_class")) {
+    else if (strName == DUI_T("expand_image_class")) {
         //Whether to display the [expand/collapse] icon
         SetExpandImageClass(strValue);
     }
-    else if (strName == _T("show_icon")) {
+    else if (strName == DUI_T("show_icon")) {
         //Whether to display the icon
-        SetEnableIcon(strValue == _T("true"));
+        SetEnableIcon(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);

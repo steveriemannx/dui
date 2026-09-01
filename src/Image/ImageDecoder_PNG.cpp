@@ -17,14 +17,14 @@ ImageDecoder_PNG::~ImageDecoder_PNG()
 
 DString ImageDecoder_PNG::GetFormatName() const
 {
-    return _T("PNG/APNG");
+    return DUI_T("PNG/APNG");
 }
 
 bool ImageDecoder_PNG::CanDecode(const DString& imageFilePath) const
 {
     DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == _T("PNG")) {
+    if (fileExt == DUI_T("PNG")) {
         return true;
     }
     return false;

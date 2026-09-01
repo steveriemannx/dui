@@ -22,7 +22,7 @@ DString LogUtil::GetTimeStamp()
     uint32_t nMM = (uint32_t)((nTimeMs / 1000) / 60);
     uint32_t nSS = (uint32_t)(nTimeMs / 1000);
     uint32_t nMS = (uint32_t)(nTimeMs % 1000);
-    return StringUtil::Printf(_T("%02u:%02u:%02u.%03u "), nHH, nMM, nSS, nMS);
+    return StringUtil::Printf(DUI_T("%02u:%02u:%02u.%03u "), nHH, nMM, nSS, nMS);
 }
 
 void LogUtil::Output(const DString& log, bool bPrintTime)
@@ -46,9 +46,9 @@ void LogUtil::Output(const DString& log, bool bPrintTime)
 void LogUtil::OutputLine(const DString& log, bool bPrintTime)
 {
 #ifdef DUI_BUILD_FOR_WIN
-    Output(log + _T("\r\n"), bPrintTime);
+    Output(log + DUI_T("\r\n"), bPrintTime);
 #else
-    Output(log + _T("\n"), bPrintTime);
+    Output(log + DUI_T("\n"), bPrintTime);
 #endif
 }
 

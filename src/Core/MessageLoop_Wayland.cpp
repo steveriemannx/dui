@@ -201,7 +201,7 @@ bool MessageLoop_Wayland::CheckInitWayland()
 
 DString MessageLoop_Wayland::GetCurrentVideoDriverName()
 {
-    return _T("wayland");
+    return DUI_T("wayland");
 }
 
 float MessageLoop_Wayland::GetPrimaryDisplayContentScale()

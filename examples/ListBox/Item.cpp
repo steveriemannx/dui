@@ -17,10 +17,10 @@ Item::~Item()
 void Item::InitSubControls(const DString& img, const DString& title)
 {
     // Find the controls under Item
-    m_pImageControl = dynamic_cast<ui::Control*>(FindSubControl(_T("control_img")));
-    m_pTitleLabel = dynamic_cast<ui::Label*>(FindSubControl(_T("label_title")));
-    m_pProgressControl = dynamic_cast<ui::Progress*>(FindSubControl(_T("progress")));
-    m_pDelBtn = dynamic_cast<ui::Button*>(FindSubControl(_T("btn_del")));
+    m_pImageControl = dynamic_cast<ui::Control*>(FindSubControl(DUI_T("control_img")));
+    m_pTitleLabel = dynamic_cast<ui::Label*>(FindSubControl(DUI_T("label_title")));
+    m_pProgressControl = dynamic_cast<ui::Progress*>(FindSubControl(DUI_T("progress")));
+    m_pDelBtn = dynamic_cast<ui::Button*>(FindSubControl(DUI_T("btn_del")));
 
     // Simulate the progress bar value
     int32_t nProgress = std::time(nullptr) % 100;
@@ -28,7 +28,7 @@ void Item::InitSubControls(const DString& img, const DString& title)
 
     // Set the icon and task name
     m_pImageControl->SetBkImage(img);
-    m_pTitleLabel->SetText(ui::StringUtil::Printf(_T("%s %d%%"), title.c_str(), nProgress));
+    m_pTitleLabel->SetText(ui::StringUtil::Printf(DUI_T("%s %d%%"), title.c_str(), nProgress));
 
     // Bind the delete-task handler
     m_pDelBtn->AttachClick(UiBind(&Item::OnRemove, this, std::placeholders::_1));

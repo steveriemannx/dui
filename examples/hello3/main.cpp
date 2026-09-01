@@ -7,7 +7,7 @@ int main()
     class Hello3App : public ui::FrameworkThread
     {
     public:
-        Hello3App() : FrameworkThread(_T("Hello3"), ui::kThreadUI) {}
+        Hello3App() : FrameworkThread(DUI_T("Hello3"), ui::kThreadUI) {}
         void Run() { RunMessageLoop(); }
     protected:
         void OnInit() override
@@ -18,13 +18,13 @@ int main()
             ui::LocalFilesResParam resParam(resourcePath);
             resParam.themePath = ui::FilePath();
             if (!ui::GlobalManager::Instance().Startup(resParam)) {
-                ui::SystemUtil::ShowMessageBox(nullptr, _T("Failed to load hello3 resources."), _T("hello3"));
+                ui::SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to load hello3 resources."), DUI_T("hello3"));
                 return;
             }
 
             MainForm* window = new MainForm();
-            if (!window->CreateWnd(nullptr, ui::WindowCreateParam(_T("Hello3 (flat resources)"), true))) {
-                ui::SystemUtil::ShowMessageBox(nullptr, _T("Failed to create the window."), _T("hello3"));
+            if (!window->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("Hello3 (flat resources)"), true))) {
+                ui::SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to create the window."), DUI_T("hello3"));
                 delete window;
                 return;
             }

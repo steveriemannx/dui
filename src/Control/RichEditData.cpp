@@ -349,7 +349,7 @@ void RichEditData::CheckCalcTextRects()
 
 void RichEditData::CalcTextRects()
 {
-    PerformanceStat statPerformance(_T("RichEditData::CalcTextRects"));
+    PerformanceStat statPerformance(DUI_T("RichEditData::CalcTextRects"));
     //Clear the cache data of all rows
     for (RichTextLineInfoPtr& pLineInfo : m_lineTextInfo) {
         ASSERT(pLineInfo != nullptr);
@@ -443,7 +443,7 @@ void RichEditData::CalcTextRects(size_t nStartLine,
                                  const std::vector<size_t>& deletedLines,
                                  size_t nDeletedRows)
 {
-    PerformanceStat statPerformance(_T("RichEditData::CalcTextRects2"));
+    PerformanceStat statPerformance(DUI_T("RichEditData::CalcTextRects2"));
     ASSERT(!m_pRichText->IsTextPasswordMode());//In password mode, this function should not be used
     if (nStartLine != (size_t)-1) {
         ASSERT(!modifiedLines.empty() || !deletedLines.empty());
@@ -672,7 +672,7 @@ void RichEditData::CalcTextRects(size_t nStartLine,
 
 bool RichEditData::SetText(const DStringW& text)
 {
-    PerformanceStat statPerformance(_T("RichEditData::SetText"));
+    PerformanceStat statPerformance(DUI_T("RichEditData::SetText"));
     if (text.empty()) {
         Clear();
         return true;
@@ -939,7 +939,7 @@ bool RichEditData::FindLineTextPos(int32_t nStartChar, int32_t nEndChar,
 
 bool RichEditData::ReplaceText(int32_t nStartChar, int32_t nEndChar, const DStringW& text, bool bCanUndo, bool bClearRedo)
 {
-    PerformanceStat statPerformance(_T("RichEditData::ReplaceText"));
+    PerformanceStat statPerformance(DUI_T("RichEditData::ReplaceText"));
     ASSERT((nStartChar >= 0) && (nEndChar >= 0) && (nEndChar >= nStartChar));
     if ((nStartChar < 0) || (nEndChar < 0) || (nStartChar > nEndChar)) {
         return false;

@@ -31,7 +31,7 @@ namespace ui
 static Control* DuiCreateCefControl(const DString& className)
 {
     Control* pControl = nullptr;
-    if (className == _T("CefControl")) {
+    if (className == DUI_T("CefControl")) {
         if (ui::CefManager::GetInstance()->IsEnableOffScreenRendering()) {
             pControl = new CefControlOffScreen(nullptr);
         }
@@ -96,7 +96,7 @@ DString CefManager::GetCefCachePath() const
     if (m_bHasCefCachePath) {
         return m_cefCachePath;
     }
-    DString defaultCachePath = _T("cef_cache");
+    DString defaultCachePath = DUI_T("cef_cache");
     defaultCachePath += FilePath::GetPathSeparatorStr();
     defaultCachePath += m_appName;
     defaultCachePath += FilePath::GetPathSeparatorStr();
@@ -125,7 +125,7 @@ DString CefManager::GetCefLanguage() const
     if (!m_lang.empty()) {
         return m_lang;
     }
-    return _T("zh-CN");
+    return DUI_T("zh-CN");
 }
 
 void CefManager::SetLogSeverity(cef_log_severity_t log_severity)
@@ -331,7 +331,7 @@ void CefManager::GetCefSetting(CefSettings& settings)
 
     //Set localstorage; do not add "\\" at the end of the path, otherwise an error will be reported at runtime
     if (!appDataRootDir.empty()) {
-        const DString cachePath = appDataRootDir + _T("CefLocalStorage");
+        const DString cachePath = appDataRootDir + DUI_T("CefLocalStorage");
         CefString(&settings.cache_path) = cachePath;
         CefString(&settings.root_cache_path) = cachePath;
     }
@@ -341,7 +341,7 @@ void CefManager::GetCefSetting(CefSettings& settings)
 
     // Set the debug log file location
     if (settings.log_severity != cef_log_severity_t::LOGSEVERITY_DISABLE) {
-        CefString(&settings.log_file) = appDataRootDir + _T("cef.log");
+        CefString(&settings.log_file) = appDataRootDir + DUI_T("cef.log");
     }
 
     // cef2623/2526 debug mode: exiting the program while using multi_threaded_message_loop triggers a breakpoint

@@ -17,7 +17,7 @@ DString FilterCombo::GetType() const { return DUI_CTR_FILTER_COMBO; }
 
 void FilterCombo::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("combo_type")) {
+    if (strName == DUI_T("combo_type")) {
         //Ignore this attribute setting
     }
     else {

@@ -19,18 +19,18 @@ DString Line::GetType() const { return DUI_CTR_LINE; }
 
 void Line::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("vertical")) {
-        SetLineVertical(strValue == _T("true"));
+    if (strName == DUI_T("vertical")) {
+        SetLineVertical(strValue == DUI_T("true"));
     }
-    else if (strName == _T("line_color")) {
+    else if (strName == DUI_T("line_color")) {
         SetLineColor(strValue);
     }
-    else if (strName == _T("line_width")) {
+    else if (strName == DUI_T("line_width")) {
         if (!strValue.empty()) {
             SetLineWidth((float)StringUtil::StringToInt32(strValue), true);
         }
     }
-    else if (strName == _T("dash_style")) {
+    else if (strName == DUI_T("dash_style")) {
         SetLineDashStyle(strValue);
     }
     else {
@@ -98,19 +98,19 @@ DString Line::GetLineColor() const
 void Line::SetLineDashStyle(const DString& dashStyle)
 {
     int32_t oldDashStyle = m_dashStyle;
-    if (dashStyle == _T("solid")) {
+    if (dashStyle == DUI_T("solid")) {
         m_dashStyle = IPen::kDashStyleSolid;
     }
-    else if (dashStyle == _T("dash")) {
+    else if (dashStyle == DUI_T("dash")) {
         m_dashStyle = IPen::kDashStyleDash;
     }
-    else if (dashStyle == _T("dot")) {
+    else if (dashStyle == DUI_T("dot")) {
         m_dashStyle = IPen::kDashStyleDot;
     }
-    else if (dashStyle == _T("dash_dot")) {
+    else if (dashStyle == DUI_T("dash_dot")) {
         m_dashStyle = IPen::kDashStyleDashDot;
     }
-    else if (dashStyle == _T("dash_dot_dot")) {
+    else if (dashStyle == DUI_T("dash_dot_dot")) {
         m_dashStyle = IPen::kDashStyleDashDotDot;
     }
     else {
@@ -124,22 +124,22 @@ void Line::SetLineDashStyle(const DString& dashStyle)
 DString Line::GetLineDashStyle() const
 {
     if (m_dashStyle == IPen::kDashStyleSolid) {
-        return _T("solid");
+        return DUI_T("solid");
     }
     else if (m_dashStyle == IPen::kDashStyleDash) {
-        return _T("dash");
+        return DUI_T("dash");
     }
     else if (m_dashStyle == IPen::kDashStyleDot) {
-        return _T("dot");
+        return DUI_T("dot");
     }
     else if (m_dashStyle == IPen::kDashStyleDashDot) {
-        return _T("dash_dot");
+        return DUI_T("dash_dot");
     }
     else if (m_dashStyle == IPen::kDashStyleDashDotDot) {
-        return _T("dash_dot_dot");
+        return DUI_T("dash_dot_dot");
     }
     else {
-        return _T("dash_dot");
+        return DUI_T("dash_dot");
     }
 }
 

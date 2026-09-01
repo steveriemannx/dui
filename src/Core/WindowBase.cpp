@@ -56,7 +56,7 @@ int32_t WindowBase::DoModal(WindowBase* pParentWindow, const WindowCreateParam& 
 
 bool WindowBase::CreateChildWnd(WindowBase* pParentWindow, int32_t nX, int32_t nY, int32_t nWidth, int32_t nHeight)
 {
-    SetWindowId(_T(""));
+    SetWindowId(DUI_T(""));
     m_pParentWindow = pParentWindow;
     NativeWindow* pNativeWindow = pParentWindow != nullptr ? pParentWindow->NativeWnd() : nullptr;
     return m_pNativeWindow->CreateChildWnd(pNativeWindow, nX, nY, nWidth, nHeight);

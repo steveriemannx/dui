@@ -27,11 +27,11 @@ VerticalDrawText::VerticalDrawText(SkCanvas* pSkCanvas, SkPaint* pSkPaint, SkPoi
 UTF16String VerticalDrawText::GetDrawStringUTF16(const DString& strText, bool bSingleLineMode) const
 {
     DString text = strText;
-    StringUtil::ReplaceAll(_T("\r\n"), _T("\n"), text);
-    StringUtil::ReplaceAll(_T("\r"), _T(""), text);
-    StringUtil::ReplaceAll(_T("\t"), _T(" "), text);
+    StringUtil::ReplaceAll(DUI_T("\r\n"), DUI_T("\n"), text);
+    StringUtil::ReplaceAll(DUI_T("\r"), DUI_T(""), text);
+    StringUtil::ReplaceAll(DUI_T("\t"), DUI_T(" "), text);
     if (bSingleLineMode) {
-        StringUtil::ReplaceAll(_T("\n"), _T(" "), text);
+        StringUtil::ReplaceAll(DUI_T("\n"), DUI_T(" "), text);
     }
 #if defined DUI_UNICODE && defined WCHAR_T_IS_UTF16
     return text;
@@ -364,7 +364,7 @@ float VerticalDrawText::CalculateDefaultCharWidth(const SkFont* pSkFont, const S
 
 UiRect VerticalDrawText::MeasureString(const DString& strText, const MeasureStringParam& measureParam)
 {
-    PerformanceStat statPerformance(_T("VerticalDrawText::MeasureString"));
+    PerformanceStat statPerformance(DUI_T("VerticalDrawText::MeasureString"));
     ASSERT((m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return UiRect();
@@ -437,7 +437,7 @@ void VerticalDrawText::DrawString(const DString& strText, const DrawStringParam&
 {
     // Note: vertical text drawing does not support the following features
     // 1. Text style: DrawStringFormat::TEXT_PATH_ELLIPSIS is not supported; it is treated as DrawStringFormat::TEXT_END_ELLIPSIS
-    PerformanceStat statPerformance(_T("VerticalDrawText::DrawString"));
+    PerformanceStat statPerformance(DUI_T("VerticalDrawText::DrawString"));
     ASSERT((m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return;

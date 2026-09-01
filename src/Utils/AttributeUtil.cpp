@@ -188,16 +188,16 @@ void AttributeUtil::ParseAttributeList(const DString& strList,
     if (pstrList == nullptr) {
         return;
     }
-    while (*pstrList != _T('\0')) {
+    while (*pstrList != DUI_T('\0')) {
         sName.clear();
         sValue.clear();
         // Read the content before the equals sign as the Name
-        while (*pstrList != _T('\0') && *pstrList != _T('=')) {
+        while (*pstrList != DUI_T('\0') && *pstrList != DUI_T('=')) {
             sName += *pstrList++;
         }
         // The current character should be an equals sign
-        ASSERT(*pstrList == _T('='));
-        if (*pstrList != _T('=')) {
+        ASSERT(*pstrList == DUI_T('='));
+        if (*pstrList != DUI_T('=')) {
             return;
         }
         // Skip to the character after the equals sign; this character should be a separator character
@@ -209,7 +209,7 @@ void AttributeUtil::ParseAttributeList(const DString& strList,
 
         // Skip to the character after the first separator character and read the attribute value
         pstrList++;
-        while (*pstrList != _T('\0') && *pstrList != seperateChar) {
+        while (*pstrList != DUI_T('\0') && *pstrList != seperateChar) {
             sValue += *pstrList++;
         }
         ASSERT(*pstrList == seperateChar);
@@ -223,7 +223,7 @@ void AttributeUtil::ParseAttributeList(const DString& strList,
 
         // Skip to the character after the separator character; it should be a space. If it is not a space, the parsing is considered finished
         pstrList++;
-        if (*pstrList != _T(' ')) {
+        if (*pstrList != DUI_T(' ')) {
             return;
         }
 

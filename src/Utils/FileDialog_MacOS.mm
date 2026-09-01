@@ -47,7 +47,7 @@ static void ApplyFileTypes(NSOpenPanel* panel, const std::vector<FileDialog::Fil
         if (!fileType.szExt.empty()) {
             //Strip a leading dot, if any (e.g. "*.txt" -> "txt")
             DString ext = fileType.szExt;
-            if (!ext.empty() && (ext[0] == _T('.'))) {
+            if (!ext.empty() && (ext[0] == DUI_T('.'))) {
                 ext.erase(ext.begin());
             }
             std::string utf8Ext = StringConvert::TToUTF8(ext);

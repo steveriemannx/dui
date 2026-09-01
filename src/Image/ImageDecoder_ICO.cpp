@@ -19,14 +19,14 @@ ImageDecoder_ICO::~ImageDecoder_ICO()
 
 DString ImageDecoder_ICO::GetFormatName() const
 {
-    return _T("ICO/CUR");
+    return DUI_T("ICO/CUR");
 }
 
 bool ImageDecoder_ICO::CanDecode(const DString& imageFilePath) const
 {
     DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if ((fileExt == _T("ICO")) || (fileExt == _T("CUR"))) {
+    if ((fileExt == DUI_T("ICO")) || (fileExt == DUI_T("CUR"))) {
         return true;
     }
     return false;

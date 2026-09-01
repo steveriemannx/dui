@@ -7,12 +7,12 @@ void MainForm::OnInitWindow()
 
     // Populate all combo controls with sample items
     const DString comboNames[] = {
-        _T("combo_default"), _T("combo_small_round"),
-        _T("combo_round"), _T("combo_not_round"),
-        _T("combo_edit_default"), _T("combo_edit_small_round"),
-        _T("combo_edit_round"), _T("combo_edit_not_round"),
-        _T("filter_default"), _T("filter_small_round"),
-        _T("filter_round"), _T("filter_not_round"),
+        DUI_T("combo_default"), DUI_T("combo_small_round"),
+        DUI_T("combo_round"), DUI_T("combo_not_round"),
+        DUI_T("combo_edit_default"), DUI_T("combo_edit_small_round"),
+        DUI_T("combo_edit_round"), DUI_T("combo_edit_not_round"),
+        DUI_T("filter_default"), DUI_T("filter_small_round"),
+        DUI_T("filter_round"), DUI_T("filter_not_round"),
     };
     for (const DString& name : comboNames) {
         ui::Combo* pCombo = dynamic_cast<ui::Combo*>(FindControl(name));
@@ -23,7 +23,7 @@ void MainForm::OnInitWindow()
         for (int32_t i = 0; i < 8; ++i) {
             auto* pNode = ui::Create<ui::TreeNode>(this, {
                 {"class", "tree_node"},
-                {"text", ui::StringUtil::Printf(_T("Item %d"), i + 1)}
+                {"text", ui::StringUtil::Printf(DUI_T("Item %d"), i + 1)}
             });
             pRoot->AddChildNode(pNode);
         }

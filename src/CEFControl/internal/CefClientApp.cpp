@@ -64,21 +64,21 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
 
         DString currentVideoDriver = StringUtil::MakeLowerString(MessageLoop_SDL::GetCurrentVideoDriverName());
         // The backend rendering mode of CEF must stay consistent with SDL, otherwise the child window mode will not work properly
-        if (currentVideoDriver == _T("wayland")) {
+        if (currentVideoDriver == DUI_T("wayland")) {
             // Force the Ozone platform to Wayland (disable X11)
             command_line->AppendSwitchWithValue("ozone-platform", "wayland");
         }
-        else if (currentVideoDriver == _T("x11")) {
+        else if (currentVideoDriver == DUI_T("x11")) {
             // Force the Ozone platform to X11 (disable Wayland)
             command_line->AppendSwitchWithValue("ozone-platform", "x11");
         }
      
-        if (IsWaylandEnvironment() && (currentVideoDriver == _T("x11"))) {
+        if (IsWaylandEnvironment() && (currentVideoDriver == DUI_T("x11"))) {
             // XWayland environment: fix the issue where the DPI adaptation feature of the CEF page fails
             DString dpiFactor;
             float scale = MessageLoop_SDL::GetPrimaryDisplayContentScale();
             if (scale > 0.001f) {
-                dpiFactor = StringUtil::Printf(_T("%.02f"), scale);
+                dpiFactor = StringUtil::Printf(DUI_T("%.02f"), scale);
             }
             if (!dpiFactor.empty()) {
                 command_line->AppendSwitchWithValue("force-device-scale-factor", CefString(dpiFactor.c_str()));

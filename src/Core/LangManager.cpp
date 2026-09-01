@@ -80,11 +80,11 @@ bool LangManager::AnalyzeStringTable(const std::vector<DString>& list)
     DString strResource;
     for (int i = 0; i < nCount; ++i) {
         const DString& strSrc = list[i];
-        if (strSrc.empty() || strSrc.at(0) == _T(';')) {
+        if (strSrc.empty() || strSrc.at(0) == DUI_T(';')) {
             //The comment starts with ";"
             continue;
         }
-        size_t pos = strSrc.find(_T('='));
+        size_t pos = strSrc.find(DUI_T('='));
         if (pos == DString::npos) {
             //No separator, ignore it
             continue;
@@ -98,8 +98,8 @@ bool LangManager::AnalyzeStringTable(const std::vector<DString>& list)
             strResource = strSrc.substr(pos + 1);
             strResource = StringUtil::Trim(strResource);
             //Replace \n and \r with the real line feed and carriage return characters
-            StringUtil::ReplaceAll(_T("\\r"), _T("\r"), strResource);
-            StringUtil::ReplaceAll(_T("\\n"), _T("\n"), strResource);
+            StringUtil::ReplaceAll(DUI_T("\\r"), DUI_T("\r"), strResource);
+            StringUtil::ReplaceAll(DUI_T("\\n"), DUI_T("\n"), strResource);
         }
         else {
             strResource.clear();

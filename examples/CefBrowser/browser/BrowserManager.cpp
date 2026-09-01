@@ -38,7 +38,7 @@ BrowserBox* BrowserManager::CreateBorwserBox(BrowserForm* pBrowserForm, std::str
     //Multi-tab mode: multiple tabs are allowed in one window
     if (pBrowserForm == nullptr) {
         pBrowserForm = BrowserManager::GetInstance()->CreateBrowserForm();
-        if (!pBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam(_T("CefBrowser"), true))) {
+        if (!pBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("CefBrowser"), true))) {
             pBrowserForm = nullptr;
             return nullptr;
         }

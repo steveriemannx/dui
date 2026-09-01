@@ -62,8 +62,8 @@ public:
                        const DString& menuText,
                        const DString& menuTextId,
                        const DString& menuXmlPath,
-                       const DString& menuTextButtonClass = _T(""),
-                       const DString& menuTextButtonAttributes = _T(""));
+                       const DString& menuTextButtonClass = DUI_T(""),
+                       const DString& menuTextButtonAttributes = DUI_T(""));
 
     /** Add a top-level menu and return its index number
     * @param [in] menuBarItem The related data of the top-level menu
@@ -82,8 +82,8 @@ public:
     int32_t AddTopMenu(const DString& menuItemId,
                        const DString& menuText,
                        const std::function<void(Menu*)>& menuBuilder,
-                       const DString& menuTextButtonClass = _T(""),
-                       const DString& menuTextButtonAttributes = _T(""));
+                       const DString& menuTextButtonClass = DUI_T(""),
+                       const DString& menuTextButtonAttributes = DUI_T(""));
 
     /** Add a top-level menu at the specified position and return its index number
     * @param [in] nMenuIndex The specified index number
@@ -98,8 +98,8 @@ public:
                           const DString& menuText,
                           const DString& menuTextId,
                           const DString& menuXmlPath,
-                          const DString& menuTextButtonClass = _T(""),
-                          const DString& menuTextButtonAttributes = _T(""));
+                          const DString& menuTextButtonClass = DUI_T(""),
+                          const DString& menuTextButtonAttributes = DUI_T(""));
 
     /** Add a top-level menu at the specified position and return its index number
     * @param [in] menuBarItem The related data of the top-level menu

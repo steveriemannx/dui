@@ -46,7 +46,7 @@ PlaceHolder::TPlaceHolderData::TPlaceHolderData():
 {
 }
 
-DString PlaceHolder::GetType() const { return _T("PlaceHolder"); }
+DString PlaceHolder::GetType() const { return DUI_T("PlaceHolder"); }
 
 void PlaceHolder::CheckPlaceHolderData()
 {

@@ -19,71 +19,71 @@ Layout::Layout() :
 bool Layout::SetAttribute(const DString& strName, const DString& strValue, const DpiManager& dpiManager)
 {
     bool hasAttribute = true;
-    if ((strName == _T("child_margin")) || (strName == _T("childmargin"))) {
+    if ((strName == DUI_T("child_margin")) || (strName == DUI_T("childmargin"))) {
         int32_t iMargin = StringUtil::StringToInt32(strValue);
         dpiManager.ScaleInt(iMargin);
         SetChildMargin(iMargin);
     }
-    else if ((strName == _T("child_margin_x")) || (strName == _T("childmarginx"))) {
+    else if ((strName == DUI_T("child_margin_x")) || (strName == DUI_T("childmarginx"))) {
         int32_t iMargin = StringUtil::StringToInt32(strValue);
         dpiManager.ScaleInt(iMargin);
         SetChildMarginX(iMargin);
     }
-    else if ((strName == _T("child_margin_y")) || (strName == _T("childmarginy"))) {
+    else if ((strName == DUI_T("child_margin_y")) || (strName == DUI_T("childmarginy"))) {
         int32_t iMargin = StringUtil::StringToInt32(strValue);
         dpiManager.ScaleInt(iMargin);
         SetChildMarginY(iMargin);
     }
-    else if (strName == _T("child_valign")) {
+    else if (strName == DUI_T("child_valign")) {
         // Vertical alignment
-        if (strValue == _T("top")) {
+        if (strValue == DUI_T("top")) {
             SetChildVAlignType(VerAlignType::kAlignTop);
         }
-        else if (strValue == _T("center")) {
+        else if (strValue == DUI_T("center")) {
             SetChildVAlignType(VerAlignType::kAlignCenter);
         }
-        else if (strValue == _T("bottom")) {
+        else if (strValue == DUI_T("bottom")) {
             SetChildVAlignType(VerAlignType::kAlignBottom);
         }
         else {
             ASSERT(0);
         }
     }
-    else if (strName == _T("child_halign")) {
+    else if (strName == DUI_T("child_halign")) {
         // Horizontal alignment
-        if (strValue == _T("left")) {
+        if (strValue == DUI_T("left")) {
             SetChildHAlignType(HorAlignType::kAlignLeft);
         }
-        else if (strValue == _T("center")) {
+        else if (strValue == DUI_T("center")) {
             SetChildHAlignType(HorAlignType::kAlignCenter);
         }
-        else if (strValue == _T("right")) {
+        else if (strValue == DUI_T("right")) {
             SetChildHAlignType(HorAlignType::kAlignRight);
         }
         else {
             ASSERT(0);
         }
     }
-    else if (strName == _T("child_align")) {
+    else if (strName == DUI_T("child_align")) {
         // Horizontal alignment
-        if (strValue.find(_T("left")) != DString::npos) {
+        if (strValue.find(DUI_T("left")) != DString::npos) {
             SetChildHAlignType(HorAlignType::kAlignLeft);
         }
-        else if (strValue.find(_T("hcenter")) != DString::npos) {
+        else if (strValue.find(DUI_T("hcenter")) != DString::npos) {
             SetChildHAlignType(HorAlignType::kAlignCenter);
         }
-        else if (strValue.find(_T("right")) != DString::npos) {
+        else if (strValue.find(DUI_T("right")) != DString::npos) {
             SetChildHAlignType(HorAlignType::kAlignRight);
         }
 
         // Vertical alignment
-        if (strValue.find(_T("top")) != DString::npos) {
+        if (strValue.find(DUI_T("top")) != DString::npos) {
             SetChildVAlignType(VerAlignType::kAlignTop);
         }
-        else if (strValue.find(_T("vcenter")) != DString::npos) {
+        else if (strValue.find(DUI_T("vcenter")) != DString::npos) {
             SetChildVAlignType(VerAlignType::kAlignCenter);
         }
-        else if (strValue.find(_T("bottom")) != DString::npos) {
+        else if (strValue.find(DUI_T("bottom")) != DString::npos) {
             SetChildVAlignType(VerAlignType::kAlignBottom);
         }
     }

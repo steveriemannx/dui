@@ -14,7 +14,7 @@ ImageDecoder_Icon::~ImageDecoder_Icon()
 
 DString ImageDecoder_Icon::GetFormatName() const
 {
-    return _T("ICON");
+    return DUI_T("ICON");
 }
 
 bool ImageDecoder_Icon::CanDecode(const DString& imageFilePath) const

@@ -55,8 +55,8 @@ public:
     /** Set whether to display the header
     */
     void SetEnableHeaderCtrl(bool bEnable,
-                             const DString& sLeftColumn = _T(""), 
-                             const DString& sRightColumn = _T(""));
+                             const DString& sLeftColumn = DUI_T(""), 
+                             const DString& sRightColumn = DUI_T(""));
     /** Determine whether the header is currently displayed
     */
     bool IsEnableHeaderCtrl() const { return m_bHeaderCtrl; }
@@ -85,7 +85,7 @@ public:
     * @return Returns the interface of the group, which can be used to add properties
     */
     PropertyGridGroup* AddGroup(const DString& groupName, 
-                                const DString& description = _T(""),
+                                const DString& description = DUI_T(""),
                                 size_t nGroupData = 0);
 
     /** Get all groups
@@ -119,7 +119,7 @@ public:
     PropertyGridTextProperty* AddTextProperty(PropertyGridGroup* pGroup,
                                               const DString& propertyName, 
                                               const DString& propertyValue,
-                                              const DString& description = _T(""),
+                                              const DString& description = DUI_T(""),
                                               size_t nPropertyData = 0);
 
     /** Add a property (combo box)
@@ -133,7 +133,7 @@ public:
     PropertyGridComboProperty* AddComboProperty(PropertyGridGroup* pGroup,
                                                 const DString& propertyName, 
                                                 const DString& propertyValue,
-                                                const DString& description = _T(""),
+                                                const DString& description = DUI_T(""),
                                                 size_t nPropertyData = 0);
 
     /** Add a property (font name)
@@ -147,7 +147,7 @@ public:
     PropertyGridFontProperty* AddFontProperty(PropertyGridGroup* pGroup,
                                               const DString& propertyName, 
                                               const DString& propertyValue,
-                                              const DString& description = _T(""),
+                                              const DString& description = DUI_T(""),
                                               size_t nPropertyData = 0);
 
     /** Add a property (font size)
@@ -161,7 +161,7 @@ public:
     PropertyGridFontSizeProperty* AddFontSizeProperty(PropertyGridGroup* pGroup,
                                                       const DString& propertyName, 
                                                       const DString& propertyValue,
-                                                      const DString& description = _T(""),
+                                                      const DString& description = DUI_T(""),
                                                       size_t nPropertyData = 0);
 
     /** Add a property (color)
@@ -175,7 +175,7 @@ public:
     PropertyGridColorProperty* AddColorProperty(PropertyGridGroup* pGroup,
                                                 const DString& propertyName, 
                                                 const DString& propertyValue,
-                                                const DString& description = _T(""),
+                                                const DString& description = DUI_T(""),
                                                 size_t nPropertyData = 0);
 
     /** Add a property (date and time)
@@ -190,7 +190,7 @@ public:
     PropertyGridDateTimeProperty* AddDateTimeProperty(PropertyGridGroup* pGroup,
                                                       const DString& propertyName, 
                                                       const DString& dateTimeValue,                                                      
-                                                      const DString& description = _T(""),
+                                                      const DString& description = DUI_T(""),
                                                       size_t nPropertyData = 0,
                                                       DateTime::EditFormat editFormat = DateTime::EditFormat::kDateCalendar);
    
@@ -205,7 +205,7 @@ public:
     PropertyGridIPAddressProperty* AddIPAddressProperty(PropertyGridGroup* pGroup,
                                                         const DString& propertyName, 
                                                         const DString& propertyValue,
-                                                        const DString& description = _T(""),
+                                                        const DString& description = DUI_T(""),
                                                         size_t nPropertyData = 0);
 
     /** Add a property (hot key)
@@ -219,7 +219,7 @@ public:
     PropertyGridHotKeyProperty* AddHotKeyProperty(PropertyGridGroup* pGroup,
                                                   const DString& propertyName, 
                                                   const DString& propertyValue,
-                                                  const DString& description = _T(""),
+                                                  const DString& description = DUI_T(""),
                                                   size_t nPropertyData = 0);
 
     /** Add a property (file path)
@@ -237,12 +237,12 @@ public:
     PropertyGridFileProperty* AddFileProperty(PropertyGridGroup* pGroup,
                                               const DString& propertyName, 
                                               const DString& propertyValue,                                              
-                                              const DString& description = _T(""),
+                                              const DString& description = DUI_T(""),
                                               size_t nPropertyData = 0,
                                               bool bOpenFileDialog = true,
                                               const std::vector<FileDialog::FileType>& fileTypes = std::vector<FileDialog::FileType>(),
                                               int32_t nFileTypeIndex = -1,
-                                              const DString& defaultExt = _T(""));
+                                              const DString& defaultExt = DUI_T(""));
 
     /** Add a property (folder)
     * @param [in] pGroup The group to which the property belongs
@@ -255,7 +255,7 @@ public:
     PropertyGridDirectoryProperty* AddDirectoryProperty(PropertyGridGroup* pGroup,
                                                         const DString& propertyName, 
                                                         const DString& propertyValue,
-                                                        const DString& description = _T(""),
+                                                        const DString& description = DUI_T(""),
                                                         size_t nPropertyData = 0);
 
     /** Set the width of the left column
@@ -463,7 +463,7 @@ public:
     */
     explicit PropertyGridGroup(Window* pWindow,
                                const DString& groupName,
-                               const DString& description = _T(""),
+                               const DString& description = DUI_T(""),
                                size_t nGroupData = 0);
 
 public:
@@ -563,7 +563,7 @@ public:
     PropertyGridProperty(Window* pWindow, 
                          const DString& propertyName,
                          const DString& propertyValue,
-                         const DString& description = _T(""),
+                         const DString& description = DUI_T(""),
                          size_t nPropertyData = 0);
 
 public:
@@ -722,7 +722,7 @@ public:
     PropertyGridTextProperty(Window* pWindow,
                              const DString& propertyName,
                              const DString& propertyValue,
-                             const DString& description = _T(""),
+                             const DString& description = DUI_T(""),
                              size_t nPropertyData = 0);
 
 public:
@@ -797,7 +797,7 @@ public:
     PropertyGridComboProperty(Window* pWindow, 
                               const DString& propertyName,
                               const DString& propertyValue,
-                              const DString& description = _T(""),
+                              const DString& description = DUI_T(""),
                               size_t nPropertyData = 0);
 
 public:
@@ -903,7 +903,7 @@ public:
     PropertyGridFontProperty(Window* pWindow,
                              const DString& propertyName,
                              const DString& propertyValue,
-                             const DString& description = _T(""),
+                             const DString& description = DUI_T(""),
                              size_t nPropertyData = 0);
 
 public:
@@ -940,7 +940,7 @@ public:
     PropertyGridFontSizeProperty(Window* pWindow, 
                                  const DString& propertyName,
                                  const DString& propertyValue,
-                                 const DString& description = _T(""),
+                                 const DString& description = DUI_T(""),
                                  size_t nPropertyData = 0);
 
 public:
@@ -1001,7 +1001,7 @@ public:
     PropertyGridColorProperty(Window* pWindow, 
                               const DString& propertyName,
                               const DString& propertyValue,
-                              const DString& description = _T(""),
+                              const DString& description = DUI_T(""),
                               size_t nPropertyData = 0);
 
 
@@ -1066,7 +1066,7 @@ public:
     PropertyGridDateTimeProperty(Window* pWindow, 
                                  const DString& propertyName,
                                  const DString& dateTimeValue,
-                                 const DString& description = _T(""),
+                                 const DString& description = DUI_T(""),
                                  size_t nPropertyData = 0,
                                  DateTime::EditFormat editFormat = DateTime::EditFormat::kDateCalendar);
 
@@ -1122,7 +1122,7 @@ public:
     PropertyGridIPAddressProperty(Window* pWindow, 
                                   const DString& propertyName,
                                   const DString& propertyValue,
-                                  const DString& description = _T(""),
+                                  const DString& description = DUI_T(""),
                                   size_t nPropertyData = 0);
 
 
@@ -1174,7 +1174,7 @@ public:
     PropertyGridHotKeyProperty(Window* pWindow, 
                                const DString& propertyName,
                                const DString& propertyValue,
-                               const DString& description = _T(""),
+                               const DString& description = DUI_T(""),
                                size_t nPropertyData = 0);
 
 
@@ -1226,12 +1226,12 @@ public:
     PropertyGridFileProperty(Window* pWindow, 
                              const DString& propertyName,
                              const DString& propertyValue,
-                             const DString& description = _T(""),
+                             const DString& description = DUI_T(""),
                              size_t nPropertyData = 0,
                              bool bOpenFileDialog = true,
                              const std::vector<FileDialog::FileType>& fileTypes = std::vector<FileDialog::FileType>(),
                              int32_t nFileTypeIndex = -1,
-                             const DString& defaultExt = _T(""));
+                             const DString& defaultExt = DUI_T(""));
 
 
 protected:
@@ -1288,7 +1288,7 @@ public:
     PropertyGridDirectoryProperty(Window* pWindow, 
                                   const DString& propertyName,
                                   const DString& propertyValue,
-                                  const DString& description = _T(""),
+                                  const DString& description = DUI_T(""),
                                   size_t nPropertyData = 0);
 
 

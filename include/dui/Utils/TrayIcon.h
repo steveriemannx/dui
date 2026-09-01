@@ -49,7 +49,7 @@ public:
     * @param [in] tooltip Tray tooltip text
     * @return Pointer to the tray icon instance, or nullptr if creation fails
     */
-    static std::unique_ptr<TrayIcon> Create(const Window* pWindow, const DString& iconFilePath, const DString& tooltip = _T(""));
+    static std::unique_ptr<TrayIcon> Create(const Window* pWindow, const DString& iconFilePath, const DString& tooltip = DUI_T(""));
 
 public:
     /** Set the tray icon

@@ -16,7 +16,7 @@ namespace ui
 
 struct DirectoryTreeImpl::TImpl
 {
-    /** Handle of _T("Shell32.dll")
+    /** Handle of DUI_T("Shell32.dll")
     */
     HMODULE m_hShell32Dll = nullptr;
 
@@ -60,7 +60,7 @@ bool DirectoryTreeImpl::GetVirtualDirectoryInfo(VirtualDirectoryType type, FileP
     nIconID = 0;
 
     if (m_impl->m_hShell32Dll == nullptr) {
-        m_impl->m_hShell32Dll = ::LoadLibrary(_T("Shell32.dll"));
+        m_impl->m_hShell32Dll = ::LoadLibrary(DUI_T("Shell32.dll"));
     }
     if (m_impl->m_hShell32Dll == nullptr) {
         return false;
@@ -128,7 +128,7 @@ bool DirectoryTreeImpl::GetVirtualDirectoryInfo(VirtualDirectoryType type, FileP
         pfnSHGetKnownFolderIDList(fid, 0, nullptr, &lpPidl);
     }
 
-    if (folder[0] == _T('\0')) {
+    if (folder[0] == DUI_T('\0')) {
         if (csidl < 0) {
             return false;
         }
@@ -187,8 +187,8 @@ void DirectoryTreeImpl::GetRootPathInfoList(bool bLargeIcon, std::vector<Directo
     for (auto iter = driveList.begin(); iter != driveList.end(); ++iter) {
         DString driverName = *iter;
         // Filter out the A: and B: drives
-        if (StringUtil::IsEqualNoCase(driverName, _T("A:\\")) ||
-            StringUtil::IsEqualNoCase(driverName, _T("B:\\"))) {
+        if (StringUtil::IsEqualNoCase(driverName, DUI_T("A:\\")) ||
+            StringUtil::IsEqualNoCase(driverName, DUI_T("B:\\"))) {
             continue;
         }
 
@@ -283,7 +283,7 @@ void DirectoryTreeImpl::GetFolderContents(const FilePath& path,
     if (fileList != nullptr) {
         fileList->clear();
     }
-    FilePath findPath = FilePathUtil::JoinFilePath(path, FilePath(_T("*.*")));
+    FilePath findPath = FilePathUtil::JoinFilePath(path, FilePath(DUI_T("*.*")));
     WIN32_FIND_DATAW findData;
     HANDLE hFile = ::FindFirstFileW(findPath.ToStringW().c_str(), &findData);
     if (hFile == INVALID_HANDLE_VALUE) {
@@ -396,7 +396,7 @@ bool DirectoryTreeImpl::NeedShowDirPath(const FilePath& path) const
     if (path.NativePath().size() == 3) {
         DString s = path.NativePath();
         if (s.size() == 3) {
-            if (((s[0] >= _T('C')) || (s[0] <= _T('Z'))) && (s[1] == _T(':')) && (s[2]) == _T('\\')) {
+            if (((s[0] >= DUI_T('C')) || (s[0] <= DUI_T('Z'))) && (s[1] == DUI_T(':')) && (s[2]) == DUI_T('\\')) {
                 //Root directory, always show it because the subsequent logic is not correct for it
                 return true;
             }
@@ -437,7 +437,7 @@ static HICON GetMyComputerIcon_Windows()
     ILFree(pidl);
     if (hMyComputerIcon == nullptr) {
         SHFILEINFO sfi = { 0 };
-        if (::SHGetFileInfo(_T("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"),
+        if (::SHGetFileInfo(DUI_T("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"),
             FILE_ATTRIBUTE_DIRECTORY, &sfi, sizeof(sfi),
             SHGFI_ICON | SHGFI_USEFILEATTRIBUTES | SHGFI_LARGEICON)) {
             hMyComputerIcon = sfi.hIcon;

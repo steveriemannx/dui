@@ -23,8 +23,8 @@ ListCtrlIconView::~ListCtrlIconView()
 
 void ListCtrlIconView::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("horizontal_layout")) {
-        SetHorizontalLayout(strValue == _T("true"));
+    if (strName == DUI_T("horizontal_layout")) {
+        SetHorizontalLayout(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -267,7 +267,7 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
         pItemLabel->SetText(pSubItemData->text.c_str());
     }
     else {
-        pItemLabel->SetText(_T(""));
+        pItemLabel->SetText(DUI_T(""));
     }
 
     //Set attributes such as not getting focus

@@ -66,116 +66,116 @@ inline void ApplyWindowAttrs(Window* window, std::initializer_list<UiAttr> attrs
     for (const auto& attr : attrs) {
         const DString& name = attr.name;
         const DString& value = attr.value;
-        if (name == _T("render_backend_type")) {
+        if (name == DUI_T("render_backend_type")) {
             RenderBackendType backend = RenderBackendType::kRaster_BackendType;
-            if (StringUtil::IsEqualNoCase(value, _T("GL")) || StringUtil::IsEqualNoCase(value, _T("GPU"))) {
+            if (StringUtil::IsEqualNoCase(value, DUI_T("GL")) || StringUtil::IsEqualNoCase(value, DUI_T("GPU"))) {
                 backend = RenderBackendType::kNativeGL_BackendType;
             }
-            else if (StringUtil::IsEqualNoCase(value, _T("Metal"))) {
+            else if (StringUtil::IsEqualNoCase(value, DUI_T("Metal"))) {
                 backend = RenderBackendType::kMetal_BackendType;
             }
             window->SetRenderBackendType(backend);
         }
-        else if (name == _T("min_size") || name == _T("mininfo")) {
+        else if (name == DUI_T("min_size") || name == DUI_T("mininfo")) {
             UiSize size;
             AttributeUtil::ParseSizeValue(value.c_str(), size);
             window->SetWindowMinimumSize(size, true);
         }
-        else if (name == _T("max_size") || name == _T("maxinfo")) {
+        else if (name == DUI_T("max_size") || name == DUI_T("maxinfo")) {
             UiSize size;
             AttributeUtil::ParseSizeValue(value.c_str(), size);
             window->SetWindowMaximumSize(size, true);
         }
-        else if (name == _T("use_system_caption")) {
-            window->SetUseSystemCaption(value == _T("true"));
+        else if (name == DUI_T("use_system_caption")) {
+            window->SetUseSystemCaption(value == DUI_T("true"));
         }
-        else if (name == _T("size_box") || name == _T("sizebox")) {
+        else if (name == DUI_T("size_box") || name == DUI_T("sizebox")) {
             UiRect rect;
             AttributeUtil::ParseRectValue(value.c_str(), rect, false);
             window->SetSizeBox(rect, true);
         }
-        else if (name == _T("caption")) {
+        else if (name == DUI_T("caption")) {
             UiRect rect;
             AttributeUtil::ParseRectValue(value.c_str(), rect);
             window->SetCaptionRect(rect, true);
         }
-        else if (name == _T("snap_layout_menu")) {
-            window->SetEnableSnapLayoutMenu(value == _T("true"));
+        else if (name == DUI_T("snap_layout_menu")) {
+            window->SetEnableSnapLayoutMenu(value == DUI_T("true"));
         }
-        else if (name == _T("sys_menu")) {
-            window->SetEnableSysMenu(value == _T("true"));
+        else if (name == DUI_T("sys_menu")) {
+            window->SetEnableSysMenu(value == DUI_T("true"));
         }
-        else if (name == _T("sys_menu_rect")) {
+        else if (name == DUI_T("sys_menu_rect")) {
             UiRect rect;
             AttributeUtil::ParseRectValue(value.c_str(), rect);
             window->SetSysMenuRect(rect, true);
         }
-        else if (name == _T("icon")) {
+        else if (name == DUI_T("icon")) {
             window->SetWindowIcon(value);
         }
-        else if (name == _T("text")) {
+        else if (name == DUI_T("text")) {
             window->SetText(value);
         }
-        else if (name == _T("text_id") || name == _T("textid")) {
+        else if (name == DUI_T("text_id") || name == DUI_T("textid")) {
             window->SetTextId(value);
         }
-        else if (name == _T("round_corner") || name == _T("roundcorner")) {
+        else if (name == DUI_T("round_corner") || name == DUI_T("roundcorner")) {
             UiSize size;
             AttributeUtil::ParseSizeValue(value.c_str(), size);
             window->SetRoundCorner(size.cx, size.cy, true);
         }
-        else if (name == _T("alpha_fix_corner") || name == _T("alphafixcorner")) {
+        else if (name == DUI_T("alpha_fix_corner") || name == DUI_T("alphafixcorner")) {
             UiRect rect;
             AttributeUtil::ParseRectValue(value.c_str(), rect);
             window->SetAlphaFixCorner(rect, true);
         }
-        else if (name == _T("shadow_attached") || name == _T("shadowattached")) {
+        else if (name == DUI_T("shadow_attached") || name == DUI_T("shadowattached")) {
             hasShadowAttached = true;
-            shadowAttached = value == _T("true");
+            shadowAttached = value == DUI_T("true");
         }
-        else if (name == _T("shadow_type")) {
+        else if (name == DUI_T("shadow_type")) {
             Shadow::ShadowType shadowType = Shadow::ShadowType::kShadowCount;
             if (Shadow::GetShadowType(value, shadowType)) {
                 window->SetShadowType(shadowType);
             }
         }
-        else if (name == _T("shadow_image") || name == _T("shadowimage")) {
+        else if (name == DUI_T("shadow_image") || name == DUI_T("shadowimage")) {
             window->SetShadowImage(value);
         }
-        else if (name == _T("shadow_corner") || name == _T("shadowcorner")) {
+        else if (name == DUI_T("shadow_corner") || name == DUI_T("shadowcorner")) {
             UiPadding padding;
             AttributeUtil::ParsePaddingValue(value.c_str(), padding);
             window->SetShadowCorner(padding);
         }
-        else if (name == _T("shadow_border_round")) {
+        else if (name == DUI_T("shadow_border_round")) {
             UiSize size;
             AttributeUtil::ParseSizeValue(value.c_str(), size);
             window->SetShadowBorderRound(size);
         }
-        else if (name == _T("shadow_border_size")) {
+        else if (name == DUI_T("shadow_border_size")) {
             window->SetShadowBorderSize(StringUtil::StringToInt32(value));
         }
-        else if (name == _T("shadow_border_color")) {
+        else if (name == DUI_T("shadow_border_color")) {
             window->SetShadowBorderColor(value);
         }
-        else if (name == _T("shadow_snap")) {
-            window->SetEnableShadowSnap(value == _T("true"));
+        else if (name == DUI_T("shadow_snap")) {
+            window->SetEnableShadowSnap(value == DUI_T("true"));
         }
-        else if (name == _T("layered_window") || name == _T("layeredwindow")) {
+        else if (name == DUI_T("layered_window") || name == DUI_T("layeredwindow")) {
             if (!window->IsUseSystemCaption()) {
-                window->SetLayeredWindow(value == _T("true"), false);
+                window->SetLayeredWindow(value == DUI_T("true"), false);
             }
         }
-        else if (name == _T("alpha")) {
+        else if (name == DUI_T("alpha")) {
             window->SetLayeredWindowAlpha(StringUtil::StringToInt32(value));
         }
-        else if (name == _T("opacity")) {
+        else if (name == DUI_T("opacity")) {
             window->SetLayeredWindowOpacity(StringUtil::StringToInt32(value));
         }
-        else if (name == _T("drag_drop")) {
-            window->SetEnableDragDrop(value == _T("true"));
+        else if (name == DUI_T("drag_drop")) {
+            window->SetEnableDragDrop(value == DUI_T("true"));
         }
-        else if (name == _T("size")) {
+        else if (name == DUI_T("size")) {
             hasWindowSize = true;
             UiSize size;
             bool scaledCX = false;
@@ -186,7 +186,7 @@ inline void ApplyWindowAttrs(Window* window, std::initializer_list<UiAttr> attrs
                                            &scaledCX, &scaledCY, &percentCX, &percentCY);
             window->SetWindowSize(size.cx, size.cy);
         }
-        else if (name == _T("position") || name == _T("pos")) {
+        else if (name == DUI_T("position") || name == DUI_T("pos")) {
             hasWindowPosition = true;
             AttributeUtil::ParsePointValue(value.c_str(), windowPosition);
         }
@@ -264,7 +264,7 @@ inline Box* Attach(Window* w, Box* root)
 }
 
 /** Typed control lookup. Eliminates the usual dynamic_cast + null-check boilerplate:
- *      if (auto* btn = ui::Find<ui::Button>(this, _T("hello_btn"))) { ... }
+ *      if (auto* btn = ui::Find<ui::Button>(this, DUI_T("hello_btn"))) { ... }
  */
 template <class T>
 T* Find(Window* w, const DString& name)
@@ -305,16 +305,16 @@ inline int RunWindow(const DString& title, std::function<void(WindowImplBase*)> 
     {
     public:
         WindowApp(const DString& t, std::function<void(WindowImplBase*)> f)
-            : FrameworkThread(_T("App"), kThreadUI), m_title(t), m_init(std::move(f)) {}
+            : FrameworkThread(DUI_T("App"), kThreadUI), m_title(t), m_init(std::move(f)) {}
         void Run() { RunMessageLoop(); }
     protected:
         void OnInit() override
         {
             FilePath resourcePath = FilePathUtil::GetCurrentModuleDirectory();
-            resourcePath += _T("resources\\");
+            resourcePath += DUI_T("resources\\");
 
             if (!GlobalManager::Instance().Startup(LocalFilesResParam(resourcePath))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to load resources from the repository."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to load resources from the repository."), DUI_T("dui"));
                 return;
             }
 
@@ -324,7 +324,7 @@ inline int RunWindow(const DString& title, std::function<void(WindowImplBase*)> 
                 return true;
             });
             if (!window->CreateWnd(nullptr, WindowCreateParam(m_title, true))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to create the window."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to create the window."), DUI_T("dui"));
                 delete window;
                 return;
             }
@@ -350,9 +350,9 @@ inline int RunWindow(const DString& title, std::function<void(WindowImplBase*)> 
 /** Named options for the XML window entry.  Clearer than three positional parameters:
  *
  *      DUI_XML_APP(ui::XmlWindowOptions()
- *          .Title(_T("basic"))
- *          .SkinFolder(_T("basic"))
- *          .SkinFile(_T("basic.xml")))
+ *          .Title(DUI_T("basic"))
+ *          .SkinFolder(DUI_T("basic"))
+ *          .SkinFile(DUI_T("basic.xml")))
  */
 struct XmlWindowOptions
 {
@@ -372,7 +372,7 @@ struct XmlWindowOptions
 /** Startup an XML-defined window directly, without writing a MainForm subclass.
  *  This is the “Qt-like minimal” entry for XML-mode examples:
  *
- *      DUI_XML_APP(_T("Hello"), _T("hello"), _T("hello.xml"))
+ *      DUI_XML_APP(DUI_T("Hello"), DUI_T("hello"), DUI_T("hello.xml"))
  */
 inline int RunXml(const DString& title, const DString& skinFolder, const DString& skinFile)
 {
@@ -380,23 +380,23 @@ inline int RunXml(const DString& title, const DString& skinFolder, const DString
     {
     public:
         XmlApp(const DString& t, const DString& folder, const DString& file)
-            : FrameworkThread(_T("App"), kThreadUI), m_title(t), m_folder(folder), m_file(file) {}
+            : FrameworkThread(DUI_T("App"), kThreadUI), m_title(t), m_folder(folder), m_file(file) {}
         void Run() { RunMessageLoop(); }
     protected:
         void OnInit() override
         {
             FilePath resourcePath = FilePathUtil::GetCurrentModuleDirectory();
-            resourcePath += _T("resources\\");
+            resourcePath += DUI_T("resources\\");
 
             if (!GlobalManager::Instance().Startup(LocalFilesResParam(resourcePath))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to load resources from the repository."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to load resources from the repository."), DUI_T("dui"));
                 return;
             }
 
             WindowImplBase* window = new WindowImplBase();
             window->InitSkin(m_folder, m_file);
             if (!window->CreateWnd(nullptr, WindowCreateParam(m_title, true))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to create the window."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to create the window."), DUI_T("dui"));
                 delete window;
                 return;
             }
@@ -434,7 +434,7 @@ int RunXml(const DString& title)
     {
     public:
         explicit XmlWindowApp(const DString& t)
-            : FrameworkThread(_T("App"), kThreadUI), m_title(t) {}
+            : FrameworkThread(DUI_T("App"), kThreadUI), m_title(t) {}
 
         void Run() { RunMessageLoop(); }
 
@@ -442,15 +442,15 @@ int RunXml(const DString& title)
         void OnInit() override
         {
             FilePath resourcePath = FilePathUtil::GetCurrentModuleDirectory();
-            resourcePath += _T("resources\\");
+            resourcePath += DUI_T("resources\\");
             if (!GlobalManager::Instance().Startup(LocalFilesResParam(resourcePath))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to load resources from the repository."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to load resources from the repository."), DUI_T("dui"));
                 return;
             }
 
             WindowT* window = new WindowT();
             if (!window->CreateWnd(nullptr, WindowCreateParam(m_title, true))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to create the window."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to create the window."), DUI_T("dui"));
                 delete window;
                 return;
             }
@@ -476,7 +476,7 @@ int RunXml(const DString& title)
  *  This removes the repetitive App/FrameworkThread boilerplate from examples:
  *
  *      #include "dui/Utils/UiBuilder.h"
- *      DUI_SIMPLE_APP(MainForm, _T("Hello"))
+ *      DUI_SIMPLE_APP(MainForm, DUI_T("Hello"))
  */
 template <class WindowT>
 int Run(const DString& title, const std::function<void(WindowT*)>& idleCallback = nullptr)
@@ -485,25 +485,25 @@ int Run(const DString& title, const std::function<void(WindowT*)>& idleCallback 
     {
     public:
         SimpleApp(const DString& t, const std::function<void(WindowT*)>& callback)
-            : FrameworkThread(_T("App"), kThreadUI), m_title(t), m_idleCallback(callback) {}
+            : FrameworkThread(DUI_T("App"), kThreadUI), m_title(t), m_idleCallback(callback) {}
         void Run() { RunMessageLoop(m_idleCallback != nullptr); }
     protected:
         void OnInit() override
         {
             FilePath resourcePath = FilePathUtil::GetCurrentModuleDirectory();
-            resourcePath += _T("resources\\");
+            resourcePath += DUI_T("resources\\");
 
             LocalFilesResParam resParam(resourcePath);
 
             if (!GlobalManager::Instance().Startup(resParam)) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to load resources from the repository."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to load resources from the repository."), DUI_T("dui"));
                 return;
             }
 
             WindowT* window = new WindowT();
             m_window = window;
             if (!window->CreateWnd(nullptr, WindowCreateParam(m_title, true))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to create the window."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to create the window."), DUI_T("dui"));
                 delete window;
                 m_window = nullptr;
                 return;
@@ -544,21 +544,21 @@ int RunMemory(const DString& title, const uint8_t* data, size_t size,
     public:
         MemoryApp(const DString& t, const uint8_t* d, size_t s,
                   const std::function<void(WindowT*)>& callback)
-            : FrameworkThread(_T("App"), kThreadUI), m_title(t), m_data(d), m_size(s),
+            : FrameworkThread(DUI_T("App"), kThreadUI), m_title(t), m_data(d), m_size(s),
               m_idleCallback(callback) {}
         void Run() { RunMessageLoop(m_idleCallback != nullptr); }
     protected:
         void OnInit() override
         {
             if (!GlobalManager::Instance().Startup(MemoryResParam(m_data, m_size))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to load embedded resources."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to load embedded resources."), DUI_T("dui"));
                 return;
             }
 
             WindowT* window = new WindowT();
             m_window = window;
             if (!window->CreateWnd(nullptr, WindowCreateParam(m_title, true))) {
-                SystemUtil::ShowMessageBox(nullptr, _T("Failed to create the window."), _T("dui"));
+                SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to create the window."), DUI_T("dui"));
                 delete window;
                 m_window = nullptr;
                 return;

@@ -185,19 +185,19 @@ void ColorControl::OnSelectPosChanged(const UiRect& rect, const UiPoint& pt)
     //    void* pPixelBits = m_spBitmap->LockPixelBits();
     //    if (pPixelBits != nullptr) {
     //        uint32_t* pData = (uint32_t*)pPixelBits;
-    //        ::OutputDebugString(_T("\n"));
+    //        ::OutputDebugString(DUI_T("\n"));
     //        for (int32_t nRow = 0; nRow < nHeight; ++nRow) {
     //            for (int32_t nColumn = 0; nColumn < nWidth; ++nColumn) {
     //                int32_t index = nRow * nWidth + nColumn;
     //                uint32_t colorData = pData[index];
     //                UiColor color = UiColor(colorData);
     //                color = UiColor(color.GetR(), color.GetG(), color.GetB());
-    //                DString strColor = StringUtil::Printf(_T("#%02X%02X%02X "), color.GetR(), color.GetG(), color.GetB());
+    //                DString strColor = StringUtil::Printf(DUI_T("#%02X%02X%02X "), color.GetR(), color.GetG(), color.GetB());
     //                ::OutputDebugString(strColor.c_str());
     //            }
-    //            ::OutputDebugString(_T("\n"));
+    //            ::OutputDebugString(DUI_T("\n"));
     //        }
-    //        ::OutputDebugString(_T("\n"));
+    //        ::OutputDebugString(DUI_T("\n"));
     //    }
     //}
     ////

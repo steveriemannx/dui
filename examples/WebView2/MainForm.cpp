@@ -83,26 +83,26 @@ bool MainForm::OnClicked(const ui::EventArgs& msg)
 {
     DString name = msg.GetSender()->GetName();
 
-    if (name == _T("btn_dev_tool")) {
+    if (name == DUI_T("btn_dev_tool")) {
         if (m_pWebView2Control != nullptr) {
             m_pWebView2Control->OpenDevToolsWindow();
         }
     }
-    else if (name == _T("btn_back")) {
+    else if (name == DUI_T("btn_back")) {
         if (m_pWebView2Control != nullptr) {
             m_pWebView2Control->NavigateBack();
         }
     }
-    else if (name == _T("btn_forward")) {
+    else if (name == DUI_T("btn_forward")) {
         if (m_pWebView2Control != nullptr) {
             m_pWebView2Control->NavigateForward();
         }
     }
-    else if (name == _T("btn_navigate")) {
+    else if (name == DUI_T("btn_navigate")) {
         ui::EventArgs emptyMsg;
         OnNavigate(emptyMsg);
     }
-    else if (name == _T("btn_refresh")) {
+    else if (name == DUI_T("btn_refresh")) {
         if (m_pWebView2Control != nullptr) {
             m_pWebView2Control->Refresh();
         }

@@ -397,9 +397,9 @@ RichEdit::~RichEdit()
 
 void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("vscrollbar")) {
+    if (strName == DUI_T("vscrollbar")) {
         //Vertical scrollbar
-        if (strValue == _T("true")) {
+        if (strValue == DUI_T("true")) {
             EnableScrollBar(true, GetHScrollBar() != nullptr);
             if (m_pRichHost != nullptr) {
                 m_pRichHost->SetVScrollBar(true);
@@ -412,9 +412,9 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
             }
         }
     }
-    else if (strName == _T("hscrollbar")) {
+    else if (strName == DUI_T("hscrollbar")) {
         //Horizontal scrollbar
-        if (strValue == _T("true")) {
+        if (strValue == DUI_T("true")) {
             EnableScrollBar(GetVScrollBar() != nullptr, true);
             if (m_pRichHost != nullptr) {
                 m_pRichHost->SetHScrollBar(true);
@@ -427,174 +427,174 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
             }
         }
     }
-    else if ((strName == _T("single_line")) || (strName == _T("singleline"))) {
-        SetMultiLine(strValue != _T("true"));
+    else if ((strName == DUI_T("single_line")) || (strName == DUI_T("singleline"))) {
+        SetMultiLine(strValue != DUI_T("true"));
     }
-    else if ((strName == _T("multi_line")) || (strName == _T("multiline"))) {
-        SetMultiLine(strValue == _T("true"));
+    else if ((strName == DUI_T("multi_line")) || (strName == DUI_T("multiline"))) {
+        SetMultiLine(strValue == DUI_T("true"));
     }
-    else if (strName == _T("readonly")) {
-        SetReadOnly(strValue == _T("true"));
+    else if (strName == DUI_T("readonly")) {
+        SetReadOnly(strValue == DUI_T("true"));
     }
-    else if (strName == _T("password")) {
-        SetPasswordMode(strValue == _T("true"));
+    else if (strName == DUI_T("password")) {
+        SetPasswordMode(strValue == DUI_T("true"));
     }
-    else if (strName == _T("show_password")) {
-        SetShowPassword(strValue == _T("true"));
+    else if (strName == DUI_T("show_password")) {
+        SetShowPassword(strValue == DUI_T("true"));
     }
-    else if (strName == _T("password_char")) {
+    else if (strName == DUI_T("password_char")) {
         if (!strValue.empty()) {
             SetPasswordChar(strValue.front());
         }
     }
-    else if (strName == _T("flash_password_char")) {
-        SetFlashPasswordChar(strValue == _T("true"));
+    else if (strName == DUI_T("flash_password_char")) {
+        SetFlashPasswordChar(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("number_only")) || (strName == _T("number"))) {
-        SetNumberOnly(strValue == _T("true"));
+    else if ((strName == DUI_T("number_only")) || (strName == DUI_T("number"))) {
+        SetNumberOnly(strValue == DUI_T("true"));
     }
-    else if (strName == _T("max_number")) {
+    else if (strName == DUI_T("max_number")) {
         SetMaxNumber(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("min_number")) {
+    else if (strName == DUI_T("min_number")) {
         SetMinNumber(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("number_format")) {
+    else if (strName == DUI_T("number_format")) {
         SetNumberFormat64(strValue);
     }
-    else if (strName == _T("text_align")) {
+    else if (strName == DUI_T("text_align")) {
         //Horizontal alignment
-        if (strValue.find(_T("left")) != DString::npos) {
+        if (strValue.find(DUI_T("left")) != DString::npos) {
             SetTextHAlignType(HorAlignType::kAlignLeft);
         }        
-        else if (strValue.find(_T("hcenter")) != DString::npos) {
+        else if (strValue.find(DUI_T("hcenter")) != DString::npos) {
             SetTextHAlignType(HorAlignType::kAlignCenter);
         }
-        else if (strValue.find(_T("right")) != DString::npos) {
+        else if (strValue.find(DUI_T("right")) != DString::npos) {
             SetTextHAlignType(HorAlignType::kAlignRight);
         }
 
         //Vertical alignment
-        if (strValue.find(_T("top")) != DString::npos) {
+        if (strValue.find(DUI_T("top")) != DString::npos) {
             SetTextVAlignType(VerAlignType::kAlignTop);
         }        
-        else if (strValue.find(_T("vcenter")) != DString::npos) {
+        else if (strValue.find(DUI_T("vcenter")) != DString::npos) {
             SetTextVAlignType(VerAlignType::kAlignCenter);
         }
-        else if (strValue.find(_T("bottom")) != DString::npos) {
+        else if (strValue.find(DUI_T("bottom")) != DString::npos) {
             SetTextVAlignType(VerAlignType::kAlignBottom);
         }
     }
-    else if ((strName == _T("text_padding")) || (strName == _T("textpadding"))) {
+    else if ((strName == DUI_T("text_padding")) || (strName == DUI_T("textpadding"))) {
         UiPadding rcTextPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcTextPadding);
         SetTextPadding(rcTextPadding, true);
     }
-    else if ((strName == _T("text_color")) || (strName == _T("normal_text_color")) || (strName == _T("normaltextcolor"))) {
+    else if ((strName == DUI_T("text_color")) || (strName == DUI_T("normal_text_color")) || (strName == DUI_T("normaltextcolor"))) {
         SetTextColor(strValue);
     }
-    else if ((strName == _T("disabled_text_color")) || (strName == _T("disabledtextcolor"))) {
+    else if ((strName == DUI_T("disabled_text_color")) || (strName == DUI_T("disabledtextcolor"))) {
         SetDisabledTextColor(strValue);
     }
-    else if ((strName == _T("caret_color")) || (strName == _T("caretcolor"))) {
+    else if ((strName == DUI_T("caret_color")) || (strName == DUI_T("caretcolor"))) {
         //Set the caret color
         SetCaretColor(strValue);
     }
-    else if ((strName == _T("prompt_mode")) || (strName == _T("promptmode"))) {
+    else if ((strName == DUI_T("prompt_mode")) || (strName == DUI_T("promptmode"))) {
         //Prompt mode
-        m_bAllowPrompt = (strValue == _T("true")) ? true : false;
+        m_bAllowPrompt = (strValue == DUI_T("true")) ? true : false;
     }
-    else if ((strName == _T("prompt_color")) || (strName == _T("promptcolor"))) {
+    else if ((strName == DUI_T("prompt_color")) || (strName == DUI_T("promptcolor"))) {
         //Prompt text color
         m_sPromptColor = strValue;
     }
-    else if ((strName == _T("prompt_text")) || (strName == _T("prompttext"))) {
+    else if ((strName == DUI_T("prompt_text")) || (strName == DUI_T("prompttext"))) {
         //Prompt text
         SetPromptText(strValue);
     }
-    else if ((strName == _T("prompt_text_id")) || (strName == _T("prompt_textid")) || (strName == _T("prompttextid"))) {
+    else if ((strName == DUI_T("prompt_text_id")) || (strName == DUI_T("prompt_textid")) || (strName == DUI_T("prompttextid"))) {
         //Prompt text ID
         SetPromptTextId(strValue);
     }
-    else if ((strName == _T("focused_image")) || (strName == _T("focusedimage"))) {
+    else if ((strName == DUI_T("focused_image")) || (strName == DUI_T("focusedimage"))) {
         SetFocusedImage(strValue);
     }
-    else if (strName == _T("font")) {
+    else if (strName == DUI_T("font")) {
         SetFontId(strValue);
     }
-    else if (strName == _T("text")) {
+    else if (strName == DUI_T("text")) {
         SetText(strValue);
     }
-    else if ((strName == _T("text_id")) || (strName == _T("textid"))) {
+    else if ((strName == DUI_T("text_id")) || (strName == DUI_T("textid"))) {
         SetTextId(strValue);
     }
-    else if ((strName == _T("want_tab")) || (strName == _T("wanttab"))) {
-        SetWantTab(strValue == _T("true"));
+    else if ((strName == DUI_T("want_tab")) || (strName == DUI_T("wanttab"))) {
+        SetWantTab(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("want_return")) || (strName == _T("want_return_msg")) || (strName == _T("wantreturnmsg"))) {
-        SetWantReturn(strValue == _T("true"));
+    else if ((strName == DUI_T("want_return")) || (strName == DUI_T("want_return_msg")) || (strName == DUI_T("wantreturnmsg"))) {
+        SetWantReturn(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("want_ctrl_return")) || (strName == _T("return_msg_want_ctrl")) || (strName == _T("returnmsgwantctrl"))) {
-        SetWantCtrlReturn(strValue == _T("true"));
+    else if ((strName == DUI_T("want_ctrl_return")) || (strName == DUI_T("return_msg_want_ctrl")) || (strName == DUI_T("returnmsgwantctrl"))) {
+        SetWantCtrlReturn(strValue == DUI_T("true"));
     }
-    else if ((strName == _T("limit_text")) || (strName == _T("max_char")) || (strName == _T("maxchar"))) {
+    else if ((strName == DUI_T("limit_text")) || (strName == DUI_T("max_char")) || (strName == DUI_T("maxchar"))) {
         //Limit the maximum number of characters
         SetLimitText(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("limit_chars")) {
+    else if (strName == DUI_T("limit_chars")) {
         //Restrict which characters can be entered
         SetLimitChars(strValue);
     }
-    else if (strName == _T("word_wrap")) {
+    else if (strName == DUI_T("word_wrap")) {
         //Whether to wrap automatically
-        SetWordWrap(strValue == _T("true"));
+        SetWordWrap(strValue == DUI_T("true"));
     }
-    else if (strName == _T("no_caret_readonly")) {
+    else if (strName == DUI_T("no_caret_readonly")) {
         //Read-only mode, do not show the caret
         SetNoCaretReadonly();
     }
-    else if (strName == _T("default_context_menu")) {
+    else if (strName == DUI_T("default_context_menu")) {
         //Whether to use the default right-click menu
-        SetEnableDefaultContextMenu(strValue == _T("true"));
+        SetEnableDefaultContextMenu(strValue == DUI_T("true"));
     }
-    else if (strName == _T("spin_class")) {
+    else if (strName == DUI_T("spin_class")) {
         SetSpinClass(strValue);
     }
-    else if (strName == _T("clear_btn_class")) {
+    else if (strName == DUI_T("clear_btn_class")) {
         SetClearBtnClass(strValue);
     }
-    else if (strName == _T("show_passowrd_btn_class")) {
+    else if (strName == DUI_T("show_passowrd_btn_class")) {
         SetShowPasswordBtnClass(strValue);
     }
-    else if (strName == _T("wheel_zoom")) {
+    else if (strName == DUI_T("wheel_zoom")) {
         //Set whether Ctrl + mouse wheel is allowed to adjust the zoom ratio
-        SetEnableWheelZoom(strValue == _T("true"));
+        SetEnableWheelZoom(strValue == DUI_T("true"));
     }
-    else if (strName == _T("hide_selection")) {
+    else if (strName == DUI_T("hide_selection")) {
         //Whether to hide the selection
-        SetHideSelection(strValue == _T("true"));
+        SetHideSelection(strValue == DUI_T("true"));
     }
-    else if (strName == _T("focus_bottom_border_size")) {
+    else if (strName == DUI_T("focus_bottom_border_size")) {
         //Size of the bottom border when focused
         SetFocusBottomBorderSize(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("focus_bottom_border_color")) {
+    else if (strName == DUI_T("focus_bottom_border_color")) {
         //Color of the bottom border when focused
         SetFocusBottomBorderColor(strValue);
     }
-    else if (strName == _T("select_all_on_focus")) {
+    else if (strName == DUI_T("select_all_on_focus")) {
         //Whether to select all when gaining focus
-        SetSelAllOnFocus(strValue == _T("true"));
+        SetSelAllOnFocus(strValue == DUI_T("true"));
     }
-    else if (strName == _T("row_spacing_mul")) {
+    else if (strName == DUI_T("row_spacing_mul")) {
         SetRowSpacingMul(StringUtil::StringToFloat(strValue.c_str(), nullptr));
     }
-    else if (strName == _T("row_spacing_add")) {
+    else if (strName == DUI_T("row_spacing_add")) {
         //This property is not supported, ignore it
     }
 
 #ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
-    else if (strName == _T("zoom")) {
+    else if (strName == DUI_T("zoom")) {
         //Zoom ratio:
         //Set the zoom ratio: wParam is the numerator of the zoom ratio, lParam is the denominator of the zoom ratio,
         // "wParam,lParam" means display scaled by the numerator/denominator of the zoom ratio, valid range: 1/64 < (wParam / lParam) < 64.
@@ -606,38 +606,38 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
             m_richCtrl.SetZoom(zoomValue.cx, zoomValue.cy);
         }
     }    
-    else if ((strName == _T("auto_vscroll")) || (strName == _T("autovscroll"))) {
+    else if ((strName == DUI_T("auto_vscroll")) || (strName == DUI_T("autovscroll"))) {
         //When the user presses ENTER on the last line, automatically scroll the text up by one page.
         if (m_pRichHost != nullptr) {
-            m_pRichHost->SetAutoVScroll(strValue == _T("true"));
+            m_pRichHost->SetAutoVScroll(strValue == DUI_T("true"));
         }
     }
-    else if ((strName == _T("auto_hscroll")) || (strName == _T("autohscroll"))) {
+    else if ((strName == DUI_T("auto_hscroll")) || (strName == DUI_T("autohscroll"))) {
         //When the user types a character at the end of a line, automatically scroll the text to the right by 10 characters.
         //When the user presses Enter, the control scrolls all text back to the zero position.
         if (m_pRichHost != nullptr) {
-            m_pRichHost->SetAutoHScroll(strValue == _T("true"));
+            m_pRichHost->SetAutoHScroll(strValue == DUI_T("true"));
         }
     }
-    else if ((strName == _T("rich_text")) || (strName == _T("rich"))) {
+    else if ((strName == DUI_T("rich_text")) || (strName == DUI_T("rich"))) {
         //Whether the rich text property is enabled
-        SetRichText(strValue == _T("true"));
+        SetRichText(strValue == DUI_T("true"));
     }
-    else if (strName == _T("auto_detect_url")) {
+    else if (strName == DUI_T("auto_detect_url")) {
         //Whether to auto-detect URLs; if it is a URL, display it as a hyperlink
-        SetAutoURLDetect(strValue == _T("true"));
+        SetAutoURLDetect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("allow_beep")) {
+    else if (strName == DUI_T("allow_beep")) {
         //Whether to allow beep sounds
-        SetAllowBeep(strValue == _T("true"));
+        SetAllowBeep(strValue == DUI_T("true"));
     }
-    else if (strName == _T("save_selection")) {
+    else if (strName == DUI_T("save_selection")) {
         //If TRUE, the boundaries of the selection should be saved when the control is inactive.
         //If FALSE, when the control becomes active again, the selection boundaries can be reset to start = 0, length = 0.
-        SetSaveSelection(strValue == _T("true"));
+        SetSaveSelection(strValue == DUI_T("true"));
     }    
 #else
-    else if (strName == _T("zoom")) {
+    else if (strName == DUI_T("zoom")) {
         //Zoom ratio:
         //Set the zoom ratio: wParam is the numerator of the zoom ratio, lParam is the denominator of the zoom ratio,
         // "wParam,lParam" means display scaled by the numerator/denominator of the zoom ratio, valid range: 1/64 < (wParam / lParam) < 64.
@@ -649,46 +649,46 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
         //    m_richCtrl.SetZoom(zoomValue.cx, zoomValue.cy);
         //}
     }    
-    else if ((strName == _T("auto_vscroll")) || (strName == _T("autovscroll"))) {
+    else if ((strName == DUI_T("auto_vscroll")) || (strName == DUI_T("autovscroll"))) {
         //When the user presses ENTER on the last line, automatically scroll the text up by one page.
         //if (m_pRichHost != nullptr) {
-        //    m_pRichHost->SetAutoVScroll(strValue == _T("true"));
+        //    m_pRichHost->SetAutoVScroll(strValue == DUI_T("true"));
         //}
     }
-    else if ((strName == _T("auto_hscroll")) || (strName == _T("autohscroll"))) {
+    else if ((strName == DUI_T("auto_hscroll")) || (strName == DUI_T("autohscroll"))) {
         //When the user types a character at the end of a line, automatically scroll the text to the right by 10 characters.
         //When the user presses Enter, the control scrolls all text back to the zero position.
         //if (m_pRichHost != nullptr) {
-        //    m_pRichHost->SetAutoHScroll(strValue == _T("true"));
+        //    m_pRichHost->SetAutoHScroll(strValue == DUI_T("true"));
         //}
     }
-    else if ((strName == _T("rich_text")) || (strName == _T("rich"))) {
+    else if ((strName == DUI_T("rich_text")) || (strName == DUI_T("rich"))) {
         //Whether the rich text property is enabled
-        //SetRichText(strValue == _T("true"));
+        //SetRichText(strValue == DUI_T("true"));
     }
-    else if (strName == _T("auto_detect_url")) {
+    else if (strName == DUI_T("auto_detect_url")) {
         //Whether to auto-detect URLs; if it is a URL, display it as a hyperlink
-        //SetAutoURLDetect(strValue == _T("true"));
+        //SetAutoURLDetect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("allow_beep")) {
+    else if (strName == DUI_T("allow_beep")) {
         //Whether to allow beep sounds
-        //SetAllowBeep(strValue == _T("true"));
+        //SetAllowBeep(strValue == DUI_T("true"));
     }
-    else if (strName == _T("save_selection")) {
+    else if (strName == DUI_T("save_selection")) {
         //If TRUE, the boundaries of the selection should be saved when the control is inactive.
         //If FALSE, when the control becomes active again, the selection boundaries can be reset to start = 0, length = 0.
-        //SetSaveSelection(strValue == _T("true"));
+        //SetSaveSelection(strValue == DUI_T("true"));
     }
 #endif
 
     //Some properties supported by SDL versions but not by this version; these need to be skipped
-    else if (strName == _T("selection_bkcolor")) {
+    else if (strName == DUI_T("selection_bkcolor")) {
     }
-    else if (strName == _T("inactive_selection_bkcolor")) {
+    else if (strName == DUI_T("inactive_selection_bkcolor")) {
     }
-    else if (strName == _T("current_row_bkcolor")) {
+    else if (strName == DUI_T("current_row_bkcolor")) {
     }
-    else if (strName == _T("inactive_current_row_bkcolor")) {
+    else if (strName == DUI_T("inactive_current_row_bkcolor")) {
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -1423,13 +1423,13 @@ void RichEdit::OnTxNotify(DWORD iNotify, void *pv)
                 GetSel(oldSel);
                 SetSel(link->chrg);
                 DString url = GetSelText();
-                const DString prefix = _T("HYPERLINK ");
+                const DString prefix = DUI_T("HYPERLINK ");
                 size_t pos = url.find(prefix);
                 if (pos == 0) {
                     url = url.substr(prefix.size());
-                    if (!url.empty() && url.front() == _T('\"')) {
+                    if (!url.empty() && url.front() == DUI_T('\"')) {
                         url.erase(url.begin());
-                        pos = url.find(_T('\"'));
+                        pos = url.find(DUI_T('\"'));
                         if (pos != DString::npos) {
                             url.resize(pos);
                         }
@@ -2055,7 +2055,7 @@ bool RichEdit::OnChar(const EventArgs& msg)
     //Number
     if (IsNumberOnly()) {
         if (msg.vkCode < '0' || msg.vkCode > '9') {
-            if (msg.vkCode == _T('-')) {
+            if (msg.vkCode == DUI_T('-')) {
                 if (GetTextLength() > 0) {
                     //Not the first character, negative sign input is forbidden
                     return true;
@@ -2270,7 +2270,7 @@ void RichEdit::OnMouseMessage(uint32_t uMsg, const EventArgs& msg)
 
 void RichEdit::Paint(IRender* pRender, const UiRect& rcPaint)
 {
-    PerformanceStat statPerformance(_T("PaintWindow, RichEdit::Paint"));
+    PerformanceStat statPerformance(DUI_T("PaintWindow, RichEdit::Paint"));
     if (pRender == nullptr) {
         return;
     }
@@ -2516,7 +2516,7 @@ private:
 
 void RichEdit::PaintRichEdit(IRender* pRender, const UiRect& rcPaint)
 {
-    PerformanceStat statPerformance(_T("PaintWindow, RichEdit::PaintRichEdit"));
+    PerformanceStat statPerformance(DUI_T("PaintWindow, RichEdit::PaintRichEdit"));
     if (pRender == nullptr) {
         return;
     }
@@ -3258,10 +3258,10 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
         }
     }
     
-    DString skinFolder = _T("public/menu/");
+    DString skinFolder = DUI_T("public/menu/");
     Menu* menu = new Menu(GetWindow());//The parent window must be set, otherwise the program status bar becomes inactive when the menu pops up
     menu->SetSkinFolder(skinFolder);
-    DString xml(_T("rich_edit_menu.xml"));
+    DString xml(DUI_T("rich_edit_menu.xml"));
 
     //While the menu is displayed, do not hide the currently selected text
     m_bContextMenuShown = true;
@@ -3289,7 +3289,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
     ui::MenuItem* menu_item = nullptr;
     //Update the command state and add menu command responses
     bool hasSelText = nEndChar > nStartChar ? true : false;
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("edit_menu_copy")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_copy")));
     if (menu_item != nullptr) {
         if (!hasSelText) {
             menu_item->SetEnabled(false);
@@ -3299,7 +3299,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("edit_menu_cut")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_cut")));
     if (menu_item != nullptr) {
         if (!hasSelText) {
             menu_item->SetEnabled(false);
@@ -3312,7 +3312,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("edit_menu_paste")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_paste")));
     if (menu_item != nullptr) {
         if (!pRichEdit->CanPaste()) {
             menu_item->SetEnabled(false);
@@ -3325,7 +3325,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("edit_menu_del")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_del")));
     if (menu_item != nullptr) {
         if (!hasSelText) {
             menu_item->SetEnabled(false);
@@ -3338,7 +3338,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("edit_menu_sel_all")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_sel_all")));
     if (menu_item != nullptr) {
         if ((nStartChar == 0) && (nEndChar == pRichEdit->GetTextLength())) {
             menu_item->SetEnabled(false);
@@ -3348,7 +3348,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("edit_menu_undo")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_undo")));
     if (menu_item != nullptr) {
         if (!pRichEdit->CanUndo()) {
             menu_item->SetEnabled(false);
@@ -3361,7 +3361,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("edit_menu_redo")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_redo")));
     if (menu_item != nullptr) {
         if (!pRichEdit->CanRedo()) {
             menu_item->SetEnabled(false);
@@ -3386,7 +3386,7 @@ void RichEdit::OnTextChanged()
             if (n < GetMinNumber()) {
                 //Exceeds the minimum number, correct it
                 int32_t newValue = GetMinNumber();
-                SetTextNoEvent(StringUtil::Printf(_T("%d"), newValue));
+                SetTextNoEvent(StringUtil::Printf(DUI_T("%d"), newValue));
                 if (!m_bDisableTextChangeEvent) {
                     SendEvent(kEventTextChanged);
                 }
@@ -3395,7 +3395,7 @@ void RichEdit::OnTextChanged()
             else if (n > GetMaxNumber()) {
                 //Exceeds the maximum number, correct it
                 int32_t newValue = GetMaxNumber();
-                SetTextNoEvent(StringUtil::Printf(_T("%d"), newValue));
+                SetTextNoEvent(StringUtil::Printf(DUI_T("%d"), newValue));
                 if (!m_bDisableTextChangeEvent) {
                     SendEvent(kEventTextChanged);
                 }
@@ -3413,7 +3413,7 @@ bool RichEdit::SetSpinClass(const DString& spinClass)
     DString spinBoxClass;
     DString spinBtnUpClass;
     DString spinBtnDownClass;
-    std::list<DString> classNames = StringUtil::Split(spinClass, _T(","));
+    std::list<DString> classNames = StringUtil::Split(spinClass, DUI_T(","));
     if (classNames.size() == 3) {
         auto iter = classNames.begin();
         spinBoxClass = *iter++;
@@ -3530,7 +3530,7 @@ bool RichEdit::SetEnableSpin(bool bEnable, const DString& spinClass, int32_t nMi
     }
     else {
         bool hasSpin = m_pSpinBox != nullptr;
-        SetSpinClass(_T(""));
+        SetSpinClass(DUI_T(""));
         bRet = true;
         if (hasSpin) {
             SetNumberOnly(false);
@@ -3630,7 +3630,7 @@ void RichEdit::SetClearBtnClass(const DString& btnClass)
 
         //Handle the button click event
         pClearButton->AttachClick([this](const EventArgs& /*args*/) {
-            SetText(_T(""));
+            SetText(DUI_T(""));
             return true;
             });
     }
@@ -3995,7 +3995,7 @@ void RichEdit::SetRichText(bool bRichText)
     //When switching text modes, the RichEdit text content must be empty
     DString text = GetText();
     if (!text.empty()) {
-        SetTextNoEvent(_T(""));
+        SetTextNoEvent(DUI_T(""));
         m_richCtrl.EmptyUndoBuffer();
     }
     m_richCtrl.SetTextMode((TEXTMODE)textMode);
@@ -4185,7 +4185,7 @@ bool RichEdit::SetDefaultCharFormat(CHARFORMAT2W& cf)
             //Synchronize the text color
             UiColor textColor;
             textColor.SetFromCOLORREF(cf.crTextColor);
-            m_sTextColor = ui::StringUtil::Printf(_T("#%02X%02X%02X%02X"), textColor.GetA(), textColor.GetR(), textColor.GetG(), textColor.GetB());
+            m_sTextColor = ui::StringUtil::Printf(DUI_T("#%02X%02X%02X%02X"), textColor.GetA(), textColor.GetR(), textColor.GetG(), textColor.GetB());
         }
         return true;
     }

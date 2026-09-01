@@ -10,14 +10,19 @@
 #include <cstring>
 #include <cstdint>
 
-/** Unicode version string macro definitions
+/** Cross-platform text literal macro definitions
 */
-#if !defined(_T)
+#if !defined(DUI_T)
     #if defined (DUI_UNICODE)
-        #define _T(x)   L##x
+        #define DUI_T(x)   L##x
     #else
-        #define _T(x)   x
+        #define DUI_T(x)   x
     #endif
+#endif
+
+// Keep the legacy spelling available to bundled third-party code.
+#if !defined(_T)
+    #define _T(x) DUI_T(x)
 #endif
 
 //Detect the wchar_t definition: the wchar_t size on each platform

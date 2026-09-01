@@ -57,7 +57,7 @@ void FontManager::SetDefaultFontFamilyNames(const DString& defaultFontFamilyName
     m_defaultFontFamilyNames.clear();
     m_bDefaultFontInited = false;
     if (!defaultFontFamilyNames.empty()) {
-        std::list<DString> fontFamilyNames = StringUtil::Split(defaultFontFamilyNames, _T(","));
+        std::list<DString> fontFamilyNames = StringUtil::Split(defaultFontFamilyNames, DUI_T(","));
         for (DString fontFamilyName : fontFamilyNames) {
             StringUtil::Trim(fontFamilyName);
             if (!fontFamilyName.empty()) {
@@ -71,7 +71,7 @@ DString FontManager::GetDpiFontId(const DString& fontId, uint32_t nZoomPercent) 
 {
     DString dpiFontId;
     if (!fontId.empty()) {
-        dpiFontId = fontId + _T("@") + StringUtil::UInt32ToString(nZoomPercent);
+        dpiFontId = fontId + DUI_T("@") + StringUtil::UInt32ToString(nZoomPercent);
     }
     return dpiFontId;
 }
@@ -162,12 +162,12 @@ IFont* FontManager::GetIFont(const DString& fontId, uint32_t nZoomPercent)
 
     DString dpiFontId = GetDpiFontId(realFontId, nZoomPercent);
     if (fontInfo.m_fontName.empty() || 
-        StringUtil::IsEqualNoCase(fontInfo.m_fontName.c_str(), _T("system"))) {
+        StringUtil::IsEqualNoCase(fontInfo.m_fontName.c_str(), DUI_T("system"))) {
         if (!m_defaultFontFamilyNames.empty()) {
             fontInfo.m_fontName = m_defaultFontFamilyNames.front();
         }
         else {
-            fontInfo.m_fontName = _T("Microsoft YaHei"); //Microsoft YaHei; this line is unreachable if a default font is set
+            fontInfo.m_fontName = DUI_T("Microsoft YaHei"); //Microsoft YaHei; this line is unreachable if a default font is set
         }
     }
 
@@ -210,7 +210,7 @@ bool FontManager::RemoveFontId(const DString& fontId)
         return false;
     }
     bool bDeleted = false;
-    const DString zoomFontId = fontId + _T("@");
+    const DString zoomFontId = fontId + DUI_T("@");
     auto iter = m_fontMap.begin();
     while (iter != m_fontMap.end()) {
         if (iter->first.find(zoomFontId) == 0) {
@@ -341,46 +341,46 @@ void FontManager::GetFontNameList(std::vector<DString>& fontNameList) const
 void FontManager::GetFontSizeList(const DpiManager& dpi, std::vector<FontSizeInfo>& fontSizeList) const
 {
     fontSizeList.clear();
-    fontSizeList.push_back({ _T("8"),  8.0f, 0 });
-    fontSizeList.push_back({ _T("9"),  9.0f, 0 });
-    fontSizeList.push_back({ _T("10"), 10.0f, 0 });
-    fontSizeList.push_back({ _T("11"), 11.0f, 0 });
-    fontSizeList.push_back({ _T("12"), 12.0f, 0 });
-    fontSizeList.push_back({ _T("14"), 14.0f, 0 });
-    fontSizeList.push_back({ _T("16"), 16.0f, 0 });
-    fontSizeList.push_back({ _T("18"), 18.0f, 0 });
-    fontSizeList.push_back({ _T("20"), 20.0f, 0 });
-    fontSizeList.push_back({ _T("22"), 22.0f, 0 });
-    fontSizeList.push_back({ _T("24"), 24.0f, 0 });
-    fontSizeList.push_back({ _T("26"), 26.0f, 0 });
-    fontSizeList.push_back({ _T("28"), 28.0f, 0 });
-    fontSizeList.push_back({ _T("32"), 32.0f, 0 });
-    fontSizeList.push_back({ _T("36"), 36.0f, 0 });
-    fontSizeList.push_back({ _T("48"), 48.0f, 0 });
-    fontSizeList.push_back({ _T("72"), 72.0f, 0 });
+    fontSizeList.push_back({ DUI_T("8"),  8.0f, 0 });
+    fontSizeList.push_back({ DUI_T("9"),  9.0f, 0 });
+    fontSizeList.push_back({ DUI_T("10"), 10.0f, 0 });
+    fontSizeList.push_back({ DUI_T("11"), 11.0f, 0 });
+    fontSizeList.push_back({ DUI_T("12"), 12.0f, 0 });
+    fontSizeList.push_back({ DUI_T("14"), 14.0f, 0 });
+    fontSizeList.push_back({ DUI_T("16"), 16.0f, 0 });
+    fontSizeList.push_back({ DUI_T("18"), 18.0f, 0 });
+    fontSizeList.push_back({ DUI_T("20"), 20.0f, 0 });
+    fontSizeList.push_back({ DUI_T("22"), 22.0f, 0 });
+    fontSizeList.push_back({ DUI_T("24"), 24.0f, 0 });
+    fontSizeList.push_back({ DUI_T("26"), 26.0f, 0 });
+    fontSizeList.push_back({ DUI_T("28"), 28.0f, 0 });
+    fontSizeList.push_back({ DUI_T("32"), 32.0f, 0 });
+    fontSizeList.push_back({ DUI_T("36"), 36.0f, 0 });
+    fontSizeList.push_back({ DUI_T("48"), 48.0f, 0 });
+    fontSizeList.push_back({ DUI_T("72"), 72.0f, 0 });
 
 #ifdef DUI_BUILD_FOR_WIN
     if (::GetACP() == 936) {
         //Only used in the Chinese environment
-        fontSizeList.push_back({ _T("1 inch"), 95.6f, 0 });
-        fontSizeList.push_back({ _T("Extra Large"), 83.7f, 0 });
-        fontSizeList.push_back({ _T("Extra No."), 71.7f, 0 });
-        fontSizeList.push_back({ _T("No.0"), 56.0f, 0 });
-        fontSizeList.push_back({ _T("Small 0"), 48.0f, 0 });
-        fontSizeList.push_back({ _T("No.1"), 34.7f, 0 });
-        fontSizeList.push_back({ _T("Small 1"), 32.0f, 0 });
-        fontSizeList.push_back({ _T("No.2"), 29.3f, 0 });
-        fontSizeList.push_back({ _T("Small 2"), 24.0f, 0 });
-        fontSizeList.push_back({ _T("No.3"), 21.3f, 0 });
-        fontSizeList.push_back({ _T("Small 3"), 20.0f, 0 });
-        fontSizeList.push_back({ _T("No.4"), 18.7f, 0 });
-        fontSizeList.push_back({ _T("Small 4"), 16.0f, 0 });
-        fontSizeList.push_back({ _T("No.5"), 14.0f, 0 });
-        fontSizeList.push_back({ _T("Small 5"), 12.0f, 0 });
-        fontSizeList.push_back({ _T("No.6"), 10.0f, 0 });
-        fontSizeList.push_back({ _T("Small 6"), 8.7f, 0 });
-        fontSizeList.push_back({ _T("No.7"), 7.3f, 0 });
-        fontSizeList.push_back({ _T("No.8"), 6.7f, 0 });
+        fontSizeList.push_back({ DUI_T("1 inch"), 95.6f, 0 });
+        fontSizeList.push_back({ DUI_T("Extra Large"), 83.7f, 0 });
+        fontSizeList.push_back({ DUI_T("Extra No."), 71.7f, 0 });
+        fontSizeList.push_back({ DUI_T("No.0"), 56.0f, 0 });
+        fontSizeList.push_back({ DUI_T("Small 0"), 48.0f, 0 });
+        fontSizeList.push_back({ DUI_T("No.1"), 34.7f, 0 });
+        fontSizeList.push_back({ DUI_T("Small 1"), 32.0f, 0 });
+        fontSizeList.push_back({ DUI_T("No.2"), 29.3f, 0 });
+        fontSizeList.push_back({ DUI_T("Small 2"), 24.0f, 0 });
+        fontSizeList.push_back({ DUI_T("No.3"), 21.3f, 0 });
+        fontSizeList.push_back({ DUI_T("Small 3"), 20.0f, 0 });
+        fontSizeList.push_back({ DUI_T("No.4"), 18.7f, 0 });
+        fontSizeList.push_back({ DUI_T("Small 4"), 16.0f, 0 });
+        fontSizeList.push_back({ DUI_T("No.5"), 14.0f, 0 });
+        fontSizeList.push_back({ DUI_T("Small 5"), 12.0f, 0 });
+        fontSizeList.push_back({ DUI_T("No.6"), 10.0f, 0 });
+        fontSizeList.push_back({ DUI_T("Small 6"), 8.7f, 0 });
+        fontSizeList.push_back({ DUI_T("No.7"), 7.3f, 0 });
+        fontSizeList.push_back({ DUI_T("No.8"), 6.7f, 0 });
     }
 #endif
 

@@ -46,12 +46,12 @@ ShadowWndBase::ShadowWndBase():
 
 DString ShadowWndBase::GetSkinFolder()
 {
-    return _T("");
+    return DUI_T("");
 }
 
 DString ShadowWndBase::GetSkinFile()
 {
-    return _T("public/shadow/shadow.xml");
+    return DUI_T("public/shadow/shadow.xml");
 }
 
 bool ShadowWndBase::Create(Window* window)
@@ -60,8 +60,8 @@ bool ShadowWndBase::Create(Window* window)
     WindowCreateParam createParam;
     createParam.m_dwStyle = kWS_POPUP;
     createParam.m_dwExStyle = kWS_EX_TRANSPARENT | kWS_EX_LAYERED | kWS_EX_NOACTIVATE | kWS_EX_TOOLWINDOW;
-    createParam.m_className = _T("ShadowWnd");
-    createParam.m_windowTitle = _T("ShadowWnd");
+    createParam.m_className = DUI_T("ShadowWnd");
+    createParam.m_windowTitle = DUI_T("ShadowWnd");
 
     // Note: the shadow-following effect while dragging is handled by the native
     // macOS window position callbacks (see NativeWindow_MacOS) instead of the

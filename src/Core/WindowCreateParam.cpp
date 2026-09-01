@@ -3,7 +3,7 @@
 namespace ui {
 
 WindowCreateParam::WindowCreateParam():
-    m_className(_T("dui_window")),
+    m_className(DUI_T("dui_window")),
     m_dwClassStyle(kCS_VREDRAW | kCS_HREDRAW | kCS_DBLCLKS),
     m_dwStyle(0),
     m_dwExStyle(0),

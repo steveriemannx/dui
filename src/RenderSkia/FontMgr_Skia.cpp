@@ -338,7 +338,7 @@ void FontMgr_Skia::ClearFontCache()
 
 SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
 {
-    PerformanceStat statPerformance(_T("FontMgr_Skia::CreateSkFont"));
+    PerformanceStat statPerformance(DUI_T("FontMgr_Skia::CreateSkFont"));
     ASSERT(!fontInfo.m_fontName.empty());
     if (fontInfo.m_fontName.empty()) {
         return nullptr;

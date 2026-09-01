@@ -70,8 +70,8 @@ GroupBoxTemplate<InheritType>::GroupBoxTemplate(Window* pWindow):
     LabelTemplate<InheritType>(pWindow),
     m_nLineWidth(0)
 {
-    SetAttribute(_T("text_align"), _T("top,left"));
-    SetAttribute(_T("text_padding"), _T("8,0,0,0"));
+    SetAttribute(DUI_T("text_align"), DUI_T("top,left"));
+    SetAttribute(DUI_T("text_padding"), DUI_T("8,0,0,0"));
 }
 
 template<typename InheritType>
@@ -80,7 +80,7 @@ GroupBoxTemplate<InheritType>::~GroupBoxTemplate()
 }
 
 template<typename InheritType>
-inline DString GroupBoxTemplate<InheritType>::GetType() const { return _T("GroupBoxTemplate"); }
+inline DString GroupBoxTemplate<InheritType>::GetType() const { return DUI_T("GroupBoxTemplate"); }
 
 template<>
 inline DString GroupBoxTemplate<Box>::GetType() const { return DUI_CTR_GROUP_BOX; }
@@ -168,22 +168,22 @@ UiColor GroupBoxTemplate<InheritType>::GetFadeColor(UiColor color, uint8_t nFade
 template<typename InheritType>
 void GroupBoxTemplate<InheritType>::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("corner_size")) {
+    if (strName == DUI_T("corner_size")) {
         //Corner size
         UiSize cxyRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), cxyRound);
         this->SetCornerSize(cxyRound, true);
     }
-    else if (strName == _T("line_width")) {
+    else if (strName == DUI_T("line_width")) {
         //Line width
         ASSERT(StringUtil::StringToInt32(strValue) >= 0);
         this->SetLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("line_color")) {
+    else if (strName == DUI_T("line_color")) {
         //Line color
         this->SetLineColor(strValue);
     }
-    else if (strName == _T("text")) {
+    else if (strName == DUI_T("text")) {
         //Set the text content
         BaseClass::SetAttribute(strName, strValue);
     }

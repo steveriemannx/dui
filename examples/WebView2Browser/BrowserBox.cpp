@@ -57,7 +57,7 @@ void BrowserBox::InitBrowserBox(const DString& url)
         if (m_pWebView2Control != nullptr) {
             //Test code
             if (state == WebView2Control::NavigationState::Completed) {
-               // m_pWebView2Control->PostWebMessageAsString(_T("hello world!"));               
+               // m_pWebView2Control->PostWebMessageAsString(DUI_T("hello world!"));               
             }
         }
         });
@@ -131,11 +131,11 @@ void BrowserBox::InitBrowserBox(const DString& url)
         ////Test JS-C++ communication
         //ui::FilePath webViewHtml = GlobalManager::GetDefaultResourcePath(true);
         //webViewHtml.NormalizeDirectoryPath();
-        //webViewHtml += _T("themes/default/webview2_browser/WebView2Demo.html");
+        //webViewHtml += DUI_T("themes/default/webview2_browser/WebView2Demo.html");
         //webViewHtml.NormalizeFilePath();
-        //navigateUrl = _T("file:///");
+        //navigateUrl = DUI_T("file:///");
         //navigateUrl += webViewHtml.ToString();
-        //StringUtil::ReplaceAll(_T("\\"), _T("/"), navigateUrl);
+        //StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), navigateUrl);
     }
     m_pWebView2Control->Navigate(navigateUrl);
 }

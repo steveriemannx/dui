@@ -6,7 +6,7 @@
 
 /** String identifying the "Computer" virtual node
 */
-#define TREE_NODE_MYCOMPUTER _T("MyComputer")
+#define TREE_NODE_MYCOMPUTER DUI_T("MyComputer")
 
 namespace ui
 {
@@ -58,17 +58,17 @@ DString DirectoryTree::GetType() const { return DUI_CTR_DIRECTORY_TREE; }
 void DirectoryTree::SetAttribute(const DString& strName, const DString& strValue)
 {
     //Supported attribute list: attributes implemented by the base class are forwarded directly
-    if (strName == _T("small_icon_size")) {
+    if (strName == DUI_T("small_icon_size")) {
         SetSmallIconSize(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("large_icon_size")) {
+    else if (strName == DUI_T("large_icon_size")) {
         SetLargeIconSize(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("show_hiden_files")) {
-        SetShowHidenFiles(strValue == _T("true"));
+    else if (strName == DUI_T("show_hiden_files")) {
+        SetShowHidenFiles(strValue == DUI_T("true"));
     }
-    else if (strName == _T("show_system_files")) {
-        SetShowSystemFiles(strValue == _T("true"));
+    else if (strName == DUI_T("show_system_files")) {
+        SetShowSystemFiles(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -213,7 +213,7 @@ TreeNode* DirectoryTree::ShowAllDiskNodes(const DString& computerName, const DSt
         }
         DString displayName = pathInfo.m_displayName;
 #ifndef DUI_BUILD_FOR_WIN
-        if (bFirstNode && (displayName == _T("/")) && !fileSystemName.empty()) {
+        if (bFirstNode && (displayName == DUI_T("/")) && !fileSystemName.empty()) {
             //Replace with the file system
             bFirstNode = false;
             displayName = fileSystemName;
@@ -238,7 +238,7 @@ bool DirectoryTree::InsertLineBeforeNode(TreeNode* pNode, const DString& lineCla
             pLineControl->SetClass(lineClassName);
         }
         else {
-            pLineControl->SetClass(_T("splitline_hor_level1"));
+            pLineControl->SetClass(DUI_T("splitline_hor_level1"));
             pLineControl->SetMargin(UiMargin(12, 8, 12, 8), true);
         }
         bRet = InsertControlBeforeNode(pNode, pLineControl);
@@ -256,7 +256,7 @@ TreeNode* DirectoryTree::InsertTreeNode(TreeNode* pParentTreeNode,
                                         bool bIconShared)
 {
     TreeNode* node = new TreeNode(GetWindow());
-    node->SetClass(_T("tree_node"));//defined in "global.xml"
+    node->SetClass(DUI_T("tree_node"));//defined in "global.xml"
     if (bDisplayNameIsID) {
         node->SetTextId(displayName);
     }

@@ -109,108 +109,108 @@ ImageListPtr ListCtrl::GetImageList(ListCtrlType type) const
 
 void ListCtrl::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("header_class")) {
+    if (strName == DUI_T("header_class")) {
         SetHeaderClass(strValue);
     }
-    else if (strName == _T("header_item_class")) {
+    else if (strName == DUI_T("header_item_class")) {
         SetHeaderItemClass(strValue);
     }
-    else if (strName == _T("header_split_box_class")) {
+    else if (strName == DUI_T("header_split_box_class")) {
         SetHeaderSplitBoxClass(strValue);
     }
-    else if (strName == _T("header_split_control_class")) {
+    else if (strName == DUI_T("header_split_control_class")) {
         SetHeaderSplitControlClass(strValue);
     }
-    else if (strName == _T("enable_header_drag_order")) {
-        SetEnableHeaderDragOrder(strValue == _T("true"));
+    else if (strName == DUI_T("enable_header_drag_order")) {
+        SetEnableHeaderDragOrder(strValue == DUI_T("true"));
     }
-    else if (strName == _T("check_box_class")) {
+    else if (strName == DUI_T("check_box_class")) {
         SetCheckBoxClass(strValue);
     }
-    else if (strName == _T("data_item_class")) {
+    else if (strName == DUI_T("data_item_class")) {
         SetDataItemClass(strValue);
     }
-    else if (strName == _T("data_sub_item_class")) {
+    else if (strName == DUI_T("data_sub_item_class")) {
         SetDataSubItemClass(strValue);
     }
-    else if (strName == _T("row_grid_line_width")) {
+    else if (strName == DUI_T("row_grid_line_width")) {
         SetRowGridLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("row_grid_line_color")) {
+    else if (strName == DUI_T("row_grid_line_color")) {
         SetRowGridLineColor(strValue);
     }
-    else if (strName == _T("column_grid_line_width")) {
+    else if (strName == DUI_T("column_grid_line_width")) {
         SetColumnGridLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("column_grid_line_color")) {
+    else if (strName == DUI_T("column_grid_line_color")) {
         SetColumnGridLineColor(strValue);
     }
-    else if (strName == _T("report_view_class")) {
+    else if (strName == DUI_T("report_view_class")) {
         SetReportViewClass(strValue);
     }
-    else if (strName == _T("header_height")) {
+    else if (strName == DUI_T("header_height")) {
         SetHeaderHeight(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("data_item_height")) {
+    else if (strName == DUI_T("data_item_height")) {
         SetDataItemHeight(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("show_header")) {
-        SetHeaderVisible(strValue == _T("true"));
+    else if (strName == DUI_T("show_header")) {
+        SetHeaderVisible(strValue == DUI_T("true"));
     }
-    else if (strName == _T("multi_select")) {
-        SetMultiSelect(strValue == _T("true"));
+    else if (strName == DUI_T("multi_select")) {
+        SetMultiSelect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("enable_column_width_auto")) {
-        SetEnableColumnWidthAuto(strValue == _T("true"));
+    else if (strName == DUI_T("enable_column_width_auto")) {
+        SetEnableColumnWidthAuto(strValue == DUI_T("true"));
     }
-    else if (strName == _T("auto_check_select")) {
-        SetAutoCheckSelect(strValue == _T("true"));
+    else if (strName == DUI_T("auto_check_select")) {
+        SetAutoCheckSelect(strValue == DUI_T("true"));
     }
-    else if (strName == _T("show_header_checkbox")) {
-        SetHeaderShowCheckBox(strValue == _T("true"));
+    else if (strName == DUI_T("show_header_checkbox")) {
+        SetHeaderShowCheckBox(strValue == DUI_T("true"));
     }
-    else if (strName == _T("show_data_item_checkbox")) {
-        SetDataItemShowCheckBox(strValue == _T("true"));
+    else if (strName == DUI_T("show_data_item_checkbox")) {
+        SetDataItemShowCheckBox(strValue == DUI_T("true"));
     }
-    else if (strName == _T("type")) {
-        if (strValue == _T("report")) {
+    else if (strName == DUI_T("type")) {
+        if (strValue == DUI_T("report")) {
             SetListCtrlType(ListCtrlType::Report);
         }
-        else if (strValue == _T("icon")) {
+        else if (strValue == DUI_T("icon")) {
             SetListCtrlType(ListCtrlType::Icon);
         }
-        else if (strValue == _T("list")) {
+        else if (strValue == DUI_T("list")) {
             SetListCtrlType(ListCtrlType::List);
         }
     }
-    else if (strName == _T("icon_view_class")) {
+    else if (strName == DUI_T("icon_view_class")) {
         SetIconViewClass(strValue);
     }
-    else if (strName == _T("icon_view_item_class")) {
+    else if (strName == DUI_T("icon_view_item_class")) {
         SetIconViewItemClass(strValue);
     }
-    else if (strName == _T("icon_view_item_image_class")) {
+    else if (strName == DUI_T("icon_view_item_image_class")) {
         SetIconViewItemImageClass(strValue);
     }
-    else if (strName == _T("icon_view_item_label_class")) {
+    else if (strName == DUI_T("icon_view_item_label_class")) {
         SetIconViewItemLabelClass(strValue);
     }
-    else if (strName == _T("list_view_class")) {
+    else if (strName == DUI_T("list_view_class")) {
         SetListViewClass(strValue);
     }
-    else if (strName == _T("list_view_item_class")) {
+    else if (strName == DUI_T("list_view_item_class")) {
         SetListViewItemClass(strValue);
     }
-    else if (strName == _T("list_view_item_image_class")) {
+    else if (strName == DUI_T("list_view_item_image_class")) {
         SetListViewItemImageClass(strValue);
     }
-    else if (strName == _T("list_view_item_label_class")) {
+    else if (strName == DUI_T("list_view_item_label_class")) {
         SetListViewItemLabelClass(strValue);
     }
-    else if (strName == _T("enable_item_edit")) {
-        SetEnableItemEdit(strValue == _T("true"));
+    else if (strName == DUI_T("enable_item_edit")) {
+        SetEnableItemEdit(strValue == DUI_T("true"));
     }
-    else if (strName == _T("list_ctrl_richedit_class")) {
+    else if (strName == DUI_T("list_ctrl_richedit_class")) {
         SetRichEditClass(strValue);
     }
     else {

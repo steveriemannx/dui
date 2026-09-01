@@ -936,7 +936,7 @@ public:
      * @param[in] linkInfo The link address
      * @param[in] font The font index
      */
-    void AddLinkColorTextEx(const DString& str, const DString& color, const DString& linkInfo = _T(""), const DString& strFontId = _T(""));
+    void AddLinkColorTextEx(const DString& str, const DString& color, const DString& linkInfo = DUI_T(""), const DString& strFontId = DUI_T(""));
 
 #endif
 

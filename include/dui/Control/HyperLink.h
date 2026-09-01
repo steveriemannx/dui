@@ -19,7 +19,7 @@ public:
     virtual DString GetType() const override { return DUI_CTR_HYPER_LINK; }
     virtual void SetAttribute(const DString& strName, const DString& strValue) override
     {
-        if (strName == _T("url")) {
+        if (strName == DUI_T("url")) {
             m_url = strValue;
         }
         else {

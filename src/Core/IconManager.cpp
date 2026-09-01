@@ -8,7 +8,7 @@ namespace ui
 IconManager::IconManager():
     m_nNextID(0),
     m_nNextCallbackID(0),
-    m_prefix(_T("icon:"))
+    m_prefix(DUI_T("icon:"))
 {
 }
 

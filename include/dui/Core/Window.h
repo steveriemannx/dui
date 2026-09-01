@@ -480,7 +480,7 @@ public:
     *             The default exit-fullscreen Class name is "btn_exit_fullscreen", defined in globlal.xml
     */
     bool SetFullscreenControl(Control* pFullscreenControl,
-                              const DString& exitButtonClass = _T("btn_exit_fullscreen"));
+                              const DString& exitButtonClass = DUI_T("btn_exit_fullscreen"));
 
     /** Gets the fullscreen control
     * @return Returns the interface of the fullscreen control, or nullptr if there is none

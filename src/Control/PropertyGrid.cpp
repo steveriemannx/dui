@@ -32,33 +32,33 @@ DString PropertyGrid::GetType() const { return DUI_CTR_PROPERTY_GRID; }
 
 void PropertyGrid::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("property_grid_xml")) {
+    if (strName == DUI_T("property_grid_xml")) {
         if (!strValue.empty()) {
             m_configXml = strValue;
         }
     }
-    else if (strName == _T("row_grid_line_width")) {
+    else if (strName == DUI_T("row_grid_line_width")) {
         SetRowGridLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("row_grid_line_color")) {
+    else if (strName == DUI_T("row_grid_line_color")) {
         SetRowGridLineColor(strValue);
     }
-    else if (strName == _T("column_grid_line_width")) {
+    else if (strName == DUI_T("column_grid_line_width")) {
         SetColumnGridLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == _T("column_grid_line_color")) {
+    else if (strName == DUI_T("column_grid_line_color")) {
         SetColumnGridLineColor(strValue);
     }
-    else if (strName == _T("header_class")) {
+    else if (strName == DUI_T("header_class")) {
         SetHeaderClass(strValue);
     }
-    else if (strName == _T("group_class")) {
+    else if (strName == DUI_T("group_class")) {
         SetGroupClass(strValue);
     }
-    else if (strName == _T("propterty_class")) {
+    else if (strName == DUI_T("propterty_class")) {
         SetPropertyClass(strValue);
     }
-    else if (strName == _T("left_column_width")) {
+    else if (strName == DUI_T("left_column_width")) {
         SetLeftColumnWidth(StringUtil::StringToInt32(strValue), true);
     }
     else {
@@ -97,13 +97,13 @@ void PropertyGrid::OnInit()
     //Initialize the basic structure
     if (m_configXml.empty()) {
         //Default configuration file
-        m_configXml = _T("public/property_grid/property_grid.xml");
+        m_configXml = DUI_T("public/property_grid/property_grid.xml");
     }
     ui::GlobalManager::Instance().FillBoxWithCache(this, FilePath(m_configXml.c_str()));
-    m_pHeaderCtrl = FindSubControl(_T("dui_property_grid_header"));
-    m_pHeaderLeft = dynamic_cast<Label*>(FindSubControl(_T("dui_property_grid_header_left")));
-    m_pHeaderRight = dynamic_cast<Label*>(FindSubControl(_T("dui_property_grid_header_right")));
-    m_pHeaderSplit = dynamic_cast<Split*>(FindSubControl(_T("dui_property_grid_header_split")));
+    m_pHeaderCtrl = FindSubControl(DUI_T("dui_property_grid_header"));
+    m_pHeaderLeft = dynamic_cast<Label*>(FindSubControl(DUI_T("dui_property_grid_header_left")));
+    m_pHeaderRight = dynamic_cast<Label*>(FindSubControl(DUI_T("dui_property_grid_header_right")));
+    m_pHeaderSplit = dynamic_cast<Split*>(FindSubControl(DUI_T("dui_property_grid_header_split")));
     if (m_pHeaderCtrl != nullptr) {
         ASSERT(m_pHeaderLeft != nullptr);
         ASSERT(m_pHeaderRight != nullptr);
@@ -114,11 +114,11 @@ void PropertyGrid::OnInit()
         m_bHeaderCtrl = false;
     }
 
-    m_pDescriptionArea = dynamic_cast<RichText*>(FindSubControl(_T("dui_property_grid_description_area")));
+    m_pDescriptionArea = dynamic_cast<RichText*>(FindSubControl(DUI_T("dui_property_grid_description_area")));
     m_bDescriptionArea = m_pDescriptionArea != nullptr;
-    m_pDescriptionAreaSplit = dynamic_cast<Split*>(FindSubControl(_T("dui_property_grid_description_area_split")));
+    m_pDescriptionAreaSplit = dynamic_cast<Split*>(FindSubControl(DUI_T("dui_property_grid_description_area_split")));
 
-    m_pTreeView = dynamic_cast<TreeView*>(FindSubControl(_T("dui_property_grid_tree")));
+    m_pTreeView = dynamic_cast<TreeView*>(FindSubControl(DUI_T("dui_property_grid_tree")));
     ASSERT(m_pTreeView != nullptr);
 
     //Attach the drag response event to adjust the column width
@@ -158,7 +158,7 @@ void PropertyGrid::OnInit()
             }
             if (m_pDescriptionArea != nullptr) {
                 if (!name.empty()) {
-                    description = _T("<b>") + name + _T("</b><br/>") + description;
+                    description = DUI_T("<b>") + name + DUI_T("</b><br/>") + description;
                 }
                 m_pDescriptionArea->SetText(description);
             }
@@ -908,7 +908,7 @@ void PropertyGridProperty::OnInit()
     m_pHBox = new HBox(GetWindow());
     AddItem(m_pHBox);
     //Background color: defined in property_grid.xml
-    m_pHBox->SetBkColor(_T("property_grid_propterty_bkcolor"));
+    m_pHBox->SetBkColor(DUI_T("property_grid_propterty_bkcolor"));
 
     m_pHBox->SetMouseEnabled(false);
     m_pHBox->SetNoFocus();
@@ -921,7 +921,7 @@ void PropertyGridProperty::OnInit()
     m_pHBox->AddItem(m_pLabelBoxRight);
     m_pLabelBoxRight->SetText(m_propertyValue.c_str());
     //Normal font for property values: defined in property_grid.xml
-    m_pLabelBoxRight->SetFontId(_T("property_grid_propterty_font_normal"));
+    m_pLabelBoxRight->SetFontId(DUI_T("property_grid_propterty_font_normal"));
 
     //Attach the mouse left button press event
     m_pLabelBoxRight->AttachButtonDown([this](const EventArgs&) {
@@ -973,10 +973,10 @@ void PropertyGridProperty::SetPropertyText(const DString& text, bool bChanged)
     if (m_pLabelBoxRight != nullptr) {
         m_pLabelBoxRight->SetText(text);
         if (bChanged) {
-            m_pLabelBoxRight->SetFontId(_T("property_grid_propterty_font_bold"));
+            m_pLabelBoxRight->SetFontId(DUI_T("property_grid_propterty_font_bold"));
         }
         else {
-            m_pLabelBoxRight->SetFontId(_T("property_grid_propterty_font_normal"));
+            m_pLabelBoxRight->SetFontId(DUI_T("property_grid_propterty_font_normal"));
         }
     }
 }
@@ -1138,7 +1138,7 @@ void PropertyGridTextProperty::EnableEditControl(bool bEnable)
         return;
     }
     m_pRichEdit = new PropertyGridRichEdit(GetWindow());
-    m_pRichEdit->SetClass(_T("property_grid_propterty_edit"));
+    m_pRichEdit->SetClass(DUI_T("property_grid_propterty_edit"));
     if (!AddPropertySubItem(m_pRichEdit)) {
         delete m_pRichEdit;
         m_pRichEdit = nullptr;
@@ -1179,7 +1179,7 @@ Control* PropertyGridTextProperty::ShowEditControl(bool bShow)
         bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
         if (IsPasswordMode()) {
             DString showText;
-            showText.resize(newText.size(), _T('*'));
+            showText.resize(newText.size(), DUI_T('*'));
             SetPropertyText(showText, bChanged);
         }
         else {
@@ -1202,7 +1202,7 @@ void PropertyGridTextProperty::SetPasswordMode(bool bPasswordMode)
     bool bChanged = text != GetPropertyValue(); //Compared with the original value, whether there is a modification
     if (bPasswordMode) {
         DString showText;
-        showText.resize(text.size(), _T('*'));
+        showText.resize(text.size(), DUI_T('*'));
         SetPropertyText(showText, bChanged);
     }
     else {
@@ -1217,7 +1217,7 @@ void PropertyGridTextProperty::SetEnableSpin(bool bEnable, int32_t nMin, int32_t
         ASSERT(pRichEdit != nullptr);
     }    
     if (pRichEdit != nullptr) {
-        DString spinClass = _T("property_grid_spin_box,property_grid_spin_btn_up,property_grid_spin_btn_down");
+        DString spinClass = DUI_T("property_grid_spin_box,property_grid_spin_btn_up,property_grid_spin_btn_down");
         pRichEdit->SetEnableSpin(bEnable, spinClass, nMin, nMax);
     }
 }
@@ -1238,7 +1238,7 @@ void PropertyGridTextProperty::SetNewTextValue(const DString& newText)
         bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
         if (IsPasswordMode()) {
             DString showText;
-            showText.resize(newText.size(), _T('*'));
+            showText.resize(newText.size(), DUI_T('*'));
             SetPropertyText(showText, bChanged);
         }
         else {
@@ -1278,7 +1278,7 @@ void PropertyGridComboProperty::EnableEditControl(bool bEnable)
         return;
     }
     m_pCombo = new PropertyGridCombo(GetWindow());
-    m_pCombo->SetClass(_T("property_grid_combo"));
+    m_pCombo->SetClass(DUI_T("property_grid_combo"));
     if (!AddPropertySubItem(m_pCombo)) {
         delete m_pCombo;
         m_pCombo = nullptr;
@@ -1492,7 +1492,7 @@ DString PropertyGridFontSizeProperty::GetFontSize() const
     if (nCurSel != Box::InvalidIndex) {
         size_t nIndex = GetOptionData(nCurSel);
         if (nIndex < m_fontSizeList.size()) {
-            fontSize = StringUtil::Printf(_T("%.01f"), m_fontSizeList[nIndex].fFontSize);
+            fontSize = StringUtil::Printf(DUI_T("%.01f"), m_fontSizeList[nIndex].fFontSize);
         }
     }
     if (fontSize.empty()) {
@@ -1508,7 +1508,7 @@ DString PropertyGridFontSizeProperty::GetDpiFontSize() const
     if (nCurSel != Box::InvalidIndex) {
         size_t nIndex = GetOptionData(nCurSel);
         if (nIndex < m_fontSizeList.size()) {
-            fontSize = StringUtil::Printf(_T("%.01f"), m_fontSizeList[nIndex].fDpiFontSize);
+            fontSize = StringUtil::Printf(DUI_T("%.01f"), m_fontSizeList[nIndex].fDpiFontSize);
         }
     }
     if (fontSize.empty()) {
@@ -1523,7 +1523,7 @@ DString PropertyGridFontSizeProperty::GetFontSize(const DString& fontSizeName) c
     const size_t nCount = m_fontSizeList.size();
     for (size_t nIndex = 0; nIndex < nCount; ++nIndex) {
         if (m_fontSizeList[nIndex].fontSizeName == fontSizeName) {
-            fontSize = StringUtil::Printf(_T("%.01f"), m_fontSizeList[nIndex].fFontSize);
+            fontSize = StringUtil::Printf(DUI_T("%.01f"), m_fontSizeList[nIndex].fFontSize);
             break;
         }
     }
@@ -1536,7 +1536,7 @@ DString PropertyGridFontSizeProperty::GetDpiFontSize(const DString& fontSizeName
     const size_t nCount = m_fontSizeList.size();
     for (size_t nIndex = 0; nIndex < nCount; ++nIndex) {
         if (m_fontSizeList[nIndex].fontSizeName == fontSizeName) {
-            fontSize = StringUtil::Printf(_T("%.01f"), m_fontSizeList[nIndex].fDpiFontSize);
+            fontSize = StringUtil::Printf(DUI_T("%.01f"), m_fontSizeList[nIndex].fDpiFontSize);
             break;
         }
     }
@@ -1568,7 +1568,7 @@ void PropertyGridColorProperty::EnableEditControl(bool bEnable)
     }
     m_pComboButton = new ComboButton(GetWindow());
     //Properties: defined in property_grid.xml
-    m_pComboButton->SetClass(_T("property_grid_combo_button"));
+    m_pComboButton->SetClass(DUI_T("property_grid_combo_button"));
     if (!AddPropertySubItem(m_pComboButton)) {
         delete m_pComboButton;
         m_pComboButton = nullptr;
@@ -1641,7 +1641,7 @@ void PropertyGridColorProperty::InitColorCombo()
         return;
     }
     pComboBox->SetWindow(GetWindow());
-    GlobalManager::Instance().FillBoxWithCache(pComboBox, FilePath(_T("public/property_grid/color_combox.xml")));
+    GlobalManager::Instance().FillBoxWithCache(pComboBox, FilePath(DUI_T("public/property_grid/color_combox.xml")));
     pComboBox->SetFixedHeight(UiFixedInt(boxSize.cy), false, false);
     pComboBox->SetFixedWidth(UiFixedInt(boxSize.cx), false, false);
 
@@ -1650,7 +1650,7 @@ void PropertyGridColorProperty::InitColorCombo()
         pComboBox->GetItemAt(0)->SetFixedWidth(UiFixedInt(boxSize.cx), false, false);
     }
 
-    ColorPickerRegular* pColorPicker = dynamic_cast<ColorPickerRegular*>(pComboBox->FindSubControl(_T("color_combo_picker")));
+    ColorPickerRegular* pColorPicker = dynamic_cast<ColorPickerRegular*>(pComboBox->FindSubControl(DUI_T("color_combo_picker")));
     if (pColorPicker != nullptr) {
         //Respond to the color selection event
         pColorPicker->AttachSelectColor([this, pColorComboBtn](const EventArgs& args) {
@@ -1665,7 +1665,7 @@ void PropertyGridColorProperty::InitColorCombo()
             });
     }
 
-    Button* pMoreColorButton = dynamic_cast<Button*>(pComboBox->FindSubControl(_T("color_combo_picker_more")));
+    Button* pMoreColorButton = dynamic_cast<Button*>(pComboBox->FindSubControl(DUI_T("color_combo_picker_more")));
     if (pMoreColorButton != nullptr) {
         pMoreColorButton->AttachClick([this](const EventArgs& /*args*/) {
             ShowColorPicker();
@@ -1772,7 +1772,7 @@ void PropertyGridDateTimeProperty::EnableEditControl(bool bEnable)
     }
     m_pDateTime = new PropertyGridDateTime(GetWindow());
     //Properties: defined in property_grid.xml
-    m_pDateTime->SetClass(_T("property_grid_date_time"));
+    m_pDateTime->SetClass(DUI_T("property_grid_date_time"));
     if (!AddPropertySubItem(m_pDateTime)) {
         delete m_pDateTime;
         m_pDateTime = nullptr;
@@ -1851,7 +1851,7 @@ void PropertyGridIPAddressProperty::EnableEditControl(bool bEnable)
     }
     m_pIPAddress = new IPAddress(GetWindow());
     //Properties: defined in property_grid.xml
-    m_pIPAddress->SetClass(_T("property_grid_ip_address"));
+    m_pIPAddress->SetClass(DUI_T("property_grid_ip_address"));
     if (!AddPropertySubItem(m_pIPAddress)) {
         delete m_pIPAddress;
         m_pIPAddress = nullptr;
@@ -1923,7 +1923,7 @@ void PropertyGridHotKeyProperty::EnableEditControl(bool bEnable)
     }
     m_pHotKey = new HotKey(GetWindow());
     //Properties: defined in property_grid.xml
-    m_pHotKey->SetClass(_T("property_grid_hot_key"));
+    m_pHotKey->SetClass(DUI_T("property_grid_hot_key"));
     if (!AddPropertySubItem(m_pHotKey)) {
         delete m_pHotKey;
         m_pHotKey = nullptr;
@@ -1997,7 +1997,7 @@ void PropertyGridFileProperty::EnableEditControl(bool bEnable)
     }
     if (m_pBrowseBtn == nullptr) {
         m_pBrowseBtn = new Button(GetWindow());
-        m_pBrowseBtn->SetClass(_T("property_grid_button"));
+        m_pBrowseBtn->SetClass(DUI_T("property_grid_button"));
         m_pBrowseBtn->SetNoFocus();
         pRichEdit->AddItem(m_pBrowseBtn);
 
@@ -2051,7 +2051,7 @@ void PropertyGridDirectoryProperty::EnableEditControl(bool bEnable)
     }
     if (m_pBrowseBtn == nullptr) {
         m_pBrowseBtn = new Button(GetWindow());
-        m_pBrowseBtn->SetClass(_T("property_grid_button"));
+        m_pBrowseBtn->SetClass(DUI_T("property_grid_button"));
         m_pBrowseBtn->SetNoFocus();
         pRichEdit->AddItem(m_pBrowseBtn);
 

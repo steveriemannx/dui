@@ -330,35 +330,35 @@ DString CheckCombo::GetType() const { return DUI_CTR_CHECK_COMBO; }
 
 void CheckCombo::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("dropbox")) {
+    if (strName == DUI_T("dropbox")) {
         SetDropBoxAttributeList(strValue);
     }
-    else if (strName == _T("dropbox_item_class")) {
+    else if (strName == DUI_T("dropbox_item_class")) {
         SetDropboxItemClass(strValue);
     }
-    else if (strName == _T("selected_item_class")) {
+    else if (strName == DUI_T("selected_item_class")) {
         SetSelectedItemClass(strValue);
     }
-    else if (strName == _T("vscrollbar")) {
+    else if (strName == DUI_T("vscrollbar")) {
     }
-    else if ((strName == _T("dropbox_size")) || (strName == _T("dropboxsize"))) {
+    else if ((strName == DUI_T("dropbox_size")) || (strName == DUI_T("dropboxsize"))) {
         UiSize szDropBoxSize;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szDropBoxSize);
         SetDropBoxSize(szDropBoxSize, true);
     }
-    else if ((strName == _T("popup_top")) || (strName == _T("popuptop"))) {
-        SetPopupTop(strValue == _T("true"));
+    else if ((strName == DUI_T("popup_top")) || (strName == DUI_T("popuptop"))) {
+        SetPopupTop(strValue == DUI_T("true"));
     }
-    else if (strName == _T("height")) {
+    else if (strName == DUI_T("height")) {
         BaseClass::SetAttribute(strName, strValue);
-        if (strValue != _T("stretch") && strValue != _T("auto")) {
+        if (strValue != DUI_T("stretch") && strValue != DUI_T("auto")) {
             m_iOrgHeight = StringUtil::StringToInt32(strValue);
             ASSERT(m_iOrgHeight >= 0);
             SetMaxHeight(m_iOrgHeight * 3, true);
             SetMinHeight(m_iOrgHeight, true);
         }
     }
-    else if (strName == _T("shadow_type")) {
+    else if (strName == DUI_T("shadow_type")) {
         //Set the shadow type of the drop-down window
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
         if (Shadow::GetShadowType(strValue, nShadowType)) {
@@ -592,13 +592,13 @@ void CheckCombo::ParseAttributeList(const DString& strList,
     }
     DString strValue = strList;
     //These attributes are written manually, using curly braces {} instead of double quotes, so escape characters are not needed when writing;
-    StringUtil::ReplaceAll(_T("{"), _T("\""), strValue);
-    StringUtil::ReplaceAll(_T("}"), _T("\""), strValue);
-    if (strValue.find(_T("\"")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, _T('\"'), attributeList);
+    StringUtil::ReplaceAll(DUI_T("{"), DUI_T("\""), strValue);
+    StringUtil::ReplaceAll(DUI_T("}"), DUI_T("\""), strValue);
+    if (strValue.find(DUI_T("\"")) != DString::npos) {
+        AttributeUtil::ParseAttributeList(strValue, DUI_T('\"'), attributeList);
     }
-    else if (strValue.find(_T("\'")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, _T('\''), attributeList);
+    else if (strValue.find(DUI_T("\'")) != DString::npos) {
+        AttributeUtil::ParseAttributeList(strValue, DUI_T('\''), attributeList);
     }
 }
 

@@ -101,7 +101,7 @@ public:
      * @param userDataFolder User data folder path (optional)
      * @param callback Initialization completed callback (optional)
      */
-    bool InitializeAsync(const DString& userDataFolder = _T(""),
+    bool InitializeAsync(const DString& userDataFolder = DUI_T(""),
                          InitializeCompletedCallback callback = nullptr);
 
     /** Checks whether the WebView is initializing

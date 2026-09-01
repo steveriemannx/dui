@@ -214,22 +214,22 @@ inline DString ControlResizableT<VBox>::GetType() const { return DUI_CTR_VBOX_RE
 template<typename T>
 void ControlResizableT<T>::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("enable_resize")) {
-        SetEnableResize(strValue == _T("true"));
+    if (strName == DUI_T("enable_resize")) {
+        SetEnableResize(strValue == DUI_T("true"));
     }
-    else if (strName == _T("resize_size_box")) {
+    else if (strName == DUI_T("resize_size_box")) {
         UiRect rcSizeBox;
         AttributeUtil::ParseRectValue(strValue.c_str(), rcSizeBox, false);
         SetSizeBox(rcSizeBox);
     }
-    else if (strName == _T("resize_reserve_width")) {
+    else if (strName == DUI_T("resize_reserve_width")) {
         SetResizeReserveWidth(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("resize_reserve_height")) {
+    else if (strName == DUI_T("resize_reserve_height")) {
         SetResizeReserveHeight(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("resize_keep_within_parent")) {
-        SetResizeKeepWithinParent(strValue == _T("true"));
+    else if (strName == DUI_T("resize_keep_within_parent")) {
+        SetResizeKeepWithinParent(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);

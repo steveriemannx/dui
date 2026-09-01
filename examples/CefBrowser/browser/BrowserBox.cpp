@@ -29,7 +29,7 @@ const DString& BrowserBox::GetTitle() const
 
 void BrowserBox::InitBrowserBox(const DString& url)
 {
-    m_pCefControl = static_cast<ui::CefControl*>(FindSubControl(_T("cef_control")));
+    m_pCefControl = static_cast<ui::CefControl*>(FindSubControl(DUI_T("cef_control")));
     ASSERT(m_pCefControl != nullptr);
     if (m_pCefControl == nullptr) {
         return;
@@ -86,9 +86,9 @@ void BrowserBox::InitBrowserBox(const DString& url)
         // The resource root already includes the active theme (default/windows11)
         ui::FilePath resourcePath = ui::GlobalManager::Instance().GetResourcePath();
         resourcePath.NormalizeDirectoryPath();
-        resourcePath += _T("cef_browser/cef.html");
+        resourcePath += DUI_T("cef_browser/cef.html");
         html_path = resourcePath.ToString();
-        html_path = _T("file:///") + html_path;
+        html_path = DUI_T("file:///") + html_path;
     }
     m_pCefControl->LoadURL(html_path);
 }
@@ -396,9 +396,9 @@ void BrowserBox::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> fr
 {
     ui::GlobalManager::Instance().AssertUIThread();
     // Register a method for the frontend to call
-    m_pCefControl->RegisterCppFunc(_T("ShowMessageBox"), ToWeakCallback([this](const std::string& params, ui::ReportResultFunction callback) {
+    m_pCefControl->RegisterCppFunc(DUI_T("ShowMessageBox"), ToWeakCallback([this](const std::string& params, ui::ReportResultFunction callback) {
         DString value = ui::StringConvert::UTF8ToT(params);
-        ui::SystemUtil::ShowMessageBox(GetWindow(), value.c_str(), _T("C++ received a message from JavaScript"));
+        ui::SystemUtil::ShowMessageBox(GetWindow(), value.c_str(), DUI_T("C++ received a message from JavaScript"));
         callback(false, R"({ "message": "Success." })");
     }));
 }

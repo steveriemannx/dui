@@ -16,19 +16,19 @@ DString TabCtrl::GetType() const { return DUI_CTR_TAB_CTRL; }
 
 void TabCtrl::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("selected_id")) {
+    if (strName == DUI_T("selected_id")) {
         int32_t nValue = StringUtil::StringToInt32(strValue);
         if (nValue >= 0) {
             m_nSelectedId = nValue;
         }
     }
-    else if (strName == _T("tab_box_name")) {
+    else if (strName == DUI_T("tab_box_name")) {
         //Name of the bound TabBox control; after binding, when the TabCtrl selection changes, the TabBox selection follows
         SetTabBoxName(strValue);
     }
-    else if (strName == _T("drag_order")) {
+    else if (strName == DUI_T("drag_order")) {
         //Whether dragging to adjust the order is supported (within the same tab), enabled by default
-        SetEnableDragOrder(strValue == _T("true"));
+        SetEnableDragOrder(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -248,47 +248,47 @@ DString TabCtrlItem::GetType() const { return DUI_CTR_TAB_CTRL_ITEM; }
 
 void TabCtrlItem::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("tab_box_item_index")) {
+    if (strName == DUI_T("tab_box_item_index")) {
         SetTabBoxItemIndex((size_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == _T("title")) {
+    else if (strName == DUI_T("title")) {
         SetTitle(strValue);
     }
-    else if (strName == _T("title_id")) {
+    else if (strName == DUI_T("title_id")) {
         SetTitleId(strValue);
     }
-    else if (strName == _T("icon")) {
+    else if (strName == DUI_T("icon")) {
         SetIcon(strValue);
     }
-    else if (strName == _T("icon_class")) {
+    else if (strName == DUI_T("icon_class")) {
         SetIconClass(strValue);
     }
-    else if (strName == _T("title_class")) {
+    else if (strName == DUI_T("title_class")) {
         SetTitleClass(strValue);
     }
-    else if (strName == _T("close_button_class")) {
+    else if (strName == DUI_T("close_button_class")) {
         SetCloseButtonClass(strValue);
     }
-    else if (strName == _T("line_class")) {
+    else if (strName == DUI_T("line_class")) {
         SetLineClass(strValue);
     }
-    else if (strName == _T("selected_round_corner")) {
+    else if (strName == DUI_T("selected_round_corner")) {
         UiSize sz;
         AttributeUtil::ParseSizeValue(strValue.c_str(), sz);
         SetSelectedRoundCorner(sz, true);
     }
-    else if (strName == _T("hot_round_corner")) {
+    else if (strName == DUI_T("hot_round_corner")) {
         UiSize sz;
         AttributeUtil::ParseSizeValue(strValue.c_str(), sz);
         SetHotRoundCorner(sz, true);
     }
-    else if (strName == _T("hot_padding")) {
+    else if (strName == DUI_T("hot_padding")) {
         UiPadding rcPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcPadding);
         SetHotPadding(rcPadding, true);
     }
-    else if (strName == _T("auto_hide_close_button")) {
-        SetAutoHideCloseButton(strValue == _T("true"));
+    else if (strName == DUI_T("auto_hide_close_button")) {
+        SetAutoHideCloseButton(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);

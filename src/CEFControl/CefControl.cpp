@@ -39,25 +39,25 @@ DString CefControl::GetType() const { return DUI_CTR_CEF; }
 
 void CefControl::SetAttribute(const DString& strName, const DString& strValue)
 {
-    if (strName == _T("url")) {
+    if (strName == DUI_T("url")) {
         //The URL to load on initialization
         SetInitURL(strValue);
     }
-    else if (strName == _T("url_is_local_file")) {
+    else if (strName == DUI_T("url_is_local_file")) {
         //Whether the URL loaded on initialization is a local file
-        SetInitUrlIsLocalFile(strValue == _T("true"));
+        SetInitUrlIsLocalFile(strValue == DUI_T("true"));
     }
-    else if (strName == _T("F12")) {
+    else if (strName == DUI_T("F12")) {
         //Whether F12 is allowed to open the developer tools
-        SetEnableF12(strValue == _T("true"));
+        SetEnableF12(strValue == DUI_T("true"));
     }
-    else if (strName == _T("F11")) {
+    else if (strName == DUI_T("F11")) {
         //Whether the F11 shortcut is allowed (page fullscreen/exit page fullscreen)
-        SetEnableF11(strValue == _T("true"));
+        SetEnableF11(strValue == DUI_T("true"));
     }
-    else if (strName == _T("download_favicon_image")) {
+    else if (strName == DUI_T("download_favicon_image")) {
         //Whether to download the website's favicon
-        SetDownloadFaviconImage(strValue == _T("true"));
+        SetDownloadFaviconImage(strValue == DUI_T("true"));
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -206,7 +206,7 @@ void CefControl::UnRegisterCppFunc(const DString& function_name)
     }
 }
 
-bool CefControl::CallJSFunction(const DString& js_function_name, const DString& params, ui::CallJsFunctionCallback callback, const DString& frame_name /*= _T("")*/)
+bool CefControl::CallJSFunction(const DString& js_function_name, const DString& params, ui::CallJsFunctionCallback callback, const DString& frame_name /*= DUI_T("")*/)
 {
     if (m_pBrowserHandler.get() && m_pBrowserHandler->GetBrowser().get() && m_jsBridge.get()) {
         CefRefPtr<CefFrame> frame;
@@ -387,15 +387,15 @@ DString CefControl::GetInitURL() const
     if (IsInitUrlIsLocalFile() && !initUrl.empty()) {
         //This URL is a local path
         DString url = StringUtil::MakeLowerString(initUrl);
-        if ((url.find(_T("http://")) != 0) && (url.find(_T("https://")) != 0) && (url.find(_T("file:///")) != 0)) {
+        if ((url.find(DUI_T("http://")) != 0) && (url.find(DUI_T("https://")) != 0) && (url.find(DUI_T("file:///")) != 0)) {
             //If there is an explicit protocol prefix, do not convert it; otherwise load the resource file from the local exe's directory
             FilePath cefHtml = GlobalManager::GetDefaultResourcePath(true);
             cefHtml.NormalizeDirectoryPath();
             cefHtml += initUrl;            
             cefHtml.NormalizeFilePath();
-            initUrl = _T("file:///");
+            initUrl = DUI_T("file:///");
             initUrl += cefHtml.ToString();
-            StringUtil::ReplaceAll(_T("\\"), _T("/"), initUrl);
+            StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), initUrl);
         }
     }
     return initUrl;
@@ -491,7 +491,7 @@ bool CefControl::AttachDevTools()
             else {
                 //Show in a popup window
 #ifdef DUI_BUILD_FOR_WIN
-                windowInfo.SetAsPopup(nullptr, _T("cef_devtools"));
+                windowInfo.SetAsPopup(nullptr, DUI_T("cef_devtools"));
 #endif
                 browser->GetHost()->ShowDevTools(windowInfo, new DevToolBrowserHandler(this), settings, CefPoint());
                 SetAttachedDevTools(true, true);
