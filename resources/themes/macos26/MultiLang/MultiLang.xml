@@ -6,7 +6,7 @@
         <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
             <Label text_id="MULTI_LANG_WINDOW_TEXT" height="32" width="stretch" margin="8,2,0,2" text_align="vcenter,left" mouse_enabled="false"/>
             <Control width="40" mouse_enabled="false"/>
-            <Button class="btn_language" height="32" width="40" name="language" margin="0,2,0,2" tooltip_textid="MULTI_LANG_SELECT_LANGUAGE"/>
+            <Button class="btn_language" height="32" width="40" name="language" margin="0,2,8,2" tooltip_textid="MULTI_LANG_SELECT_LANGUAGE"/>
         </HBox>
         
         <!-- Work area: everything outside the title bar goes into this large Box area -->

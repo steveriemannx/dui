@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="800,600" caption="0,0,0,36" use_system_caption="false" shadow_attached="true" layered_window="true" size_box="4,4,4,4" shadow_type="system_default" shadow_border_size="0">
-    <VBox bkcolor="bk_wnd_darkcolor">
-        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
-            <Control mouse_enabled="false"/>
-        </HBox>
+<Window size="800,600" use_system_caption="true">
+    <VBox bkcolor="white">
         <HBox height="30" margin="0,10,0,0">
             <Label text="Current Progress:"/>
             <Label name="progress_text" text="0%"/>

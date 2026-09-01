@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="75%,75%" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" shadow_attached="true" layered_window="true" size_box="4,4,4,4" text="Container Layout Test Program" shadow_type="system_default" shadow_border_size="0">
+<Window size="75%,75%" min_size="400,300" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" shadow_type="system_default" shadow_attached="true" shadow_snap="true" layered_window="true" shadow_border_size="0" alpha="255" size_box="4,4,4,4" icon="public/caption/logo.ico" text="Container Layout Test Program">
     <!-- All controls in the entire window are placed in this VBox container -->  
     <VBox bkcolor="bk_wnd_darkcolor">
         <!-- Title bar area -->  
@@ -12,11 +12,17 @@
             <Control mouse_enabled="false"/>            
             <!-- Title bar: window control area on the right; minimize, maximize, restore, and close buttons -->
             <HBox margin="0,0,0,0" valign="center" width="auto" height="36">
+                <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+                <Box height="stretch" width="40" margin="0,2,0,2">
+                    <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
+                    <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
+                </Box>
+                <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
             </HBox>
         </HBox> <!-- End of title bar area --> 
         
         <!-- Display area --> 
-        <VBox>
+        <VBox width="stretch" height="stretch">
             <TabCtrl class="tab_ctrl" tab_box_name="main_view_tab" selected_id="0">
                 <TabCtrlItem class="tab_ctrl_item" title="Box" tooltip_text="Box" close_button_class="" tab_box_item_index="0"/>
                 <TabCtrlItem class="tab_ctrl_item" title="HBox" tooltip_text="HBox" close_button_class="" tab_box_item_index="1"/>
@@ -36,60 +42,60 @@
                 <TabCtrlItem class="tab_ctrl_item" title="GridBox" tooltip_text="GridBox" close_button_class="" tab_box_item_index="15"/>
                 <TabCtrlItem class="tab_ctrl_item" title="GridScrollBox" tooltip_text="GridScrollBox" close_button_class="" tab_box_item_index="16"/>
             </TabCtrl>
-            <TabBox name="main_view_tab" bkcolor="white" selected_id="0"
+            <TabBox name="main_view_tab" bkcolor="white" selected_id="0" width="stretch" height="stretch"
                     fade_switch_type="FadeInOutX" 
                     fade_switch_frame_interval_ms="16" 
                     fade_switch_total_ms="220"
                     fade_switch_easing_function="EaseOutCubic">
-                <VBox name="main_view_page_00">
-                    <Include src="page_box.xml"/>
+                <VBox name="main_view_page_00" width="stretch" height="stretch">
+                    <Include src="page_box.xml"/> <!-- Box page styles are explicit for code generation. -->
                 </VBox>
-                <VBox name="main_view_page_01">
+                <VBox name="main_view_page_01" width="stretch" height="stretch">
                     <Include src="page_hbox.xml"/>
                 </VBox>
-                <VBox name="main_view_page_02">
+                <VBox name="main_view_page_02" width="stretch" height="stretch">
                     <Include src="page_vbox.xml"/>
                 </VBox>
-                <VBox name="main_view_page_03">
+                <VBox name="main_view_page_03" width="stretch" height="stretch">
                     <Include src="page_hflow_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_04">
+                <VBox name="main_view_page_04" width="stretch" height="stretch">
                     <Include src="page_vflow_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_05">
+                <VBox name="main_view_page_05" width="stretch" height="stretch">
                     <Include src="page_tilebox.xml"/>
                 </VBox>
-                <VBox name="main_view_page_06">
+                <VBox name="main_view_page_06" width="stretch" height="stretch">
                     <Include src="page_scroll_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_07">           
+                <VBox name="main_view_page_07" width="stretch" height="stretch">
                     <Include src="page_hscroll_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_08">
+                <VBox name="main_view_page_08" width="stretch" height="stretch">
                     <Include src="page_vscroll_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_09">           
+                <VBox name="main_view_page_09" width="stretch" height="stretch">
                     <Include src="page_hflow_scroll_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_10">
+                <VBox name="main_view_page_10" width="stretch" height="stretch">
                     <Include src="page_vflow_scroll_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_11">
+                <VBox name="main_view_page_11" width="stretch" height="stretch">
                     <Include src="page_tile_scroll_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_12">
+                <VBox name="main_view_page_12" width="stretch" height="stretch">
                     <Include src="page_list_box.xml"/>
                 </VBox>
-                <VBox name="main_view_page_13">
+                <VBox name="main_view_page_13" width="stretch" height="stretch">
                     <Include src="page_layout.xml"/>
                 </VBox>
-                <VBox name="main_view_page_14">
+                <VBox name="main_view_page_14" width="stretch" height="stretch">
                     <Include src="page_tabbox.xml"/>
                 </VBox>
-                <VBox name="main_view_page_15">
+                <VBox name="main_view_page_15" width="stretch" height="stretch">
                     <Include src="page_gridbox.xml"/>
                 </VBox>
-                <VBox name="main_view_page_16">
+                <VBox name="main_view_page_16" width="stretch" height="stretch">
                     <Include src="page_grid_scroll_box.xml"/>
                 </VBox>
             </TabBox>

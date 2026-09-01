@@ -46,7 +46,12 @@
         </VBox>
         <VBox bkcolor="green">
             <Label text="Page 3: This is page 3"/>
-            <TabBox name="sub_view_tab" selected_id="2" bkcolor="Cornsilk">
+            <TabCtrl class="tab_ctrl" tab_box_name="sub_view_tab" selected_id="2">
+                <TabCtrlItem class="tab_ctrl_item" title="Embedded Page 1" close_button_class="" tab_box_item_index="0"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Embedded Page 2" close_button_class="" tab_box_item_index="1"/>
+                <TabCtrlItem class="tab_ctrl_item" title="Embedded Page 3" close_button_class="" tab_box_item_index="2"/>
+            </TabCtrl>
+            <TabBox name="sub_view_tab" selected_id="2" bkcolor="Cornsilk" width="stretch" height="stretch">
                 <VBox name="sub_view_tab_page1" height="200" bkcolor="LightBlue">
                     <Label text="Embedded Page 1: This is embedded page 1"/>                    
                 </VBox>

@@ -10,7 +10,7 @@
         <VBox>
             <HBox height="auto">
                 <Label text="Table Type:" valign="center" margin="2,0,2,0"/>
-                <Combo class="combo" name="list_ctrl_type_combo" combo_type="drop_list" dropbox_size="0,300" height="26" width="80" margin="0,0,0,1" valign="center">
+                <Combo class="combo" name="list_ctrl_type_combo" combo_type="drop_list" dropbox_size="0,300" shadow_type="system_round" height="26" width="80" margin="0,0,0,1" valign="center">
                     <TreeNode class="tree_node" padding="4" text="Report" user_dataid="0"/>
                     <TreeNode class="tree_node" padding="4" text="Icon" user_dataid="1"/>
                     <TreeNode class="tree_node" padding="4" text="List" user_dataid="2"/>
@@ -46,7 +46,7 @@
                     
                     <HBox minheight="18" bkcolor="bk_wnd_darkcolor" height="auto" margin="4,0,4,0">
                         <Label text="Column Controls:" valign="center" margin="2,0,2,0"/>                
-                        <Combo class="combo" name="column_combo" combo_type="drop_list" dropbox_size="0,300" height="26" width="80" margin="0,0,0,1" valign="center"/>              
+                        <Combo class="combo" name="column_combo" combo_type="drop_list" dropbox_size="0,300" shadow_type="system_round" height="26" width="80" margin="0,0,0,1" valign="center"/>
                         <Line vertical="true" margin="8,4,4,4" width="2"/>
                         <CheckBox class="checkbox_1" name="checkbox_column_show" text="Show This Column" margin="4,0,0,0" valign="center"/>
                         <CheckBox class="checkbox_1" name="checkbox_column_width" text="Resizable Width" margin="4,0,0,0" valign="center"/>

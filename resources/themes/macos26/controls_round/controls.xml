@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window shadow_type="system_round" round_corner="10,10" size="1000,760" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" use_system_caption="false" shadow_attached="true" size_box="2,2,2,2" min_size="400,320" icon="public/caption/logo.ico">
+    <Class name="checkbox_1" height="20" text_padding="20,0,0,0" text_align="vcenter" valign="center"
+           normal_image="file='checkbox_round_unchecked.svg' width='16' height='16' valign='center'"
+           disabled_image="file='checkbox_round_unchecked.svg' width='16' height='16' valign='center' fade='80'"
+           selected_normal_image="file='checkbox_round_checked.svg' width='16' height='16' valign='center'"
+           selected_disabled_image="file='checkbox_round_checked.svg' width='16' height='16' valign='center' fade='80'"/>
+    <Class name="checkbox_2" height="20" text_padding="20,0,0,0" text_align="vcenter" valign="center"
+           normal_image="file='checkbox_round_outline_unchecked.svg' width='18' height='18' valign='center'"
+           disabled_image="file='checkbox_round_outline_unchecked.svg' width='18' height='18' valign='center' fade='80'"
+           selected_normal_image="file='checkbox_round_outline_checked.svg' width='18' height='18' valign='center'"
+           selected_disabled_image="file='checkbox_round_outline_checked.svg' width='18' height='18' valign='center' fade='80'"/>
+    <Class name="check_combo" bordersize="1" bordercolor="splitline_level1"
+           dropbox="padding='0,0,0,0' bkcolor='bk_wnd_lightcolor' border_color='splitline_level1' border_size='0,0,0,0' vscrollbar='true'"
+           dropbox_item_class="width={stretch} height={24} text_padding={20,0,2,1} text_align={left,vcenter}
+                               normal_image={file='checkbox_round_outline_unchecked.svg' valign='center'}
+                               selected_normal_image={file='checkbox_round_outline_checked.svg' valign='center'}"
+           selected_item_class="width={auto} height={22} margin={4,2,4,2} bkcolor={bk_menuitem_selected} text_padding={2,1,2,1}"/>
+    <!-- The entire layout is placed in a VBox container -->
+    <!-- Layout attributes: margin="left,top,right,bottom"; padding="left,top,right,bottom" -->
+    <VBox border_round="6,6" bkcolor="bk_wnd_darkcolor">
+        <!-- Title bar area -->
+        <HBox border_round="6,6" name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+            <Control border_round="6,6" width="18" height="18" bkimage="public/caption/logo.svg" valign="center" margin="8"/>
+            <Label border_round="6,6" name="window_title" text="Controls" valign="center" margin="8" mouse_enabled="false"/>
+            <Control border_round="6,6" mouse_enabled="false"/>
+            <Button border_round="6,6" class="btn_wnd_settings_11" height="32" width="40" name="settings" margin="0,2,0,2" tooltip_text="Settings"/>
+            <Button border_round="6,6" class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+            <Button border_round="6,6" class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,8,2" tooltip_text="Close"/>
+        </HBox>
+        <!-- Work area: everything outside the title bar goes into this large VBox area -->
+        <VBox border_round="6,6" padding="10,10,10,10">
+            <!-- First row -->
+            <HBox border_round="6,6" height="170" padding="0,0,0,10">
+                <!-- Buttons -->
+                <VBox border_round="6,6" width="120">
+                    <Button border_round="6,6" class="btn_global_blue_80x30" text="blue" tooltip_text="ui::Buttons"/>
+                    <Button border_round="6,6" class="btn_global_white_80x30" text="white"/>
+                    <Button border_round="6,6" class="btn_global_red_80x30" text="red"/>
+                    <Button class="btn_global_color_gray" text="Control Test" name="test_btn" width="80" height="30" border_round="8,8" margin="0,2,0,0"/>
+                    <Button class="btn_global_color_gray" name="animation_btn" text="Animation Test" width="80" height="30" border_round="8,8" margin="0,2,0,0"/>
+                </VBox>
+                <!-- Checkbox -->
+                <VBox border_round="6,6" width="120">
+                    <CheckBox border_round="6,6" class="checkbox_1" font="system_14" text="CheckBox 1" margin="0,3,0,3" selected="true"
+                              normal_image="file='checkbox_round_unchecked.svg' width='16' height='16' valign='center'"
+                              selected_normal_image="file='checkbox_round_checked.svg' width='16' height='16' valign='center'"
+                              tooltip_text="ui::Checkbox"/>
+                    <CheckBox border_round="6,6" class="checkbox_1" text="CheckBox 2" margin="0,3,0,3"
+                              normal_image="file='checkbox_round_unchecked.svg' width='16' height='16' valign='center'"
+                              selected_normal_image="file='checkbox_round_checked.svg' width='16' height='16' valign='center'"/>
+                    <CheckBox border_round="6,6" class="checkbox_2" text="CheckBox 3" margin="0,3,0,3"
+                              normal_image="file='checkbox_round_outline_unchecked.svg' width='18' height='18' valign='center'"
+                              selected_normal_image="file='checkbox_round_outline_checked.svg' width='18' height='18' valign='center'"/>
+                    <Button class="btn_global_color_gray" name="domodal2" text="Modal Dialog" width="110" height="30" border_round="8,8" margin="0,12,0,0"/>
+                    <Button class="btn_global_color_gray" name="show_color_picker" text="Color Picker (Modal)" width="110" height="30" border_round="8,8" margin="0,2,0,0"/>
+                </VBox>
+                <!-- Option -->
+                <VBox border_round="6,6" width="160" margin="20,0,0,0">
+                    <Option border_round="6,6" class="option_1" group="option_group" text="Radio 1" margin="0,3,0,3" selected="true" tooltip_text="ui::Option"/>
+                    <Option border_round="6,6" class="option_1" group="option_group" text="Radio 2" margin="0,3,0,3"/>
+                    <Option border_round="6,6" class="option_1" group="option_group" text="Radio 3" margin="0,3,0,3"/>
+                    <HBox border_round="6,6" height="36">
+                        <Label border_round="6,6" text="Tray Icon" height="36" valign="center"/>
+                        <CheckBox border_round="6,6" class="checkbox_toggle_1" name="checkbox_tray_icon" selected="false" margin="4,3,0,3"/>
+                    </HBox>
+                    <HBox border_round="6,6" height="36">
+                        <Label border_round="6,6" text="Switch Example" height="36" valign="center"/>
+                        <CheckBox border_round="6,6" class="checkbox_toggle_2" margin="4,3,0,3"/>
+                    </HBox>
+                </VBox>
+                <!-- List -->
+                <VListBox border_round="6,6" class="list" name="list" padding="5,3,5,3" tooltip_text="ui::VListBox">
+                    <ListBoxItem border_round="6,6" class="listitem" height="20" text="ui::VListBox::ListBoxItem"/>
+                </VListBox>
+                <!-- TreeView -->
+                <TreeView border_round="6,6" class="list" name="tree" padding="5,3,5,3" margin="8,0,0,0" indent="20" tooltip_text="ui::TreeView">
+                    <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView Parent Node 0"/>
+                    <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView Parent Node 1">
+                        <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 1-1"/>
+                        <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 1-2"/>
+                        <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 1-3">
+                            <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 1-3-1"/>
+                            <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 1-3-2">
+                                <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 1-3-2-1"/>
+                            </TreeNode>
+                        </TreeNode>
+                    </TreeNode>
+                    <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView Parent Node 2">
+                        <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 2-1"/>
+                        <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 2-2"/>
+                        <TreeNode border_round="6,6" class="listitem" height="20" text="ui::TreeView::TreeNode 2-3"/>
+                    </TreeNode>
+                </TreeView>
+            </HBox>
+            <Control border_round="6,6" class="splitline_hor_level1"/>
+            <!-- Second row -->
+            <HBox border_round="6,6" height="220">
+                <!-- Combo/RichEdit/FilterCombo/CheckCombo -->
+                <VBox border_round="6,6" width="300" margin="0,0,10">
+                    <Combo border_round="6,6" class="combo" name="combo" combo_type="drop_list" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::Combo" shadow_type="system_small_round"/>
+                    <FilterCombo border_round="6,6" class="filter_combo" name="filter_combo" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::FilterCombo" shadow_type="system_small_round"/>
+                    <RichEdit border_round="6,6" class="simple prompt simple_border_bottom" height="30" margin="0,3" font="system_14" 
+                              text_align="vcenter" text_padding="8,4,8,4" default_context_menu="true"
+                              prompt_text="ui::RichEdit: single line text" />
+                    <CheckCombo border_round="6,6" class="check_combo" name="check_combo" height="30" margin="0,3" tooltip_text="nim_comp::CheckCombo" shadow_type="system_small_round"/>
+                    <Button class="btn_global_color_gray" text="Fullscreen RichEdit" name="rich_edit_fullscreen_btn" width="160" height="30" border_round="8,8" margin="0,2,0,0"/>
+                </VBox>
+                
+                <!-- Some basic controls -->
+                <VBox border_round="6,6" height="240">
+                    <HBox border_round="6,6">
+                        <!-- Progress/Slider -->
+                        <VBox border_round="6,6" width="200">
+                            <HBox border_round="6,6" margin="0,10" height="32">
+                                <Control border_round="6,6" width="20" height="20" bkimage="file='public/animation/loading3.json'" valign="center"/>
+                                <Progress border_round="6,6" class="progress_horizontal_blue" name="progress" value="0" margin="10" tooltip_text="ui::Progress"/>
+                            </HBox>
+                            <HBox border_round="6,6" margin="0,0,0,10" height="32">
+                                <Control border_round="6,6" width="24" height="24" bkimage="file='set_speaker.svg' width='20' height='20' valign='center' halign='center'" valign="center"/>
+                                <Slider border_round="6,6" class="slider_horizontal_green" value="70" margin="10" tooltip_text="ui::Slider"/>
+                            </HBox>
+                        </VBox>
+                        <!-- CircleProgress -->
+                        <VBox border_round="6,6" width="90" margin="10,0">
+                            <CircleProgress border_round="6,6" name="circleprogress" circular="true" height="80" width="80"
+                            circle_width="12" bgcolor="gray" fgcolor="green" gradient_color="red" clockwise="true"  min="0" max="100" value="75" margin="10"
+                            text_padding="10,32,10,10" normal_text_color="darkcolor" indicator="file='public/progress/indicator.svg' width='12' height='12'" tooltip_text="ui::CircleProgress"/>
+                        </VBox>
+                        <!-- DateTime -->
+                        <VBox border_round="6,6" margin="4,8,0,0">
+                            <HBox border_round="6,6" child_margin="4" width="300">
+                                <Label border_round="6,6" text="Date" height="24" text_align="vcenter" hot_text_color="red" pushed_text_color="blue"/>
+                                <DateTime border_round="6,6" width="100%" height="24" text="2022-02-01"/>
+                                <DateTime border_round="6,6" width="120" height="24" edit_format="date_up_down" />
+                            </HBox>
+                            <HBox border_round="6,6" child_margin="4" width="320">
+                                <Label border_round="6,6" text="Time" height="24" text_align="vcenter" />
+                                <DateTime border_round="6,6" width="100%" height="24" edit_format="date_time_up_down" />
+                                <DateTime border_round="6,6" width="72" height="24" edit_format="minute_up_down" />
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                    <!-- IPAddress / RichEdit With Spin -->
+                    <HBox border_round="6,6">                        
+                        <VBox border_round="6,6" margin="10,0,0,0">
+                            <HBox border_round="6,6" child_margin="10">
+                                <Label border_round="6,6" text="IP Address" height="28" text_align="vcenter"/>
+                                <IPAddress border_round="6,6" class="ip_address" ip="192.168.0.1"/>
+                            </HBox>
+                            <HBox border_round="6,6" child_margin="10">
+                                <Label border_round="6,6" text="RichEdit Spin" height="28" text_align="vcenter"/>
+                                <RichEdit border_round="6,6" class="simple simple_border rich_edit_spin" min_number="-64" max_number="64" limit_text="3" text="0"/>
+                            </HBox>
+                        </VBox>
+                        <VBox border_round="6,6" margin="10,0,0,0">
+                            <HBox border_round="6,6" child_margin="10">
+                                <HotKey border_round="6,6" class="hot_key" name="set_hot_key" default_text="None"/>
+                                 <Button class="btn_global_color_gray" name="btn_set_hot_key" text="Set Window HotKey" width="100%" height="28" border_round="8,8" text_align="vcenter"/>
+                            </HBox>
+                            <HBox border_round="6,6" child_margin="10">
+                                <HotKey border_round="6,6" class="hot_key" name="set_system_hot_key" default_text="None"/>
+                                 <Button class="btn_global_color_gray" name="btn_set_system_hot_key" text="Set System HotKey" width="100%" height="28" border_round="8,8" text_align="vcenter"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                    <!-- RichText / Line -->
+                    <HBox border_round="6,6" child_margin="10">
+                        <HBox border_round="6,6" child_margin="10">
+                            <RichText border_round="6,6" class="rich_text" name="rich_text_demo" width="300" height="60" row_spacing_mul="1.2">
+                                RichText:　<a href="www.baidu.com">Click to visit Baidu</a><br/>
+                                RichText:　<a href="www.sohu.com">Click to visit Sohu</a>
+                            </RichText>
+                            <VBox border_round="6,6" width="80">
+                                <HyperLink border_round="6,6" class="hyper_link" name="hyper_link1" text="Baidu Homepage" url="www.baidu.com" tooltip_text="This is a HyperLink control"/>
+                                <HyperLink border_round="6,6" class="hyper_link" name="hyper_link2" text="Text Button" url="" tooltip_text="This is a HyperLink control"/>
+                            </VBox>
+                        </HBox>
+                        <HBox border_round="6,6" child_margin="10">
+                            <Label border_round="6,6" text="Line:" valign="center" />
+                            <VBox border_round="6,6">
+                                <Line border_round="6,6" vertical="false" line_color="blue" dash_style="solid" line_width="2"/>
+                                <Line border_round="6,6" vertical="false" line_color="red" dash_style="dash" line_width="2"/>
+                                <Line border_round="6,6" vertical="false" line_color="green" dash_style="dot" line_width="2"/>
+                                <Line border_round="6,6" vertical="false" line_color="black" dash_style="dash_dot" line_width="2"/>
+                                <Line border_round="6,6" vertical="false" line_color="orange" dash_style="dash_dot_dot" line_width="2"/>
+                            </VBox>
+                            <VBox border_round="6,6">
+                                <HBox border_round="6,6" margin="0,4,0,4">
+                                    <Line border_round="6,6" vertical="true" line_color="blue" dash_style="solid" line_width="1"/>
+                                    <Line border_round="6,6" vertical="true" line_color="red" dash_style="dash" line_width="1"/>
+                                    <Line border_round="6,6" vertical="true" line_color="green" dash_style="dot" line_width="1"/>
+                                    <Line border_round="6,6" vertical="true" line_color="black" dash_style="dash_dot" line_width="1"/>
+                                    <Line border_round="6,6" vertical="true" line_color="orange" dash_style="dash_dot_dot" line_width="1"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+                    </HBox>
+                </VBox>
+            </HBox>
+            
+            <!-- Separator line -->
+            <Control border_round="6,6" class="splitline_hor_level1" margin="0,8,0,4"/>
+            <!-- RichEdit -->
+            <HBox border_round="6,6">
+                <RichEdit border_round="6,6" class="prompt" name="edit" bkcolor="white" width="stretch" height="stretch"
+                            hide_selection="false" multiline="true" auto_vscroll="true"
+                            vscrollbar="true" hscrollbar="true" 
+                            want_return_msg="true" rich="false" 
+                            enable_drag_drop="true" enable_drop_file="true" drop_file_types=".txt;.md"/>
+                <RichEdit border_round="6,6" class="prompt" name="edit2" bkcolor="white" width="stretch" height="stretch"
+                            hide_selection="false" multiline="true" auto_vscroll="true"
+                            vscrollbar="true" hscrollbar="true" scrollbar_float="true"
+                            vscrollbar_class="vscrollbar2" hscrollbar_class="hscrollbar2"
+                            vscrollbar_style="auto_hide_scroll='false'" hscrollbar_style="auto_hide_scroll='false'"
+                            want_return_msg="true" rich="false" 
+                            margin="4,0,0,0"
+                            enable_drag_drop="true" enable_drop_file="false"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</Window>

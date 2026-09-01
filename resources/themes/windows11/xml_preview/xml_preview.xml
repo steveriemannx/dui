@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Window size="75%,85%" min_size="300,200" 
         caption="0,0,0,32" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" 
-        shadow_type="default" shadow_attached="true" shadow_snap="true" 
+        shadow_type="system_default" shadow_attached="true" shadow_snap="true" layered_window="true" shadow_border_size="0"
         size_box="4,4,4,4" icon="public/caption/logo.ico">
     <VBox bkcolor="bk_wnd_darkcolor" visible="true">    
         <!-- Title bar area -->  

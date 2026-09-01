@@ -152,8 +152,8 @@
                    <HBox height="auto" margin="0,2,2,0">
                         <Label text="Font:" valign="center" margin="8,0,8,0"/>
                         <Button class="btn_global_gray_80x30" name="set_font" width="100" height="28" text="Set Font" borderround="2,2" valign="center" margin="4,0,4,2"/>
-                        <Combo class="combo" name="combo_font_name" combo_icon_class="" combo_type="drop_down" dropbox_size="0,300" height="28" width="160" tooltiptext="Select Font" margin="2,0,2,2"/>
-                        <Combo class="combo" name="combo_font_size" combo_icon_class="" combo_type="drop_down" dropbox_size="0,300" height="28" width="60" margin="2,0,2,0" tooltiptext="Select Font"/>
+                        <Combo class="combo" name="combo_font_name" combo_type="drop_down" dropbox_size="0,300" shadow_type="system_round" height="28" width="160" tooltiptext="Select Font" margin="2,0,2,2"/>
+                        <Combo class="combo" name="combo_font_size" combo_type="drop_down" dropbox_size="0,300" shadow_type="system_round" height="28" width="60" margin="2,0,2,0" tooltiptext="Select Font"/>
                         <CheckBox class="checkbox_font_class" name="btn_font_bold" width="28" height="26" text="B" font="btn_font_bold_14" valign="center" margin="2,1,1,3" tooltiptext="Bold: change to heavier font"/>
                         <CheckBox class="checkbox_font_class" name="btn_font_italic" width="28" height="26" text="I" font="btn_font_italic_14" valign="center" margin="1,1,1,3" tooltiptext="Italic: change to slanted font"/>
                         <CheckBox class="checkbox_font_class" name="btn_font_underline" width="28" height="26" text="U" font="system_underline_14" valign="center" margin="1,1,1,3" tooltiptext="Underline: draw a line under the text"/>

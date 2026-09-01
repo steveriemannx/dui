@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="1000,760" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" caption="0,0,0,32" use_system_caption="false" shadow_attached="true" size_box="2,2,2,2" min_size="400,320" icon="public/caption/logo.ico">
+<Window size="1000,760" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" use_system_caption="false" shadow_attached="true" size_box="2,2,2,2" min_size="400,320" icon="public/caption/logo.ico">
     <!-- The entire layout is placed in a VBox container -->
     <!-- Layout attributes: margin="left,top,right,bottom"; padding="left,top,right,bottom" -->
     <VBox bkcolor="bk_wnd_darkcolor">
         <!-- Title bar area -->
-        <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
+        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
             <Control width="18" height="18" bkimage="public/caption/logo.svg" valign="center" margin="8"/>
             <Label name="window_title" text="Controls" valign="center" margin="8" mouse_enabled="false"/>
             <Control mouse_enabled="false"/>
-            <Button class="btn_wnd_settings_11" height="32" width="46" name="settings" margin="0,0,0,0" tooltip_text="Settings"/>
-            <Button class="btn_wnd_fullscreen_11" height="32" width="46" name="fullscreenbtn" margin="0,0,0,0" tooltip_text="Window fullscreen, press ESC to exit"/>
-            <Button class="btn_wnd_min_11" height="32" width="46" name="minbtn" margin="0,0,0,0" tooltip_text="Minimize"/>
-            <Box height="stretch" width="46" margin="0,0,0,0">
-                <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
-                <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
-            </Box>
-            <Button class="btn_wnd_close_11" height="stretch" width="46" name="closebtn" margin="0,0,0,0" tooltip_text="Close"/>
+            <Button class="btn_wnd_settings_11" height="32" width="40" name="settings" margin="0,2,0,2" tooltip_text="Settings"/>
+            <Button class="btn_wnd_fullscreen_11" height="32" width="40" name="fullscreenbtn" margin="0,2,0,2" tooltip_text="Window fullscreen, press ESC to exit"/>
+            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,8,2" tooltip_text="Close"/>
         </HBox>
         <!-- Work area: everything outside the title bar goes into this large VBox area -->
         <VBox padding="10,10,10,10">
@@ -38,7 +34,7 @@
                     <Button class="btn_global_color_gray" name="show_color_picker" text="Color Picker (Modal)" width="110" height="30" border_round="3,3" margin="0,2,0,0"/>
                 </VBox>
                 <!-- Option -->
-                <VBox width="120" margin="20,0,0,0">
+                <VBox width="160" margin="20,0,0,0">
                     <Option class="option_1" group="option_group" text="Radio 1" margin="0,3,0,3" selected="true" tooltip_text="ui::Option"/>
                     <Option class="option_1" group="option_group" text="Radio 2" margin="0,3,0,3"/>
                     <Option class="option_1" group="option_group" text="Radio 3" margin="0,3,0,3"/>
@@ -80,12 +76,12 @@
             <HBox height="220">
                 <!-- Combo/RichEdit/FilterCombo/CheckCombo -->
                 <VBox width="300" margin="0,0,10">
-                    <Combo class="combo" name="combo" combo_type="drop_list" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::Combo"/>
-                    <FilterCombo class="filter_combo" name="filter_combo" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::FilterCombo"/>
+                    <Combo class="combo" name="combo" combo_type="drop_list" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::Combo" shadow_type="system_small_round"/>
+                    <FilterCombo class="filter_combo" name="filter_combo" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::FilterCombo" shadow_type="system_small_round"/>
                     <RichEdit class="simple prompt simple_border_bottom" height="30" margin="0,3" font="system_14" 
                               text_align="vcenter" text_padding="8,4,8,4" default_context_menu="true"
                               prompt_text="ui::RichEdit: single line text" />
-                    <CheckCombo class="check_combo" name="check_combo" height="30" margin="0,3" tooltip_text="nim_comp::CheckCombo"/>
+                    <CheckCombo class="check_combo" name="check_combo" height="30" margin="0,3" tooltip_text="nim_comp::CheckCombo" shadow_type="system_small_round"/>
                     <Button class="btn_global_color_gray" text="Fullscreen RichEdit" name="rich_edit_fullscreen_btn" width="160" height="30" border_round="3,3" margin="0,2,0,0"/>
                 </VBox>
                 
@@ -149,7 +145,7 @@
                     <!-- RichText / Line -->
                     <HBox child_margin="10">
                         <HBox child_margin="10">
-                            <RichText class="rich_text" name="rich_text_demo" row_spacing_mul="1.2">
+                            <RichText class="rich_text" name="rich_text_demo" width="300" height="60" row_spacing_mul="1.2">
                                 RichText:　<a href="www.baidu.com">Click to visit Baidu</a><br/>
                                 RichText:　<a href="www.sohu.com">Click to visit Sohu</a>
                             </RichText>

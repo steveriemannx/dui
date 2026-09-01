@@ -11,6 +11,10 @@
 
 <VBox bkcolor="bk_wnd_lightcolor">
     <HBox name="title_bar" width="stretch" height="36" bkcolor="#FFD3E3FD">
+        <!-- macOS traffic lights are inserted here at runtime, before the tabs -->
+        <HBox name="window_caption_bar" width="auto" height="36" bkcolor="">
+        </HBox>
+
         <!-- Icon area -->
         <Control width="36" height="36" bkimage="file='public/caption/logo.ico' width='22' height='22' halign='center' valign='center'"/>
         
@@ -22,12 +26,9 @@
         
         <!-- A new tab button placed after the top tab list -->
         <Button class="tab_item_new_add_btn" name="btn_add" text="+" tooltip_text="New Tab" width="24" height="24" border_round="8,8" text_padding="0,0,0,2"/>
-		
-        <!-- Title bar area -->
-        <HBox name="window_caption_bar" width="auto" height="36" bkcolor="">
-            <Control mouse_enabled="false"/>
-            <Control width="36" mouse_enabled="false"/>
-        </HBox>
+
+        <!-- Right-side filler so the + button stays next to the tabs -->
+        <Control width="1" mouse_enabled="false"/>
     </HBox>
     <!-- Back/forward/refresh buttons, address bar, tab bar area -->
     <HBox height="30" margin="10,2,10,2" child_margin="3">
