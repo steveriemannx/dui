@@ -7,6 +7,7 @@
 class MainForm;
 class ReplaceForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     explicit ReplaceForm(MainForm* pMainForm);
     virtual ~ReplaceForm() override;
@@ -24,8 +25,11 @@ public:
 
 private:
     /** Pure code UI construction (corresponds to the replace.xml layout)
-    */
+     */
     void BuildUI();
+
+    // Bind control events
+    void BindEvents();
 
 private:
     // Find Next

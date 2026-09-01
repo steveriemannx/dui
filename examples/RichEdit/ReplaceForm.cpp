@@ -1,5 +1,6 @@
 #include "ReplaceForm.h"
 #include "MainForm.h"
+#include "dui/Utils/UiBuilder.h"
 
 ReplaceForm::ReplaceForm(MainForm* pMainForm):
     m_pMainForm(pMainForm),
@@ -18,21 +19,21 @@ ReplaceForm::~ReplaceForm()
 
 DString ReplaceForm::GetSkinFolder()
 {
-    return _T("rich_edit");
+    return "rich_edit";
 }
 
 DString ReplaceForm::GetSkinFile()
 {
-    return _T("replace.xml");
+    return "replace.xml";
 }
 
 void ReplaceForm::OnInitWindow()
 {
-    m_pFindText = dynamic_cast<ui::RichEdit*>(FindControl(_T("btn_find_text")));
-    m_pReplaceText = dynamic_cast<ui::RichEdit*>(FindControl(_T("btn_replace_text")));
-    m_pDirectionOption = dynamic_cast<ui::Option*>(FindControl(_T("option_direction_down")));
-    m_pCaseSensitive = dynamic_cast<ui::CheckBox*>(FindControl(_T("check_box_case_sensitive")));
-    m_pMatchWholeWord = dynamic_cast<ui::CheckBox*>(FindControl(_T("check_box_match_whole_word")));
+    m_pFindText = ui::Find<ui::RichEdit>(this, "btn_find_text");
+    m_pReplaceText = ui::Find<ui::RichEdit>(this, "btn_replace_text");
+    m_pDirectionOption = ui::Find<ui::Option>(this, "option_direction_down");
+    m_pCaseSensitive = ui::Find<ui::CheckBox>(this, "check_box_case_sensitive");
+    m_pMatchWholeWord = ui::Find<ui::CheckBox>(this, "check_box_match_whole_word");
     ASSERT(m_pFindText != nullptr);
     ASSERT(m_pReplaceText != nullptr);
     ASSERT(m_pDirectionOption != nullptr);
@@ -56,7 +57,13 @@ void ReplaceForm::OnInitWindow()
         }
     }
 
-    ui::Button* pButton = dynamic_cast<ui::Button*>(FindControl(_T("btn_cancel")));
+    BindEvents();
+    BaseClass::OnInitWindow();
+}
+
+void ReplaceForm::BindEvents()
+{
+    ui::Button* pButton = ui::Find<ui::Button>(this, "btn_cancel");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -65,7 +72,7 @@ void ReplaceForm::OnInitWindow()
                 return true;
             });
     }
-    pButton = dynamic_cast<ui::Button*>(FindControl(_T("btn_find_next")));
+    pButton = ui::Find<ui::Button>(this, "btn_find_next");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -74,7 +81,7 @@ void ReplaceForm::OnInitWindow()
                 return true;
             });
     }
-    pButton = dynamic_cast<ui::Button*>(FindControl(_T("btn_replace")));
+    pButton = ui::Find<ui::Button>(this, "btn_replace");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -83,7 +90,7 @@ void ReplaceForm::OnInitWindow()
                 return true;
             });
     }
-    pButton = dynamic_cast<ui::Button*>(FindControl(_T("btn_replace_all")));
+    pButton = ui::Find<ui::Button>(this, "btn_replace_all");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {

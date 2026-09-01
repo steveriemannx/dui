@@ -8,10 +8,26 @@ get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
-# Mode 2 (XML-to-code generation): convert tree_view.xml to pure C++ code at build time.
-# Note: tree_node.xml is a node template, now built in code; the two context menus are now pure-code menus.
-set(GEN_XML_FILES tree_view.xml)
+if(APPLE)
+    set(TREEVIEW_EMBED_THEME macos26)
+elseif(WIN32)
+    set(TREEVIEW_EMBED_THEME windows11)
+else()
+    set(TREEVIEW_EMBED_THEME default)
+endif()
+# Mode 2 (XML-to-code generation): convert the active theme XML to C++.
+set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${TREEVIEW_EMBED_THEME}/tree_view/tree_view.xml")
 set(GEN_FUNC_NAME Init)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_gen_code.cmake")
+
+# Embed resources into the executable; embedded resources are accessed directly from memory.
+set(EMBED_RES_DIR "${DUI_ROOT}/resources")
+set(EMBED_RES_PATHS
+    "themes/${TREEVIEW_EMBED_THEME}/global.xml"
+    "themes/${TREEVIEW_EMBED_THEME}/public"
+    "themes/${TREEVIEW_EMBED_THEME}/tree_view"
+    "fonts"
+    "lang")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

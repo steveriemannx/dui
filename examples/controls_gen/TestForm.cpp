@@ -11,183 +11,72 @@ TestForm::~TestForm()
 
 DString TestForm::GetSkinFolder()
 {
-    return _T("");
+    return "";
 }
 
 DString TestForm::GetSkinFile()
 {
     // Pure code mode: no layout XML is loaded
-    return _T("");
+    return "";
 }
 
 void TestForm::BuildUI()
 {
     // Corresponds to the test.xml layout
     ui::VBox* pRoot = new ui::VBox(this);
-    pRoot->SetBkColor(_T("white"));
+    pRoot->SetBkColor("white");
 
-    ui::HBox* pHeader = new ui::HBox(this);
-    pHeader->SetAttribute(_T("height"), _T("30"));
-    pHeader->SetAttribute(_T("margin"), _T("0,10,0,0"));
-    pRoot->AddItem(pHeader);
+    auto* pHeader = ui::Create<ui::HBox>(this, {{"height", "30"}, {"margin", "0,10,0,0"}});
+    ui::Attach(pRoot, pHeader);
 
-    ui::Label* pTitle = new ui::Label(this);
-    pTitle->SetText(_T("Current Progress:"));
-    pHeader->AddItem(pTitle);
+    auto* pTitle = ui::Create<ui::Label>(this, {{"text", "Current Progress:"}});
+    ui::Attach(pHeader, pTitle);
 
-    ui::Label* pProgressText = new ui::Label(this);
-    pProgressText->SetName(_T("progress_text"));
-    pProgressText->SetText(_T("0%"));
-    pHeader->AddItem(pProgressText);
+    auto* pProgressText = ui::Create<ui::Label>(this, {{"name", "progress_text"}, {"text", "0%"}});
+    ui::Attach(pHeader, pProgressText);
 
-    ui::HBox* pBody = new ui::HBox(this);
-    pBody->SetAttribute(_T("margin"), _T("0,10,0,0"));
-    pRoot->AddItem(pBody);
+    auto* pBody = ui::Create<ui::HBox>(this, {{"margin", "0,10,0,0"}});
+    ui::Attach(pRoot, pBody);
 
     // Horizontal progress bar
-    ui::VBox* pLeftCol = new ui::VBox(this);
-    pLeftCol->SetAttribute(_T("valign"), _T("center"));
-    pLeftCol->SetAttribute(_T("halign"), _T("center"));
-    pLeftCol->SetAttribute(_T("width"), _T("50%"));
-    pLeftCol->SetAttribute(_T("height"), _T("100%"));
-    pBody->AddItem(pLeftCol);
+    auto* pLeftCol = ui::Create<ui::VBox>(this, {{"valign", "center"}, {"halign", "center"}, {"width", "50%"}, {"height", "100%"}});
+    ui::Attach(pBody, pLeftCol);
 
-    ui::Progress* pProgress11 = new ui::Progress(this);
-    pProgress11->SetClass(_T("progress_horizontal_blue"));
-    pProgress11->SetName(_T("progress11"));
-    pProgress11->SetAttribute(_T("reverse"), _T("false"));
-    pProgress11->SetAttribute(_T("height"), _T("6"));
-    pProgress11->SetAttribute(_T("width"), _T("stretch"));
-    pProgress11->SetAttribute(_T("min"), _T("0"));
-    pProgress11->SetAttribute(_T("max"), _T("100"));
-    pProgress11->SetAttribute(_T("value"), _T("0"));
-    pProgress11->SetAttribute(_T("margin"), _T("20,20,20,20"));
-    pProgress11->SetToolTipText(_T("ui::Progress"));
-    pLeftCol->AddItem(pProgress11);
+    auto* pProgress11 = ui::Create<ui::Progress>(this, {{"class", "progress_horizontal_blue"}, {"name", "progress11"}, {"reverse", "false"}, {"height", "6"}, {"width", "stretch"}, {"min", "0"}, {"max", "100"}, {"value", "0"}, {"margin", "20,20,20,20"}});
+    pProgress11->SetToolTipText("ui::Progress");
+    ui::Attach(pLeftCol, pProgress11);
 
-    ui::Progress* pProgress12 = new ui::Progress(this);
-    pProgress12->SetAttribute(_T("progress_color"), _T("blue"));
-    pProgress12->SetName(_T("progress12"));
-    pProgress12->SetAttribute(_T("reverse"), _T("false"));
-    pProgress12->SetAttribute(_T("height"), _T("6"));
-    pProgress12->SetAttribute(_T("width"), _T("stretch"));
-    pProgress12->SetAttribute(_T("min"), _T("0"));
-    pProgress12->SetAttribute(_T("max"), _T("100"));
-    pProgress12->SetAttribute(_T("value"), _T("0"));
-    pProgress12->SetAttribute(_T("marquee"), _T("false"));
-    pProgress12->SetAttribute(_T("margin"), _T("20,20,20,20"));
-    pProgress12->SetBkColor(_T("LightGray"));
-    pProgress12->SetToolTipText(_T("ui::Progress"));
-    pLeftCol->AddItem(pProgress12);
+    auto* pProgress12 = ui::Create<ui::Progress>(this, {{"progress_color", "blue"}, {"name", "progress12"}, {"reverse", "false"}, {"height", "6"}, {"width", "stretch"}, {"min", "0"}, {"max", "100"}, {"value", "0"}, {"marquee", "false"}, {"margin", "20,20,20,20"}, {"bkcolor", "LightGray"}});
+    pProgress12->SetToolTipText("ui::Progress");
+    ui::Attach(pLeftCol, pProgress12);
 
-    ui::Slider* pProgress13 = new ui::Slider(this);
-    pProgress13->SetClass(_T("slider_horizontal_green"));
-    pProgress13->SetName(_T("progress13"));
-    pProgress13->SetAttribute(_T("reverse"), _T("false"));
-    pProgress13->SetAttribute(_T("height"), _T("14"));
-    pProgress13->SetAttribute(_T("width"), _T("stretch"));
-    pProgress13->SetAttribute(_T("min"), _T("0"));
-    pProgress13->SetAttribute(_T("max"), _T("100"));
-    pProgress13->SetAttribute(_T("value"), _T("0"));
-    pProgress13->SetAttribute(_T("progress_bar_padding"), _T("0,4,0,4"));
-    pProgress13->SetAttribute(_T("margin"), _T("20,20,20,20"));
-    pProgress13->SetToolTipText(_T("ui::Slider"));
-    pLeftCol->AddItem(pProgress13);
+    auto* pProgress13 = ui::Create<ui::Slider>(this, {{"class", "slider_horizontal_green"}, {"name", "progress13"}, {"reverse", "false"}, {"height", "14"}, {"width", "stretch"}, {"min", "0"}, {"max", "100"}, {"value", "0"}, {"progress_bar_padding", "0,4,0,4"}, {"margin", "20,20,20,20"}});
+    pProgress13->SetToolTipText("ui::Slider");
+    ui::Attach(pLeftCol, pProgress13);
 
-    ui::CircleProgress* pProgress14 = new ui::CircleProgress(this);
-    pProgress14->SetName(_T("progress14"));
-    pProgress14->SetAttribute(_T("reverse"), _T("false"));
-    pProgress14->SetAttribute(_T("circular"), _T("true"));
-    pProgress14->SetAttribute(_T("height"), _T("80"));
-    pProgress14->SetAttribute(_T("width"), _T("80"));
-    pProgress14->SetAttribute(_T("circle_width"), _T("12"));
-    pProgress14->SetAttribute(_T("bgcolor"), _T("gray"));
-    pProgress14->SetAttribute(_T("fgcolor"), _T("green"));
-    pProgress14->SetAttribute(_T("gradient_color"), _T("red"));
-    pProgress14->SetAttribute(_T("clockwise"), _T("true"));
-    pProgress14->SetAttribute(_T("min"), _T("0"));
-    pProgress14->SetAttribute(_T("max"), _T("100"));
-    pProgress14->SetAttribute(_T("value"), _T("0"));
-    pProgress14->SetAttribute(_T("margin"), _T("20,20,20,20"));
-    pProgress14->SetAttribute(_T("text_padding"), _T("10,32,10,10"));
-    pProgress14->SetAttribute(_T("normal_text_color"), _T("darkcolor"));
-    pProgress14->SetAttribute(_T("indicator"), _T("file='public/progress/indicator.svg' width='12' height='12'"));
-    pProgress14->SetToolTipText(_T("ui::CircleProgress"));
-    pLeftCol->AddItem(pProgress14);
+    auto* pProgress14 = ui::Create<ui::CircleProgress>(this, {{"name", "progress14"}, {"reverse", "false"}, {"circular", "true"}, {"height", "80"}, {"width", "80"}, {"circle_width", "12"}, {"bgcolor", "gray"}, {"fgcolor", "green"}, {"gradient_color", "red"}, {"clockwise", "true"}, {"min", "0"}, {"max", "100"}, {"value", "0"}, {"margin", "20,20,20,20"}, {"text_padding", "10,32,10,10"}, {"normal_text_color", "darkcolor"}, {"indicator", "file='public/progress/indicator.svg' width='12' height='12'"}});
+    pProgress14->SetToolTipText("ui::CircleProgress");
+    ui::Attach(pLeftCol, pProgress14);
 
     // Vertical progress bar
-    ui::HBox* pRightCol = new ui::HBox(this);
-    pRightCol->SetAttribute(_T("valign"), _T("center"));
-    pRightCol->SetAttribute(_T("halign"), _T("center"));
-    pRightCol->SetAttribute(_T("width"), _T("50%"));
-    pRightCol->SetAttribute(_T("height"), _T("100%"));
-    pBody->AddItem(pRightCol);
+    auto* pRightCol = ui::Create<ui::HBox>(this, {{"valign", "center"}, {"halign", "center"}, {"width", "50%"}, {"height", "100%"}});
+    ui::Attach(pBody, pRightCol);
 
-    ui::Progress* pProgress21 = new ui::Progress(this);
-    pProgress21->SetClass(_T("progress_vertical_blue"));
-    pProgress21->SetName(_T("progress21"));
-    pProgress21->SetAttribute(_T("reverse"), _T("false"));
-    pProgress21->SetAttribute(_T("height"), _T("stretch"));
-    pProgress21->SetAttribute(_T("width"), _T("6"));
-    pProgress21->SetAttribute(_T("min"), _T("0"));
-    pProgress21->SetAttribute(_T("max"), _T("100"));
-    pProgress21->SetAttribute(_T("value"), _T("0"));
-    pProgress21->SetAttribute(_T("horizontal"), _T("false"));
-    pProgress21->SetAttribute(_T("margin"), _T("20,20,20,20"));
-    pProgress21->SetToolTipText(_T("ui::Progress"));
-    pRightCol->AddItem(pProgress21);
+    auto* pProgress21 = ui::Create<ui::Progress>(this, {{"class", "progress_vertical_blue"}, {"name", "progress21"}, {"reverse", "false"}, {"height", "stretch"}, {"width", "6"}, {"min", "0"}, {"max", "100"}, {"value", "0"}, {"horizontal", "false"}, {"margin", "20,20,20,20"}});
+    pProgress21->SetToolTipText("ui::Progress");
+    ui::Attach(pRightCol, pProgress21);
 
-    ui::Progress* pProgress22 = new ui::Progress(this);
-    pProgress22->SetAttribute(_T("progress_color"), _T("blue"));
-    pProgress22->SetName(_T("progress22"));
-    pProgress22->SetAttribute(_T("reverse"), _T("false"));
-    pProgress22->SetAttribute(_T("height"), _T("stretch"));
-    pProgress22->SetAttribute(_T("width"), _T("6"));
-    pProgress22->SetAttribute(_T("min"), _T("0"));
-    pProgress22->SetAttribute(_T("max"), _T("100"));
-    pProgress22->SetAttribute(_T("value"), _T("0"));
-    pProgress22->SetAttribute(_T("horizontal"), _T("false"));
-    pProgress22->SetAttribute(_T("margin"), _T("20,20,20,20"));
-    pProgress22->SetBkColor(_T("LightGray"));
-    pProgress22->SetToolTipText(_T("ui::Progress"));
-    pRightCol->AddItem(pProgress22);
+    auto* pProgress22 = ui::Create<ui::Progress>(this, {{"progress_color", "blue"}, {"name", "progress22"}, {"reverse", "false"}, {"height", "stretch"}, {"width", "6"}, {"min", "0"}, {"max", "100"}, {"value", "0"}, {"horizontal", "false"}, {"margin", "20,20,20,20"}, {"bkcolor", "LightGray"}});
+    pProgress22->SetToolTipText("ui::Progress");
+    ui::Attach(pRightCol, pProgress22);
 
-    ui::Slider* pProgress23 = new ui::Slider(this);
-    pProgress23->SetClass(_T("slider_vertical_green"));
-    pProgress23->SetName(_T("progress23"));
-    pProgress23->SetAttribute(_T("reverse"), _T("false"));
-    pProgress23->SetAttribute(_T("height"), _T("stretch"));
-    pProgress23->SetAttribute(_T("width"), _T("14"));
-    pProgress23->SetAttribute(_T("min"), _T("0"));
-    pProgress23->SetAttribute(_T("max"), _T("100"));
-    pProgress23->SetAttribute(_T("value"), _T("0"));
-    pProgress23->SetAttribute(_T("progress_bar_padding"), _T("4,0,4,0"));
-    pProgress23->SetAttribute(_T("margin"), _T("20,20,20,20"));
-    pProgress23->SetAttribute(_T("horizontal"), _T("false"));
-    pProgress23->SetToolTipText(_T("ui::Slider"));
-    pRightCol->AddItem(pProgress23);
+    auto* pProgress23 = ui::Create<ui::Slider>(this, {{"class", "slider_vertical_green"}, {"name", "progress23"}, {"reverse", "false"}, {"height", "stretch"}, {"width", "14"}, {"min", "0"}, {"max", "100"}, {"value", "0"}, {"progress_bar_padding", "4,0,4,0"}, {"margin", "20,20,20,20"}, {"horizontal", "false"}});
+    pProgress23->SetToolTipText("ui::Slider");
+    ui::Attach(pRightCol, pProgress23);
 
-    ui::CircleProgress* pProgress24 = new ui::CircleProgress(this);
-    pProgress24->SetName(_T("progress24"));
-    pProgress24->SetAttribute(_T("reverse"), _T("false"));
-    pProgress24->SetAttribute(_T("circular"), _T("true"));
-    pProgress24->SetAttribute(_T("height"), _T("80"));
-    pProgress24->SetAttribute(_T("width"), _T("80"));
-    pProgress24->SetAttribute(_T("horizontal"), _T("false"));
-    pProgress24->SetAttribute(_T("circle_width"), _T("12"));
-    pProgress24->SetAttribute(_T("bgcolor"), _T("gray"));
-    pProgress24->SetAttribute(_T("fgcolor"), _T("green"));
-    pProgress24->SetAttribute(_T("gradient_color"), _T("red"));
-    pProgress24->SetAttribute(_T("clockwise"), _T("true"));
-    pProgress24->SetAttribute(_T("min"), _T("0"));
-    pProgress24->SetAttribute(_T("max"), _T("100"));
-    pProgress24->SetAttribute(_T("value"), _T("0"));
-    pProgress24->SetAttribute(_T("margin"), _T("20,20,20,20"));
-    pProgress24->SetAttribute(_T("text_padding"), _T("10,32,10,10"));
-    pProgress24->SetAttribute(_T("normal_text_color"), _T("darkcolor"));
-    pProgress24->SetAttribute(_T("indicator"), _T("file='public/progress/indicator.svg' width='12' height='12'"));
-    pProgress24->SetToolTipText(_T("ui::CircleProgress"));
-    pRightCol->AddItem(pProgress24);
+    auto* pProgress24 = ui::Create<ui::CircleProgress>(this, {{"name", "progress24"}, {"reverse", "false"}, {"circular", "true"}, {"height", "80"}, {"width", "80"}, {"horizontal", "false"}, {"circle_width", "12"}, {"bgcolor", "gray"}, {"fgcolor", "green"}, {"gradient_color", "red"}, {"clockwise", "true"}, {"min", "0"}, {"max", "100"}, {"value", "0"}, {"margin", "20,20,20,20"}, {"text_padding", "10,32,10,10"}, {"normal_text_color", "darkcolor"}, {"indicator", "file='public/progress/indicator.svg' width='12' height='12'"}});
+    pProgress24->SetToolTipText("ui::CircleProgress");
+    ui::Attach(pRightCol, pProgress24);
 
     AttachBox(pRoot);
 }
@@ -206,14 +95,14 @@ void TestForm::OnInitWindow()
 
 void TestForm::OnTimer()
 {
-    ui::Label* pLabel = dynamic_cast<ui::Label*>(FindControl(_T("progress_text")));
-    std::vector<DString> controlList = {_T("progress11"), _T("progress12"), _T("progress13"), _T("progress14"),
-                                        _T("progress21"), _T("progress22"), _T("progress23"), _T("progress24") };
+    ui::Label* pLabel = ui::Find<ui::Label>(this, "progress_text");
+    std::vector<DString> controlList = {"progress11", "progress12", "progress13", "progress14",
+                                        "progress21", "progress22", "progress23", "progress24" };
     for (const DString& name : controlList) {
-        ui::Progress* pProgress = dynamic_cast<ui::Progress*>(FindControl(name));
+        ui::Progress* pProgress = ui::Find<ui::Progress>(this, name);
         if (pProgress != nullptr) {
             if (pLabel != nullptr) {
-                pLabel->SetText(ui::StringUtil::Printf(_T("%d%%"), (int32_t)m_nProgressValue));                
+                pLabel->SetText(ui::StringUtil::Printf("%d%%", (int32_t)m_nProgressValue));                
             }
             pProgress->SetValue(m_nProgressValue);
         }

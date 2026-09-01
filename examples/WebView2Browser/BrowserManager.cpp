@@ -30,7 +30,7 @@ BrowserBox* BrowserManager::CreateBorwserBox(BrowserForm* pBrowserForm, std::str
     //Multi-tab mode: multiple tabs are allowed in one window
     if (pBrowserForm == nullptr) {
         pBrowserForm = BrowserManager::GetInstance()->CreateBrowserForm();
-        if (!pBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam(_T("WebView2Browser"), true))) {
+        if (!pBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam("WebView2Browser", true))) {
             pBrowserForm = nullptr;
             return nullptr;
         }

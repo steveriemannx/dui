@@ -9,9 +9,25 @@ get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
 # Mode 2 (XML-to-code generation): convert render.xml to pure C++ code at build time
-# (with 13 <Include src="page_*.xml"/> expansions). The MenuBar menu is now a builder callback.
-set(GEN_XML_FILES render.xml)
+if(APPLE)
+    set(RENDER_THEME macos26)
+elseif(WIN32)
+    set(RENDER_THEME windows11)
+else()
+    set(RENDER_THEME default)
+endif()
+set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${RENDER_THEME}/render/render.xml")
 set(GEN_FUNC_NAME Init)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_gen_code.cmake")
+
+# Embed resources into the executable; embedded resources are accessed directly from memory.
+set(EMBED_RES_DIR "${DUI_ROOT}/resources")
+set(EMBED_RES_PATHS
+    "themes/${RENDER_THEME}/global.xml"
+    "themes/${RENDER_THEME}/public"
+    "themes/${RENDER_THEME}/render"
+    "fonts"
+    "lang")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

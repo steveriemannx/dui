@@ -8,11 +8,32 @@ get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
-# Mode 2 (XML-to-code generation): convert basic.xml to pure C++ code at build time (xml_to_code tool)
-# XML is the design-time format: write/debug the UI in XML, generate code at build time, zero layout XML parsing at runtime.
-# Note: keep GEN_AUTO_EMBED OFF (images are read from the resources directory on disk; embedding uses memfd and is Linux-only)
-set(GEN_XML_FILES basic.xml)
+# Mode 2 (XML-to-code generation): convert basic.xml to pure C++ code at build time.
+# The XML is the design-time format: write/debug the UI in XML, generate code at
+# build time, zero layout XML parsing at runtime.
+# The XML source follows the platform-default theme (same as the basic XML example,
+# see GetDefaultThemePath): Windows -> windows11, macOS -> macos26, others -> default.
+if(APPLE)
+    set(BASIC_THEME macos26)
+elseif(WIN32)
+    set(BASIC_THEME windows11)
+else()
+    set(BASIC_THEME default)
+endif()
+set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${BASIC_THEME}/basic/basic.xml")
 set(GEN_FUNC_NAME Init)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_gen_code.cmake")
+
+# Embed only the platform theme (self-contained: macos26/public now carries all
+# shared images, no default-theme fallback) plus this example's own skin
+# (themes/<platform-theme>/basic). Always: fonts + lang.
+set(EMBED_RES_DIR "${DUI_ROOT}/resources")
+set(EMBED_RES_PATHS
+    "themes/${BASIC_THEME}/global.xml"
+    "themes/${BASIC_THEME}/public"
+    "themes/${BASIC_THEME}/basic"
+    "fonts"
+    "lang")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

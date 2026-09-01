@@ -1,136 +1,378 @@
-// 纯代码构建 UI（对应 controls.xml 的布局）
-// 使用 ui::Make / ui::Add 简洁 API，替代逐行 SetAttribute。
-static void BuildUIFromXml(ui::Window* pWindow)
-{
-    auto* p0 = ui::Create<ui::VBox>(pWindow, {{_T("bkcolor"), _T("bk_wnd_darkcolor")}});
-    auto* p1 = ui::Attach<ui::HBox>(p0, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}, {_T("bkcolor"), _T("bk_wnd_lightcolor")}});
-    auto* p2 = ui::Attach<ui::Control>(p1, {{_T("width"), _T("18")}, {_T("height"), _T("18")}, {_T("bkimage"), _T("public/caption/logo.svg")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8")}});
-    auto* p3 = ui::Attach<ui::Label>(p1, {{_T("name"), _T("window_title")}, {_T("text"), _T("Controls")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8")}, {_T("mouse_enabled"), _T("false")}});
-    auto* p4 = ui::Attach<ui::Control>(p1, {{_T("mouse_enabled"), _T("false")}});
-    auto* p5 = ui::Attach<ui::Button>(p1, {{_T("class"), _T("btn_wnd_settings_11")}, {_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("name"), _T("settings")}, {_T("margin"), _T("0,2,0,2")}, {_T("tooltip_text"), _T("设置")}});
-    auto* p6 = ui::Attach<ui::Button>(p1, {{_T("class"), _T("btn_wnd_fullscreen_11")}, {_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("name"), _T("fullscreenbtn")}, {_T("margin"), _T("0,2,0,2")}, {_T("tooltip_text"), _T("窗口全屏，按ESC键可退出全屏")}});
-    auto* p7 = ui::Attach<ui::Button>(p1, {{_T("class"), _T("btn_wnd_min_11")}, {_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("name"), _T("minbtn")}, {_T("margin"), _T("0,2,0,2")}, {_T("tooltip_text"), _T("最小化")}});
-    auto* p8 = ui::Attach<ui::Box>(p1, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    auto* p9 = ui::Attach<ui::Button>(p8, {{_T("class"), _T("btn_wnd_max_11")}, {_T("height"), _T("32")}, {_T("width"), _T("stretch")}, {_T("name"), _T("maxbtn")}, {_T("tooltip_text"), _T("最大化")}});
-    auto* p10 = ui::Attach<ui::Button>(p8, {{_T("class"), _T("btn_wnd_restore_11")}, {_T("height"), _T("32")}, {_T("width"), _T("stretch")}, {_T("name"), _T("restorebtn")}, {_T("visible"), _T("false")}, {_T("tooltip_text"), _T("还原")}});
-    auto* p11 = ui::Attach<ui::Button>(p1, {{_T("class"), _T("btn_wnd_close_11")}, {_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("name"), _T("closebtn")}, {_T("margin"), _T("0,0,0,2")}, {_T("tooltip_text"), _T("关闭")}});
-    auto* p12 = ui::Attach<ui::VBox>(p0, {{_T("padding"), _T("10,10,10,10")}});
-    auto* p13 = ui::Attach<ui::HBox>(p12, {{_T("height"), _T("170")}, {_T("padding"), _T("0,0,0,10")}});
-    auto* p14 = ui::Attach<ui::VBox>(p13, {{_T("width"), _T("120")}});
-    auto* p15 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_blue_80x30")}, {_T("text"), _T("blue")}, {_T("tooltip_text"), _T("ui::Buttons")}});
-    auto* p16 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_white_80x30")}, {_T("text"), _T("white")}});
-    auto* p17 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_red_80x30")}, {_T("text"), _T("red")}});
-    auto* p18 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_color_gray")}, {_T("text"), _T("Control Test")}, {_T("name"), _T("test_btn")}, {_T("width"), _T("110")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
-    auto* p19 = ui::Attach<ui::Button>(p14, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("animation_btn")}, {_T("text"), _T("Animation Test")}, {_T("width"), _T("120")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
-    auto* p20 = ui::Attach<ui::VBox>(p13, {{_T("width"), _T("180")}});
-    auto* p21 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_1")}, {_T("font"), _T("system_14")}, {_T("text"), _T("CheckBox 1")}, {_T("margin"), _T("0,3,0,3")}, {_T("selected"), _T("true")}, {_T("tooltip_text"), _T("ui::Checkbox")}});
-    auto* p22 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_1")}, {_T("text"), _T("CheckBox 2")}, {_T("margin"), _T("0,3,0,3")}});
-    auto* p23 = ui::Attach<ui::CheckBox>(p20, {{_T("class"), _T("checkbox_2")}, {_T("text"), _T("CheckBox 3")}, {_T("margin"), _T("0,3,0,3")}});
-    auto* p24 = ui::Attach<ui::Button>(p20, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("domodal2")}, {_T("text"), _T("Modal Dialog")}, {_T("width"), _T("120")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,12,0,0")}});
-    auto* p25 = ui::Attach<ui::Button>(p20, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("show_color_picker")}, {_T("text"), _T("Color Picker (Modal)")}, {_T("width"), _T("170")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
-    auto* p26 = ui::Attach<ui::VBox>(p13, {{_T("width"), _T("180")}, {_T("margin"), _T("20,0,0,0")}});
-    auto* p27 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("Radio 1")}, {_T("margin"), _T("0,3,0,3")}, {_T("selected"), _T("true")}, {_T("tooltip_text"), _T("ui::Option")}});
-    auto* p28 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("Radio 2")}, {_T("margin"), _T("0,3,0,3")}});
-    auto* p29 = ui::Attach<ui::Option>(p26, {{_T("class"), _T("option_1")}, {_T("group"), _T("option_group")}, {_T("text"), _T("Radio 3")}, {_T("margin"), _T("0,3,0,3")}});
-    auto* p30 = ui::Attach<ui::HBox>(p26, {{_T("height"), _T("36")}});
-    auto* p31 = ui::Attach<ui::Label>(p30, {{_T("text"), _T("Tray Icon")}, {_T("height"), _T("36")}, {_T("valign"), _T("center")}});
-    auto* p32 = ui::Attach<ui::CheckBox>(p30, {{_T("class"), _T("checkbox_toggle_1")}, {_T("name"), _T("checkbox_tray_icon")}, {_T("selected"), _T("false")}, {_T("margin"), _T("4,3,0,3")}});
-    auto* p33 = ui::Attach<ui::HBox>(p26, {{_T("height"), _T("36")}});
-    auto* p34 = ui::Attach<ui::Label>(p33, {{_T("text"), _T("Switch Example")}, {_T("height"), _T("36")}, {_T("valign"), _T("center")}});
-    auto* p35 = ui::Attach<ui::CheckBox>(p33, {{_T("class"), _T("checkbox_toggle_2")}, {_T("margin"), _T("4,3,0,3")}});
-    auto* p36 = ui::Attach<ui::VListBox>(p13, {{_T("class"), _T("list")}, {_T("name"), _T("list")}, {_T("padding"), _T("5,3,5,3")}, {_T("tooltip_text"), _T("ui::VListBox")}});
-    auto* p37 = ui::Attach<ui::ListBoxItem>(p36, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::VListBox::ListBoxItem")}});
-    auto* p38 = ui::Attach<ui::TreeView>(p13, {{_T("class"), _T("list")}, {_T("name"), _T("tree")}, {_T("padding"), _T("5,3,5,3")}, {_T("margin"), _T("8,0,0,0")}, {_T("indent"), _T("20")}, {_T("tooltip_text"), _T("ui::TreeView")}});
-    auto* p39 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView Parent Node 0")}});
-    auto* p40 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView Parent Node 1")}});
-    auto* p41 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 1-1")}});
-    auto* p42 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 1-2")}});
-    auto* p43 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 1-3")}});
-    auto* p44 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 1-3-1")}});
-    auto* p45 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 1-3-2")}});
-    auto* p46 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 1-3-2-1")}});
-    auto* p47 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView Parent Node 2")}});
-    auto* p48 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 2-1")}});
-    auto* p49 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 2-2")}});
-    auto* p50 = ui::Create<ui::TreeNode>(pWindow, {{_T("class"), _T("listitem")}, {_T("height"), _T("20")}, {_T("text"), _T("ui::TreeView::TreeNode 2-3")}});
-    auto* p51 = ui::Attach<ui::Control>(p12, {{_T("class"), _T("splitline_hor_level1")}});
-    auto* p52 = ui::Attach<ui::HBox>(p12, {{_T("height"), _T("220")}});
-    auto* p53 = ui::Attach<ui::VBox>(p52, {{_T("width"), _T("300")}, {_T("margin"), _T("0,0,10")}});
-    auto* p54 = ui::Attach<ui::Combo>(p53, {{_T("class"), _T("combo")}, {_T("name"), _T("combo")}, {_T("combo_type"), _T("drop_list")}, {_T("dropbox_size"), _T("0,150")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,12,0,0")}, {_T("tooltip_text"), _T("ui::Combo")}, {_T("shadow_type"), _T("system_small_round")}});
-    auto* p55 = ui::Attach<ui::FilterCombo>(p53, {{_T("class"), _T("filter_combo")}, {_T("name"), _T("filter_combo")}, {_T("dropbox_size"), _T("0,150")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,12,0,0")}, {_T("tooltip_text"), _T("ui::FilterCombo")}, {_T("shadow_type"), _T("system_small_round")}});
-    auto* p56 = ui::Attach<ui::RichEdit>(p53, {{_T("class"), _T("simple prompt simple_border_bottom")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,3")}, {_T("font"), _T("system_14")}, {_T("text_align"), _T("vcenter")}, {_T("text_padding"), _T("8,4,8,4")}, {_T("default_context_menu"), _T("true")}, {_T("prompt_text"), _T("ui::RichEdit: 单行文本")}});
-    auto* p57 = ui::Attach<ui::CheckCombo>(p53, {{_T("class"), _T("check_combo")}, {_T("name"), _T("check_combo")}, {_T("height"), _T("30")}, {_T("margin"), _T("0,3")}, {_T("tooltip_text"), _T("nim_comp::CheckCombo")}, {_T("shadow_type"), _T("system_small_round")}});
-    auto* p58 = ui::Attach<ui::Button>(p53, {{_T("class"), _T("btn_global_color_gray")}, {_T("text"), _T("Fullscreen RichEdit")}, {_T("name"), _T("rich_edit_fullscreen_btn")}, {_T("width"), _T("160")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("margin"), _T("0,2,0,0")}});
-    auto* p59 = ui::Attach<ui::VBox>(p52, {{_T("height"), _T("240")}});
-    auto* p60 = ui::Attach<ui::HBox>(p59, {});
-    auto* p61 = ui::Attach<ui::VBox>(p60, {{_T("width"), _T("200")}});
-    auto* p62 = ui::Attach<ui::HBox>(p61, {{_T("margin"), _T("0,10")}, {_T("height"), _T("32")}});
-    auto* p63 = ui::Attach<ui::Control>(p62, {{_T("width"), _T("20")}, {_T("height"), _T("20")}, {_T("bkimage"), _T("file='public/animation/loading3.json'")}, {_T("valign"), _T("center")}});
-    auto* p64 = ui::Attach<ui::Progress>(p62, {{_T("class"), _T("progress_horizontal_blue")}, {_T("name"), _T("progress")}, {_T("value"), _T("0")}, {_T("margin"), _T("10")}, {_T("tooltip_text"), _T("ui::Progress")}});
-    auto* p65 = ui::Attach<ui::HBox>(p61, {{_T("margin"), _T("0,0,0,10")}, {_T("height"), _T("32")}});
-    auto* p66 = ui::Attach<ui::Control>(p65, {{_T("width"), _T("24")}, {_T("height"), _T("24")}, {_T("bkimage"), _T("file='set_speaker.svg' width='20' height='20' valign='center' halign='center'")}, {_T("valign"), _T("center")}});
-    auto* p67 = ui::Attach<ui::Slider>(p65, {{_T("class"), _T("slider_horizontal_green")}, {_T("value"), _T("70")}, {_T("margin"), _T("10")}, {_T("tooltip_text"), _T("ui::Slider")}});
-    auto* p68 = ui::Attach<ui::VBox>(p60, {{_T("width"), _T("90")}, {_T("margin"), _T("10,0")}});
-    auto* p69 = ui::Attach<ui::CircleProgress>(p68, {{_T("name"), _T("circleprogress")}, {_T("circular"), _T("true")}, {_T("height"), _T("80")}, {_T("width"), _T("80")}, {_T("circle_width"), _T("12")}, {_T("bgcolor"), _T("gray")}, {_T("fgcolor"), _T("green")}, {_T("gradient_color"), _T("red")}, {_T("clockwise"), _T("true")}, {_T("min"), _T("0")}, {_T("max"), _T("100")}, {_T("value"), _T("75")}, {_T("margin"), _T("10")}, {_T("text_padding"), _T("10,32,10,10")}, {_T("normal_text_color"), _T("darkcolor")}, {_T("indicator"), _T("file='public/progress/indicator.svg' width='12' height='12'")}, {_T("tooltip_text"), _T("ui::CircleProgress")}});
-    auto* p70 = ui::Attach<ui::VBox>(p60, {{_T("margin"), _T("4,8,0,0")}});
-    auto* p71 = ui::Attach<ui::HBox>(p70, {{_T("child_margin"), _T("4")}, {_T("width"), _T("300")}});
-    auto* p72 = ui::Attach<ui::Label>(p71, {{_T("text"), _T("Date")}, {_T("height"), _T("24")}, {_T("text_align"), _T("vcenter")}, {_T("hot_text_color"), _T("red")}, {_T("pushed_text_color"), _T("blue")}});
-    auto* p73 = ui::Attach<ui::DateTime>(p71, {{_T("width"), _T("100%")}, {_T("height"), _T("24")}, {_T("text"), _T("2022-02-01")}});
-    auto* p74 = ui::Attach<ui::DateTime>(p71, {{_T("width"), _T("120")}, {_T("height"), _T("24")}, {_T("edit_format"), _T("date_up_down")}});
-    auto* p75 = ui::Attach<ui::HBox>(p70, {{_T("child_margin"), _T("4")}, {_T("width"), _T("320")}});
-    auto* p76 = ui::Attach<ui::Label>(p75, {{_T("text"), _T("Time")}, {_T("height"), _T("24")}, {_T("text_align"), _T("vcenter")}});
-    auto* p77 = ui::Attach<ui::DateTime>(p75, {{_T("width"), _T("100%")}, {_T("height"), _T("24")}, {_T("edit_format"), _T("date_time_up_down")}});
-    auto* p78 = ui::Attach<ui::DateTime>(p75, {{_T("width"), _T("72")}, {_T("height"), _T("24")}, {_T("edit_format"), _T("minute_up_down")}});
-    auto* p79 = ui::Attach<ui::HBox>(p59, {});
-    auto* p80 = ui::Attach<ui::VBox>(p79, {{_T("margin"), _T("10,0,0,0")}});
-    auto* p81 = ui::Attach<ui::HBox>(p80, {{_T("child_margin"), _T("10")}});
-    auto* p82 = ui::Attach<ui::Label>(p81, {{_T("text"), _T("IP Address")}, {_T("height"), _T("28")}, {_T("text_align"), _T("vcenter")}});
-    auto* p83 = ui::Attach<ui::IPAddress>(p81, {{_T("class"), _T("ip_address")}, {_T("ip"), _T("192.168.0.1")}});
-    auto* p84 = ui::Attach<ui::HBox>(p80, {{_T("child_margin"), _T("10")}});
-    auto* p85 = ui::Attach<ui::Label>(p84, {{_T("text"), _T("RichEdit Spin")}, {_T("height"), _T("28")}, {_T("text_align"), _T("vcenter")}});
-    auto* p86 = ui::Attach<ui::RichEdit>(p84, {{_T("class"), _T("simple simple_border rich_edit_spin")}, {_T("min_number"), _T("-64")}, {_T("max_number"), _T("64")}, {_T("limit_text"), _T("3")}, {_T("text"), _T("0")}});
-    auto* p87 = ui::Attach<ui::VBox>(p79, {{_T("margin"), _T("10,0,0,0")}});
-    auto* p88 = ui::Attach<ui::HBox>(p87, {{_T("child_margin"), _T("10")}});
-    auto* p89 = ui::Attach<ui::HotKey>(p88, {{_T("class"), _T("hot_key")}, {_T("name"), _T("set_hot_key")}, {_T("default_text"), _T("无")}});
-    auto* p90 = ui::Attach<ui::Button>(p88, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("btn_set_hot_key")}, {_T("text"), _T("Set Window HotKey")}, {_T("width"), _T("100%")}, {_T("height"), _T("28")}, {_T("border_round"), _T("3,3")}, {_T("text_align"), _T("vcenter")}});
-    auto* p91 = ui::Attach<ui::HBox>(p87, {{_T("child_margin"), _T("10")}});
-    auto* p92 = ui::Attach<ui::HotKey>(p91, {{_T("class"), _T("hot_key")}, {_T("name"), _T("set_system_hot_key")}, {_T("default_text"), _T("无")}});
-    auto* p93 = ui::Attach<ui::Button>(p91, {{_T("class"), _T("btn_global_color_gray")}, {_T("name"), _T("btn_set_system_hot_key")}, {_T("text"), _T("Set System HotKey")}, {_T("width"), _T("100%")}, {_T("height"), _T("28")}, {_T("border_round"), _T("3,3")}, {_T("text_align"), _T("vcenter")}});
-    auto* p94 = ui::Attach<ui::HBox>(p59, {{_T("child_margin"), _T("10")}});
-    auto* p95 = ui::Attach<ui::HBox>(p94, {{_T("child_margin"), _T("10")}});
-    auto* p96 = ui::Attach<ui::RichText>(p95, {{_T("class"), _T("rich_text")}, {_T("name"), _T("rich_text_demo")}, {_T("row_spacing_mul"), _T("1.2")}});
-    auto* p97 = ui::Attach<ui::VBox>(p95, {{_T("width"), _T("80")}});
-    auto* p98 = ui::Attach<ui::HyperLink>(p97, {{_T("class"), _T("hyper_link")}, {_T("name"), _T("hyper_link1")}, {_T("text"), _T("Baidu Homepage")}, {_T("url"), _T("www.baidu.com")}, {_T("tooltip_text"), _T("这是一个HyperLink控件")}});
-    auto* p99 = ui::Attach<ui::HyperLink>(p97, {{_T("class"), _T("hyper_link")}, {_T("name"), _T("hyper_link2")}, {_T("text"), _T("文字按钮")}, {_T("tooltip_text"), _T("这是一个HyperLink控件")}});
-    auto* p100 = ui::Attach<ui::HBox>(p94, {{_T("child_margin"), _T("10")}});
-    auto* p101 = ui::Attach<ui::Label>(p100, {{_T("text"), _T("Line:")}, {_T("valign"), _T("center")}});
-    auto* p102 = ui::Attach<ui::VBox>(p100, {});
-    auto* p103 = ui::Attach<ui::Line>(p102, {{_T("vertical"), _T("false")}, {_T("line_color"), _T("blue")}, {_T("dash_style"), _T("solid")}, {_T("line_width"), _T("2")}});
-    auto* p104 = ui::Attach<ui::Line>(p102, {{_T("vertical"), _T("false")}, {_T("line_color"), _T("red")}, {_T("dash_style"), _T("dash")}, {_T("line_width"), _T("2")}});
-    auto* p105 = ui::Attach<ui::Line>(p102, {{_T("vertical"), _T("false")}, {_T("line_color"), _T("green")}, {_T("dash_style"), _T("dot")}, {_T("line_width"), _T("2")}});
-    auto* p106 = ui::Attach<ui::Line>(p102, {{_T("vertical"), _T("false")}, {_T("line_color"), _T("black")}, {_T("dash_style"), _T("dash_dot")}, {_T("line_width"), _T("2")}});
-    auto* p107 = ui::Attach<ui::Line>(p102, {{_T("vertical"), _T("false")}, {_T("line_color"), _T("orange")}, {_T("dash_style"), _T("dash_dot_dot")}, {_T("line_width"), _T("2")}});
-    auto* p108 = ui::Attach<ui::VBox>(p100, {});
-    auto* p109 = ui::Attach<ui::HBox>(p108, {{_T("margin"), _T("0,4,0,4")}});
-    auto* p110 = ui::Attach<ui::Line>(p109, {{_T("vertical"), _T("true")}, {_T("line_color"), _T("blue")}, {_T("dash_style"), _T("solid")}, {_T("line_width"), _T("1")}});
-    auto* p111 = ui::Attach<ui::Line>(p109, {{_T("vertical"), _T("true")}, {_T("line_color"), _T("red")}, {_T("dash_style"), _T("dash")}, {_T("line_width"), _T("1")}});
-    auto* p112 = ui::Attach<ui::Line>(p109, {{_T("vertical"), _T("true")}, {_T("line_color"), _T("green")}, {_T("dash_style"), _T("dot")}, {_T("line_width"), _T("1")}});
-    auto* p113 = ui::Attach<ui::Line>(p109, {{_T("vertical"), _T("true")}, {_T("line_color"), _T("black")}, {_T("dash_style"), _T("dash_dot")}, {_T("line_width"), _T("1")}});
-    auto* p114 = ui::Attach<ui::Line>(p109, {{_T("vertical"), _T("true")}, {_T("line_color"), _T("orange")}, {_T("dash_style"), _T("dash_dot_dot")}, {_T("line_width"), _T("1")}});
-    auto* p115 = ui::Attach<ui::Control>(p12, {{_T("class"), _T("splitline_hor_level1")}, {_T("margin"), _T("0,8,0,4")}});
-    auto* p116 = ui::Attach<ui::HBox>(p12, {});
-    auto* p117 = ui::Attach<ui::RichEdit>(p116, {{_T("class"), _T("prompt")}, {_T("name"), _T("edit")}, {_T("bkcolor"), _T("white")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("hide_selection"), _T("false")}, {_T("multiline"), _T("true")}, {_T("auto_vscroll"), _T("true")}, {_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("want_return_msg"), _T("true")}, {_T("rich"), _T("false")}, {_T("enable_drag_drop"), _T("true")}, {_T("enable_drop_file"), _T("true")}, {_T("drop_file_types"), _T(".txt;.md")}});
-    auto* p118 = ui::Attach<ui::RichEdit>(p116, {{_T("class"), _T("prompt")}, {_T("name"), _T("edit2")}, {_T("bkcolor"), _T("white")}, {_T("width"), _T("stretch")}, {_T("height"), _T("stretch")}, {_T("hide_selection"), _T("false")}, {_T("multiline"), _T("true")}, {_T("auto_vscroll"), _T("true")}, {_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("scrollbar_float"), _T("true")}, {_T("vscrollbar_class"), _T("vscrollbar2")}, {_T("hscrollbar_class"), _T("hscrollbar2")}, {_T("vscrollbar_style"), _T("auto_hide_scroll='false'")}, {_T("hscrollbar_style"), _T("auto_hide_scroll='false'")}, {_T("want_return_msg"), _T("true")}, {_T("rich"), _T("false")}, {_T("margin"), _T("4,0,0,0")}, {_T("enable_drag_drop"), _T("true")}, {_T("enable_drop_file"), _T("false")}});
-    p38->GetRootNode()->AddChildNode(p39);
-    p40->AddChildNode(p41);
-    p40->AddChildNode(p42);
+///////////////////////////////////////////////////////////////////////////
+//   AUTO-GENERATED by xml_to_code - DO NOT EDIT BY HAND
+//
+//   Source XML files:
+//     resources/themes/macos26/controls/controls.xml
+//
+//   Each XML file produces one function:
+//     BuildUIFromXml + FileStem
+//     BuildUIFromXmlControls(ui::Window* pWindow)
+//
+//   Functions ending in 'Window' call ui::Attach(pWindow, p0) automatically.
+//   Other functions (templates, items) do NOT attach the root - the
+//   caller must add the root control to a parent container.
+///////////////////////////////////////////////////////////////////////////
+
+#include "dui/dui.h"
+#include "dui/Utils/UiBuilder.h"
+
+void BuildUIFromXmlControls(ui::Window* pWindow) {
+    auto& w = *pWindow;
+    w.SetWindowSize(1000, 760);
+    w.SetEnableSnapLayoutMenu(true);
+    w.SetEnableSysMenu(true);
+    w.SetSysMenuRect(ui::UiRect(0, 0, 36, 36), true);
+    w.SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    w.SetUseSystemCaption(false);
+    w.SetSizeBox(ui::UiRect(2, 2, 2, 2), true);
+    w.SetWindowMinimumSize(ui::UiSize(400, 320), true);
+    w.SetWindowIcon("public/caption/logo.ico");
+    w.SetShadowAttached(true);
+    w.CenterWindow();
+    auto* p0 = ui::Create<ui::VBox>(pWindow, {{"bkcolor", "bk_wnd_darkcolor"}});
+    auto* p1 = ui::Create<ui::HBox>(pWindow, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
+    auto* p2 = ui::Create<ui::Control>(pWindow, {{"width", "18"}, {"height", "18"}, {"bkimage", "public/caption/logo.svg"}, {"valign", "center"}, {"margin", "8"}});
+    ui::Attach(p1, p2);
+
+    auto* p3 = ui::Create<ui::Label>(pWindow, {{"name", "window_title"}, {"text", "Controls"}, {"valign", "center"}, {"margin", "8"}, {"mouse_enabled", "false"}});
+    ui::Attach(p1, p3);
+
+    auto* p4 = ui::Create<ui::Control>(pWindow, {{"mouse_enabled", "false"}});
+    ui::Attach(p1, p4);
+
+    auto* p5 = ui::Create<ui::Button>(pWindow, {{"class", "btn_wnd_settings_11"}, {"height", "32"}, {"width", "40"}, {"name", "settings"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Settings"}});
+    ui::Attach(p1, p5);
+
+    auto* p6 = ui::Create<ui::Button>(pWindow, {{"class", "btn_wnd_min_11"}, {"height", "32"}, {"width", "40"}, {"name", "minbtn"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}});
+    ui::Attach(p1, p6);
+
+    auto* p7 = ui::Create<ui::Button>(pWindow, {{"class", "btn_wnd_close_11"}, {"height", "stretch"}, {"width", "40"}, {"name", "closebtn"}, {"margin", "0,0,8,2"}, {"tooltip_text", "Close"}});
+    ui::Attach(p1, p7);
+
+    ui::Attach(p0, p1);
+
+    auto* p8 = ui::Create<ui::VBox>(pWindow, {{"padding", "10,10,10,10"}});
+    auto* p9 = ui::Create<ui::HBox>(pWindow, {{"height", "170"}, {"padding", "0,0,0,10"}});
+    auto* p10 = ui::Create<ui::VBox>(pWindow, {{"width", "120"}});
+    auto* p11 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_blue_80x30"}, {"text", "blue"}, {"tooltip_text", "ui::Buttons"}});
+    ui::Attach(p10, p11);
+
+    auto* p12 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_white_80x30"}, {"text", "white"}});
+    ui::Attach(p10, p12);
+
+    auto* p13 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_red_80x30"}, {"text", "red"}});
+    ui::Attach(p10, p13);
+
+    auto* p14 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"text", "Control Test"}, {"name", "test_btn"}, {"width", "80"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,2,0,0"}});
+    ui::Attach(p10, p14);
+
+    auto* p15 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "animation_btn"}, {"text", "Animation Test"}, {"width", "80"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,2,0,0"}});
+    ui::Attach(p10, p15);
+
+    ui::Attach(p9, p10);
+
+    auto* p16 = ui::Create<ui::VBox>(pWindow, {{"width", "120"}});
+    auto* p17 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_1"}, {"font", "system_14"}, {"text", "CheckBox 1"}, {"margin", "0,3,0,3"}, {"selected", "true"}, {"tooltip_text", "ui::Checkbox"}});
+    ui::Attach(p16, p17);
+
+    auto* p18 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_1"}, {"text", "CheckBox 2"}, {"margin", "0,3,0,3"}});
+    ui::Attach(p16, p18);
+
+    auto* p19 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_2"}, {"text", "CheckBox 3"}, {"margin", "0,3,0,3"}});
+    ui::Attach(p16, p19);
+
+    auto* p20 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "domodal2"}, {"text", "Modal Dialog"}, {"width", "110"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,12,0,0"}});
+    ui::Attach(p16, p20);
+
+    auto* p21 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "show_color_picker"}, {"text", "Color Picker (Modal)"}, {"width", "110"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,2,0,0"}});
+    ui::Attach(p16, p21);
+
+    ui::Attach(p9, p16);
+
+    auto* p22 = ui::Create<ui::VBox>(pWindow, {{"width", "160"}, {"margin", "20,0,0,0"}});
+    auto* p23 = ui::Create<ui::Option>(pWindow, {{"class", "option_1"}, {"group", "option_group"}, {"text", "Radio 1"}, {"margin", "0,3,0,3"}, {"selected", "true"}, {"tooltip_text", "ui::Option"}});
+    ui::Attach(p22, p23);
+
+    auto* p24 = ui::Create<ui::Option>(pWindow, {{"class", "option_1"}, {"group", "option_group"}, {"text", "Radio 2"}, {"margin", "0,3,0,3"}});
+    ui::Attach(p22, p24);
+
+    auto* p25 = ui::Create<ui::Option>(pWindow, {{"class", "option_1"}, {"group", "option_group"}, {"text", "Radio 3"}, {"margin", "0,3,0,3"}});
+    ui::Attach(p22, p25);
+
+    auto* p26 = ui::Create<ui::HBox>(pWindow, {{"height", "36"}});
+    auto* p27 = ui::Create<ui::Label>(pWindow, {{"text", "Tray Icon"}, {"height", "36"}, {"valign", "center"}});
+    ui::Attach(p26, p27);
+
+    auto* p28 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_toggle_1"}, {"name", "checkbox_tray_icon"}, {"selected", "false"}, {"margin", "4,3,0,3"}});
+    ui::Attach(p26, p28);
+
+    ui::Attach(p22, p26);
+
+    auto* p29 = ui::Create<ui::HBox>(pWindow, {{"height", "36"}});
+    auto* p30 = ui::Create<ui::Label>(pWindow, {{"text", "Switch Example"}, {"height", "36"}, {"valign", "center"}});
+    ui::Attach(p29, p30);
+
+    auto* p31 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_toggle_2"}, {"margin", "4,3,0,3"}});
+    ui::Attach(p29, p31);
+
+    ui::Attach(p22, p29);
+
+    ui::Attach(p9, p22);
+
+    auto* p32 = ui::Create<ui::VListBox>(pWindow, {{"class", "list"}, {"name", "list"}, {"padding", "5,3,5,3"}, {"tooltip_text", "ui::VListBox"}});
+    auto* p33 = ui::Create<ui::ListBoxItem>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::VListBox::ListBoxItem"}});
+    ui::Attach(p32, p33);
+
+    ui::Attach(p9, p32);
+
+    auto* p34 = ui::Create<ui::TreeView>(pWindow, {{"class", "list"}, {"name", "tree"}, {"padding", "5,3,5,3"}, {"margin", "8,0,0,0"}, {"indent", "20"}, {"tooltip_text", "ui::TreeView"}});
+    auto* p35 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView Parent Node 0"}});
+    p34->GetRootNode()->AddChildNode(p35);
+
+    auto* p36 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView Parent Node 1"}});
+    auto* p37 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-1"}});
+    p36->AddChildNode(p37);
+
+    auto* p38 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-2"}});
+    p36->AddChildNode(p38);
+
+    auto* p39 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-3"}});
+    auto* p40 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-3-1"}});
+    p39->AddChildNode(p40);
+
+    auto* p41 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-3-2"}});
+    auto* p42 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-3-2-1"}});
+    p41->AddChildNode(p42);
+
+    p39->AddChildNode(p41);
+
+    p36->AddChildNode(p39);
+
+    p34->GetRootNode()->AddChildNode(p36);
+
+    auto* p43 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView Parent Node 2"}});
+    auto* p44 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 2-1"}});
     p43->AddChildNode(p44);
-    p45->AddChildNode(p46);
+
+    auto* p45 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 2-2"}});
     p43->AddChildNode(p45);
-    p40->AddChildNode(p43);
-    p38->GetRootNode()->AddChildNode(p40);
-    p47->AddChildNode(p48);
-    p47->AddChildNode(p49);
-    p47->AddChildNode(p50);
-    p38->GetRootNode()->AddChildNode(p47);
+
+    auto* p46 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 2-3"}});
+    p43->AddChildNode(p46);
+
+    p34->GetRootNode()->AddChildNode(p43);
+
+    ui::Attach(p9, p34);
+
+    ui::Attach(p8, p9);
+
+    auto* p47 = ui::Create<ui::Control>(pWindow, {{"class", "splitline_hor_level1"}});
+    ui::Attach(p8, p47);
+
+    auto* p48 = ui::Create<ui::HBox>(pWindow, {{"height", "220"}});
+    auto* p49 = ui::Create<ui::VBox>(pWindow, {{"width", "300"}, {"margin", "0,0,10"}});
+    auto* p50 = ui::Create<ui::Combo>(pWindow, {{"class", "combo"}, {"name", "combo"}, {"combo_type", "drop_list"}, {"dropbox_size", "0,150"}, {"height", "30"}, {"margin", "0,12,0,0"}, {"tooltip_text", "ui::Combo"}, {"shadow_type", "system_small_round"}});
+    ui::Attach(p49, p50);
+
+    auto* p51 = ui::Create<ui::FilterCombo>(pWindow, {{"class", "filter_combo"}, {"name", "filter_combo"}, {"dropbox_size", "0,150"}, {"height", "30"}, {"margin", "0,12,0,0"}, {"tooltip_text", "ui::FilterCombo"}, {"shadow_type", "system_small_round"}});
+    ui::Attach(p49, p51);
+
+    auto* p52 = ui::Create<ui::RichEdit>(pWindow, {{"class", "simple prompt simple_border_bottom"}, {"height", "30"}, {"margin", "0,3"}, {"font", "system_14"}, {"text_align", "vcenter"}, {"text_padding", "8,4,8,4"}, {"default_context_menu", "true"}, {"prompt_text", "ui::RichEdit: single line text"}});
+    ui::Attach(p49, p52);
+
+    auto* p53 = ui::Create<ui::CheckCombo>(pWindow, {{"class", "check_combo"}, {"name", "check_combo"}, {"height", "30"}, {"margin", "0,3"}, {"tooltip_text", "nim_comp::CheckCombo"}, {"shadow_type", "system_small_round"}});
+    ui::Attach(p49, p53);
+
+    auto* p54 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"text", "Fullscreen RichEdit"}, {"name", "rich_edit_fullscreen_btn"}, {"width", "160"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,2,0,0"}});
+    ui::Attach(p49, p54);
+
+    ui::Attach(p48, p49);
+
+    auto* p55 = ui::Create<ui::VBox>(pWindow, {{"height", "240"}});
+    auto* p56 = ui::Create<ui::HBox>(pWindow, {});
+    auto* p57 = ui::Create<ui::VBox>(pWindow, {{"width", "200"}});
+    auto* p58 = ui::Create<ui::HBox>(pWindow, {{"margin", "0,10"}, {"height", "32"}});
+    auto* p59 = ui::Create<ui::Control>(pWindow, {{"width", "20"}, {"height", "20"}, {"bkimage", "file='public/animation/loading3.json'"}, {"valign", "center"}});
+    ui::Attach(p58, p59);
+
+    auto* p60 = ui::Create<ui::Progress>(pWindow, {{"class", "progress_horizontal_blue"}, {"name", "progress"}, {"value", "0"}, {"margin", "10"}, {"tooltip_text", "ui::Progress"}});
+    ui::Attach(p58, p60);
+
+    ui::Attach(p57, p58);
+
+    auto* p61 = ui::Create<ui::HBox>(pWindow, {{"margin", "0,0,0,10"}, {"height", "32"}});
+    auto* p62 = ui::Create<ui::Control>(pWindow, {{"width", "24"}, {"height", "24"}, {"bkimage", "file='set_speaker.svg' width='20' height='20' valign='center' halign='center'"}, {"valign", "center"}});
+    ui::Attach(p61, p62);
+
+    auto* p63 = ui::Create<ui::Slider>(pWindow, {{"class", "slider_horizontal_green"}, {"value", "70"}, {"margin", "10"}, {"tooltip_text", "ui::Slider"}});
+    ui::Attach(p61, p63);
+
+    ui::Attach(p57, p61);
+
+    ui::Attach(p56, p57);
+
+    auto* p64 = ui::Create<ui::VBox>(pWindow, {{"width", "90"}, {"margin", "10,0"}});
+    auto* p65 = ui::Create<ui::CircleProgress>(pWindow, {{"name", "circleprogress"}, {"circular", "true"}, {"height", "80"}, {"width", "80"}, {"circle_width", "12"}, {"bgcolor", "gray"}, {"fgcolor", "green"}, {"gradient_color", "red"}, {"clockwise", "true"}, {"min", "0"}, {"max", "100"}, {"value", "75"}, {"margin", "10"}, {"text_padding", "10,32,10,10"}, {"normal_text_color", "darkcolor"}, {"indicator", "file='public/progress/indicator.svg' width='12' height='12'"}, {"tooltip_text", "ui::CircleProgress"}});
+    ui::Attach(p64, p65);
+
+    ui::Attach(p56, p64);
+
+    auto* p66 = ui::Create<ui::VBox>(pWindow, {{"margin", "4,8,0,0"}});
+    auto* p67 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "4"}, {"width", "300"}});
+    auto* p68 = ui::Create<ui::Label>(pWindow, {{"text", "Date"}, {"height", "24"}, {"text_align", "vcenter"}, {"hot_text_color", "red"}, {"pushed_text_color", "blue"}});
+    ui::Attach(p67, p68);
+
+    auto* p69 = ui::Create<ui::DateTime>(pWindow, {{"width", "100%"}, {"height", "24"}, {"text", "2022-02-01"}});
+    ui::Attach(p67, p69);
+
+    auto* p70 = ui::Create<ui::DateTime>(pWindow, {{"width", "120"}, {"height", "24"}, {"edit_format", "date_up_down"}});
+    ui::Attach(p67, p70);
+
+    ui::Attach(p66, p67);
+
+    auto* p71 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "4"}, {"width", "320"}});
+    auto* p72 = ui::Create<ui::Label>(pWindow, {{"text", "Time"}, {"height", "24"}, {"text_align", "vcenter"}});
+    ui::Attach(p71, p72);
+
+    auto* p73 = ui::Create<ui::DateTime>(pWindow, {{"width", "100%"}, {"height", "24"}, {"edit_format", "date_time_up_down"}});
+    ui::Attach(p71, p73);
+
+    auto* p74 = ui::Create<ui::DateTime>(pWindow, {{"width", "72"}, {"height", "24"}, {"edit_format", "minute_up_down"}});
+    ui::Attach(p71, p74);
+
+    ui::Attach(p66, p71);
+
+    ui::Attach(p56, p66);
+
+    ui::Attach(p55, p56);
+
+    auto* p75 = ui::Create<ui::HBox>(pWindow, {});
+    auto* p76 = ui::Create<ui::VBox>(pWindow, {{"margin", "10,0,0,0"}});
+    auto* p77 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
+    auto* p78 = ui::Create<ui::Label>(pWindow, {{"text", "IP Address"}, {"height", "28"}, {"text_align", "vcenter"}});
+    ui::Attach(p77, p78);
+
+    auto* p79 = ui::Create<ui::IPAddress>(pWindow, {{"class", "ip_address"}, {"ip", "192.168.0.1"}});
+    ui::Attach(p77, p79);
+
+    ui::Attach(p76, p77);
+
+    auto* p80 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
+    auto* p81 = ui::Create<ui::Label>(pWindow, {{"text", "RichEdit Spin"}, {"height", "28"}, {"text_align", "vcenter"}});
+    ui::Attach(p80, p81);
+
+    auto* p82 = ui::Create<ui::RichEdit>(pWindow, {{"class", "simple simple_border rich_edit_spin"}, {"min_number", "-64"}, {"max_number", "64"}, {"limit_text", "3"}, {"text", "0"}});
+    ui::Attach(p80, p82);
+
+    ui::Attach(p76, p80);
+
+    ui::Attach(p75, p76);
+
+    auto* p83 = ui::Create<ui::VBox>(pWindow, {{"margin", "10,0,0,0"}});
+    auto* p84 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
+    auto* p85 = ui::Create<ui::HotKey>(pWindow, {{"class", "hot_key"}, {"name", "set_hot_key"}, {"default_text", "None"}});
+    ui::Attach(p84, p85);
+
+    auto* p86 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "btn_set_hot_key"}, {"text", "Set Window HotKey"}, {"width", "100%"}, {"height", "28"}, {"border_round", "3,3"}, {"text_align", "vcenter"}});
+    ui::Attach(p84, p86);
+
+    ui::Attach(p83, p84);
+
+    auto* p87 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
+    auto* p88 = ui::Create<ui::HotKey>(pWindow, {{"class", "hot_key"}, {"name", "set_system_hot_key"}, {"default_text", "None"}});
+    ui::Attach(p87, p88);
+
+    auto* p89 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "btn_set_system_hot_key"}, {"text", "Set System HotKey"}, {"width", "100%"}, {"height", "28"}, {"border_round", "3,3"}, {"text_align", "vcenter"}});
+    ui::Attach(p87, p89);
+
+    ui::Attach(p83, p87);
+
+    ui::Attach(p75, p83);
+
+    ui::Attach(p55, p75);
+
+    auto* p90 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
+    auto* p91 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
+    auto* p92 = ui::Create<ui::RichText>(pWindow, {{"class", "rich_text"}, {"name", "rich_text_demo"}, {"width", "300"}, {"height", "60"}, {"row_spacing_mul", "1.2"}});
+    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText>\n                                RichText:　<a href=\"www.baidu.com\">Click to visit Baidu</a><br/>\n                                RichText:　<a href=\"www.sohu.com\">Click to visit Sohu</a></RichText>"), p92);
+    ui::Attach(p91, p92);
+
+    auto* p93 = ui::Create<ui::VBox>(pWindow, {{"width", "80"}});
+    auto* p94 = ui::Create<ui::HyperLink>(pWindow, {{"class", "hyper_link"}, {"name", "hyper_link1"}, {"text", "Baidu Homepage"}, {"url", "www.baidu.com"}, {"tooltip_text", "This is a HyperLink control"}});
+    ui::Attach(p93, p94);
+
+    auto* p95 = ui::Create<ui::HyperLink>(pWindow, {{"class", "hyper_link"}, {"name", "hyper_link2"}, {"text", "Text Button"}, {"tooltip_text", "This is a HyperLink control"}});
+    ui::Attach(p93, p95);
+
+    ui::Attach(p91, p93);
+
+    ui::Attach(p90, p91);
+
+    auto* p96 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
+    auto* p97 = ui::Create<ui::Label>(pWindow, {{"text", "Line:"}, {"valign", "center"}});
+    ui::Attach(p96, p97);
+
+    auto* p98 = ui::Create<ui::VBox>(pWindow, {});
+    auto* p99 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "blue"}, {"dash_style", "solid"}, {"line_width", "2"}});
+    ui::Attach(p98, p99);
+
+    auto* p100 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "red"}, {"dash_style", "dash"}, {"line_width", "2"}});
+    ui::Attach(p98, p100);
+
+    auto* p101 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "green"}, {"dash_style", "dot"}, {"line_width", "2"}});
+    ui::Attach(p98, p101);
+
+    auto* p102 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "black"}, {"dash_style", "dash_dot"}, {"line_width", "2"}});
+    ui::Attach(p98, p102);
+
+    auto* p103 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "orange"}, {"dash_style", "dash_dot_dot"}, {"line_width", "2"}});
+    ui::Attach(p98, p103);
+
+    ui::Attach(p96, p98);
+
+    auto* p104 = ui::Create<ui::VBox>(pWindow, {});
+    auto* p105 = ui::Create<ui::HBox>(pWindow, {{"margin", "0,4,0,4"}});
+    auto* p106 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "blue"}, {"dash_style", "solid"}, {"line_width", "1"}});
+    ui::Attach(p105, p106);
+
+    auto* p107 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "red"}, {"dash_style", "dash"}, {"line_width", "1"}});
+    ui::Attach(p105, p107);
+
+    auto* p108 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "green"}, {"dash_style", "dot"}, {"line_width", "1"}});
+    ui::Attach(p105, p108);
+
+    auto* p109 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "black"}, {"dash_style", "dash_dot"}, {"line_width", "1"}});
+    ui::Attach(p105, p109);
+
+    auto* p110 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "orange"}, {"dash_style", "dash_dot_dot"}, {"line_width", "1"}});
+    ui::Attach(p105, p110);
+
+    ui::Attach(p104, p105);
+
+    ui::Attach(p96, p104);
+
+    ui::Attach(p90, p96);
+
+    ui::Attach(p55, p90);
+
+    ui::Attach(p48, p55);
+
+    ui::Attach(p8, p48);
+
+    auto* p111 = ui::Create<ui::Control>(pWindow, {{"class", "splitline_hor_level1"}, {"margin", "0,8,0,4"}});
+    ui::Attach(p8, p111);
+
+    auto* p112 = ui::Create<ui::HBox>(pWindow, {});
+    auto* p113 = ui::Create<ui::RichEdit>(pWindow, {{"class", "prompt"}, {"name", "edit"}, {"bkcolor", "white"}, {"width", "stretch"}, {"height", "stretch"}, {"hide_selection", "false"}, {"multiline", "true"}, {"auto_vscroll", "true"}, {"vscrollbar", "true"}, {"hscrollbar", "true"}, {"want_return_msg", "true"}, {"rich", "false"}, {"enable_drag_drop", "true"}, {"enable_drop_file", "true"}, {"drop_file_types", ".txt;.md"}});
+    ui::Attach(p112, p113);
+
+    auto* p114 = ui::Create<ui::RichEdit>(pWindow, {{"class", "prompt"}, {"name", "edit2"}, {"bkcolor", "white"}, {"width", "stretch"}, {"height", "stretch"}, {"hide_selection", "false"}, {"multiline", "true"}, {"auto_vscroll", "true"}, {"vscrollbar", "true"}, {"hscrollbar", "true"}, {"scrollbar_float", "true"}, {"vscrollbar_class", "vscrollbar2"}, {"hscrollbar_class", "hscrollbar2"}, {"vscrollbar_style", "auto_hide_scroll='false'"}, {"hscrollbar_style", "auto_hide_scroll='false'"}, {"want_return_msg", "true"}, {"rich", "false"}, {"margin", "4,0,0,0"}, {"enable_drag_drop", "true"}, {"enable_drop_file", "false"}});
+    ui::Attach(p112, p114);
+
+    ui::Attach(p8, p112);
+
+    ui::Attach(p0, p8);
+
+
+    ui::Attach(pWindow, p0);
 }

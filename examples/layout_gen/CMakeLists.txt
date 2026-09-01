@@ -8,10 +8,19 @@ get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
-# Mode 2 (XML-to-code generation): convert layout.xml to pure C++ code at build time
-# (with 17 <Include src="page_*.xml"/> expansions)
-set(GEN_XML_FILES layout.xml)
+# Mode 2 (XML-to-code generation): convert the platform layout.xml to pure C++ code.
+if(APPLE)
+    set(LAYOUT_THEME macos26)
+elseif(WIN32)
+    set(LAYOUT_THEME windows11)
+else()
+    set(LAYOUT_THEME default)
+endif()
+set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${LAYOUT_THEME}/layout/layout.xml")
 set(GEN_FUNC_NAME Init)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_gen_code.cmake")
 
+set(EMBED_RES_DIR "${DUI_ROOT}/resources")
+set(EMBED_RES_PATHS "themes/${LAYOUT_THEME}/global.xml" "themes/${LAYOUT_THEME}/public" "themes/${LAYOUT_THEME}/layout" "fonts" "lang")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

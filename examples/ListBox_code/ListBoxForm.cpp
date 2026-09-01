@@ -1,127 +1,92 @@
 #include "ListBoxForm.h"
 #include "Item.h"
+#include "dui/Utils/UiBuilder.h"
 
-ListBoxForm::ListBoxForm():
-    m_pListBox(nullptr)
+void ListBoxForm::SetupWindow()
 {
-}
+    SetWindowSize(540, 720);
+    CenterWindow();
 
-
-ListBoxForm::~ListBoxForm()
-{
-}
-
-DString ListBoxForm::GetSkinFolder()
-{
-    // Pure code mode: no layout XML is loaded, but the skin folder is kept as
-    // the window's resource path so that image paths can still be resolved
-    return _T("list_box");
-}
-
-DString ListBoxForm::GetSkinFile()
-{
-    // Pure code mode: no layout XML is loaded
-    return _T("");
-}
-
-void ListBoxForm::BuildUI()
-{
-    // Register the local style classes in item.xml (the Item template is now built in code)
-    AddClass(_T("list_box_item_test"),
-             _T(" hot_color=\"bk_listitem_hovered\" pushed_color=\"bk_listitem_selected\" selected_normal_color=\"bk_listitem_selected\" fade_hot=\"false\""));
-    AddClass(_T("list_box_item_checkbox_1"),
-             _T(" height=\"20\" text_padding=\"20,0,0,0\" font=\"system_14\" normal_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'\" disabled_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'\" selected_normal_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'\" selected_disabled_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'\""));
-
-    // Corresponding to the list_box.xml layout
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
-    pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
-
-    // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
-    pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
-    pRoot->AddItem(pCaption);
-
-    auto* pTitle = ui::Create<ui::Label>(this, {{_T("font"), _T("system_14")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8")}, {_T("width"), _T("stretch")}, {_T("mouse_enabled"), _T("false")}});
-    pTitle->SetText(_T("List (VTileListBox | HTileListBox | VListBox | HListBox)"));
-    pCaption->AddItem(pTitle);
-
-    auto* pCaptionBtns = ui::Create<ui::HBox>(this, {{_T("width"), _T("auto")}});
-    pCaption->AddItem(pCaptionBtns);
-
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetToolTipText(_T("Minimize"));
-    pCaptionBtns->AddItem(pMinBtn);
-
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pCaptionBtns->AddItem(pMaxBox);
-
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetName(_T("maxbtn"));
-    pMaxBtn->SetToolTipText(_T("Maximize"));
-    pMaxBox->AddItem(pMaxBtn);
-
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetName(_T("restorebtn"));
-    pRestoreBtn->SetVisible(false);
-    pRestoreBtn->SetToolTipText(_T("Restore"));
-    pMaxBox->AddItem(pRestoreBtn);
-
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
-    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetToolTipText(_T("Close"));
-    pCaptionBtns->AddItem(pCloseBtn);
-
-    // List area
-    auto* pContent = ui::Create<ui::Box>(this, {});
-    pRoot->AddItem(pContent);
-
-    auto* pListBox = ui::Create<ui::VListBox>(this, {{_T("vscrollbar"), _T("true")}, {_T("hscrollbar"), _T("true")}, {_T("multi_select"), _T("false")}, {_T("scroll_select"), _T("false")}});
-    pListBox->SetName(_T("list"));
-    pListBox->SetBkColor(_T("bk_wnd_lightcolor"));
-    pContent->AddItem(pListBox);
-
-    AttachBox(pRoot);
-}
-
-void ListBoxForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    ui::UiRect rcWork;
-    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = 540;
-    attrs.m_szInitSize.cy = 720;
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = true;
-    attrs.m_bIsLayeredWindowDefined = true;
-    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-
-    BaseClass::GetCreateWindowAttributes(attrs);
-}
-
-void ListBoxForm::OnInitWindow()
-{
-    // Use the OS-provided system shadow on all platforms.
     SetShadowAttached(true);
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+}
 
+void ListBoxForm::BuildUI()
+{
+    // Register the local style classes in item.xml (the Item template is now built in code)
+    AddClass("list_box_item_test",
+             " hot_color=\"bk_listitem_hovered\" pushed_color=\"bk_listitem_selected\" selected_normal_color=\"bk_listitem_selected\" fade_hot=\"false\"");
+    AddClass("list_box_item_checkbox_1",
+             " height=\"20\" text_padding=\"20,0,0,0\" font=\"system_14\" normal_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'\" disabled_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'\" selected_normal_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'\" selected_disabled_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'\"");
+
+    // Corresponding to the list_box.xml layout
+    auto* pRoot = ui::Create<ui::VBox>(this, {});
+    pRoot->SetBkColor("bk_wnd_darkcolor");
+
+    // Title bar area
+    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}});
+    pCaption->SetBkColor("bk_wnd_lightcolor");
+    pRoot->AddItem(pCaption);
+
+    auto* pTitle = ui::Create<ui::Label>(this, {{"font", "system_14"}, {"valign", "center"}, {"margin", "8"}, {"width", "stretch"}, {"mouse_enabled", "false"}});
+    pTitle->SetText("List (VTileListBox | HTileListBox | VListBox | HListBox)");
+    pCaption->AddItem(pTitle);
+
+    auto* pCaptionBtns = ui::Create<ui::HBox>(this, {{"width", "auto"}});
+    pCaption->AddItem(pCaptionBtns);
+
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    pMinBtn->SetClass("btn_wnd_min_11");
+    pMinBtn->SetName("minbtn");
+    pMinBtn->SetToolTipText("Minimize");
+    pCaptionBtns->AddItem(pMinBtn);
+
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    pCaptionBtns->AddItem(pMaxBox);
+
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "stretch"}});
+    pMaxBtn->SetClass("btn_wnd_max_11");
+    pMaxBtn->SetName("maxbtn");
+    pMaxBtn->SetToolTipText("Maximize");
+    pMaxBox->AddItem(pMaxBtn);
+
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "stretch"}});
+    pRestoreBtn->SetClass("btn_wnd_restore_11");
+    pRestoreBtn->SetName("restorebtn");
+    pRestoreBtn->SetToolTipText("Restore");
+    pRestoreBtn->SetVisible(false);
+    pMaxBox->AddItem(pRestoreBtn);
+
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,0,0,2"}});
+    pCloseBtn->SetClass("btn_wnd_close_11");
+    pCloseBtn->SetName("closebtn");
+    pCloseBtn->SetToolTipText("Close");
+    pCaptionBtns->AddItem(pCloseBtn);
+
+    // List area
+    auto* pContent = ui::Create<ui::Box>(this, {});
+    pRoot->AddItem(pContent);
+
+    auto* pListBox = ui::Create<ui::VListBox>(this, {{"vscrollbar", "true"}, {"hscrollbar", "true"}, {"multi_select", "false"}, {"scroll_select", "false"}});
+    pListBox->SetName("list");
+    pListBox->SetBkColor("bk_wnd_lightcolor");
+    pContent->AddItem(pListBox);
+
+    AttachBox(pRoot);
+}
+
+void ListBoxForm::OnInitWindow()
+{
+    SetupWindow();
     BuildUI();
 
-    m_pListBox = dynamic_cast<ui::ListBox*>(FindControl(_T("list")));
+    m_pListBox = ui::Find<ui::ListBox>(this, "list");
     ASSERT(m_pListBox != nullptr);
     if (m_pListBox == nullptr) {
         return;
@@ -133,15 +98,15 @@ void ListBoxForm::OnInitWindow()
 
     if (bVTileListBox) {
         //VTileListBox: set to fixed 2 columns, auto-calculate the Item width
-        //m_pListBox->SetAttribute(_T("item_size"), _T("200，80"));
-        m_pListBox->SetAttribute(_T("columns"), _T("2"));
-        m_pListBox->SetAttribute(_T("auto_calc_item_size"), _T("true"));
+        //m_pListBox->SetAttribute("item_size", "200，80");
+        m_pListBox->SetAttribute("columns", "2");
+        m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
     else if (bHTileListBox) {
         //HTileListBox: set to fixed 2 rows, auto-calculate the Item height
-        //m_pListBox->SetAttribute(_T("item_size"), _T("200，80"));
-        m_pListBox->SetAttribute(_T("rows"), _T("2"));
-        m_pListBox->SetAttribute(_T("auto_calc_item_size"), _T("true"));
+        //m_pListBox->SetAttribute("item_size", "200，80");
+        m_pListBox->SetAttribute("rows", "2");
+        m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
 
     for (auto i = 0; i < 300; i++) {
@@ -166,8 +131,8 @@ void ListBoxForm::OnInitWindow()
             item->SetFixedHeight(ui::UiFixedInt::MakeAuto(), true, true);
         }
 
-        DString img = _T("icon.png");
-        DString title = ui::StringUtil::Printf(_T("Task [%02d]"), i);
+        DString img = "icon.png";
+        DString title = ui::StringUtil::Printf("Task [%02d]", i);
 
         item->InitSubControls(img, title);
         m_pListBox->AddItem(item);
@@ -175,9 +140,13 @@ void ListBoxForm::OnInitWindow()
 
     m_pListBox->SetFocus();
 
-    //Test the ListBox events
-    TestListBoxEvents(m_pListBox);
+    BindEvents();
     BaseClass::OnInitWindow();
+}
+
+void ListBoxForm::BindEvents()
+{
+    TestListBoxEvents(m_pListBox);
 }
 
 void ListBoxForm::TestListBoxEvents(ui::ListBox* pListBox)
@@ -243,22 +212,22 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
 {
     DString sInfo = ui::EventUtils::EventTypeToString(args.eventType);
     while (sInfo.size() < 24) {
-        sInfo += _T(" ");
+        sInfo += " ";
     }
     if (args.eventType == ui::kEventSelect) {
         size_t nNewItemIndex = (size_t)args.wParam;
         size_t nOldItemIndex = (size_t)args.lParam;
         if (nOldItemIndex != ui::Box::InvalidIndex) {
-            sInfo += ui::StringUtil::Printf(_T("NewItemIndex=%zu, OldItemIndex=%zu"),
+            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu, OldItemIndex=%zu",
                                             nNewItemIndex, nOldItemIndex);
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("NewItemIndex=%zu"), nNewItemIndex);
+            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu", nNewItemIndex);
         }
     }
     else if (args.eventType == ui::kEventUnSelect) {
         size_t nItemIndex = (size_t)args.wParam;
-        sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+        sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
     }
     else if (args.eventType == ui::kEventSelChanged) {
         //No parameters
@@ -271,10 +240,10 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
              (args.eventType == ui::kEventReturn)) {
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += _T("no params");
+            sInfo += "no params";
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
         }
     }
     else if ((args.eventType == ui::kEventKeyDown) || (args.eventType == ui::kEventKeyUp)) {
@@ -283,31 +252,31 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
         DString modifierKey;
         if (args.vkCode != ui::VirtualKeyCode::kVK_CONTROL) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_CONTROL)) {
-                modifierKey += _T("Ctrl+");
+                modifierKey += "Ctrl+";
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_SHIFT) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_SHIFT)) {
-                modifierKey += _T("Shift+");
+                modifierKey += "Shift+";
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_MENU) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_MENU)) {
-                modifierKey += _T("Alt+");
+                modifierKey += "Alt+";
             }
         }
-        sInfo += _T("<");
+        sInfo += "<";
         sInfo += modifierKey;
         sInfo += keyName;
-        sInfo += _T(">");
-        sInfo += _T(" ");
+        sInfo += ">";
+        sInfo += " ";
 
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += _T("no params");
+            sInfo += "no params";
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
         }
     }
     else {

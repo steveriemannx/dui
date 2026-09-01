@@ -12,14 +12,10 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 # Project source directory
 get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE) 
 
-# Name of the resource (*.rc) file; the default is "<ProjectName>.rc" and its encoding must be UTF-8
-# The resource file must be in the source directory; only effective on Windows, ignored on other platforms
-set(DUI_WINRES_FILE_NAME "${PROJECT_NAME}.rc")
-
 # Use the CEF module
 set(DUI_ENABLE_CEF ON)
 
-# Name of the resource subdirectory (a subdirectory under resources/themes/default; used when macOS copies resources)
+# Name of the resource subdirectory under the active platform theme (macOS: macos26)
 set(DUI_THEME_DIR_NAME "cef")
 
 # Include the common implementation

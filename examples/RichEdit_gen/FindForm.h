@@ -7,6 +7,7 @@
 class MainForm;
 class FindForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     explicit FindForm(MainForm* pMainForm);
     virtual ~FindForm() override;
@@ -24,8 +25,11 @@ public:
 
 private:
     /** Pure code UI construction (corresponds to the find.xml layout)
-    */
+     */
     void BuildUI();
+
+    // Bind control events
+    void BindEvents();
 
 private:
     // Find Next

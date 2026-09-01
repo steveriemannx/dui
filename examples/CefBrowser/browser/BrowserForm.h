@@ -268,6 +268,10 @@ protected:
     BrowserBox* m_pActiveBrowserBox;
 
 private:
+    /** Bind UI events after the window and controls are ready.
+    */
+    void BindEvents();
+
     //Handle the browser box drag event
     /** Whether the mouse left button is pressed
     */

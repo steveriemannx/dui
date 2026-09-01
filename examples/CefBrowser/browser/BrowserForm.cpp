@@ -3,6 +3,7 @@
 #include "browser/BrowserBox.h"
 #include "browser/BrowserManager.h"
 #include "browser/DragDropManager.h"
+#include "dui/Utils/UiBuilder.h"
 #include <chrono>
 
 #ifdef DUI_BUILD_FOR_SDL
@@ -71,8 +72,10 @@ public:
     virtual UiSize64 ArrangeChildren(const std::vector<Control*>& items, UiRect rc, bool bEstimateOnly = false) override
     {
         UiSize64 szSize = HLayout::ArrangeChildren(items, rc, bEstimateOnly);
-        ASSERT(items.empty() || items.size() == 5);
-        if (items.size() != 5) {
+        // macOS theme: [caption/traffic lights, icon, line, TabCtrl, +, right filler]
+        // other themes: [icon, line, TabCtrl, +, caption area]
+        ASSERT(items.empty() || items.size() == 5 || items.size() == 6);
+        if ((items.size() != 5) && (items.size() != 6)) {
             return szSize;
         }
         //Fixed structure, modify the width of the tab bar after validation
@@ -95,7 +98,8 @@ public:
 
         //Validate the TabCtrl control of the tab bar
         ui::TabCtrl* pTabCtrl = nullptr;
-        ui::Control* pItem = items[2];
+        const size_t nTabCtrlIndex = (items.size() == 6) ? 3 : 2;
+        ui::Control* pItem = items[nTabCtrlIndex];
         if (pItem != nullptr) {
             pTabCtrl = dynamic_cast<ui::TabCtrl*>(pItem);            
         }
@@ -172,17 +176,19 @@ void BrowserForm::OnInitWindow()
         return true;
         });
 
-    GetRoot()->AttachBubbledEvent(ui::kEventClick, UiBind(&BrowserForm::OnClicked, this, std::placeholders::_1), 0);
+    ui::Box* pRoot = GetRoot();
+    if (pRoot == nullptr) {
+        return;
+    }
 
-    m_pEditUrl = static_cast<RichEdit*>(FindControl(_T("edit_url")));
-    m_pEditUrl->AttachReturn(UiBind(&BrowserForm::OnReturn, this, std::placeholders::_1));
+    m_pEditUrl = ui::Find<ui::RichEdit>(this, _T("edit_url"));
     if (m_pEditUrl != nullptr) {
         //When the mouse clicks into the address bar, select all the text
         m_pEditUrl->SetSelAllOnFocus(true);
     }
 
     //Replace the layout of the title bar
-    HBox* pTitleBar = static_cast<HBox*>(FindControl(_T("title_bar")));
+    ui::HBox* pTitleBar = ui::Find<ui::HBox>(this, _T("title_bar"));
     if (pTitleBar != nullptr) {
         TitleBarHLayout* pNewLayout = new TitleBarHLayout;
         Layout* pOldLayout = pTitleBar->ResetLayout(pNewLayout);
@@ -194,28 +200,20 @@ void BrowserForm::OnInitWindow()
         }
     }
 
-    m_pTabCtrl = static_cast<TabCtrl*>(FindControl(_T("tab_ctrl")));
-    m_pBorwserBoxTab = static_cast<TabBox*>(FindControl(_T("browser_box_tab")));
-
-    if (m_pTabCtrl != nullptr) {
-        m_pTabCtrl->AttachSelect(UiBind(&BrowserForm::OnTabItemSelected, this, std::placeholders::_1));
-    }
+    m_pTabCtrl = ui::Find<ui::TabCtrl>(this, _T("tab_ctrl"));
+    m_pBorwserBoxTab = ui::Find<ui::TabBox>(this, _T("browser_box_tab"));
 
     //Set the state of the buttons
-    Control* pButton = FindControl(_T("btn_back"));
-    if (pButton != nullptr) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, _T("btn_back"))) {
         pButton->SetEnabled(false);
     }
-    pButton = FindControl(_T("btn_forward"));
-    if (pButton != nullptr) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, _T("btn_forward"))) {
         pButton->SetEnabled(false);
     }
-    pButton = FindControl(_T("btn_refresh"));
-    if (pButton != nullptr) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, _T("btn_refresh"))) {
         pButton->SetVisible(true);
     }
-    pButton = FindControl(_T("btn_stop"));
-    if (pButton != nullptr) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, _T("btn_stop"))) {
         pButton->SetVisible(false);
     }
 
@@ -226,6 +224,25 @@ void BrowserForm::OnInitWindow()
     DString logMsg = ui::StringUtil::Printf(_T("[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
     std::cout << logMsg << std::endl;
 #endif
+
+    BindEvents();
+    BaseClass::OnInitWindow();
+}
+
+void BrowserForm::BindEvents()
+{
+    ui::Box* pRoot = GetRoot();
+    if (pRoot != nullptr) {
+        pRoot->AttachBubbledEvent(ui::kEventClick, UiBind(&BrowserForm::OnClicked, this, std::placeholders::_1), 0);
+    }
+
+    if (m_pEditUrl != nullptr) {
+        m_pEditUrl->AttachReturn(UiBind(&BrowserForm::OnReturn, this, std::placeholders::_1));
+    }
+
+    if (m_pTabCtrl != nullptr) {
+        m_pTabCtrl->AttachSelect(UiBind(&BrowserForm::OnTabItemSelected, this, std::placeholders::_1));
+    }
 }
 
 void BrowserForm::OnPreCloseWindow()
@@ -265,20 +282,16 @@ void BrowserForm::OnLoadingStateChange(BrowserBox* pBrowserBox)
     bool isLoading = pCefCcontrol->GetCefBrowser()->IsLoading();
     bool canGoBack = pCefCcontrol->GetCefBrowser()->CanGoBack();
     bool canGoForward = pCefCcontrol->GetCefBrowser()->CanGoForward();
-    Control* pButton = FindControl(_T("btn_back"));
-    if (pButton != nullptr) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, _T("btn_back"))) {
         pButton->SetEnabled(canGoBack);
     }
-    pButton = FindControl(_T("btn_forward"));
-    if (pButton != nullptr) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, _T("btn_forward"))) {
         pButton->SetEnabled(canGoForward);
     }
-    pButton = FindControl(_T("btn_refresh"));
-    if (pButton != nullptr) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, _T("btn_refresh"))) {
         pButton->SetVisible(!isLoading);
     }
-    pButton = FindControl(_T("btn_stop"));
-    if (pButton != nullptr) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, _T("btn_stop"))) {
         pButton->SetVisible(isLoading);
     }
 }

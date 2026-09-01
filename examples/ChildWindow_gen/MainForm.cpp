@@ -2,6 +2,7 @@
 #include "generated_ui.inc"  // Build-time generated pure C++ UI code
 #include "ChildWindowPaint.h"
 #include "MyChildWindowEvents.h"
+#include "dui/Utils/UiBuilder.h"
 
 MainForm::MainForm():
     m_pChildWindow(nullptr)
@@ -15,65 +16,36 @@ MainForm::~MainForm()
     }    
 }
 
-DString MainForm::GetSkinFolder()
-{
-    return _T("child_window");
-}
-
-DString MainForm::GetSkinFile()
-{
-    // No XML file - UI is generated at build time
-    return _T("");
-}
-
-void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    // Match the <Window> attributes in child_window.xml:
-    // size="75%,85%", size_box/caption, shadow/layered settings.
-    ui::UiRect rcWork;
-    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.85f);
-    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.90f);
-
-    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = false;
-    attrs.m_bIsLayeredWindowDefined = true;
-
-    BaseClass::GetCreateWindowAttributes(attrs);
-}
-
 void MainForm::PreInitWindow()
 {
     BaseClass::PreInitWindow();
-    //Use the GPU (Metal) render backend on macOS, matching the XML example.
     SetRenderBackendType(ui::RenderBackendType::kMetal_BackendType);
 }
 
 void MainForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
-
-    // Build-time generated from child_window.xml
-    InitChild_window(this);
+    BuildUI();
+    BindEvents();
 
     BaseClass::OnInitWindow();
-    // Create the child window and associate the handling interface
-    CreateChildWindows();
+}
+
+void MainForm::OnInitLayout()
+{
+    BaseClass::OnInitLayout();
+    if (m_childWindowEvents.empty()) {
+        CreateChildWindows();
+    }
+}
+
+void MainForm::BuildUI()
+{
+    InitChild_window(this);
+}
+
+void MainForm::BindEvents()
+{
+    // Child-window controls bind their events in MyChildWindowEvents.
 }
 
 void MainForm::OnPreCloseWindow()
@@ -99,15 +71,20 @@ void MainForm::OnLayeredWindowChanged()
 
 void MainForm::CreateChildWindows()
 {
-    ui::GridBox* pChildWindowBox = dynamic_cast<ui::GridBox*>(FindControl(_T("child_window_box")));
+    ui::GridBox* pChildWindowBox = ui::Find<ui::GridBox>(this, "child_window_box");
     if (pChildWindowBox != nullptr) {
         size_t nCount = pChildWindowBox->GetItemCount();
         for (size_t nItem = 0; nItem < nCount; ++nItem) {
             ui::ChildWindow* pChildWindow = dynamic_cast<ui::ChildWindow*>(pChildWindowBox->GetItemAt(nItem));
             if (pChildWindow != nullptr) {
                 MyChildWindowEvents* pMyChildWindowEvents = new MyChildWindowEvents(pChildWindow, nItem, this);
-                pChildWindow->CreateChildWindow(pMyChildWindowEvents);
-                m_childWindowEvents.push_back(pMyChildWindowEvents);
+                if (pChildWindow->CreateChildWindow(pMyChildWindowEvents)) {
+                    m_childWindowEvents.push_back(pMyChildWindowEvents);
+                    pChildWindow->InvalidateChildWindow();
+                }
+                else {
+                    delete pMyChildWindowEvents;
+                }
             }
         }
     }

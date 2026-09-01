@@ -11,43 +11,42 @@ class MainForm : public ui::WindowImplBase
 {
     typedef ui::WindowImplBase BaseClass;
 public:
-    MainForm();
-    virtual ~MainForm() override;
+    MainForm() = default;
+    virtual ~MainForm() override = default;
 
     /**  Called when the window is created; implemented by subclasses to get the window skin directory
-    * @return The subclass must implement and return the window skin directory
-    */
-    virtual DString GetSkinFolder() override;
+     * @return The subclass must implement and return the window skin directory
+     */
+    virtual DString GetSkinFolder() override { return "dpi_aware"; }
 
     /**  Called when the window is created; implemented by subclasses to get the window skin XML description file
-    * @return The subclass must implement and return the window skin XML description file
-    */
-    virtual DString GetSkinFile() override;
-
-    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
-    virtual void PreInitWindow() override;
+     * @return The subclass must implement and return the window skin XML description file
+     */
+    virtual DString GetSkinFile() override { return ""; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;
 
     /** The window's DPI scale factor changed; update control sizes and layout (for subclasses to use)
-    * @param [in] nOldScaleFactor The old DPI scale percentage
-    * @param [in] nNewScaleFactor The new DPI scale percentage, consistent with the value of Dpi().GetDisplayScaleFactor(); it may be the same as nOldScaleFactor
-    */
+     * @param [in] nOldScaleFactor The old DPI scale percentage
+     * @param [in] nNewScaleFactor The new DPI scale percentage, consistent with the value of Dpi().GetDisplayScaleFactor(); it may be the same as nOldScaleFactor
+     */
     virtual void OnWindowDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nNewScaleFactor) override;
 
 protected:
     /** The window size has changed (WM_SIZE)
-    * @param [in] sizeType The type that triggered the window size change
-    * @param [in] newWindowSize The new window size (width and height)
-    * @param [in] nativeMsg The raw message content received from the system
-    * @param [out] bHandled Whether the message has been handled; returning true means the message was handled successfully and need not be passed to the window procedure; returning false means the message is passed on to the window procedure
-    * @return The message handling result; if the application handled this message, zero should be returned
-    */
+     * @param [in] sizeType The type that triggered the window size change
+     * @param [in] newWindowSize The new window size (width and height)
+     * @param [in] nativeMsg The raw message content received from the system
+     * @param [out] bHandled Whether the message has been handled; returning true means the message was handled successfully and need not be passed to the window procedure; returning false means the message is passed on to the window procedure
+     * @return The message handling result; if the application handled this message, zero should be returned
+     */
     virtual LRESULT OnSizeMsg(ui::WindowSizeType sizeType, const ui::UiSize& newWindowSize, const ui::NativeMsg& nativeMsg, bool& bHandled) override;
 
 private:
+    void SetupWindow();
+
     /** Build the UI in pure code (corresponding to the DpiAware.xml layout)
     */
     void BuildUI();
@@ -55,6 +54,10 @@ private:
     /** Refresh the UI
     */
     void UpdateUI();
+
+    /** Bind the event handlers
+    */
+    void BindEvents();
 };
 
 #endif //EXAMPLES_DPI_DISPLAY_SCALE_MAIN_FORM_H_

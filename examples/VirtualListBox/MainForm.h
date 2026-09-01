@@ -8,22 +8,25 @@
 
 class MainForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     MainForm();
-    virtual ~MainForm() override;
+    virtual ~MainForm() override = default;
 
     /** Resource-related interfaces
      * The GetSkinFolder interface sets the skin resource path for the window to be drawn
      * The GetSkinFile interface sets the xml description file for the window to be drawn
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return "virtual_list_box"; }
+    virtual DString GetSkinFile() override { return "main.xml"; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;
 
 private:
+    void BindEvents();
+
     bool OnClicked(const ui::EventArgs& args);
 
     /** Test the virtual list events

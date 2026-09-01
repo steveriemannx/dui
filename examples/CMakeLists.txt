@@ -1,13 +1,12 @@
 # Register all examples in the top-level build (57 on Linux / 55 on Windows; varies with platform conditions)
 # Three modes: XML mode (21 original examples) + mode 2 XML-to-code generation (*_gen) + mode 3 pure code (*_code)
-# Also includes codeui/embedxml/genlist/genui from the code-backend branch
 
 # ---- Compile-time mode selection ----
 # DUI_EXAMPLES_MODE selects which development-mode examples to build, avoiding a full build every time:
 #   ALL  - build all three modes (default)
 #   XML  - mode 1 only: XML layout (parsed at runtime)
-#   GEN  - mode 2 only: generate C++ code from XML at build time (*_gen + embedxml/genlist/genui)
-#   CODE - mode 3 only: pure code (*_code + codeui)
+#   GEN  - mode 2 only: generate C++ code from XML at build time (*_gen)
+#   CODE - mode 3 only: pure code (*_code)
 set(DUI_EXAMPLES_MODE "ALL" CACHE STRING "Which example mode to build: ALL/XML/GEN/CODE")
 if(NOT DUI_EXAMPLES_MODE MATCHES "^(ALL|XML|GEN|CODE)$")
     message(FATAL_ERROR "DUI_EXAMPLES_MODE must be ALL/XML/GEN/CODE, got: ${DUI_EXAMPLES_MODE}")
@@ -30,10 +29,14 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW AND DUI_BUILD_CEF_EXAM
 endif()
 add_subdirectory(chat)
 add_subdirectory(ChildWindow)
+add_subdirectory(Combo)
 add_subdirectory(ColorPicker)
 add_subdirectory(controls)
+add_subdirectory(controls_round)
 add_subdirectory(DpiAware)
 add_subdirectory(hello)
+add_subdirectory(hello2)
+add_subdirectory(hello3)
 add_subdirectory(layout)
 add_subdirectory(ListBox)
 add_subdirectory(ListCtrl)
@@ -50,20 +53,6 @@ if(WIN32 AND DUI_BUILD_WEBVIEW2_EXAMPLES)
     add_subdirectory(WebView2Browser)
 endif()
 add_subdirectory(XmlPreview)
-endif()
-
-# ---- Added from the code-backend branch (Unix examples: the generation/embedding
-# tools are portable C++, supported on Linux / macOS / FreeBSD) ----
-# codeui follows the pure-code direction (built with CODE); embedxml/genlist/genui follow the build-time generation/embedding direction (built with GEN)
-if(UNIX)
-    if(DUI_EXAMPLES_MODE STREQUAL "ALL" OR DUI_EXAMPLES_MODE STREQUAL "GEN")
-        add_subdirectory(embedxml)
-        add_subdirectory(genlist)
-        add_subdirectory(genui)
-    endif()
-    if(DUI_EXAMPLES_MODE STREQUAL "ALL" OR DUI_EXAMPLES_MODE STREQUAL "CODE")
-        add_subdirectory(codeui)
-    endif()
 endif()
 
 # ---- Mode 2: XML-to-code generation (*_gen) ----

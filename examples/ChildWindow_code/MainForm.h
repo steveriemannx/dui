@@ -1,5 +1,5 @@
-#ifndef EXAMPLES_MAIN_FORM_H_
-#define EXAMPLES_MAIN_FORM_H_
+#ifndef EXAMPLES_CHILD_WINDOW_CODE_MAIN_FORM_H_
+#define EXAMPLES_CHILD_WINDOW_CODE_MAIN_FORM_H_
 
 // dui
 #include "dui/dui.h"
@@ -14,13 +14,8 @@ public:
     MainForm();
     virtual ~MainForm() override;
 
-    /** Resource-related interfaces
-     * GetSkinFolder sets the skin resource path of the window to be drawn
-     * GetSkinFile sets the XML description file of the window to be drawn
-     */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
-    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
+    virtual DString GetSkinFolder() override { return "child_window"; }
+    virtual DString GetSkinFile() override { return ""; }
 
 public:
     /** Draw this child window immediately
@@ -46,11 +41,12 @@ protected:
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;
+    virtual void OnInitLayout() override;
 
 private:
-    /** Build the UI in pure code (corresponding to the child_window.xml layout)
-    */
+    void SetupWindow();
     void BuildUI();
+    void BindEvents();
 
     /** Called when the window is about to be closed, for subclasses to do some cleanup work
     */
@@ -84,4 +80,4 @@ private:
     ui::ChildWindow* m_pChildWindow;
 };
 
-#endif //EXAMPLES_MAIN_FORM_H_
+#endif // EXAMPLES_CHILD_WINDOW_CODE_MAIN_FORM_H_

@@ -13,14 +13,14 @@ class MainForm : public ui::WindowImplBase
     typedef ui::WindowImplBase BaseClass;
 public:
     MainForm();
-    virtual ~MainForm() override;
+    virtual ~MainForm() override = default;
 
     /** Resource-related interface
      * The GetSkinFolder interface sets the skin resource path of the window you are drawing
      * The GetSkinFile interface sets the xml description file of the window you are drawing
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return "rich_edit"; }
+    virtual DString GetSkinFile() override { return "rich_edit.xml"; }
 
     /** Called after the window is created, allowing subclasses to do some initialization work
     */
@@ -57,6 +57,9 @@ public:
     ui::RichEdit* GetRichEdit() const;
 
 private:
+    // Bind control events
+    void BindEvents();
+
     // Load the default text content
     void LoadRichEditData();
 

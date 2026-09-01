@@ -10,7 +10,9 @@
 // Controls whether to use off-screen rendering:
 // When true, the default window shadow scheme is used, and the window has the WS_EX_LAYERED attribute in off-screen rendering mode;
 // When false, because the real window mode does not support windows with the WS_EX_LAYERED attribute, the external window shadow scheme is used;
-const bool kEnableOffScreenRendering = false;
+// Keep OSR enabled: native child-window mode breaks the DUI layout/painting in
+// this example, so we stay with OSR and handle IME caret in CefControlOffScreen.
+const bool kEnableOffScreenRendering = true;
 
 /** Window of the CEF control
 */
@@ -59,6 +61,10 @@ protected:
 private:
     bool OnClicked(const ui::EventArgs& msg);
     bool OnNavigate(const ui::EventArgs& msg);
+
+    /** Bind UI events after the window and controls are ready.
+    */
+    void BindEvents();
 
     /** Callback function for the main process singleton
     */

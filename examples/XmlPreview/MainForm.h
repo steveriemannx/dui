@@ -12,19 +12,19 @@ class MainForm : public ui::WindowImplBase
     typedef ui::WindowImplBase BaseClass;
 public:
     MainForm();
-    virtual ~MainForm() override;
+    virtual ~MainForm() override = default;
 
     /**  Called when the window is created; implemented by subclasses to get the window skin directory
-    * @return The subclass must implement and return the window skin directory
-    */
-    virtual DString GetSkinFolder() override;
+     * @return The subclass must implement and return the window skin directory
+     */
+    virtual DString GetSkinFolder() override { return "xml_preview"; }
 
     /**  Called when the window is created; implemented by subclasses to get the window skin XML description file
-    * @return The subclass must implement and return the window skin XML description file
-    *         The returned content can be the XML file content (a string starting with the character '<'),
-    *         or a file path (a string not starting with the character '<'); the file must be found under the GetSkinFolder() path
-    */
-    virtual DString GetSkinFile() override;
+     * @return The subclass must implement and return the window skin XML description file
+     *         The returned content can be the XML file content (a string starting with the character '<'),
+     *         or a file path (a string not starting with the character '<'); the file must be found under the GetSkinFolder() path
+     */
+    virtual DString GetSkinFile() override { return "xml_preview.xml"; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */
@@ -42,6 +42,10 @@ private:
     /** Check and refresh the preview result of the XML file
     */
     void CheckXmlPreview();
+
+    /** Bind control events
+    */
+    void BindEvents();
 
 private:
     /** The path of the XML file currently being previewed

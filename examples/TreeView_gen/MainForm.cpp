@@ -3,6 +3,7 @@
 #include "ComputerView.h"
 #include "SimpleFileView.h"
 #include "ExplorerView.h"
+#include "dui/Utils/UiBuilder.h"
 
 MainForm::MainForm():
     m_pTree(nullptr),
@@ -24,53 +25,74 @@ MainForm::~MainForm()
 {
 }
 
-DString MainForm::GetSkinFolder()
+void MainForm::BuildUI()
 {
-    return _T("tree_view");
-}
-
-DString MainForm::GetSkinFile()
-{
-    // No XML file - UI is generated at build time from tree_view.xml
-    return _T("");
+    InitTree_view(this);
 }
 
 void MainForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
+    BuildUI();
+    BindEvents();
 
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
-
-    // Build-time generated from tree_view.xml
-    InitTree_view(this);
-
-    m_pTree = dynamic_cast<ui::DirectoryTree*>(FindControl(_T("tree")));
+    m_pTree = ui::Find<ui::DirectoryTree>(this, "tree");
     ASSERT(m_pTree != nullptr);
     if (m_pTree == nullptr) {
         return;
     }
-    m_pAddressBar = dynamic_cast<ui::AddressBar*>(FindControl(_T("file_path")));
+    m_pAddressBar = ui::Find<ui::AddressBar>(this, "file_path");
     if (m_pAddressBar != nullptr) {
         m_pAddressBar->AttachPathChanged(UiBind(&MainForm::OnAddressBarPathChanged, this, std::placeholders::_1));
         m_pAddressBar->AttachPathClick(UiBind(&MainForm::OnAddressBarPathClick, this, std::placeholders::_1));
     }
-    m_pTabBox = dynamic_cast<ui::TabBox*>(FindControl(_T("main_view_tab_box")));
-    ui::ListCtrl* pComputerListCtrl = dynamic_cast<ui::ListCtrl*>(FindControl(_T("computer_view")));
+    m_pTabBox = ui::Find<ui::TabBox>(this, "main_view_tab_box");
+    ui::ListCtrl* pComputerListCtrl = ui::Find<ui::ListCtrl>(this, "computer_view");
     m_pComputerView = std::make_unique<ComputerView>(this, pComputerListCtrl);
-    ui::VirtualListBox* pListBox = dynamic_cast<ui::VirtualListBox*>(FindControl(_T("simple_file_view")));
+    ui::VirtualListBox* pListBox = ui::Find<ui::VirtualListBox>(this, "simple_file_view");
     m_pSimpleFileView = std::make_unique<SimpleFileView>(this, pListBox);
-    ui::ListCtrl* pExplorerListCtrl = dynamic_cast<ui::ListCtrl*>(FindControl(_T("explorer_view")));
+    ui::ListCtrl* pExplorerListCtrl = ui::Find<ui::ListCtrl>(this, "explorer_view");
     m_pExplorerView = std::make_unique<ExplorerView>(this, pExplorerListCtrl);
 
+    // Up button
+    m_pBtnUp = ui::Find<ui::Button>(this, "btn_view_up");
+    // Back button
+    m_pBtnBack = ui::Find<ui::Button>(this, "btn_view_left");
+    // Forward button
+    m_pBtnForward = ui::Find<ui::Button>(this, "btn_view_right");
+    // Switch view mode
+    m_pBtnViewListType = ui::Find<ui::ButtonHBox>(this, "btn_view_list_type");
+    // Switch sort mode
+    m_pBtnViewSort = ui::Find<ui::ButtonHBox>(this, "btn_view_sort");
+
+    UpdateCommandUI();
+
+    // Show the virtual path
+    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kUserHome, "Home Folder");
+    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kDesktop, "Desktop");
+    ui::TreeNode* pDocumentsNode = m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kDocuments, "Document");
+    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kPictures, "Image");
+    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kMusic, "Music");
+    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kVideos, "Video");
+    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kDownloads, "Download");
+
+    // Show disks
+    ui::TreeNode* pComputerNode = m_pTree->ShowAllDiskNodes("Computer", "File System");
+    if (pComputerNode != nullptr) {
+        // Put a horizontal separator in front of the disks
+        m_pTree->InsertLineBeforeNode(pComputerNode);
+    }
+
+    // The "Computer" view is the default at startup
+    if (pComputerNode != nullptr) {
+        m_pTree->SelectTreeNode(pComputerNode);
+    }
+    BaseClass::OnInitWindow();
+}
+
+void MainForm::BindEvents()
+{
     // Refresh button
-    ui::Button* pRefreshBtn = dynamic_cast<ui::Button*>(FindControl(_T("btn_view_refresh")));
-    if (pRefreshBtn != nullptr) {
+    if (auto* pRefreshBtn = ui::Find<ui::Button>(this, "btn_view_refresh")) {
         pRefreshBtn->AttachClick([this](const ui::EventArgs&) {
             Refresh();
             return true;
@@ -78,7 +100,6 @@ void MainForm::OnInitWindow()
     }
 
     // Up button
-    m_pBtnUp = dynamic_cast<ui::Button*>(FindControl(_T("btn_view_up")));
     if (m_pBtnUp != nullptr) {
         m_pBtnUp->AttachClick([this](const ui::EventArgs&) {
             ShowUp();
@@ -87,7 +108,6 @@ void MainForm::OnInitWindow()
     }
 
     // Back button
-    m_pBtnBack = dynamic_cast<ui::Button*>(FindControl(_T("btn_view_left")));
     if (m_pBtnBack != nullptr) {
         m_pBtnBack->AttachClick([this](const ui::EventArgs&) {
             ShowBack();
@@ -96,7 +116,6 @@ void MainForm::OnInitWindow()
     }
 
     // Forward button
-    m_pBtnForward = dynamic_cast<ui::Button*>(FindControl(_T("btn_view_right")));
     if (m_pBtnForward != nullptr) {
         m_pBtnForward->AttachClick([this](const ui::EventArgs&) {
             ShowForward();
@@ -105,7 +124,6 @@ void MainForm::OnInitWindow()
     }
 
     // Switch view mode
-    m_pBtnViewListType = dynamic_cast<ui::ButtonHBox*>(FindControl(_T("btn_view_list_type")));
     if (m_pBtnViewListType != nullptr) {
         m_pBtnViewListType->AttachClick([this](const ui::EventArgs& args) {
             ui::UiRect rect = args.GetSender()->GetPos();
@@ -120,7 +138,6 @@ void MainForm::OnInitWindow()
     }
 
     // Switch sort mode
-    m_pBtnViewSort = dynamic_cast<ui::ButtonHBox*>(FindControl(_T("btn_view_sort")));
     if (m_pBtnViewSort != nullptr) {
         m_pBtnViewSort->AttachClick([this](const ui::EventArgs& args) {
             ui::UiRect rect = args.GetSender()->GetPos();
@@ -134,37 +151,15 @@ void MainForm::OnInitWindow()
             });
     }
 
-    UpdateCommandUI();
-
-    // Bind events
-    m_pTree->AttachShowMyComputerContents(ui::UiBind(&MainForm::OnShowMyComputerContents, this, std::placeholders::_1, std::placeholders::_2));
-    m_pTree->AttachShowFolderContents(ui::UiBind(&MainForm::OnShowFolderContents, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-    ui::StdClosure finishCallback = ToWeakCallback([this]() {
-        OnRefresh();
-        });
-    m_pTree->SetRefreshFinishCallback(finishCallback);
-
-    // Show the virtual path
-    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kUserHome, _T("Home Folder"));
-    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kDesktop, _T("Desktop"));
-    ui::TreeNode* pDocumentsNode = m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kDocuments, _T("Document"));
-    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kPictures, _T("Image"));
-    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kMusic, _T("Music"));
-    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kVideos, _T("Video"));
-    m_pTree->ShowVirtualDirectoryNode(ui::VirtualDirectoryType::kDownloads, _T("Download"));
-
-    // Show disks
-    ui::TreeNode* pComputerNode = m_pTree->ShowAllDiskNodes(_T("Computer"), _T("File System"));
-    if (pComputerNode != nullptr) {
-        // Put a horizontal separator in front of the disks
-        m_pTree->InsertLineBeforeNode(pComputerNode);
+    if (m_pTree != nullptr) {
+        // Bind events
+        m_pTree->AttachShowMyComputerContents(ui::UiBind(&MainForm::OnShowMyComputerContents, this, std::placeholders::_1, std::placeholders::_2));
+        m_pTree->AttachShowFolderContents(ui::UiBind(&MainForm::OnShowFolderContents, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        ui::StdClosure finishCallback = ToWeakCallback([this]() {
+            OnRefresh();
+            });
+        m_pTree->SetRefreshFinishCallback(finishCallback);
     }
-
-    // The "Computer" view is the default at startup
-    if (pComputerNode != nullptr) {
-        m_pTree->SelectTreeNode(pComputerNode);
-    }
-    BaseClass::OnInitWindow();
 }
 
 void MainForm::Refresh()
@@ -291,7 +286,7 @@ void MainForm::OnShowMyComputerContents(ui::TreeNode* pTreeNode,
     }
     SwitchToTabBoxViewType(TabBoxViewType::kComputerView);
     if (m_pAddressBar != nullptr) {
-        m_pAddressBar->SetAddressPath(_T(""));
+        m_pAddressBar->SetAddressPath("");
     }
 
     // Show the content of the "Computer" view
@@ -310,9 +305,9 @@ void MainForm::SelectSubPath(const ui::FilePath& filePath)
 {
     if (!filePath.IsExistsDirectory()) {
         // Report an error if the folder does not exist
-        DString errMsg = _T("Path does not exist:");
+        DString errMsg = "Path does not exist:";
         errMsg += filePath.ToString();
-        ui::SystemUtil::ShowMessageBox(this, errMsg.c_str(), _T("Error Info"));
+        ui::SystemUtil::ShowMessageBox(this, errMsg.c_str(), "Error Info");
         return;
     }
 
@@ -380,9 +375,9 @@ bool MainForm::OnShowAddressPath(const DString& newFilePath)
     }
     else {
         // Report an error if the folder does not exist
-        DString errMsg = _T("The input path does not exist:");
+        DString errMsg = "The input path does not exist:";
         errMsg += text;
-        ui::SystemUtil::ShowMessageBox(this, errMsg.c_str(), _T("Error Info"));
+        ui::SystemUtil::ShowMessageBox(this, errMsg.c_str(), "Error Info");
         return false;
     }
 }
@@ -480,57 +475,57 @@ void MainForm::SwithListType(const ui::UiPoint& point, ui::Control* pRelatedCont
 {
     ui::Menu* menu = new ui::Menu(this, pRelatedControl);// Need to set the parent window, otherwise the program becomes inactive when the menu pops up
     // Pure code menu: no XML template, menu items are added by code (corresponds to list_type_menu.xml)
-    menu->ShowMenu(_T(""), point);
+    menu->ShowMenu("", point);
     {
         // Add menu items (with icons and text, structure corresponds to list_type_menu.xml)
         struct ListTypeItem { DString name; DString btnName; DString image; DString text; };
         const ListTypeItem items[] = {
-            { _T("menu_item_icon_big"), _T("btn_menu_item_icon_big"), _T("data_icons_display-symbolic.svg"), _T("Icon View (Large Icons)") },
-            { _T("menu_item_icon_medium"), _T("btn_menu_item_icon_medium"), _T("data_icons_display-symbolic.svg"), _T("Icon View (Medium Icons)") },
-            { _T("menu_item_icon_small"), _T("btn_menu_item_icon_small"), _T("data_icons_display-symbolic.svg"), _T("Icon View (Small Icons)") },
-            { _T("menu_item_list_big"), _T("btn_menu_item_list_big"), _T("view-list-symbolic.svg"), _T("List View (Large Icons)") },
-            { _T("menu_item_list_medium"), _T("btn_menu_item_list_medium"), _T("view-list-symbolic.svg"), _T("List View (Medium Icons)") },
-            { _T("menu_item_list_small"), _T("btn_menu_item_list_small"), _T("view-list-symbolic.svg"), _T("List View (Small Icons)") },
-            { _T("menu_item_report"), _T("btn_menu_item_report"), _T("view-list-compact-symbolic.svg"), _T("Detail View") },
-            { _T("menu_item_picture"), _T("btn_menu_item_picture"), _T("view-list-images-symbolic.svg"), _T("Picture List View") },
+            { "menu_item_icon_big", "btn_menu_item_icon_big", "data_icons_display-symbolic.svg", "Icon View (Large Icons)" },
+            { "menu_item_icon_medium", "btn_menu_item_icon_medium", "data_icons_display-symbolic.svg", "Icon View (Medium Icons)" },
+            { "menu_item_icon_small", "btn_menu_item_icon_small", "data_icons_display-symbolic.svg", "Icon View (Small Icons)" },
+            { "menu_item_list_big", "btn_menu_item_list_big", "view-list-symbolic.svg", "List View (Large Icons)" },
+            { "menu_item_list_medium", "btn_menu_item_list_medium", "view-list-symbolic.svg", "List View (Medium Icons)" },
+            { "menu_item_list_small", "btn_menu_item_list_small", "view-list-symbolic.svg", "List View (Small Icons)" },
+            { "menu_item_report", "btn_menu_item_report", "view-list-compact-symbolic.svg", "Detail View" },
+            { "menu_item_picture", "btn_menu_item_picture", "view-list-images-symbolic.svg", "Picture List View" },
         };
         for (const auto& item : items) {
             ui::MenuItem* pMenuItem = new ui::MenuItem(menu);
-            pMenuItem->SetClass(_T("menu_element"));
+            pMenuItem->SetClass("menu_element");
             pMenuItem->SetName(item.name);
             pMenuItem->SetFixedWidth(ui::UiFixedInt(220), true, true);
 
             ui::HBox* pIconBox = new ui::HBox(menu);
-            pIconBox->SetAttribute(_T("width"), _T("44"));
-            pIconBox->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pIconBox->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pIconBox->SetAttribute("width", "44");
+            pIconBox->SetAttribute("mouse_enabled", "false");
+            pIconBox->SetAttribute("keyboard_enabled", "false");
             pMenuItem->AddItem(pIconBox);
 
             ui::Button* pIconBtn = new ui::Button(menu);
             pIconBtn->SetName(item.btnName);
-            pIconBtn->SetAttribute(_T("width"), _T("16"));
-            pIconBtn->SetAttribute(_T("height"), _T("16"));
-            pIconBtn->SetAttribute(_T("valign"), _T("center"));
-            pIconBtn->SetAttribute(_T("margin"), _T("0,0,8,0"));
-            pIconBtn->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pIconBtn->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pIconBtn->SetAttribute("width", "16");
+            pIconBtn->SetAttribute("height", "16");
+            pIconBtn->SetAttribute("valign", "center");
+            pIconBtn->SetAttribute("margin", "0,0,8,0");
+            pIconBtn->SetAttribute("mouse_enabled", "false");
+            pIconBtn->SetAttribute("keyboard_enabled", "false");
             pIconBox->AddItem(pIconBtn);
 
             ui::Button* pImageBtn = new ui::Button(menu);
             pImageBtn->SetBkImage(item.image);
-            pImageBtn->SetAttribute(_T("width"), _T("16"));
-            pImageBtn->SetAttribute(_T("height"), _T("16"));
-            pImageBtn->SetAttribute(_T("valign"), _T("center"));
-            pImageBtn->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pImageBtn->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pImageBtn->SetAttribute("width", "16");
+            pImageBtn->SetAttribute("height", "16");
+            pImageBtn->SetAttribute("valign", "center");
+            pImageBtn->SetAttribute("mouse_enabled", "false");
+            pImageBtn->SetAttribute("keyboard_enabled", "false");
             pIconBox->AddItem(pImageBtn);
 
             ui::Label* pLabel = new ui::Label(menu);
-            pLabel->SetClass(_T("menu_text"));
+            pLabel->SetClass("menu_text");
             pLabel->SetText(item.text);
-            pLabel->SetAttribute(_T("margin"), _T("50,0,0,0"));
-            pLabel->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pLabel->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pLabel->SetAttribute("margin", "50,0,0,0");
+            pLabel->SetAttribute("mouse_enabled", "false");
+            pLabel->SetAttribute("keyboard_enabled", "false");
             pMenuItem->AddItem(pLabel);
 
             menu->AddMenuItem(pMenuItem);
@@ -538,19 +533,19 @@ void MainForm::SwithListType(const ui::UiPoint& point, ui::Control* pRelatedCont
     }
 
     std::map<DataViewType, DString> btnNameMap;
-    btnNameMap[DataViewType::kIconViewBig] = _T("btn_menu_item_icon_big");
-    btnNameMap[DataViewType::kIconViewMedium] = _T("btn_menu_item_icon_medium");
-    btnNameMap[DataViewType::kIconViewSmall] = _T("btn_menu_item_icon_small");
-    btnNameMap[DataViewType::kListViewBig] = _T("btn_menu_item_list_big");
-    btnNameMap[DataViewType::kListViewMedium] = _T("btn_menu_item_list_medium");
-    btnNameMap[DataViewType::kListViewSmall] = _T("btn_menu_item_list_small");
-    btnNameMap[DataViewType::kReprortView] = _T("btn_menu_item_report");
-    btnNameMap[DataViewType::kPictureView] = _T("btn_menu_item_picture");
+    btnNameMap[DataViewType::kIconViewBig] = "btn_menu_item_icon_big";
+    btnNameMap[DataViewType::kIconViewMedium] = "btn_menu_item_icon_medium";
+    btnNameMap[DataViewType::kIconViewSmall] = "btn_menu_item_icon_small";
+    btnNameMap[DataViewType::kListViewBig] = "btn_menu_item_list_big";
+    btnNameMap[DataViewType::kListViewMedium] = "btn_menu_item_list_medium";
+    btnNameMap[DataViewType::kListViewSmall] = "btn_menu_item_list_small";
+    btnNameMap[DataViewType::kReprortView] = "btn_menu_item_report";
+    btnNameMap[DataViewType::kPictureView] = "btn_menu_item_picture";
 
     DString selectBtnName = btnNameMap[GetDataViewType()];
-    ui::Button* pSelectBtn = dynamic_cast<ui::Button*>(menu->FindControl(selectBtnName));
+    ui::Button* pSelectBtn = ui::Find<ui::Button>(menu, selectBtnName);
     if (pSelectBtn != nullptr) {
-        pSelectBtn->SetBkImage(_T("ui-item-symbolic.svg"));
+        pSelectBtn->SetBkImage("ui-item-symbolic.svg");
     }
 
     // Bind the menu item selection event
@@ -558,14 +553,14 @@ void MainForm::SwithListType(const ui::UiPoint& point, ui::Control* pRelatedCont
                                          const DString& itemName, size_t /*nItemIndex*/) {
             // Matches the menu item names in the XML
             std::map<DataViewType, DString> itemNameMap;
-            itemNameMap[DataViewType::kIconViewBig] = _T("menu_item_icon_big");
-            itemNameMap[DataViewType::kIconViewMedium] = _T("menu_item_icon_medium");
-            itemNameMap[DataViewType::kIconViewSmall] = _T("menu_item_icon_small");
-            itemNameMap[DataViewType::kListViewBig] = _T("menu_item_list_big");
-            itemNameMap[DataViewType::kListViewMedium] = _T("menu_item_list_medium");
-            itemNameMap[DataViewType::kListViewSmall] = _T("menu_item_list_small");
-            itemNameMap[DataViewType::kReprortView] = _T("menu_item_report");
-            itemNameMap[DataViewType::kPictureView] = _T("menu_item_picture");
+            itemNameMap[DataViewType::kIconViewBig] = "menu_item_icon_big";
+            itemNameMap[DataViewType::kIconViewMedium] = "menu_item_icon_medium";
+            itemNameMap[DataViewType::kIconViewSmall] = "menu_item_icon_small";
+            itemNameMap[DataViewType::kListViewBig] = "menu_item_list_big";
+            itemNameMap[DataViewType::kListViewMedium] = "menu_item_list_medium";
+            itemNameMap[DataViewType::kListViewSmall] = "menu_item_list_small";
+            itemNameMap[DataViewType::kReprortView] = "menu_item_report";
+            itemNameMap[DataViewType::kPictureView] = "menu_item_picture";
             for (auto iter : itemNameMap) {
                 if (iter.second == itemName) {
                     DataViewType dataViewType = iter.first;
@@ -583,37 +578,37 @@ void MainForm::SwithSortMode(const ui::UiPoint& point, ui::Control* pRelatedCont
     }
     ui::Menu* menu = new ui::Menu(this, pRelatedControl);// Need to set the parent window, otherwise the program becomes inactive when the menu pops up
     // Pure code menu: no XML template, menu items are added by code (corresponds to sort_mode_menu.xml)
-    menu->ShowMenu(_T(""), point);
+    menu->ShowMenu("", point);
     {
         // Add menu items (with icon buttons and text, structure corresponds to sort_mode_menu.xml)
         struct SortModeItem { DString name; DString btnName; DString text; };
         const SortModeItem items[] = {
-            { _T("menu_item_file_name"), _T("btn_file_name"), _T("File Name") },
-            { _T("menu_item_file_modify_time"), _T("btn_file_modify_time"), _T("Modified Date") },
-            { _T("menu_item_file_type"), _T("btn_file_type"), _T("File Type") },
-            { _T("menu_item_file_size"), _T("btn_file_size"), _T("File Size") },
+            { "menu_item_file_name", "btn_file_name", "File Name" },
+            { "menu_item_file_modify_time", "btn_file_modify_time", "Modified Date" },
+            { "menu_item_file_type", "btn_file_type", "File Type" },
+            { "menu_item_file_size", "btn_file_size", "File Size" },
         };
         for (const auto& item : items) {
             ui::MenuItem* pMenuItem = new ui::MenuItem(menu);
-            pMenuItem->SetClass(_T("menu_element"));
+            pMenuItem->SetClass("menu_element");
             pMenuItem->SetName(item.name);
             pMenuItem->SetFixedWidth(ui::UiFixedInt(160), true, true);
 
             ui::Button* pIconBtn = new ui::Button(menu);
             pIconBtn->SetName(item.btnName);
-            pIconBtn->SetAttribute(_T("width"), _T("auto"));
-            pIconBtn->SetAttribute(_T("height"), _T("auto"));
-            pIconBtn->SetAttribute(_T("valign"), _T("center"));
-            pIconBtn->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pIconBtn->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pIconBtn->SetAttribute("width", "auto");
+            pIconBtn->SetAttribute("height", "auto");
+            pIconBtn->SetAttribute("valign", "center");
+            pIconBtn->SetAttribute("mouse_enabled", "false");
+            pIconBtn->SetAttribute("keyboard_enabled", "false");
             pMenuItem->AddItem(pIconBtn);
 
             ui::Label* pLabel = new ui::Label(menu);
-            pLabel->SetClass(_T("menu_text"));
+            pLabel->SetClass("menu_text");
             pLabel->SetText(item.text);
-            pLabel->SetAttribute(_T("margin"), _T("30,0,0,0"));
-            pLabel->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pLabel->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pLabel->SetAttribute("margin", "30,0,0,0");
+            pLabel->SetAttribute("mouse_enabled", "false");
+            pLabel->SetAttribute("keyboard_enabled", "false");
             pMenuItem->AddItem(pLabel);
 
             menu->AddMenuItem(pMenuItem);
@@ -622,53 +617,53 @@ void MainForm::SwithSortMode(const ui::UiPoint& point, ui::Control* pRelatedCont
         // Separator
         {
             ui::Box* pSplitBox = new ui::Box(menu);
-            pSplitBox->SetClass(_T("menu_split_box"));
-            pSplitBox->SetAttribute(_T("margin"), _T("0,4,0,4"));
+            pSplitBox->SetClass("menu_split_box");
+            pSplitBox->SetAttribute("margin", "0,4,0,4");
             ui::Control* pSplitLine = new ui::Control(menu);
-            pSplitLine->SetClass(_T("menu_split_line"));
-            pSplitLine->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pSplitLine->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pSplitLine->SetClass("menu_split_line");
+            pSplitLine->SetAttribute("mouse_enabled", "false");
+            pSplitLine->SetAttribute("keyboard_enabled", "false");
             pSplitBox->AddItem(pSplitLine);
             // Note: the separator is for display only and is not added as a menu item
             ui::MenuItem* pSortAsc = new ui::MenuItem(menu);
-            pSortAsc->SetClass(_T("menu_element"));
-            pSortAsc->SetName(_T("menu_item_sort_ascending"));
+            pSortAsc->SetClass("menu_element");
+            pSortAsc->SetName("menu_item_sort_ascending");
             pSortAsc->SetFixedWidth(ui::UiFixedInt(160), true, true);
             ui::Button* pAscBtn = new ui::Button(menu);
-            pAscBtn->SetName(_T("btn_sort_ascending"));
-            pAscBtn->SetAttribute(_T("width"), _T("auto"));
-            pAscBtn->SetAttribute(_T("height"), _T("auto"));
-            pAscBtn->SetAttribute(_T("valign"), _T("center"));
-            pAscBtn->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pAscBtn->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pAscBtn->SetName("btn_sort_ascending");
+            pAscBtn->SetAttribute("width", "auto");
+            pAscBtn->SetAttribute("height", "auto");
+            pAscBtn->SetAttribute("valign", "center");
+            pAscBtn->SetAttribute("mouse_enabled", "false");
+            pAscBtn->SetAttribute("keyboard_enabled", "false");
             pSortAsc->AddItem(pAscBtn);
             ui::Label* pAscLabel = new ui::Label(menu);
-            pAscLabel->SetClass(_T("menu_text"));
-            pAscLabel->SetText(_T("Ascending Sort"));
-            pAscLabel->SetAttribute(_T("margin"), _T("30,0,0,0"));
-            pAscLabel->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pAscLabel->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pAscLabel->SetClass("menu_text");
+            pAscLabel->SetText("Ascending Sort");
+            pAscLabel->SetAttribute("margin", "30,0,0,0");
+            pAscLabel->SetAttribute("mouse_enabled", "false");
+            pAscLabel->SetAttribute("keyboard_enabled", "false");
             pSortAsc->AddItem(pAscLabel);
             menu->AddMenuItem(pSortAsc);
 
             ui::MenuItem* pSortDesc = new ui::MenuItem(menu);
-            pSortDesc->SetClass(_T("menu_element"));
-            pSortDesc->SetName(_T("menu_item_sort_descending"));
+            pSortDesc->SetClass("menu_element");
+            pSortDesc->SetName("menu_item_sort_descending");
             pSortDesc->SetFixedWidth(ui::UiFixedInt(160), true, true);
             ui::Button* pDescBtn = new ui::Button(menu);
-            pDescBtn->SetName(_T("btn_sort_descending"));
-            pDescBtn->SetAttribute(_T("width"), _T("auto"));
-            pDescBtn->SetAttribute(_T("height"), _T("auto"));
-            pDescBtn->SetAttribute(_T("valign"), _T("center"));
-            pDescBtn->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pDescBtn->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pDescBtn->SetName("btn_sort_descending");
+            pDescBtn->SetAttribute("width", "auto");
+            pDescBtn->SetAttribute("height", "auto");
+            pDescBtn->SetAttribute("valign", "center");
+            pDescBtn->SetAttribute("mouse_enabled", "false");
+            pDescBtn->SetAttribute("keyboard_enabled", "false");
             pSortDesc->AddItem(pDescBtn);
             ui::Label* pDescLabel = new ui::Label(menu);
-            pDescLabel->SetClass(_T("menu_text"));
-            pDescLabel->SetText(_T("Descending Sort"));
-            pDescLabel->SetAttribute(_T("margin"), _T("30,0,0,0"));
-            pDescLabel->SetAttribute(_T("mouse_enabled"), _T("false"));
-            pDescLabel->SetAttribute(_T("keyboard_enabled"), _T("false"));
+            pDescLabel->SetClass("menu_text");
+            pDescLabel->SetText("Descending Sort");
+            pDescLabel->SetAttribute("margin", "30,0,0,0");
+            pDescLabel->SetAttribute("mouse_enabled", "false");
+            pDescLabel->SetAttribute("keyboard_enabled", "false");
             pSortDesc->AddItem(pDescLabel);
             menu->AddMenuItem(pSortDesc);
         }
@@ -681,32 +676,32 @@ void MainForm::SwithSortMode(const ui::UiPoint& point, ui::Control* pRelatedCont
     if (bSorted) {
         ui::Button* pSortColumnBtn = nullptr;
         if (sortColumn == ExplorerView::ExplorerViewColumn::kName) {
-            pSortColumnBtn = dynamic_cast<ui::Button*>(menu->FindControl(_T("btn_file_name")));
+            pSortColumnBtn = ui::Find<ui::Button>(menu, "btn_file_name");
         }
         else if (sortColumn == ExplorerView::ExplorerViewColumn::kModifyDateTime) {
-            pSortColumnBtn = dynamic_cast<ui::Button*>(menu->FindControl(_T("btn_file_modify_time")));
+            pSortColumnBtn = ui::Find<ui::Button>(menu, "btn_file_modify_time");
         }
         else if (sortColumn == ExplorerView::ExplorerViewColumn::kType) {
-            pSortColumnBtn = dynamic_cast<ui::Button*>(menu->FindControl(_T("btn_file_type")));
+            pSortColumnBtn = ui::Find<ui::Button>(menu, "btn_file_type");
         }
         else if (sortColumn == ExplorerView::ExplorerViewColumn::kSize) {
-            pSortColumnBtn = dynamic_cast<ui::Button*>(menu->FindControl(_T("btn_file_size")));
+            pSortColumnBtn = ui::Find<ui::Button>(menu, "btn_file_size");
         }
 
         ui::Button* pSortBtn = nullptr;
         if (bSortUp) {
             // Ascending
-            pSortBtn = dynamic_cast<ui::Button*>(menu->FindControl(_T("btn_sort_ascending")));
+            pSortBtn = ui::Find<ui::Button>(menu, "btn_sort_ascending");
         }
         else {
             // Descending
-            pSortBtn = dynamic_cast<ui::Button*>(menu->FindControl(_T("btn_sort_descending")));
+            pSortBtn = ui::Find<ui::Button>(menu, "btn_sort_descending");
         }
         if (pSortBtn != nullptr) {
-            pSortBtn->SetBkImage(_T("ui-item-symbolic.svg"));
+            pSortBtn->SetBkImage("ui-item-symbolic.svg");
         }
         if (pSortColumnBtn != nullptr) {
-            pSortColumnBtn->SetBkImage(_T("ui-item-symbolic.svg"));
+            pSortColumnBtn->SetBkImage("ui-item-symbolic.svg");
         }
     }
     else {
@@ -718,31 +713,31 @@ void MainForm::SwithSortMode(const ui::UiPoint& point, ui::Control* pRelatedCont
     menu->AttachMenuItemActivated([this, bSorted, bSortUp, sortColumn](const DString& menuName, int32_t nMenuLevel,
                                                                        const DString& itemName, size_t nItemIndex) {
             // Matches the menu item names in the XML
-            if (itemName == _T("menu_item_file_name")) {
+            if (itemName == "menu_item_file_name") {
                 // File name
                 if (m_pExplorerView != nullptr) {
                     m_pExplorerView->SortByColumn(ExplorerView::ExplorerViewColumn::kName, bSortUp);
                 }
             }
-            else if (itemName == _T("menu_item_file_modify_time")) {
+            else if (itemName == "menu_item_file_modify_time") {
                 // Modified date
                 if (m_pExplorerView != nullptr) {
                     m_pExplorerView->SortByColumn(ExplorerView::ExplorerViewColumn::kModifyDateTime, bSortUp);
                 }
             }
-            else if (itemName == _T("menu_item_file_type")) {
+            else if (itemName == "menu_item_file_type") {
                 // File type
                 if (m_pExplorerView != nullptr) {
                     m_pExplorerView->SortByColumn(ExplorerView::ExplorerViewColumn::kType, bSortUp);
                 }
             }
-            else if (itemName == _T("menu_item_file_size")) {
+            else if (itemName == "menu_item_file_size") {
                 // File size
                 if (m_pExplorerView != nullptr) {
                     m_pExplorerView->SortByColumn(ExplorerView::ExplorerViewColumn::kSize, bSortUp);
                 }
             }
-            else if (itemName == _T("menu_item_sort_ascending")) {
+            else if (itemName == "menu_item_sort_ascending") {
                 // Ascending sort
                 if (!bSorted || !bSortUp) {
                     if (m_pExplorerView != nullptr) {
@@ -750,7 +745,7 @@ void MainForm::SwithSortMode(const ui::UiPoint& point, ui::Control* pRelatedCont
                     }
                 }
             }
-            else if (itemName == _T("menu_item_sort_descending")) {
+            else if (itemName == "menu_item_sort_descending") {
                 // Descending sort
                 if (!bSorted || bSortUp) {
                     if (m_pExplorerView != nullptr) {

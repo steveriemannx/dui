@@ -1,8 +1,9 @@
 #include "dui/dui.h"
 #include "ListBoxForm.h"
+#include "embedded_resources.inc"
 #include "dui/Utils/UiBuilder.h"
 
 int main()
 {
-    return ui::Run<ListBoxForm>(_T("ListBox (Pure Code)"));
+    return ui::RunMemory<ListBoxForm>("ListBox (Pure Code)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

@@ -1,32 +1,13 @@
 //MainForm.cpp
 #include "MainForm.h"
-
-MainForm::MainForm()
-{
-}
-
-MainForm::~MainForm()
-{
-}
-
-DString MainForm::GetSkinFolder()
-{
-    return _T("webview2");
-}
-
-DString MainForm::GetSkinFile()
-{
-    return _T("webview2.xml");
-}
+#include "dui/Utils/UiBuilder.h"
 
 void MainForm::OnInitWindow()
 {
-    BaseClass::OnInitWindow();
     //Window initialization finished, this Form can now be initialized
 
-    GetRoot()->AttachBubbledEvent(ui::kEventClick, UiBind(&MainForm::OnClicked, this, std::placeholders::_1), 0);
-    m_pWebView2Control = dynamic_cast<ui::WebView2Control*>(FindControl(_T("webview2_control")));
-    m_pEditUrl = dynamic_cast<ui::RichEdit*>(FindControl(_T("edit_url")));
+    m_pWebView2Control = ui::Find<ui::WebView2Control>(this, "webview2_control");
+    m_pEditUrl = ui::Find<ui::RichEdit>(this, "edit_url");
 
     // Set the input box style
     if (m_pEditUrl != nullptr) {
@@ -34,12 +15,12 @@ void MainForm::OnInitWindow()
         m_pEditUrl->AttachReturn(UiBind(&MainForm::OnNavigate, this, std::placeholders::_1));
     }
 
-    ui::Control* pControl = FindControl(_T("btn_back"));
+    ui::Control* pControl = ui::Find<ui::Control>(this, "btn_back");
     if (pControl != nullptr) {
         pControl->SetEnabled(false);
     }
 
-    pControl = FindControl(_T("btn_forward"));
+    pControl = ui::Find<ui::Control>(this, "btn_forward");
     if (pControl != nullptr) {
         pControl->SetEnabled(false);
     }
@@ -48,11 +29,11 @@ void MainForm::OnInitWindow()
         //Update the state of the back and forward buttons
         m_pWebView2Control->SetHistoryChangedCallback([this]() {
             if (m_pWebView2Control != nullptr) {
-                ui::Control* pControl = FindControl(_T("btn_back"));
+                ui::Control* pControl = ui::Find<ui::Control>(this, "btn_back");
                 if (pControl != nullptr) {
                     pControl->SetEnabled(m_pWebView2Control->CanGoBack());
                 }
-                pControl = FindControl(_T("btn_forward"));
+                pControl = ui::Find<ui::Control>(this, "btn_forward");
                 if (pControl != nullptr) {
                     pControl->SetEnabled(m_pWebView2Control->CanGoForward());
                 }
@@ -62,7 +43,7 @@ void MainForm::OnInitWindow()
         //Update the URL
         m_pWebView2Control->SetSourceChangedCallback([this](const DString& url) {
             ui::GlobalManager::Instance().AssertUIThread();
-            ui::RichEdit* pEditUrl = dynamic_cast<ui::RichEdit*>(FindControl(_T("edit_url")));
+            ui::RichEdit* pEditUrl = ui::Find<ui::RichEdit>(this, "edit_url");
             if (pEditUrl != nullptr) {
                 pEditUrl->SetText(url);
             }
@@ -71,18 +52,25 @@ void MainForm::OnInitWindow()
         //Update the title
         m_pWebView2Control->SetDocumentTitleChangedCallback([this](const DString& title) {
             ui::GlobalManager::Instance().AssertUIThread();
-            ui::Label* pLabelTitle = dynamic_cast<ui::Label*>(FindControl(_T("page_title")));
+            ui::Label* pLabelTitle = ui::Find<ui::Label>(this, "page_title");
             if (pLabelTitle != nullptr) {
                 pLabelTitle->SetText(title);
             }
             });
     }
 
+    BindEvents();
+    BaseClass::OnInitWindow();
+}
+
+void MainForm::BindEvents()
+{
+    GetRoot()->AttachBubbledEvent(ui::kEventClick, UiBind(&MainForm::OnClicked, this, std::placeholders::_1), 0);
+
     //Fullscreen page
-    ui::Button* pFullscreenBtn = dynamic_cast<ui::Button*>(FindControl(_T("webview2_full_screen_btn")));
-    if (pFullscreenBtn != nullptr) {
+    if (auto* pFullscreenBtn = ui::Find<ui::Button>(this, "webview2_full_screen_btn")) {
         pFullscreenBtn->AttachClick([this](const ui::EventArgs&) {
-            ui::Control* pWebView2Control = FindControl(_T("webview2_control"));
+            ui::Control* pWebView2Control = ui::Find<ui::Control>(this, "webview2_control");
             if (pWebView2Control != nullptr) {
                 this->SetFullscreenControl(pWebView2Control);
             }

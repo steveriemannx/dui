@@ -14,12 +14,8 @@ public:
     MainForm();
     virtual ~MainForm() override;
 
-    /** Resource-related interfaces
-     * GetSkinFolder sets the skin resource path of the window to be drawn
-     * GetSkinFile sets the XML description file of the window to be drawn
-     */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return "child_window"; }
+    virtual DString GetSkinFile() override { return "child_window.xml"; }
 
 public:
     /** Draw this child window immediately
@@ -41,6 +37,7 @@ protected:
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;
+    virtual void OnInitLayout() override;
 
     /** Called when the window is about to be closed, for subclasses to do some cleanup work
     */
@@ -49,6 +46,9 @@ protected:
     /** The layered window attributes of the window have changed
     */
     virtual void OnLayeredWindowChanged() override;
+
+private:
+    void BindEvents();
 
 private:
     /** Create a child window and save the association

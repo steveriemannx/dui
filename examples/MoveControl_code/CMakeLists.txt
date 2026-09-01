@@ -7,4 +7,11 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE)
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
+
+# Embed resources for code mode
+set(EMBED_RES_DIR "${DUI_SRC_ROOT_DIR}/resources")
+set(EMBED_RES_PATHS "${DUI_SRC_ROOT_DIR}/resources/themes")
+set(EMBED_RES_THEME "default")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
+
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

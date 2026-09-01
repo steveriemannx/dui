@@ -6,22 +6,25 @@
 
 class ListBoxForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
-    ListBoxForm();
-    virtual ~ListBoxForm() override;
+    ListBoxForm() = default;
+    virtual ~ListBoxForm() override = default;
 
     /** Resource-related interfaces
      * The GetSkinFolder interface sets the skin resource path for the window to be drawn
      * The GetSkinFile interface sets the xml description file for the window to be drawn
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return "list_box"; }
+    virtual DString GetSkinFile() override { return "list_box.xml"; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;
 
 private:
+    void BindEvents();
+
     /** Test the list events
     */
     void TestListBoxEvents(ui::ListBox* pListBox);
@@ -35,7 +38,7 @@ private:
     void OutputDebugLog(const DString& logMsg);
 
 private:
-    ui::ListBox* m_pListBox;
+    ui::ListBox* m_pListBox = nullptr;
 };
 
 #endif //EXAMPLES_LISTBOX_FORM_H_

@@ -1,50 +1,13 @@
 #include "ListBoxForm.h"
 #include "Item.h"
+#include "dui/Utils/UiBuilder.h"
 #include "generated_ui.inc"  // Build-time generated pure C++ UI code (from list_box.xml)
-
-ListBoxForm::ListBoxForm():
-    m_pListBox(nullptr)
-{
-}
-
-
-ListBoxForm::~ListBoxForm()
-{
-}
-
-DString ListBoxForm::GetSkinFolder()
-{
-    return _T("list_box");
-}
-
-DString ListBoxForm::GetSkinFile()
-{
-    // No XML file - UI is generated at build time from list_box.xml
-    return _T("");
-}
 
 void ListBoxForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
+    BuildUI();
 
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
-
-    // Register the local style classes in item.xml (the Item template no longer loads XML; it is built in code)
-    AddClass(_T("list_box_item_test"),
-             _T(" hot_color=\"bk_listitem_hovered\" pushed_color=\"bk_listitem_selected\" selected_normal_color=\"bk_listitem_selected\" fade_hot=\"false\""));
-    AddClass(_T("list_box_item_checkbox_1"),
-             _T(" height=\"20\" text_padding=\"20,0,0,0\" font=\"system_14\" normal_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'\" disabled_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'\" selected_normal_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'\" selected_disabled_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'\""));
-
-    // Build-time generated from list_box.xml
-    InitList_box(this);
-
-    m_pListBox = dynamic_cast<ui::ListBox*>(FindControl(_T("list")));
+    m_pListBox = ui::Find<ui::ListBox>(this, "list");
     ASSERT(m_pListBox != nullptr);
     if (m_pListBox == nullptr) {
         return;
@@ -55,42 +18,33 @@ void ListBoxForm::OnInitWindow()
     bool bVTileListBox = dynamic_cast<ui::VTileListBox*>(m_pListBox) != nullptr;
 
     if (bVTileListBox) {
-        //VTileListBox: set to fixed 2 columns, auto-calculate the Item width
-        //m_pListBox->SetAttribute(_T("item_size"), _T("200，80"));
-        m_pListBox->SetAttribute(_T("columns"), _T("2"));
-        m_pListBox->SetAttribute(_T("auto_calc_item_size"), _T("true"));
+        m_pListBox->SetAttribute("columns", "2");
+        m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
     else if (bHTileListBox) {
-        //HTileListBox: set to fixed 2 rows, auto-calculate the Item height
-        //m_pListBox->SetAttribute(_T("item_size"), _T("200，80"));
-        m_pListBox->SetAttribute(_T("rows"), _T("2"));
-        m_pListBox->SetAttribute(_T("auto_calc_item_size"), _T("true"));
+        m_pListBox->SetAttribute("rows", "2");
+        m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
 
     for (auto i = 0; i < 300; i++) {
-        //The Item template is built in code (item.xml is no longer loaded)
         Item* item = new Item(this);
 
         if (bVListBox) {
-            //VListBox: set to the stretch type
             item->SetFixedWidth(ui::UiFixedInt::MakeStretch(), true, true);
         }
         else if(bHListBox) {
-            //HListBox: set to a fixed width
             item->SetFixedWidth(ui::UiFixedInt(200), true, true);
         }
         else if (bVTileListBox) {
-            //VTileListBox: auto-calculated height
             item->SetFixedHeight(ui::UiFixedInt::MakeAuto(), true, true);
         }
         else if (bHTileListBox) {
-            //HTileListBox: fixed width, auto-calculated height
             item->SetFixedWidth(ui::UiFixedInt(200), true, true);
             item->SetFixedHeight(ui::UiFixedInt::MakeAuto(), true, true);
         }
 
-        DString img = _T("icon.png");
-        DString title = ui::StringUtil::Printf(_T("Task [%02d]"), i);
+        DString img = "icon.png";
+        DString title = ui::StringUtil::Printf("Task [%02d]", i);
 
         item->InitSubControls(img, title);
         m_pListBox->AddItem(item);
@@ -98,9 +52,23 @@ void ListBoxForm::OnInitWindow()
 
     m_pListBox->SetFocus();
 
-    //Test the ListBox events
-    TestListBoxEvents(m_pListBox);
+    BindEvents();
     BaseClass::OnInitWindow();
+}
+
+void ListBoxForm::BuildUI()
+{
+    AddClass("list_box_item_test",
+             " hot_color=\"bk_listitem_hovered\" pushed_color=\"bk_listitem_selected\" selected_normal_color=\"bk_listitem_selected\" fade_hot=\"false\"");
+    AddClass("list_box_item_checkbox_1",
+             " height=\"20\" text_padding=\"20,0,0,0\" font=\"system_14\" normal_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'\" disabled_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'\" selected_normal_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'\" selected_disabled_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'\"");
+
+    InitList_box(this);
+}
+
+void ListBoxForm::BindEvents()
+{
+    TestListBoxEvents(m_pListBox);
 }
 
 void ListBoxForm::TestListBoxEvents(ui::ListBox* pListBox)
@@ -166,22 +134,22 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
 {
     DString sInfo = ui::EventUtils::EventTypeToString(args.eventType);
     while (sInfo.size() < 24) {
-        sInfo += _T(" ");
+        sInfo += " ";
     }
     if (args.eventType == ui::kEventSelect) {
         size_t nNewItemIndex = (size_t)args.wParam;
         size_t nOldItemIndex = (size_t)args.lParam;
         if (nOldItemIndex != ui::Box::InvalidIndex) {
-            sInfo += ui::StringUtil::Printf(_T("NewItemIndex=%zu, OldItemIndex=%zu"),
+            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu, OldItemIndex=%zu",
                                             nNewItemIndex, nOldItemIndex);
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("NewItemIndex=%zu"), nNewItemIndex);
+            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu", nNewItemIndex);
         }
     }
     else if (args.eventType == ui::kEventUnSelect) {
         size_t nItemIndex = (size_t)args.wParam;
-        sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+        sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
     }
     else if (args.eventType == ui::kEventSelChanged) {
         //No parameters
@@ -194,10 +162,10 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
              (args.eventType == ui::kEventReturn)) {
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += _T("no params");
+            sInfo += "no params";
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
         }
     }
     else if ((args.eventType == ui::kEventKeyDown) || (args.eventType == ui::kEventKeyUp)) {
@@ -206,31 +174,31 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
         DString modifierKey;
         if (args.vkCode != ui::VirtualKeyCode::kVK_CONTROL) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_CONTROL)) {
-                modifierKey += _T("Ctrl+");
+                modifierKey += "Ctrl+";
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_SHIFT) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_SHIFT)) {
-                modifierKey += _T("Shift+");
+                modifierKey += "Shift+";
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_MENU) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_MENU)) {
-                modifierKey += _T("Alt+");
+                modifierKey += "Alt+";
             }
         }
-        sInfo += _T("<");
+        sInfo += "<";
         sInfo += modifierKey;
         sInfo += keyName;
-        sInfo += _T(">");
-        sInfo += _T(" ");
+        sInfo += ">";
+        sInfo += " ";
 
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += _T("no params");
+            sInfo += "no params";
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
         }
     }
     else {
@@ -245,5 +213,3 @@ void ListBoxForm::OutputDebugLog(const DString& logMsg)
     //::OutputDebugString(logMsg.c_str());
 #endif
 }
-
-

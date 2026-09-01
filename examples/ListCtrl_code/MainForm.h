@@ -9,34 +9,31 @@ class MainForm : public ui::WindowImplBase
     typedef ui::WindowImplBase BaseClass;
 public:
     MainForm();
-    virtual ~MainForm() override;
+    virtual ~MainForm() override = default;
 
     /** Resource-related interface
      * The GetSkinFolder interface sets the skin resource path of the window you are drawing
      * The GetSkinFile interface sets the xml description file of the window you are drawing
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
-
-    /** Window attributes corresponding to the XML version */
-    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
+    virtual DString GetSkinFolder() override { return ""; }
+    virtual DString GetSkinFile() override { return ""; }
 
     /** Called after the window is created, allowing subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;
-
-private:
-    /** Pure code UI construction (corresponds to the list_ctrl.xml layout)
-    */
-    void BuildUI();
 
     /** Layout initialization is complete; the position, size, and other layout info of each control is initialized, for subclasses to adjust the layout after the UI starts
     */
     virtual void OnInitLayout() override;
 
 private:
+    void SetupWindow();
+    void BuildUI();
+
+    void BindEvents();
+
     /** Fill data
-    */
+     */
     void InsertItemData(int32_t nRows, int32_t nColumns, int32_t nImageId);
 
     /** Initialize the UI events related to this program's test features

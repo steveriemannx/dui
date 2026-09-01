@@ -1,132 +1,82 @@
 #include "MainForm.h"
 #include "dui/Utils/UiBuilder.h"
 
-MainForm::MainForm()
-{
-}
-
-MainForm::~MainForm()
-{
-}
-
-DString MainForm::GetSkinFolder()
-{
-    return _T("");
-}
-
-DString MainForm::GetSkinFile()
-{
-    // Pure code mode: no layout XML is loaded
-    return _T("");
-}
-
-void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    // Window attributes correspond to the <Window> attributes in basic.xml
-    using namespace ui;
-    ui::UiRect rcWork;
-    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.75f);
-    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.75f);
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = true;
-    attrs.m_bIsLayeredWindowDefined = true;
-    attrs.m_rcSizeBox = UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-
-    // The XML basic.xml uses size="75%,75%" with a system shadow, so no
-    // self-drawn shadow corner should be added here. Keeping the size exactly
-    // in sync with the XML window is what main-mac expects.
-    BaseClass::GetCreateWindowAttributes(attrs);
-}
-
 void MainForm::OnInitWindow()
 {
-    using namespace ui;
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
+    SetupWindow();
+    BuildUI();
+    BindEvents();
 
-    SetSizeBox(UiRect(4, 4, 4, 4), true);
-    SetCaptionRect(UiRect(0, 0, 0, 36), true);
-
-    // The whole window tree is built with one nested ui::Make expression:
-    // it mirrors the XML layout and reads much closer to Qt/gtkmm code.
-    auto* root = Create<ui::VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}},
-
-        Create<ui::HBox>(this,
-            {{"name", "window_caption_bar"},
-             {"width", "stretch"},
-             {"height", "36"},
-             {"bkcolor", "bk_wnd_lightcolor"}},
-
-            Create<ui::Control>(this, {{"mouse_enabled", "false"}}),
-
-            Create<ui::Button>(this,
-                {{"class", "btn_wnd_fullscreen_11"}, {"height", "32"},
-                 {"width", "40"}, {"name", "fullscreenbtn"},
-                 {"margin", "0,2,0,2"},
-                 {"tooltip_text", "Fullscreen, press ESC to exit fullscreen"}}),
-
-            Create<ui::Button>(this,
-                {{"class", "btn_wnd_min_11"}, {"height", "32"},
-                 {"width", "40"}, {"name", "minbtn"},
-                 {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}}),
-
-            Create<ui::Box>(this,
-                {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}},
-
-                Create<ui::Button>(this,
-                    {{"class", "btn_wnd_max_11"}, {"height", "32"},
-                     {"width", "stretch"}, {"name", "maxbtn"},
-                     {"tooltip_text", "Maximize"}}),
-
-                Create<ui::Button>(this,
-                    {{"class", "btn_wnd_restore_11"}, {"height", "32"},
-                     {"width", "stretch"}, {"name", "restorebtn"},
-                     {"visible", "false"}, {"tooltip_text", "Restore"}})),
-
-            Create<ui::Button>(this,
-                {{"class", "btn_wnd_close_11"}, {"height", "stretch"},
-                 {"width", "40"}, {"name", "closebtn"},
-                 {"margin", "0,0,0,2"}, {"tooltip_text", "Close"}})),
-
-        Create<ui::Box>(this, {},
-
-            Create<ui::VBox>(this,
-                {{"valign", "center"}, {"halign", "center"}},
-
-                Create<ui::Label>(this,
-                    {{"name", "tooltip"},
-                     {"text", "A simple window with a title bar and standard buttons."},
-                     {"height", "100%"}, {"width", "100%"},
-                     {"text_align", "hcenter,vcenter"}}))));
-
-    AttachBox(root);
     BaseClass::OnInitWindow();
 }
 
-bool MainForm::OnButtonClick(const ui::EventArgs& msg)
+void MainForm::SetupWindow()
 {
-    ui::Control* pSender = msg.GetSender();
-    if (pSender == nullptr) return false;
-    DString sName = pSender->GetName();
-    if (sName == DUI_CTR_BUTTON_CLOSE) {
-        CloseWnd();
-    } else if (sName == DUI_CTR_BUTTON_MIN) {
-        ShowWindow(ui::kSW_MINIMIZE);
-    } else if (sName == DUI_CTR_BUTTON_MAX) {
-        ShowWindow(ui::kSW_SHOW_MAXIMIZED);
-    } else if (sName == DUI_CTR_BUTTON_RESTORE) {
-        ShowWindow(ui::kSW_RESTORE);
-    }
-    // The full-screen button is handled automatically by the WindowImplBase framework
-    return true;
+    SetWindowSize(800, 600);
+    CenterWindow();
+    SetWindowMinimumSize(ui::UiSize(240, 100), true);
+    SetUseSystemCaption(false);
+
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetLayeredWindow(true, false);
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+    SetEnableSnapLayoutMenu(true);
+    SetEnableSysMenu(true);
+    SetSysMenuRect(ui::UiRect(0, 0, 36, 36), true);
+    SetLayeredWindowAlpha(255);
+
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    SetWindowIcon("public/caption/logo.ico");
+}
+
+void MainForm::BuildUI()
+{
+    auto* pRoot = ui::Create<ui::VBox>(this, {
+        {"bkcolor", "bk_wnd_darkcolor"},
+        {"visible", "true"}
+    });
+
+    // Title bar area
+    auto* pCaption = ui::Create<ui::HBox>(this, {
+        {"name", "window_caption_bar"},
+        {"width", "stretch"},
+        {"height", "36"},
+        {"bkcolor", "bk_wnd_lightcolor"}
+    });
+    ui::Attach(pRoot, pCaption);
+
+    auto* pSpacer = ui::Create<ui::Control>(this, {
+        {"mouse_enabled", "false"}
+    });
+    ui::Attach(pCaption, pSpacer);
+
+    // Work area
+    auto* pContent = ui::Create<ui::Box>(this, {});
+    ui::Attach(pRoot, pContent);
+
+    auto* pCenter = ui::Create<ui::VBox>(this, {
+        {"valign", "center"},
+        {"halign", "center"}
+    });
+    ui::Attach(pContent, pCenter);
+
+    auto* pLabel = ui::Create<ui::Label>(this, {
+        {"name", "tooltip"},
+        {"text", "A simple window with a title bar and standard buttons."},
+        {"height", "100%"},
+        {"width", "100%"},
+        {"text_align", "hcenter,vcenter"}
+    });
+    ui::Attach(pCenter, pLabel);
+
+    ui::Attach(this, pRoot);
+}
+
+void MainForm::BindEvents()
+{
+    // Window caption buttons (closebtn/minbtn/maxbtn/restorebtn/fullscreenbtn)
+    // are wired automatically by the framework via their names.
 }

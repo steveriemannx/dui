@@ -7,6 +7,7 @@
 class MainForm;
 class FindForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     explicit FindForm(MainForm* pMainForm);
     virtual ~FindForm() override;
@@ -19,10 +20,13 @@ public:
     virtual DString GetSkinFile() override;
 
     /** Called after the window is created, allowing subclasses to do some initialization work
-    */
+     */
     virtual void OnInitWindow() override;
 
 private:
+    // Bind control events
+    void BindEvents();
+
     // Find Next
     void OnFindNext();
 

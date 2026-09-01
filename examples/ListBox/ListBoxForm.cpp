@@ -1,29 +1,10 @@
 #include "ListBoxForm.h"
 #include "Item.h"
-
-ListBoxForm::ListBoxForm():
-    m_pListBox(nullptr)
-{
-}
-
-
-ListBoxForm::~ListBoxForm()
-{
-}
-
-DString ListBoxForm::GetSkinFolder()
-{
-    return _T("list_box");
-}
-
-DString ListBoxForm::GetSkinFile()
-{
-    return _T("list_box.xml");
-}
+#include "dui/Utils/UiBuilder.h"
 
 void ListBoxForm::OnInitWindow()
 {
-    m_pListBox = dynamic_cast<ui::ListBox*>(FindControl(_T("list")));
+    m_pListBox = ui::Find<ui::ListBox>(this, "list");
     ASSERT(m_pListBox != nullptr);
     if (m_pListBox == nullptr) {
         return;
@@ -35,20 +16,20 @@ void ListBoxForm::OnInitWindow()
 
     if (bVTileListBox) {
         //VTileListBox: set to fixed 2 columns, auto-calculate the Item width
-        //m_pListBox->SetAttribute(_T("item_size"), _T("200，80"));
-        m_pListBox->SetAttribute(_T("columns"), _T("2"));
-        m_pListBox->SetAttribute(_T("auto_calc_item_size"), _T("true"));
+        //m_pListBox->SetAttribute("item_size", "200，80");
+        m_pListBox->SetAttribute("columns", "2");
+        m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
     else if (bHTileListBox) {
         //HTileListBox: set to fixed 2 rows, auto-calculate the Item height
-        //m_pListBox->SetAttribute(_T("item_size"), _T("200，80"));
-        m_pListBox->SetAttribute(_T("rows"), _T("2"));
-        m_pListBox->SetAttribute(_T("auto_calc_item_size"), _T("true"));
+        //m_pListBox->SetAttribute("item_size", "200，80");
+        m_pListBox->SetAttribute("rows", "2");
+        m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
 
     for (auto i = 0; i < 300; i++) {
         Item* item = new Item(this);
-        ui::GlobalManager::Instance().FillBoxWithCache(item, ui::FilePath(_T("list_box/item.xml")));
+        ui::GlobalManager::Instance().FillBoxWithCache(item, ui::FilePath("list_box/item.xml"));
 
         if (bVListBox) {
             //VListBox: set to the stretch type
@@ -68,8 +49,8 @@ void ListBoxForm::OnInitWindow()
             item->SetFixedHeight(ui::UiFixedInt::MakeAuto(), true, true);
         }
 
-        DString img = _T("icon.png");
-        DString title = ui::StringUtil::Printf(_T("Task [%02d]"), i);
+        DString img = "icon.png";
+        DString title = ui::StringUtil::Printf("Task [%02d]", i);
 
         item->InitSubControls(img, title);
         m_pListBox->AddItem(item);
@@ -77,7 +58,12 @@ void ListBoxForm::OnInitWindow()
 
     m_pListBox->SetFocus();
 
-    //Test the ListBox events
+    BindEvents();
+    BaseClass::OnInitWindow();
+}
+
+void ListBoxForm::BindEvents()
+{
     TestListBoxEvents(m_pListBox);
 }
 
@@ -144,22 +130,22 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
 {
     DString sInfo = ui::EventUtils::EventTypeToString(args.eventType);
     while (sInfo.size() < 24) {
-        sInfo += _T(" ");
+        sInfo += " ";
     }
     if (args.eventType == ui::kEventSelect) {
         size_t nNewItemIndex = (size_t)args.wParam;
         size_t nOldItemIndex = (size_t)args.lParam;
         if (nOldItemIndex != ui::Box::InvalidIndex) {
-            sInfo += ui::StringUtil::Printf(_T("NewItemIndex=%zu, OldItemIndex=%zu"),
+            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu, OldItemIndex=%zu",
                                             nNewItemIndex, nOldItemIndex);
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("NewItemIndex=%zu"), nNewItemIndex);
+            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu", nNewItemIndex);
         }
     }
     else if (args.eventType == ui::kEventUnSelect) {
         size_t nItemIndex = (size_t)args.wParam;
-        sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+        sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
     }
     else if (args.eventType == ui::kEventSelChanged) {
         //No parameters
@@ -172,10 +158,10 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
              (args.eventType == ui::kEventReturn)) {
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += _T("no params");
+            sInfo += "no params";
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
         }
     }
     else if ((args.eventType == ui::kEventKeyDown) || (args.eventType == ui::kEventKeyUp)) {
@@ -184,31 +170,31 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
         DString modifierKey;
         if (args.vkCode != ui::VirtualKeyCode::kVK_CONTROL) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_CONTROL)) {
-                modifierKey += _T("Ctrl+");
+                modifierKey += "Ctrl+";
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_SHIFT) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_SHIFT)) {
-                modifierKey += _T("Shift+");
+                modifierKey += "Shift+";
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_MENU) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_MENU)) {
-                modifierKey += _T("Alt+");
+                modifierKey += "Alt+";
             }
         }
-        sInfo += _T("<");
+        sInfo += "<";
         sInfo += modifierKey;
         sInfo += keyName;
-        sInfo += _T(">");
-        sInfo += _T(" ");
+        sInfo += ">";
+        sInfo += " ";
 
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += _T("no params");
+            sInfo += "no params";
         }
         else {
-            sInfo += ui::StringUtil::Printf(_T("ItemIndex=%zu"), nItemIndex);
+            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
         }
     }
     else {
@@ -223,5 +209,3 @@ void ListBoxForm::OutputDebugLog(const DString& logMsg)
     //::OutputDebugString(logMsg.c_str());
 #endif
 }
-
-

@@ -1,10 +1,11 @@
 #include "dui/dui.h"
 #include "MainForm.h"
 #include "dui/WebView2/WebView2Manager.h"
-#include "dui/Utils/AppEntry.h"
 
-/** App: FrameworkThread subclass that serves as the DUI_APP_ENTRY target.
+/** App: FrameworkThread subclass that serves as the application entry.
  *  RunMessageLoop() calls OnInit() -> message loop -> OnCleanup().
+ *  WebView2 must be initialized before the window is created and uninitialized
+ *  after the message loop exits, so a custom entry (instead of ui::Run) is kept.
  */
 class App : public ui::FrameworkThread
 {

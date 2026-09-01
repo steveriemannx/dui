@@ -1,6 +1,7 @@
 #include "MainForm.h"
 #include "ChildWindowPaint.h"
 #include "MyChildWindowEvents.h"
+#include "dui/Utils/UiBuilder.h"
 
 MainForm::MainForm():
     m_pChildWindow(nullptr)
@@ -14,21 +15,23 @@ MainForm::~MainForm()
     }    
 }
 
-DString MainForm::GetSkinFolder()
+void MainForm::BindEvents()
 {
-    return _T("child_window");
-}
-
-DString MainForm::GetSkinFile()
-{
-    return _T("child_window.xml");
 }
 
 void MainForm::OnInitWindow()
 {
+    BindEvents();
+
     BaseClass::OnInitWindow();
-    // Create the child window and associate the handling interface
-    CreateChildWindows();
+}
+
+void MainForm::OnInitLayout()
+{
+    BaseClass::OnInitLayout();
+    if (m_childWindowEvents.empty()) {
+        CreateChildWindows();
+    }
 }
 
 void MainForm::OnPreCloseWindow()
@@ -54,15 +57,20 @@ void MainForm::OnLayeredWindowChanged()
 
 void MainForm::CreateChildWindows()
 {
-    ui::GridBox* pChildWindowBox = dynamic_cast<ui::GridBox*>(FindControl(_T("child_window_box")));
+    ui::GridBox* pChildWindowBox = ui::Find<ui::GridBox>(this, "child_window_box");
     if (pChildWindowBox != nullptr) {
         size_t nCount = pChildWindowBox->GetItemCount();
         for (size_t nItem = 0; nItem < nCount; ++nItem) {
             ui::ChildWindow* pChildWindow = dynamic_cast<ui::ChildWindow*>(pChildWindowBox->GetItemAt(nItem));
             if (pChildWindow != nullptr) {
                 MyChildWindowEvents* pMyChildWindowEvents = new MyChildWindowEvents(pChildWindow, nItem, this);
-                pChildWindow->CreateChildWindow(pMyChildWindowEvents);
-                m_childWindowEvents.push_back(pMyChildWindowEvents);
+                if (pChildWindow->CreateChildWindow(pMyChildWindowEvents)) {
+                    m_childWindowEvents.push_back(pMyChildWindowEvents);
+                    pChildWindow->InvalidateChildWindow();
+                }
+                else {
+                    delete pMyChildWindowEvents;
+                }
             }
         }
     }

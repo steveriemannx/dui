@@ -7,4 +7,24 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE)
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
+
+# Embed resources into the executable; embedded resources are accessed directly from memory.
+# Only embed the common resources (active theme's global.xml + public assets, plus fonts and
+# lang) and this example's own skin (themes/<platform-theme>/list_box), not the whole tree.
+set(EMBED_RES_DIR "${DUI_ROOT}/resources")
+if(APPLE)
+    set(LISTBOX_EMBED_THEME macos26)
+elseif(WIN32)
+    set(LISTBOX_EMBED_THEME windows11)
+else()
+    set(LISTBOX_EMBED_THEME default)
+endif()
+set(EMBED_RES_PATHS
+    "themes/${LISTBOX_EMBED_THEME}/global.xml"
+    "themes/${LISTBOX_EMBED_THEME}/public"
+    "themes/${LISTBOX_EMBED_THEME}/list_box"
+    "fonts"
+    "lang")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
+
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

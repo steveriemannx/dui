@@ -1,25 +1,31 @@
 #ifndef EXAMPLES_BASIC_CODE_MAIN_FORM_H_
 #define EXAMPLES_BASIC_CODE_MAIN_FORM_H_
 
+// dui
 #include "dui/dui.h"
 
-/** Mode 3 (pure code): the window layout is built entirely with C++ code, with no layout XML.
- *  The concise ui::Make / ui::Add helpers make the pure-code style feel much closer to Qt/gtkmm.
- */
 class MainForm : public ui::WindowImplBase
 {
     typedef ui::WindowImplBase BaseClass;
 public:
-    MainForm();
-    virtual ~MainForm() override;
+    MainForm() = default;
+    virtual ~MainForm() override = default;
 
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
-    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
+    /** Resource-related interfaces
+     * GetSkinFolder sets the skin resource path of the window to be drawn
+     * GetSkinFile sets the XML description file of the window to be drawn
+     */
+    virtual DString GetSkinFolder() override { return "basic"; }
+    virtual DString GetSkinFile() override { return ""; }
+
+    /** Called after the window is created, for subclasses to do some initialization work
+     */
     virtual void OnInitWindow() override;
 
 private:
-    bool OnButtonClick(const ui::EventArgs& msg);
+    void SetupWindow();
+    void BuildUI();
+    void BindEvents();
 };
 
-#endif
+#endif //EXAMPLES_BASIC_CODE_MAIN_FORM_H_

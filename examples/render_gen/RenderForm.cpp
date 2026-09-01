@@ -1,80 +1,66 @@
 #include "RenderForm.h"
+#include "dui/Utils/UiBuilder.h"
 #include "generated_ui.inc"  // Build-time generated pure C++ UI code (from render.xml)
 #include "RenderTest1.h"
 #include "RenderTest2.h"
 
-RenderForm::RenderForm()
+void RenderForm::BuildUI()
 {
-}
-
-RenderForm::~RenderForm()
-{
-}
-
-DString RenderForm::GetSkinFolder()
-{
-    return _T("render");
-}
-
-DString RenderForm::GetSkinFile()
-{
-    // No XML file - UI is generated at build time from render.xml
-    return _T("");
-}
-
-void RenderForm::OnInitWindow()
-{
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
-
     // Build-time generated from render.xml
     ::InitRender(this);
 
     // Add the custom draw-test controls to the Draw pages.
-    if (ui::Box* pPage5 = dynamic_cast<ui::Box*>(FindControl(_T("main_view_page_05")))) {
+    if (ui::Box* pPage5 = ui::Find<ui::Box>(this, "main_view_page_05")) {
         ui::RenderTest1* pRenderTest1 = new ui::RenderTest1(this);
-        pRenderTest1->SetAttribute(_T("width"), _T("stretch"));
-        pRenderTest1->SetAttribute(_T("height"), _T("stretch"));
+        pRenderTest1->SetAttribute("width", "stretch");
+        pRenderTest1->SetAttribute("height", "stretch");
         pPage5->AddItem(pRenderTest1);
     }
-    if (ui::Box* pPage6 = dynamic_cast<ui::Box*>(FindControl(_T("main_view_page_06")))) {
+    if (ui::Box* pPage6 = ui::Find<ui::Box>(this, "main_view_page_06")) {
         ui::RenderTest2* pRenderTest2 = new ui::RenderTest2(this);
-        pRenderTest2->SetAttribute(_T("width"), _T("stretch"));
-        pRenderTest2->SetAttribute(_T("height"), _T("stretch"));
+        pRenderTest2->SetAttribute("width", "stretch");
+        pRenderTest2->SetAttribute("height", "stretch");
         pPage6->AddItem(pRenderTest2);
     }
+}
 
+void RenderForm::OnInitWindow()
+{
+    BuildUI();
     TestPropertyGrid();
 
     //MenuBar test (pure code menu: menu items are built by the builder callback, no XML template)
-    ui::MenuBar* pMenuBar = dynamic_cast<ui::MenuBar*>(FindControl(_T("menu_bar_test")));
+    ui::MenuBar* pMenuBar = ui::Find<ui::MenuBar>(this, "menu_bar_test");
     if (pMenuBar != nullptr) {
         auto menuBuilder = [](ui::Menu* pMenu) {
             for (int32_t i = 1; i <= 5; ++i) {
                 ui::MenuItem* pItem = new ui::MenuItem(pMenu);
-                pItem->SetClass(_T("menu_element"));
-                pItem->SetName(ui::StringUtil::Printf(_T("menu_item_%d"), i));
-                pItem->SetText(ui::StringUtil::Printf(_T("Menu Item %d"), i));
+                pItem->SetClass("menu_element");
+                pItem->SetName(ui::StringUtil::Printf("menu_item_%d", i));
+                pItem->SetText(ui::StringUtil::Printf("Menu Item %d", i));
                 pItem->SetFixedWidth(ui::UiFixedInt(160), true, true);
                 pMenu->AddMenuItem(pItem);
             }
         };
-        pMenuBar->AddTopMenu(_T("1"), _T("File"),      menuBuilder);
-        pMenuBar->AddTopMenu(_T("2"), _T("Edit"),      menuBuilder);
-        pMenuBar->AddTopMenu(_T("3"), _T("Selection"), menuBuilder);
-        pMenuBar->AddTopMenu(_T("4"), _T("View"),      menuBuilder);
-        pMenuBar->AddTopMenu(_T("5"), _T("View"),       menuBuilder);
-        pMenuBar->AddTopMenu(_T("6"), _T("  ...  "),   menuBuilder, _T(""), _T("text_padding='8,1,8,7'"));
+        pMenuBar->AddTopMenu("1", "File",      menuBuilder);
+        pMenuBar->AddTopMenu("2", "Edit",      menuBuilder);
+        pMenuBar->AddTopMenu("3", "Selection", menuBuilder);
+        pMenuBar->AddTopMenu("4", "View",      menuBuilder);
+        pMenuBar->AddTopMenu("5", "View",       menuBuilder);
+        pMenuBar->AddTopMenu("6", "  ...  ",   menuBuilder, "", "text_padding='8,1,8,7'");
     }
 
+    BindEvents();
+    BaseClass::OnInitWindow();
+}
+
+void RenderForm::BindEvents()
+{
     //Register the response function for menu command activation
+    ui::MenuBar* pMenuBar = ui::Find<ui::MenuBar>(this, "menu_bar_test");
+    if (pMenuBar == nullptr) {
+        return;
+    }
     ui::MenuBarItemActivatedEvent callback = [](const DString& menuItemId,
                                                 const DString& menuName, int32_t nMenuLevel,
                                                 const DString& itemName, size_t nItemIndex) {
@@ -85,10 +71,7 @@ void RenderForm::OnInitWindow()
             (void)nItemIndex;
             int ii = 0;
         };
-    if (pMenuBar != nullptr) {
-        pMenuBar->AttachMenuBarItemActivated(callback);
-    }
-    BaseClass::OnInitWindow();
+    pMenuBar->AttachMenuBarItemActivated(callback);
 }
 
 void RenderForm::OnCloseWindow()
@@ -100,10 +83,10 @@ void RenderForm::OnCloseWindow()
 
 ui::Control* RenderForm::CreateControl(const DString& strClass)
 {
-    if (strClass == _T("RenderTest1")) {
+    if (strClass == "RenderTest1") {
         return new ui::RenderTest1(this);
     }
-    else if (strClass == _T("RenderTest2")) {
+    else if (strClass == "RenderTest2") {
         return new ui::RenderTest2(this);
     }
     return nullptr;
@@ -111,110 +94,110 @@ ui::Control* RenderForm::CreateControl(const DString& strClass)
 
 void RenderForm::TestPropertyGrid()
 {
-    ui::PropertyGrid* pPropertyGrid = dynamic_cast<ui::PropertyGrid*>(FindControl(_T("property_grid_test")));
+    ui::PropertyGrid* pPropertyGrid = ui::Find<ui::PropertyGrid>(this, "property_grid_test");
     if (pPropertyGrid == nullptr) {
         return;
     }
-    pPropertyGrid->SetEnableHeaderCtrl(true, _T("Property"), _T("Value"));
+    pPropertyGrid->SetEnableHeaderCtrl(true, "Property", "Value");
     pPropertyGrid->SetEnableDescriptionArea(true);
 
     ui::PropertyGridGroup* pGroup = nullptr;
     
-    pGroup = pPropertyGrid->AddGroup(_T("Group 1"), _T("Description 1"), (size_t)this);
+    pGroup = pPropertyGrid->AddGroup("Group 1", "Description 1", (size_t)this);
     ASSERT(pGroup->GetGroupData() == (size_t)this);
-    auto p = pPropertyGrid->AddTextProperty(pGroup, _T("Property 1"), _T("Value 1"), _T("Description of Property 1"), (size_t)this);
+    auto p = pPropertyGrid->AddTextProperty(pGroup, "Property 1", "Value 1", "Description of Property 1", (size_t)this);
     ASSERT(p->GetPropertyData() == (size_t)this);
-    auto p00 = pPropertyGrid->AddTextProperty(pGroup, _T("Property 2"), _T("Value 2"), _T("Description of Property 2: Disable"));
+    auto p00 = pPropertyGrid->AddTextProperty(pGroup, "Property 2", "Value 2", "Description of Property 2: Disable");
     p00->SetEnabled(false);
 
-    pGroup = pPropertyGrid->AddGroup(_T("Group 2"), _T("Description 2"));
-    pPropertyGrid->AddTextProperty(pGroup, _T("Property 2"), _T("Value 2"), _T("Description of Property 2"));
+    pGroup = pPropertyGrid->AddGroup("Group 2", "Description 2");
+    pPropertyGrid->AddTextProperty(pGroup, "Property 2", "Value 2", "Description of Property 2");
 
-    pGroup = pPropertyGrid->AddGroup(_T("Group 3"), _T("Description 3"));
-    auto p0 = pPropertyGrid->AddTextProperty(pGroup, _T("Property 3-0 (Text)"), _T("Text Value 3-0"), _T("Description of Property 3"));
-    auto p1 = pPropertyGrid->AddTextProperty(pGroup, _T("Property 3-1 (Number)"), _T("3"), _T("Description of Property 3, a number with a Spin control"));
+    pGroup = pPropertyGrid->AddGroup("Group 3", "Description 3");
+    auto p0 = pPropertyGrid->AddTextProperty(pGroup, "Property 3-0 (Text)", "Text Value 3-0", "Description of Property 3");
+    auto p1 = pPropertyGrid->AddTextProperty(pGroup, "Property 3-1 (Number)", "3", "Description of Property 3, a number with a Spin control");
     p1->SetEnableSpin(true, -10, 10);
 
-    auto p2 = pPropertyGrid->AddTextProperty(pGroup, _T("Property 3-2 (Read Only)"), _T("Value 3-2"), _T("Description of Property 3"));
+    auto p2 = pPropertyGrid->AddTextProperty(pGroup, "Property 3-2 (Read Only)", "Value 3-2", "Description of Property 3");
     p2->SetReadOnly(true);
 
-    auto p3 = pPropertyGrid->AddTextProperty(pGroup, _T("Property 3-3 (Password)"), _T("Value 3-3"), _T("Description of Property 3"));
+    auto p3 = pPropertyGrid->AddTextProperty(pGroup, "Property 3-3 (Password)", "Value 3-3", "Description of Property 3");
     p3->SetPasswordMode(true);
 
-    pGroup = pPropertyGrid->AddGroup(_T("Group 4"), _T("Description 4"));
-    auto p10 = pPropertyGrid->AddComboProperty(pGroup, _T("Property 4-1 (Drop Table)"), _T("Text Value 4"), _T("Description of Property 4"));
-    p10->AddOption(_T("Value 1"));
-    p10->AddOption(_T("Value 2"));
-    p10->AddOption(_T("Value 3"));
+    pGroup = pPropertyGrid->AddGroup("Group 4", "Description 4");
+    auto p10 = pPropertyGrid->AddComboProperty(pGroup, "Property 4-1 (Drop Table)", "Text Value 4", "Description of Property 4");
+    p10->AddOption("Value 1");
+    p10->AddOption("Value 2");
+    p10->AddOption("Value 3");
     p10->SetComboListMode(true);
 
-    auto p11 = pPropertyGrid->AddComboProperty(pGroup, _T("Property 4-1 (Drop List)"), _T("Text Value 4"), _T("Description of Property 4"));
-    p11->AddOption(_T("Value 1"));
-    p11->AddOption(_T("Value 2"));
-    p11->AddOption(_T("Value 3"));
+    auto p11 = pPropertyGrid->AddComboProperty(pGroup, "Property 4-1 (Drop List)", "Text Value 4", "Description of Property 4");
+    p11->AddOption("Value 1");
+    p11->AddOption("Value 2");
+    p11->AddOption("Value 3");
     p11->SetComboListMode(false);//Default
 
-    pGroup = pPropertyGrid->AddGroup(_T("Group 5"), _T("Description 5: Font"));
-    auto p20 = pPropertyGrid->AddFontProperty(pGroup, _T("Font"), _T("SimSun"), _T("Description: Set Font Name"));
-    auto p21 = pPropertyGrid->AddFontSizeProperty(pGroup, _T("Font Size"), _T("No.5"), _T("Description: Set Font Size"));
+    pGroup = pPropertyGrid->AddGroup("Group 5", "Description 5: Font");
+    auto p20 = pPropertyGrid->AddFontProperty(pGroup, "Font", "SimSun", "Description: Set Font Name");
+    auto p21 = pPropertyGrid->AddFontSizeProperty(pGroup, "Font Size", "No.5", "Description: Set Font Size");
 
     auto s000 = p21->GetPropertyNewValue();
     auto s001 = p21->GetFontSize();
     auto s002 = p21->GetDpiFontSize();
-    auto s003 = p21->GetFontSize(_T("No.6"));
-    auto s004 = p21->GetDpiFontSize(_T("No.6"));
+    auto s003 = p21->GetFontSize("No.6");
+    auto s004 = p21->GetDpiFontSize("No.6");
 
-    auto p22 = pPropertyGrid->AddColorProperty(pGroup, _T("Color"), _T("Blue"), _T("Description: Set Font Color"));
+    auto p22 = pPropertyGrid->AddColorProperty(pGroup, "Color", "Blue", "Description: Set Font Color");
 
-    pGroup = pPropertyGrid->AddGroup(_T("Group 6"), _T("Description 6: Date Time"));
-    pPropertyGrid->AddDateTimeProperty(pGroup, _T("Date"), _T("2023-12-07"), _T("Description: Set Date"));
-    pPropertyGrid->AddDateTimeProperty(pGroup, _T("Date"), _T("2023/12/07"), _T("Description: Set Date"));
-    pPropertyGrid->AddDateTimeProperty(pGroup, _T("Date"), _T("2023-12-07"), _T("Description: Set Date"), 0,
+    pGroup = pPropertyGrid->AddGroup("Group 6", "Description 6: Date Time");
+    pPropertyGrid->AddDateTimeProperty(pGroup, "Date", "2023-12-07", "Description: Set Date");
+    pPropertyGrid->AddDateTimeProperty(pGroup, "Date", "2023/12/07", "Description: Set Date");
+    pPropertyGrid->AddDateTimeProperty(pGroup, "Date", "2023-12-07", "Description: Set Date", 0,
                                         ui::DateTime::EditFormat::kDateUpDown);
-    pPropertyGrid->AddDateTimeProperty(pGroup, _T("Date Time"), _T("2023-12-07 17:30:02"), _T("Description: Set Date Time"), 0, 
+    pPropertyGrid->AddDateTimeProperty(pGroup, "Date Time", "2023-12-07 17:30:02", "Description: Set Date Time", 0, 
                                         ui::DateTime::EditFormat::kDateTimeUpDown);
-    pPropertyGrid->AddDateTimeProperty(pGroup, _T("Date Time"), _T("2023-12-07 17:30"), _T("Description: Set Date Time"), 0,
+    pPropertyGrid->AddDateTimeProperty(pGroup, "Date Time", "2023-12-07 17:30", "Description: Set Date Time", 0,
                                         ui::DateTime::EditFormat::kDateMinuteUpDown);
-    pPropertyGrid->AddDateTimeProperty(pGroup, _T("Time"), _T("17:30:02"), _T("Description: Set Time"), 0,
+    pPropertyGrid->AddDateTimeProperty(pGroup, "Time", "17:30:02", "Description: Set Time", 0,
                                         ui::DateTime::EditFormat::kTimeUpDown);
-    pPropertyGrid->AddDateTimeProperty(pGroup, _T("Time"), _T("17:30"), _T("Description: Set Time"), 0,
+    pPropertyGrid->AddDateTimeProperty(pGroup, "Time", "17:30", "Description: Set Time", 0,
                                         ui::DateTime::EditFormat::kMinuteUpDown);
 
-    pGroup = pPropertyGrid->AddGroup(_T("Group 7"), _T("Description 7"));
-    pPropertyGrid->AddIPAddressProperty(pGroup, _T("IP Address"), _T("192.168.0.1"), _T("Description: IP Address"));
-    pPropertyGrid->AddHotKeyProperty(pGroup, _T("HotKey 1"), _T("Ctrl+C"), _T("Description: HotKey Control 1"));
-    pPropertyGrid->AddHotKeyProperty(pGroup, _T("HotKey 2"), _T("Ctrl+Shift+C"), _T("Description: HotKey Control 2"));
-    pPropertyGrid->AddHotKeyProperty(pGroup, _T("HotKey 3"), _T("Ctrl+Shift+Alt+C"), _T("Description: HotKey Control 3"));
-    pPropertyGrid->AddHotKeyProperty(pGroup, _T("HotKey 4"), _T("Ctrl+Shift"), _T("Description: HotKey Control 4"));
+    pGroup = pPropertyGrid->AddGroup("Group 7", "Description 7");
+    pPropertyGrid->AddIPAddressProperty(pGroup, "IP Address", "192.168.0.1", "Description: IP Address");
+    pPropertyGrid->AddHotKeyProperty(pGroup, "HotKey 1", "Ctrl+C", "Description: HotKey Control 1");
+    pPropertyGrid->AddHotKeyProperty(pGroup, "HotKey 2", "Ctrl+Shift+C", "Description: HotKey Control 2");
+    pPropertyGrid->AddHotKeyProperty(pGroup, "HotKey 3", "Ctrl+Shift+Alt+C", "Description: HotKey Control 3");
+    pPropertyGrid->AddHotKeyProperty(pGroup, "HotKey 4", "Ctrl+Shift", "Description: HotKey Control 4");
 
-    pGroup = pPropertyGrid->AddGroup(_T("Group 8"), _T("Description 8"));
-    auto p80 = pPropertyGrid->AddFileProperty(pGroup, _T("File Path"), _T("C:\\Test-Save.txt"), _T("Description: File Path"), 0,
+    pGroup = pPropertyGrid->AddGroup("Group 8", "Description 8");
+    auto p80 = pPropertyGrid->AddFileProperty(pGroup, "File Path", "C:\\Test-Save.txt", "Description: File Path", 0,
                                               false, 
                                               { 
-                                                  {_T("Text File"), _T("*.txt")},
-                                                  {_T("CSV File"), _T("*.csv")},
-                                                  {_T("INI File"), _T("*.ini")},
-                                                  {_T("All Files"), _T("*.*")}
+                                                  {"Text File", "*.txt"},
+                                                  {"CSV File", "*.csv"},
+                                                  {"INI File", "*.ini"},
+                                                  {"All Files", "*.*"}
                                               }, 
-                                              0, _T("txt"));
-    auto p81 = pPropertyGrid->AddFileProperty(pGroup, _T("File Path"), _T("C:\\Test-Open.txt"), _T("Description: File Path"), 0,
+                                              0, "txt");
+    auto p81 = pPropertyGrid->AddFileProperty(pGroup, "File Path", "C:\\Test-Open.txt", "Description: File Path", 0,
                                               true, 
                                               { 
-                                                  {_T("Text File"), _T("*.txt")},
-                                                  {_T("CSV File"), _T("*.csv")},
-                                                  {_T("INI File"), _T("*.ini")},
-                                                  {_T("All Files"), _T("*.*")}
+                                                  {"Text File", "*.txt"},
+                                                  {"CSV File", "*.csv"},
+                                                  {"INI File", "*.ini"},
+                                                  {"All Files", "*.*"}
                                               }, 
-                                              0, _T("txt"));
+                                              0, "txt");
 
-    auto p82 = pPropertyGrid->AddDirectoryProperty(pGroup, _T("Folder"), _T("C:\\Test\\"), _T("Description: Folder"));
+    auto p82 = pPropertyGrid->AddDirectoryProperty(pGroup, "Folder", "C:\\Test\\", "Description: Folder");
 
     return;
 }
 
 void RenderForm::CheckPropertyGridResult()
 {
-    ui::PropertyGrid* pPropertyGrid = dynamic_cast<ui::PropertyGrid*>(FindControl(_T("property_grid_test")));
+    ui::PropertyGrid* pPropertyGrid = ui::Find<ui::PropertyGrid>(this, "property_grid_test");
     if (pPropertyGrid == nullptr) {
         return;
     }

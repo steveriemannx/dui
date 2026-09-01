@@ -1,44 +1,19 @@
 #include "MainForm.h"
-
-MainForm::MainForm()
-{
-}
-
-MainForm::~MainForm()
-{
-}
-
-DString MainForm::GetSkinFolder()
-{
-    return _T("");
-}
-
-DString MainForm::GetSkinFile()
-{
-    // Pure code mode: no layout XML is loaded
-    return _T("");
-}
-
-void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    // Window attributes correspond to the <Window> attributes in hello.xml
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = 800;
-    attrs.m_szInitSize.cy = 600;
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = true;
-    attrs.m_bIsLayeredWindowDefined = true;
-    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-    BaseClass::GetCreateWindowAttributes(attrs);
-}
+#include "dui/Utils/UiBuilder.h"
 
 void MainForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
+    SetupWindow();
+    BuildUI();
+    BindEvents();
+
+    BaseClass::OnInitWindow();
+}
+
+void MainForm::SetupWindow()
+{
+    SetWindowSize(800, 600);
+
     SetShadowAttached(true);
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
@@ -47,83 +22,128 @@ void MainForm::OnInitWindow()
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    SetWindowIcon("public/caption/logo.ico");
+}
 
-    // Build the UI in handwritten pure code (corresponding to the hello.xml layout)
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
-    pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
+void MainForm::BuildUI()
+{
+    auto* pRoot = ui::Create<ui::VBox>(this, {
+        {"bkcolor", "bk_wnd_darkcolor"},
+        {"visible", "true"}
+    });
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
-    pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
-    pRoot->AddItem(pCaption);
+    auto* pCaption = ui::Create<ui::HBox>(this, {
+        {"name", "window_caption_bar"},
+        {"width", "stretch"},
+        {"height", "36"},
+        {"bkcolor", "bk_wnd_lightcolor"}
+    });
+    ui::Attach(pRoot, pCaption);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
-    pCaption->AddItem(pSpacer);
+    auto* pSpacer = ui::Create<ui::Control>(this, {
+        {"mouse_enabled", "false"}
+    });
+    ui::Attach(pCaption, pSpacer);
 
-    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pFullscreenBtn->SetClass(_T("btn_wnd_fullscreen_11"));
-    pFullscreenBtn->SetName(_T("fullscreenbtn"));
-    pFullscreenBtn->SetToolTipText(_T("Fullscreen, press ESC to exit fullscreen"));
-    pCaption->AddItem(pFullscreenBtn);
+    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {
+        {"class", "btn_wnd_fullscreen_11"},
+        {"name", "fullscreenbtn"},
+        {"height", "32"},
+        {"width", "40"},
+        {"margin", "0,2,0,2"},
+        {"tooltip_text", "Fullscreen, press ESC to exit fullscreen"}
+    });
+    ui::Attach(pCaption, pFullscreenBtn);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetToolTipText(_T("Minimize"));
-    pCaption->AddItem(pMinBtn);
+    auto* pMinBtn = ui::Create<ui::Button>(this, {
+        {"class", "btn_wnd_min_11"},
+        {"name", "minbtn"},
+        {"height", "32"},
+        {"width", "40"},
+        {"margin", "0,2,0,2"},
+        {"tooltip_text", "Minimize"}
+    });
+    ui::Attach(pCaption, pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pCaption->AddItem(pMaxBox);
+    auto* pMaxBox = ui::Create<ui::Box>(this, {
+        {"height", "stretch"},
+        {"width", "40"},
+        {"margin", "0,2,0,2"}
+    });
+    ui::Attach(pCaption, pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetName(_T("maxbtn"));
-    pMaxBtn->SetToolTipText(_T("Maximize"));
-    pMaxBox->AddItem(pMaxBtn);
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {
+        {"class", "btn_wnd_max_11"},
+        {"name", "maxbtn"},
+        {"height", "32"},
+        {"width", "stretch"},
+        {"tooltip_text", "Maximize"}
+    });
+    ui::Attach(pMaxBox, pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetName(_T("restorebtn"));
-    pRestoreBtn->SetVisible(false);
-    pRestoreBtn->SetToolTipText(_T("Restore"));
-    pMaxBox->AddItem(pRestoreBtn);
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {
+        {"class", "btn_wnd_restore_11"},
+        {"name", "restorebtn"},
+        {"height", "32"},
+        {"width", "stretch"},
+        {"visible", "false"},
+        {"tooltip_text", "Restore"}
+    });
+    ui::Attach(pMaxBox, pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
-    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetToolTipText(_T("Close"));
-    pCaption->AddItem(pCloseBtn);
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {
+        {"class", "btn_wnd_close_11"},
+        {"name", "closebtn"},
+        {"height", "stretch"},
+        {"width", "40"},
+        {"margin", "0,0,0,2"},
+        {"tooltip_text", "Close"}
+    });
+    ui::Attach(pCaption, pCloseBtn);
 
     // Work area
     auto* pContent = ui::Create<ui::Box>(this, {});
-    pRoot->AddItem(pContent);
+    ui::Attach(pRoot, pContent);
 
-    auto* pCenter = ui::Create<ui::VBox>(this, {{_T("valign"), _T("center")}, {_T("halign"), _T("center")}, {_T("height"), _T("100")}});
-    pContent->AddItem(pCenter);
-
-    auto* pLabel = ui::Create<ui::Label>(this, {{_T("height"), _T("40")}, {_T("width"), _T("100%")}, {_T("text_align"), _T("hcenter,vcenter")}, {_T("margin"), _T("0,0,0,16")}});
-    pLabel->SetName(_T("hello_label"));
-    pLabel->SetText(_T("Hello, dui!"));
-    pCenter->AddItem(pLabel);
-
-    auto* pButton = ui::Create<ui::Button>(this, {{_T("halign"), _T("center")}, {_T("width"), _T("90")}, {_T("height"), _T("32")}});
-    pButton->SetName(_T("hello_btn"));
-    pButton->SetClass(_T("btn_global_blue_80x30"));
-    pButton->SetText(_T("Click Me"));
-    pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
-        ui::Label* pLabel = dynamic_cast<ui::Label*>(FindControl(_T("hello_label")));
-        if (pLabel != nullptr) {
-            pLabel->SetText(_T("Hello from pure code mode!"));
-        }
-        return true;
+    auto* pCenter = ui::Create<ui::VBox>(this, {
+        {"valign", "center"},
+        {"halign", "center"},
+        {"height", "100"}
     });
-    pCenter->AddItem(pButton);
+    ui::Attach(pContent, pCenter);
 
-    AttachBox(pRoot);
+    auto* pLabel = ui::Create<ui::Label>(this, {
+        {"name", "hello_label"},
+        {"text", "Hello, dui!"},
+        {"height", "40"},
+        {"width", "100%"},
+        {"text_align", "hcenter,vcenter"},
+        {"margin", "0,0,0,16"}
+    });
+    ui::Attach(pCenter, pLabel);
 
-    // Set the window icon (the Dock icon on macOS), matching
-    // icon="public/caption/logo.ico" in hello.xml
-    SetWindowIcon(_T("public/caption/logo.ico"));
+    auto* pButton = ui::Create<ui::Button>(this, {
+        {"name", "hello_btn"},
+        {"class", "btn_global_blue_80x30"},
+        {"text", "Click Me"},
+        {"halign", "center"},
+        {"width", "90"},
+        {"height", "32"}
+    });
+    ui::Attach(pCenter, pButton);
 
-    BaseClass::OnInitWindow();
+    ui::Attach(this, pRoot);
+}
+
+void MainForm::BindEvents()
+{
+    if (auto* pButton = ui::Find<ui::Button>(this, "hello_btn")) {
+        pButton->AttachClick([this](const ui::EventArgs&) {
+            if (auto* pLabel = ui::Find<ui::Label>(this, "hello_label")) {
+                pLabel->SetText("Hello from pure code mode!");
+            }
+            return true;
+        });
+    }
 }

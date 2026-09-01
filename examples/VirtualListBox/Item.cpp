@@ -21,10 +21,10 @@ void Item::InitSubControls(const DString& img, const DString& title, size_t nDat
 {
     // Find the controls under Item
     if (m_pImageControl == nullptr) {
-        m_pImageControl = dynamic_cast<ui::Control*>(FindSubControl(_T("control_img")));
-        m_pTitleLabel = dynamic_cast<ui::Label*>(FindSubControl(_T("label_title")));
-        m_pProgressControl = dynamic_cast<ui::Progress*>(FindSubControl(_T("progress")));
-        m_pDelBtn = dynamic_cast<ui::Button*>(FindSubControl(_T("btn_del")));
+        m_pImageControl = dynamic_cast<ui::Control*>(FindSubControl("control_img"));
+        m_pTitleLabel = dynamic_cast<ui::Label*>(FindSubControl("label_title"));
+        m_pProgressControl = dynamic_cast<ui::Progress*>(FindSubControl("progress"));
+        m_pDelBtn = dynamic_cast<ui::Button*>(FindSubControl("btn_del"));
         // Simulate the progress bar value
         t_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1000;
         m_pProgressControl->SetValue((double)(t_time % 100));
@@ -33,7 +33,7 @@ void Item::InitSubControls(const DString& img, const DString& title, size_t nDat
         // Bind the delete-task handler
         m_pDelBtn->AttachClick(UiBind(&Item::OnRemove, this, std::placeholders::_1));
     }
-    m_pTitleLabel->SetText(ui::StringUtil::Printf(_T("%s %d%%"), title.c_str(), t_time % 100));
+    m_pTitleLabel->SetText(ui::StringUtil::Printf("%s %d%%", title.c_str(), t_time % 100));
     m_nDataIndex = nDataIndex;
 }
 

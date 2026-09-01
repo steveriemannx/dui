@@ -21,10 +21,6 @@ public:
     */
     virtual void OnInitWindow() override;
 
-private:
-    /** Build the UI purely in code (corresponds to the about.xml layout)
-    */
-    void BuildUI();
 };
 
 #endif //EXAMPLES_ABOUT_FORM_H_

@@ -8,9 +8,20 @@ get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
 
-# Mode 2 (XML-to-code generation): convert DpiAware.xml to pure C++ code at build time
-set(GEN_XML_FILES DpiAware.xml)
+# Mode 2 (XML-to-code generation): convert the platform DpiAware.xml to pure C++ code.
+if(APPLE)
+    set(DPI_AWARE_THEME macos26)
+elseif(WIN32)
+    set(DPI_AWARE_THEME windows11)
+else()
+    set(DPI_AWARE_THEME default)
+endif()
+set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${DPI_AWARE_THEME}/dpi_aware/DpiAware.xml")
 set(GEN_FUNC_NAME Init)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_gen_code.cmake")
+
+set(EMBED_RES_DIR "${DUI_ROOT}/resources")
+set(EMBED_RES_PATHS "themes/${DPI_AWARE_THEME}/global.xml" "themes/${DPI_AWARE_THEME}/public" "themes/${DPI_AWARE_THEME}/dpi_aware" "fonts" "lang")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")

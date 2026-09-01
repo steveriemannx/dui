@@ -8,21 +8,22 @@
 */
 class MainForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
-    MainForm();
-    virtual ~MainForm() override;
+    MainForm() = default;
+    virtual ~MainForm() override = default;
 
     /**  Called when the window is created; implemented by subclasses to get the window skin directory
     * @return The subclass must implement and return the window skin directory
     */
-    virtual DString GetSkinFolder() override;
+    virtual DString GetSkinFolder() override { return "MultiLang"; }
 
     /**  Called when the window is created; implemented by subclasses to get the window skin XML description file
     * @return The subclass must implement and return the window skin XML description file
     *         The returned content can be the XML file content (a string starting with the character '<'),
     *         or a file path (a string not starting with the character '<'); the file must be found under the GetSkinFolder() path
     */
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFile() override { return "MultiLang.xml"; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */
@@ -33,7 +34,8 @@ private:
     * @param [in] point The display position, in screen coordinates
     */
     void ShowPopupMenu(const ui::UiPoint& point);
+
+    void BindEvents();
 };
 
 #endif //EXAMPLES_MAIN_FORM_H_
-

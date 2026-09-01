@@ -12,26 +12,26 @@ public:
         m_pTextControl(nullptr)
     {
         // Pure code node layout construction (corresponds to the tree_node.xml template, no longer loads the template XML)
-        SetClass(_T("listitem"));
+        SetClass("listitem");
 
-    auto* pRow = ui::Create<ui::HBox>(pWindow, {{_T("mouse_enabled"), _T("false")}, {_T("padding"), _T("4,4,4,4")}});
+    auto* pRow = ui::Create<ui::HBox>(pWindow, {{"mouse_enabled", "false"}, {"padding", "4,4,4,4"}});
         AddItem(pRow);
 
         m_pIconControl = new ui::Control(pWindow);
-        m_pIconControl->SetName(_T("control_img"));
-        m_pIconControl->SetAttribute(_T("width"), _T("auto"));
-        m_pIconControl->SetAttribute(_T("height"), _T("stretch"));
-        m_pIconControl->SetAttribute(_T("margin"), _T("4,0,4,0"));
-        m_pIconControl->SetAttribute(_T("mouse_enabled"), _T("false"));
+        m_pIconControl->SetName("control_img");
+        m_pIconControl->SetAttribute("width", "auto");
+        m_pIconControl->SetAttribute("height", "stretch");
+        m_pIconControl->SetAttribute("margin", "4,0,4,0");
+        m_pIconControl->SetAttribute("mouse_enabled", "false");
         pRow->AddItem(m_pIconControl);
 
         m_pTextControl = new ui::Label(pWindow);
-        m_pTextControl->SetName(_T("control_text"));
-        m_pTextControl->SetAttribute(_T("width"), _T("stretch"));
-        m_pTextControl->SetAttribute(_T("single_line"), _T("false"));
-        m_pTextControl->SetAttribute(_T("height"), _T("stretch"));
-        m_pTextControl->SetAttribute(_T("mouse_enabled"), _T("false"));
-        m_pTextControl->SetAttribute(_T("text_align"), _T("left,vcenter"));
+        m_pTextControl->SetName("control_text");
+        m_pTextControl->SetAttribute("width", "stretch");
+        m_pTextControl->SetAttribute("single_line", "false");
+        m_pTextControl->SetAttribute("height", "stretch");
+        m_pTextControl->SetAttribute("mouse_enabled", "false");
+        m_pTextControl->SetAttribute("text_align", "left,vcenter");
         pRow->AddItem(m_pTextControl);
     }
 
@@ -48,10 +48,10 @@ public:
     {
         m_nElementIndex = nElementIndex;
         if (m_pIconControl == nullptr) {
-            m_pIconControl = FindSubControl(_T("control_img"));
+            m_pIconControl = FindSubControl("control_img");
         }
         if (m_pTextControl == nullptr) {
-            m_pTextControl = dynamic_cast<ui::Label*>(FindSubControl(_T("control_text")));
+            m_pTextControl = dynamic_cast<ui::Label*>(FindSubControl("control_text"));
         }
         if (m_pTextControl != nullptr) {
             m_pTextControl->SetAutoToolTip(true);
@@ -69,15 +69,15 @@ public:
                 Dpi().UnscaleInt(itemWidth);
 
                 // When an error occurs (image load failure or image decode failure), show a default image
-                const DString defaultImage = ui::StringUtil::Printf(_T("file='image-photo.svg' halign='center' valign='center' width='%d'"), itemWidth);
+                const DString defaultImage = ui::StringUtil::Printf("file='image-photo.svg' halign='center' valign='center' width='%d'", itemWidth);
 
                 if (errorImagePathSet.find(fileInfo.m_filePath.ToString()) == errorImagePathSet.end()) {
                     DString imageString = fileInfo.m_filePath.ToString();
                     if (itemWidth > 0) {
-                        imageString = ui::StringUtil::Printf(_T("file='%s' halign='center' valign='center' width='%d' assert='false'"), imageString.c_str(), itemWidth);
+                        imageString = ui::StringUtil::Printf("file='%s' halign='center' valign='center' width='%d' assert='false'", imageString.c_str(), itemWidth);
                     }
                     else {
-                        imageString = ui::StringUtil::Printf(_T("file='%s' halign='center' valign='center'"), imageString.c_str());
+                        imageString = ui::StringUtil::Printf("file='%s' halign='center' valign='center'", imageString.c_str());
                     }
                     m_pIconControl->SetBkImage(imageString);
                 }
@@ -91,7 +91,7 @@ public:
                     ui::ImageDecodeResult* pImageDecodeResult = (ui::ImageDecodeResult*)args.wParam;
                     if ((pImageDecodeResult != nullptr) && pImageDecodeResult->m_bLoadError) {
                         errorImagePathSet.insert(pImageDecodeResult->m_imageFilePath);
-                        ui::Control* pIconControl = FindSubControl(_T("control_img"));
+                        ui::Control* pIconControl = FindSubControl("control_img");
                         if (pIconControl != nullptr) {
                             pIconControl->SetBkImage(defaultImage);
                         }
@@ -103,7 +103,7 @@ public:
                     ui::ImageDecodeResult* pImageDecodeResult = (ui::ImageDecodeResult*)args.wParam;
                     if ((pImageDecodeResult != nullptr) && pImageDecodeResult->m_bDecodeError) {
                         errorImagePathSet.insert(pImageDecodeResult->m_imageFilePath);
-                        ui::Control* pIconControl = FindSubControl(_T("control_img"));
+                        ui::Control* pIconControl = FindSubControl("control_img");
                         if (pIconControl != nullptr) {
                             pIconControl->SetBkImage(defaultImage);
                         }
@@ -115,11 +115,11 @@ public:
                 // For non-image files or folders, show an icon
                 DString iconString = ui::GlobalManager::Instance().Icon().GetIconString(fileInfo.m_nIconID);
                 if (!iconString.empty()) {
-                    iconString = ui::StringUtil::Printf(_T("file='%s' width='64' height='64' halign='center' valign='center'"), iconString.c_str());
+                    iconString = ui::StringUtil::Printf("file='%s' width='64' height='64' halign='center' valign='center'", iconString.c_str());
                     m_pIconControl->SetBkImage(iconString);
                 }
                 else {
-                    m_pIconControl->SetBkImage(_T(""));
+                    m_pIconControl->SetBkImage("");
                 }
             }
         }
@@ -136,25 +136,25 @@ private:
             fileExt = filePath.substr(pos);
         }
         fileExt = ui::StringUtil::MakeLowerString(fileExt);
-        if (fileExt == _T(".svg")) {
+        if (fileExt == ".svg") {
             return true;
         }
-        if ((fileExt == _T(".svg")) ||
-            (fileExt == _T(".jpg")) ||
-            (fileExt == _T(".jpeg")) ||
-            (fileExt == _T(".jpe")) ||
-            (fileExt == _T(".jif")) ||
-            (fileExt == _T(".jfif")) ||
-            (fileExt == _T(".jfi")) ||
-            (fileExt == _T(".gif")) ||
-            (fileExt == _T(".png")) ||
-            (fileExt == _T(".bmp")) ||
-            (fileExt == _T(".dib")) ||
-            (fileExt == _T(".webp")) ||
-            (fileExt == _T(".json")) ||
-            (fileExt == _T(".pag")) ||
-            (fileExt == _T(".ico")) ||
-            (fileExt == _T(".cur")) ) {
+        if ((fileExt == ".svg") ||
+            (fileExt == ".jpg") ||
+            (fileExt == ".jpeg") ||
+            (fileExt == ".jpe") ||
+            (fileExt == ".jif") ||
+            (fileExt == ".jfif") ||
+            (fileExt == ".jfi") ||
+            (fileExt == ".gif") ||
+            (fileExt == ".png") ||
+            (fileExt == ".bmp") ||
+            (fileExt == ".dib") ||
+            (fileExt == ".webp") ||
+            (fileExt == ".json") ||
+            (fileExt == ".pag") ||
+            (fileExt == ".ico") ||
+            (fileExt == ".cur") ) {
             return true;
         }
         return false;

@@ -13,6 +13,7 @@ class ExplorerView;
 
 class MainForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     MainForm();
     virtual ~MainForm() override;
@@ -21,8 +22,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window you are drawing
      * The GetSkinFile interface sets the xml description file of the window you are drawing
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return "tree_view"; }
+    virtual DString GetSkinFile() override { return "tree_view.xml"; }
 
     /** Called after the window is created, allowing subclasses to do some initialization work
     */
@@ -31,6 +32,11 @@ public:
     /** Trigger the tree node click event to select the corresponding directory
      */
     void SelectSubPath(const ui::FilePath& filePath);
+
+private:
+    /** Bind control events
+     */
+    void BindEvents();
 
 private:
     /** The content of the specified directory has been retrieved

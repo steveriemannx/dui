@@ -5,22 +5,26 @@
 
 class MoveControlForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
+    MoveControlForm();
     MoveControlForm(const DString& theme_directory, const DString& layout_xml);
-    virtual ~MoveControlForm() override;
+    virtual ~MoveControlForm() override = default;
 
     /** Resource-related interfaces
      * GetSkinFolder sets the skin resource path of the window to be drawn
      * GetSkinFile sets the XML description file of the window to be drawn
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return m_theme_directory; }
+    virtual DString GetSkinFile() override { return m_layout_xml; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override;
 
 private:
+    void BindEvents();
+
     DString m_theme_directory;
     DString m_layout_xml;
 

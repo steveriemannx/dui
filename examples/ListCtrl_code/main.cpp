@@ -1,8 +1,9 @@
 #include "dui/dui.h"
 #include "MainForm.h"
+#include "embedded_resources.inc"
 #include "dui/Utils/UiBuilder.h"
 
 int main()
 {
-    return ui::Run<MainForm>(_T("ListCtrl Control Test Program"));
+    return ui::RunMemory<MainForm>("ListCtrl Control Test Program", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

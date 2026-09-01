@@ -24,8 +24,8 @@ public:
     virtual ~BrowserForm() override;
     
     //Override virtual functions
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;   
+    virtual DString GetSkinFolder() override { return "webview2_browser"; }
+    virtual DString GetSkinFile() override { return "webview2_browser.xml"; }
 
     /** Key pressed (WM_KEYDOWN or WM_SYSKEYDOWN)
     * @param [in] vkCode virtual key code
@@ -235,8 +235,12 @@ protected:
     virtual LRESULT OnCaptureChangedMsg(const ui::NativeMsg& nativeMsg, bool& bHandled) override;
 
 private:
+    /** Bind the event handlers of controls
+     */
+    void BindEvents();
+
     /** Show or hide the developer tools
-    */
+     */
     void SwitchShowDevTools();
 
     /** Display the current page in fullscreen

@@ -4,89 +4,91 @@
 // dui
 #include "dui/dui.h"
 #include <chrono>
+#include <memory>
+#include <vector>
 
-/** Application interface: the worker-thread pool is owned by the App class
- *  (defined in main.cpp); the form controls it through this interface.
- */
-class IMainThread
-{
-public:
-    virtual ~IMainThread() = default;
-
-    /** Start the worker thread
-    */
-    virtual void StartThreads() = 0;
-
-    /** Stop the worker thread
-    */
-    virtual void StopThreads() = 0;
-
-    /** Get the number of worker threads in the thread pool
-    */
-    virtual int32_t GetPoolThreadCount() const = 0;
-};
+class WorkerThread;
 
 class MainForm : public ui::WindowImplBase
 {
     typedef ui::WindowImplBase BaseClass;
 public:
-    explicit MainForm(IMainThread* pMainThread);
-    virtual ~MainForm() override;
+    MainForm() = default;
+    virtual ~MainForm() override = default;
 
-    /** Resource-related interfaces
-     * GetSkinFolder sets the skin resource path of the window to be drawn
-     * GetSkinFile sets the XML description file of the window to be drawn
+    /** Resource-related interfaces.
+     *  This is the code-generation (gen) mode: the UI is built from generated
+     *  C++ code (InitThreads, see BuildUI), so no XML skin is loaded.
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return "threads"; }
+    virtual DString GetSkinFile() override { return ""; }
 
     /** Called after the window is created, for subclasses to do some initialization work
-    */
+     */
     virtual void OnInitWindow() override;
 
-public:
+    /** Called after the window has been closed, for subclasses to do cleanup work
+     */
+    virtual void OnCloseWindow() override;
+
+private:
+    void BindEvents();
+    void BuildUI();
+
+    /** Start the worker thread pool
+     */
+    void StartThreads();
+
+    /** Stop the worker thread pool
+     */
+    void StopThreads();
+
+    /** Get the number of worker threads in the thread pool
+     */
+    int32_t GetPoolThreadCount() const;
+
     /** Update the UI state (can be called from the worker thread)
-    */
+     */
     void UpdateUI();
 
     /** Output a log (can be called from the worker thread)
-    */
+     */
+public:
     void PrintLog(const DString& log);
 
-private:
     /** Execute a task in the worker thread
-    * @param [in] nThreadIdentifier Thread identifier
-    */
+     * @param [in] nThreadIdentifier Thread identifier
+     */
     bool RunTaskInThread(int32_t nThreadIdentifier);
 
     /** Execute a specific task in the worker thread
-    */
+     */
     void ExecuteTaskInThread();
 
     /** Update the running time
-    */
+     */
     void UpdateRunningTime();
 
 private:
     /** Log display control
-    */
-    ui::RichEdit* m_pLogEdit;
+     */
+    ui::RichEdit* m_pLogEdit = nullptr;
 
     /** Running time display
-    */
-    ui::Label* m_pRunningTimeLabel;
+     */
+    ui::Label* m_pRunningTimeLabel = nullptr;
 
     /** Start time
-    */
+     */
     std::chrono::steady_clock::time_point m_startTime;
 
     /** Log sequence number
-    */
-    int32_t m_nLogLineNumber;
+     */
+    int32_t m_nLogLineNumber = 0;
 
-    /** Thread management interface
-    */
-    IMainThread* m_pMainThread;
+    /** User-defined thread pool: the thread identifier is ui::kThreadUser + the element index of the vector
+     */
+    std::vector<std::shared_ptr<WorkerThread>> m_threadPools;
 };
 
 #endif //EXAMPLES_THREADS_GEN_MAIN_FORM_H_

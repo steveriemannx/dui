@@ -20,76 +20,72 @@ ControlForm::~ControlForm()
 
 DString ControlForm::GetSkinFolder()
 {
-    return _T("controls");
+    return "controls";
 }
 
 DString ControlForm::GetSkinFile()
 {
-    return _T("controls.xml");
+    return "controls.xml";
 }
 
 void ControlForm::OnInitWindow()
 {
+    BaseClass::OnInitWindow();
+    BindEvents();
+}
+
+void ControlForm::BindEvents()
+{
 #ifdef DUI_BUILD_FOR_SDL
     //Display basic SDL information
-    ui::Label* pTitle = ui::Find<ui::Label>(this, _T("window_title"));
+    ui::Label* pTitle = ui::Find<ui::Label>(this, "window_title");
     if (pTitle != nullptr) {
         DString title = pTitle->GetText();
         DString driverName = GetVideoDriverName();
         DString renderName = GetWindowRenderName();
-        DString newTitle = ui::StringUtil::Printf(_T("%s[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), title.c_str(), driverName.c_str(), renderName.c_str());
+        DString newTitle = ui::StringUtil::Printf("%s[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]", title.c_str(), driverName.c_str(), renderName.c_str());
         pTitle->SetText(newTitle);
     }
 #endif
 
     /* Initialize ListBox data */
-    ui::ListBox* list = ui::Find<ui::ListBox>(this, _T("list"));
+    ui::ListBox* list = ui::Find<ui::ListBox>(this, "list");
     if (list != nullptr) {
         for (auto i = 0; i < 30; i++)
         {
-            ui::ListBoxItem* element = new ui::ListBoxItem(this);
-            element->SetText(ui::StringUtil::Printf(_T("ui::VListBox::ListBoxItem %d"), i));
-            element->SetClass(_T("listitem"));
+            auto* element = ui::Create<ui::ListBoxItem>(this, {{"text", ui::StringUtil::Printf("ui::VListBox::ListBoxItem %d", i)}, {"class", "listitem"}});
             element->SetFixedHeight(ui::UiFixedInt(20), true, true);
-            list->AddItem(element);
+            ui::Attach(list, element);
         }
     }
 
-    ui::TreeView* pTree = ui::Find<ui::TreeView>(this, _T("tree"));
+    ui::TreeView* pTree = ui::Find<ui::TreeView>(this, "tree");
     if (pTree != nullptr) {
         ui::TreeNode* pRootNode = pTree->GetRootNode();
         ASSERT(pRootNode != nullptr);
         if (pRootNode != nullptr) {
-            ui::TreeNode* pTestNode = pRootNode->FindChildNodeByText(_T("ui::TreeView Parent Node 2"), true);
+            ui::TreeNode* pTestNode = pRootNode->FindChildNodeByText("ui::TreeView Parent Node 2", true);
             ASSERT(pTestNode != nullptr);
             if (pTestNode != nullptr) {
-                ui::TreeNode* pNode0 = new ui::TreeNode(this);
-                pNode0->SetClass(_T("tree_node"));
-                pNode0->SetText(_T("Dynamic Node 0(top)"));
+                auto* pNode0 = ui::Create<ui::TreeNode>(this, {{"class", "tree_node"}, {"text", "Dynamic Node 0(top)"}});
                 pTestNode->AddChildNodeAt(pNode0, 0);
 
-                ui::TreeNode* pNode2 = new ui::TreeNode(this);
-                pNode2->SetClass(_T("tree_node"));
-                pNode2->SetText(_T("Dynamic Node 1(end)"));
+                auto* pNode2 = ui::Create<ui::TreeNode>(this, {{"class", "tree_node"}, {"text", "Dynamic Node 1(end)"}});
                 pTestNode->AddChildNode(pNode2);
 
-                ui::TreeNode* pNode1 = new ui::TreeNode(this);
-                pNode1->SetClass(_T("tree_node"));
-                pNode1->SetText(_T("Dynamic Node 2(at index 2)"));
+                auto* pNode1 = ui::Create<ui::TreeNode>(this, {{"class", "tree_node"}, {"text", "Dynamic Node 2(at index 2)"}});
                 pTestNode->AddChildNodeAt(pNode1, 2);
             }
         }
     }
 
     //Initialize the Combo data
-    ui::Combo* combo = ui::Find<ui::Combo>(this, _T("combo"));
+    ui::Combo* combo = ui::Find<ui::Combo>(this, "combo");
     if (combo != nullptr) {
         ui::TreeView* pTreeView = combo->GetTreeView();
         ui::TreeNode* pTreeNode = pTreeView->GetRootNode();
         for (auto i = 0; i < 10; i++) {
-            ui::TreeNode* node = new ui::TreeNode(this);
-            node->SetClass(_T("tree_node"));
-            node->SetText(ui::StringUtil::Printf(_T("ui::Combo::TreeNode %d"), i));
+            auto* node = ui::Create<ui::TreeNode>(this, {{"class", "tree_node"}, {"text", ui::StringUtil::Printf("ui::Combo::TreeNode %d", i)}});
             pTreeNode->AddChildNode(node);
         }
     }
@@ -100,38 +96,38 @@ void ControlForm::OnInitWindow()
 //    ASSERT(combo->GetCurSel() == 1);
 //    combo->SetItemData(1, 0xFF1234);
 //    ASSERT(combo->GetItemData(1) == 0xFF1234);
-//    combo->SetItemText(2, _T("2"));
-//    ASSERT(combo->GetItemText(2) == _T("2"));
+//    combo->SetItemText(2, "2");
+//    ASSERT(combo->GetItemText(2) == "2");
 //
-//    size_t nIndex = combo->AddTextItem(_T("Last"));
-//    ASSERT(combo->GetItemText(nIndex) == _T("Last"));
+//    size_t nIndex = combo->AddTextItem("Last");
+//    ASSERT(combo->GetItemText(nIndex) == "Last");
 //
-//    nIndex = combo->InsertTextItem(nIndex, _T("Last2"));
-//    ASSERT(combo->GetItemText(nIndex) == _T("Last2"));
+//    nIndex = combo->InsertTextItem(nIndex, "Last2");
+//    ASSERT(combo->GetItemText(nIndex) == "Last2");
 //
 //    ASSERT(combo->DeleteItem(nIndex));
 //
 //    ASSERT(combo->GetItemText(combo->GetCurSel()) == combo->GetText());
-//    combo->SetText(_T("Test"));
-//    ASSERT(combo->GetText() == _T("Test"));
+//    combo->SetText("Test");
+//    ASSERT(combo->GetText() == "Test");
 //#endif
 
-    ui::FilterCombo* filterCombo = ui::Find<ui::FilterCombo>(this, _T("filter_combo"));
+    ui::FilterCombo* filterCombo = ui::Find<ui::FilterCombo>(this, "filter_combo");
     if (filterCombo != nullptr) {
         for (auto i = 0; i < 100; i++) {
-            filterCombo->AddTextItem(ui::StringUtil::Printf(_T("Item %d FilterCombo"), i));
+            filterCombo->AddTextItem(ui::StringUtil::Printf("Item %d FilterCombo", i));
         }
     }
 
-    ui::CheckCombo* check_combo = ui::Find<ui::CheckCombo>(this, _T("check_combo"));
+    ui::CheckCombo* check_combo = ui::Find<ui::CheckCombo>(this, "check_combo");
     if (check_combo != nullptr) {
-        check_combo->AddTextItem(_T("Monday"));
-        check_combo->AddTextItem(_T("Tuesday"));
-        check_combo->AddTextItem(_T("Wednesday"));
-        check_combo->AddTextItem(_T("Thursday"));
-        check_combo->AddTextItem(_T("Friday"));
-        check_combo->AddTextItem(_T("Saturday"));
-        check_combo->AddTextItem(_T("Sunday"));
+        check_combo->AddTextItem("Monday");
+        check_combo->AddTextItem("Tuesday");
+        check_combo->AddTextItem("Wednesday");
+        check_combo->AddTextItem("Thursday");
+        check_combo->AddTextItem("Friday");
+        check_combo->AddTextItem("Saturday");
+        check_combo->AddTextItem("Sunday");
     }
 
     int32_t nThreadIdentifier = ui::ThreadIdentifier::kThreadWorker;
@@ -152,7 +148,7 @@ void ControlForm::OnInitWindow()
         300);
 
     /* Show settings menu */
-    ui::Button* settings = ui::Find<ui::Button>(this, _T("settings"));
+    ui::Button* settings = ui::Find<ui::Button>(this, "settings");
     if (settings != nullptr) {
         settings->AttachClick([this, settings](const ui::EventArgs& args) {
             ui::UiRect rect = args.GetSender()->GetPos();
@@ -168,11 +164,11 @@ void ControlForm::OnInitWindow()
     }
 
     //Register a context menu, demonstrating the feature (both methods can register a context menu)
-    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, _T("edit")));
-    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, _T("edit2")));
+    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, "edit"));
+    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, "edit2"));
 
     //Show the color picker of a modal dialog
-    ui::Button* pShowColorPicker = ui::Find<ui::Button>(this, _T("show_color_picker"));
+    ui::Button* pShowColorPicker = ui::Find<ui::Button>(this, "show_color_picker");
     if (pShowColorPicker != nullptr) {
         pShowColorPicker->AttachClick([this](const ui::EventArgs& args) {
             ShowColorPicker(true);
@@ -181,7 +177,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Show a modal dialog
-    ui::Button* pShowModal = ui::Find<ui::Button>(this, _T("domodal2"));
+    ui::Button* pShowModal = ui::Find<ui::Button>(this, "domodal2");
     if (pShowModal != nullptr) {
         pShowModal->AttachClick([this](const ui::EventArgs& args) {
             ShowDoModalDlg();
@@ -190,40 +186,40 @@ void ControlForm::OnInitWindow()
     }
 
     //RichText displays hyperlinks
-    ui::RichText* pRichText = ui::Find<ui::RichText>(this, _T("rich_text_demo"));
+    ui::RichText* pRichText = ui::Find<ui::RichText>(this, "rich_text_demo");
     if (pRichText != nullptr) {
         pRichText->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-                ui::SystemUtil::ShowMessageBox(this, url, _T("RichText Click HyperLink"));
+                ui::SystemUtil::ShowMessageBox(this, url, "RichText Click HyperLink");
             }
             return true;
             });
     }
 
     //HyperLink control
-    ui::HyperLink* pHyperLink = ui::Find<ui::HyperLink>(this, _T("hyper_link1"));
+    ui::HyperLink* pHyperLink = ui::Find<ui::HyperLink>(this, "hyper_link1");
     if (pHyperLink != nullptr) {
         pHyperLink->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-                ui::SystemUtil::ShowMessageBox(this, url, _T("HyperLink Click HyperLink"));
+                ui::SystemUtil::ShowMessageBox(this, url, "HyperLink Click HyperLink");
             }
             return true;
             });
     }
 
-    pHyperLink = ui::Find<ui::HyperLink>(this, _T("hyper_link2"));
+    pHyperLink = ui::Find<ui::HyperLink>(this, "hyper_link2");
     if (pHyperLink != nullptr) {
         pHyperLink->AttachLinkClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, _T("Text Button Event Response"), _T("HyperLink Click"));
+            ui::SystemUtil::ShowMessageBox(this, "Text Button Event Response", "HyperLink Click");
             return true;
             });
     }
 
     //Hotkey settings
-    ui::HotKey* pHotKey = ui::Find<ui::HotKey>(this, _T("set_hot_key"));
-    ui::Button* pHotKeyButton = ui::Find<ui::Button>(this, _T("btn_set_hot_key"));
+    ui::HotKey* pHotKey = ui::Find<ui::HotKey>(this, "set_hot_key");
+    ui::Button* pHotKeyButton = ui::Find<ui::Button>(this, "btn_set_hot_key");
     if (pHotKey && pHotKeyButton) {
         pHotKeyButton->AttachClick([this, pHotKey](const ui::EventArgs& args) {
             uint8_t wVirtualKeyCode = 0;
@@ -261,8 +257,8 @@ void ControlForm::OnInitWindow()
             });
     }
 
-    pHotKey = ui::Find<ui::HotKey>(this, _T("set_system_hot_key"));
-    pHotKeyButton = ui::Find<ui::Button>(this, _T("btn_set_system_hot_key"));
+    pHotKey = ui::Find<ui::HotKey>(this, "set_system_hot_key");
+    pHotKeyButton = ui::Find<ui::Button>(this, "btn_set_system_hot_key");
     if (pHotKey && pHotKeyButton) {
         pHotKeyButton->AttachClick([this, pHotKey](const ui::EventArgs& args) {
             uint8_t wVirtualKeyCode = 0;
@@ -278,7 +274,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Test page, open a new window
-    ui::Button* pTestBtn = ui::Find<ui::Button>(this, _T("test_btn"));
+    ui::Button* pTestBtn = ui::Find<ui::Button>(this, "test_btn");
     if (pTestBtn != nullptr) {
         pTestBtn->AttachClick([this](const ui::EventArgs&) {
             ShowTestWindow();
@@ -287,7 +283,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Response function of the animation test button
-    ui::Button* pAnimationBtn = ui::Find<ui::Button>(this, _T("animation_btn"));
+    ui::Button* pAnimationBtn = ui::Find<ui::Button>(this, "animation_btn");
     if (pAnimationBtn != nullptr) {
         pAnimationBtn->AttachClick([this](const ui::EventArgs&) {
             ShowAnimationWindow();
@@ -296,7 +292,7 @@ void ControlForm::OnInitWindow()
     }
 
     //Tray icon functionality
-    ui::CheckBox* pTrayIconCheckBox = ui::Find<ui::CheckBox>(this, _T("checkbox_tray_icon"));
+    ui::CheckBox* pTrayIconCheckBox = ui::Find<ui::CheckBox>(this, "checkbox_tray_icon");
     if (pTrayIconCheckBox != nullptr) {
         pTrayIconCheckBox->AttachSelect([this](const ui::EventArgs&) {
             //Enable
@@ -317,6 +313,47 @@ void ControlForm::OnCloseWindow()
     ShowTrayIcon(false);
 
     BaseClass::OnCloseWindow();
+}
+
+void ControlForm::OnWindowMinimized()
+{
+    ui::Menu::CloseAllMenus();
+    BaseClass::OnWindowMinimized();
+}
+
+LRESULT ControlForm::OnMouseLButtonDownMsg(const ui::UiPoint& pt, uint32_t modifierKey,
+                                           const ui::NativeMsg& nativeMsg, bool& bHandled)
+{
+    ui::Menu::CloseAllMenus();
+    return BaseClass::OnMouseLButtonDownMsg(pt, modifierKey, nativeMsg, bHandled);
+}
+
+LRESULT ControlForm::OnMouseRButtonDownMsg(const ui::UiPoint& pt, uint32_t modifierKey,
+                                           const ui::NativeMsg& nativeMsg, bool& bHandled)
+{
+    ui::Menu::CloseAllMenus();
+    return BaseClass::OnMouseRButtonDownMsg(pt, modifierKey, nativeMsg, bHandled);
+}
+
+LRESULT ControlForm::OnMoveMsg(const ui::UiPoint& ptTopLeft, const ui::NativeMsg& nativeMsg,
+                               bool& bHandled)
+{
+    if (auto* combo = ui::Find<ui::Combo>(this, "combo")) {
+        if (combo->GetComboWnd() != nullptr) {
+            combo->GetComboWnd()->CloseWnd();
+        }
+    }
+    if (auto* filterCombo = ui::Find<ui::FilterCombo>(this, "filter_combo")) {
+        if (filterCombo->GetComboWnd() != nullptr) {
+            filterCombo->GetComboWnd()->CloseWnd();
+        }
+    }
+    if (auto* checkCombo = ui::Find<ui::CheckCombo>(this, "check_combo")) {
+        if (checkCombo->GetCheckComboWnd() != nullptr) {
+            checkCombo->GetCheckComboWnd()->CloseWnd();
+        }
+    }
+    return BaseClass::OnMoveMsg(ptTopLeft, nativeMsg, bHandled);
 }
 
 void ControlForm::AttachRichEditEvents(ui::RichEdit* edit)
@@ -378,10 +415,10 @@ void ControlForm::AttachRichEditEvents(ui::RichEdit* edit)
         });
 
     //Display RichEdit in full screen
-    ui::Button* pFullscreenBtn = ui::Find<ui::Button>(this, _T("rich_edit_fullscreen_btn"));
+    ui::Button* pFullscreenBtn = ui::Find<ui::Button>(this, "rich_edit_fullscreen_btn");
     if (pFullscreenBtn != nullptr) {
         pFullscreenBtn->AttachClick([this](const ui::EventArgs&) {
-            ui::Control* pControl = ui::Find<ui::Control>(this, _T("edit"));
+            ui::Control* pControl = ui::Find<ui::Control>(this, "edit");
             if (pControl != nullptr) {
                 this->SetFullscreenControl(pControl);
             }
@@ -404,7 +441,7 @@ void ControlForm::ShowColorPicker(bool bDoModal)
 
     //Function executed after the window is created
     auto OnInitColorPicker = [this, pColorPicker](const ui::EventArgs&) {
-        ui::RichEdit* pEdit = ui::Find<ui::RichEdit>(this, _T("edit"));
+        ui::RichEdit* pEdit = ui::Find<ui::RichEdit>(this, "edit");
         if (pEdit != nullptr) {
             DString oldTextColor = pEdit->GetTextColor();
             if (!oldTextColor.empty()) {
@@ -452,11 +489,11 @@ void ControlForm::ShowColorPicker(bool bDoModal)
 void ControlForm::ShowDoModalDlg()
 {
     ui::WindowImplBase simpleWnd;
-    simpleWnd.InitSkin(_T("controls"), _T("about.xml"));
+    simpleWnd.InitSkin("controls", "about.xml");
     ui::WindowCreateParam createParam;
     createParam.m_dwStyle = ui::kWS_POPUP;
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = _T("AboutForm");
+    createParam.m_windowTitle = "AboutForm";
     createParam.m_bCenterWindow = true;
     simpleWnd.DoModal(this, createParam);
 }
@@ -467,7 +504,7 @@ void ControlForm::ShowTestWindow()
     ui::WindowCreateParam createParam;
     createParam.m_dwStyle = ui::kWS_POPUP;
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = _T("TestWindow");
+    createParam.m_windowTitle = "TestWindow";
     createParam.m_bCenterWindow = true;
     testForm->CreateWnd(this, createParam);
     testForm->ShowModalFake();
@@ -479,7 +516,7 @@ void ControlForm::ShowAnimationWindow()
     ui::WindowCreateParam createParam;
     createParam.m_dwStyle = ui::kWS_POPUP;
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = _T("AnimationWindow");
+    createParam.m_windowTitle = "AnimationWindow";
     createParam.m_bCenterWindow = true;
     testForm->CreateWnd(this, createParam);
     testForm->ShowModalFake();
@@ -487,19 +524,18 @@ void ControlForm::ShowAnimationWindow()
 
 void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedControl)
 {
-    ui::Menu* menu = new ui::Menu(this, pRelatedControl);//A parent window is required, otherwise the program status bar becomes inactive when the menu pops up
+    ui::Menu* menu = new ui::Menu(this, pRelatedControl); //A parent window is required, otherwise the program status bar becomes inactive when the menu pops up
+    menu->SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     menu->SetSkinFolder(GetResourcePath().ToString());
-    DString xml(_T("menu/settings_menu.xml"));
+    DString xml("menu/settings_menu.xml");
     menu->ShowMenu(xml, point);
 
     //Add a submenu item to the second-level menu
-    ui::MenuItem* menu_fourth = static_cast<ui::MenuItem*>(menu->FindControl(_T("fourth")));
+    ui::MenuItem* menu_fourth = ui::Find<ui::MenuItem>(menu, "fourth");
     if (menu_fourth != nullptr) {
-        ui::MenuItem* menu_item = new ui::MenuItem(menu);
-        menu_item->SetText(_T("Dynamically created"));
-        menu_item->SetClass(_T("menu_element"));
-        menu_item->SetFixedWidth(ui::UiFixedInt(180), true, true);
-        menu_item->SetFontId(_T("system_14"));
+        auto* menu_item = ui::Create<ui::MenuItem>(menu, {{"text", "Dynamically created"}, {"class", "menu_element"}});
+        menu_item->SetFixedWidth(ui::UiFixedInt(200), true, true);
+        menu_item->SetFontId("system_14");
         menu_item->SetTextPadding({ 20, 0, 20, 0 }, true);
         menu_fourth->AddSubMenuItemAt(menu_item, 1);//After adding, the resource is managed by the menu
     }
@@ -509,10 +545,10 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
     /*
     menu_item = new ui::MenuItem(menu);
     menu_item->SetWindow(menu);
-    menu_item->SetText(_T("Dynamically created"));
-    menu_item->SetClass(_T("menu_element"));
+    menu_item->SetText("Dynamically created");
+    menu_item->SetClass("menu_element");
     menu_item->SetFixedWidth(180);
-    menu_item->SetFontId(_T("system_14"));
+    menu_item->SetFontId("system_14");
     menu_item->SetTextPadding({ 20, 0, 20, 0 });
     menu->AddMenuItemAt(menu_item, 4);//After adding, the resource is managed by the menu
     */
@@ -520,19 +556,19 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
     //Demonstration of the checkbox menu item functionality
     static bool s_is_checked_01_flag = false;
     bool& flag = s_is_checked_01_flag;
-    ui::MenuItem* menu_check_01 = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("menu_check_01")));
+    ui::MenuItem* menu_check_01 = ui::Find<ui::MenuItem>(menu, "menu_check_01");
     if (menu_check_01 != nullptr) {
         menu_check_01->AttachClick([&flag](const ui::EventArgs& args) {
             flag = true;
             return true;
             });
     }
-    ui::CheckBox* menuCheckBox01 = dynamic_cast<ui::CheckBox*>(menu->FindControl(_T("menu_checkbox_01")));
+    ui::CheckBox* menuCheckBox01 = ui::Find<ui::CheckBox>(menu, "menu_checkbox_01");
     if (menuCheckBox01 != nullptr) {
         menuCheckBox01->Selected(s_is_checked_01_flag);
     }
 
-    ui::MenuItem* menu_check_02 = dynamic_cast<ui::MenuItem*>(menu->FindControl(_T("menu_check_02")));
+    ui::MenuItem* menu_check_02 = ui::Find<ui::MenuItem>(menu, "menu_check_02");
     if (menu_check_02 != nullptr) {
         menu_check_02->AttachClick([&flag](const ui::EventArgs& args) {
             flag = false;
@@ -540,36 +576,53 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
             });
     }
 
-    ui::CheckBox* menuCheckBox02 = dynamic_cast<ui::CheckBox*>(menu->FindControl(_T("menu_checkbox_02")));
+    ui::CheckBox* menuCheckBox02 = ui::Find<ui::CheckBox>(menu, "menu_checkbox_02");
     if (menuCheckBox02 != nullptr) {
         menuCheckBox02->Selected(!s_is_checked_01_flag);
     }
 
 
     /* About menu */
-    ui::MenuItem* menu_about = static_cast<ui::MenuItem*>(menu->FindControl(_T("about")));
+    ui::MenuItem* menu_about = menu->GetMenuItemByName("about");
     if (menu_about != nullptr) {
-        menu_about->AttachClick([this](const ui::EventArgs& args) {
-            AboutForm* about_form = new AboutForm();
-            ui::WindowCreateParam createParam;
-            createParam.m_dwStyle = ui::kWS_POPUP;
-            createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-            createParam.m_windowTitle = _T("AboutForm");
-            createParam.m_bCenterWindow = true;
-            about_form->CreateWnd(this, createParam);
-            about_form->ShowModalFake();
+        menu_about->AttachClick([this](const ui::EventArgs&) {
+            ui::GlobalManager::Instance().Thread().PostTask(ui::kThreadUI,
+                [this]() {
+                    AboutForm* about_form = new AboutForm();
+                    ui::WindowCreateParam createParam;
+                    createParam.m_dwStyle = ui::kWS_OVERLAPPEDWINDOW;
+                    createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
+                    createParam.m_windowTitle = "AboutForm";
+                    createParam.m_nWidth = 400;
+                    createParam.m_nHeight = 220;
+                    createParam.m_bCenterWindow = true;
+                    about_form->CreateWnd(this, createParam);
+                    about_form->ShowModalFake();
+                });
             return true;
-            });
+        });
     }
 }
 
 void ControlForm::LoadRichEditData()
 {
-    std::streamoff length = 0;
-    
+    // The pure-code and generated variants still display the design XML in the editor.
+    DString skinFile = GetSkinFile();
+    if (skinFile.empty()) {
+        skinFile = "controls.xml";
+    }
+
     ui::FilePath controls_xml = ui::GlobalManager::Instance().GetResourcePath();
     controls_xml += GetResourcePath();
-    controls_xml += GetSkinFile();
+    controls_xml += skinFile;
+    if (!controls_xml.IsExistsFile()) {
+        const ui::FilePath themeDefaultPath = ui::GlobalManager::Instance().GetThemeDefaultPath();
+        if (!themeDefaultPath.IsEmpty()) {
+            controls_xml = themeDefaultPath;
+            controls_xml += GetResourcePath();
+            controls_xml += skinFile;
+        }
+    }
 
     //XML files are loaded in UTF-8 encoding
     std::string xml;
@@ -589,12 +642,12 @@ void ControlForm::OnResourceFileLoaded(const DString& xml)
     if (xml.empty()) {
         return;
     }
-    ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, _T("edit2"));
+    ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, "edit2");
     if (pRichEdit) {
         pRichEdit->SetText(xml);
         pRichEdit->HomeUp();
     }
-    pRichEdit = ui::Find<ui::RichEdit>(this, _T("edit"));
+    pRichEdit = ui::Find<ui::RichEdit>(this, "edit");
     if (pRichEdit) {
         pRichEdit->SetText(xml);
         pRichEdit->SetFocus();
@@ -606,15 +659,15 @@ void ControlForm::OnProgressValueChagned(float value)
 {
     //The progress range given by the callback is [0, 99), convert it to [0, 100]
     value = value * 100 / 99 + 0.5f;
-    auto progress = ui::Find<ui::Progress>(this, _T("progress"));
+    auto progress = ui::Find<ui::Progress>(this, "progress");
     if (progress) {
         progress->SetValue(value);
     }
 
-    auto circleprogress = ui::Find<ui::Progress>(this, _T("circleprogress"));
+    auto circleprogress = ui::Find<ui::Progress>(this, "circleprogress");
     if (circleprogress)    {
         circleprogress->SetValue(value);
-        circleprogress->SetText(ui::StringUtil::Printf(_T("%.0f%%"), value));
+        circleprogress->SetText(ui::StringUtil::Printf("%.0f%%", value));
     }
 }
 
@@ -624,7 +677,7 @@ LRESULT ControlForm::OnHotKeyMsg(int32_t hotkeyId, ui::VirtualKeyCode vkCode, ui
     bHandled = true;
     if (hotkeyId == SYSTEM_HOTKEY_ID) {
         SetWindowForeground();
-        ui::SystemUtil::ShowMessageBox(this, _T("System HotKey Command Received"), _T("ControlForm::OnHotKeyMsg"));
+        ui::SystemUtil::ShowMessageBox(this, "System HotKey Command Received", "ControlForm::OnHotKeyMsg");
     }
     return lResult;
 }
@@ -633,7 +686,7 @@ void ControlForm::ShowTrayIcon(bool bShow)
 {
     if (bShow) {
         // Create the tray icon
-        m_pTrayIcon = ui::TrayIcon::Create(this, _T("public/caption/logo.ico"), _T("controls(dui)"));
+        m_pTrayIcon = ui::TrayIcon::Create(this, "public/caption/logo.ico", "controls(dui)");
         if (m_pTrayIcon != nullptr) {
             // Set the message callback
             m_pTrayIcon->SetMessageCallback([this](ui::TrayIconMessageType msgType, int32_t x, int32_t y)
@@ -642,7 +695,7 @@ void ControlForm::ShowTrayIcon(bool bShow)
                 });
 
             // Show the welcome balloon
-            m_pTrayIcon->ShowBalloon(_T("Hint"), _T("App has started!"), 3000);
+            m_pTrayIcon->ShowBalloon("Hint", "App has started!", 3000);
         }
 
     }
@@ -689,39 +742,39 @@ void ControlForm::ShowTrayMenu(int32_t x, int32_t y)
     ui::Window* pParentWnd = IsWindowVisible() ? this : nullptr;//When the window is hidden, do not set the parent window to avoid the menu not being displayed
     ui::Menu* menu = new ui::Menu(pParentWnd, nullptr);
     menu->SetSkinFolder(GetResourcePath().ToString());
-    DString xml(_T("menu/tray_menu.xml"));
+    DString xml("menu/tray_menu.xml");
     menu->ShowMenu(xml, ui::UiPoint(x, y));
 
     //Menu item click response
-    ui::MenuItem* pMenuItem = static_cast<ui::MenuItem*>(menu->FindControl(_T("tray_menu_item_1")));
+    ui::MenuItem* pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_item_1");
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, _T("tray_menu_item_1 clicked!"), _T("TrayIconTest"));
+            ui::SystemUtil::ShowMessageBox(this, "tray_menu_item_1 clicked!", "TrayIconTest");
             return true;
             });
     }
-    pMenuItem = static_cast<ui::MenuItem*>(menu->FindControl(_T("tray_menu_item_2")));
+    pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_item_2");
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, _T("tray_menu_item_2 clicked!"), _T("TrayIconTest"));
+            ui::SystemUtil::ShowMessageBox(this, "tray_menu_item_2 clicked!", "TrayIconTest");
             return true;
             });
     }
-    pMenuItem = static_cast<ui::MenuItem*>(menu->FindControl(_T("tray_menu_item_3")));
+    pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_item_3");
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, _T("tray_menu_item_3 clicked!"), _T("TrayIconTest"));
+            ui::SystemUtil::ShowMessageBox(this, "tray_menu_item_3 clicked!", "TrayIconTest");
             return true;
             });
     }
-    pMenuItem = static_cast<ui::MenuItem*>(menu->FindControl(_T("tray_menu_item_4")));
+    pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_item_4");
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, _T("tray_menu_item_4 clicked!"), _T("TrayIconTest"));
+            ui::SystemUtil::ShowMessageBox(this, "tray_menu_item_4 clicked!", "TrayIconTest");
             return true;
             });
     }
-    pMenuItem = static_cast<ui::MenuItem*>(menu->FindControl(_T("tray_menu_exit")));
+    pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_exit");
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
             this->CloseWnd();

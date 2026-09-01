@@ -1,508 +1,303 @@
 #include "MainForm.h"
+#include "dui/Utils/UiBuilder.h"
 
 MainForm::MainForm():
     m_fLoadingPercent(0)
 {
 }
 
-MainForm::~MainForm()
+void MainForm::SetupWindow()
 {
-}
-
-DString MainForm::GetSkinFolder()
-{
-    // Pure code mode: no layout XML is loaded, but the skin folder is kept as
-    // the window's resource path so that image paths can still be resolved
-    return _T("list_ctrl");
-}
-
-DString MainForm::GetSkinFile()
-{
-    // Pure code mode: no layout XML is loaded
-    return _T("");
+    ui::UiSize size; bool scaledCX = false; bool scaledCY = false;
+    bool percentCX = false; bool percentCY = false;
+    ui::AttributeUtil::ParseWindowSize(this, "85%,85%", size, &scaledCX, &scaledCY, &percentCX, &percentCY);
+    SetWindowSize(size.cx, size.cy);
+    SetWindowMinimumSize(ui::UiSize(80, 50), true);
+    SetUseSystemCaption(false);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    SetLayeredWindow(true, false);
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+    SetShadowBorderSize(0);
+    SetShadowAttached(true);
+    // System shadow type: normalize and force non-layered window
+    ui::Shadow::ShadowType supportedType =
+        ui::Shadow::GetSupportedShadowType(this, ui::Shadow::ShadowType::kShadowSystemDefault);
+    if (supportedType != ui::Shadow::ShadowType::kShadowSystemDefault) {
+        SetShadowType(supportedType);
+    }
+    if (ui::Shadow::IsSystemShadowType(supportedType)) {
+        SetLayeredWindow(false, false);
+    }
+    CenterWindow();
 }
 
 void MainForm::BuildUI()
 {
-    // Corresponds to the list_ctrl.xml layout (hand-written pure code)
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
-    pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
-
-    // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
-    pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
-    pRoot->AddItem(pCaption);
-
-    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
-    pCaption->AddItem(pSpacer);
-
-    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pFullscreenBtn->SetClass(_T("btn_wnd_fullscreen_11"));
-    pFullscreenBtn->SetName(_T("fullscreenbtn"));
-    pFullscreenBtn->SetToolTipText(_T("Fullscreen, press ESC to exit fullscreen"));
-    pCaption->AddItem(pFullscreenBtn);
-
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetToolTipText(_T("Minimize"));
-    pCaption->AddItem(pMinBtn);
-
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pCaption->AddItem(pMaxBox);
-
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetName(_T("maxbtn"));
-    pMaxBtn->SetToolTipText(_T("Maximize"));
-    pMaxBox->AddItem(pMaxBtn);
-
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetName(_T("restorebtn"));
-    pRestoreBtn->SetVisible(false);
-    pRestoreBtn->SetToolTipText(_T("Restore"));
-    pMaxBox->AddItem(pRestoreBtn);
-
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
-    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetToolTipText(_T("Close"));
-    pCaption->AddItem(pCloseBtn);
-
-    // Work area
-    auto* pContent = ui::Create<ui::VBox>(this, {});
-    pRoot->AddItem(pContent);
-
-    // Table type row
-    auto* pTypeRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
-    pContent->AddItem(pTypeRow);
-
-    auto* pTypeLabel = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}});
-    pTypeLabel->SetText(_T("Table Type:"));
-    pTypeRow->AddItem(pTypeLabel);
-
-    auto* pTypeCombo = ui::Create<ui::Combo>(this, {{_T("combo_type"), _T("drop_list")}, {_T("dropbox_size"), _T("0,300")}, {_T("combo_icon_class"), _T("")}, {_T("height"), _T("26")}, {_T("width"), _T("80")}, {_T("margin"), _T("0,0,0,1")}, {_T("valign"), _T("center")}});
-    pTypeCombo->SetClass(_T("combo"));
-    pTypeCombo->SetName(_T("list_ctrl_type_combo"));
-    pTypeRow->AddItem(pTypeCombo);
-
-    {
-        struct ComboItem { DString text; int32_t userData; };
-        const ComboItem items[] = {
-            { _T("Report"), 0 }, { _T("Icon"), 1 }, { _T("List"), 2 },
-        };
-        for (const auto& item : items) {
-    auto* pNode = ui::Create<ui::TreeNode>(this, {{_T("padding"), _T("4")}});
-            pNode->SetClass(_T("tree_node"));
-            pNode->SetText(item.text);
-            pNode->SetUserDataID((size_t)item.userData);
-            pTypeCombo->GetTreeView()->GetRootNode()->AddChildNode(pNode);
-        }
-    }
-
-    auto* pMultiSelect = ui::Create<ui::CheckBox>(this, {{_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}});
-    pMultiSelect->SetClass(_T("checkbox_1"));
-    pMultiSelect->SetName(_T("checkbox_multi_select"));
-    pMultiSelect->SetText(_T("Multi-select"));
-    pTypeRow->AddItem(pMultiSelect);
-
-    // Tool area
-    auto* pToolArea = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
-    pContent->AddItem(pToolArea);
-
-    // Report type control group
-    auto* pReportGroup = ui::Create<ui::GroupVBox>(this, {{_T("height"), _T("auto")}, {_T("width"), _T("770")}, {_T("text"), _T("Report Type")}});
-    pReportGroup->SetName(_T("report_group"));
-    pToolArea->AddItem(pReportGroup);
-
-    // Row 1: header controls
-    auto* pRow1 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,18,4,0")}});
-    pRow1->SetBkColor(_T("bk_wnd_darkcolor"));
-    pReportGroup->AddItem(pRow1);
-
-    auto* pLbl = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("6,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("6,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,0,2,0")}});
-    pLbl->SetText(_T("Header Controls:"));
-    pRow1->AddItem(pLbl);
-
-    auto* pOpt = ui::Create<ui::Option>(this, {{_T("group"), _T("show")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("group"), _T("show")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("group"), _T("drag_order")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("group"), _T("drag_order")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
-    pOpt->SetClass(_T("option_2"));
-    pOpt->SetText(_T("Hide"));
-    pRow1->AddItem(pOpt);
-
-    pOpt = new ui::Option(this);
-    pOpt->SetClass(_T("option_2"));
-    pOpt->SetText(_T("Show"));
-    pOpt->Selected(true);
-    pRow1->AddItem(pOpt);
-
-    auto* pLine = ui::Create<ui::Line>(this, {{_T("vertical"), _T("true")}, {_T("margin"), _T("0,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("0,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,4,4,4")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,2,4,2")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,2,4,2")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("0,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("0,8,4,8")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,2,4,2")}, {_T("width"), _T("2")}, {_T("vertical"), _T("true")}, {_T("margin"), _T("8,2,4,2")}, {_T("width"), _T("2")}});
-    pRow1->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Drag Header to Reorder:"));
-    pRow1->AddItem(pLbl);
-
-    pOpt = new ui::Option(this);
-    pOpt->SetClass(_T("option_2"));
-    pOpt->SetText(_T("Forbidden"));
-    pRow1->AddItem(pOpt);
-
-    pOpt = new ui::Option(this);
-    pOpt->SetClass(_T("option_2"));
-    pOpt->SetText(_T("Allowed"));
-    pOpt->Selected(true);
-    pRow1->AddItem(pOpt);
-
-    pLine = new ui::Line(this);
-    pRow1->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Header Height:"));
-    pRow1->AddItem(pLbl);
-
-    auto* pHeaderHeight = ui::Create<ui::RichEdit>(this, {{_T("min_number"), _T("0")}, {_T("max_number"), _T("512")}, {_T("limit_text"), _T("3")}, {_T("margin"), _T("0,2,0,0")}});
-    pHeaderHeight->SetClass(_T("simple simple_border rich_edit_spin"));
-    pHeaderHeight->SetName(_T("header_height_edit"));
-    pHeaderHeight->SetText(_T("0"));
-    pRow1->AddItem(pHeaderHeight);
-
-    auto* pStretchBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("auto")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("text_padding"), _T("8,0,8,0")}, {_T("margin"), _T("4,0,0,0")}});
-    pStretchBtn->SetClass(_T("btn_global_color_gray"));
-    pStretchBtn->SetName(_T("set_column_stretch"));
-    pStretchBtn->SetText(_T("Set Column Widths Proportionally"));
-    pRow1->AddItem(pStretchBtn);
-
-    // Row 2: column controls
-    auto* pRow2 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
-    pRow2->SetBkColor(_T("bk_wnd_darkcolor"));
-    pReportGroup->AddItem(pRow2);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Column Controls:"));
-    pRow2->AddItem(pLbl);
-
-    auto* pColumnCombo = ui::Create<ui::Combo>(this, {{_T("combo_type"), _T("drop_list")}, {_T("dropbox_size"), _T("0,300")}, {_T("combo_icon_class"), _T("")}, {_T("height"), _T("26")}, {_T("width"), _T("80")}, {_T("margin"), _T("0,0,0,1")}, {_T("valign"), _T("center")}});
-    pColumnCombo->SetClass(_T("combo"));
-    pColumnCombo->SetName(_T("column_combo"));
-    pRow2->AddItem(pColumnCombo);
-
-    pLine = new ui::Line(this);
-    pRow2->AddItem(pLine);
-
-    struct Row2Check { DString name; DString text; };
-    const Row2Check row2Checks[] = {
-        { _T("checkbox_column_show"), _T("Show This Column") },
-        { _T("checkbox_column_width"), _T("Resizable Width") },
-        { _T("checkbox_column_sort"), _T("Sortable") },
-        { _T("checkbox_column_icon_at_top"), _T("Sort Icon on Top") },
-        { _T("checkbox_column_drag_order"), _T("Drag to Reorder") },
-        { _T("checkbox_column_editable"), _T("Editable Text") },
-    };
-    for (const auto& item : row2Checks) {
-    auto* pCheck = ui::Create<ui::CheckBox>(this, {{_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}});
-        pCheck->SetClass(_T("checkbox_1"));
-        pCheck->SetName(item.name);
-        pCheck->SetText(item.text);
-        pRow2->AddItem(pCheck);
-    }
-
-    // Row 3: column-level CheckBox/icon
-    auto* pRow3 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
-    pRow3->SetBkColor(_T("bk_wnd_darkcolor"));
-    pReportGroup->AddItem(pRow3);
-
-    auto* pW153 = ui::Create<ui::Control>(this, {{_T("width"), _T("153")}, {_T("width"), _T("153")}, {_T("width"), _T("153")}});
-    pRow3->AddItem(pW153);
-
-    pLine = new ui::Line(this);
-    pRow3->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Column CheckBox:"));
-    pLbl->SetToolTipText(_T("Each column header and cell can show a CheckBox"));
-    pRow3->AddItem(pLbl);
-
-    auto* pCheck = ui::Create<ui::CheckBox>(this, {{_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}, {_T("margin"), _T("4,0,0,0")}, {_T("valign"), _T("center")}});
-    pCheck->SetClass(_T("checkbox_1"));
-    pCheck->SetName(_T("checkbox_column_show_header_checkbox"));
-    pCheck->SetText(_T("Show in Header"));
-    pRow3->AddItem(pCheck);
-
-    pCheck = new ui::CheckBox(this);
-    pCheck->SetClass(_T("checkbox_1"));
-    pCheck->SetName(_T("checkbox_column_show_checkbox"));
-    pCheck->SetText(_T("Show in Each Column"));
-    pRow3->AddItem(pCheck);
-
-    pLine = new ui::Line(this);
-    pRow3->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Column Icons:"));
-    pLbl->SetToolTipText(_T("Each column header and cell can show an icon"));
-    pRow3->AddItem(pLbl);
-
-    pCheck = new ui::CheckBox(this);
-    pCheck->SetClass(_T("checkbox_1"));
-    pCheck->SetName(_T("checkbox_column_show_header_icon"));
-    pCheck->SetText(_T("Show in Header"));
-    pRow3->AddItem(pCheck);
-
-    pCheck = new ui::CheckBox(this);
-    pCheck->SetClass(_T("checkbox_1"));
-    pCheck->SetName(_T("checkbox_column_show_icon"));
-    pCheck->SetText(_T("Show in Each Column"));
-    pRow3->AddItem(pCheck);
-
-    // Row 4: header/table text alignment
-    auto* pRow4 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
-    pRow4->SetBkColor(_T("bk_wnd_darkcolor"));
-    pReportGroup->AddItem(pRow4);
-
-    pW153 = new ui::Control(this);
-    pRow4->AddItem(pW153);
-
-    pLine = new ui::Line(this);
-    pRow4->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Header Text:"));
-    pRow4->AddItem(pLbl);
-
-    struct AlignOpt { DString name; DString group; DString text; bool selected; };
-    const AlignOpt headerAligns[] = {
-        { _T("header_text_align_left"), _T("header_text_align"), _T("Left"), false },
-        { _T("header_text_align_center"), _T("header_text_align"), _T("Center"), true },
-        { _T("header_text_align_right"), _T("header_text_align"), _T("Right"), false },
-    };
-    for (const auto& item : headerAligns) {
-    auto* pAlign = ui::Create<ui::Option>(this, {{_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
-        pAlign->SetClass(_T("option_2"));
-        pAlign->SetName(item.name);
-        pAlign->SetAttribute(_T("group"), item.group);
-        pAlign->SetText(item.text);
-        if (item.selected) pAlign->Selected(true);
-        pRow4->AddItem(pAlign);
-    }
-
-    pLine = new ui::Line(this);
-    pRow4->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Cell Text:"));
-    pRow4->AddItem(pLbl);
-
-    const AlignOpt columnAligns[] = {
-        { _T("column_text_align_left"), _T("column_text_align"), _T("Left"), true },
-        { _T("column_text_align_center"), _T("column_text_align"), _T("Center"), false },
-        { _T("column_text_align_right"), _T("column_text_align"), _T("Right"), false },
-    };
-    for (const auto& item : columnAligns) {
-    auto* pAlign = ui::Create<ui::Option>(this, {{_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
-        pAlign->SetClass(_T("option_2"));
-        pAlign->SetName(item.name);
-        pAlign->SetAttribute(_T("group"), item.group);
-        pAlign->SetText(item.text);
-        if (item.selected) pAlign->Selected(true);
-        pRow4->AddItem(pAlign);
-    }
-
-    // Row 5: table properties (grid/row height)
-    auto* pRow5 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
-    pRow5->SetBkColor(_T("bk_wnd_darkcolor"));
-    pReportGroup->AddItem(pRow5);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Table Properties:"));
-    pRow5->AddItem(pLbl);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Horizontal Grid:"));
-    pRow5->AddItem(pLbl);
-
-    struct GridOpt { DString group; DString text; bool selected; };
-    const GridOpt gridRow[] = {
-        { _T("grid_line_row"), _T("Hide"), false },
-        { _T("grid_line_row"), _T("Show"), true },
-    };
-    for (const auto& item : gridRow) {
-    auto* pGrid = ui::Create<ui::Option>(this, {{_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
-        pGrid->SetClass(_T("option_2"));
-        pGrid->SetAttribute(_T("group"), item.group);
-        pGrid->SetText(item.text);
-        if (item.selected) pGrid->Selected(true);
-        pRow5->AddItem(pGrid);
-    }
-
-    pLine = new ui::Line(this);
-    pRow5->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Vertical Grid:"));
-    pRow5->AddItem(pLbl);
-
-    const GridOpt gridColumn[] = {
-        { _T("grid_line_column"), _T("Hide"), false },
-        { _T("grid_line_column"), _T("Show"), true },
-    };
-    for (const auto& item : gridColumn) {
-    auto* pGrid = ui::Create<ui::Option>(this, {{_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}, {_T("width"), _T("64")}, {_T("height"), _T("32")}, {_T("padding"), _T("2,2,2,2")}, {_T("borderround"), _T("2,2")}, {_T("valign"), _T("center")}});
-        pGrid->SetClass(_T("option_2"));
-        pGrid->SetAttribute(_T("group"), item.group);
-        pGrid->SetText(item.text);
-        if (item.selected) pGrid->Selected(true);
-        pRow5->AddItem(pGrid);
-    }
-
-    pLine = new ui::Line(this);
-    pRow5->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Row Height:"));
-    pRow5->AddItem(pLbl);
-
-    auto* pItemHeight = ui::Create<ui::RichEdit>(this, {{_T("min_number"), _T("0")}, {_T("max_number"), _T("512")}, {_T("limit_text"), _T("3")}, {_T("margin"), _T("0,2,0,0")}});
-    pItemHeight->SetClass(_T("simple simple_border rich_edit_spin"));
-    pItemHeight->SetName(_T("list_item_height_edit"));
-    pItemHeight->SetText(_T("0"));
-    pRow5->AddItem(pItemHeight);
-
-    // Row 6: row-level CheckBox/icon
-    auto* pRow6 = ui::Create<ui::HBox>(this, {{_T("minheight"), _T("18")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,8")}});
-    pRow6->SetBkColor(_T("bk_wnd_darkcolor"));
-    pReportGroup->AddItem(pRow6);
-
-    pW153 = new ui::Control(this);
-    pRow6->AddItem(pW153);
-
-    pLine = new ui::Line(this);
-    pRow6->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Row CheckBox:"));
-    pLbl->SetToolTipText(_T("Each row header and row start can show a CheckBox"));
-    pRow6->AddItem(pLbl);
-
-    pCheck = new ui::CheckBox(this);
-    pCheck->SetClass(_T("checkbox_1"));
-    pCheck->SetName(_T("checkbox_show_header_checkbox"));
-    pCheck->SetText(_T("Show in Header"));
-    pRow6->AddItem(pCheck);
-
-    pCheck = new ui::CheckBox(this);
-    pCheck->SetClass(_T("checkbox_1"));
-    pCheck->SetName(_T("checkbox_show_checkbox"));
-    pCheck->SetText(_T("Show at Row Start"));
-    pRow6->AddItem(pCheck);
-
-    pLine = new ui::Line(this);
-    pRow6->AddItem(pLine);
-
-    pLbl = new ui::Label(this);
-    pLbl->SetText(_T("Row Icons:"));
-    pLbl->SetToolTipText(_T("Each row header and row start can show an icon"));
-    pRow6->AddItem(pLbl);
-
-    pCheck = new ui::CheckBox(this);
-    pCheck->SetClass(_T("checkbox_1"));
-    pCheck->SetName(_T("checkbox_show_icon"));
-    pCheck->SetText(_T("Show at Row Start"));
-    pRow6->AddItem(pCheck);
-
-    // Other tests (Loading)
-    auto* pOtherArea = ui::Create<ui::HBox>(this, {});
-    pToolArea->AddItem(pOtherArea);
-
-    auto* pOther1 = ui::Create<ui::GroupVBox>(this, {{_T("text"), _T("Other Tests")}});
-    pOtherArea->AddItem(pOther1);
-
-    struct LoadingBtn { DString name; DString text; int32_t marginTop; };
-    const LoadingBtn loadingBtns1[] = {
-        { _T("loading_progress_btn1"), _T("Loading Function Test (Progress Bar 1)"), 25 },
-        { _T("loading_progress_btn2"), _T("Loading Function Test (Progress Bar 2)"), 4 },
-        { _T("loading_btn1"), _T("Loading Function Test 1"), 4 },
-        { _T("loading_btn2"), _T("Loading Function Test 2"), 4 },
-    };
-    for (const auto& item : loadingBtns1) {
-    auto* pBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("200")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("width"), _T("200")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}});
-        pBtn->SetClass(_T("btn_global_color_gray"));
-        pBtn->SetName(item.name);
-        pBtn->SetText(item.text);
-        pBtn->SetAttribute(_T("margin"), ui::StringUtil::Printf(_T("20,%d,10,0"), item.marginTop));
-        pOther1->AddItem(pBtn);
-    }
-
-    auto* pOther2 = ui::Create<ui::GroupVBox>(this, {{_T("text"), _T("Other Tests")}});
-    pOtherArea->AddItem(pOther2);
-
-    const LoadingBtn loadingBtns2[] = {
-        { _T("loading_btn3"), _T("Loading Function Test 3"), 25 },
-        { _T("loading_btn4"), _T("Loading Function Test 4"), 4 },
-        { _T("loading_btn5"), _T("Loading Function Test 5"), 4 },
-        { _T("loading_btn6"), _T("Loading Function Test 6"), 4 },
-    };
-    for (const auto& item : loadingBtns2) {
-    auto* pBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("200")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}, {_T("width"), _T("200")}, {_T("height"), _T("30")}, {_T("border_round"), _T("3,3")}});
-        pBtn->SetClass(_T("btn_global_color_gray"));
-        pBtn->SetName(item.name);
-        pBtn->SetText(item.text);
-        pBtn->SetAttribute(_T("margin"), ui::StringUtil::Printf(_T("20,%d,10,0"), item.marginTop));
-        pOther2->AddItem(pBtn);
-    }
-
-    // Splitter bar
-    auto* pSplit = ui::Create<ui::Split>(this, {{_T("height"), _T("2")}});
-    pSplit->SetBkColor(_T("splitline_level1"));
-    pContent->AddItem(pSplit);
-
-    // ListCtrl
-    auto* pListArea = ui::Create<ui::VBox>(this, {{_T("margin"), _T("0,0,0,0")}, {_T("valign"), _T("center")}, {_T("halign"), _T("center")}});
-    pContent->AddItem(pListArea);
-
-    auto* pListCtrl = ui::Create<ui::ListCtrl>(this, {{_T("type"), _T("report")}, {_T("show_header"), _T("true")}, {_T("header_class"), _T("list_ctrl_header")}, {_T("header_item_class"), _T("list_ctrl_header_item")}, {_T("header_split_box_class"), _T("list_ctrl_header_split_box")}, {_T("header_split_control_class"), _T("list_ctrl_header_split_control")}, {_T("header_height"), _T("32")}, {_T("enable_header_drag_order"), _T("true")}, {_T("check_box_class"), _T("list_ctrl_checkbox")}, {_T("data_item_class"), _T("list_ctrl_item")}, {_T("data_sub_item_class"), _T("list_ctrl_sub_item")}, {_T("report_view_class"), _T("list_ctrl_report_view")}, {_T("data_item_height"), _T("46")}, {_T("row_grid_line_width"), _T("1")}, {_T("row_grid_line_color"), _T("lightgray")}, {_T("column_grid_line_width"), _T("1")}, {_T("column_grid_line_color"), _T("lightgray")}, {_T("multi_select"), _T("true")}, {_T("auto_check_select"), _T("false")}, {_T("show_header_checkbox"), _T("true")}, {_T("show_data_item_checkbox"), _T("true")}, {_T("icon_view_class"), _T("list_ctrl_icon_view")}, {_T("icon_view_item_class"), _T("list_ctrl_icon_view_item")}, {_T("icon_view_item_image_class"), _T("list_ctrl_icon_view_item_image")}, {_T("icon_view_item_label_class"), _T("list_ctrl_icon_view_item_label")}, {_T("list_view_class"), _T("list_ctrl_list_view")}, {_T("list_view_item_class"), _T("list_ctrl_list_view_item")}, {_T("list_view_item_image_class"), _T("list_ctrl_list_view_item_image")}, {_T("list_view_item_label_class"), _T("list_ctrl_list_view_item_label")}, {_T("enable_item_edit"), _T("true")}, {_T("list_ctrl_richedit_class"), _T("list_ctrl_richedit")}, {_T("loading"), _T("file='loading_progress1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'")}});
-    pListCtrl->SetName(_T("list_ctrl"));
-    pListCtrl->SetBkColor(_T("YellowGreen"));
-    pListArea->AddItem(pListCtrl);
-
-    AttachBox(pRoot);
-}
-
-
-void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    ui::UiRect rcWork;
-    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.85f);
-    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.85f);
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = true;
-    attrs.m_bIsLayeredWindowDefined = true;
-    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-
-    BaseClass::GetCreateWindowAttributes(attrs);
+    // Root VBox
+    auto* pRoot = ui::Create<ui::VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}, {"visible", "true"}});
+
+    // ---- Title bar ----
+    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
+    ui::Attach(pRoot, pCaption);
+    auto* pCaptionSpacer = ui::Create<ui::Control>(this, {{"mouse_enabled", "false"}});
+    ui::Attach(pCaption, pCaptionSpacer);
+    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_fullscreen_11"}, {"height", "32"}, {"width", "40"}, {"name", "fullscreenbtn"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Fullscreen, press ESC to exit fullscreen"}});
+    ui::Attach(pCaption, pFullscreenBtn);
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_min_11"}, {"height", "32"}, {"width", "40"}, {"name", "minbtn"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}});
+    ui::Attach(pCaption, pMinBtn);
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    ui::Attach(pCaption, pMaxBox);
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_max_11"}, {"height", "32"}, {"width", "stretch"}, {"name", "maxbtn"}, {"tooltip_text", "Maximize"}});
+    ui::Attach(pMaxBox, pMaxBtn);
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_restore_11"}, {"height", "32"}, {"width", "stretch"}, {"name", "restorebtn"}, {"visible", "false"}, {"tooltip_text", "Restore"}});
+    ui::Attach(pMaxBox, pRestoreBtn);
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_close_11"}, {"height", "stretch"}, {"width", "40"}, {"name", "closebtn"}, {"margin", "0,0,0,2"}, {"tooltip_text", "Close"}});
+    ui::Attach(pCaption, pCloseBtn);
+
+    // ---- Work area (VBox) ----
+    auto* pWorkArea = ui::Create<ui::VBox>(this, {});
+    ui::Attach(pRoot, pWorkArea);
+
+    // -- Row: top controls (type combo + multi-select) --
+    auto* pTopRow = ui::Create<ui::HBox>(this, {{"height", "auto"}});
+    ui::Attach(pWorkArea, pTopRow);
+    auto* pTypeLabel = ui::Create<ui::Label>(this, {{"text", "Table Type:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pTopRow, pTypeLabel);
+    auto* pTypeCombo = ui::Create<ui::Combo>(this, {{"class", "combo"}, {"name", "list_ctrl_type_combo"}, {"combo_type", "drop_list"}, {"dropbox_size", "0,300"}, {"shadow_type", "system_round"}, {"height", "26"}, {"width", "80"}, {"margin", "0,0,0,1"}, {"valign", "center"}});
+    ui::Attach(pTopRow, pTypeCombo);
+    auto* pTypeReportNode = ui::Create<ui::TreeNode>(this, {{"class", "tree_node"}, {"padding", "4"}, {"text", "Report"}, {"user_dataid", "0"}});
+    pTypeCombo->GetTreeView()->GetRootNode()->AddChildNode(pTypeReportNode);
+    auto* pTypeIconNode = ui::Create<ui::TreeNode>(this, {{"class", "tree_node"}, {"padding", "4"}, {"text", "Icon"}, {"user_dataid", "1"}});
+    pTypeCombo->GetTreeView()->GetRootNode()->AddChildNode(pTypeIconNode);
+    auto* pTypeListNode = ui::Create<ui::TreeNode>(this, {{"class", "tree_node"}, {"padding", "4"}, {"text", "List"}, {"user_dataid", "2"}});
+    pTypeCombo->GetTreeView()->GetRootNode()->AddChildNode(pTypeListNode);
+    auto* pMultiSelect = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_multi_select"}, {"text", "Multi-select"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pTopRow, pMultiSelect);
+
+    // -- Row: main content area (Report Group + Other Tests) --
+    auto* pMainRow = ui::Create<ui::HBox>(this, {{"height", "auto"}});
+    ui::Attach(pWorkArea, pMainRow);
+
+    // ==== Report Group (left panel) ====
+    auto* pReportGroup = ui::Create<ui::GroupVBox>(this, {{"name", "report_group"}, {"height", "auto"}, {"width", "770"}, {"text", "Report Type"}});
+    ui::Attach(pMainRow, pReportGroup);
+
+    // Row 1: Header Controls
+    auto* pRow1 = ui::Create<ui::HBox>(this, {{"minheight", "18"}, {"bkcolor", "bk_wnd_darkcolor"}, {"height", "auto"}, {"margin", "4,18,4,0"}});
+    ui::Attach(pReportGroup, pRow1);
+    auto* pHeaderCtrlLabel = ui::Create<ui::Label>(this, {{"text", "Header Controls:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pRow1, pHeaderCtrlLabel);
+    auto* pHeaderHide = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"group", "show"}, {"selected", "false"}, {"width", "64"}, {"height", "32"}, {"text", "Hide"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow1, pHeaderHide);
+    auto* pHeaderShow = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"group", "show"}, {"selected", "true"}, {"width", "64"}, {"height", "32"}, {"text", "Show"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow1, pHeaderShow);
+    auto* pLine1a = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "0,8,4,8"}, {"width", "2"}});
+    ui::Attach(pRow1, pLine1a);
+    auto* pDragLabel = ui::Create<ui::Label>(this, {{"text", "Drag Header to Reorder:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pRow1, pDragLabel);
+    auto* pDragForbidden = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"group", "drag_order"}, {"selected", "false"}, {"width", "64"}, {"height", "32"}, {"text", "Forbidden"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow1, pDragForbidden);
+    auto* pDragAllowed = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"group", "drag_order"}, {"selected", "true"}, {"width", "64"}, {"height", "32"}, {"text", "Allowed"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow1, pDragAllowed);
+    auto* pLine1b = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "0,8,4,8"}, {"width", "2"}});
+    ui::Attach(pRow1, pLine1b);
+    auto* pHeaderHeightLabel = ui::Create<ui::Label>(this, {{"text", "Header Height:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pRow1, pHeaderHeightLabel);
+    auto* pHeaderHeightEdit = ui::Create<ui::RichEdit>(this, {{"class", "simple simple_border rich_edit_spin"}, {"name", "header_height_edit"}, {"min_number", "0"}, {"max_number", "512"}, {"limit_text", "3"}, {"text", "0"}, {"margin", "0,2,0,0"}});
+    ui::Attach(pRow1, pHeaderHeightEdit);
+    auto* pStretchBtn = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "set_column_stretch"}, {"text", "Set Column Widths Proportionally"}, {"width", "auto"}, {"height", "30"}, {"border_round", "3,3"}, {"text_padding", "8,0,8,0"}, {"margin", "4,0,0,0"}});
+    ui::Attach(pRow1, pStretchBtn);
+
+    // Row 2: Column Controls
+    auto* pRow2 = ui::Create<ui::HBox>(this, {{"minheight", "18"}, {"bkcolor", "bk_wnd_darkcolor"}, {"height", "auto"}, {"margin", "4,0,4,0"}});
+    ui::Attach(pReportGroup, pRow2);
+    auto* pColumnLabel = ui::Create<ui::Label>(this, {{"text", "Column Controls:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pRow2, pColumnLabel);
+    auto* pColumnCombo = ui::Create<ui::Combo>(this, {{"class", "combo"}, {"name", "column_combo"}, {"combo_type", "drop_list"}, {"dropbox_size", "0,300"}, {"shadow_type", "system_default"}, {"height", "26"}, {"width", "80"}, {"margin", "0,0,0,1"}, {"valign", "center"}});
+    ui::Attach(pRow2, pColumnCombo);
+    auto* pLine2 = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "8,4,4,4"}, {"width", "2"}});
+    ui::Attach(pRow2, pLine2);
+    auto* pColShow = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_show"}, {"text", "Show This Column"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow2, pColShow);
+    auto* pColWidth = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_width"}, {"text", "Resizable Width"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow2, pColWidth);
+    auto* pColSort = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_sort"}, {"text", "Sortable"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow2, pColSort);
+    auto* pColIconTop = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_icon_at_top"}, {"text", "Sort Icon on Top"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow2, pColIconTop);
+    auto* pColDrag = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_drag_order"}, {"text", "Drag to Reorder"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow2, pColDrag);
+    auto* pColEditable = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_editable"}, {"text", "Editable Text"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow2, pColEditable);
+
+    // Row 3: Column CheckBox & Icon options
+    auto* pRow3 = ui::Create<ui::HBox>(this, {{"minheight", "18"}, {"bkcolor", "bk_wnd_darkcolor"}, {"height", "auto"}, {"margin", "4,0,4,0"}});
+    ui::Attach(pReportGroup, pRow3);
+    auto* pRow3Spacer = ui::Create<ui::Control>(this, {{"width", "153"}});
+    ui::Attach(pRow3, pRow3Spacer);
+    auto* pLine3 = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "8,2,4,2"}, {"width", "2"}});
+    ui::Attach(pRow3, pLine3);
+    auto* pColCbLabel = ui::Create<ui::Label>(this, {{"text", "Column CheckBox:"}, {"valign", "center"}, {"margin", "2,0,2,0"}, {"tooltip_text", "Each column header and cell can show a CheckBox"}});
+    ui::Attach(pRow3, pColCbLabel);
+    auto* pColHeaderCb = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_show_header_checkbox"}, {"text", "Show in Header"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow3, pColHeaderCb);
+    auto* pColShowCb = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_show_checkbox"}, {"text", "Show in Each Column"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow3, pColShowCb);
+    auto* pLine3b = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "8,2,4,2"}, {"width", "2"}});
+    ui::Attach(pRow3, pLine3b);
+    auto* pColIconLabel = ui::Create<ui::Label>(this, {{"text", "Column Icons:"}, {"valign", "center"}, {"margin", "2,0,2,0"}, {"tooltip_text", "Each column header and cell can show an icon"}});
+    ui::Attach(pRow3, pColIconLabel);
+    auto* pColHeaderIcon = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_show_header_icon"}, {"text", "Show in Header"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow3, pColHeaderIcon);
+    auto* pColShowIcon = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_column_show_icon"}, {"text", "Show in Each Column"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow3, pColShowIcon);
+
+    // Row 4: Header Text alignment + Cell Text alignment
+    auto* pRow4 = ui::Create<ui::HBox>(this, {{"minheight", "18"}, {"bkcolor", "bk_wnd_darkcolor"}, {"height", "auto"}, {"margin", "4,0,4,0"}});
+    ui::Attach(pReportGroup, pRow4);
+    auto* pRow4Spacer = ui::Create<ui::Control>(this, {{"width", "153"}});
+    ui::Attach(pRow4, pRow4Spacer);
+    auto* pLine4 = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "8,8,4,8"}, {"width", "2"}});
+    ui::Attach(pRow4, pLine4);
+    auto* pHeaderTextLabel = ui::Create<ui::Label>(this, {{"text", "Header Text:"}, {"valign", "center"}, {"margin", "6,0,2,0"}});
+    ui::Attach(pRow4, pHeaderTextLabel);
+    auto* pHeaderTextLeft = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"name", "header_text_align_left"}, {"group", "header_text_align"}, {"selected", "false"}, {"width", "64"}, {"height", "32"}, {"text", "Left"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow4, pHeaderTextLeft);
+    auto* pHeaderTextCenter = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"name", "header_text_align_center"}, {"group", "header_text_align"}, {"selected", "true"}, {"width", "64"}, {"height", "32"}, {"text", "Center"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow4, pHeaderTextCenter);
+    auto* pHeaderTextRight = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"name", "header_text_align_right"}, {"group", "header_text_align"}, {"selected", "false"}, {"width", "64"}, {"height", "32"}, {"text", "Right"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow4, pHeaderTextRight);
+    auto* pLine4b = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "8,8,4,8"}, {"width", "2"}});
+    ui::Attach(pRow4, pLine4b);
+    auto* pCellTextLabel = ui::Create<ui::Label>(this, {{"text", "Cell Text:"}, {"valign", "center"}, {"margin", "6,0,2,0"}});
+    ui::Attach(pRow4, pCellTextLabel);
+    auto* pCellTextLeft = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"name", "column_text_align_left"}, {"group", "column_text_align"}, {"selected", "true"}, {"width", "64"}, {"height", "32"}, {"text", "Left"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow4, pCellTextLeft);
+    auto* pCellTextCenter = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"name", "column_text_align_center"}, {"group", "column_text_align"}, {"selected", "false"}, {"width", "64"}, {"height", "32"}, {"text", "Center"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow4, pCellTextCenter);
+    auto* pCellTextRight = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"name", "column_text_align_right"}, {"group", "column_text_align"}, {"selected", "false"}, {"width", "64"}, {"height", "32"}, {"text", "Right"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow4, pCellTextRight);
+
+    // Row 5: Table Properties (grid lines + row height)
+    auto* pRow5 = ui::Create<ui::HBox>(this, {{"minheight", "18"}, {"bkcolor", "bk_wnd_darkcolor"}, {"height", "auto"}, {"margin", "4,0,4,0"}});
+    ui::Attach(pReportGroup, pRow5);
+    auto* pTablePropLabel = ui::Create<ui::Label>(this, {{"text", "Table Properties:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pRow5, pTablePropLabel);
+    auto* pHorGridLabel = ui::Create<ui::Label>(this, {{"text", "Horizontal Grid:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pRow5, pHorGridLabel);
+    auto* pHorGridHide = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"group", "grid_line_row"}, {"selected", "false"}, {"width", "64"}, {"height", "32"}, {"text", "Hide"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow5, pHorGridHide);
+    auto* pHorGridShow = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"group", "grid_line_row"}, {"selected", "true"}, {"width", "64"}, {"height", "32"}, {"text", "Show"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow5, pHorGridShow);
+    auto* pLine5a = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "0,8,4,8"}, {"width", "2"}});
+    ui::Attach(pRow5, pLine5a);
+    auto* pVerGridLabel = ui::Create<ui::Label>(this, {{"text", "Vertical Grid:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pRow5, pVerGridLabel);
+    auto* pVerGridHide = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"group", "grid_line_column"}, {"selected", "false"}, {"width", "64"}, {"height", "32"}, {"text", "Hide"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow5, pVerGridHide);
+    auto* pVerGridShow = ui::Create<ui::Option>(this, {{"class", "option_2"}, {"group", "grid_line_column"}, {"selected", "true"}, {"width", "64"}, {"height", "32"}, {"text", "Show"}, {"padding", "2,2,2,2"}, {"borderround", "2,2"}, {"valign", "center"}});
+    ui::Attach(pRow5, pVerGridShow);
+    auto* pLine5b = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "0,8,4,8"}, {"width", "2"}});
+    ui::Attach(pRow5, pLine5b);
+    auto* pRowHeightLabel = ui::Create<ui::Label>(this, {{"text", "Row Height:"}, {"valign", "center"}, {"margin", "2,0,2,0"}});
+    ui::Attach(pRow5, pRowHeightLabel);
+    auto* pRowHeightEdit = ui::Create<ui::RichEdit>(this, {{"class", "simple simple_border rich_edit_spin"}, {"name", "list_item_height_edit"}, {"min_number", "0"}, {"max_number", "512"}, {"limit_text", "3"}, {"text", "0"}, {"margin", "0,2,0,0"}});
+    ui::Attach(pRow5, pRowHeightEdit);
+
+    // Row 6: Row CheckBox & Icon options
+    auto* pRow6 = ui::Create<ui::HBox>(this, {{"minheight", "18"}, {"bkcolor", "bk_wnd_darkcolor"}, {"height", "auto"}, {"margin", "4,0,4,8"}});
+    ui::Attach(pReportGroup, pRow6);
+    auto* pRow6Spacer = ui::Create<ui::Control>(this, {{"width", "153"}});
+    ui::Attach(pRow6, pRow6Spacer);
+    auto* pLine6a = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "8,2,4,2"}, {"width", "2"}});
+    ui::Attach(pRow6, pLine6a);
+    auto* pRowCbLabel = ui::Create<ui::Label>(this, {{"text", "Row CheckBox:"}, {"valign", "center"}, {"margin", "2,0,2,0"}, {"tooltip_text", "Each row header and row start can show a CheckBox"}});
+    ui::Attach(pRow6, pRowCbLabel);
+    auto* pRowHeaderCb = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_show_header_checkbox"}, {"text", "Show in Header"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow6, pRowHeaderCb);
+    auto* pRowShowCb = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_show_checkbox"}, {"text", "Show at Row Start"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow6, pRowShowCb);
+    auto* pLine6b = ui::Create<ui::Line>(this, {{"vertical", "true"}, {"margin", "8,2,4,2"}, {"width", "2"}});
+    ui::Attach(pRow6, pLine6b);
+    auto* pRowIconLabel = ui::Create<ui::Label>(this, {{"text", "Row Icons:"}, {"valign", "center"}, {"margin", "2,0,2,0"}, {"tooltip_text", "Each row header and row start can show an icon"}});
+    ui::Attach(pRow6, pRowIconLabel);
+    auto* pRowShowIcon = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "checkbox_show_icon"}, {"text", "Show at Row Start"}, {"margin", "4,0,0,0"}, {"valign", "center"}});
+    ui::Attach(pRow6, pRowShowIcon);
+
+    // ==== Right panel (Other Tests) ====
+    auto* pRightPanel = ui::Create<ui::HBox>(this, {});
+    ui::Attach(pMainRow, pRightPanel);
+
+    auto* pOtherTests1 = ui::Create<ui::GroupVBox>(this, {{"text", "Other Tests"}});
+    ui::Attach(pRightPanel, pOtherTests1);
+    auto* pLoadBtn1 = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "loading_progress_btn1"}, {"text", "Loading Function Test (Progress Bar 1)"}, {"width", "200"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "20,25,10,0"}});
+    ui::Attach(pOtherTests1, pLoadBtn1);
+    auto* pLoadBtn2 = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "loading_progress_btn2"}, {"text", "Loading Function Test (Progress Bar 2)"}, {"width", "200"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "20,4,10,0"}});
+    ui::Attach(pOtherTests1, pLoadBtn2);
+    auto* pLoadBtn3 = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "loading_btn1"}, {"text", "Loading Function Test 1"}, {"width", "200"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "20,4,10,0"}});
+    ui::Attach(pOtherTests1, pLoadBtn3);
+    auto* pLoadBtn4 = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "loading_btn2"}, {"text", "Loading Function Test 2"}, {"width", "200"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "20,4,10,0"}});
+    ui::Attach(pOtherTests1, pLoadBtn4);
+
+    auto* pOtherTests2 = ui::Create<ui::GroupVBox>(this, {{"text", "Other Tests"}});
+    ui::Attach(pRightPanel, pOtherTests2);
+    auto* pLoadBtn5 = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "loading_btn3"}, {"text", "Loading Function Test 3"}, {"width", "200"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "20,25,10,0"}});
+    ui::Attach(pOtherTests2, pLoadBtn5);
+    auto* pLoadBtn6 = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "loading_btn4"}, {"text", "Loading Function Test 4"}, {"width", "200"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "20,4,10,0"}});
+    ui::Attach(pOtherTests2, pLoadBtn6);
+    auto* pLoadBtn7 = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "loading_btn5"}, {"text", "Loading Function Test 5"}, {"width", "200"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "20,4,10,0"}});
+    ui::Attach(pOtherTests2, pLoadBtn7);
+    auto* pLoadBtn8 = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "loading_btn6"}, {"text", "Loading Function Test 6"}, {"width", "200"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "20,4,10,0"}});
+    ui::Attach(pOtherTests2, pLoadBtn8);
+
+    // ---- Splitter bar ----
+    auto* pSplit = ui::Create<ui::Split>(this, {{"bkcolor", "splitline_level1"}, {"height", "2"}});
+    ui::Attach(pWorkArea, pSplit);
+
+    // ---- ListCtrl area ----
+    auto* pListCtrlBox = ui::Create<ui::VBox>(this, {{"margin", "0,0,0,0"}, {"valign", "center"}, {"halign", "center"}});
+    ui::Attach(pWorkArea, pListCtrlBox);
+    auto* pListCtrl = ui::Create<ui::ListCtrl>(this, {
+        {"name", "list_ctrl"}, {"bkcolor", "YellowGreen"},
+        {"type", "report"}, {"show_header", "true"},
+        {"header_class", "list_ctrl_header"},
+        {"header_item_class", "list_ctrl_header_item"},
+        {"header_split_box_class", "list_ctrl_header_split_box"},
+        {"header_split_control_class", "list_ctrl_header_split_control"},
+        {"header_height", "32"}, {"enable_header_drag_order", "true"},
+        {"check_box_class", "list_ctrl_checkbox"},
+        {"data_item_class", "list_ctrl_item"},
+        {"data_sub_item_class", "list_ctrl_sub_item"},
+        {"report_view_class", "list_ctrl_report_view"},
+        {"data_item_height", "46"},
+        {"row_grid_line_width", "1"}, {"row_grid_line_color", "lightgray"},
+        {"column_grid_line_width", "1"}, {"column_grid_line_color", "lightgray"},
+        {"multi_select", "true"}, {"auto_check_select", "false"},
+        {"show_header_checkbox", "true"}, {"show_data_item_checkbox", "true"},
+        {"icon_view_class", "list_ctrl_icon_view"},
+        {"icon_view_item_class", "list_ctrl_icon_view_item"},
+        {"icon_view_item_image_class", "list_ctrl_icon_view_item_image"},
+        {"icon_view_item_label_class", "list_ctrl_icon_view_item_label"},
+        {"list_view_class", "list_ctrl_list_view"},
+        {"list_view_item_class", "list_ctrl_list_view_item"},
+        {"list_view_item_image_class", "list_ctrl_list_view_item_image"},
+        {"list_view_item_label_class", "list_ctrl_list_view_item_label"},
+        {"enable_item_edit", "true"}, {"list_ctrl_richedit_class", "list_ctrl_richedit"},
+        {"loading", "file='loading_progress1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"}
+    });
+    ui::Attach(pListCtrlBox, pListCtrl);
+
+    // Final: attach root to window
+    ui::Attach(this, pRoot);
 }
 
 void MainForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
-
+    SetupWindow();
     BuildUI();
 
-    ui::ListCtrl* pListCtrl = dynamic_cast<ui::ListCtrl*>(FindControl(_T("list_ctrl")));
+    ui::ListCtrl* pListCtrl = ui::Find<ui::ListCtrl>(this, "list_ctrl");
     ASSERT(pListCtrl != nullptr);
     if (pListCtrl == nullptr) {
         return;
@@ -519,43 +314,33 @@ void MainForm::OnInitWindow()
     pIconImageList->SetImageSize(ui::UiSize(64, 64), Dpi(), true);
 
     // Add image resources
-    uint32_t imageId = pReportImageList->AddImageString(_T("file='display-color.svg' width='22' height='22'"), Dpi());
-    pListImageList->AddImageString(_T("file='display-color.svg' width='32' height='32' valign='center' halign='center'"), Dpi());
-    pIconImageList->AddImageString(_T("file='display-color.svg' width='64' height='64' valign='center' halign='center'"), Dpi());
+    uint32_t imageId = pReportImageList->AddImageString("file='display-color.svg' width='22' height='22'", Dpi());
+    pListImageList->AddImageString("file='display-color.svg' width='32' height='32' valign='center' halign='center'", Dpi());
+    pIconImageList->AddImageString("file='display-color.svg' width='64' height='64' valign='center' halign='center'", Dpi());
 
     // Fill data
     InsertItemData(400, 9, (int32_t)imageId);
 
-    // Initialize the UI events related to this program's test features
-    InitListCtrlEvents(pListCtrl);
-
-    // Event binding, test event interfaces
-    TestListCtrlEvents(pListCtrl);
-
-    // Test the loading feature
-    TestListCtrlLoading(pListCtrl);
-
-    //pListCtrl->AttachViewSizeChanged([this, pListCtrl](const ui::EventArgs& args) {
-    //    if (args.listCtrlType == (int32_t)ui::ListCtrlType::Report) {
-    //        // When the view size changes, automatically adjust the column widths
-    //        std::vector<ui::UiFixedInt> columnWidthList;
-    //        size_t nColumnCount = pListCtrl->GetColumnCount();
-    //        for (size_t nColumnIndex = 0; nColumnIndex < nColumnCount; nColumnIndex++) {
-    //            columnWidthList.push_back(ui::UiFixedInt::MakeStretch());
-    //        }
-    //        bool bRet = pListCtrl->SetColumnWidth(columnWidthList, true);
-    //        UNUSED_VARIABLE(bRet);
-    //    }        
-    //    return true;
-    //    });
-
+    BindEvents();
     BaseClass::OnInitWindow();
+}
+
+void MainForm::BindEvents()
+{
+    ui::ListCtrl* pListCtrl = ui::Find<ui::ListCtrl>(this, "list_ctrl");
+    ASSERT(pListCtrl != nullptr);
+    if (pListCtrl == nullptr) {
+        return;
+    }
+    InitListCtrlEvents(pListCtrl);
+    TestListCtrlEvents(pListCtrl);
+    TestListCtrlLoading(pListCtrl);
 }
 
 void MainForm::OnInitLayout()
 {
     // Test automatically resizing column widths proportionally
-    /*ui::ListCtrl* pListCtrl = dynamic_cast<ui::ListCtrl*>(FindControl(_T("list_ctrl")));
+    /*ui::ListCtrl* pListCtrl = ui::Find<ui::ListCtrl>(this, "list_ctrl");
     ASSERT(pListCtrl != nullptr);
     if (pListCtrl == nullptr) {
         return;
@@ -572,7 +357,7 @@ void MainForm::OnInitLayout()
 void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
 {
     // Table type
-    ui::Combo* pTypeCombo = dynamic_cast<ui::Combo*>(FindControl(_T("list_ctrl_type_combo")));
+    ui::Combo* pTypeCombo = ui::Find<ui::Combo>(this, "list_ctrl_type_combo");
     if (pTypeCombo != nullptr) {
         pTypeCombo->SetCurSel((int32_t)pListCtrl->GetListCtrlType());
         pTypeCombo->AttachSelect([this, pListCtrl, pTypeCombo](const ui::EventArgs& args) {
@@ -598,9 +383,9 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     }
 
     // Header height control
-    ui::RichEdit* pHeaderHeightEdit = dynamic_cast<ui::RichEdit*>(FindControl(_T("header_height_edit")));
+    ui::RichEdit* pHeaderHeightEdit = ui::Find<ui::RichEdit>(this, "header_height_edit");
     if (pHeaderHeightEdit != nullptr) {
-        pHeaderHeightEdit->SetText(ui::StringUtil::Printf(_T("%d"), pListCtrl->GetHeaderHeight()));
+        pHeaderHeightEdit->SetText(ui::StringUtil::Printf("%d", pListCtrl->GetHeaderHeight()));
         pHeaderHeightEdit->AttachTextChanged([this, pHeaderHeightEdit, pListCtrl](const ui::EventArgs&) {
             int32_t height = ui::StringUtil::StringToInt32(pHeaderHeightEdit->GetText());
             if (height >= 0) {
@@ -611,9 +396,9 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     }
 
     // Row height control
-    ui::RichEdit* pItemHeightEdit = dynamic_cast<ui::RichEdit*>(FindControl(_T("list_item_height_edit")));
+    ui::RichEdit* pItemHeightEdit = ui::Find<ui::RichEdit>(this, "list_item_height_edit");
     if (pItemHeightEdit != nullptr) {
-        pItemHeightEdit->SetText(ui::StringUtil::Printf(_T("%d"), pListCtrl->GetDataItemHeight()));
+        pItemHeightEdit->SetText(ui::StringUtil::Printf("%d", pListCtrl->GetDataItemHeight()));
         pItemHeightEdit->AttachTextChanged([this, pItemHeightEdit, pListCtrl](const ui::EventArgs&) {
             int32_t height = ui::StringUtil::StringToInt32(pItemHeightEdit->GetText());
             if (height >= 0) {
@@ -624,7 +409,7 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     }
 
     // Column controls
-    ui::Combo* pColumnCombo = dynamic_cast<ui::Combo*>(FindControl(_T("column_combo")));
+    ui::Combo* pColumnCombo = ui::Find<ui::Combo>(this, "column_combo");
     if (pColumnCombo != nullptr) {
         // Fill column data
         size_t nColumnCount = pListCtrl->GetColumnCount();
@@ -650,30 +435,30 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
         OnColumnChanged(pColumnCombo->GetItemData(0));
     }
 
-    ui::CheckBox* pColumnShow = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show")));
-    ui::CheckBox* pColumnWidth = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_width")));
-    ui::CheckBox* pColumnSort = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_sort")));
-    ui::CheckBox* pColumnIcon = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_icon_at_top")));
-    ui::CheckBox* pColumnDragOrder = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_drag_order")));
-    ui::CheckBox* pColumnEditable = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_editable")));
-    ui::CheckBox* pColumnHeaderCheckBox = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show_header_checkbox")));
-    ui::CheckBox* pColumnShowCheckBox = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show_checkbox")));
+    ui::CheckBox* pColumnShow = ui::Find<ui::CheckBox>(this, "checkbox_column_show");
+    ui::CheckBox* pColumnWidth = ui::Find<ui::CheckBox>(this, "checkbox_column_width");
+    ui::CheckBox* pColumnSort = ui::Find<ui::CheckBox>(this, "checkbox_column_sort");
+    ui::CheckBox* pColumnIcon = ui::Find<ui::CheckBox>(this, "checkbox_column_icon_at_top");
+    ui::CheckBox* pColumnDragOrder = ui::Find<ui::CheckBox>(this, "checkbox_column_drag_order");
+    ui::CheckBox* pColumnEditable = ui::Find<ui::CheckBox>(this, "checkbox_column_editable");
+    ui::CheckBox* pColumnHeaderCheckBox = ui::Find<ui::CheckBox>(this, "checkbox_column_show_header_checkbox");
+    ui::CheckBox* pColumnShowCheckBox = ui::Find<ui::CheckBox>(this, "checkbox_column_show_checkbox");
 
-    ui::CheckBox* pColumnHeaderIcon = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show_header_icon")));
-    ui::CheckBox* pColumnShowIcon = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show_icon")));
+    ui::CheckBox* pColumnHeaderIcon = ui::Find<ui::CheckBox>(this, "checkbox_column_show_header_icon");
+    ui::CheckBox* pColumnShowIcon = ui::Find<ui::CheckBox>(this, "checkbox_column_show_icon");
 
-    ui::Option* pColumnHeaderTextAlignLeft = dynamic_cast<ui::Option*>(FindControl(_T("header_text_align_left")));
-    ui::Option* pColumnHeaderTextAlignCenter = dynamic_cast<ui::Option*>(FindControl(_T("header_text_align_center")));
-    ui::Option* pColumnHeaderTextAlignRight = dynamic_cast<ui::Option*>(FindControl(_T("header_text_align_right")));
+    ui::Option* pColumnHeaderTextAlignLeft = ui::Find<ui::Option>(this, "header_text_align_left");
+    ui::Option* pColumnHeaderTextAlignCenter = ui::Find<ui::Option>(this, "header_text_align_center");
+    ui::Option* pColumnHeaderTextAlignRight = ui::Find<ui::Option>(this, "header_text_align_right");
 
-    ui::Option* pColumnTextAlignLeft = dynamic_cast<ui::Option*>(FindControl(_T("column_text_align_left")));
-    ui::Option* pColumnTextAlignCenter = dynamic_cast<ui::Option*>(FindControl(_T("column_text_align_center")));
-    ui::Option* pColumnTextAlignRight = dynamic_cast<ui::Option*>(FindControl(_T("column_text_align_right")));
+    ui::Option* pColumnTextAlignLeft = ui::Find<ui::Option>(this, "column_text_align_left");
+    ui::Option* pColumnTextAlignCenter = ui::Find<ui::Option>(this, "column_text_align_center");
+    ui::Option* pColumnTextAlignRight = ui::Find<ui::Option>(this, "column_text_align_right");
 
-    ui::CheckBox* pHeaderCheckBox = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_show_header_checkbox")));
-    ui::CheckBox* pShowCheckBox = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_show_checkbox")));
+    ui::CheckBox* pHeaderCheckBox = ui::Find<ui::CheckBox>(this, "checkbox_show_header_checkbox");
+    ui::CheckBox* pShowCheckBox = ui::Find<ui::CheckBox>(this, "checkbox_show_checkbox");
 
-    ui::CheckBox* pShowIcon = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_show_icon")));
+    ui::CheckBox* pShowIcon = ui::Find<ui::CheckBox>(this, "checkbox_show_icon");
 
     // Implement showing this column
     auto OnColumnShowHide = [this, pColumnCombo, pListCtrl](bool bColumnVisible) {
@@ -931,7 +716,7 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
         });
 
     // Whether multi-selection is supported
-    ui::CheckBox* pMultiSelect = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_multi_select")));
+    ui::CheckBox* pMultiSelect = ui::Find<ui::CheckBox>(this, "checkbox_multi_select");
     if (pMultiSelect != nullptr) {
         pMultiSelect->Selected(pListCtrl->IsMultiSelect(), false);
     }
@@ -940,11 +725,11 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     if (pHeaderCtrl != nullptr) {
         pHeaderCtrl->AttachRClick([this](const ui::EventArgs&) {
 #if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
-            if (::MessageBox(nullptr, _T("ListCtrlHeader RClick! Run function test?"), _T(""), MB_YESNO) == IDYES) {
+            if (::MessageBox(nullptr, "ListCtrlHeader RClick! Run function test?", "", MB_YESNO) == IDYES) {
                 RunListCtrlTest();
             }
 #else
-            ui::SystemUtil::ShowMessageBox(this, _T("Start Function Test"), _T("ListCtrlHeader RClick!"));
+            ui::SystemUtil::ShowMessageBox(this, "Start Function Test", "ListCtrlHeader RClick!");
             RunListCtrlTest();
 #endif
             return true;
@@ -952,7 +737,7 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     }
 
     // Set each column's width proportionally to fill the entire view
-    ui::Button* pAutoStretchBtn = dynamic_cast<ui::Button*>(FindControl(_T("set_column_stretch")));
+    ui::Button* pAutoStretchBtn = ui::Find<ui::Button>(this, "set_column_stretch");
     if (pAutoStretchBtn != nullptr) {
         pAutoStretchBtn->AttachClick([pListCtrl, this](const ui::EventArgs& /*args*/) {
             std::vector<ui::UiFixedInt> columnWidthList;
@@ -1019,88 +804,88 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
 void MainForm::TestListCtrlLoading(ui::ListCtrl* pListCtrl)
 {
     // Test the loading feature
-    ui::Button* pLoadingBtn = dynamic_cast<ui::Button*>(FindControl(_T("loading_progress_btn1")));
+    ui::Button* pLoadingBtn = ui::Find<ui::Button>(this, "loading_progress_btn1");
     if (pLoadingBtn != nullptr) {
         pLoadingBtn->AttachClick([pListCtrl, this](const ui::EventArgs& args) {
             if (!pListCtrl->IsLoading()) {
-                pListCtrl->SetLoadingAttribute(_T("file='loading_progress1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
+                pListCtrl->SetLoadingAttribute("file='loading_progress1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'");
                 OnTestLoadingProgress();
             }
             return true;
             });
     }
 
-    pLoadingBtn = dynamic_cast<ui::Button*>(FindControl(_T("loading_progress_btn2")));
+    pLoadingBtn = ui::Find<ui::Button>(this, "loading_progress_btn2");
     if (pLoadingBtn != nullptr) {
         pLoadingBtn->AttachClick([pListCtrl, this](const ui::EventArgs& args) {
             if (!pListCtrl->IsLoading()) {
-                pListCtrl->SetLoadingAttribute(_T("file='loading_progress2.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
+                pListCtrl->SetLoadingAttribute("file='loading_progress2.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'");
                 OnTestLoadingProgress();
             }
             return true;
             });
     }
 
-    pLoadingBtn = dynamic_cast<ui::Button*>(FindControl(_T("loading_btn1")));
+    pLoadingBtn = ui::Find<ui::Button>(this, "loading_btn1");
     if (pLoadingBtn != nullptr) {
         pLoadingBtn->AttachClick([pListCtrl, this](const ui::EventArgs& args) {
             if (!pListCtrl->IsLoading()) {
-                pListCtrl->SetLoadingAttribute(_T("file='loading1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
+                pListCtrl->SetLoadingAttribute("file='loading1.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'");
                 // In real applications, event handling can refer to the logic of OnTestLoadingProgress
                 pListCtrl->StartLoading(100, -1);
             }
             return true;
             });
     }
-    pLoadingBtn = dynamic_cast<ui::Button*>(FindControl(_T("loading_btn2")));
+    pLoadingBtn = ui::Find<ui::Button>(this, "loading_btn2");
     if (pLoadingBtn != nullptr) {
         pLoadingBtn->AttachClick([pListCtrl, this](const ui::EventArgs& args) {
             if (!pListCtrl->IsLoading()) {
-                pListCtrl->SetLoadingAttribute(_T("file='loading2.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
+                pListCtrl->SetLoadingAttribute("file='loading2.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'");
                 // In real applications, event handling can refer to the logic of OnTestLoadingProgress
                 pListCtrl->StartLoading(100, -1);
             }
             return true;
             });
     }
-    pLoadingBtn = dynamic_cast<ui::Button*>(FindControl(_T("loading_btn3")));
+    pLoadingBtn = ui::Find<ui::Button>(this, "loading_btn3");
     if (pLoadingBtn != nullptr) {
         pLoadingBtn->AttachClick([pListCtrl, this](const ui::EventArgs& args) {
             if (!pListCtrl->IsLoading()) {
-                pListCtrl->SetLoadingAttribute(_T("file='loading3.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
+                pListCtrl->SetLoadingAttribute("file='loading3.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'");
                 // In real applications, event handling can refer to the logic of OnTestLoadingProgress
                 pListCtrl->StartLoading(100, -1);
             }
             return true;
             });
     }
-    pLoadingBtn = dynamic_cast<ui::Button*>(FindControl(_T("loading_btn4")));
+    pLoadingBtn = ui::Find<ui::Button>(this, "loading_btn4");
     if (pLoadingBtn != nullptr) {
         pLoadingBtn->AttachClick([pListCtrl, this](const ui::EventArgs& args) {
             if (!pListCtrl->IsLoading()) {
-                pListCtrl->SetLoadingAttribute(_T("file='loading4.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
+                pListCtrl->SetLoadingAttribute("file='loading4.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'");
                 // In real applications, event handling can refer to the logic of OnTestLoadingProgress
                 pListCtrl->StartLoading(100, -1);
             }
             return true;
             });
     }
-    pLoadingBtn = dynamic_cast<ui::Button*>(FindControl(_T("loading_btn5")));
+    pLoadingBtn = ui::Find<ui::Button>(this, "loading_btn5");
     if (pLoadingBtn != nullptr) {
         pLoadingBtn->AttachClick([pListCtrl, this](const ui::EventArgs& args) {
             if (!pListCtrl->IsLoading()) {
-                pListCtrl->SetLoadingAttribute(_T("file='loading5.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
+                pListCtrl->SetLoadingAttribute("file='loading5.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'");
                 // In real applications, event handling can refer to the logic of OnTestLoadingProgress
                 pListCtrl->StartLoading(100, -1);
             }
             return true;
             });
     }
-    pLoadingBtn = dynamic_cast<ui::Button*>(FindControl(_T("loading_btn6")));
+    pLoadingBtn = ui::Find<ui::Button>(this, "loading_btn6");
     if (pLoadingBtn != nullptr) {
         pLoadingBtn->AttachClick([pListCtrl, this](const ui::EventArgs& args) {
             if (!pListCtrl->IsLoading()) {
-                pListCtrl->SetLoadingAttribute(_T("file='loading6.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'"));
+                pListCtrl->SetLoadingAttribute("file='loading6.xml' width='0' height='0' offset_x='-1' offset_y='-1' valign='center' halign='center' fade='255' animation_control='loading_animation' auto_stop='true'");
                 // In real applications, event handling can refer to the logic of OnTestLoadingProgress
                 pListCtrl->StartLoading(100, -1);
             }
@@ -1111,7 +896,7 @@ void MainForm::TestListCtrlLoading(ui::ListCtrl* pListCtrl)
 
 void MainForm::OnTestLoadingProgress()
 {
-    ui::ListCtrl* pListCtrl = dynamic_cast<ui::ListCtrl*>(FindControl(_T("list_ctrl")));
+    ui::ListCtrl* pListCtrl = ui::Find<ui::ListCtrl>(this, "list_ctrl");
     ASSERT(pListCtrl != nullptr);
     if (pListCtrl == nullptr) {
         return;
@@ -1191,7 +976,7 @@ void MainForm::OnTestLoadingProgress()
 
 void MainForm::OnColumnChanged(size_t nColumnId)
 {
-    ui::ListCtrl* pListCtrl = dynamic_cast<ui::ListCtrl*>(FindControl(_T("list_ctrl")));
+    ui::ListCtrl* pListCtrl = ui::Find<ui::ListCtrl>(this, "list_ctrl");
     ASSERT(pListCtrl != nullptr);
     if (pListCtrl == nullptr) {
         return;
@@ -1208,25 +993,25 @@ void MainForm::OnColumnChanged(size_t nColumnId)
     }
 
 
-    ui::CheckBox* pColumnShow = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show")));
-    ui::CheckBox* pColumnWidth = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_width")));
-    ui::CheckBox* pColumnSort = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_sort")));
-    ui::CheckBox* pColumnIcon = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_icon_at_top")));
-    ui::CheckBox* pColumnDragOrder = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_drag_order")));
-    ui::CheckBox* pColumnEditable = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_editable")));
-    ui::CheckBox* pColumnHeaderCheckBox = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show_header_checkbox")));
-    ui::CheckBox* pColumnShowCheckBox = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show_checkbox")));
+    ui::CheckBox* pColumnShow = ui::Find<ui::CheckBox>(this, "checkbox_column_show");
+    ui::CheckBox* pColumnWidth = ui::Find<ui::CheckBox>(this, "checkbox_column_width");
+    ui::CheckBox* pColumnSort = ui::Find<ui::CheckBox>(this, "checkbox_column_sort");
+    ui::CheckBox* pColumnIcon = ui::Find<ui::CheckBox>(this, "checkbox_column_icon_at_top");
+    ui::CheckBox* pColumnDragOrder = ui::Find<ui::CheckBox>(this, "checkbox_column_drag_order");
+    ui::CheckBox* pColumnEditable = ui::Find<ui::CheckBox>(this, "checkbox_column_editable");
+    ui::CheckBox* pColumnHeaderCheckBox = ui::Find<ui::CheckBox>(this, "checkbox_column_show_header_checkbox");
+    ui::CheckBox* pColumnShowCheckBox = ui::Find<ui::CheckBox>(this, "checkbox_column_show_checkbox");
 
-    ui::CheckBox* pColumnHeaderIcon = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show_header_icon")));
-    ui::CheckBox* pColumnShowIcon = dynamic_cast<ui::CheckBox*>(FindControl(_T("checkbox_column_show_icon")));
+    ui::CheckBox* pColumnHeaderIcon = ui::Find<ui::CheckBox>(this, "checkbox_column_show_header_icon");
+    ui::CheckBox* pColumnShowIcon = ui::Find<ui::CheckBox>(this, "checkbox_column_show_icon");
 
-    ui::Option* pColumnHeaderTextAlignLeft = dynamic_cast<ui::Option*>(FindControl(_T("header_text_align_left")));
-    ui::Option* pColumnHeaderTextAlignCenter = dynamic_cast<ui::Option*>(FindControl(_T("header_text_align_center")));
-    ui::Option* pColumnHeaderTextAlignRight = dynamic_cast<ui::Option*>(FindControl(_T("header_text_align_right")));
+    ui::Option* pColumnHeaderTextAlignLeft = ui::Find<ui::Option>(this, "header_text_align_left");
+    ui::Option* pColumnHeaderTextAlignCenter = ui::Find<ui::Option>(this, "header_text_align_center");
+    ui::Option* pColumnHeaderTextAlignRight = ui::Find<ui::Option>(this, "header_text_align_right");
 
-    ui::Option* pColumnTextAlignLeft = dynamic_cast<ui::Option*>(FindControl(_T("column_text_align_left")));
-    ui::Option* pColumnTextAlignCenter = dynamic_cast<ui::Option*>(FindControl(_T("column_text_align_center")));
-    ui::Option* pColumnTextAlignRight = dynamic_cast<ui::Option*>(FindControl(_T("column_text_align_right")));
+    ui::Option* pColumnTextAlignLeft = ui::Find<ui::Option>(this, "column_text_align_left");
+    ui::Option* pColumnTextAlignCenter = ui::Find<ui::Option>(this, "column_text_align_center");
+    ui::Option* pColumnTextAlignRight = ui::Find<ui::Option>(this, "column_text_align_right");
 
     ASSERT(pHeaderItem->IsColumnVisible() == pHeaderItem->IsVisible());
     pColumnShow->Selected(pHeaderItem->IsColumnVisible(), false);
@@ -1284,7 +1069,7 @@ void MainForm::OnColumnChanged(size_t nColumnId)
 
 void MainForm::InsertItemData(int32_t nRows, int32_t nColumns, int32_t nImageId)
 {
-    ui::ListCtrl* pListCtrl = dynamic_cast<ui::ListCtrl*>(FindControl(_T("list_ctrl")));
+    ui::ListCtrl* pListCtrl = ui::Find<ui::ListCtrl>(this, "list_ctrl");
     ASSERT(pListCtrl != nullptr);
     if (pListCtrl == nullptr) {
         return;
@@ -1297,7 +1082,7 @@ void MainForm::InsertItemData(int32_t nRows, int32_t nColumns, int32_t nImageId)
         ui::ListCtrlColumn columnInfo;
         columnInfo.nColumnWidth = 200;
         //columnInfo.nTextFormat = TEXT_LEFT | TEXT_VCENTER;
-        columnInfo.text = ui::StringUtil::Printf(_T("Column %d"), i);
+        columnInfo.text = ui::StringUtil::Printf("Column %d", i);
         columnInfo.bShowCheckBox = bShowCheckBox;
         columnInfo.nImageId = nImageId;
         pListCtrl->InsertColumn(-1, columnInfo);
@@ -1308,11 +1093,11 @@ void MainForm::InsertItemData(int32_t nRows, int32_t nColumns, int32_t nImageId)
     for (size_t itemIndex = 0; itemIndex < rowCount; ++itemIndex) {
         for (size_t columnIndex = 0; columnIndex < columnCount; ++columnIndex) {
             ui::ListCtrlSubItemData subItemData;
-            subItemData.text = ui::StringUtil::Printf(_T("Row %03d / Column %02d"), itemIndex, columnIndex);
+            subItemData.text = ui::StringUtil::Printf("Row %03d / Column %02d", itemIndex, columnIndex);
             subItemData.bShowCheckBox = bShowCheckBox;
             subItemData.nImageId = nImageId;
             if (columnIndex == 0) {
-                subItemData.text += _T("-test1234567890-test1234567890-test1234567890-test1234567890");
+                subItemData.text += "-test1234567890-test1234567890-test1234567890-test1234567890";
             }
             pListCtrl->SetSubItemData(itemIndex, columnIndex, subItemData);
         }
@@ -1341,7 +1126,7 @@ void MainForm::InsertItemData(int32_t nRows, int32_t nColumns, int32_t nImageId)
 
 void MainForm::RunListCtrlTest()
 {
-    ui::ListCtrl* pListCtrl = dynamic_cast<ui::ListCtrl*>(FindControl(_T("list_ctrl")));
+    ui::ListCtrl* pListCtrl = ui::Find<ui::ListCtrl>(this, "list_ctrl");
     ASSERT(pListCtrl != nullptr);
     if (pListCtrl == nullptr) {
         return;
@@ -1355,7 +1140,7 @@ void MainForm::RunListCtrlTest()
 #ifdef _DEBUG
 
     // Basic functionality tests
-    const DString text = _T("1");
+    const DString text = "1";
     ui::ListCtrlSubItemData subItemData;
     subItemData.text = text;
     const size_t nDataItemIndex = pListCtrl->AddDataItem(subItemData);
@@ -1394,7 +1179,7 @@ void MainForm::RunListCtrlTest()
     pListCtrl->SetDataItemUserData(nDataItemIndex, 0);
 
     size_t nColumnIndex = 1;
-    subItemData.text = _T("3");
+    subItemData.text = "3";
     subItemData.textColor = ui::UiColor(ui::UiColors::Crimson);
     subItemData.bkColor = ui::UiColor(ui::UiColors::BlanchedAlmond);
     subItemData.bShowCheckBox = false;
@@ -1411,9 +1196,9 @@ void MainForm::RunListCtrlTest()
     ASSERT(subItemData.nImageId == dataItem2.nImageId);
     ASSERT(subItemData.nTextFormat == dataItem2.nTextFormat);
 
-    ASSERT(pListCtrl->GetSubItemText(nDataItemIndex, nColumnIndex) == _T("3"));
+    ASSERT(pListCtrl->GetSubItemText(nDataItemIndex, nColumnIndex) == "3");
 
-    subItemData.text = _T("2");
+    subItemData.text = "2";
     nColumnIndex = 2;
     pListCtrl->SetSubItemText(nDataItemIndex, nColumnIndex, subItemData.text);
     ASSERT(pListCtrl->GetSubItemText(nDataItemIndex, nColumnIndex) == subItemData.text);
@@ -1448,10 +1233,10 @@ void MainForm::RunListCtrlTest()
     ASSERT(pListCtrl->GetSubItemImageId(nDataItemIndex, nColumnIndex) == 667);
     pListCtrl->SetSubItemImageId(nDataItemIndex, nColumnIndex, nOldValue);
 
-    subItemData.text = _T("3");
+    subItemData.text = "3";
     nColumnIndex = 0;
     pListCtrl->InsertDataItem(nDataItemIndex, subItemData);
-    ASSERT(pListCtrl->GetSubItemText(nDataItemIndex, nColumnIndex) == _T("3"));
+    ASSERT(pListCtrl->GetSubItemText(nDataItemIndex, nColumnIndex) == "3");
     //pListCtrl->DeleteDataItem(nDataItemIndex);
     //pListCtrl->DeleteAllDataItems();
 
@@ -1546,7 +1331,7 @@ void MainForm::RunListCtrlTest()
 
     ui::ListCtrlSubItemData dataItem3;
     nColumnIndex = 0;
-    dataItem3.text = _T("Test");
+    dataItem3.text = "Test";
     size_t nDataItemIndex3 = pListCtrl->AddDataItem(dataItem3);
     ASSERT(nDataItemIndex3 > 60);
     ASSERT(pListCtrl->IsDataItemSelected(60));
@@ -1729,7 +1514,7 @@ DString MainForm::GetEventDisplayInfo(const ui::EventArgs& args)
 {
     DString sInfo = ui::EventUtils::EventTypeToString(args.eventType);
     while (sInfo.size() < 24) {
-        sInfo += _T(" ");
+        sInfo += " ";
     }
     if ((args.eventType == ui::kEventSelect) ||
         (args.eventType == ui::kEventSelChanged) ||
@@ -1748,7 +1533,7 @@ DString MainForm::GetEventDisplayInfo(const ui::EventArgs& args)
         int32_t nDataColumnIndex = -1;
         ui::ListCtrlType listCtrlType = (ui::ListCtrlType)args.listCtrlType;
         if (listCtrlType == ui::ListCtrlType::Report) {
-            sInfo += _T("ListCtrlType::Report: ");
+            sInfo += "ListCtrlType::Report: ";
             ui::ListCtrlItem* pItem = nullptr;
             if ((args.eventType == ui::kEventSubItemMouseEnter) || (args.eventType == ui::kEventSubItemMouseLeave)) {
                 ui::ListCtrlSubItem* pSubItem = (ui::ListCtrlSubItem*)args.pEventData;
@@ -1775,7 +1560,7 @@ DString MainForm::GetEventDisplayInfo(const ui::EventArgs& args)
             }
         }
         else if (listCtrlType == ui::ListCtrlType::Icon) {
-            sInfo += _T("ListCtrlType::Icon: ");
+            sInfo += "ListCtrlType::Icon: ";
             ui::ListCtrlIconViewItem* pItem = (ui::ListCtrlIconViewItem*)args.pEventData;
             if (pItem != nullptr) {
                 nDataItemIndex = (int32_t)pItem->GetDataItemIndex();
@@ -1783,7 +1568,7 @@ DString MainForm::GetEventDisplayInfo(const ui::EventArgs& args)
             }
         }
         else if (listCtrlType == ui::ListCtrlType::List) {
-            sInfo += _T("ListCtrlType::List: ");
+            sInfo += "ListCtrlType::List: ";
             ui::ListCtrlListViewItem* pItem = (ui::ListCtrlListViewItem*)args.pEventData;
             if (pItem != nullptr) {
                 nDataItemIndex = (int32_t)pItem->GetDataItemIndex();
@@ -1791,7 +1576,7 @@ DString MainForm::GetEventDisplayInfo(const ui::EventArgs& args)
             }
         }
         else {
-            sInfo += _T("ListCtrl: ");
+            sInfo += "ListCtrl: ";
         }
         if (nDataItemIndex >= 0) {
             if ((args.eventType >= ui::kEventKeyBegin) && (args.eventType <= ui::kEventKeyEnd)) {
@@ -1800,39 +1585,39 @@ DString MainForm::GetEventDisplayInfo(const ui::EventArgs& args)
                 DString modifierKey;
                 if (args.vkCode != ui::VirtualKeyCode::kVK_CONTROL) {
                     if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_CONTROL)) {
-                        modifierKey += _T("Ctrl+");
+                        modifierKey += "Ctrl+";
                     }
                 }
                 if (args.vkCode != ui::VirtualKeyCode::kVK_SHIFT) {
                     if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_SHIFT)) {
-                        modifierKey += _T("Shift+");
+                        modifierKey += "Shift+";
                     }
                 }
                 if (args.vkCode != ui::VirtualKeyCode::kVK_MENU) {
                     if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_MENU)) {
-                        modifierKey += _T("Alt+");
+                        modifierKey += "Alt+";
                     }
                 }
-                sInfo += _T("<");
+                sInfo += "<";
                 sInfo += modifierKey;
                 sInfo += keyName;
-                sInfo += _T(">");
-                sInfo += _T(" ");
+                sInfo += ">";
+                sInfo += " ";
             }
             if (labelText.empty()) {
                 if (nDataColumnIndex >= 0) {
-                    sInfo += ui::StringUtil::Printf(_T("nDataItemIndex=%d, nDataColumnIndex=%d"), nDataItemIndex, nDataColumnIndex);
+                    sInfo += ui::StringUtil::Printf("nDataItemIndex=%d, nDataColumnIndex=%d", nDataItemIndex, nDataColumnIndex);
                 }
                 else {
-                    sInfo += ui::StringUtil::Printf(_T("nDataItemIndex=%d"), nDataItemIndex);
+                    sInfo += ui::StringUtil::Printf("nDataItemIndex=%d", nDataItemIndex);
                 }
             }
             else {
                 if (nDataColumnIndex >= 0) {
-                    sInfo += ui::StringUtil::Printf(_T("nDataItemIndex=%d, nDataColumnIndex=%d, LabelText='%s'"), nDataItemIndex, nDataColumnIndex, labelText.c_str());
+                    sInfo += ui::StringUtil::Printf("nDataItemIndex=%d, nDataColumnIndex=%d, LabelText='%s'", nDataItemIndex, nDataColumnIndex, labelText.c_str());
                 }
                 else {
-                    sInfo += ui::StringUtil::Printf(_T("nDataItemIndex=%d, LabelText='%s'"), nDataItemIndex, labelText.c_str());
+                    sInfo += ui::StringUtil::Printf("nDataItemIndex=%d, LabelText='%s'", nDataItemIndex, labelText.c_str());
                 }
             }
         }
@@ -1843,37 +1628,37 @@ DString MainForm::GetEventDisplayInfo(const ui::EventArgs& args)
         ui::ListCtrlType listCtrlType = (ui::ListCtrlType)args.listCtrlType;
         ui::Control* pControl = nullptr;
         if (listCtrlType == ui::ListCtrlType::Report) {
-            sInfo += _T("ListCtrlType::Report: ");
+            sInfo += "ListCtrlType::Report: ";
             ui::ListCtrlReportView* pView = (ui::ListCtrlReportView*)args.pEventData;
             pControl = dynamic_cast<ui::Control*>(pView);
         }
         else if (listCtrlType == ui::ListCtrlType::Icon) {
-            sInfo += _T("ListCtrlType::Icon: ");
+            sInfo += "ListCtrlType::Icon: ";
             ui::ListCtrlIconView* pView = (ui::ListCtrlIconView*)args.pEventData;
             pControl = dynamic_cast<ui::Control*>(pView);
         }
         else if (listCtrlType == ui::ListCtrlType::List) {
-            sInfo += _T("ListCtrlType::List: ");
+            sInfo += "ListCtrlType::List: ";
             ui::ListCtrlListView* pView = (ui::ListCtrlListView*)args.pEventData;
             pControl = dynamic_cast<ui::Control*>(pView);
         }
         ASSERT(pControl != nullptr);
         if (args.eventType == ui::kEventViewTypeChanged) {
             // Not shown
-            sInfo += _T("ViewTypeChanged");
+            sInfo += "ViewTypeChanged";
         }
         else if (args.eventType == ui::kEventViewPosChanged) {
-            sInfo += ui::StringUtil::Printf(_T("left:%d, top: %d"), pControl->GetRect().left, pControl->GetRect().top);
+            sInfo += ui::StringUtil::Printf("left:%d, top: %d", pControl->GetRect().left, pControl->GetRect().top);
         }
         else if (args.eventType == ui::kEventViewSizeChanged) {
-            sInfo += ui::StringUtil::Printf(_T("width:%d, height: %d"), pControl->GetRect().Width(), pControl->GetRect().Height());
+            sInfo += ui::StringUtil::Printf("width:%d, height: %d", pControl->GetRect().Width(), pControl->GetRect().Height());
         }
     }
     else {
         ASSERT(0);
     }
    
-    sInfo += _T("\n");
+    sInfo += "\n";
     return sInfo;
 }
 
@@ -1881,11 +1666,11 @@ DString MainForm::GetItemFilledEventDisplayInfo(const ui::EventArgs& args)
 {
     DString sInfo = ui::EventUtils::EventTypeToString(args.eventType);
     while (sInfo.size() < 32) {
-        sInfo += _T(" ");
+        sInfo += " ";
     }
 
-    sInfo += ui::StringUtil::Printf(_T("ListBoxItemIndex=%zu "), (size_t)args.wParam);
-    sInfo += ui::StringUtil::Printf(_T("DataItemIndex=%zu "), (size_t)args.lParam);
+    sInfo += ui::StringUtil::Printf("ListBoxItemIndex=%zu ", (size_t)args.wParam);
+    sInfo += ui::StringUtil::Printf("DataItemIndex=%zu ", (size_t)args.lParam);
 
     if (args.eventType == ui::kEventReportViewItemFilled) {
         ui::ListCtrlItem* pItem = (ui::ListCtrlItem*)args.pEventData;
@@ -1906,8 +1691,8 @@ DString MainForm::GetItemFilledEventDisplayInfo(const ui::EventArgs& args)
                 ASSERT(pItem->GetListBoxIndex() == (size_t)args.wParam);
                 ASSERT(pItem->GetDataItemIndex() == (size_t)args.lParam);
             }
-            sInfo += ui::StringUtil::Printf(_T("DataColumnIndex='%zu' "), pSubItem->GetDataColumnIndex());
-            sInfo += ui::StringUtil::Printf(_T("LabelText='%s' "), pSubItem->GetText().c_str());
+            sInfo += ui::StringUtil::Printf("DataColumnIndex='%zu' ", pSubItem->GetDataColumnIndex());
+            sInfo += ui::StringUtil::Printf("LabelText='%s' ", pSubItem->GetText().c_str());
         }
     }
     else if (args.eventType == ui::kEventListViewItemFilled) {
@@ -1916,7 +1701,7 @@ DString MainForm::GetItemFilledEventDisplayInfo(const ui::EventArgs& args)
         if (pItem != nullptr) {
             ASSERT(pItem->GetListBoxIndex() == (size_t)args.wParam);
             ASSERT(pItem->GetDataItemIndex() == (size_t)args.lParam);
-            sInfo += ui::StringUtil::Printf(_T("LabelText='%s'"), pItem->GetLabelText().c_str());
+            sInfo += ui::StringUtil::Printf("LabelText='%s'", pItem->GetLabelText().c_str());
         }
     }
     else if (args.eventType == ui::kEventIconViewItemFilled) {
@@ -1925,7 +1710,7 @@ DString MainForm::GetItemFilledEventDisplayInfo(const ui::EventArgs& args)
         if (pItem != nullptr) {
             ASSERT(pItem->GetListBoxIndex() == (size_t)args.wParam);
             ASSERT(pItem->GetDataItemIndex() == (size_t)args.lParam);
-            sInfo += ui::StringUtil::Printf(_T("LabelText='%s'"), pItem->GetLabelText().c_str());
+            sInfo += ui::StringUtil::Printf("LabelText='%s'", pItem->GetLabelText().c_str());
         }
     }
     return sInfo;
@@ -1955,13 +1740,13 @@ void MainForm::OnReportViewSubItemFilled(const ui::EventArgs& args)
     if (pSubItem->GetItemCount() == 0) {
         // Feature demo: dynamically add a new button
         ui::Button* pHoverButton = new ui::Button(pSubItem->GetWindow());
-        pHoverButton->SetClass(_T("btn_recycle"));
-        pHoverButton->SetAttribute(_T("width"), _T("auto"));
-        pHoverButton->SetAttribute(_T("height"), _T("auto"));
-        pHoverButton->SetAttribute(_T("halign"), _T("right"));
-        pHoverButton->SetAttribute(_T("valign"), _T("top"));
-        pHoverButton->SetAttribute(_T("margin"), _T("0,8,8,0"));
-        pHoverButton->SetToolTipText(_T("Hover Button"));
+        pHoverButton->SetClass("btn_recycle");
+        pHoverButton->SetAttribute("width", "auto");
+        pHoverButton->SetAttribute("height", "auto");
+        pHoverButton->SetAttribute("halign", "right");
+        pHoverButton->SetAttribute("valign", "top");
+        pHoverButton->SetAttribute("margin", "0,8,8,0");
+        pHoverButton->SetToolTipText("Hover Button");
 
         // Floating button
         pHoverButton->SetFloat(true);
@@ -1974,8 +1759,8 @@ void MainForm::OnReportViewSubItemFilled(const ui::EventArgs& args)
 
         // Bind events
         pHoverButton->AttachClick([this, nDataItemIndex, nDataColumnIndex](const ui::EventArgs& /*args*/){
-            DString title = _T("Hover Button Clicked");
-            DString content = ui::StringUtil::Printf(_T("DataItemIndex:%zu, DataColumnIndex:%zu"), nDataItemIndex, nDataColumnIndex);
+            DString title = "Hover Button Clicked";
+            DString content = ui::StringUtil::Printf("DataItemIndex:%zu, DataColumnIndex:%zu", nDataItemIndex, nDataColumnIndex);
             ui::SystemUtil::ShowMessageBox(this, content, title);
             return true;
             });

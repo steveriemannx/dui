@@ -22,11 +22,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window you are drawing
      * The GetSkinFile interface sets the xml description file of the window you are drawing
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
-
-    /** Window attributes corresponding to the XML version */
-    virtual void GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs) override;
+    virtual DString GetSkinFolder() override { return "tree_view"; }
+    virtual DString GetSkinFile() override { return ""; }
 
     /** Called after the window is created, allowing subclasses to do some initialization work
     */
@@ -37,8 +34,15 @@ public:
     void SelectSubPath(const ui::FilePath& filePath);
 
 private:
+    void SetupWindow();
+    void BuildUI();
+
+    /** Bind control events
+     */
+    void BindEvents();
+
     /** The content of the specified directory has been retrieved
-    * @param [in] pTreeNode the current node
+     * @param [in] pTreeNode the current node
     * @param [in] currentPath the path of the currently displayed content
     * @param [in] folderList returns the list of all subdirectories in the path directory
     * @param [in] fileList returns the list of all files in the path directory

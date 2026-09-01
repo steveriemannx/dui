@@ -1,5 +1,6 @@
 #include "FindForm.h"
 #include "MainForm.h"
+#include "dui/Utils/UiBuilder.h"
 
 FindForm::FindForm(MainForm* pMainForm):
     m_pMainForm(pMainForm),
@@ -16,20 +17,20 @@ FindForm::~FindForm()
 
 DString FindForm::GetSkinFolder()
 {
-    return _T("rich_edit");
+    return "rich_edit";
 }
 
 DString FindForm::GetSkinFile()
 {
-    return _T("find.xml");
+    return "find.xml";
 }
 
 void FindForm::OnInitWindow()
 {
-    m_pFindText = dynamic_cast<ui::RichEdit*>(FindControl(_T("btn_find_text")));
-    m_pDirectionOption = dynamic_cast<ui::Option*>(FindControl(_T("option_direction_down")));
-    m_pCaseSensitive = dynamic_cast<ui::CheckBox*>(FindControl(_T("check_box_case_sensitive")));
-    m_pMatchWholeWord = dynamic_cast<ui::CheckBox*>(FindControl(_T("check_box_match_whole_word")));
+    m_pFindText = ui::Find<ui::RichEdit>(this, "btn_find_text");
+    m_pDirectionOption = ui::Find<ui::Option>(this, "option_direction_down");
+    m_pCaseSensitive = ui::Find<ui::CheckBox>(this, "check_box_case_sensitive");
+    m_pMatchWholeWord = ui::Find<ui::CheckBox>(this, "check_box_match_whole_word");
     ASSERT(m_pFindText != nullptr);
     ASSERT(m_pDirectionOption != nullptr);
     ASSERT(m_pCaseSensitive != nullptr);
@@ -52,7 +53,13 @@ void FindForm::OnInitWindow()
         }
     }
 
-    ui::Button* pButton = dynamic_cast<ui::Button*>(FindControl(_T("btn_cancel")));
+    BindEvents();
+    BaseClass::OnInitWindow();
+}
+
+void FindForm::BindEvents()
+{
+    ui::Button* pButton = ui::Find<ui::Button>(this, "btn_cancel");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -61,7 +68,7 @@ void FindForm::OnInitWindow()
                 return true;
             });
     }
-    pButton = dynamic_cast<ui::Button*>(FindControl(_T("btn_find_next")));
+    pButton = ui::Find<ui::Button>(this, "btn_find_next");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {

@@ -15,11 +15,11 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window to be drawn
      * The GetSkinFile interface sets the xml description file of the window to be drawn
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return "controls"; }
+    virtual DString GetSkinFile() override { return ""; }
 
     /** Called after the window is created, for subclasses to do some initialization work
-    */
+     */
     virtual void OnInitWindow() override;
 
     /** Called after the window is closed, for subclasses to do some cleanup work
@@ -27,6 +27,9 @@ public:
     virtual void OnCloseWindow() override;
 
 private:
+    void SetupWindow();
+    void BuildUI();
+    void BindEvents();
 
     /** Show the menu
     * @param [in] point Display position coordinates, in screen coordinates

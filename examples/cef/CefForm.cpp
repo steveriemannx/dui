@@ -1,4 +1,5 @@
 #include "CefForm.h"
+#include "dui/Utils/UiBuilder.h"
 
 #ifdef DUI_BUILD_FOR_SDL
     #include <iostream>
@@ -42,30 +43,23 @@ void CefForm::OnInitWindow()
         }
     }
 
-    // Listen to the mouse click event
-    GetRoot()->AttachBubbledEvent(ui::kEventClick, UiBind(&CefForm::OnClicked, this, std::placeholders::_1), 0);
-
     // Find the specified control from the XML
-    m_pCefControl = dynamic_cast<ui::CefControl*>(FindControl(_T("cef_control")));
-    m_pCefControlDev = dynamic_cast<ui::CefControl*>(FindControl(_T("cef_control_dev")));
-    m_pDevToolBtn = dynamic_cast<ui::Button*>(FindControl(_T("btn_dev_tool")));
-    m_pEditUrl = dynamic_cast<ui::RichEdit*>(FindControl(_T("edit_url")));
+    m_pCefControl = ui::Find<ui::CefControl>(this, _T("cef_control"));
+    m_pCefControlDev = ui::Find<ui::CefControl>(this, _T("cef_control_dev"));
+    m_pDevToolBtn = ui::Find<ui::Button>(this, _T("btn_dev_tool"));
+    m_pEditUrl = ui::Find<ui::RichEdit>(this, _T("edit_url"));
     ASSERT(m_pDevToolBtn != nullptr);
-    //ASSERT(m_pEditUrl != nullptr);
 
     // Set the input box style
     if (m_pEditUrl != nullptr) {
         m_pEditUrl->SetSelAllOnFocus(true);
-        m_pEditUrl->AttachReturn(UiBind(&CefForm::OnNavigate, this, std::placeholders::_1));
     }
 
-    ui::Control* pControl = FindControl(_T("btn_back"));
-    if (pControl != nullptr) {
+    if (ui::Control* pControl = ui::Find<ui::Control>(this, _T("btn_back"))) {
         pControl->SetEnabled(false);
     }
 
-    pControl = FindControl(_T("btn_forward"));
-    if (pControl != nullptr) {
+    if (ui::Control* pControl = ui::Find<ui::Control>(this, _T("btn_forward"))) {
         pControl->SetEnabled(false);
     }
 
@@ -75,20 +69,43 @@ void CefForm::OnInitWindow()
             //The developer tools of m_pCefControl are displayed in the m_pCefControlDev control
             m_pCefControl->SetDevToolsView(m_pCefControlDev);
         }
-
-        //URL change event
-        m_pCefControl->AttachMainUrlChange(UiBind(&CefForm::OnMainUrlChange, this, std::placeholders::_1, std::placeholders::_2));
     }
 
-    if (m_pCefControl != nullptr) {
-        m_pCefControl->AttachDevToolAttachedStateChange(UiBind(&CefForm::OnDevToolVisibleStateChanged, this, std::placeholders::_1, std::placeholders::_2));
-    }
     if (m_pCefControlDev != nullptr) {
         m_pCefControlDev->SetFadeVisible(false);
     }
 
     //Set the callback function that controls the main process singleton
     ui::CefManager::GetInstance()->SetAlreadyRunningAppRelaunch(UiBind(&CefForm::OnAlreadyRunningAppRelaunch, this, std::placeholders::_1));
+
+#ifdef DUI_BUILD_FOR_SDL
+    //Show basic SDL information
+    DString driverName = GetVideoDriverName();
+    DString renderName = GetWindowRenderName();
+    DString logMsg = ui::StringUtil::Printf(_T("[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
+    std::cout << logMsg << std::endl;
+#endif
+
+    BindEvents();
+    BaseClass::OnInitWindow();
+}
+
+void CefForm::BindEvents()
+{
+    ui::Box* pRoot = GetRoot();
+    if (pRoot != nullptr) {
+        pRoot->AttachBubbledEvent(ui::kEventClick, UiBind(&CefForm::OnClicked, this, std::placeholders::_1), 0);
+    }
+
+    if (m_pEditUrl != nullptr) {
+        m_pEditUrl->AttachReturn(UiBind(&CefForm::OnNavigate, this, std::placeholders::_1));
+    }
+
+    if (m_pCefControl != nullptr) {
+        //URL change event
+        m_pCefControl->AttachMainUrlChange(UiBind(&CefForm::OnMainUrlChange, this, std::placeholders::_1, std::placeholders::_2));
+        m_pCefControl->AttachDevToolAttachedStateChange(UiBind(&CefForm::OnDevToolVisibleStateChanged, this, std::placeholders::_1, std::placeholders::_2));
+    }
 
     if (!ui::CefManager::GetInstance()->IsEnableOffScreenRendering()) {
         //Handle the multi-focus problem of controls (since the cef control is in child window mode, dui cannot do this by itself)
@@ -100,24 +117,15 @@ void CefForm::OnInitWindow()
     }
 
     //Fullscreen page
-    ui::Button* pFullscreenBtn = dynamic_cast<ui::Button*>(FindControl(_T("cef_full_screen_btn")));
-    if (pFullscreenBtn != nullptr) {
+    if (ui::Button* pFullscreenBtn = ui::Find<ui::Button>(this, _T("cef_full_screen_btn"))) {
         pFullscreenBtn->AttachClick([this](const ui::EventArgs&) {
-            ui::Control* pCefControl = FindControl(_T("cef_control"));
+            ui::Control* pCefControl = ui::Find<ui::Control>(this, _T("cef_control"));
             if (pCefControl != nullptr) {
                 this->SetFullscreenControl(pCefControl);
             }
             return true;
             });
     }
-
-#ifdef DUI_BUILD_FOR_SDL
-    //Show basic SDL information
-    DString driverName = GetVideoDriverName();
-    DString renderName = GetWindowRenderName();
-    DString logMsg = ui::StringUtil::Printf(_T("[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
-    std::cout << logMsg << std::endl;
-#endif
 }
 
 void CefForm::OnPreCloseWindow()
@@ -229,12 +237,25 @@ bool CefForm::OnClicked(const ui::EventArgs& msg)
 
 bool CefForm::OnNavigate(const ui::EventArgs& /*msg*/)
 {
-    if ((m_pEditUrl != nullptr) && !m_pEditUrl->GetText().empty()) {
-        if (m_pCefControl != nullptr) {
-            m_pCefControl->LoadURL(m_pEditUrl->GetText());
-            m_pCefControl->SetFocus();
-        }
+    if (m_pEditUrl == nullptr || m_pCefControl == nullptr) {
+        return true;
     }
+
+    DString url = m_pEditUrl->GetText();
+    ui::StringUtil::Trim(url);
+    if (url.empty()) {
+        return true;
+    }
+
+    // Treat a plain host name as an HTTPS URL, like a normal browser address bar.
+    if (url.find(_T("://")) == DString::npos &&
+        url.find(_T(":")) == DString::npos) {
+        url.insert(0, _T("https://"));
+    }
+
+    m_pEditUrl->SetText(url);
+    m_pCefControl->LoadURL(url);
+    m_pCefControl->SetFocus();
     return true;
 }
 
@@ -274,8 +295,7 @@ void CefForm::OnContextMenuDismissed(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
 void CefForm::OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title)
 {
     ui::GlobalManager::Instance().AssertUIThread();
-    ui::Label* pLabelTitle = dynamic_cast<ui::Label*>(FindControl(_T("page_title")));
-    if (pLabelTitle != nullptr) {
+    if (ui::Label* pLabelTitle = ui::Find<ui::Label>(this, _T("page_title"))) {
         pLabelTitle->SetText(title);
     }
 }
@@ -288,8 +308,7 @@ void CefForm::OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> fra
 void CefForm::OnMainUrlChange(const DString& oldUrl, const DString& newUrl)
 {
     ui::GlobalManager::Instance().AssertUIThread();
-    ui::RichEdit* pEditUrl = dynamic_cast<ui::RichEdit*>(FindControl(_T("edit_url")));
-    if (pEditUrl != nullptr) {
+    if (ui::RichEdit* pEditUrl = ui::Find<ui::RichEdit>(this, _T("edit_url"))) {
         pEditUrl->SetText(newUrl);
     }
 }
@@ -439,14 +458,14 @@ void CefForm::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
 void CefForm::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward)
 {
     ui::GlobalManager::Instance().AssertUIThread();
-    ui::Control* pControl = FindControl(_T("btn_back"));
-    if ((pControl != nullptr) && (m_pCefControl != nullptr)) {
-        pControl->SetEnabled(m_pCefControl->CanGoBack());
-    }
+    if (m_pCefControl != nullptr) {
+        if (ui::Control* pControl = ui::Find<ui::Control>(this, _T("btn_back"))) {
+            pControl->SetEnabled(m_pCefControl->CanGoBack());
+        }
 
-    pControl = FindControl(_T("btn_forward"));
-    if ((pControl != nullptr) && (m_pCefControl != nullptr)) {
-        pControl->SetEnabled(m_pCefControl->CanGoForward());
+        if (ui::Control* pControl = ui::Find<ui::Control>(this, _T("btn_forward"))) {
+            pControl->SetEnabled(m_pCefControl->CanGoForward());
+        }
     }
 }
     

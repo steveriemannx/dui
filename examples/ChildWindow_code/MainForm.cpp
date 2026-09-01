@@ -1,8 +1,9 @@
-﻿#include "MainForm.h"
+#include "MainForm.h"
 #include "ChildWindowPaint.h"
 #include "MyChildWindowEvents.h"
+#include "dui/Utils/UiBuilder.h"
 
-MainForm::MainForm():
+MainForm::MainForm() :
     m_pChildWindow(nullptr)
 {
 }
@@ -11,177 +12,135 @@ MainForm::~MainForm()
 {
     if (!m_childWindowEvents.empty()) {
         CloseChildWindows();
-    }    
-}
-
-DString MainForm::GetSkinFolder()
-{
-    return _T("");
-}
-
-DString MainForm::GetSkinFile()
-{
-    // Pure code mode: no layout XML is loaded
-    return _T("");
-}
-
-void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    // Match the <Window> attributes in child_window.xml:
-    // size="75%,85%", size_box/caption, shadow/layered settings.
-    ui::UiRect rcWork;
-    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = (int32_t)(rcWork.Width() * 0.85f);
-    attrs.m_szInitSize.cy = (int32_t)(rcWork.Height() * 0.90f);
-
-    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = false;
-    attrs.m_bIsLayeredWindowDefined = true;
-
-    BaseClass::GetCreateWindowAttributes(attrs);
+    }
 }
 
 void MainForm::PreInitWindow()
 {
     BaseClass::PreInitWindow();
-    //Use the GPU (Metal) render backend on macOS, matching the XML example.
     SetRenderBackendType(ui::RenderBackendType::kMetal_BackendType);
+}
+
+void MainForm::SetupWindow()
+{
+    ui::UiRect rcWork;
+    ui::WindowBase::GetPrimaryMonitorWorkRect(rcWork);
+#if defined(DUI_BUILD_FOR_MACOS)
+    SetWindowSize(static_cast<int32_t>(rcWork.Width() * 0.85f),
+                  static_cast<int32_t>(rcWork.Height() * 0.90f));
+#else
+    SetWindowSize(static_cast<int32_t>(rcWork.Width() * 0.75f),
+                  static_cast<int32_t>(rcWork.Height() * 0.85f));
+#endif
+
+    SetShadowAttached(true);
+    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+#if defined(DUI_BUILD_FOR_MACOS)
+    SetLayeredWindow(true, false);
+#else
+    SetLayeredWindow(false, false);
+#endif
+    SetEnableShadowSnap(true);
+    SetShadowBorderSize(0);
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    SetWindowIcon("public/caption/logo.ico");
+    CenterWindow();
 }
 
 void MainForm::BuildUI()
 {
-    // Corresponding to the child_window.xml layout
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
-    pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
+    auto* pRoot = ui::Create<ui::VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}, {"visible", "true"}});
 
-    // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
-    pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
-    pRoot->AddItem(pCaption);
+    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
+    ui::Attach(pRoot, pCaption);
 
-    auto* pCaptionLeft = ui::Create<ui::HBox>(this, {{_T("margin"), _T("0,0,30,0")}, {_T("valign"), _T("center")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("mouse_enabled"), _T("false")}});
-    pCaption->AddItem(pCaptionLeft);
+    auto* pCaptionLeft = ui::Create<ui::HBox>(this, {{"margin", "0,0,30,0"}, {"valign", "center"}, {"width", "auto"}, {"height", "auto"}, {"mouse_enabled", "false"}});
+    ui::Attach(pCaption, pCaptionLeft);
 
-    auto* pLogo = ui::Create<ui::Control>(this, {{_T("width"), _T("18")}, {_T("height"), _T("18")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}});
-    pLogo->SetBkImage(_T("public/caption/logo.svg"));
-    pCaptionLeft->AddItem(pLogo);
+    auto* pLogo = ui::Create<ui::Control>(this, {{"width", "18"}, {"height", "18"}, {"valign", "center"}, {"margin", "8,0,0,0"}, {"bkimage", "public/caption/logo.svg"}});
+    ui::Attach(pCaptionLeft, pLogo);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}, {_T("mouse_enabled"), _T("false")}});
-    pTitle->SetText(_T("ChildWindow Control Test Program"));
-    pCaptionLeft->AddItem(pTitle);
+    auto* pTitle = ui::Create<ui::Label>(this, {{"text", "ChildWindow Control Test Program"}, {"valign", "center"}, {"margin", "8,0,0,0"}, {"mouse_enabled", "false"}});
+    ui::Attach(pCaptionLeft, pTitle);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{_T("mouse_enabled"), _T("false")}});
-    pCaption->AddItem(pSpacer);
+    auto* pSpacer = ui::Create<ui::Control>(this, {{"mouse_enabled", "false"}});
+    ui::Attach(pCaption, pSpacer);
 
-    auto* pCaptionRight = ui::Create<ui::HBox>(this, {{_T("margin"), _T("0,0,0,0")}, {_T("valign"), _T("center")}, {_T("width"), _T("auto")}, {_T("height"), _T("36")}});
-    pCaption->AddItem(pCaptionRight);
+    auto* pCaptionRight = ui::Create<ui::HBox>(this, {{"margin", "0,0,0,0"}, {"valign", "center"}, {"width", "auto"}, {"height", "36"}});
+    ui::Attach(pCaption, pCaptionRight);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetToolTipText(_T("Minimize"));
-    pCaptionRight->AddItem(pMinBtn);
+    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_fullscreen_11"}, {"name", "fullscreenbtn"}, {"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Fullscreen, press ESC to exit fullscreen"}});
+    ui::Attach(pCaptionRight, pFullscreenBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pCaptionRight->AddItem(pMaxBox);
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_min_11"}, {"name", "minbtn"}, {"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}});
+    ui::Attach(pCaptionRight, pMinBtn);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetName(_T("maxbtn"));
-    pMaxBtn->SetToolTipText(_T("Maximize"));
-    pMaxBox->AddItem(pMaxBtn);
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    ui::Attach(pCaptionRight, pMaxBox);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetName(_T("restorebtn"));
-    pRestoreBtn->SetVisible(false);
-    pRestoreBtn->SetToolTipText(_T("Restore"));
-    pMaxBox->AddItem(pRestoreBtn);
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_max_11"}, {"name", "maxbtn"}, {"height", "32"}, {"width", "stretch"}, {"tooltip_text", "Maximize"}});
+    ui::Attach(pMaxBox, pMaxBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
-    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetToolTipText(_T("Close"));
-    pCaptionRight->AddItem(pCloseBtn);
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_restore_11"}, {"name", "restorebtn"}, {"height", "32"}, {"width", "stretch"}, {"visible", "false"}, {"tooltip_text", "Restore"}});
+    ui::Attach(pMaxBox, pRestoreBtn);
 
-    // Work area: a 3x3 GridBox holding 9 child windows (corresponding to <Include count="9"/>)
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_close_11"}, {"name", "closebtn"}, {"height", "stretch"}, {"width", "40"}, {"margin", "0,0,0,2"}, {"tooltip_text", "Close"}});
+    ui::Attach(pCaptionRight, pCloseBtn);
+
     auto* pContent = ui::Create<ui::Box>(this, {});
-    pRoot->AddItem(pContent);
+    ui::Attach(pRoot, pContent);
 
-    auto* pGridBox = ui::Create<ui::GridBox>(this, {{_T("valign"), _T("center")}, {_T("rows"), _T("3")}, {_T("columns"), _T("3")}});
-    pGridBox->SetName(_T("child_window_box"));
-    pGridBox->SetBkColor(_T("#FFF0F0F0"));
-    pContent->AddItem(pGridBox);
+    auto* pGridBox = ui::Create<ui::GridBox>(this, {{"name", "child_window_box"}, {"valign", "center"}, {"rows", "3"}, {"columns", "3"}, {"bkcolor", "#FFF0F0F0"}});
+    ui::Attach(pContent, pGridBox);
 
     for (int32_t i = 0; i < 9; ++i) {
-    auto* pChild = ui::Create<ui::ChildWindow>(this, {{_T("valign"), _T("center")}, {_T("halign"), _T("center")}, {_T("child_window_margin"), _T("12,36,12,12")}});
+        auto* pChild = ui::Create<ui::ChildWindow>(this, {{"valign", "center"}, {"halign", "center"}, {"child_window_margin", "12,36,12,12"}});
+        auto* pChildCaption = ui::Create<ui::HBox>(this, {{"padding", "12,0,0,0"}, {"valign", "top"}, {"height", "36"}});
+        ui::Attach(pChild, pChildCaption);
 
-    auto* pChildCaption = ui::Create<ui::HBox>(this, {{_T("padding"), _T("12,0,0,0")}, {_T("valign"), _T("top")}, {_T("height"), _T("36")}});
-        pChild->AddItem(pChildCaption);
+        auto* pChildName = ui::Create<ui::Label>(this, {{"name", "child_window_name"}, {"text", ui::StringUtil::Printf("ChildWindow%d", i + 1)}, {"margin", "2,0,2,0"}, {"valign", "center"}, {"mouse_enabled", "false"}});
+        ui::Attach(pChildCaption, pChildName);
 
-    auto* pChildName = ui::Create<ui::Label>(this, {{_T("margin"), _T("2,0,2,0")}, {_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}});
-        pChildName->SetName(_T("child_window_name"));
-        pChildName->SetText(ui::StringUtil::Printf(_T("ChildWindow%d"), i + 1));
-        pChildCaption->AddItem(pChildName);
+        auto* pFpsText = ui::Create<ui::Label>(this, {{"text", "Frame Rate FPS:"}, {"valign", "center"}, {"mouse_enabled", "false"}});
+        ui::Attach(pChildCaption, pFpsText);
 
-    auto* pFpsText = ui::Create<ui::Label>(this, {{_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}});
-        pFpsText->SetText(_T("Frame Rate FPS:"));
-        pChildCaption->AddItem(pFpsText);
+        auto* pFpsValue = ui::Create<ui::Label>(this, {{"name", "label_fps"}, {"text", "0000"}, {"width", "42"}, {"margin", "4,0,4,0"}, {"valign", "center"}, {"mouse_enabled", "false"}});
+        ui::Attach(pChildCaption, pFpsValue);
 
-    auto* pFpsValue = ui::Create<ui::Label>(this, {{_T("width"), _T("42")}, {_T("margin"), _T("4,0,4,0")}, {_T("valign"), _T("center")}, {_T("mouse_enabled"), _T("false")}});
-        pFpsValue->SetName(_T("label_fps"));
-        pFpsValue->SetText(_T("0000"));
-        pChildCaption->AddItem(pFpsValue);
+        auto* pFpsPaint = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "fps_paint"}, {"height", "28"}, {"width", "auto"}, {"text", "Draw"}, {"valign", "center"}, {"selected", "true"}});
+        ui::Attach(pChildCaption, pFpsPaint);
 
-    auto* pFpsPaint = ui::Create<ui::CheckBox>(this, {{_T("height"), _T("28")}, {_T("width"), _T("auto")}, {_T("valign"), _T("center")}});
-        pFpsPaint->SetClass(_T("checkbox_1"));
-        pFpsPaint->SetName(_T("fps_paint"));
-        pFpsPaint->SetText(_T("Draw"));
-        pFpsPaint->Selected(true);
-        pChildCaption->AddItem(pFpsPaint);
-
-    auto* pFullscreen = ui::Create<ui::CheckBox>(this, {{_T("height"), _T("28")}, {_T("width"), _T("auto")}, {_T("valign"), _T("center")}, {_T("margin"), _T("8,0,0,0")}});
-        pFullscreen->SetClass(_T("checkbox_1"));
-        pFullscreen->SetName(_T("child_fullscreen"));
-        pFullscreen->SetText(_T("Fullscreen"));
-        pChildCaption->AddItem(pFullscreen);
-
-        pGridBox->AddItem(pChild);
+        auto* pFullscreen = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "child_fullscreen"}, {"height", "28"}, {"width", "auto"}, {"text", "Fullscreen"}, {"valign", "center"}, {"margin", "8,0,0,0"}, {"selected", "false"}});
+        ui::Attach(pChildCaption, pFullscreen);
+        ui::Attach(pGridBox, pChild);
     }
 
-    AttachBox(pRoot);
+    ui::Attach(this, pRoot);
 }
 
+void MainForm::BindEvents()
+{
+}
 
 void MainForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
-
+    SetupWindow();
     BuildUI();
-
+    BindEvents();
     BaseClass::OnInitWindow();
-    // Create the child window and associate the handling interface
-    CreateChildWindows();
+}
+
+void MainForm::OnInitLayout()
+{
+    BaseClass::OnInitLayout();
+    if (m_childWindowEvents.empty()) {
+        CreateChildWindows();
+    }
 }
 
 void MainForm::OnPreCloseWindow()
 {
-    // Destroy the child window and remove the association
     CloseChildWindows();
     BaseClass::OnPreCloseWindow();
 }
@@ -189,7 +148,6 @@ void MainForm::OnPreCloseWindow()
 void MainForm::OnLayeredWindowChanged()
 {
     BaseClass::OnLayeredWindowChanged();
-    // Synchronize the layered window attributes to the child window
     for (MyChildWindowEvents* pChildWindowEvents : m_childWindowEvents) {
         if (pChildWindowEvents != nullptr) {
             ui::ChildWindow* pChildWindow = pChildWindowEvents->GetChildWindow();
@@ -202,15 +160,20 @@ void MainForm::OnLayeredWindowChanged()
 
 void MainForm::CreateChildWindows()
 {
-    ui::GridBox* pChildWindowBox = dynamic_cast<ui::GridBox*>(FindControl(_T("child_window_box")));
+    ui::GridBox* pChildWindowBox = ui::Find<ui::GridBox>(this, "child_window_box");
     if (pChildWindowBox != nullptr) {
         size_t nCount = pChildWindowBox->GetItemCount();
         for (size_t nItem = 0; nItem < nCount; ++nItem) {
             ui::ChildWindow* pChildWindow = dynamic_cast<ui::ChildWindow*>(pChildWindowBox->GetItemAt(nItem));
             if (pChildWindow != nullptr) {
                 MyChildWindowEvents* pMyChildWindowEvents = new MyChildWindowEvents(pChildWindow, nItem, this);
-                pChildWindow->CreateChildWindow(pMyChildWindowEvents);
-                m_childWindowEvents.push_back(pMyChildWindowEvents);
+                if (pChildWindow->CreateChildWindow(pMyChildWindowEvents)) {
+                    m_childWindowEvents.push_back(pMyChildWindowEvents);
+                    pChildWindow->InvalidateChildWindow();
+                }
+                else {
+                    delete pMyChildWindowEvents;
+                }
             }
         }
     }
@@ -224,7 +187,6 @@ void MainForm::CloseChildWindows()
         if (pChildWindowEvents != nullptr) {
             ui::ChildWindow* pChildWindow = pChildWindowEvents->GetChildWindow();
             if (pChildWindow != nullptr) {
-                // Close the child window (synchronously)
                 pChildWindow->SetChildWindowEvents(nullptr);
                 pChildWindow->CloseChildWindow();
             }
@@ -245,7 +207,6 @@ bool MainForm::PaintChildWindow(ui::ChildWindow* pChildWindow)
 
 bool MainForm::PaintNextChildWindow(ui::ChildWindow* pChildWindow)
 {
-    // Continuous drawing must be triggered in the idle function, otherwise the UI will freeze
     m_pChildWindow = pChildWindow;
     return true;
 }
@@ -255,30 +216,24 @@ bool MainForm::PaintNextChildWindow()
     return DoPaintNextChildWindow(m_pChildWindow);
 }
 
-bool MainForm::DoPaintNextChildWindow(ui::ChildWindow * pChildWindow)
+bool MainForm::DoPaintNextChildWindow(ui::ChildWindow* pChildWindow)
 {
-    if (pChildWindow == nullptr) {
-        return false;
-    }
-    if ((pChildWindow == nullptr) || m_childWindowEvents.empty()) {
+    if (pChildWindow == nullptr || m_childWindowEvents.empty()) {
         return false;
     }
     size_t nStartItemIndex = 0;
     const size_t nItemCount = m_childWindowEvents.size();
     for (size_t nItemIndex = 0; nItemIndex < nItemCount; ++nItemIndex) {
         MyChildWindowEvents* pChildWindowEvents = m_childWindowEvents[nItemIndex];
-        if ((pChildWindowEvents != nullptr) && (pChildWindowEvents->GetChildWindow() == pChildWindow)) {
+        if (pChildWindowEvents != nullptr && pChildWindowEvents->GetChildWindow() == pChildWindow) {
             nStartItemIndex = nItemIndex;
             break;
         }
     }
     for (size_t nItemIndex = nStartItemIndex + 1; nItemIndex < nItemCount; ++nItemIndex) {
         MyChildWindowEvents* pChildWindowEvents = m_childWindowEvents[nItemIndex];
-        if ((pChildWindowEvents != nullptr) &&
-            (pChildWindowEvents->GetChildWindow() != nullptr) &&
-            pChildWindowEvents->GetChildWindow()->IsVisible() &&
-            pChildWindowEvents->IsPaintFps()) {
-            // Determine the window to draw
+        if (pChildWindowEvents != nullptr && pChildWindowEvents->GetChildWindow() != nullptr &&
+            pChildWindowEvents->GetChildWindow()->IsVisible() && pChildWindowEvents->IsPaintFps()) {
             return PaintChildWindow(pChildWindowEvents->GetChildWindow());
         }
     }
@@ -287,11 +242,8 @@ bool MainForm::DoPaintNextChildWindow(ui::ChildWindow * pChildWindow)
     }
     for (size_t nItemIndex = 0; nItemIndex <= nStartItemIndex; ++nItemIndex) {
         MyChildWindowEvents* pChildWindowEvents = m_childWindowEvents[nItemIndex];
-        if ((pChildWindowEvents != nullptr) &&
-            (pChildWindowEvents->GetChildWindow() != nullptr) &&
-            pChildWindowEvents->GetChildWindow()->IsVisible() &&
-            pChildWindowEvents->IsPaintFps()) {
-            // Determine the window to draw
+        if (pChildWindowEvents != nullptr && pChildWindowEvents->GetChildWindow() != nullptr &&
+            pChildWindowEvents->GetChildWindow()->IsVisible() && pChildWindowEvents->IsPaintFps()) {
             return PaintChildWindow(pChildWindowEvents->GetChildWindow());
         }
     }

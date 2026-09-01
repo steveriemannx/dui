@@ -31,7 +31,7 @@ const DString& BrowserBox::GetTitle() const
 
 void BrowserBox::InitBrowserBox(const DString& url)
 {
-    m_pWebView2Control = static_cast<ui::WebView2Control*>(FindSubControl(_T("webview2_control")));
+    m_pWebView2Control = static_cast<ui::WebView2Control*>(FindSubControl("webview2_control"));
     ASSERT(m_pWebView2Control != nullptr);
     if (m_pWebView2Control == nullptr) {
         return;
@@ -85,7 +85,7 @@ void BrowserBox::InitBrowserBox(const DString& url)
         //Test code
         ui::GlobalManager::Instance().AssertUIThread();
         //Send a reply to the HTML page
-        m_pWebView2Control->PostWebMessageAsString(_T("Hello from C++!"));
+        m_pWebView2Control->PostWebMessageAsString("Hello from C++!");
         });
 
     //New window request callback function
@@ -118,7 +118,7 @@ void BrowserBox::InitBrowserBox(const DString& url)
             return false;
         });
 
-    m_pWebView2Control->InitializeAsync(_T(""), [this](HRESULT result) {
+    m_pWebView2Control->InitializeAsync("", [this](HRESULT result) {
         //Test code
         ui::GlobalManager::Instance().AssertUIThread();
         });
@@ -126,7 +126,7 @@ void BrowserBox::InitBrowserBox(const DString& url)
     //Navigate to the URL
     DString navigateUrl = url;
     if (navigateUrl.empty()) {
-        navigateUrl = _T("www.baidu.com");
+        navigateUrl = "www.baidu.com";
 
         ////Test JS-C++ communication
         //ui::FilePath webViewHtml = GlobalManager::GetDefaultResourcePath(true);

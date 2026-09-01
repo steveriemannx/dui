@@ -2,7 +2,7 @@
 #include "MainForm.h"
 
 WorkerThread::WorkerThread(int32_t nThreadIdentifier)
-    : FrameworkThread(_T("WorkerThread"), nThreadIdentifier),
+    : FrameworkThread("WorkerThread", nThreadIdentifier),
     m_pMainForm(nullptr)
 {
 }
@@ -14,13 +14,13 @@ WorkerThread::~WorkerThread()
 void WorkerThread::OnInit()
 {
     // Output a log
-    PrintLog(_T("WorkerThread::OnInit"));
+    PrintLog("WorkerThread::OnInit");
 }
 
 void WorkerThread::OnCleanup()
 {
     // Output a log
-    PrintLog(_T("WorkerThread::OnCleanup"));
+    PrintLog("WorkerThread::OnCleanup");
 }
 
 void WorkerThread::SetMainForm(MainForm* pMainForm)
@@ -30,7 +30,7 @@ void WorkerThread::SetMainForm(MainForm* pMainForm)
 
 void WorkerThread::PrintLog(const DString& log)
 {
-    DString logMsg = ui::StringUtil::Printf(_T("[Calling Thread ID: %s][Thread ID: %s, Thread Name: %s, Thread Identifier: %d]: %s"),
+    DString logMsg = ui::StringUtil::Printf("[Calling Thread ID: %s][Thread ID: %s, Thread Name: %s, Thread Identifier: %d]: %s",
                                             ThreadIdToString(std::this_thread::get_id()).c_str(),
                                             ThreadIdToString(GetThreadId()).c_str(),
                                             GetThreadName().c_str(),

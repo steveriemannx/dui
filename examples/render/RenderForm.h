@@ -6,16 +6,17 @@
 
 class RenderForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
-    RenderForm();
-    virtual ~RenderForm() override;
+    RenderForm() = default;
+    virtual ~RenderForm() override = default;
 
     /** Resource-related interfaces
      * The GetSkinFolder interface sets the skin resource path for the window to be drawn
      * The GetSkinFile interface sets the xml description file for the window to be drawn
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual DString GetSkinFolder() override { return "render"; }
+    virtual DString GetSkinFile() override { return "render.xml"; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */
@@ -32,6 +33,8 @@ public:
     virtual ui::Control* CreateControl(const DString& strClass) override;
 
 private:
+    void BindEvents();
+
     //Test the PropertyGrid control
     void TestPropertyGrid();
 

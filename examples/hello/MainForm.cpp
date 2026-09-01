@@ -1,34 +1,18 @@
 #include "MainForm.h"
-
-MainForm::MainForm()
-{
-}
-
-MainForm::~MainForm()
-{
-}
-
-DString MainForm::GetSkinFolder()
-{
-    return _T("hello");
-}
-
-DString MainForm::GetSkinFile()
-{
-    return _T("hello.xml");
-}
+#include "dui/Utils/UiBuilder.h"
 
 void MainForm::OnInitWindow()
 {
+    BindEvents();
     BaseClass::OnInitWindow();
+}
 
-    // Bind the click event of the "Click Me" button
-    ui::Button* pBtn = dynamic_cast<ui::Button*>(FindControl(_T("hello_btn")));
-    if (pBtn != nullptr) {
-        pBtn->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::Label* pLabel = dynamic_cast<ui::Label*>(FindControl(_T("hello_label")));
-            if (pLabel != nullptr) {
-                pLabel->SetText(_T("Hello from XML mode!"));
+void MainForm::BindEvents()
+{
+    if (auto* pButton = ui::Find<ui::Button>(this, "hello_btn")) {
+        pButton->AttachClick([this](const ui::EventArgs&) {
+            if (auto* pLabel = ui::Find<ui::Label>(this, "hello_label")) {
+                pLabel->SetText("Hello from XML mode!");
             }
             return true;
         });

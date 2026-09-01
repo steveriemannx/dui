@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<ControlForm>(_T("controls"));
+    return ui::Run<ControlForm>("controls");
 }

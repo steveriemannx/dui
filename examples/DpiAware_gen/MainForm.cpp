@@ -1,83 +1,31 @@
 //MainForm.cpp
 #include "MainForm.h"
+#include "dui/Utils/UiBuilder.h"
 #include "generated_ui.inc"  // Build-time generated pure C++ UI code (from DpiAware.xml)
-
-MainForm::MainForm()
-{
-}
-
-
-MainForm::~MainForm()
-{
-}
-
-DString MainForm::GetSkinFolder()
-{
-    return _T("dpi_aware");
-}
-
-DString MainForm::GetSkinFile()
-{
-    // No XML file - UI is generated at build time from DpiAware.xml
-    return _T("");
-}
-
-void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    // Corresponding to the <Window> attributes in DpiAware.xml
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = 800;
-    attrs.m_szInitSize.cy = 600;
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = true;
-    attrs.m_bIsLayeredWindowDefined = true;
-    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-
-    BaseClass::GetCreateWindowAttributes(attrs);
-}
-
-void MainForm::PreInitWindow()
-{
-    BaseClass::PreInitWindow();
-
-    // No layout XML is loaded, so Window::ParseWindowXml attempted to load an
-    // empty XML and reset the window resource sub-path; restore it now so image
-    // paths resolve from the "dpi_aware" folder.
-    SetResourcePath(ui::FilePath(_T("dpi_aware")));
-    SetWindowMinimumSize(ui::UiSize(80, 50), true);
-}
 
 void MainForm::OnInitWindow()
 {
-    // Use the OS-provided system shadow on all platforms.
-    SetShadowAttached(true);
-    SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
-    SetLayeredWindow(false, false);
-    SetEnableShadowSnap(true);
-    SetShadowBorderSize(0);
-
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
-
-    // Build-time generated from DpiAware.xml
-    InitDpiAware(this);
-
-    // Window initialization is complete; this form can now be initialized
+    BuildUI();
+    BindEvents();
+    BaseClass::OnInitWindow();
     UpdateUI();
+}
 
-    ui::Button* pButton = dynamic_cast<ui::Button*>(FindControl(_T("NewWindow")));
-    if (pButton != nullptr) {
+void MainForm::BuildUI()
+{
+    InitDpiAware(this);
+}
+
+void MainForm::BindEvents()
+{
+    if (auto* pButton = ui::Find<ui::Button>(this, "NewWindow")) {
         pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
             // Pop up a new window
             MainForm* window = new MainForm();
-            ui::WindowCreateParam createParam;
+            auto createParam = ui::WindowCreateParam();
             createParam.m_dwStyle = ui::kWS_POPUP | ui::kWS_VISIBLE;
             createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-            createParam.m_windowTitle = _T("DpiAware");
+            createParam.m_windowTitle = "DpiAware";
             createParam.m_bCenterWindow = true;
             window->CreateWnd(this, createParam);
             window->ShowWindow(ui::kSW_SHOW_NORMAL);
@@ -85,13 +33,11 @@ void MainForm::OnInitWindow()
             });
     }
 
-    pButton = dynamic_cast<ui::Button*>(FindControl(_T("set_display_scale_factor")));
-    if (pButton != nullptr) {
+    if (auto* pButton = ui::Find<ui::Button>(this, "set_display_scale_factor")) {
         pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
             // Change the UI display scale
-            ui::RichEdit* pRichEdit = dynamic_cast<ui::RichEdit*>(FindControl(_T("display_scale_factor")));
-            if (pRichEdit != nullptr) {
-                int32_t nNewDisplayScaleFactor = ui::StringUtil::StringToInt32(pRichEdit->GetText());
+            if (auto* pRichEdit = ui::Find<ui::RichEdit>(this, "display_scale_factor")) {
+            auto nNewDisplayScaleFactor = ui::StringUtil::StringToInt32(pRichEdit->GetText());
                 if (nNewDisplayScaleFactor > 0) {
                     this->ChangeDisplayScale((uint32_t)nNewDisplayScaleFactor);
                     UpdateUI();
@@ -101,14 +47,12 @@ void MainForm::OnInitWindow()
             });
     }
 
-    ui::Control* pGroupTest = FindControl(_T("group_box_test"));
-    if (pGroupTest != nullptr) {
+    if (auto* pGroupTest = ui::Find<ui::Control>(this, "group_box_test")) {
         pGroupTest->AttachPosChanged([this](const ui::EventArgs& /*args*/) {
             UpdateUI();
             return true;
             });
     }
-    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnWindowDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nNewScaleFactor)
@@ -119,110 +63,99 @@ void MainForm::OnWindowDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nN
 
 LRESULT MainForm::OnSizeMsg(ui::WindowSizeType sizeType, const ui::UiSize& newWindowSize, const ui::NativeMsg& nativeMsg, bool& bHandled)
 {
-    LRESULT lResult = ui::WindowImplBase::OnSizeMsg(sizeType, newWindowSize, nativeMsg, bHandled);
+    auto lResult = ui::WindowImplBase::OnSizeMsg(sizeType, newWindowSize, nativeMsg, bHandled);
     UpdateUI();
     return lResult;
 }
 
 void MainForm::UpdateUI()
 {
-    ui::Label* pLabel = dynamic_cast<ui::Label*>(FindControl(_T("dpi_awareness")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "dpi_awareness")) {
         DString text;
-        ui::DpiAwarenessMode mode = ui::GlobalManager::Instance().Dpi().GetDpiAwareness();
+        auto mode = ui::GlobalManager::Instance().Dpi().GetDpiAwareness();
         if (mode == ui::DpiAwarenessMode::kDpiUnaware) {
-            text = _T("kDpiUnaware");
+            text = "kDpiUnaware";
         }
         else if (mode == ui::DpiAwarenessMode::kSystemDpiAware) {
-            text = _T("kSystemDpiAware");
+            text = "kSystemDpiAware";
         }
         else if (mode == ui::DpiAwarenessMode::kPerMonitorDpiAware) {
-            text = _T("kPerMonitorDpiAware");
+            text = "kPerMonitorDpiAware";
         }
         else if (mode == ui::DpiAwarenessMode::kPerMonitorDpiAware_V2) {
-            text = _T("kPerMonitorDpiAware_V2");
+            text = "kPerMonitorDpiAware_V2";
         }
         pLabel->SetText(text);
     }
 
-    const ui::Control* pGroupTest = FindControl(_T("group_box_test"));
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("group_box_pos")));
-    if ((pLabel != nullptr) && (pGroupTest != nullptr)) {
-        DString text = ui::StringUtil::Printf(_T("[left: %d, top: %d]"), pGroupTest->GetRect().left, pGroupTest->GetRect().top);
-        pLabel->SetText(text);
+    const auto* pGroupTest = ui::Find<ui::Control>(this, "group_box_test");
+    if (auto* pLabel = ui::Find<ui::Label>(this, "group_box_pos")) {
+        if (pGroupTest != nullptr) {
+            auto text = ui::StringUtil::Printf("[left: %d, top: %d]", pGroupTest->GetRect().left, pGroupTest->GetRect().top);
+            pLabel->SetText(text);
+        }
     }
-    
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("primary_monitor_display_scale")));
-    if (pLabel != nullptr) {
-        uint32_t nScaleFactor = ui::GlobalManager::Instance().Dpi().GetDisplayScaleFactor();
+
+    if (auto* pLabel = ui::Find<ui::Label>(this, "primary_monitor_display_scale")) {
+        auto nScaleFactor = ui::GlobalManager::Instance().Dpi().GetDisplayScaleFactor();
         float fScale = ui::GlobalManager::Instance().Dpi().GetDisplayScale();
-        DString text = ui::StringUtil::Printf(_T("%d%% (DisplayScale: %.02f)"), nScaleFactor, fScale);
+        auto text = ui::StringUtil::Printf("%d%% (DisplayScale: %.02f)", nScaleFactor, fScale);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("window_display_scale")));
-    if (pLabel != nullptr) {
-        uint32_t nScaleFactor = Dpi().GetDisplayScaleFactor();
+    if (auto* pLabel = ui::Find<ui::Label>(this, "window_display_scale")) {
+        auto nScaleFactor = Dpi().GetDisplayScaleFactor();
         float fScale = Dpi().GetDisplayScale();
-        DString text = ui::StringUtil::Printf(_T("%d%% (DisplayScale: %.02f)"), nScaleFactor, fScale);
+        auto text = ui::StringUtil::Printf("%d%% (DisplayScale: %.02f)", nScaleFactor, fScale);
         pLabel->SetText(text);
     }
-    ui::RichEdit* pRichEdit = dynamic_cast<ui::RichEdit*>(FindControl(_T("display_scale_factor")));
-    if (pRichEdit != nullptr) {
+    if (auto* pRichEdit = ui::Find<ui::RichEdit>(this, "display_scale_factor")) {
         uint32_t nScaleFactor = Dpi().GetDisplayScaleFactor();
         pRichEdit->SetTextNumber((int64_t)nScaleFactor);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("window_size")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "window_size")) {
         ui::UiRect rcWindow;
         GetWindowRect(rcWindow);
-        DString text = ui::StringUtil::Printf(_T("W:%d, H:%d [Left:%d, Top:%d]"), rcWindow.Width(), rcWindow.Height(), rcWindow.left, rcWindow.top);
+        auto text = ui::StringUtil::Printf("W:%d, H:%d [Left:%d, Top:%d]", rcWindow.Width(), rcWindow.Height(), rcWindow.left, rcWindow.top);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("window_client_size")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "window_client_size")) {
         ui::UiRect rcClient;
         GetClientRect(rcClient);
-        DString text = ui::StringUtil::Printf(_T("W:%d, H:%d [Left:%d, Top:%d]"), rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
+        auto text = ui::StringUtil::Printf("W:%d, H:%d [Left:%d, Top:%d]", rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
         pLabel->SetText(text);
     }
 #ifdef DUI_BUILD_FOR_SDL
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowSize")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetWindowSize")) {
         int32_t w = 0;
         int32_t h = 0;
         NativeWnd()->GetWindowSize(&w, &h);
-        DString text = ui::StringUtil::Printf(_T("W:%d, H:%d"), w, h);
+        auto text = ui::StringUtil::Printf("W:%d, H:%d", w, h);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowSizeInPixels")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetWindowSizeInPixels")) {
         int32_t w = 0;
         int32_t h = 0;
         NativeWnd()->GetWindowSizeInPixels(&w, &h);
-        DString text = ui::StringUtil::Printf(_T("W:%d, H:%d"), w, h);
+        auto text = ui::StringUtil::Printf("W:%d, H:%d", w, h);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetDisplayContentScale")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetDisplayContentScale")) {
         float scale = NativeWnd()->GetDisplayContentScale();
-        DString text = ui::StringUtil::Printf(_T("%.02f"), scale);
+        auto text = ui::StringUtil::Printf("%.02f", scale);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowDisplayScale")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetWindowDisplayScale")) {
         float scale = NativeWnd()->GetWindowDisplayScale();
-        DString text = ui::StringUtil::Printf(_T("%.02f"), scale);
+        auto text = ui::StringUtil::Printf("%.02f", scale);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowPixelDensity")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetWindowPixelDensity")) {
         float scale = NativeWnd()->GetWindowPixelDensity();
-        DString text = ui::StringUtil::Printf(_T("%.02f"), scale);
+        auto text = ui::StringUtil::Printf("%.02f", scale);
         pLabel->SetText(text);
     }
 #else
-    ui::Control* pSDL = FindControl(_T("SDL"));
-    if (pSDL != nullptr) {
+    if (auto* pSDL = ui::Find<ui::Control>(this, "SDL")) {
         pSDL->SetVisible(false);
     }
 #endif

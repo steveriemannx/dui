@@ -1,8 +1,9 @@
 #include "dui/dui.h"
 #include "RenderForm.h"
+#include "embedded_resources.inc"
 #include "dui/Utils/UiBuilder.h"
 
 int main()
 {
-    return ui::Run<RenderForm>(_T("render"));
+    return ui::RunMemory<RenderForm>("Render Code Test", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

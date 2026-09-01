@@ -7,6 +7,7 @@
 class MainForm;
 class ReplaceForm : public ui::WindowImplBase
 {
+    typedef ui::WindowImplBase BaseClass;
 public:
     explicit ReplaceForm(MainForm* pMainForm);
     virtual ~ReplaceForm() override;
@@ -19,10 +20,13 @@ public:
     virtual DString GetSkinFile() override;
 
     /** Called after the window is created, allowing subclasses to do some initialization work
-    */
+     */
     virtual void OnInitWindow() override;
 
 private:
+    // Bind control events
+    void BindEvents();
+
     // Find Next
     void OnFindNext();
     // Replace

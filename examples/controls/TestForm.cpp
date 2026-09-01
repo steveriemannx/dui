@@ -11,12 +11,12 @@ TestForm::~TestForm()
 
 DString TestForm::GetSkinFolder()
 {
-    return _T("controls");
+    return "controls";
 }
 
 DString TestForm::GetSkinFile()
 {
-    return _T("test.xml");
+    return "test.xml";
 }
 
 void TestForm::OnInitWindow()
@@ -31,14 +31,14 @@ void TestForm::OnInitWindow()
 
 void TestForm::OnTimer()
 {
-    ui::Label* pLabel = dynamic_cast<ui::Label*>(FindControl(_T("progress_text")));
-    std::vector<DString> controlList = {_T("progress11"), _T("progress12"), _T("progress13"), _T("progress14"),
-                                        _T("progress21"), _T("progress22"), _T("progress23"), _T("progress24") };
+    ui::Label* pLabel = ui::Find<ui::Label>(this, "progress_text");
+    std::vector<DString> controlList = {"progress11", "progress12", "progress13", "progress14",
+                                        "progress21", "progress22", "progress23", "progress24" };
     for (const DString& name : controlList) {
-        ui::Progress* pProgress = dynamic_cast<ui::Progress*>(FindControl(name));
+        ui::Progress* pProgress = ui::Find<ui::Progress>(this, name);
         if (pProgress != nullptr) {
             if (pLabel != nullptr) {
-                pLabel->SetText(ui::StringUtil::Printf(_T("%d%%"), (int32_t)m_nProgressValue));                
+                pLabel->SetText(ui::StringUtil::Printf("%d%%", (int32_t)m_nProgressValue));                
             }
             pProgress->SetValue(m_nProgressValue);
         }

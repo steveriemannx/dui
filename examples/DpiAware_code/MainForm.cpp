@@ -1,319 +1,223 @@
 ﻿//MainForm.cpp
 #include "MainForm.h"
+#include "dui/Utils/UiBuilder.h"
 
-MainForm::MainForm()
+void MainForm::SetupWindow()
 {
-}
-
-
-MainForm::~MainForm()
-{
-}
-
-DString MainForm::GetSkinFolder()
-{
-    return _T("");
-}
-
-DString MainForm::GetSkinFile()
-{
-    // Pure code mode: no layout XML is loaded
-    return _T("");
-}
-
-void MainForm::PreInitWindow()
-{
-    BaseClass::PreInitWindow();
-
-    // No layout XML is loaded, so Window::ParseWindowXml cannot establish the
-    // window resource sub-path; set it explicitly so image paths resolve from
-    // the "dpi_aware" folder.
-    SetResourcePath(ui::FilePath(_T("dpi_aware")));
-    SetWindowMinimumSize(ui::UiSize(80, 50), true);
-}
-
-void MainForm::GetCreateWindowAttributes(ui::WindowCreateAttributes& attrs)
-{
-    // Corresponding to the <Window> attributes in DpiAware.xml
-    attrs.m_bInitSizeDefined = true;
-    attrs.m_szInitSize.cx = 800;
-    attrs.m_szInitSize.cy = 600;
-    attrs.m_bShadowAttached = true;
-    attrs.m_bShadowAttachedDefined = true;
-    attrs.m_bIsLayeredWindow = true;
-    attrs.m_bIsLayeredWindowDefined = true;
-    attrs.m_rcSizeBox = ui::UiRect(4, 4, 4, 4);
-    attrs.m_bSizeBoxDefined = true;
-    attrs.m_rcCaption = ui::UiRect(0, 0, 0, 36);
-    attrs.m_bCaptionDefined = true;
-
-    BaseClass::GetCreateWindowAttributes(attrs);
-}
-
-void MainForm::BuildUI()
-{
-    // Corresponding to the DpiAware.xml layout
-    auto* pRoot = ui::Create<ui::VBox>(this, {});
-    pRoot->SetBkColor(_T("bk_wnd_darkcolor"));
-
-    // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{_T("name"), _T("window_caption_bar")}, {_T("width"), _T("stretch")}, {_T("height"), _T("36")}});
-    pCaption->SetBkColor(_T("bk_wnd_lightcolor"));
-    pRoot->AddItem(pCaption);
-
-    auto* pTitle = ui::Create<ui::Label>(this, {{_T("width"), _T("100%")}, {_T("height"), _T("100%")}, {_T("mouse_enabled"), _T("false")}, {_T("text_padding"), _T("10,0,0,0")}, {_T("text_align"), _T("vcenter")}});
-    pTitle->SetName(_T("title"));
-    pCaption->AddItem(pTitle);
-
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pMinBtn->SetClass(_T("btn_wnd_min_11"));
-    pMinBtn->SetName(_T("minbtn"));
-    pMinBtn->SetToolTipText(_T("Minimize"));
-    pCaption->AddItem(pMinBtn);
-
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,2,0,2")}});
-    pCaption->AddItem(pMaxBox);
-
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pMaxBtn->SetClass(_T("btn_wnd_max_11"));
-    pMaxBtn->SetName(_T("maxbtn"));
-    pMaxBtn->SetToolTipText(_T("Maximize"));
-    pMaxBox->AddItem(pMaxBtn);
-
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("stretch")}});
-    pRestoreBtn->SetClass(_T("btn_wnd_restore_11"));
-    pRestoreBtn->SetName(_T("restorebtn"));
-    pRestoreBtn->SetVisible(false);
-    pRestoreBtn->SetToolTipText(_T("Restore"));
-    pMaxBox->AddItem(pRestoreBtn);
-
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("stretch")}, {_T("width"), _T("40")}, {_T("margin"), _T("0,0,0,2")}});
-    pCloseBtn->SetClass(_T("btn_wnd_close_11"));
-    pCloseBtn->SetName(_T("closebtn"));
-    pCloseBtn->SetToolTipText(_T("Close"));
-    pCaption->AddItem(pCloseBtn);
-
-    // Work area
-    auto* pContent = ui::Create<ui::Box>(this, {});
-    pRoot->AddItem(pContent);
-
-    auto* pGroupBox = ui::Create<ui::GroupVBox>(this, {{_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("width"), _T("640")}, {_T("height"), _T("auto")}});
-    pGroupBox->SetName(_T("group_box_test"));
-    pContent->AddItem(pGroupBox);
-
-    // Title row
-    auto* pRow1 = ui::Create<ui::HBox>(this, {{_T("height"), _T("40")}, {_T("width"), _T("100%")}, {_T("valign"), _T("center")}, {_T("child_halign"), _T("center")}});
-    pGroupBox->AddItem(pRow1);
-
-    auto* pLabel = ui::Create<ui::Label>(this, {{_T("height"), _T("40")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("right,vcenter")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("100%")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("100%")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("100%")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}, {_T("height"), _T("32")}, {_T("valign"), _T("center")}, {_T("text_align"), _T("left,vcenter")}, {_T("margin"), _T("4,0,0,0")}});
-    pLabel->SetText(_T("DPI-Aware Application Example (High-DPI Support)"));
-    pRow1->AddItem(pLabel);
-
-    auto* pGroupPos = ui::Create<ui::Label>(this, {{_T("height"), _T("40")}, {_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}});
-    pGroupPos->SetName(_T("group_box_pos"));
-    pGroupPos->SetText(_T("[left: 0, top: 0]"));
-    pRow1->AddItem(pGroupPos);
-
-    // DPI awareness mode row
-    auto* pRow2 = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}, {_T("width"), _T("100%")}, {_T("valign"), _T("center")}, {_T("padding"), _T("20,0,0,0")}});
-    pGroupBox->AddItem(pRow2);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetText(_T("Current process DPI awareness mode:"));
-    pRow2->AddItem(pLabel);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetName(_T("dpi_awareness"));
-    pLabel->SetText(_T("PROCESS_DPI_UNAWARE"));
-    pRow2->AddItem(pLabel);
-
-    // Primary display scale row
-    auto* pRow3 = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}, {_T("width"), _T("100%")}, {_T("valign"), _T("center")}, {_T("padding"), _T("20,0,0,0")}});
-    pGroupBox->AddItem(pRow3);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetText(_T("Primary monitor display scale:"));
-    pRow3->AddItem(pLabel);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetName(_T("primary_monitor_display_scale"));
-    pLabel->SetText(_T("200%"));
-    pRow3->AddItem(pLabel);
-
-    // Window scale row
-    auto* pRow4 = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}, {_T("width"), _T("100%")}, {_T("valign"), _T("center")}, {_T("padding"), _T("20,0,0,0")}});
-    pGroupBox->AddItem(pRow4);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetText(_T("Current window UI scale:"));
-    pRow4->AddItem(pLabel);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetName(_T("window_display_scale"));
-    pLabel->SetText(_T("200%"));
-    pRow4->AddItem(pLabel);
-
-    // Window position and size
-    auto* pSizeVBox = ui::Create<ui::VBox>(this, {{_T("height"), _T("auto")}, {_T("width"), _T("100%")}, {_T("valign"), _T("center")}, {_T("padding"), _T("20,0,0,0")}});
-    pGroupBox->AddItem(pSizeVBox);
-
-    auto* pRow5 = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
-    pSizeVBox->AddItem(pRow5);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetText(_T("Current Window Position and Size:"));
-    pRow5->AddItem(pLabel);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetName(_T("window_size"));
-    pLabel->SetText(_T("L:0,T:0,W:0,H:0"));
-    pRow5->AddItem(pLabel);
-
-    auto* pRow6 = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
-    pSizeVBox->AddItem(pRow6);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetText(_T("Current Window Client Size:"));
-    pRow6->AddItem(pLabel);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetName(_T("window_client_size"));
-    pLabel->SetText(_T("L:0,T:0,W:0,H:0"));
-    pRow6->AddItem(pLabel);
-
-    // SDL info area
-    auto* pSDLVBox = ui::Create<ui::VBox>(this, {{_T("height"), _T("auto")}, {_T("width"), _T("100%")}, {_T("valign"), _T("center")}, {_T("padding"), _T("20,0,0,0")}, {_T("margin"), _T("0,4,0,0")}});
-    pSDLVBox->SetName(_T("SDL"));
-    pGroupBox->AddItem(pSDLVBox);
-
-    struct SdlRow { DString name; DString label; DString init; };
-    const SdlRow sdlRows[] = {
-        { _T("SDL_GetWindowSize"), _T("SDL_GetWindowSize："), _T("W:0,H:0") },
-        { _T("SDL_GetWindowSizeInPixels"), _T("SDL_GetWindowSizeInPixels："), _T("W:0,H:0") },
-        { _T("SDL_GetDisplayContentScale"), _T("SDL_GetDisplayContentScale："), _T("0") },
-        { _T("SDL_GetWindowDisplayScale"), _T("SDL_GetWindowDisplayScale："), _T("0") },
-        { _T("SDL_GetWindowPixelDensity"), _T("SDL_GetWindowPixelDensity："), _T("0") },
-    };
-    for (const auto& row : sdlRows) {
-    auto* pSdlRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
-        pSDLVBox->AddItem(pSdlRow);
-
-    auto* pSdlLabel = ui::Create<ui::Label>(this, {{_T("width"), _T("300")}, {_T("text_align"), _T("right,vcenter")}});
-        pSdlLabel->SetText(row.label);
-        pSdlRow->AddItem(pSdlLabel);
-
-    auto* pSdlValue = ui::Create<ui::Label>(this, {{_T("width"), _T("auto")}, {_T("text_align"), _T("left,vcenter")}});
-        pSdlValue->SetName(row.name);
-        pSdlValue->SetText(row.init);
-        pSdlRow->AddItem(pSdlValue);
-    }
-
-    // Rich text area
-    auto* pRichRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}, {_T("width"), _T("100%")}, {_T("valign"), _T("center")}, {_T("margin"), _T("0,8,0,8")}});
-    pGroupBox->AddItem(pRichRow);
-
-    auto* pRichText = ui::Create<ui::RichText>(this, {{_T("row_spacing_mul"), _T("1.5")}, {_T("width"), _T("100%")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,0,4,0")}});
-    pRichText->SetClass(_T("rich_text"));
-    pRichText->SetBkColor(_T("green"));
-    pRichRow->AddItem(pRichText);
-
-    // Rich text content (corresponding to the <RichText> content in DpiAware.xml)
-    ui::WindowBuilder::ParseRichTextXmlText(_T("<RichText>")
-        _T("RichText text: <b>bold, <font color=\"#FF0000\">bold red, </font></b>")
-        _T("<font face=\"Microsoft YaHei\" size=\"16\">Microsoft YaHei 16pt demo, </font>")
-        _T("<font face=\"Microsoft YaHei\" size=\"14\">Microsoft YaHei 14pt demo, </font>")
-        _T("<font face=\"Microsoft YaHei\" size=\"12\">Microsoft YaHei 12pt demo, </font>")
-        _T("<font face=\"Microsoft YaHei\" size=\"10\">Microsoft YaHei 10pt demo, </font>")
-        _T("<font face=\"Microsoft YaHei\" size=\"8\">Microsoft YaHei 8pt demo, </font>")
-        _T("<i>italic demo, </i><b>bold demo, </b><s>strikethrough demo, </s><u>underline demo</u>")
-        _T("</RichText>"), pRichText);
-
-    // Scale adjustment row
-    auto* pScaleRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}});
-    pGroupBox->AddItem(pScaleRow);
-
-    auto* pLeftCol = ui::Create<ui::VBox>(this, {{_T("height"), _T("auto")}});
-    pScaleRow->AddItem(pLeftCol);
-
-    auto* pScaleInner = ui::Create<ui::HBox>(this, {{_T("height"), _T("auto")}, {_T("valign"), _T("center")}});
-    pLeftCol->AddItem(pScaleInner);
-
-    pLabel = new ui::Label(this);
-    pLabel->SetText(_T("Adjust window UI scale (60-500):"));
-    pScaleInner->AddItem(pLabel);
-
-    auto* pScaleEdit = ui::Create<ui::RichEdit>(this, {{_T("text"), _T("")}, {_T("number"), _T("true")}, {_T("height"), _T("32")}, {_T("width"), _T("60")}, {_T("max_char"), _T("4")}, {_T("min_number"), _T("0")}, {_T("max_number"), _T("500")}, {_T("valign"), _T("center")}, {_T("text_align"), _T("hcenter,vcenter")}, {_T("margin"), _T("1,0,4,0")}});
-    pScaleEdit->SetClass(_T("simple simple_border"));
-    pScaleEdit->SetName(_T("display_scale_factor"));
-    pScaleEdit->SetBkColor(_T("white"));
-    pScaleInner->AddItem(pScaleEdit);
-
-    auto* pSetScaleBtn = ui::Create<ui::Button>(this, {{_T("height"), _T("32")}, {_T("width"), _T("auto")}, {_T("valign"), _T("center")}, {_T("text_padding"), _T("10,0,10,0")}});
-    pSetScaleBtn->SetClass(_T("btn_global_blue_80x30"));
-    pSetScaleBtn->SetName(_T("set_display_scale_factor"));
-    pSetScaleBtn->SetText(_T("Change Display Scale"));
-    pScaleInner->AddItem(pSetScaleBtn);
-
-    auto* pNewWndRow = ui::Create<ui::HBox>(this, {{_T("height"), _T("40")}, {_T("valign"), _T("center")}, {_T("halign"), _T("center")}, {_T("margin"), _T("160,40,1,1")}, {_T("child_halign"), _T("left")}});
-    pLeftCol->AddItem(pNewWndRow);
-
-    auto* pNewWndBtn = ui::Create<ui::Button>(this, {{_T("width"), _T("auto")}, {_T("text_padding"), _T("10,0,10,0")}});
-    pNewWndBtn->SetClass(_T("btn_global_blue_80x30"));
-    pNewWndBtn->SetName(_T("NewWindow"));
-    pNewWndBtn->SetText(_T("Create New Window"));
-    pNewWndRow->AddItem(pNewWndBtn);
-
-    // Right-side image
-    auto* pRightCol = ui::Create<ui::VBox>(this, {{_T("border_size"), _T("1")}, {_T("border_color"), _T("blue")}, {_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("margin"), _T("4,4,4,4")}});
-    pScaleRow->AddItem(pRightCol);
-
-    auto* pImage = ui::Create<ui::Control>(this, {{_T("width"), _T("auto")}, {_T("height"), _T("auto")}, {_T("halign"), _T("center")}, {_T("valign"), _T("center")}, {_T("margin"), _T("2,2,2,2")}, {_T("border_size"), _T("1")}, {_T("border_color"), _T("red")}});
-    pImage->SetBkImage(_T("autumn.png"));
-    pRightCol->AddItem(pImage);
-
-    AttachBox(pRoot);
-}
-
-void MainForm::OnInitWindow()
-{
-    // Use the OS-provided system shadow on all platforms.
+    SetWindowSize(800, 600);
+    CenterWindow();
+    SetWindowMinimumSize(ui::UiSize(240, 100), true);
     SetShadowAttached(true);
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
+    SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+    SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+    SetWindowIcon("public/caption/logo.ico");
+}
 
-    SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
-    SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
+void MainForm::BuildUI()
+{
+    // Corresponding to the DpiAware.xml layout
+    auto* pRoot = ui::Create<ui::VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}, {"visible", "true"}});
 
+    // Title bar area
+    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
+    ui::Attach(pRoot, pCaption);
+
+    auto* pSpacer = ui::Create<ui::Control>(this, {{"mouse_enabled", "false"}});
+    ui::Attach(pCaption, pSpacer);
+
+    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_fullscreen_11"}, {"name", "fullscreenbtn"}, {"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Fullscreen, press ESC to exit fullscreen"}});
+    ui::Attach(pCaption, pFullscreenBtn);
+
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_min_11"}, {"name", "minbtn"}, {"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}});
+    ui::Attach(pCaption, pMinBtn);
+
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    ui::Attach(pCaption, pMaxBox);
+
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_max_11"}, {"name", "maxbtn"}, {"height", "32"}, {"width", "stretch"}, {"tooltip_text", "Maximize"}});
+    ui::Attach(pMaxBox, pMaxBtn);
+
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_restore_11"}, {"name", "restorebtn"}, {"height", "32"}, {"width", "stretch"}, {"visible", "false"}, {"tooltip_text", "Restore"}});
+    ui::Attach(pMaxBox, pRestoreBtn);
+
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_close_11"}, {"name", "closebtn"}, {"height", "stretch"}, {"width", "40"}, {"margin", "0,0,0,2"}, {"tooltip_text", "Close"}});
+    ui::Attach(pCaption, pCloseBtn);
+
+    // Work area
+    auto* pContent = ui::Create<ui::Box>(this, {});
+    ui::Attach(pRoot, pContent);
+
+    auto* pGroupBox = ui::Create<ui::GroupVBox>(this, {{"name", "group_box_test"}, {"halign", "center"}, {"valign", "center"}, {"width", "640"}, {"height", "auto"}});
+    ui::Attach(pContent, pGroupBox);
+
+    // Title row
+    auto* pRow1 = ui::Create<ui::HBox>(this, {{"height", "40"}, {"width", "100%"}, {"valign", "center"}, {"child_halign", "center"}});
+    ui::Attach(pGroupBox, pRow1);
+
+    auto* pLabel = ui::Create<ui::Label>(this, {{"height", "32"}, {"width", "auto"}, {"valign", "center"}, {"text_align", "left,vcenter"}, {"text", "DPI-Aware Application Example (High-DPI Support)"}, {"margin", "4,0,0,0"}});
+    ui::Attach(pRow1, pLabel);
+
+    auto* pGroupPos = ui::Create<ui::Label>(this, {{"name", "group_box_pos"}, {"text", "[left: 0, top: 0]"}, {"height", "40"}, {"width", "auto"}, {"text_align", "left,vcenter"}});
+    ui::Attach(pRow1, pGroupPos);
+
+    // DPI awareness mode row
+    auto* pRow2 = ui::Create<ui::HBox>(this, {{"height", "auto"}, {"width", "100%"}, {"valign", "center"}, {"padding", "20,0,0,0"}});
+    ui::Attach(pGroupBox, pRow2);
+
+    pLabel = ui::Create<ui::Label>(this, {{"text", "Current process DPI awareness mode:"}});
+    ui::Attach(pRow2, pLabel);
+
+    pLabel = ui::Create<ui::Label>(this, {{"name", "dpi_awareness"}, {"text", "PROCESS_DPI_UNAWARE"}});
+    ui::Attach(pRow2, pLabel);
+
+    // Primary display scale row
+    auto* pRow3 = ui::Create<ui::HBox>(this, {{"height", "auto"}, {"width", "100%"}, {"valign", "center"}, {"padding", "20,0,0,0"}});
+    ui::Attach(pGroupBox, pRow3);
+
+    pLabel = ui::Create<ui::Label>(this, {{"text", "Primary monitor display scale:"}});
+    ui::Attach(pRow3, pLabel);
+
+    pLabel = ui::Create<ui::Label>(this, {{"name", "primary_monitor_display_scale"}, {"text", "200%"}});
+    ui::Attach(pRow3, pLabel);
+
+    // Window scale row
+    auto* pRow4 = ui::Create<ui::HBox>(this, {{"height", "auto"}, {"width", "100%"}, {"valign", "center"}, {"padding", "20,0,0,0"}});
+    ui::Attach(pGroupBox, pRow4);
+
+    pLabel = ui::Create<ui::Label>(this, {{"text", "Current window UI scale:"}});
+    ui::Attach(pRow4, pLabel);
+
+    pLabel = ui::Create<ui::Label>(this, {{"name", "window_display_scale"}, {"text", "200%"}});
+    ui::Attach(pRow4, pLabel);
+
+    // Window position and size
+    auto* pSizeVBox = ui::Create<ui::VBox>(this, {{"height", "auto"}, {"width", "100%"}, {"valign", "center"}, {"padding", "20,0,0,0"}});
+    ui::Attach(pGroupBox, pSizeVBox);
+
+    auto* pRow5 = ui::Create<ui::HBox>(this, {{"height", "auto"}});
+    ui::Attach(pSizeVBox, pRow5);
+
+    pLabel = ui::Create<ui::Label>(this, {{"text", "Current Window Position and Size:"}});
+    ui::Attach(pRow5, pLabel);
+
+    pLabel = ui::Create<ui::Label>(this, {{"name", "window_size"}, {"text", "L:0,T:0,W:0,H:0"}});
+    ui::Attach(pRow5, pLabel);
+
+    auto* pRow6 = ui::Create<ui::HBox>(this, {{"height", "auto"}});
+    ui::Attach(pSizeVBox, pRow6);
+
+    pLabel = ui::Create<ui::Label>(this, {{"text", "Current Window Client Size:"}});
+    ui::Attach(pRow6, pLabel);
+
+    pLabel = ui::Create<ui::Label>(this, {{"name", "window_client_size"}, {"text", "L:0,T:0,W:0,H:0"}});
+    ui::Attach(pRow6, pLabel);
+
+    // SDL info area
+    auto* pSDLVBox = ui::Create<ui::VBox>(this, {{"name", "SDL"}, {"height", "auto"}, {"width", "100%"}, {"valign", "center"}, {"padding", "20,0,0,0"}, {"margin", "0,4,0,0"}});
+    ui::Attach(pGroupBox, pSDLVBox);
+
+    struct SdlRow { DString name; DString label; DString init; };
+    const SdlRow sdlRows[] = {
+        { "SDL_GetWindowSize", "SDL_GetWindowSize：", "W:0,H:0" },
+        { "SDL_GetWindowSizeInPixels", "SDL_GetWindowSizeInPixels：", "W:0,H:0" },
+        { "SDL_GetDisplayContentScale", "SDL_GetDisplayContentScale：", "0" },
+        { "SDL_GetWindowDisplayScale", "SDL_GetWindowDisplayScale：", "0" },
+        { "SDL_GetWindowPixelDensity", "SDL_GetWindowPixelDensity：", "0" },
+    };
+    for (const auto& row : sdlRows) {
+    auto* pSdlRow = ui::Create<ui::HBox>(this, {{"height", "auto"}});
+        ui::Attach(pSDLVBox, pSdlRow);
+
+        auto* pSdlLabel = ui::Create<ui::Label>(this, {{"width", "300"}, {"text_align", "right,vcenter"}, {"text", row.label}});
+        ui::Attach(pSdlRow, pSdlLabel);
+
+        auto* pSdlValue = ui::Create<ui::Label>(this, {{"name", row.name}, {"text", row.init}, {"width", "auto"}, {"text_align", "left,vcenter"}});
+        ui::Attach(pSdlRow, pSdlValue);
+    }
+
+    // Rich text area
+    auto* pRichRow = ui::Create<ui::HBox>(this, {{"height", "auto"}, {"width", "100%"}, {"valign", "center"}, {"margin", "0,8,0,8"}});
+    ui::Attach(pGroupBox, pRichRow);
+
+    auto* pRichText = ui::Create<ui::RichText>(this, {{"class", "rich_text"}, {"bkcolor", "green"}, {"row_spacing_mul", "1.5"}, {"width", "100%"}, {"height", "auto"}, {"margin", "4,0,4,0"}});
+    ui::Attach(pRichRow, pRichText);
+
+    // Rich text content (corresponding to the <RichText> content in DpiAware.xml)
+    ui::WindowBuilder::ParseRichTextXmlText("<RichText>"
+        "RichText text: <b>bold, <font color=\"#FF0000\">bold red, </font></b>"
+        "<font face=\"Microsoft YaHei\" size=\"16\">Microsoft YaHei 16pt demo, </font>"
+        "<font face=\"Microsoft YaHei\" size=\"14\">Microsoft YaHei 14pt demo, </font>"
+        "<font face=\"Microsoft YaHei\" size=\"12\">Microsoft YaHei 12pt demo, </font>"
+        "<font face=\"Microsoft YaHei\" size=\"10\">Microsoft YaHei 10pt demo, </font>"
+        "<font face=\"Microsoft YaHei\" size=\"8\">Microsoft YaHei 8pt demo, </font>"
+        "<i>italic demo, </i><b>bold demo, </b><s>strikethrough demo, </s><u>underline demo</u>"
+        "</RichText>", pRichText);
+
+    // Scale adjustment row
+    auto* pScaleRow = ui::Create<ui::HBox>(this, {{"height", "auto"}});
+    ui::Attach(pGroupBox, pScaleRow);
+
+    auto* pLeftCol = ui::Create<ui::VBox>(this, {{"height", "auto"}});
+    ui::Attach(pScaleRow, pLeftCol);
+
+    auto* pScaleInner = ui::Create<ui::HBox>(this, {{"height", "auto"}, {"valign", "center"}});
+    ui::Attach(pLeftCol, pScaleInner);
+
+    pLabel = ui::Create<ui::Label>(this, {{"text", "Adjust window UI scale (60-500):"}});
+    ui::Attach(pScaleInner, pLabel);
+
+    auto* pScaleEdit = ui::Create<ui::RichEdit>(this, {{"class", "simple simple_border"}, {"name", "display_scale_factor"}, {"bkcolor", "white"}, {"text", ""}, {"number", "true"}, {"height", "32"}, {"width", "60"}, {"max_char", "4"}, {"min_number", "0"}, {"max_number", "500"}, {"valign", "center"}, {"text_align", "hcenter,vcenter"}, {"margin", "1,0,4,0"}});
+    ui::Attach(pScaleInner, pScaleEdit);
+
+    auto* pSetScaleBtn = ui::Create<ui::Button>(this, {{"class", "btn_global_blue_80x30"}, {"name", "set_display_scale_factor"}, {"text", "Change Display Scale"}, {"height", "32"}, {"width", "auto"}, {"valign", "center"}, {"text_padding", "10,0,10,0"}});
+    ui::Attach(pScaleInner, pSetScaleBtn);
+
+    auto* pNewWndRow = ui::Create<ui::HBox>(this, {{"height", "40"}, {"valign", "center"}, {"halign", "center"}, {"margin", "160,40,1,1"}, {"child_halign", "left"}});
+    ui::Attach(pLeftCol, pNewWndRow);
+
+    auto* pNewWndBtn = ui::Create<ui::Button>(this, {{"class", "btn_global_blue_80x30"}, {"name", "NewWindow"}, {"text", "Create New Window"}, {"width", "auto"}, {"text_padding", "10,0,10,0"}});
+    ui::Attach(pNewWndRow, pNewWndBtn);
+
+    // Right-side image
+    auto* pRightCol = ui::Create<ui::VBox>(this, {{"border_size", "1"}, {"border_color", "blue"}, {"width", "auto"}, {"height", "auto"}, {"margin", "4,4,4,4"}});
+    ui::Attach(pScaleRow, pRightCol);
+
+    auto* pImage = ui::Create<ui::Control>(this, {{"bkimage", "autumn.png"}, {"width", "auto"}, {"height", "auto"}, {"halign", "center"}, {"valign", "center"}, {"margin", "2,2,2,2"}, {"border_size", "1"}, {"border_color", "red"}});
+    ui::Attach(pRightCol, pImage);
+
+    ui::Attach(this, pRoot);
+}
+
+void MainForm::OnInitWindow()
+{
+    SetupWindow();
     BuildUI();
-
-    // Window initialization is complete; this form can now be initialized
+    BindEvents();
+    BaseClass::OnInitWindow();
     UpdateUI();
+}
 
-    ui::Button* pButton = dynamic_cast<ui::Button*>(FindControl(_T("NewWindow")));
-    if (pButton != nullptr) {
+void MainForm::BindEvents()
+{
+    if (auto* pButton = ui::Find<ui::Button>(this, "NewWindow")) {
         pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
             // Pop up a new window
             MainForm* window = new MainForm();
-            ui::WindowCreateParam createParam;
-            createParam.m_dwStyle = ui::kWS_POPUP | ui::kWS_VISIBLE;
-            createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-            createParam.m_windowTitle = _T("DpiAware");
-            createParam.m_bCenterWindow = true;
-            window->CreateWnd(this, createParam);
+            window->CreateWnd(this, ui::WindowCreateParam("DpiAware", true));
             window->ShowWindow(ui::kSW_SHOW_NORMAL);
             return true;
             });
     }
 
-    pButton = dynamic_cast<ui::Button*>(FindControl(_T("set_display_scale_factor")));
-    if (pButton != nullptr) {
+    if (auto* pButton = ui::Find<ui::Button>(this, "set_display_scale_factor")) {
         pButton->AttachClick([this](const ui::EventArgs& /*args*/) {
             // Change the UI display scale
-            ui::RichEdit* pRichEdit = dynamic_cast<ui::RichEdit*>(FindControl(_T("display_scale_factor")));
-            if (pRichEdit != nullptr) {
-                int32_t nNewDisplayScaleFactor = ui::StringUtil::StringToInt32(pRichEdit->GetText());
+            if (auto* pRichEdit = ui::Find<ui::RichEdit>(this, "display_scale_factor")) {
+            auto nNewDisplayScaleFactor = ui::StringUtil::StringToInt32(pRichEdit->GetText());
                 if (nNewDisplayScaleFactor > 0) {
                     this->ChangeDisplayScale((uint32_t)nNewDisplayScaleFactor);
                     UpdateUI();
@@ -323,15 +227,12 @@ void MainForm::OnInitWindow()
             });
     }
 
-    ui::Control* pGroupTest = FindControl(_T("group_box_test"));
-    if (pGroupTest != nullptr) {
+    if (auto* pGroupTest = ui::Find<ui::Control>(this, "group_box_test")) {
         pGroupTest->AttachPosChanged([this](const ui::EventArgs& /*args*/) {
             UpdateUI();
             return true;
             });
     }
-
-    BaseClass::OnInitWindow();
 }
 
 void MainForm::OnWindowDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nNewScaleFactor)
@@ -342,110 +243,99 @@ void MainForm::OnWindowDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nN
 
 LRESULT MainForm::OnSizeMsg(ui::WindowSizeType sizeType, const ui::UiSize& newWindowSize, const ui::NativeMsg& nativeMsg, bool& bHandled)
 {
-    LRESULT lResult = ui::WindowImplBase::OnSizeMsg(sizeType, newWindowSize, nativeMsg, bHandled);
+    auto lResult = ui::WindowImplBase::OnSizeMsg(sizeType, newWindowSize, nativeMsg, bHandled);
     UpdateUI();
     return lResult;
 }
 
 void MainForm::UpdateUI()
 {
-    ui::Label* pLabel = dynamic_cast<ui::Label*>(FindControl(_T("dpi_awareness")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "dpi_awareness")) {
         DString text;
-        ui::DpiAwarenessMode mode = ui::GlobalManager::Instance().Dpi().GetDpiAwareness();
+        auto mode = ui::GlobalManager::Instance().Dpi().GetDpiAwareness();
         if (mode == ui::DpiAwarenessMode::kDpiUnaware) {
-            text = _T("kDpiUnaware");
+            text = "kDpiUnaware";
         }
         else if (mode == ui::DpiAwarenessMode::kSystemDpiAware) {
-            text = _T("kSystemDpiAware");
+            text = "kSystemDpiAware";
         }
         else if (mode == ui::DpiAwarenessMode::kPerMonitorDpiAware) {
-            text = _T("kPerMonitorDpiAware");
+            text = "kPerMonitorDpiAware";
         }
         else if (mode == ui::DpiAwarenessMode::kPerMonitorDpiAware_V2) {
-            text = _T("kPerMonitorDpiAware_V2");
+            text = "kPerMonitorDpiAware_V2";
         }
         pLabel->SetText(text);
     }
 
-    const ui::Control* pGroupTest = FindControl(_T("group_box_test"));
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("group_box_pos")));
-    if ((pLabel != nullptr) && (pGroupTest != nullptr)) {
-        DString text = ui::StringUtil::Printf(_T("[left: %d, top: %d]"), pGroupTest->GetRect().left, pGroupTest->GetRect().top);
-        pLabel->SetText(text);
+    const auto* pGroupTest = ui::Find<ui::Control>(this, "group_box_test");
+    if (auto* pLabel = ui::Find<ui::Label>(this, "group_box_pos")) {
+        if (pGroupTest != nullptr) {
+            auto text = ui::StringUtil::Printf("[left: %d, top: %d]", pGroupTest->GetRect().left, pGroupTest->GetRect().top);
+            pLabel->SetText(text);
+        }
     }
 
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("primary_monitor_display_scale")));
-    if (pLabel != nullptr) {
-        uint32_t nScaleFactor = ui::GlobalManager::Instance().Dpi().GetDisplayScaleFactor();
+    if (auto* pLabel = ui::Find<ui::Label>(this, "primary_monitor_display_scale")) {
+        auto nScaleFactor = ui::GlobalManager::Instance().Dpi().GetDisplayScaleFactor();
         float fScale = ui::GlobalManager::Instance().Dpi().GetDisplayScale();
-        DString text = ui::StringUtil::Printf(_T("%d%% (DisplayScale: %.02f)"), nScaleFactor, fScale);
+        auto text = ui::StringUtil::Printf("%d%% (DisplayScale: %.02f)", nScaleFactor, fScale);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("window_display_scale")));
-    if (pLabel != nullptr) {
-        uint32_t nScaleFactor = Dpi().GetDisplayScaleFactor();
+    if (auto* pLabel = ui::Find<ui::Label>(this, "window_display_scale")) {
+        auto nScaleFactor = Dpi().GetDisplayScaleFactor();
         float fScale = Dpi().GetDisplayScale();
-        DString text = ui::StringUtil::Printf(_T("%d%% (DisplayScale: %.02f)"), nScaleFactor, fScale);
+        auto text = ui::StringUtil::Printf("%d%% (DisplayScale: %.02f)", nScaleFactor, fScale);
         pLabel->SetText(text);
     }
-    ui::RichEdit* pRichEdit = dynamic_cast<ui::RichEdit*>(FindControl(_T("display_scale_factor")));
-    if (pRichEdit != nullptr) {
-        uint32_t nScaleFactor = Dpi().GetDisplayScaleFactor();
+    if (auto* pRichEdit = ui::Find<ui::RichEdit>(this, "display_scale_factor")) {
+        auto nScaleFactor = Dpi().GetDisplayScaleFactor();
         pRichEdit->SetTextNumber((int64_t)nScaleFactor);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("window_size")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "window_size")) {
         ui::UiRect rcWindow;
         GetWindowRect(rcWindow);
-        DString text = ui::StringUtil::Printf(_T("W:%d, H:%d [Left:%d, Top:%d]"), rcWindow.Width(), rcWindow.Height(), rcWindow.left, rcWindow.top);
+        auto text = ui::StringUtil::Printf("W:%d, H:%d [Left:%d, Top:%d]", rcWindow.Width(), rcWindow.Height(), rcWindow.left, rcWindow.top);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("window_client_size")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "window_client_size")) {
         ui::UiRect rcClient;
         GetClientRect(rcClient);
-        DString text = ui::StringUtil::Printf(_T("W:%d, H:%d [Left:%d, Top:%d]"), rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
+        auto text = ui::StringUtil::Printf("W:%d, H:%d [Left:%d, Top:%d]", rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
         pLabel->SetText(text);
     }
 #ifdef DUI_BUILD_FOR_SDL
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowSize")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetWindowSize")) {
         int32_t w = 0;
         int32_t h = 0;
         NativeWnd()->GetWindowSize(&w, &h);
-        DString text = ui::StringUtil::Printf(_T("W:%d, H:%d"), w, h);
+        auto text = ui::StringUtil::Printf("W:%d, H:%d", w, h);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowSizeInPixels")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetWindowSizeInPixels")) {
         int32_t w = 0;
         int32_t h = 0;
         NativeWnd()->GetWindowSizeInPixels(&w, &h);
-        DString text = ui::StringUtil::Printf(_T("W:%d, H:%d"), w, h);
+        auto text = ui::StringUtil::Printf("W:%d, H:%d", w, h);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetDisplayContentScale")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetDisplayContentScale")) {
         float scale = NativeWnd()->GetDisplayContentScale();
-        DString text = ui::StringUtil::Printf(_T("%.02f"), scale);
+        auto text = ui::StringUtil::Printf("%.02f", scale);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowDisplayScale")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetWindowDisplayScale")) {
         float scale = NativeWnd()->GetWindowDisplayScale();
-        DString text = ui::StringUtil::Printf(_T("%.02f"), scale);
+        auto text = ui::StringUtil::Printf("%.02f", scale);
         pLabel->SetText(text);
     }
-    pLabel = dynamic_cast<ui::Label*>(FindControl(_T("SDL_GetWindowPixelDensity")));
-    if (pLabel != nullptr) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, "SDL_GetWindowPixelDensity")) {
         float scale = NativeWnd()->GetWindowPixelDensity();
-        DString text = ui::StringUtil::Printf(_T("%.02f"), scale);
+        auto text = ui::StringUtil::Printf("%.02f", scale);
         pLabel->SetText(text);
     }
 #else
-    ui::Control* pSDL = FindControl(_T("SDL"));
-    if (pSDL != nullptr) {
+    if (auto* pSDL = ui::Find<ui::Control>(this, "SDL")) {
         pSDL->SetVisible(false);
     }
 #endif
