@@ -1486,10 +1486,12 @@ if (!IsVisible() || !IsEnabled() || !IsFocused() ){
         inputRect.bottom = inputRect.top;
 
         pWindow->NativeWnd()->SetTextInputArea(&inputRect, 0);
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
         // Resolve the initial position to the actual DOM caret. This is
         // asynchronous, but avoids keeping the whole input element as the
         // IME anchor after the first focus event.
         QueryImeCaretFromJS();
+#endif
     }
     else {
         pWindow->NativeWnd()->SetTextInputArea(nullptr, 0);
