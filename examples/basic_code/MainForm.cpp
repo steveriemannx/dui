@@ -27,27 +27,27 @@ void MainForm::SetupWindow()
     SetSysMenuRect(ui::UiRect(0, 0, 36, 36), true);
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
-    SetWindowIcon("public/caption/logo.ico");
+    SetWindowIcon(DUI_T("public/caption/logo.ico"));
 }
 
 void MainForm::BuildUI()
 {
     auto* pRoot = ui::Create<ui::VBox>(this, {
-        {"bkcolor", "bk_wnd_darkcolor"},
-        {"visible", "true"}
+        {DUI_T("bkcolor"), DUI_T("bk_wnd_darkcolor")},
+        {DUI_T("visible"), DUI_T("true")}
     });
 
     // Title bar area
     auto* pCaption = ui::Create<ui::HBox>(this, {
-        {"name", "window_caption_bar"},
-        {"width", "stretch"},
-        {"height", "36"},
-        {"bkcolor", "bk_wnd_lightcolor"}
+        {DUI_T("name"), DUI_T("window_caption_bar")},
+        {DUI_T("width"), DUI_T("stretch")},
+        {DUI_T("height"), DUI_T("36")},
+        {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}
     });
     ui::Attach(pRoot, pCaption);
 
     auto* pSpacer = ui::Create<ui::Control>(this, {
-        {"mouse_enabled", "false"}
+        {DUI_T("mouse_enabled"), DUI_T("false")}
     });
     ui::Attach(pCaption, pSpacer);
 
@@ -56,17 +56,17 @@ void MainForm::BuildUI()
     ui::Attach(pRoot, pContent);
 
     auto* pCenter = ui::Create<ui::VBox>(this, {
-        {"valign", "center"},
-        {"halign", "center"}
+        {DUI_T("valign"), DUI_T("center")},
+        {DUI_T("halign"), DUI_T("center")}
     });
     ui::Attach(pContent, pCenter);
 
     auto* pLabel = ui::Create<ui::Label>(this, {
-        {"name", "tooltip"},
-        {"text", "A simple window with a title bar and standard buttons."},
-        {"height", "100%"},
-        {"width", "100%"},
-        {"text_align", "hcenter,vcenter"}
+        {DUI_T("name"), DUI_T("tooltip")},
+        {DUI_T("text"), DUI_T("A simple window with a title bar and standard buttons.")},
+        {DUI_T("height"), DUI_T("100%")},
+        {DUI_T("width"), DUI_T("100%")},
+        {DUI_T("text_align"), DUI_T("hcenter,vcenter")}
     });
     ui::Attach(pCenter, pLabel);
 

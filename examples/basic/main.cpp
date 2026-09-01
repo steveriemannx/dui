@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<MainForm>("Basic");
+    return ui::Run<MainForm>(DUI_T("Basic"));
 }
