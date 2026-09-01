@@ -39,8 +39,8 @@ See [docs/ThreeModes.md](docs/ThreeModes.md) for details.
 | :---          | :--- |
 | src / include | Library source code / public header files |
 | examples      | Example programs (each with `_code` / `_gen` variants; see the three development modes) |
-| bin           | Build output: example programs; `resources/` and `resources.zip` are synced from the repo-root `resources/` at configure time |
-| resources     | Theme resources: `fonts/`, `lang/`, `themes/` (synced into `bin/` at configure time; `resources.zip` is generated) |
+| bin           | Build output: example programs |
+| resources     | Theme resources: `fonts/`, `lang/`, `themes/` |
 | cmake         | Common CMake configuration |
 | msvc          | Windows VC project property sheets |
 | scripts       | Build scripts and Visual Studio solutions |

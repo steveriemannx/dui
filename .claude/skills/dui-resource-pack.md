@@ -1,6 +1,6 @@
 ---
 name: dui-resource-pack
-description: dui resource packaging and deployment (ZIP packaging, embedding into the executable, single-file release); configure how resources are loaded
+description: dui resource deployment and custom binary embedding; configure how resources are loaded
 ---
 
 # Resource Packaging and Deployment in dui
@@ -101,4 +101,4 @@ resources/
 | macOS | Local files / custom embedded binary |
 | FreeBSD | Local files / custom embedded binary |
 
-The custom binary archive is platform-independent and can be embedded in any executable. A ZIP may still be used as an external distribution wrapper, but dui does not read ZIP files at runtime.
+The custom binary archive is platform-independent and can be embedded in any executable. ZIP resources are not supported.

@@ -83,8 +83,8 @@ Library path: \`${DUI_ROOT}\`
 ### Resource rules (IMPORTANT)
 - MUST copy: \`global.xml\` + \`public/\` (shared icons) + your app's own skin directory
 - NEVER copy demo directories (basic/, controls/, layout/, chat/, cef/, render/, etc.)
-- NEVER copy bin/*.exe, bin/*.dll, bin/bin.zip
-- Resource packaging: local files (dev) / ZIP file (release) / embedded EXE (Windows single-file)
+- NEVER copy bin/*.exe, bin/*.dll
+- Resource packaging: local files or custom binary data embedded in the executable
 
 ### Key patterns
 - Window class extends \`ui::WindowImplBase\`, override \`GetSkinFolder()\`/\`GetSkinFile()\`/\`OnInitWindow()\`
