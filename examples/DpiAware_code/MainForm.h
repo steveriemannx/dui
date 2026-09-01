@@ -17,12 +17,12 @@ public:
     /**  Called when the window is created; implemented by subclasses to get the window skin directory
      * @return The subclass must implement and return the window skin directory
      */
-    virtual DString GetSkinFolder() override { return "dpi_aware"; }
+    virtual DString GetSkinFolder() override { return _T("dpi_aware"); }
 
     /**  Called when the window is created; implemented by subclasses to get the window skin XML description file
      * @return The subclass must implement and return the window skin XML description file
      */
-    virtual DString GetSkinFile() override { return ""; }
+    virtual DString GetSkinFile() override { return _T(""); }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */

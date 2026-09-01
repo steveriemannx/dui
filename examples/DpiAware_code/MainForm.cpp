@@ -254,16 +254,16 @@ void MainForm::UpdateUI()
         DString text;
         auto mode = ui::GlobalManager::Instance().Dpi().GetDpiAwareness();
         if (mode == ui::DpiAwarenessMode::kDpiUnaware) {
-            text = "kDpiUnaware";
+            text = _T("kDpiUnaware");
         }
         else if (mode == ui::DpiAwarenessMode::kSystemDpiAware) {
-            text = "kSystemDpiAware";
+            text = _T("kSystemDpiAware");
         }
         else if (mode == ui::DpiAwarenessMode::kPerMonitorDpiAware) {
-            text = "kPerMonitorDpiAware";
+            text = _T("kPerMonitorDpiAware");
         }
         else if (mode == ui::DpiAwarenessMode::kPerMonitorDpiAware_V2) {
-            text = "kPerMonitorDpiAware_V2";
+            text = _T("kPerMonitorDpiAware_V2");
         }
         pLabel->SetText(text);
     }
@@ -271,7 +271,7 @@ void MainForm::UpdateUI()
     const auto* pGroupTest = ui::Find<ui::Control>(this, "group_box_test");
     if (auto* pLabel = ui::Find<ui::Label>(this, "group_box_pos")) {
         if (pGroupTest != nullptr) {
-            auto text = ui::StringUtil::Printf("[left: %d, top: %d]", pGroupTest->GetRect().left, pGroupTest->GetRect().top);
+            auto text = ui::StringUtil::Printf(_T("[left: %d, top: %d]"), pGroupTest->GetRect().left, pGroupTest->GetRect().top);
             pLabel->SetText(text);
         }
     }
@@ -279,13 +279,13 @@ void MainForm::UpdateUI()
     if (auto* pLabel = ui::Find<ui::Label>(this, "primary_monitor_display_scale")) {
         auto nScaleFactor = ui::GlobalManager::Instance().Dpi().GetDisplayScaleFactor();
         float fScale = ui::GlobalManager::Instance().Dpi().GetDisplayScale();
-        auto text = ui::StringUtil::Printf("%d%% (DisplayScale: %.02f)", nScaleFactor, fScale);
+        auto text = ui::StringUtil::Printf(_T("%d%% (DisplayScale: %.02f)"), nScaleFactor, fScale);
         pLabel->SetText(text);
     }
     if (auto* pLabel = ui::Find<ui::Label>(this, "window_display_scale")) {
         auto nScaleFactor = Dpi().GetDisplayScaleFactor();
         float fScale = Dpi().GetDisplayScale();
-        auto text = ui::StringUtil::Printf("%d%% (DisplayScale: %.02f)", nScaleFactor, fScale);
+        auto text = ui::StringUtil::Printf(_T("%d%% (DisplayScale: %.02f)"), nScaleFactor, fScale);
         pLabel->SetText(text);
     }
     if (auto* pRichEdit = ui::Find<ui::RichEdit>(this, "display_scale_factor")) {
@@ -295,13 +295,13 @@ void MainForm::UpdateUI()
     if (auto* pLabel = ui::Find<ui::Label>(this, "window_size")) {
         ui::UiRect rcWindow;
         GetWindowRect(rcWindow);
-        auto text = ui::StringUtil::Printf("W:%d, H:%d [Left:%d, Top:%d]", rcWindow.Width(), rcWindow.Height(), rcWindow.left, rcWindow.top);
+        auto text = ui::StringUtil::Printf(_T("W:%d, H:%d [Left:%d, Top:%d]"), rcWindow.Width(), rcWindow.Height(), rcWindow.left, rcWindow.top);
         pLabel->SetText(text);
     }
     if (auto* pLabel = ui::Find<ui::Label>(this, "window_client_size")) {
         ui::UiRect rcClient;
         GetClientRect(rcClient);
-        auto text = ui::StringUtil::Printf("W:%d, H:%d [Left:%d, Top:%d]", rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
+        auto text = ui::StringUtil::Printf(_T("W:%d, H:%d [Left:%d, Top:%d]"), rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
         pLabel->SetText(text);
     }
 #ifdef DUI_BUILD_FOR_SDL
