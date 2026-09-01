@@ -10,7 +10,7 @@ Usage:
 Extraction targets (strings shown to users / literals):
   - XML:  any attribute value containing CJK (text, tooltip_text, prompttext, ...)
   - XML:  element text content containing CJK (RichText etc.)
-  - C++:  _T("...") / L"..." / "..." literals containing CJK
+  - C++:  DUI_T("...") / L"..." / "..." literals containing CJK
 Excluded (kept as-is):
   - bin/resources/lang/zh_CN.txt (language pack)
   - MultiLang/MultiLang.xml and global.xml text_id mechanism is runtime-switched,
@@ -74,9 +74,9 @@ def extract_from_xml(text):
 
 def extract_from_code(text):
     found = []
-    # _T("...") with CJK (single-line only; no newlines inside)
-    for m in re.finditer(r'_T\("((?:[^"\\\n]|\\.)*[一-鿿](?:[^"\\\n]|\\.)*)"\)', text):
-        found.append(('code', '_T', m.group(1)))
+    # DUI_T("...") with CJK (single-line only; no newlines inside)
+    for m in re.finditer(r'DUI_T\("((?:[^"\\\n]|\\.)*[一-鿿](?:[^"\\\n]|\\.)*)"\)', text):
+        found.append(('code', 'DUI_T', m.group(1)))
     # L"..." with CJK (single-line only)
     for m in re.finditer(r'L"((?:[^"\\\n]|\\.)*[一-鿿](?:[^"\\\n]|\\.)*)"', text):
         found.append(('code', 'L', m.group(1)))
@@ -166,7 +166,7 @@ def main():
                     # C string escaping for the replacement value:
                     # backslash -> \\, quote -> \", newline -> \n
                     esc_en = en.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
-                    text = text.replace('_T("' + zh + '")', '_T("' + esc_en + '")')
+                    text = text.replace('DUI_T("' + zh + '")', 'DUI_T("' + esc_en + '")')
                     text = text.replace('L"' + zh + '"', 'L"' + esc_en + '"')
                     text = text.replace('"' + zh + '"', '"' + esc_en + '"')
             if text != orig:

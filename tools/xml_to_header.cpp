@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 
         out << "// Original: " << fpath << "\n";
         out << "static const DString " << varName
-            << " = _T(\"" << escapeString(content) << "\");\n\n";
+            << " = DUI_T(\"" << escapeString(content) << "\");\n\n";
     }
 
     out << "} // namespace ui_resources\n\n";

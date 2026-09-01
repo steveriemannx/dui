@@ -556,7 +556,7 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
         // static helper (b/i/font/s/u markup and text slices)
         std::string inner = serializeChildren(node);
         if (!inner.empty()) {
-            out << "    ui::WindowBuilder::ParseRichTextXmlText(_T(\"<RichText>"
+            out << "    ui::WindowBuilder::ParseRichTextXmlText(DUI_T(\"<RichText>"
                 << escapeCStr(inner) << "</RichText>\"), " << var << ");\n";
         }
     }

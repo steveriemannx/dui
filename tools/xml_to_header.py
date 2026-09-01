@@ -51,7 +51,7 @@ def xml_to_header(output_path, input_files):
         # Escape content and wrap in DString literal
         escaped = escape_c_string(content)
         lines.append(f'// Original: {fpath}')
-        lines.append(f'static const DString {var_name} = _T("{escaped}");')
+        lines.append(f'static const DString {var_name} = DUI_T("{escaped}");')
         lines.append('')
 
     lines.append('} // namespace ui_resources')

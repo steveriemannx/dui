@@ -78,12 +78,12 @@ int main(int argc, char** argv) {
 
     out << "inline DString ImgMemFd(const char* b64, const char* tag) {\n";
     out << "    int fd=memfd_create(tag, MFD_CLOEXEC);\n";
-    out << "    if(fd<0) return _T(\"\");\n";
+    out << "    if(fd<0) return DUI_T(\"\");\n";
     out << "    unsigned char buf[8192];\n";
     out << "    size_t len=ImgDecode(b64,buf,sizeof(buf));\n";
-    out << "    if(write(fd,buf,len)!=(ssize_t)len){close(fd);return _T(\"\");}\n";
+    out << "    if(write(fd,buf,len)!=(ssize_t)len){close(fd);return DUI_T(\"\");}\n";
     out << "    char tmp[32]; snprintf(tmp,sizeof(tmp),\"%d\",fd);\n";
-    out << "    DString p=_T(\"/proc/self/fd/\");\n";
+    out << "    DString p=DUI_T(\"/proc/self/fd/\");\n";
     out << "    for(char* x=tmp;*x;x++) p+=(DString::value_type)(unsigned char)*x;\n";
     out << "    return p;\n}\n\n";
 

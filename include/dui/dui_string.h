@@ -20,11 +20,6 @@
     #endif
 #endif
 
-// Compatibility for generated code and bundled third-party sources.
-#if !defined(_T)
-    #define _T(x) DUI_T(x)
-#endif
-
 //Detect the wchar_t definition: the wchar_t size on each platform
 #if defined(DUI_BUILD_FOR_WIN)
     //Windows: wchar_t is 2 bytes (UTF-16)
