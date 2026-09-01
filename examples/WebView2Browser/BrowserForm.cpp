@@ -159,14 +159,14 @@ void BrowserForm::OnInitWindow()
         return true;
         });
 
-    m_pEditUrl = ui::Find<ui::RichEdit>(this, "edit_url");
+    m_pEditUrl = ui::Find<ui::RichEdit>(this, DUI_T("edit_url"));
     if (m_pEditUrl != nullptr) {
         //When the mouse clicks into the address bar, select all the text
         m_pEditUrl->SetSelAllOnFocus(true);
     }
 
     //Replace the layout of the title bar
-    ui::HBox* pTitleBar = ui::Find<ui::HBox>(this, "title_bar");
+    ui::HBox* pTitleBar = ui::Find<ui::HBox>(this, DUI_T("title_bar"));
     if (pTitleBar != nullptr) {
         TitleBarHLayout* pNewLayout = new TitleBarHLayout;
         Layout* pOldLayout = pTitleBar->ResetLayout(pNewLayout);
@@ -178,23 +178,23 @@ void BrowserForm::OnInitWindow()
         }
     }
 
-    m_pTabCtrl = ui::Find<ui::TabCtrl>(this, "tab_ctrl");
-    m_pBorwserBoxTab = ui::Find<ui::TabBox>(this, "browser_box_tab");
+    m_pTabCtrl = ui::Find<ui::TabCtrl>(this, DUI_T("tab_ctrl"));
+    m_pBorwserBoxTab = ui::Find<ui::TabBox>(this, DUI_T("browser_box_tab"));
 
     //Set the state of the buttons
-    Control* pButton = FindControl("btn_back");
+    Control* pButton = FindControl(DUI_T("btn_back"));
     if (pButton != nullptr) {
         pButton->SetEnabled(false);
     }
-    pButton = FindControl("btn_forward");
+    pButton = FindControl(DUI_T("btn_forward"));
     if (pButton != nullptr) {
         pButton->SetEnabled(false);
     }
-    pButton = FindControl("btn_refresh");
+    pButton = FindControl(DUI_T("btn_refresh"));
     if (pButton != nullptr) {
         pButton->SetVisible(true);
     }
-    pButton = FindControl("btn_stop");
+    pButton = FindControl(DUI_T("btn_stop"));
     if (pButton != nullptr) {
         pButton->SetVisible(false);
     }
@@ -247,19 +247,19 @@ void BrowserForm::OnLoadingStateChange(BrowserBox* pBrowserBox)
     bool isLoading = pWebView2Ccontrol->IsNavigating();
     bool canGoBack = pWebView2Ccontrol->CanGoBack();
     bool canGoForward = pWebView2Ccontrol->CanGoForward();
-    Control* pButton = FindControl("btn_back");
+    Control* pButton = FindControl(DUI_T("btn_back"));
     if (pButton != nullptr) {
         pButton->SetEnabled(canGoBack);
     }
-    pButton = FindControl("btn_forward");
+    pButton = FindControl(DUI_T("btn_forward"));
     if (pButton != nullptr) {
         pButton->SetEnabled(canGoForward);
     }
-    pButton = FindControl("btn_refresh");
+    pButton = FindControl(DUI_T("btn_refresh"));
     if (pButton != nullptr) {
         pButton->SetVisible(!isLoading);
     }
-    pButton = FindControl("btn_stop");
+    pButton = FindControl(DUI_T("btn_stop"));
     if (pButton != nullptr) {
         pButton->SetVisible(isLoading);
     }
@@ -358,13 +358,13 @@ LRESULT BrowserForm::OnWindowCloseMsg(uint32_t wParam, const ui::NativeMsg& nati
 bool BrowserForm::OnClicked(const ui::EventArgs& arg )
 {
     DString name = arg.GetSender()->GetName();
-    if (name == "btn_close") {
+    if (name == DUI_T("btn_close")) {
         if (m_pActiveBrowserBox != nullptr) {
             CloseBox(m_pActiveBrowserBox->GetBrowserId());
         }
     }
-    else if (name == "btn_add") {
-        BrowserManager::GetInstance()->CreateBorwserBox(this, "", "");
+    else if (name == DUI_T("btn_add")) {
+        BrowserManager::GetInstance()->CreateBorwserBox(this, "", DUI_T(""));
     }
     else if (m_pActiveBrowserBox) {
         WebView2Control* pWebView2Control = m_pActiveBrowserBox->GetWebView2Control();
@@ -372,16 +372,16 @@ bool BrowserForm::OnClicked(const ui::EventArgs& arg )
             return true;
         }
 
-        if (name == "btn_back") {
+        if (name == DUI_T("btn_back")) {
             pWebView2Control->NavigateBack();
         }
-        else if (name == "btn_forward") {
+        else if (name == DUI_T("btn_forward")) {
             pWebView2Control->NavigateForward();
         }
-        else if (name == "btn_refresh") {
+        else if (name == DUI_T("btn_refresh")) {
             pWebView2Control->Refresh();
         }
-        else if (name == "btn_stop") {
+        else if (name == DUI_T("btn_stop")) {
             pWebView2Control->Stop();
         }
     }
@@ -437,7 +437,7 @@ BrowserBox* BrowserForm::CreateBox(const std::string& browserId, DString url)
     }
 
     TabCtrlItem* pTabItem = new TabCtrlItem(m_pTabCtrl->GetWindow());
-    GlobalManager::Instance().FillBoxWithCache(pTabItem, ui::FilePath("webview2_browser/tab_item.xml"));
+    GlobalManager::Instance().FillBoxWithCache(pTabItem, ui::FilePath(DUI_T("webview2_browser/tab_item.xml")));
     m_pTabCtrl->AddItemAt(pTabItem, GetBoxCount());
     pTabItem->SetUTF8Name(browserId);
     ui::Button* btn_item_close = pTabItem->GetCloseButton();
@@ -448,7 +448,7 @@ BrowserBox* BrowserForm::CreateBox(const std::string& browserId, DString url)
 
     BrowserBox* pBrowserBox = CreateBrowserBox(m_pBorwserBoxTab->GetWindow(), browserId);
     m_pBorwserBoxTab->AddItem(pBrowserBox);
-    GlobalManager::Instance().FillBoxWithCache(pBrowserBox, ui::FilePath("webview2_browser/browser_box.xml"), nullptr);
+    GlobalManager::Instance().FillBoxWithCache(pBrowserBox, ui::FilePath(DUI_T("webview2_browser/browser_box.xml")), nullptr);
     pBrowserBox->SetName(id);
     pBrowserBox->InitBrowserBox(url);
 
@@ -537,7 +537,7 @@ bool BrowserForm::AttachBox(BrowserBox* pBrowserBox)
     }
 
     TabCtrlItem* pTabItem = new TabCtrlItem(m_pTabCtrl->GetWindow());
-    GlobalManager::Instance().FillBoxWithCache(pTabItem, ui::FilePath("webview2_browser/tab_item.xml"));
+    GlobalManager::Instance().FillBoxWithCache(pTabItem, ui::FilePath(DUI_T("webview2_browser/tab_item.xml")));
     m_pTabCtrl->AddItemAt(pTabItem, GetBoxCount());
     pTabItem->SetUTF8Name(pBrowserBox->GetBrowserId());
     pTabItem->SetTitle(pBrowserBox->GetTitle());

@@ -71,7 +71,7 @@ void MainForm::OnLayeredWindowChanged()
 
 void MainForm::CreateChildWindows()
 {
-    ui::GridBox* pChildWindowBox = ui::Find<ui::GridBox>(this, "child_window_box");
+    ui::GridBox* pChildWindowBox = ui::Find<ui::GridBox>(this, DUI_T("child_window_box"));
     if (pChildWindowBox != nullptr) {
         size_t nCount = pChildWindowBox->GetItemCount();
         for (size_t nItem = 0; nItem < nCount; ++nItem) {

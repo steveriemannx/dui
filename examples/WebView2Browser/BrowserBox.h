@@ -57,7 +57,7 @@ public:
 public:
     /** Control type
     */
-    virtual DString GetType() const override { return "BrowserBox"; }
+    virtual DString GetType() const override { return DUI_T("BrowserBox"); }
 
     /**
     * Override the base class virtual function to specify the form this control belongs to

@@ -5,6 +5,6 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>("chat (Generated Code)", GetEmbeddedResourcesData(),
+    return ui::RunMemory<MainForm>(DUI_T("chat (Generated Code)"), GetEmbeddedResourcesData(),
                                    GetEmbeddedResourcesSize());
 }

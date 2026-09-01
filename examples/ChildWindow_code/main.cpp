@@ -5,7 +5,7 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>("ChildWindow (Pure Code)", GetEmbeddedResourcesData(),
+    return ui::RunMemory<MainForm>(DUI_T("ChildWindow (Pure Code)"), GetEmbeddedResourcesData(),
                                    GetEmbeddedResourcesSize(), [](MainForm* window) {
         window->PaintNextChildWindow();
     });

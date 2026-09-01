@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<MainForm>("TreeView Control Test Program");
+    return ui::Run<MainForm>(DUI_T("TreeView Control Test Program"));
 }

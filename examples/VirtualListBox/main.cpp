@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<MainForm>("VirtualListBox Control Test Program");
+    return ui::Run<MainForm>(DUI_T("VirtualListBox Control Test Program"));
 }

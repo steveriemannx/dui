@@ -21,7 +21,7 @@ void MainForm::OnInitWindow()
     // The login window is the entry window; it spawns the WeChat window
     // behind it. The WeChat window does not spawn anything (avoids recursion).
     if (m_isLogin) {
-        OpenWindow("wechat", "wechat.xml");
+        OpenWindow(DUI_T("wechat"), DUI_T("wechat.xml"));
     }
 
     BaseClass::OnInitWindow();

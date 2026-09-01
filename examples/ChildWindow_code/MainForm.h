@@ -14,8 +14,8 @@ public:
     MainForm();
     virtual ~MainForm() override;
 
-    virtual DString GetSkinFolder() override { return "child_window"; }
-    virtual DString GetSkinFile() override { return ""; }
+    virtual DString GetSkinFolder() override { return DUI_T("child_window"); }
+    virtual DString GetSkinFile() override { return DUI_T(""); }
 
 public:
     /** Draw this child window immediately

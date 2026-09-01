@@ -48,7 +48,7 @@ void RenderTest1::Paint(IRender* pRender, const UiRect& rcPaint)
     if (m_pImage == nullptr) {
         //Load the image on first draw
         m_pImage = std::make_unique<Image>();
-        m_pImage->SetImageString("file='autumn.png' async_load='false'", Dpi());
+        m_pImage->SetImageString(DUI_T("file='autumn.png' async_load='false'"), Dpi());
         LoadImageInfo(*m_pImage);
     }
     const Image& image = *m_pImage;

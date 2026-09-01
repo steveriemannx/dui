@@ -5,7 +5,7 @@ using namespace ui;
 using namespace std;
 
 
-MoveControlForm::MoveControlForm() : MoveControlForm("move_control", "main.xml") {}
+MoveControlForm::MoveControlForm() : MoveControlForm(DUI_T("move_control"), DUI_T("main.xml")) {}
 
 MoveControlForm::MoveControlForm(const DString& theme_directory, const DString& layout_xml):
     m_theme_directory(theme_directory),
@@ -25,8 +25,8 @@ void MoveControlForm::OnInitWindow()
     std::vector<AppItem> applist;
     AppDb::GetInstance().LoadFromDb(applist);
 
-    m_frequent_app = ui::Find<ui::Box>(this, "frequent_app");
-    m_my_app = ui::Find<ui::Box>(this, "my_app");
+    m_frequent_app = ui::Find<ui::Box>(this, DUI_T("frequent_app"));
+    m_my_app = ui::Find<ui::Box>(this, DUI_T("my_app"));
     ASSERT(m_frequent_app != nullptr);
     ASSERT(m_my_app != nullptr);
     

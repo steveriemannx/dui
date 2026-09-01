@@ -135,25 +135,25 @@ void ExplorerView::InitViewHeader()
     }
     ui::ListCtrlHeaderItem* pHeaderItem = nullptr;
     ui::ListCtrlColumn columnInfo;
-    columnInfo.text = "File Name";
+    columnInfo.text = DUI_T("File Name");
     columnInfo.nColumnWidth = 360;
     pHeaderItem = m_pListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ExplorerViewColumn::kName] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Modified Date";
+    columnInfo.text = DUI_T("Modified Date");
     columnInfo.nColumnWidth = 160;
     pHeaderItem = m_pListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ExplorerViewColumn::kModifyDateTime] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "File Type";
+    columnInfo.text = DUI_T("File Type");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ExplorerViewColumn::kType] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "File Size";
+    columnInfo.text = DUI_T("File Size");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
@@ -300,24 +300,24 @@ DString ExplorerView::FormatFileSize(bool bFolder, uint64_t nFileSize) const
     if (nFileSize > 1 * 1024 * 1024 * 1024) {
         //GB
         double total_gb = static_cast<double>(nFileSize) / (1024 * 1024 * 1024);
-        value = ui::StringUtil::Printf("%.01lf GB", total_gb);
+        value = ui::StringUtil::Printf(DUI_T("%.01lf GB"), total_gb);
     }
     else if (nFileSize > 1 * 1024 * 1024) {
         //MB
         double total_mb = static_cast<double>(nFileSize) / (1024 * 1024);
-        value = ui::StringUtil::Printf("%.01lf MB", total_mb);
+        value = ui::StringUtil::Printf(DUI_T("%.01lf MB"), total_mb);
     }
     else if (nFileSize > 1 * 1024) {
         //KB
         double total_kb = static_cast<double>(nFileSize) / (1024);
-        value = ui::StringUtil::Printf("%.01lf KB", total_kb);
+        value = ui::StringUtil::Printf(DUI_T("%.01lf KB"), total_kb);
     }
     else if (nFileSize == 0) {
-        value = "0";
+        value = DUI_T("0");
     }
     else {
         //B
-        value = ui::StringUtil::Printf("%d B", (int32_t)nFileSize);
+        value = ui::StringUtil::Printf(DUI_T("%d B"), (int32_t)nFileSize);
     }
     return value;
 }

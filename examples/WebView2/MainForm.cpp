@@ -6,8 +6,8 @@ void MainForm::OnInitWindow()
 {
     //Window initialization finished, this Form can now be initialized
 
-    m_pWebView2Control = ui::Find<ui::WebView2Control>(this, "webview2_control");
-    m_pEditUrl = ui::Find<ui::RichEdit>(this, "edit_url");
+    m_pWebView2Control = ui::Find<ui::WebView2Control>(this, DUI_T("webview2_control"));
+    m_pEditUrl = ui::Find<ui::RichEdit>(this, DUI_T("edit_url"));
 
     // Set the input box style
     if (m_pEditUrl != nullptr) {
@@ -15,12 +15,12 @@ void MainForm::OnInitWindow()
         m_pEditUrl->AttachReturn(UiBind(&MainForm::OnNavigate, this, std::placeholders::_1));
     }
 
-    ui::Control* pControl = ui::Find<ui::Control>(this, "btn_back");
+    ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("btn_back"));
     if (pControl != nullptr) {
         pControl->SetEnabled(false);
     }
 
-    pControl = ui::Find<ui::Control>(this, "btn_forward");
+    pControl = ui::Find<ui::Control>(this, DUI_T("btn_forward"));
     if (pControl != nullptr) {
         pControl->SetEnabled(false);
     }
@@ -29,11 +29,11 @@ void MainForm::OnInitWindow()
         //Update the state of the back and forward buttons
         m_pWebView2Control->SetHistoryChangedCallback([this]() {
             if (m_pWebView2Control != nullptr) {
-                ui::Control* pControl = ui::Find<ui::Control>(this, "btn_back");
+                ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("btn_back"));
                 if (pControl != nullptr) {
                     pControl->SetEnabled(m_pWebView2Control->CanGoBack());
                 }
-                pControl = ui::Find<ui::Control>(this, "btn_forward");
+                pControl = ui::Find<ui::Control>(this, DUI_T("btn_forward"));
                 if (pControl != nullptr) {
                     pControl->SetEnabled(m_pWebView2Control->CanGoForward());
                 }
@@ -43,7 +43,7 @@ void MainForm::OnInitWindow()
         //Update the URL
         m_pWebView2Control->SetSourceChangedCallback([this](const DString& url) {
             ui::GlobalManager::Instance().AssertUIThread();
-            ui::RichEdit* pEditUrl = ui::Find<ui::RichEdit>(this, "edit_url");
+            ui::RichEdit* pEditUrl = ui::Find<ui::RichEdit>(this, DUI_T("edit_url"));
             if (pEditUrl != nullptr) {
                 pEditUrl->SetText(url);
             }
@@ -52,7 +52,7 @@ void MainForm::OnInitWindow()
         //Update the title
         m_pWebView2Control->SetDocumentTitleChangedCallback([this](const DString& title) {
             ui::GlobalManager::Instance().AssertUIThread();
-            ui::Label* pLabelTitle = ui::Find<ui::Label>(this, "page_title");
+            ui::Label* pLabelTitle = ui::Find<ui::Label>(this, DUI_T("page_title"));
             if (pLabelTitle != nullptr) {
                 pLabelTitle->SetText(title);
             }
@@ -68,9 +68,9 @@ void MainForm::BindEvents()
     GetRoot()->AttachBubbledEvent(ui::kEventClick, UiBind(&MainForm::OnClicked, this, std::placeholders::_1), 0);
 
     //Fullscreen page
-    if (auto* pFullscreenBtn = ui::Find<ui::Button>(this, "webview2_full_screen_btn")) {
+    if (auto* pFullscreenBtn = ui::Find<ui::Button>(this, DUI_T("webview2_full_screen_btn"))) {
         pFullscreenBtn->AttachClick([this](const ui::EventArgs&) {
-            ui::Control* pWebView2Control = ui::Find<ui::Control>(this, "webview2_control");
+            ui::Control* pWebView2Control = ui::Find<ui::Control>(this, DUI_T("webview2_control"));
             if (pWebView2Control != nullptr) {
                 this->SetFullscreenControl(pWebView2Control);
             }

@@ -29,87 +29,87 @@ void MoveControlForm::BuildUI()
     auto* pRoot = ui::Create<ui::VBox>(this, {});
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}});
-    pCaption->SetBkColor("bk_wnd_lightcolor");
+    auto* pCaption = ui::Create<ui::HBox>(this, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}});
+    pCaption->SetBkColor(DUI_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{"font", "system_bold_14"}, {"margin", "10,10"}, {"mouse_enabled", "false"}});
-    pTitle->SetText("App List");
+    auto* pTitle = ui::Create<ui::Label>(this, {{DUI_T("font"), DUI_T("system_bold_14")}, {DUI_T("margin"), DUI_T("10,10")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+    pTitle->SetText(DUI_T("App List"));
     pCaption->AddItem(pTitle);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{"mouse_enabled", "false"}});
+    auto* pSpacer = ui::Create<ui::Control>(this, {{DUI_T("mouse_enabled"), DUI_T("false")}});
     pCaption->AddItem(pSpacer);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}});
-    pMinBtn->SetClass("btn_wnd_min_11");
-    pMinBtn->SetName("minbtn");
-    pMinBtn->SetToolTipText("Minimize");
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
+    pMinBtn->SetClass(DUI_T("btn_wnd_min_11"));
+    pMinBtn->SetName(DUI_T("minbtn"));
+    pMinBtn->SetToolTipText(DUI_T("Minimize"));
     pCaption->AddItem(pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
     pCaption->AddItem(pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "stretch"}});
-    pMaxBtn->SetClass("btn_wnd_max_11");
-    pMaxBtn->SetName("maxbtn");
-    pMaxBtn->SetToolTipText("Maximize");
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}});
+    pMaxBtn->SetClass(DUI_T("btn_wnd_max_11"));
+    pMaxBtn->SetName(DUI_T("maxbtn"));
+    pMaxBtn->SetToolTipText(DUI_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "stretch"}});
-    pRestoreBtn->SetClass("btn_wnd_restore_11");
-    pRestoreBtn->SetName("restorebtn");
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}});
+    pRestoreBtn->SetClass(DUI_T("btn_wnd_restore_11"));
+    pRestoreBtn->SetName(DUI_T("restorebtn"));
     pRestoreBtn->SetVisible(false);
-    pRestoreBtn->SetToolTipText("Restore");
+    pRestoreBtn->SetToolTipText(DUI_T("Restore"));
     pMaxBox->AddItem(pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,0,0,2"}});
-    pCloseBtn->SetClass("btn_wnd_close_11");
-    pCloseBtn->SetName("closebtn");
-    pCloseBtn->SetToolTipText("Close");
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,0,0,2")}});
+    pCloseBtn->SetClass(DUI_T("btn_wnd_close_11"));
+    pCloseBtn->SetName(DUI_T("closebtn"));
+    pCloseBtn->SetToolTipText(DUI_T("Close"));
     pCaption->AddItem(pCloseBtn);
 
     auto* pSplit1 = ui::Create<ui::Control>(this, {});
-    pSplit1->SetClass("splitline_hor_level1");
+    pSplit1->SetClass(DUI_T("splitline_hor_level1"));
     pRoot->AddItem(pSplit1);
 
     // Frequent apps
-    auto* pFrequentSection = ui::Create<ui::VBox>(this, {{"height", "200"}});
-    pFrequentSection->SetBkColor("bk_wnd_lightcolor");
+    auto* pFrequentSection = ui::Create<ui::VBox>(this, {{DUI_T("height"), DUI_T("200")}});
+    pFrequentSection->SetBkColor(DUI_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pFrequentSection);
 
-    auto* pFrequentTitle = ui::Create<ui::HBox>(this, {{"height", "35"}});
-    pFrequentTitle->SetBkColor("bk_wnd_darkcolor");
+    auto* pFrequentTitle = ui::Create<ui::HBox>(this, {{DUI_T("height"), DUI_T("35")}});
+    pFrequentTitle->SetBkColor(DUI_T("bk_wnd_darkcolor"));
     pFrequentSection->AddItem(pFrequentTitle);
 
-    auto* pFrequentLabel = ui::Create<ui::Label>(this, {{"font", "system_14"}, {"margin", "10,10"}});
-    pFrequentLabel->SetText("Common Apps");
+    auto* pFrequentLabel = ui::Create<ui::Label>(this, {{DUI_T("font"), DUI_T("system_14")}, {DUI_T("margin"), DUI_T("10,10")}});
+    pFrequentLabel->SetText(DUI_T("Common Apps"));
     pFrequentTitle->AddItem(pFrequentLabel);
 
-    auto* pFrequentBox = ui::Create<ui::VTileBox>(this, {{"child_halign", "left"}, {"drop_in_id", "1"}, {"drag_out_id", "1"}});
-    pFrequentBox->SetName("frequent_app");
-    pFrequentBox->SetBkColor("white");
+    auto* pFrequentBox = ui::Create<ui::VTileBox>(this, {{DUI_T("child_halign"), DUI_T("left")}, {DUI_T("drop_in_id"), DUI_T("1")}, {DUI_T("drag_out_id"), DUI_T("1")}});
+    pFrequentBox->SetName(DUI_T("frequent_app"));
+    pFrequentBox->SetBkColor(DUI_T("white"));
     pFrequentSection->AddItem(pFrequentBox);
 
     auto* pSplit2 = ui::Create<ui::Control>(this, {});
-    pSplit2->SetClass("splitline_hor_level1");
+    pSplit2->SetClass(DUI_T("splitline_hor_level1"));
     pRoot->AddItem(pSplit2);
 
     // My apps
     auto* pMySection = ui::Create<ui::VBox>(this, {});
-    pMySection->SetBkColor("bk_wnd_lightcolor");
+    pMySection->SetBkColor(DUI_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pMySection);
 
-    auto* pMyTitle = ui::Create<ui::HBox>(this, {{"height", "35"}});
-    pMyTitle->SetBkColor("bk_wnd_darkcolor");
+    auto* pMyTitle = ui::Create<ui::HBox>(this, {{DUI_T("height"), DUI_T("35")}});
+    pMyTitle->SetBkColor(DUI_T("bk_wnd_darkcolor"));
     pMySection->AddItem(pMyTitle);
 
-    auto* pMyLabel = ui::Create<ui::Label>(this, {{"font", "system_14"}, {"margin", "10,10"}});
-    pMyLabel->SetText("My Apps");
+    auto* pMyLabel = ui::Create<ui::Label>(this, {{DUI_T("font"), DUI_T("system_14")}, {DUI_T("margin"), DUI_T("10,10")}});
+    pMyLabel->SetText(DUI_T("My Apps"));
     pMyTitle->AddItem(pMyLabel);
 
-    auto* pMyBox = ui::Create<ui::VTileBox>(this, {{"child_halign", "left"}, {"drop_in_id", "1"}, {"drag_out_id", "1"}});
-    pMyBox->SetName("my_app");
-    pMyBox->SetBkColor("white");
+    auto* pMyBox = ui::Create<ui::VTileBox>(this, {{DUI_T("child_halign"), DUI_T("left")}, {DUI_T("drop_in_id"), DUI_T("1")}, {DUI_T("drag_out_id"), DUI_T("1")}});
+    pMyBox->SetName(DUI_T("my_app"));
+    pMyBox->SetBkColor(DUI_T("white"));
     pMySection->AddItem(pMyBox);
 
     AttachBox(pRoot);
@@ -128,8 +128,8 @@ void MoveControlForm::OnInitWindow()
     std::vector<AppItem> applist;
     AppDb::GetInstance().LoadFromDb(applist);
 
-    m_frequent_app = ui::Find<ui::Box>(this, "frequent_app");
-    m_my_app = ui::Find<ui::Box>(this, "my_app");
+    m_frequent_app = ui::Find<ui::Box>(this, DUI_T("frequent_app"));
+    m_my_app = ui::Find<ui::Box>(this, DUI_T("my_app"));
     ASSERT(m_frequent_app != nullptr);
     ASSERT(m_my_app != nullptr);
 

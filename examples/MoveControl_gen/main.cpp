@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MoveControlForm>("move_control_gen", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MoveControlForm>(DUI_T("move_control_gen"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

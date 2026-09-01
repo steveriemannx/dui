@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<MainForm>("Threads Test Program");
+    return ui::Run<MainForm>(DUI_T("Threads Test Program"));
 }

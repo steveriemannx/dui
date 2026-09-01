@@ -12,7 +12,7 @@ void MainForm::BindEvents()
     // Window initialization is complete; this form can now be initialized
 
     /* Show select language menu */
-    ui::Button* select = ui::Find<ui::Button>(this, "language");
+    ui::Button* select = ui::Find<ui::Button>(this, DUI_T("language"));
     ASSERT(select != nullptr);
     if (select == nullptr) {
         return;
@@ -34,7 +34,7 @@ void MainForm::ShowPopupMenu(const ui::UiPoint& point)
     ui::Menu* menu = new ui::Menu(this);// The parent window must be set; otherwise, when the menu pops up, the program status bar becomes inactive
     // Set the directory where the menu XML is located
     menu->SetSkinFolder(GetResourcePath().ToString());
-    DString xml("lang_menu.xml");
+    DString xml(DUI_T("lang_menu.xml"));
     menu->ShowMenu(xml, point);
 
     // Current language file
@@ -44,7 +44,7 @@ void MainForm::ShowPopupMenu(const ui::UiPoint& point)
     std::vector<std::pair<DString, DString>> languageList;
     ui::GlobalManager::Instance().GetLanguageList(languageList);
     if (languageList.empty()) {
-        languageList.push_back({ currentLangFileName , ""});
+        languageList.push_back({ currentLangFileName , DUI_T("")});
     }
 
     // Add menu items dynamically
@@ -53,10 +53,10 @@ void MainForm::ShowPopupMenu(const ui::UiPoint& point)
         DString& displayName = lang.second;
 
         ui::MenuItem* pMenuItem = new ui::MenuItem(menu);
-        pMenuItem->SetClass("menu_element");
+        pMenuItem->SetClass(DUI_T("menu_element"));
         ui::CheckBox* pCheckBox = new ui::CheckBox(menu);
-        pCheckBox->SetClass("menu_checkbox");
-        pCheckBox->SetAttribute("margin", "0,5,0,10");
+        pCheckBox->SetClass(DUI_T("menu_checkbox"));
+        pCheckBox->SetAttribute(DUI_T("margin"), DUI_T("0,5,0,10"));
         pCheckBox->SetText(!displayName.empty() ? displayName : fileName);
         pMenuItem->AddItem(pCheckBox);
         menu->AddMenuItem(pMenuItem);

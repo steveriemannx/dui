@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<RenderForm>("Render Gen (Codegen)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<RenderForm>(DUI_T("Render Gen (Codegen)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

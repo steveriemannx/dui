@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<MainForm>("DpiAware");
+    return ui::Run<MainForm>(DUI_T("DpiAware"));
 }

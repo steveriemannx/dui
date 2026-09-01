@@ -7,7 +7,7 @@
 
 class MainForm;
 
-/** The "Computer" view, showing the disk list
+/** The DUI_T("Computer") view, showing the disk list
 */
 class ComputerView: public ui::SupportWeakCallback
 {
@@ -23,7 +23,7 @@ public:
     virtual ~ComputerView() override;
 
 public:
-    /** Show the content of the "Computer" node
+    /** Show the content of the DUI_T("Computer") node
     * @param [in] diskInfoList the information list of all disks
     */
     void ShowMyComputerContents(const std::vector<ui::DirectoryTree::DiskInfo>& diskInfoList);
@@ -33,11 +33,11 @@ private:
     */
     void Initialize();
 
-    /** Initialize the header of the "Computer" view
+    /** Initialize the header of the DUI_T("Computer") view
     */
     void InitComputerViewHeader();
 
-    /** Double-click in the "Computer" view
+    /** Double-click in the DUI_T("Computer") view
     */
     bool OnComuterViewDoubleClick(const ui::EventArgs& msg);    
 
@@ -59,7 +59,7 @@ private:
     */
     void InitComputerViewHeader_Win();
 
-    /** Show the content of the "Computer" node
+    /** Show the content of the DUI_T("Computer") node
     * @param [in] diskInfoList the information list of all disks
     */
     void ShowMyComputerContents_Win(ui::ImageListPtr pImageList, const std::vector<ui::DirectoryTree::DiskInfo>& diskInfoList);
@@ -69,7 +69,7 @@ private:
     */
     void InitComputerViewHeader_Linux();
 
-    /** Show the content of the "Computer" node
+    /** Show the content of the DUI_T("Computer") node
     * @param [in] diskInfoList the information list of all disks
     */
     void ShowMyComputerContents_Linux(ui::ImageListPtr pImageList, const std::vector<ui::DirectoryTree::DiskInfo>& diskInfoList);
@@ -81,7 +81,7 @@ private:
 #endif
 
 private:
-    /** The header of the "Computer" view
+    /** The header of the DUI_T("Computer") view
     */
     enum class ComputerViewColumn
     {
@@ -104,11 +104,11 @@ private:
     MainForm* m_pMainForm;
 
 private:
-    /** Data of the "Computer" view
+    /** Data of the DUI_T("Computer") view
     */
     std::vector<ui::DirectoryTree::DiskInfo> m_diskInfoList;
 
-    /** List interface of the "Computer" view
+    /** List interface of the DUI_T("Computer") view
     */
     ui::ControlPtrT<ui::ListCtrl> m_pComputerListCtrl;
 

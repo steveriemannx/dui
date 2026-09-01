@@ -18,14 +18,14 @@ public:
     /**  Called when the window is created; implemented by subclasses to get the window skin folder
     * @return subclasses need to implement and return the window skin folder
     */
-    virtual DString GetSkinFolder() override { return "webview2"; }
+    virtual DString GetSkinFolder() override { return DUI_T("webview2"); }
 
     /**  Called when the window is created; implemented by subclasses to get the window skin XML description file
     * @return subclasses need to implement and return the window skin XML description file
     *         The returned content can be the XML file content (a string starting with the character '<'),
     *         or a file path (a string not starting with the character '<'); the file must be findable in the GetSkinFolder() path
     */
-    virtual DString GetSkinFile() override { return "webview2.xml"; }
+    virtual DString GetSkinFile() override { return DUI_T("webview2.xml"); }
 
 protected:
     /** Called after the window is created, so that subclasses can do some initialization work

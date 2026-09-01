@@ -22,8 +22,8 @@ void MainForm::OnInitWindow()
         ui::TreeNode* pRoot = pCombo->GetTreeView()->GetRootNode();
         for (int32_t i = 0; i < 8; ++i) {
             auto* pNode = ui::Create<ui::TreeNode>(this, {
-                {"class", "tree_node"},
-                {"text", ui::StringUtil::Printf(DUI_T("Item %d"), i + 1)}
+                {DUI_T("class"), DUI_T("tree_node")},
+                {DUI_T("text"), ui::StringUtil::Printf(DUI_T("Item %d"), i + 1)}
             });
             pRoot->AddChildNode(pNode);
         }

@@ -10,10 +10,10 @@ DragForm::~DragForm()
 
 DString DragForm::GetSkinFolder()
 {
-    return "webview2_browser";
+    return DUI_T("webview2_browser");
 }
 
 DString DragForm::GetSkinFile()
 {
-    return "drag_form.xml";
+    return DUI_T("drag_form.xml");
 }

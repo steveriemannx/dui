@@ -22,83 +22,83 @@ void MainForm::SetupWindow()
 
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
-    SetWindowIcon("public/caption/logo.ico");
+    SetWindowIcon(DUI_T("public/caption/logo.ico"));
 }
 
 void MainForm::BuildUI()
 {
     auto* pRoot = ui::Create<ui::VBox>(this, {
-        {"bkcolor", "bk_wnd_darkcolor"},
-        {"visible", "true"}
+        {DUI_T("bkcolor"), DUI_T("bk_wnd_darkcolor")},
+        {DUI_T("visible"), DUI_T("true")}
     });
 
     // Title bar area
     auto* pCaption = ui::Create<ui::HBox>(this, {
-        {"name", "window_caption_bar"},
-        {"width", "stretch"},
-        {"height", "36"},
-        {"bkcolor", "bk_wnd_lightcolor"}
+        {DUI_T("name"), DUI_T("window_caption_bar")},
+        {DUI_T("width"), DUI_T("stretch")},
+        {DUI_T("height"), DUI_T("36")},
+        {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}
     });
     ui::Attach(pRoot, pCaption);
 
     auto* pSpacer = ui::Create<ui::Control>(this, {
-        {"mouse_enabled", "false"}
+        {DUI_T("mouse_enabled"), DUI_T("false")}
     });
     ui::Attach(pCaption, pSpacer);
 
     auto* pFullscreenBtn = ui::Create<ui::Button>(this, {
-        {"class", "btn_wnd_fullscreen_11"},
-        {"name", "fullscreenbtn"},
-        {"height", "32"},
-        {"width", "40"},
-        {"margin", "0,2,0,2"},
-        {"tooltip_text", "Fullscreen, press ESC to exit fullscreen"}
+        {DUI_T("class"), DUI_T("btn_wnd_fullscreen_11")},
+        {DUI_T("name"), DUI_T("fullscreenbtn")},
+        {DUI_T("height"), DUI_T("32")},
+        {DUI_T("width"), DUI_T("40")},
+        {DUI_T("margin"), DUI_T("0,2,0,2")},
+        {DUI_T("tooltip_text"), DUI_T("Fullscreen, press ESC to exit fullscreen")}
     });
     ui::Attach(pCaption, pFullscreenBtn);
 
     auto* pMinBtn = ui::Create<ui::Button>(this, {
-        {"class", "btn_wnd_min_11"},
-        {"name", "minbtn"},
-        {"height", "32"},
-        {"width", "40"},
-        {"margin", "0,2,0,2"},
-        {"tooltip_text", "Minimize"}
+        {DUI_T("class"), DUI_T("btn_wnd_min_11")},
+        {DUI_T("name"), DUI_T("minbtn")},
+        {DUI_T("height"), DUI_T("32")},
+        {DUI_T("width"), DUI_T("40")},
+        {DUI_T("margin"), DUI_T("0,2,0,2")},
+        {DUI_T("tooltip_text"), DUI_T("Minimize")}
     });
     ui::Attach(pCaption, pMinBtn);
 
     auto* pMaxBox = ui::Create<ui::Box>(this, {
-        {"height", "stretch"},
-        {"width", "40"},
-        {"margin", "0,2,0,2"}
+        {DUI_T("height"), DUI_T("stretch")},
+        {DUI_T("width"), DUI_T("40")},
+        {DUI_T("margin"), DUI_T("0,2,0,2")}
     });
     ui::Attach(pCaption, pMaxBox);
 
     auto* pMaxBtn = ui::Create<ui::Button>(this, {
-        {"class", "btn_wnd_max_11"},
-        {"name", "maxbtn"},
-        {"height", "32"},
-        {"width", "stretch"},
-        {"tooltip_text", "Maximize"}
+        {DUI_T("class"), DUI_T("btn_wnd_max_11")},
+        {DUI_T("name"), DUI_T("maxbtn")},
+        {DUI_T("height"), DUI_T("32")},
+        {DUI_T("width"), DUI_T("stretch")},
+        {DUI_T("tooltip_text"), DUI_T("Maximize")}
     });
     ui::Attach(pMaxBox, pMaxBtn);
 
     auto* pRestoreBtn = ui::Create<ui::Button>(this, {
-        {"class", "btn_wnd_restore_11"},
-        {"name", "restorebtn"},
-        {"height", "32"},
-        {"width", "stretch"},
-        {"visible", "false"},
-        {"tooltip_text", "Restore"}
+        {DUI_T("class"), DUI_T("btn_wnd_restore_11")},
+        {DUI_T("name"), DUI_T("restorebtn")},
+        {DUI_T("height"), DUI_T("32")},
+        {DUI_T("width"), DUI_T("stretch")},
+        {DUI_T("visible"), DUI_T("false")},
+        {DUI_T("tooltip_text"), DUI_T("Restore")}
     });
     ui::Attach(pMaxBox, pRestoreBtn);
 
     auto* pCloseBtn = ui::Create<ui::Button>(this, {
-        {"class", "btn_wnd_close_11"},
-        {"name", "closebtn"},
-        {"height", "stretch"},
-        {"width", "40"},
-        {"margin", "0,0,0,2"},
-        {"tooltip_text", "Close"}
+        {DUI_T("class"), DUI_T("btn_wnd_close_11")},
+        {DUI_T("name"), DUI_T("closebtn")},
+        {DUI_T("height"), DUI_T("stretch")},
+        {DUI_T("width"), DUI_T("40")},
+        {DUI_T("margin"), DUI_T("0,0,0,2")},
+        {DUI_T("tooltip_text"), DUI_T("Close")}
     });
     ui::Attach(pCaption, pCloseBtn);
 
@@ -107,29 +107,29 @@ void MainForm::BuildUI()
     ui::Attach(pRoot, pContent);
 
     auto* pCenter = ui::Create<ui::VBox>(this, {
-        {"valign", "center"},
-        {"halign", "center"},
-        {"height", "100"}
+        {DUI_T("valign"), DUI_T("center")},
+        {DUI_T("halign"), DUI_T("center")},
+        {DUI_T("height"), DUI_T("100")}
     });
     ui::Attach(pContent, pCenter);
 
     auto* pLabel = ui::Create<ui::Label>(this, {
-        {"name", "hello_label"},
-        {"text", "Hello, dui!"},
-        {"height", "40"},
-        {"width", "100%"},
-        {"text_align", "hcenter,vcenter"},
-        {"margin", "0,0,0,16"}
+        {DUI_T("name"), DUI_T("hello_label")},
+        {DUI_T("text"), DUI_T("Hello, dui!")},
+        {DUI_T("height"), DUI_T("40")},
+        {DUI_T("width"), DUI_T("100%")},
+        {DUI_T("text_align"), DUI_T("hcenter,vcenter")},
+        {DUI_T("margin"), DUI_T("0,0,0,16")}
     });
     ui::Attach(pCenter, pLabel);
 
     auto* pButton = ui::Create<ui::Button>(this, {
-        {"name", "hello_btn"},
-        {"class", "btn_global_blue_80x30"},
-        {"text", "Click Me"},
-        {"halign", "center"},
-        {"width", "90"},
-        {"height", "32"}
+        {DUI_T("name"), DUI_T("hello_btn")},
+        {DUI_T("class"), DUI_T("btn_global_blue_80x30")},
+        {DUI_T("text"), DUI_T("Click Me")},
+        {DUI_T("halign"), DUI_T("center")},
+        {DUI_T("width"), DUI_T("90")},
+        {DUI_T("height"), DUI_T("32")}
     });
     ui::Attach(pCenter, pButton);
 
@@ -138,10 +138,10 @@ void MainForm::BuildUI()
 
 void MainForm::BindEvents()
 {
-    if (auto* pButton = ui::Find<ui::Button>(this, "hello_btn")) {
+    if (auto* pButton = ui::Find<ui::Button>(this, DUI_T("hello_btn"))) {
         pButton->AttachClick([this](const ui::EventArgs&) {
-            if (auto* pLabel = ui::Find<ui::Label>(this, "hello_label")) {
-                pLabel->SetText("Hello from pure code mode!");
+            if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("hello_label"))) {
+                pLabel->SetText(DUI_T("Hello from pure code mode!"));
             }
             return true;
         });

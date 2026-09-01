@@ -100,24 +100,24 @@ DString ComputerView::FormatDiskSpace(uint64_t nSpace) const
     if (nSpace > 1 * 1024 * 1024 * 1024) {
         //GB
         double total_gb = static_cast<double>(nSpace) / (1024 * 1024 * 1024);
-        value = ui::StringUtil::Printf("%.01lf GB", total_gb);
+        value = ui::StringUtil::Printf(DUI_T("%.01lf GB"), total_gb);
     }
     else if (nSpace > 1 * 1024 * 1024) {
         //MB
         double total_mb = static_cast<double>(nSpace) / (1024 * 1024);
-        value = ui::StringUtil::Printf("%.01lf MB", total_mb);
+        value = ui::StringUtil::Printf(DUI_T("%.01lf MB"), total_mb);
     }
     else if (nSpace > 1 * 1024) {
         //KB
         double total_kb = static_cast<double>(nSpace) / (1024);
-        value = ui::StringUtil::Printf("%.01lf KB", total_kb);
+        value = ui::StringUtil::Printf(DUI_T("%.01lf KB"), total_kb);
     }
     else if (nSpace == 0) {
-        value = "0";
+        value = DUI_T("0");
     }
     else {
         //B
-        value = ui::StringUtil::Printf("%d B", (int32_t)nSpace);
+        value = ui::StringUtil::Printf(DUI_T("%d B"), (int32_t)nSpace);
     }
     return value;
 }
@@ -127,7 +127,7 @@ DString ComputerView::FormatUsedPercent(uint64_t nTotalSpace, uint64_t nFreeSpac
     DString value;
     if ((nFreeSpace <= nTotalSpace) && (nTotalSpace != 0)) {
         double fPercent = static_cast<double>(nTotalSpace - nFreeSpace) / nTotalSpace;
-        value = ui::StringUtil::Printf("%.01lf%%", fPercent * 100);
+        value = ui::StringUtil::Printf(DUI_T("%.01lf%%"), fPercent * 100);
     }
     return value;
 }
@@ -176,37 +176,37 @@ void ComputerView::InitComputerViewHeader_Win()
     }
     ui::ListCtrlHeaderItem* pHeaderItem = nullptr;
     ui::ListCtrlColumn columnInfo;
-    columnInfo.text = "Name";
+    columnInfo.text = DUI_T("Name");
     columnInfo.nColumnWidth = 200;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kName] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Disk Type";
+    columnInfo.text = DUI_T("Disk Type");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kType] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Partition Type";
+    columnInfo.text = DUI_T("Partition Type");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kPartitionType] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Total Size";
+    columnInfo.text = DUI_T("Total Size");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kTotalSpace] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Free Space";
+    columnInfo.text = DUI_T("Free Space");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kFreeSpace] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Used";
+    columnInfo.text = DUI_T("Used");
     columnInfo.nColumnWidth = 80;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
@@ -297,43 +297,43 @@ void ComputerView::InitComputerViewHeader_Linux()
     }
     ui::ListCtrlHeaderItem* pHeaderItem = nullptr;
     ui::ListCtrlColumn columnInfo;
-    columnInfo.text = "File System";
+    columnInfo.text = DUI_T("File System");
     columnInfo.nColumnWidth = 200;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kName] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Device Type";
+    columnInfo.text = DUI_T("Device Type");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kType] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Partition Type";
+    columnInfo.text = DUI_T("Partition Type");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kPartitionType] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Total Size";
+    columnInfo.text = DUI_T("Total Size");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kTotalSpace] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Free Space";
+    columnInfo.text = DUI_T("Free Space");
     columnInfo.nColumnWidth = 120;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kFreeSpace] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Used";
+    columnInfo.text = DUI_T("Used");
     columnInfo.nColumnWidth = 80;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
     m_columnIdMap[ComputerViewColumn::kUsedPercent] = pHeaderItem->GetColumnId();
 
-    columnInfo.text = "Mount Point";
+    columnInfo.text = DUI_T("Mount Point");
     columnInfo.nColumnWidth = 200;
     pHeaderItem = m_pComputerListCtrl->InsertColumn(-1, columnInfo);
     ASSERT(pHeaderItem != nullptr);
@@ -417,40 +417,40 @@ void ComputerView::ShowMyComputerContents_Linux(ui::ImageListPtr pImageList, con
 
 DString ComputerView::GetDeviceTypeString(ui::DirectoryTree::DeviceType deviceType) const
 {
-    DString deviceTypeString = "Unknown";
+    DString deviceTypeString = DUI_T("Unknown");
     switch (deviceType) {
     case ui::DirectoryTree::DeviceType::HDD:
-        deviceTypeString = "HDD";
+        deviceTypeString = DUI_T("HDD");
         break;
     case ui::DirectoryTree::DeviceType::SSD:
-        deviceTypeString = "SATA SSD";
+        deviceTypeString = DUI_T("SATA SSD");
         break;
     case ui::DirectoryTree::DeviceType::NVME:
-        deviceTypeString = "NVMe SSD";
+        deviceTypeString = DUI_T("NVMe SSD");
         break;
     case ui::DirectoryTree::DeviceType::USB:
-        deviceTypeString = "USB Storage";
+        deviceTypeString = DUI_T("USB Storage");
         break;
     case ui::DirectoryTree::DeviceType::SD_CARD:
-        deviceTypeString = "SD Card";
+        deviceTypeString = DUI_T("SD Card");
         break;
     case ui::DirectoryTree::DeviceType::CDROM:
-        deviceTypeString = "CD/DVD";
+        deviceTypeString = DUI_T("CD/DVD");
         break;
     case ui::DirectoryTree::DeviceType::LOOP:
-        deviceTypeString = "LOOP Virtual Storage";
+        deviceTypeString = DUI_T("LOOP Virtual Storage");
         break;
     case ui::DirectoryTree::DeviceType::VIRT_DISK:
-        deviceTypeString = "Virtual Storage";
+        deviceTypeString = DUI_T("Virtual Storage");
         break;
     case ui::DirectoryTree::DeviceType::RAMDISK:
-        deviceTypeString = "RAM Disk";
+        deviceTypeString = DUI_T("RAM Disk");
         break;
     case ui::DirectoryTree::DeviceType::NFS:
-        deviceTypeString = "NFS";
+        deviceTypeString = DUI_T("NFS");
         break;
     case ui::DirectoryTree::DeviceType::SHARE:
-        deviceTypeString = "Shared Folder";
+        deviceTypeString = DUI_T("Shared Folder");
         break;
     default:
         break;

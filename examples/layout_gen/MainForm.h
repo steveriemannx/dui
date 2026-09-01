@@ -12,8 +12,8 @@ public:
     virtual ~MainForm() override = default;
 
     /** Resource-related interfaces. The generated UI does not load a skin XML file. */
-    virtual DString GetSkinFolder() override { return "layout"; }
-    virtual DString GetSkinFile() override { return ""; }
+    virtual DString GetSkinFolder() override { return DUI_T("layout"); }
+    virtual DString GetSkinFile() override { return DUI_T(""); }
 
     /** Called after the window is created, for subclasses to do some initialization work
      */

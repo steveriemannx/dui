@@ -36,8 +36,8 @@ bool DataProvider::FillElement(ui::Control* pControl, size_t nElementIndex)
         return false;
     }
     const DownloadTask& task = m_vTasks[nElementIndex];
-    DString img = "icon.png";
-    DString title = ui::StringUtil::Printf("%s [%02d]", task.sName, task.nId);
+    DString img = DUI_T("icon.png");
+    DString title = ui::StringUtil::Printf(DUI_T("%s [%02d]"), task.sName, task.nId);
     pItem->InitSubControls(img, title, nElementIndex);
     return true;
 }
@@ -109,7 +109,7 @@ void DataProvider::SetTotal(int nTotal)
         delete [] task.sName;
     }
     m_vTasks.clear();
-    DString name = "Task Name";
+    DString name = DUI_T("Task Name");
     m_vTasks.reserve(nTotal);
     for (auto i=0; i < nTotal; i++)
     {

@@ -24,9 +24,9 @@ void ControlForm::OnInitWindow()
 {
     SetupWindow();
     BuildUI();
-    if (auto* pRichText = ui::Find<ui::RichText>(this, "rich_text_demo")) {
-        pRichText->SetText("RichText: <a href=\"www.baidu.com\">Click to visit Baidu</a><br/>"
-                           "RichText: <a href=\"www.sohu.com\">Click to visit Sohu</a>");
+    if (auto* pRichText = ui::Find<ui::RichText>(this, DUI_T("rich_text_demo"))) {
+        pRichText->SetText(DUI_T("RichText: <a href=\"www.baidu.com\">Click to visit Baidu</a><br/>")
+                           DUI_T("RichText: <a href=\"www.sohu.com\">Click to visit Sohu</a>"));
     }
     BindEvents();
 
@@ -67,64 +67,64 @@ void ControlForm::BindEvents()
 {
 #ifdef DUI_BUILD_FOR_SDL
     //Display basic SDL information
-    ui::Label* pTitle = ui::Find<ui::Label>(this, "window_title");
+    ui::Label* pTitle = ui::Find<ui::Label>(this, DUI_T("window_title"));
     if (pTitle != nullptr) {
         DString title = pTitle->GetText();
         DString driverName = GetVideoDriverName();
         DString renderName = GetWindowRenderName();
-        DString newTitle = ui::StringUtil::Printf("%s[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]", title.c_str(), driverName.c_str(), renderName.c_str());
+        DString newTitle = ui::StringUtil::Printf(DUI_T("%s[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), title.c_str(), driverName.c_str(), renderName.c_str());
         pTitle->SetText(newTitle);
     }
 #endif
 
     /* Initialize ListBox data */
-    ui::ListBox* list = ui::Find<ui::ListBox>(this, "list");
+    ui::ListBox* list = ui::Find<ui::ListBox>(this, DUI_T("list"));
     if (list != nullptr) {
         for (auto i = 0; i < 30; i++)
         {
             auto* element = ui::Create<ui::ListBoxItem>(this, {});
-            element->SetText(ui::StringUtil::Printf("ui::VListBox::ListBoxItem %d", i));
-            element->SetClass("listitem");
+            element->SetText(ui::StringUtil::Printf(DUI_T("ui::VListBox::ListBoxItem %d"), i));
+            element->SetClass(DUI_T("listitem"));
             element->SetFixedHeight(ui::UiFixedInt(20), true, true);
             list->AddItem(element);
         }
     }
 
-    ui::TreeView* pTree = ui::Find<ui::TreeView>(this, "tree");
+    ui::TreeView* pTree = ui::Find<ui::TreeView>(this, DUI_T("tree"));
     if (pTree != nullptr) {
         ui::TreeNode* pRootNode = pTree->GetRootNode();
         ASSERT(pRootNode != nullptr);
         if (pRootNode != nullptr) {
-            ui::TreeNode* pTestNode = pRootNode->FindChildNodeByText("ui::TreeView Parent Node 2", true);
+            ui::TreeNode* pTestNode = pRootNode->FindChildNodeByText(DUI_T("ui::TreeView Parent Node 2"), true);
             ASSERT(pTestNode != nullptr);
             if (pTestNode != nullptr) {
                 auto* pNode0 = ui::Create<ui::TreeNode>(this, {});
-                pNode0->SetClass("tree_node");
-                pNode0->SetText("Dynamic Node 0(top)");
+                pNode0->SetClass(DUI_T("tree_node"));
+                pNode0->SetText(DUI_T("Dynamic Node 0(top)"));
                 pTestNode->AddChildNodeAt(pNode0, 0);
 
                 auto* pNode2 = ui::Create<ui::TreeNode>(this, {});
-                pNode2->SetClass("tree_node");
-                pNode2->SetText("Dynamic Node 1(end)");
+                pNode2->SetClass(DUI_T("tree_node"));
+                pNode2->SetText(DUI_T("Dynamic Node 1(end)"));
                 pTestNode->AddChildNode(pNode2);
 
                 auto* pNode1 = ui::Create<ui::TreeNode>(this, {});
-                pNode1->SetClass("tree_node");
-                pNode1->SetText("Dynamic Node 2(at index 2)");
+                pNode1->SetClass(DUI_T("tree_node"));
+                pNode1->SetText(DUI_T("Dynamic Node 2(at index 2)"));
                 pTestNode->AddChildNodeAt(pNode1, 2);
             }
         }
     }
 
     //Initialize the Combo data
-    ui::Combo* combo = ui::Find<ui::Combo>(this, "combo");
+    ui::Combo* combo = ui::Find<ui::Combo>(this, DUI_T("combo"));
     if (combo != nullptr) {
         ui::TreeView* pTreeView = combo->GetTreeView();
         ui::TreeNode* pTreeNode = pTreeView->GetRootNode();
         for (auto i = 0; i < 10; i++) {
             auto* node = ui::Create<ui::TreeNode>(this, {});
-            node->SetClass("tree_node");
-            node->SetText(ui::StringUtil::Printf("ui::Combo::TreeNode %d", i));
+            node->SetClass(DUI_T("tree_node"));
+            node->SetText(ui::StringUtil::Printf(DUI_T("ui::Combo::TreeNode %d"), i));
             pTreeNode->AddChildNode(node);
         }
     }
@@ -151,22 +151,22 @@ void ControlForm::BindEvents()
 //    ASSERT(combo->GetText() == "Test");
 //#endif
 
-    ui::FilterCombo* filterCombo = ui::Find<ui::FilterCombo>(this, "filter_combo");
+    ui::FilterCombo* filterCombo = ui::Find<ui::FilterCombo>(this, DUI_T("filter_combo"));
     if (filterCombo != nullptr) {
         for (auto i = 0; i < 100; i++) {
-            filterCombo->AddTextItem(ui::StringUtil::Printf("Item %d FilterCombo", i));
+            filterCombo->AddTextItem(ui::StringUtil::Printf(DUI_T("Item %d FilterCombo"), i));
         }
     }
 
-    ui::CheckCombo* check_combo = ui::Find<ui::CheckCombo>(this, "check_combo");
+    ui::CheckCombo* check_combo = ui::Find<ui::CheckCombo>(this, DUI_T("check_combo"));
     if (check_combo != nullptr) {
-        check_combo->AddTextItem("Monday");
-        check_combo->AddTextItem("Tuesday");
-        check_combo->AddTextItem("Wednesday");
-        check_combo->AddTextItem("Thursday");
-        check_combo->AddTextItem("Friday");
-        check_combo->AddTextItem("Saturday");
-        check_combo->AddTextItem("Sunday");
+        check_combo->AddTextItem(DUI_T("Monday"));
+        check_combo->AddTextItem(DUI_T("Tuesday"));
+        check_combo->AddTextItem(DUI_T("Wednesday"));
+        check_combo->AddTextItem(DUI_T("Thursday"));
+        check_combo->AddTextItem(DUI_T("Friday"));
+        check_combo->AddTextItem(DUI_T("Saturday"));
+        check_combo->AddTextItem(DUI_T("Sunday"));
     }
 
     int32_t nThreadIdentifier = ui::ThreadIdentifier::kThreadWorker;
@@ -187,7 +187,7 @@ void ControlForm::BindEvents()
         300);
 
     /* Show settings menu */
-    ui::Button* settings = ui::Find<ui::Button>(this, "settings");
+    ui::Button* settings = ui::Find<ui::Button>(this, DUI_T("settings"));
     if (settings != nullptr) {
         settings->AttachClick([this, settings](const ui::EventArgs& args) {
             ui::UiRect rect = args.GetSender()->GetPos();
@@ -203,11 +203,11 @@ void ControlForm::BindEvents()
     }
 
     //Register a context menu, demonstrating the feature (both methods can register a context menu)
-    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, "edit"));
-    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, "edit2"));
+    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, DUI_T("edit")));
+    AttachRichEditEvents(ui::Find<ui::RichEdit>(this, DUI_T("edit2")));
 
     //Show the color picker of a modal dialog
-    ui::Button* pShowColorPicker = ui::Find<ui::Button>(this, "show_color_picker");
+    ui::Button* pShowColorPicker = ui::Find<ui::Button>(this, DUI_T("show_color_picker"));
     if (pShowColorPicker != nullptr) {
         pShowColorPicker->AttachClick([this](const ui::EventArgs& args) {
             ShowColorPicker(true);
@@ -216,7 +216,7 @@ void ControlForm::BindEvents()
     }
 
     //Show a modal dialog
-    ui::Button* pShowModal = ui::Find<ui::Button>(this, "domodal2");
+    ui::Button* pShowModal = ui::Find<ui::Button>(this, DUI_T("domodal2"));
     if (pShowModal != nullptr) {
         pShowModal->AttachClick([this](const ui::EventArgs& args) {
             ShowDoModalDlg();
@@ -225,40 +225,40 @@ void ControlForm::BindEvents()
     }
 
     //RichText displays hyperlinks
-    ui::RichText* pRichText = ui::Find<ui::RichText>(this, "rich_text_demo");
+    ui::RichText* pRichText = ui::Find<ui::RichText>(this, DUI_T("rich_text_demo"));
     if (pRichText != nullptr) {
         pRichText->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-                ui::SystemUtil::ShowMessageBox(this, url, "RichText Click HyperLink");
+                ui::SystemUtil::ShowMessageBox(this, url, DUI_T("RichText Click HyperLink"));
             }
             return true;
             });
     }
 
     //HyperLink control
-    ui::HyperLink* pHyperLink = ui::Find<ui::HyperLink>(this, "hyper_link1");
+    ui::HyperLink* pHyperLink = ui::Find<ui::HyperLink>(this, DUI_T("hyper_link1"));
     if (pHyperLink != nullptr) {
         pHyperLink->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-                ui::SystemUtil::ShowMessageBox(this, url, "HyperLink Click HyperLink");
+                ui::SystemUtil::ShowMessageBox(this, url, DUI_T("HyperLink Click HyperLink"));
             }
             return true;
             });
     }
 
-    pHyperLink = ui::Find<ui::HyperLink>(this, "hyper_link2");
+    pHyperLink = ui::Find<ui::HyperLink>(this, DUI_T("hyper_link2"));
     if (pHyperLink != nullptr) {
         pHyperLink->AttachLinkClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, "Text Button Event Response", "HyperLink Click");
+            ui::SystemUtil::ShowMessageBox(this, DUI_T("Text Button Event Response"), DUI_T("HyperLink Click"));
             return true;
             });
     }
 
     //Hotkey settings
-    ui::HotKey* pHotKey = ui::Find<ui::HotKey>(this, "set_hot_key");
-    ui::Button* pHotKeyButton = ui::Find<ui::Button>(this, "btn_set_hot_key");
+    ui::HotKey* pHotKey = ui::Find<ui::HotKey>(this, DUI_T("set_hot_key"));
+    ui::Button* pHotKeyButton = ui::Find<ui::Button>(this, DUI_T("btn_set_hot_key"));
     if (pHotKey && pHotKeyButton) {
         pHotKeyButton->AttachClick([this, pHotKey](const ui::EventArgs& args) {
             uint8_t wVirtualKeyCode = 0;
@@ -296,8 +296,8 @@ void ControlForm::BindEvents()
             });
     }
 
-    pHotKey = ui::Find<ui::HotKey>(this, "set_system_hot_key");
-    pHotKeyButton = ui::Find<ui::Button>(this, "btn_set_system_hot_key");
+    pHotKey = ui::Find<ui::HotKey>(this, DUI_T("set_system_hot_key"));
+    pHotKeyButton = ui::Find<ui::Button>(this, DUI_T("btn_set_system_hot_key"));
     if (pHotKey && pHotKeyButton) {
         pHotKeyButton->AttachClick([this, pHotKey](const ui::EventArgs& args) {
             uint8_t wVirtualKeyCode = 0;
@@ -313,7 +313,7 @@ void ControlForm::BindEvents()
     }
 
     //Test page, open a new window
-    ui::Button* pTestBtn = ui::Find<ui::Button>(this, "test_btn");
+    ui::Button* pTestBtn = ui::Find<ui::Button>(this, DUI_T("test_btn"));
     if (pTestBtn != nullptr) {
         pTestBtn->AttachClick([this](const ui::EventArgs&) {
             ShowTestWindow();
@@ -322,7 +322,7 @@ void ControlForm::BindEvents()
     }
 
     //Response function of the animation test button
-    ui::Button* pAnimationBtn = ui::Find<ui::Button>(this, "animation_btn");
+    ui::Button* pAnimationBtn = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
     if (pAnimationBtn != nullptr) {
         pAnimationBtn->AttachClick([this](const ui::EventArgs&) {
             ShowAnimationWindow();
@@ -331,7 +331,7 @@ void ControlForm::BindEvents()
     }
 
     //Tray icon functionality
-    ui::CheckBox* pTrayIconCheckBox = ui::Find<ui::CheckBox>(this, "checkbox_tray_icon");
+    ui::CheckBox* pTrayIconCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("checkbox_tray_icon"));
     if (pTrayIconCheckBox != nullptr) {
         pTrayIconCheckBox->AttachSelect([this](const ui::EventArgs&) {
             //Enable
@@ -413,10 +413,10 @@ void ControlForm::AttachRichEditEvents(ui::RichEdit* edit)
         });
 
     //Display RichEdit in full screen
-    ui::Button* pFullscreenBtn = ui::Find<ui::Button>(this, "rich_edit_fullscreen_btn");
+    ui::Button* pFullscreenBtn = ui::Find<ui::Button>(this, DUI_T("rich_edit_fullscreen_btn"));
     if (pFullscreenBtn != nullptr) {
         pFullscreenBtn->AttachClick([this](const ui::EventArgs&) {
-            ui::Control* pControl = ui::Find<ui::Control>(this, "edit");
+            ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("edit"));
             if (pControl != nullptr) {
                 this->SetFullscreenControl(pControl);
             }
@@ -439,7 +439,7 @@ void ControlForm::ShowColorPicker(bool bDoModal)
 
     //Function executed after the window is created
     auto OnInitColorPicker = [this, pColorPicker](const ui::EventArgs&) {
-        ui::RichEdit* pEdit = ui::Find<ui::RichEdit>(this, "edit");
+        ui::RichEdit* pEdit = ui::Find<ui::RichEdit>(this, DUI_T("edit"));
         if (pEdit != nullptr) {
             DString oldTextColor = pEdit->GetTextColor();
             if (!oldTextColor.empty()) {
@@ -487,11 +487,11 @@ void ControlForm::ShowColorPicker(bool bDoModal)
 void ControlForm::ShowDoModalDlg()
 {
     ui::WindowImplBase simpleWnd;
-    simpleWnd.InitSkin("controls", "about.xml");
+    simpleWnd.InitSkin(DUI_T("controls"), DUI_T("about.xml"));
     ui::WindowCreateParam createParam;
     createParam.m_dwStyle = ui::kWS_POPUP;
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = "AboutForm";
+    createParam.m_windowTitle = DUI_T("AboutForm");
     createParam.m_bCenterWindow = true;
     simpleWnd.DoModal(this, createParam);
 }
@@ -502,7 +502,7 @@ void ControlForm::ShowTestWindow()
     ui::WindowCreateParam createParam;
     createParam.m_dwStyle = ui::kWS_POPUP;
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = "TestWindow";
+    createParam.m_windowTitle = DUI_T("TestWindow");
     createParam.m_bCenterWindow = true;
     testForm->CreateWnd(this, createParam);
     testForm->ShowModalFake();
@@ -514,7 +514,7 @@ void ControlForm::ShowAnimationWindow()
     ui::WindowCreateParam createParam;
     createParam.m_dwStyle = ui::kWS_POPUP;
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = "AnimationWindow";
+    createParam.m_windowTitle = DUI_T("AnimationWindow");
     createParam.m_bCenterWindow = true;
     testForm->CreateWnd(this, createParam);
     testForm->ShowModalFake();
@@ -525,15 +525,15 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
     ui::Menu* menu = new ui::Menu(this, pRelatedControl);//A parent window is required, otherwise the program status bar becomes inactive when the menu pops up
     menu->SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     menu->SetSkinFolder(GetResourcePath().ToString());
-    DString xml("menu/settings_menu.xml");
+    DString xml(DUI_T("menu/settings_menu.xml"));
     menu->ShowMenu(xml, point);
 
     //Add a submenu item to the second-level menu
-    ui::MenuItem* menu_fourth = ui::Find<ui::MenuItem>(menu, "fourth");
+    ui::MenuItem* menu_fourth = ui::Find<ui::MenuItem>(menu, DUI_T("fourth"));
     if (menu_fourth != nullptr) {
-        auto* menu_item = ui::Create<ui::MenuItem>(menu, {{"text", "Dynamically created"}, {"class", "menu_element"}});
+        auto* menu_item = ui::Create<ui::MenuItem>(menu, {{DUI_T("text"), DUI_T("Dynamically created")}, {DUI_T("class"), DUI_T("menu_element")}});
         menu_item->SetFixedWidth(ui::UiFixedInt(200), true, true);
-        menu_item->SetFontId("system_14");
+        menu_item->SetFontId(DUI_T("system_14"));
         menu_item->SetTextPadding({ 20, 0, 20, 0 }, true);
         menu_fourth->AddSubMenuItemAt(menu_item, 1);//After adding, the resource is managed by the menu
     }
@@ -543,10 +543,10 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
     /*
     menu_item = new ui::MenuItem(menu);
     menu_item->SetWindow(menu);
-    menu_item->SetText("Dynamically created");
-    menu_item->SetClass("menu_element");
+    menu_item->SetText(DUI_T("Dynamically created"));
+    menu_item->SetClass(DUI_T("menu_element"));
     menu_item->SetFixedWidth(180);
-    menu_item->SetFontId("system_14");
+    menu_item->SetFontId(DUI_T("system_14"));
     menu_item->SetTextPadding({ 20, 0, 20, 0 });
     menu->AddMenuItemAt(menu_item, 4);//After adding, the resource is managed by the menu
     */
@@ -554,19 +554,19 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
     //Demonstration of the checkbox menu item functionality
     static bool s_is_checked_01_flag = false;
     bool& flag = s_is_checked_01_flag;
-    ui::MenuItem* menu_check_01 = ui::Find<ui::MenuItem>(menu, "menu_check_01");
+    ui::MenuItem* menu_check_01 = ui::Find<ui::MenuItem>(menu, DUI_T("menu_check_01"));
     if (menu_check_01 != nullptr) {
         menu_check_01->AttachClick([&flag](const ui::EventArgs& args) {
             flag = true;
             return true;
             });
     }
-    ui::CheckBox* menuCheckBox01 = ui::Find<ui::CheckBox>(menu, "menu_checkbox_01");
+    ui::CheckBox* menuCheckBox01 = ui::Find<ui::CheckBox>(menu, DUI_T("menu_checkbox_01"));
     if (menuCheckBox01 != nullptr) {
         menuCheckBox01->Selected(s_is_checked_01_flag);
     }
 
-    ui::MenuItem* menu_check_02 = ui::Find<ui::MenuItem>(menu, "menu_check_02");
+    ui::MenuItem* menu_check_02 = ui::Find<ui::MenuItem>(menu, DUI_T("menu_check_02"));
     if (menu_check_02 != nullptr) {
         menu_check_02->AttachClick([&flag](const ui::EventArgs& args) {
             flag = false;
@@ -574,14 +574,14 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
             });
     }
 
-    ui::CheckBox* menuCheckBox02 = ui::Find<ui::CheckBox>(menu, "menu_checkbox_02");
+    ui::CheckBox* menuCheckBox02 = ui::Find<ui::CheckBox>(menu, DUI_T("menu_checkbox_02"));
     if (menuCheckBox02 != nullptr) {
         menuCheckBox02->Selected(!s_is_checked_01_flag);
     }
 
 
     /* About menu */
-    ui::MenuItem* menu_about = menu->GetMenuItemByName("about");
+    ui::MenuItem* menu_about = menu->GetMenuItemByName(DUI_T("about"));
     if (menu_about != nullptr) {
         menu_about->AttachClick([this](const ui::EventArgs&) {
             ui::GlobalManager::Instance().Thread().PostTask(ui::kThreadUI,
@@ -590,7 +590,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
                     ui::WindowCreateParam createParam;
                     createParam.m_dwStyle = ui::kWS_OVERLAPPEDWINDOW;
                     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-                    createParam.m_windowTitle = "AboutForm";
+                    createParam.m_windowTitle = DUI_T("AboutForm");
                     createParam.m_nWidth = 400;
                     createParam.m_nHeight = 220;
                     createParam.m_bCenterWindow = true;
@@ -605,7 +605,7 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
 void ControlForm::LoadRichEditData()
 {
     ui::FilePath controls_xml = ui::GlobalManager::Instance().GetResourcePath();
-    controls_xml += "controls/controls.xml";
+    controls_xml += DUI_T("controls/controls.xml");
 
     //XML files are loaded in UTF-8 encoding
     std::string xml;
@@ -619,12 +619,12 @@ void ControlForm::LoadRichEditData()
             const ui::FilePath themeDefaultPath = ui::GlobalManager::Instance().GetThemeDefaultPath();
             if (!themeDefaultPath.IsEmpty()) {
                 ui::FilePath defaultXml = themeDefaultPath;
-                defaultXml += "controls/controls.xml";
+                defaultXml += DUI_T("controls/controls.xml");
             bReadOk = ui::GlobalManager::Instance().MemoryResources().GetData(defaultXml, xmlData);
             }
             if (!bReadOk || xmlData.empty()) {
                 xmlData.clear();
-            bReadOk = ui::GlobalManager::Instance().MemoryResources().GetData(ui::FilePath("themes/default/controls/controls.xml"), xmlData);
+            bReadOk = ui::GlobalManager::Instance().MemoryResources().GetData(ui::FilePath(DUI_T("themes/default/controls/controls.xml")), xmlData);
             }
         }
         if (!bReadOk || xmlData.empty()) {
@@ -644,7 +644,7 @@ void ControlForm::LoadRichEditData()
             const ui::FilePath themeDefaultPath = ui::GlobalManager::Instance().GetThemeDefaultPath();
             if (!themeDefaultPath.IsEmpty()) {
                 ui::FilePath defaultXml = themeDefaultPath;
-                defaultXml += "controls/controls.xml";
+                defaultXml += DUI_T("controls/controls.xml");
                 fileData.clear();
                 if (ui::FileUtil::ReadFileData(defaultXml, fileData) && !fileData.empty()) {
                     xmlData.assign(fileData.begin(), fileData.end());
@@ -667,12 +667,12 @@ void ControlForm::OnResourceFileLoaded(const DString& xml)
     if (xml.empty()) {
         return;
     }
-    ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, "edit2");
+    ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, DUI_T("edit2"));
     if (pRichEdit) {
         pRichEdit->SetText(xml);
         pRichEdit->HomeUp();
     }
-    pRichEdit = ui::Find<ui::RichEdit>(this, "edit");
+    pRichEdit = ui::Find<ui::RichEdit>(this, DUI_T("edit"));
     if (pRichEdit) {
         pRichEdit->SetText(xml);
         pRichEdit->SetFocus();
@@ -684,15 +684,15 @@ void ControlForm::OnProgressValueChagned(float value)
 {
     //The progress range given by the callback is [0, 99), convert it to [0, 100]
     value = value * 100 / 99 + 0.5f;
-    auto progress = ui::Find<ui::Progress>(this, "progress");
+    auto progress = ui::Find<ui::Progress>(this, DUI_T("progress"));
     if (progress) {
         progress->SetValue(value);
     }
 
-    auto circleprogress = ui::Find<ui::Progress>(this, "circleprogress");
+    auto circleprogress = ui::Find<ui::Progress>(this, DUI_T("circleprogress"));
     if (circleprogress)    {
         circleprogress->SetValue(value);
-        circleprogress->SetText(ui::StringUtil::Printf("%.0f%%", value));
+        circleprogress->SetText(ui::StringUtil::Printf(DUI_T("%.0f%%"), value));
     }
 }
 
@@ -702,7 +702,7 @@ LRESULT ControlForm::OnHotKeyMsg(int32_t hotkeyId, ui::VirtualKeyCode vkCode, ui
     bHandled = true;
     if (hotkeyId == SYSTEM_HOTKEY_ID) {
         SetWindowForeground();
-        ui::SystemUtil::ShowMessageBox(this, "System HotKey Command Received", "ControlForm::OnHotKeyMsg");
+        ui::SystemUtil::ShowMessageBox(this, DUI_T("System HotKey Command Received"), DUI_T("ControlForm::OnHotKeyMsg"));
     }
     return lResult;
 }
@@ -711,7 +711,7 @@ void ControlForm::ShowTrayIcon(bool bShow)
 {
     if (bShow) {
         // Create the tray icon
-        m_pTrayIcon = ui::TrayIcon::Create(this, "public/caption/logo.ico", "controls(dui)");
+        m_pTrayIcon = ui::TrayIcon::Create(this, DUI_T("public/caption/logo.ico"), DUI_T("controls(dui)"));
         if (m_pTrayIcon != nullptr) {
             // Set the message callback
             m_pTrayIcon->SetMessageCallback([this](ui::TrayIconMessageType msgType, int32_t x, int32_t y)
@@ -720,7 +720,7 @@ void ControlForm::ShowTrayIcon(bool bShow)
                 });
 
             // Show the welcome balloon
-            m_pTrayIcon->ShowBalloon("Hint", "App has started!", 3000);
+            m_pTrayIcon->ShowBalloon(DUI_T("Hint"), DUI_T("App has started!"), 3000);
         }
 
     }
@@ -768,55 +768,55 @@ void ControlForm::ShowTrayMenu(int32_t x, int32_t y)
     ui::Menu* menu = new ui::Menu(pParentWnd, nullptr);
     menu->SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     //Pure code menu: no XML template, menu items are added by code (corresponds to tray_menu.xml)
-    menu->ShowMenu("", ui::UiPoint(x, y));
+    menu->ShowMenu(DUI_T(""), ui::UiPoint(x, y));
     {
         struct TrayItem { DString name; DString text; };
         const TrayItem items[] = {
-            { "tray_menu_item_1", "Tray Menu Item 1" },
-            { "tray_menu_item_2", "Tray Menu Item 2" },
-            { "tray_menu_item_3", "Tray Menu Item 3" },
-            { "tray_menu_item_4", "Tray Menu Item 4" },
-            { "tray_menu_exit", "Exit" },
+            { DUI_T("tray_menu_item_1"), DUI_T("Tray Menu Item 1") },
+            { DUI_T("tray_menu_item_2"), DUI_T("Tray Menu Item 2") },
+            { DUI_T("tray_menu_item_3"), DUI_T("Tray Menu Item 3") },
+            { DUI_T("tray_menu_item_4"), DUI_T("Tray Menu Item 4") },
+            { DUI_T("tray_menu_exit"), DUI_T("Exit") },
         };
         for (const auto& item : items) {
-            auto* pMenuItem = ui::Create<ui::MenuItem>(menu, {{"class", "menu_element"}, {"name", item.name}});
+            auto* pMenuItem = ui::Create<ui::MenuItem>(menu, {{DUI_T("class"), DUI_T("menu_element")}, {DUI_T("name"), item.name}});
             pMenuItem->SetFixedWidth(ui::UiFixedInt(200), true, true);
-    auto* pLabel = ui::Create<ui::Label>(menu, {{"class", "menu_text"}, {"text", item.text}, {"margin", "30,0,0,0"}, {"mouse_enabled", "false"}, {"keyboard_enabled", "false"}});
+    auto* pLabel = ui::Create<ui::Label>(menu, {{DUI_T("class"), DUI_T("menu_text")}, {DUI_T("text"), item.text}, {DUI_T("margin"), DUI_T("30,0,0,0")}, {DUI_T("mouse_enabled"), DUI_T("false")}, {DUI_T("keyboard_enabled"), DUI_T("false")}});
     ui::Attach(pMenuItem, pLabel);
             menu->AddMenuItem(pMenuItem);
         }
     }
 
     //Menu item click response
-    ui::MenuItem* pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_item_1");
+    ui::MenuItem* pMenuItem = ui::Find<ui::MenuItem>(menu, DUI_T("tray_menu_item_1"));
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, "tray_menu_item_1 clicked!", "TrayIconTest");
+            ui::SystemUtil::ShowMessageBox(this, DUI_T("tray_menu_item_1 clicked!"), DUI_T("TrayIconTest"));
             return true;
             });
     }
-    pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_item_2");
+    pMenuItem = ui::Find<ui::MenuItem>(menu, DUI_T("tray_menu_item_2"));
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, "tray_menu_item_2 clicked!", "TrayIconTest");
+            ui::SystemUtil::ShowMessageBox(this, DUI_T("tray_menu_item_2 clicked!"), DUI_T("TrayIconTest"));
             return true;
             });
     }
-    pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_item_3");
+    pMenuItem = ui::Find<ui::MenuItem>(menu, DUI_T("tray_menu_item_3"));
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, "tray_menu_item_3 clicked!", "TrayIconTest");
+            ui::SystemUtil::ShowMessageBox(this, DUI_T("tray_menu_item_3 clicked!"), DUI_T("TrayIconTest"));
             return true;
             });
     }
-    pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_item_4");
+    pMenuItem = ui::Find<ui::MenuItem>(menu, DUI_T("tray_menu_item_4"));
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
-            ui::SystemUtil::ShowMessageBox(this, "tray_menu_item_4 clicked!", "TrayIconTest");
+            ui::SystemUtil::ShowMessageBox(this, DUI_T("tray_menu_item_4 clicked!"), DUI_T("TrayIconTest"));
             return true;
             });
     }
-    pMenuItem = ui::Find<ui::MenuItem>(menu, "tray_menu_exit");
+    pMenuItem = ui::Find<ui::MenuItem>(menu, DUI_T("tray_menu_exit"));
     if (pMenuItem != nullptr) {
         pMenuItem->AttachClick([this](const ui::EventArgs& /*args*/) {
             this->CloseWnd();
@@ -856,7 +856,7 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
     w.SetShadowBorderSize(0);
     w.SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     w.SetWindowMinimumSize(ui::UiSize(400, 320), true);
-    w.SetWindowIcon("public/caption/logo.ico");
+    w.SetWindowIcon(DUI_T("public/caption/logo.ico"));
     w.SetShadowAttached(true);
     // System shadow type: normalize and force non-layered window
     { ui::Shadow::ShadowType supportedType =
@@ -869,120 +869,120 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
       }
     }
     w.CenterWindow();
-    pWindow->AddClass("check_combo", " bordersize=\"1\" bordercolor=\"splitline_level1\" dropbox=\"padding='0,0,0,0' bkcolor='bk_wnd_lightcolor' border_color='splitline_level1' border_size='0,0,0,0' vscrollbar='true'\" dropbox_item_class=\"width={stretch} height={24} text_padding={20,0,2,1} text_align={left,vcenter}                                normal_image={file='controls_round/checkbox_round_outline_unchecked.svg' valign='center'}                                selected_normal_image={file='controls_round/checkbox_round_outline_checked.svg' valign='center'}\" selected_item_class=\"width={auto} height={22} margin={4,2,4,2} bkcolor={bk_menuitem_selected} text_padding={2,1,2,1}\"");
-    auto* p0 = ui::Create<ui::VBox>(pWindow, {{"bkcolor", "bk_wnd_darkcolor"}});
-    auto* p1 = ui::Create<ui::HBox>(pWindow, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
-    auto* p2 = ui::Create<ui::Control>(pWindow, {{"width", "18"}, {"height", "18"}, {"bkimage", "public/caption/logo.svg"}, {"valign", "center"}, {"margin", "8"}});
+    pWindow->AddClass(DUI_T("check_combo"), DUI_T(" bordersize=\"1\" bordercolor=\"splitline_level1\" dropbox=\"padding='0,0,0,0' bkcolor='bk_wnd_lightcolor' border_color='splitline_level1' border_size='0,0,0,0' vscrollbar='true'\" dropbox_item_class=\"width={stretch} height={24} text_padding={20,0,2,1} text_align={left,vcenter}                                normal_image={file='controls_round/checkbox_round_outline_unchecked.svg' valign='center'}                                selected_normal_image={file='controls_round/checkbox_round_outline_checked.svg' valign='center'}\" selected_item_class=\"width={auto} height={22} margin={4,2,4,2} bkcolor={bk_menuitem_selected} text_padding={2,1,2,1}\""));
+    auto* p0 = ui::Create<ui::VBox>(pWindow, {{DUI_T("bkcolor"), DUI_T("bk_wnd_darkcolor")}});
+    auto* p1 = ui::Create<ui::HBox>(pWindow, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}});
+    auto* p2 = ui::Create<ui::Control>(pWindow, {{DUI_T("width"), DUI_T("18")}, {DUI_T("height"), DUI_T("18")}, {DUI_T("bkimage"), DUI_T("public/caption/logo.svg")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8")}});
     ui::Attach(p1, p2);
 
-    auto* p3 = ui::Create<ui::Label>(pWindow, {{"name", "window_title"}, {"text", "Controls"}, {"valign", "center"}, {"margin", "8"}, {"mouse_enabled", "false"}});
+    auto* p3 = ui::Create<ui::Label>(pWindow, {{DUI_T("name"), DUI_T("window_title")}, {DUI_T("text"), DUI_T("Controls")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
     ui::Attach(p1, p3);
 
-    auto* p4 = ui::Create<ui::Control>(pWindow, {{"mouse_enabled", "false"}});
+    auto* p4 = ui::Create<ui::Control>(pWindow, {{DUI_T("mouse_enabled"), DUI_T("false")}});
     ui::Attach(p1, p4);
 
-    auto* p5 = ui::Create<ui::Button>(pWindow, {{"class", "btn_wnd_settings_11"}, {"height", "32"}, {"width", "40"}, {"name", "settings"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Settings"}});
+    auto* p5 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_settings_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("settings")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Settings")}});
     ui::Attach(p1, p5);
 
-    auto* p6 = ui::Create<ui::Button>(pWindow, {{"class", "btn_wnd_min_11"}, {"height", "32"}, {"width", "40"}, {"name", "minbtn"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}});
+    auto* p6 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Minimize")}});
     ui::Attach(p1, p6);
 
-    auto* p7 = ui::Create<ui::Button>(pWindow, {{"class", "btn_wnd_close_11"}, {"height", "stretch"}, {"width", "40"}, {"name", "closebtn"}, {"margin", "0,0,8,2"}, {"tooltip_text", "Close"}});
+    auto* p7 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_close_11")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("closebtn")}, {DUI_T("margin"), DUI_T("0,0,8,2")}, {DUI_T("tooltip_text"), DUI_T("Close")}});
     ui::Attach(p1, p7);
 
     ui::Attach(p0, p1);
 
-    auto* p8 = ui::Create<ui::VBox>(pWindow, {{"padding", "10,10,10,10"}});
-    auto* p9 = ui::Create<ui::HBox>(pWindow, {{"height", "170"}, {"padding", "0,0,0,10"}});
-    auto* p10 = ui::Create<ui::VBox>(pWindow, {{"width", "120"}});
-    auto* p11 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_blue_80x30"}, {"text", "blue"}, {"tooltip_text", "ui::Buttons"}});
+    auto* p8 = ui::Create<ui::VBox>(pWindow, {{DUI_T("padding"), DUI_T("10,10,10,10")}});
+    auto* p9 = ui::Create<ui::HBox>(pWindow, {{DUI_T("height"), DUI_T("170")}, {DUI_T("padding"), DUI_T("0,0,0,10")}});
+    auto* p10 = ui::Create<ui::VBox>(pWindow, {{DUI_T("width"), DUI_T("120")}});
+    auto* p11 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_blue_80x30")}, {DUI_T("text"), DUI_T("blue")}, {DUI_T("tooltip_text"), DUI_T("ui::Buttons")}});
     ui::Attach(p10, p11);
 
-    auto* p12 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_white_80x30"}, {"text", "white"}});
+    auto* p12 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_white_80x30")}, {DUI_T("text"), DUI_T("white")}});
     ui::Attach(p10, p12);
 
-    auto* p13 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_red_80x30"}, {"text", "red"}});
+    auto* p13 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_red_80x30")}, {DUI_T("text"), DUI_T("red")}});
     ui::Attach(p10, p13);
 
-    auto* p14 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"text", "Control Test"}, {"name", "test_btn"}, {"width", "80"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,2,0,0"}});
+    auto* p14 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("text"), DUI_T("Control Test")}, {DUI_T("name"), DUI_T("test_btn")}, {DUI_T("width"), DUI_T("80")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("margin"), DUI_T("0,2,0,0")}});
     ui::Attach(p10, p14);
 
-    auto* p15 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "animation_btn"}, {"text", "Animation Test"}, {"width", "80"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,2,0,0"}});
+    auto* p15 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("name"), DUI_T("animation_btn")}, {DUI_T("text"), DUI_T("Animation Test")}, {DUI_T("width"), DUI_T("80")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("margin"), DUI_T("0,2,0,0")}});
     ui::Attach(p10, p15);
 
     ui::Attach(p9, p10);
 
-    auto* p16 = ui::Create<ui::VBox>(pWindow, {{"width", "120"}});
-    auto* p17 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_1"}, {"font", "system_14"}, {"text", "CheckBox 1"}, {"margin", "0,3,0,3"}, {"selected", "true"}, {"tooltip_text", "ui::Checkbox"}});
+    auto* p16 = ui::Create<ui::VBox>(pWindow, {{DUI_T("width"), DUI_T("120")}});
+    auto* p17 = ui::Create<ui::CheckBox>(pWindow, {{DUI_T("class"), DUI_T("checkbox_1")}, {DUI_T("font"), DUI_T("system_14")}, {DUI_T("text"), DUI_T("CheckBox 1")}, {DUI_T("margin"), DUI_T("0,3,0,3")}, {DUI_T("selected"), DUI_T("true")}, {DUI_T("tooltip_text"), DUI_T("ui::Checkbox")}});
     ui::Attach(p16, p17);
 
-    auto* p18 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_1"}, {"text", "CheckBox 2"}, {"margin", "0,3,0,3"}});
+    auto* p18 = ui::Create<ui::CheckBox>(pWindow, {{DUI_T("class"), DUI_T("checkbox_1")}, {DUI_T("text"), DUI_T("CheckBox 2")}, {DUI_T("margin"), DUI_T("0,3,0,3")}});
     ui::Attach(p16, p18);
 
-    auto* p19 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_2"}, {"text", "CheckBox 3"}, {"margin", "0,3,0,3"}});
+    auto* p19 = ui::Create<ui::CheckBox>(pWindow, {{DUI_T("class"), DUI_T("checkbox_2")}, {DUI_T("text"), DUI_T("CheckBox 3")}, {DUI_T("margin"), DUI_T("0,3,0,3")}});
     ui::Attach(p16, p19);
 
-    auto* p20 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "domodal2"}, {"text", "Modal Dialog"}, {"width", "110"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,12,0,0"}});
+    auto* p20 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("name"), DUI_T("domodal2")}, {DUI_T("text"), DUI_T("Modal Dialog")}, {DUI_T("width"), DUI_T("110")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("margin"), DUI_T("0,12,0,0")}});
     ui::Attach(p16, p20);
 
-    auto* p21 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "show_color_picker"}, {"text", "Color Picker (Modal)"}, {"width", "110"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,2,0,0"}});
+    auto* p21 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("name"), DUI_T("show_color_picker")}, {DUI_T("text"), DUI_T("Color Picker (Modal)")}, {DUI_T("width"), DUI_T("110")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("margin"), DUI_T("0,2,0,0")}});
     ui::Attach(p16, p21);
 
     ui::Attach(p9, p16);
 
-    auto* p22 = ui::Create<ui::VBox>(pWindow, {{"width", "160"}, {"margin", "20,0,0,0"}});
-    auto* p23 = ui::Create<ui::Option>(pWindow, {{"class", "option_1"}, {"group", "option_group"}, {"text", "Radio 1"}, {"margin", "0,3,0,3"}, {"selected", "true"}, {"tooltip_text", "ui::Option"}});
+    auto* p22 = ui::Create<ui::VBox>(pWindow, {{DUI_T("width"), DUI_T("160")}, {DUI_T("margin"), DUI_T("20,0,0,0")}});
+    auto* p23 = ui::Create<ui::Option>(pWindow, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("option_group")}, {DUI_T("text"), DUI_T("Radio 1")}, {DUI_T("margin"), DUI_T("0,3,0,3")}, {DUI_T("selected"), DUI_T("true")}, {DUI_T("tooltip_text"), DUI_T("ui::Option")}});
     ui::Attach(p22, p23);
 
-    auto* p24 = ui::Create<ui::Option>(pWindow, {{"class", "option_1"}, {"group", "option_group"}, {"text", "Radio 2"}, {"margin", "0,3,0,3"}});
+    auto* p24 = ui::Create<ui::Option>(pWindow, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("option_group")}, {DUI_T("text"), DUI_T("Radio 2")}, {DUI_T("margin"), DUI_T("0,3,0,3")}});
     ui::Attach(p22, p24);
 
-    auto* p25 = ui::Create<ui::Option>(pWindow, {{"class", "option_1"}, {"group", "option_group"}, {"text", "Radio 3"}, {"margin", "0,3,0,3"}});
+    auto* p25 = ui::Create<ui::Option>(pWindow, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("option_group")}, {DUI_T("text"), DUI_T("Radio 3")}, {DUI_T("margin"), DUI_T("0,3,0,3")}});
     ui::Attach(p22, p25);
 
-    auto* p26 = ui::Create<ui::HBox>(pWindow, {{"height", "36"}});
-    auto* p27 = ui::Create<ui::Label>(pWindow, {{"text", "Tray Icon"}, {"height", "36"}, {"valign", "center"}});
+    auto* p26 = ui::Create<ui::HBox>(pWindow, {{DUI_T("height"), DUI_T("36")}});
+    auto* p27 = ui::Create<ui::Label>(pWindow, {{DUI_T("text"), DUI_T("Tray Icon")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("valign"), DUI_T("center")}});
     ui::Attach(p26, p27);
 
-    auto* p28 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_toggle_1"}, {"name", "checkbox_tray_icon"}, {"selected", "false"}, {"margin", "4,3,0,3"}});
+    auto* p28 = ui::Create<ui::CheckBox>(pWindow, {{DUI_T("class"), DUI_T("checkbox_toggle_1")}, {DUI_T("name"), DUI_T("checkbox_tray_icon")}, {DUI_T("selected"), DUI_T("false")}, {DUI_T("margin"), DUI_T("4,3,0,3")}});
     ui::Attach(p26, p28);
 
     ui::Attach(p22, p26);
 
-    auto* p29 = ui::Create<ui::HBox>(pWindow, {{"height", "36"}});
-    auto* p30 = ui::Create<ui::Label>(pWindow, {{"text", "Switch Example"}, {"height", "36"}, {"valign", "center"}});
+    auto* p29 = ui::Create<ui::HBox>(pWindow, {{DUI_T("height"), DUI_T("36")}});
+    auto* p30 = ui::Create<ui::Label>(pWindow, {{DUI_T("text"), DUI_T("Switch Example")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("valign"), DUI_T("center")}});
     ui::Attach(p29, p30);
 
-    auto* p31 = ui::Create<ui::CheckBox>(pWindow, {{"class", "checkbox_toggle_2"}, {"margin", "4,3,0,3"}});
+    auto* p31 = ui::Create<ui::CheckBox>(pWindow, {{DUI_T("class"), DUI_T("checkbox_toggle_2")}, {DUI_T("margin"), DUI_T("4,3,0,3")}});
     ui::Attach(p29, p31);
 
     ui::Attach(p22, p29);
 
     ui::Attach(p9, p22);
 
-    auto* p32 = ui::Create<ui::VListBox>(pWindow, {{"class", "list"}, {"name", "list"}, {"padding", "5,3,5,3"}, {"tooltip_text", "ui::VListBox"}});
-    auto* p33 = ui::Create<ui::ListBoxItem>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::VListBox::ListBoxItem"}});
+    auto* p32 = ui::Create<ui::VListBox>(pWindow, {{DUI_T("class"), DUI_T("list")}, {DUI_T("name"), DUI_T("list")}, {DUI_T("padding"), DUI_T("5,3,5,3")}, {DUI_T("tooltip_text"), DUI_T("ui::VListBox")}});
+    auto* p33 = ui::Create<ui::ListBoxItem>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::VListBox::ListBoxItem")}});
     ui::Attach(p32, p33);
 
     ui::Attach(p9, p32);
 
-    auto* p34 = ui::Create<ui::TreeView>(pWindow, {{"class", "list"}, {"name", "tree"}, {"padding", "5,3,5,3"}, {"margin", "8,0,0,0"}, {"indent", "20"}, {"tooltip_text", "ui::TreeView"}});
-    auto* p35 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView Parent Node 0"}});
+    auto* p34 = ui::Create<ui::TreeView>(pWindow, {{DUI_T("class"), DUI_T("list")}, {DUI_T("name"), DUI_T("tree")}, {DUI_T("padding"), DUI_T("5,3,5,3")}, {DUI_T("margin"), DUI_T("8,0,0,0")}, {DUI_T("indent"), DUI_T("20")}, {DUI_T("tooltip_text"), DUI_T("ui::TreeView")}});
+    auto* p35 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView Parent Node 0")}});
     p34->GetRootNode()->AddChildNode(p35);
 
-    auto* p36 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView Parent Node 1"}});
-    auto* p37 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-1"}});
+    auto* p36 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView Parent Node 1")}});
+    auto* p37 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 1-1")}});
     p36->AddChildNode(p37);
 
-    auto* p38 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-2"}});
+    auto* p38 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 1-2")}});
     p36->AddChildNode(p38);
 
-    auto* p39 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-3"}});
-    auto* p40 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-3-1"}});
+    auto* p39 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 1-3")}});
+    auto* p40 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 1-3-1")}});
     p39->AddChildNode(p40);
 
-    auto* p41 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-3-2"}});
-    auto* p42 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 1-3-2-1"}});
+    auto* p41 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 1-3-2")}});
+    auto* p42 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 1-3-2-1")}});
     p41->AddChildNode(p42);
 
     p39->AddChildNode(p41);
@@ -991,14 +991,14 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
 
     p34->GetRootNode()->AddChildNode(p36);
 
-    auto* p43 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView Parent Node 2"}});
-    auto* p44 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 2-1"}});
+    auto* p43 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView Parent Node 2")}});
+    auto* p44 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 2-1")}});
     p43->AddChildNode(p44);
 
-    auto* p45 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 2-2"}});
+    auto* p45 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 2-2")}});
     p43->AddChildNode(p45);
 
-    auto* p46 = ui::Create<ui::TreeNode>(pWindow, {{"class", "listitem"}, {"height", "20"}, {"text", "ui::TreeView::TreeNode 2-3"}});
+    auto* p46 = ui::Create<ui::TreeNode>(pWindow, {{DUI_T("class"), DUI_T("listitem")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("text"), DUI_T("ui::TreeView::TreeNode 2-3")}});
     p43->AddChildNode(p46);
 
     p34->GetRootNode()->AddChildNode(p43);
@@ -1007,78 +1007,78 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
 
     ui::Attach(p8, p9);
 
-    auto* p47 = ui::Create<ui::Control>(pWindow, {{"class", "splitline_hor_level1"}});
+    auto* p47 = ui::Create<ui::Control>(pWindow, {{DUI_T("class"), DUI_T("splitline_hor_level1")}});
     ui::Attach(p8, p47);
 
-    auto* p48 = ui::Create<ui::HBox>(pWindow, {{"height", "220"}});
-    auto* p49 = ui::Create<ui::VBox>(pWindow, {{"width", "300"}, {"margin", "0,0,10"}});
-    auto* p50 = ui::Create<ui::Combo>(pWindow, {{"class", "combo"}, {"name", "combo"}, {"combo_type", "drop_list"}, {"dropbox_size", "0,150"}, {"height", "30"}, {"margin", "0,12,0,0"}, {"tooltip_text", "ui::Combo"}, {"shadow_type", "system_small_round"}});
+    auto* p48 = ui::Create<ui::HBox>(pWindow, {{DUI_T("height"), DUI_T("220")}});
+    auto* p49 = ui::Create<ui::VBox>(pWindow, {{DUI_T("width"), DUI_T("300")}, {DUI_T("margin"), DUI_T("0,0,10")}});
+    auto* p50 = ui::Create<ui::Combo>(pWindow, {{DUI_T("class"), DUI_T("combo")}, {DUI_T("name"), DUI_T("combo")}, {DUI_T("combo_type"), DUI_T("drop_list")}, {DUI_T("dropbox_size"), DUI_T("0,150")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("margin"), DUI_T("0,12,0,0")}, {DUI_T("tooltip_text"), DUI_T("ui::Combo")}, {DUI_T("shadow_type"), DUI_T("system_small_round")}});
     ui::Attach(p49, p50);
 
-    auto* p51 = ui::Create<ui::FilterCombo>(pWindow, {{"class", "filter_combo"}, {"name", "filter_combo"}, {"dropbox_size", "0,150"}, {"height", "30"}, {"margin", "0,12,0,0"}, {"tooltip_text", "ui::FilterCombo"}, {"shadow_type", "system_small_round"}});
+    auto* p51 = ui::Create<ui::FilterCombo>(pWindow, {{DUI_T("class"), DUI_T("filter_combo")}, {DUI_T("name"), DUI_T("filter_combo")}, {DUI_T("dropbox_size"), DUI_T("0,150")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("margin"), DUI_T("0,12,0,0")}, {DUI_T("tooltip_text"), DUI_T("ui::FilterCombo")}, {DUI_T("shadow_type"), DUI_T("system_small_round")}});
     ui::Attach(p49, p51);
 
-    auto* p52 = ui::Create<ui::RichEdit>(pWindow, {{"class", "simple prompt simple_border_bottom"}, {"height", "30"}, {"margin", "0,3"}, {"font", "system_14"}, {"text_align", "vcenter"}, {"text_padding", "8,4,8,4"}, {"default_context_menu", "true"}, {"prompt_text", "ui::RichEdit: single line text"}});
+    auto* p52 = ui::Create<ui::RichEdit>(pWindow, {{DUI_T("class"), DUI_T("simple prompt simple_border_bottom")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("margin"), DUI_T("0,3")}, {DUI_T("font"), DUI_T("system_14")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("text_padding"), DUI_T("8,4,8,4")}, {DUI_T("default_context_menu"), DUI_T("true")}, {DUI_T("prompt_text"), DUI_T("ui::RichEdit: single line text")}});
     ui::Attach(p49, p52);
 
-    auto* p53 = ui::Create<ui::CheckCombo>(pWindow, {{"class", "check_combo"}, {"name", "check_combo"}, {"height", "30"}, {"margin", "0,3"}, {"tooltip_text", "nim_comp::CheckCombo"}, {"shadow_type", "system_small_round"}});
+    auto* p53 = ui::Create<ui::CheckCombo>(pWindow, {{DUI_T("class"), DUI_T("check_combo")}, {DUI_T("name"), DUI_T("check_combo")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("margin"), DUI_T("0,3")}, {DUI_T("tooltip_text"), DUI_T("nim_comp::CheckCombo")}, {DUI_T("shadow_type"), DUI_T("system_small_round")}});
     ui::Attach(p49, p53);
 
-    auto* p54 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"text", "Fullscreen RichEdit"}, {"name", "rich_edit_fullscreen_btn"}, {"width", "160"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "0,2,0,0"}});
+    auto* p54 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("text"), DUI_T("Fullscreen RichEdit")}, {DUI_T("name"), DUI_T("rich_edit_fullscreen_btn")}, {DUI_T("width"), DUI_T("160")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("margin"), DUI_T("0,2,0,0")}});
     ui::Attach(p49, p54);
 
     ui::Attach(p48, p49);
 
-    auto* p55 = ui::Create<ui::VBox>(pWindow, {{"height", "240"}});
+    auto* p55 = ui::Create<ui::VBox>(pWindow, {{DUI_T("height"), DUI_T("240")}});
     auto* p56 = ui::Create<ui::HBox>(pWindow, {});
-    auto* p57 = ui::Create<ui::VBox>(pWindow, {{"width", "200"}});
-    auto* p58 = ui::Create<ui::HBox>(pWindow, {{"margin", "0,10"}, {"height", "32"}});
-    auto* p59 = ui::Create<ui::Control>(pWindow, {{"width", "20"}, {"height", "20"}, {"bkimage", "file='public/animation/loading3.json'"}, {"valign", "center"}});
+    auto* p57 = ui::Create<ui::VBox>(pWindow, {{DUI_T("width"), DUI_T("200")}});
+    auto* p58 = ui::Create<ui::HBox>(pWindow, {{DUI_T("margin"), DUI_T("0,10")}, {DUI_T("height"), DUI_T("32")}});
+    auto* p59 = ui::Create<ui::Control>(pWindow, {{DUI_T("width"), DUI_T("20")}, {DUI_T("height"), DUI_T("20")}, {DUI_T("bkimage"), DUI_T("file='public/animation/loading3.json'")}, {DUI_T("valign"), DUI_T("center")}});
     ui::Attach(p58, p59);
 
-    auto* p60 = ui::Create<ui::Progress>(pWindow, {{"class", "progress_horizontal_blue"}, {"name", "progress"}, {"value", "0"}, {"margin", "10"}, {"tooltip_text", "ui::Progress"}});
+    auto* p60 = ui::Create<ui::Progress>(pWindow, {{DUI_T("class"), DUI_T("progress_horizontal_blue")}, {DUI_T("name"), DUI_T("progress")}, {DUI_T("value"), DUI_T("0")}, {DUI_T("margin"), DUI_T("10")}, {DUI_T("tooltip_text"), DUI_T("ui::Progress")}});
     ui::Attach(p58, p60);
 
     ui::Attach(p57, p58);
 
-    auto* p61 = ui::Create<ui::HBox>(pWindow, {{"margin", "0,0,0,10"}, {"height", "32"}});
-    auto* p62 = ui::Create<ui::Control>(pWindow, {{"width", "24"}, {"height", "24"}, {"bkimage", "file='set_speaker.svg' width='20' height='20' valign='center' halign='center'"}, {"valign", "center"}});
+    auto* p61 = ui::Create<ui::HBox>(pWindow, {{DUI_T("margin"), DUI_T("0,0,0,10")}, {DUI_T("height"), DUI_T("32")}});
+    auto* p62 = ui::Create<ui::Control>(pWindow, {{DUI_T("width"), DUI_T("24")}, {DUI_T("height"), DUI_T("24")}, {DUI_T("bkimage"), DUI_T("file='set_speaker.svg' width='20' height='20' valign='center' halign='center'")}, {DUI_T("valign"), DUI_T("center")}});
     ui::Attach(p61, p62);
 
-    auto* p63 = ui::Create<ui::Slider>(pWindow, {{"class", "slider_horizontal_green"}, {"value", "70"}, {"margin", "10"}, {"tooltip_text", "ui::Slider"}});
+    auto* p63 = ui::Create<ui::Slider>(pWindow, {{DUI_T("class"), DUI_T("slider_horizontal_green")}, {DUI_T("value"), DUI_T("70")}, {DUI_T("margin"), DUI_T("10")}, {DUI_T("tooltip_text"), DUI_T("ui::Slider")}});
     ui::Attach(p61, p63);
 
     ui::Attach(p57, p61);
 
     ui::Attach(p56, p57);
 
-    auto* p64 = ui::Create<ui::VBox>(pWindow, {{"width", "90"}, {"margin", "10,0"}});
-    auto* p65 = ui::Create<ui::CircleProgress>(pWindow, {{"name", "circleprogress"}, {"circular", "true"}, {"height", "80"}, {"width", "80"}, {"circle_width", "12"}, {"bgcolor", "gray"}, {"fgcolor", "green"}, {"gradient_color", "red"}, {"clockwise", "true"}, {"min", "0"}, {"max", "100"}, {"value", "75"}, {"margin", "10"}, {"text_padding", "10,32,10,10"}, {"normal_text_color", "darkcolor"}, {"indicator", "file='public/progress/indicator.svg' width='12' height='12'"}, {"tooltip_text", "ui::CircleProgress"}});
+    auto* p64 = ui::Create<ui::VBox>(pWindow, {{DUI_T("width"), DUI_T("90")}, {DUI_T("margin"), DUI_T("10,0")}});
+    auto* p65 = ui::Create<ui::CircleProgress>(pWindow, {{DUI_T("name"), DUI_T("circleprogress")}, {DUI_T("circular"), DUI_T("true")}, {DUI_T("height"), DUI_T("80")}, {DUI_T("width"), DUI_T("80")}, {DUI_T("circle_width"), DUI_T("12")}, {DUI_T("bgcolor"), DUI_T("gray")}, {DUI_T("fgcolor"), DUI_T("green")}, {DUI_T("gradient_color"), DUI_T("red")}, {DUI_T("clockwise"), DUI_T("true")}, {DUI_T("min"), DUI_T("0")}, {DUI_T("max"), DUI_T("100")}, {DUI_T("value"), DUI_T("75")}, {DUI_T("margin"), DUI_T("10")}, {DUI_T("text_padding"), DUI_T("10,32,10,10")}, {DUI_T("normal_text_color"), DUI_T("darkcolor")}, {DUI_T("indicator"), DUI_T("file='public/progress/indicator.svg' width='12' height='12'")}, {DUI_T("tooltip_text"), DUI_T("ui::CircleProgress")}});
     ui::Attach(p64, p65);
 
     ui::Attach(p56, p64);
 
-    auto* p66 = ui::Create<ui::VBox>(pWindow, {{"margin", "4,8,0,0"}});
-    auto* p67 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "4"}, {"width", "300"}});
-    auto* p68 = ui::Create<ui::Label>(pWindow, {{"text", "Date"}, {"height", "24"}, {"text_align", "vcenter"}, {"hot_text_color", "red"}, {"pushed_text_color", "blue"}});
+    auto* p66 = ui::Create<ui::VBox>(pWindow, {{DUI_T("margin"), DUI_T("4,8,0,0")}});
+    auto* p67 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("4")}, {DUI_T("width"), DUI_T("300")}});
+    auto* p68 = ui::Create<ui::Label>(pWindow, {{DUI_T("text"), DUI_T("Date")}, {DUI_T("height"), DUI_T("24")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("hot_text_color"), DUI_T("red")}, {DUI_T("pushed_text_color"), DUI_T("blue")}});
     ui::Attach(p67, p68);
 
-    auto* p69 = ui::Create<ui::DateTime>(pWindow, {{"width", "100%"}, {"height", "24"}, {"text", "2022-02-01"}});
+    auto* p69 = ui::Create<ui::DateTime>(pWindow, {{DUI_T("width"), DUI_T("100%")}, {DUI_T("height"), DUI_T("24")}, {DUI_T("text"), DUI_T("2022-02-01")}});
     ui::Attach(p67, p69);
 
-    auto* p70 = ui::Create<ui::DateTime>(pWindow, {{"width", "120"}, {"height", "24"}, {"edit_format", "date_up_down"}});
+    auto* p70 = ui::Create<ui::DateTime>(pWindow, {{DUI_T("width"), DUI_T("120")}, {DUI_T("height"), DUI_T("24")}, {DUI_T("edit_format"), DUI_T("date_up_down")}});
     ui::Attach(p67, p70);
 
     ui::Attach(p66, p67);
 
-    auto* p71 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "4"}, {"width", "320"}});
-    auto* p72 = ui::Create<ui::Label>(pWindow, {{"text", "Time"}, {"height", "24"}, {"text_align", "vcenter"}});
+    auto* p71 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("4")}, {DUI_T("width"), DUI_T("320")}});
+    auto* p72 = ui::Create<ui::Label>(pWindow, {{DUI_T("text"), DUI_T("Time")}, {DUI_T("height"), DUI_T("24")}, {DUI_T("text_align"), DUI_T("vcenter")}});
     ui::Attach(p71, p72);
 
-    auto* p73 = ui::Create<ui::DateTime>(pWindow, {{"width", "100%"}, {"height", "24"}, {"edit_format", "date_time_up_down"}});
+    auto* p73 = ui::Create<ui::DateTime>(pWindow, {{DUI_T("width"), DUI_T("100%")}, {DUI_T("height"), DUI_T("24")}, {DUI_T("edit_format"), DUI_T("date_time_up_down")}});
     ui::Attach(p71, p73);
 
-    auto* p74 = ui::Create<ui::DateTime>(pWindow, {{"width", "72"}, {"height", "24"}, {"edit_format", "minute_up_down"}});
+    auto* p74 = ui::Create<ui::DateTime>(pWindow, {{DUI_T("width"), DUI_T("72")}, {DUI_T("height"), DUI_T("24")}, {DUI_T("edit_format"), DUI_T("minute_up_down")}});
     ui::Attach(p71, p74);
 
     ui::Attach(p66, p71);
@@ -1088,42 +1088,42 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
     ui::Attach(p55, p56);
 
     auto* p75 = ui::Create<ui::HBox>(pWindow, {});
-    auto* p76 = ui::Create<ui::VBox>(pWindow, {{"margin", "10,0,0,0"}});
-    auto* p77 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
-    auto* p78 = ui::Create<ui::Label>(pWindow, {{"text", "IP Address"}, {"height", "28"}, {"text_align", "vcenter"}});
+    auto* p76 = ui::Create<ui::VBox>(pWindow, {{DUI_T("margin"), DUI_T("10,0,0,0")}});
+    auto* p77 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("10")}});
+    auto* p78 = ui::Create<ui::Label>(pWindow, {{DUI_T("text"), DUI_T("IP Address")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text_align"), DUI_T("vcenter")}});
     ui::Attach(p77, p78);
 
-    auto* p79 = ui::Create<ui::IPAddress>(pWindow, {{"class", "ip_address"}, {"ip", "192.168.0.1"}});
+    auto* p79 = ui::Create<ui::IPAddress>(pWindow, {{DUI_T("class"), DUI_T("ip_address")}, {DUI_T("ip"), DUI_T("192.168.0.1")}});
     ui::Attach(p77, p79);
 
     ui::Attach(p76, p77);
 
-    auto* p80 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
-    auto* p81 = ui::Create<ui::Label>(pWindow, {{"text", "RichEdit Spin"}, {"height", "28"}, {"text_align", "vcenter"}});
+    auto* p80 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("10")}});
+    auto* p81 = ui::Create<ui::Label>(pWindow, {{DUI_T("text"), DUI_T("RichEdit Spin")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text_align"), DUI_T("vcenter")}});
     ui::Attach(p80, p81);
 
-    auto* p82 = ui::Create<ui::RichEdit>(pWindow, {{"class", "simple simple_border rich_edit_spin"}, {"min_number", "-64"}, {"max_number", "64"}, {"limit_text", "3"}, {"text", "0"}});
+    auto* p82 = ui::Create<ui::RichEdit>(pWindow, {{DUI_T("class"), DUI_T("simple simple_border rich_edit_spin")}, {DUI_T("min_number"), DUI_T("-64")}, {DUI_T("max_number"), DUI_T("64")}, {DUI_T("limit_text"), DUI_T("3")}, {DUI_T("text"), DUI_T("0")}});
     ui::Attach(p80, p82);
 
     ui::Attach(p76, p80);
 
     ui::Attach(p75, p76);
 
-    auto* p83 = ui::Create<ui::VBox>(pWindow, {{"margin", "10,0,0,0"}});
-    auto* p84 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
-    auto* p85 = ui::Create<ui::HotKey>(pWindow, {{"class", "hot_key"}, {"name", "set_hot_key"}, {"default_text", "None"}});
+    auto* p83 = ui::Create<ui::VBox>(pWindow, {{DUI_T("margin"), DUI_T("10,0,0,0")}});
+    auto* p84 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("10")}});
+    auto* p85 = ui::Create<ui::HotKey>(pWindow, {{DUI_T("class"), DUI_T("hot_key")}, {DUI_T("name"), DUI_T("set_hot_key")}, {DUI_T("default_text"), DUI_T("None")}});
     ui::Attach(p84, p85);
 
-    auto* p86 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "btn_set_hot_key"}, {"text", "Set Window HotKey"}, {"width", "100%"}, {"height", "28"}, {"border_round", "3,3"}, {"text_align", "vcenter"}});
+    auto* p86 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("name"), DUI_T("btn_set_hot_key")}, {DUI_T("text"), DUI_T("Set Window HotKey")}, {DUI_T("width"), DUI_T("100%")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("text_align"), DUI_T("vcenter")}});
     ui::Attach(p84, p86);
 
     ui::Attach(p83, p84);
 
-    auto* p87 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
-    auto* p88 = ui::Create<ui::HotKey>(pWindow, {{"class", "hot_key"}, {"name", "set_system_hot_key"}, {"default_text", "None"}});
+    auto* p87 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("10")}});
+    auto* p88 = ui::Create<ui::HotKey>(pWindow, {{DUI_T("class"), DUI_T("hot_key")}, {DUI_T("name"), DUI_T("set_system_hot_key")}, {DUI_T("default_text"), DUI_T("None")}});
     ui::Attach(p87, p88);
 
-    auto* p89 = ui::Create<ui::Button>(pWindow, {{"class", "btn_global_color_gray"}, {"name", "btn_set_system_hot_key"}, {"text", "Set System HotKey"}, {"width", "100%"}, {"height", "28"}, {"border_round", "3,3"}, {"text_align", "vcenter"}});
+    auto* p89 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("name"), DUI_T("btn_set_system_hot_key")}, {DUI_T("text"), DUI_T("Set System HotKey")}, {DUI_T("width"), DUI_T("100%")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("text_align"), DUI_T("vcenter")}});
     ui::Attach(p87, p89);
 
     ui::Attach(p83, p87);
@@ -1132,60 +1132,60 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
 
     ui::Attach(p55, p75);
 
-    auto* p90 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
-    auto* p91 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
-    auto* p92 = ui::Create<ui::RichText>(pWindow, {{"class", "rich_text"}, {"name", "rich_text_demo"}, {"width", "300"}, {"height", "60"}, {"row_spacing_mul", "1.2"}});
+    auto* p90 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("10")}});
+    auto* p91 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("10")}});
+    auto* p92 = ui::Create<ui::RichText>(pWindow, {{DUI_T("class"), DUI_T("rich_text")}, {DUI_T("name"), DUI_T("rich_text_demo")}, {DUI_T("width"), DUI_T("300")}, {DUI_T("height"), DUI_T("60")}, {DUI_T("row_spacing_mul"), DUI_T("1.2")}});
     ui::WindowBuilder::ParseRichTextXmlText(DUI_T("<RichText>\n                                RichText:　<a href=\"www.baidu.com\">Click to visit Baidu</a><br/>\n                                RichText:　<a href=\"www.sohu.com\">Click to visit Sohu</a></RichText>"), p92);
     ui::Attach(p91, p92);
 
-    auto* p93 = ui::Create<ui::VBox>(pWindow, {{"width", "80"}});
-    auto* p94 = ui::Create<ui::HyperLink>(pWindow, {{"class", "hyper_link"}, {"name", "hyper_link1"}, {"text", "Baidu Homepage"}, {"url", "www.baidu.com"}, {"tooltip_text", "This is a HyperLink control"}});
+    auto* p93 = ui::Create<ui::VBox>(pWindow, {{DUI_T("width"), DUI_T("80")}});
+    auto* p94 = ui::Create<ui::HyperLink>(pWindow, {{DUI_T("class"), DUI_T("hyper_link")}, {DUI_T("name"), DUI_T("hyper_link1")}, {DUI_T("text"), DUI_T("Baidu Homepage")}, {DUI_T("url"), DUI_T("www.baidu.com")}, {DUI_T("tooltip_text"), DUI_T("This is a HyperLink control")}});
     ui::Attach(p93, p94);
 
-    auto* p95 = ui::Create<ui::HyperLink>(pWindow, {{"class", "hyper_link"}, {"name", "hyper_link2"}, {"text", "Text Button"}, {"tooltip_text", "This is a HyperLink control"}});
+    auto* p95 = ui::Create<ui::HyperLink>(pWindow, {{DUI_T("class"), DUI_T("hyper_link")}, {DUI_T("name"), DUI_T("hyper_link2")}, {DUI_T("text"), DUI_T("Text Button")}, {DUI_T("tooltip_text"), DUI_T("This is a HyperLink control")}});
     ui::Attach(p93, p95);
 
     ui::Attach(p91, p93);
 
     ui::Attach(p90, p91);
 
-    auto* p96 = ui::Create<ui::HBox>(pWindow, {{"child_margin", "10"}});
-    auto* p97 = ui::Create<ui::Label>(pWindow, {{"text", "Line:"}, {"valign", "center"}});
+    auto* p96 = ui::Create<ui::HBox>(pWindow, {{DUI_T("child_margin"), DUI_T("10")}});
+    auto* p97 = ui::Create<ui::Label>(pWindow, {{DUI_T("text"), DUI_T("Line:")}, {DUI_T("valign"), DUI_T("center")}});
     ui::Attach(p96, p97);
 
     auto* p98 = ui::Create<ui::VBox>(pWindow, {});
-    auto* p99 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "blue"}, {"dash_style", "solid"}, {"line_width", "2"}});
+    auto* p99 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("false")}, {DUI_T("line_color"), DUI_T("blue")}, {DUI_T("dash_style"), DUI_T("solid")}, {DUI_T("line_width"), DUI_T("2")}});
     ui::Attach(p98, p99);
 
-    auto* p100 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "red"}, {"dash_style", "dash"}, {"line_width", "2"}});
+    auto* p100 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("false")}, {DUI_T("line_color"), DUI_T("red")}, {DUI_T("dash_style"), DUI_T("dash")}, {DUI_T("line_width"), DUI_T("2")}});
     ui::Attach(p98, p100);
 
-    auto* p101 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "green"}, {"dash_style", "dot"}, {"line_width", "2"}});
+    auto* p101 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("false")}, {DUI_T("line_color"), DUI_T("green")}, {DUI_T("dash_style"), DUI_T("dot")}, {DUI_T("line_width"), DUI_T("2")}});
     ui::Attach(p98, p101);
 
-    auto* p102 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "black"}, {"dash_style", "dash_dot"}, {"line_width", "2"}});
+    auto* p102 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("false")}, {DUI_T("line_color"), DUI_T("black")}, {DUI_T("dash_style"), DUI_T("dash_dot")}, {DUI_T("line_width"), DUI_T("2")}});
     ui::Attach(p98, p102);
 
-    auto* p103 = ui::Create<ui::Line>(pWindow, {{"vertical", "false"}, {"line_color", "orange"}, {"dash_style", "dash_dot_dot"}, {"line_width", "2"}});
+    auto* p103 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("false")}, {DUI_T("line_color"), DUI_T("orange")}, {DUI_T("dash_style"), DUI_T("dash_dot_dot")}, {DUI_T("line_width"), DUI_T("2")}});
     ui::Attach(p98, p103);
 
     ui::Attach(p96, p98);
 
     auto* p104 = ui::Create<ui::VBox>(pWindow, {});
-    auto* p105 = ui::Create<ui::HBox>(pWindow, {{"margin", "0,4,0,4"}});
-    auto* p106 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "blue"}, {"dash_style", "solid"}, {"line_width", "1"}});
+    auto* p105 = ui::Create<ui::HBox>(pWindow, {{DUI_T("margin"), DUI_T("0,4,0,4")}});
+    auto* p106 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("true")}, {DUI_T("line_color"), DUI_T("blue")}, {DUI_T("dash_style"), DUI_T("solid")}, {DUI_T("line_width"), DUI_T("1")}});
     ui::Attach(p105, p106);
 
-    auto* p107 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "red"}, {"dash_style", "dash"}, {"line_width", "1"}});
+    auto* p107 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("true")}, {DUI_T("line_color"), DUI_T("red")}, {DUI_T("dash_style"), DUI_T("dash")}, {DUI_T("line_width"), DUI_T("1")}});
     ui::Attach(p105, p107);
 
-    auto* p108 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "green"}, {"dash_style", "dot"}, {"line_width", "1"}});
+    auto* p108 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("true")}, {DUI_T("line_color"), DUI_T("green")}, {DUI_T("dash_style"), DUI_T("dot")}, {DUI_T("line_width"), DUI_T("1")}});
     ui::Attach(p105, p108);
 
-    auto* p109 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "black"}, {"dash_style", "dash_dot"}, {"line_width", "1"}});
+    auto* p109 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("true")}, {DUI_T("line_color"), DUI_T("black")}, {DUI_T("dash_style"), DUI_T("dash_dot")}, {DUI_T("line_width"), DUI_T("1")}});
     ui::Attach(p105, p109);
 
-    auto* p110 = ui::Create<ui::Line>(pWindow, {{"vertical", "true"}, {"line_color", "orange"}, {"dash_style", "dash_dot_dot"}, {"line_width", "1"}});
+    auto* p110 = ui::Create<ui::Line>(pWindow, {{DUI_T("vertical"), DUI_T("true")}, {DUI_T("line_color"), DUI_T("orange")}, {DUI_T("dash_style"), DUI_T("dash_dot_dot")}, {DUI_T("line_width"), DUI_T("1")}});
     ui::Attach(p105, p110);
 
     ui::Attach(p104, p105);
@@ -1200,14 +1200,14 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
 
     ui::Attach(p8, p48);
 
-    auto* p111 = ui::Create<ui::Control>(pWindow, {{"class", "splitline_hor_level1"}, {"margin", "0,8,0,4"}});
+    auto* p111 = ui::Create<ui::Control>(pWindow, {{DUI_T("class"), DUI_T("splitline_hor_level1")}, {DUI_T("margin"), DUI_T("0,8,0,4")}});
     ui::Attach(p8, p111);
 
     auto* p112 = ui::Create<ui::HBox>(pWindow, {});
-    auto* p113 = ui::Create<ui::RichEdit>(pWindow, {{"class", "prompt"}, {"name", "edit"}, {"bkcolor", "white"}, {"width", "stretch"}, {"height", "stretch"}, {"hide_selection", "false"}, {"multiline", "true"}, {"auto_vscroll", "true"}, {"vscrollbar", "true"}, {"hscrollbar", "true"}, {"want_return_msg", "true"}, {"rich", "false"}, {"enable_drag_drop", "true"}, {"enable_drop_file", "true"}, {"drop_file_types", ".txt;.md"}});
+    auto* p113 = ui::Create<ui::RichEdit>(pWindow, {{DUI_T("class"), DUI_T("prompt")}, {DUI_T("name"), DUI_T("edit")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("hide_selection"), DUI_T("false")}, {DUI_T("multiline"), DUI_T("true")}, {DUI_T("auto_vscroll"), DUI_T("true")}, {DUI_T("vscrollbar"), DUI_T("true")}, {DUI_T("hscrollbar"), DUI_T("true")}, {DUI_T("want_return_msg"), DUI_T("true")}, {DUI_T("rich"), DUI_T("false")}, {DUI_T("enable_drag_drop"), DUI_T("true")}, {DUI_T("enable_drop_file"), DUI_T("true")}, {DUI_T("drop_file_types"), DUI_T(".txt;.md")}});
     ui::Attach(p112, p113);
 
-    auto* p114 = ui::Create<ui::RichEdit>(pWindow, {{"class", "prompt"}, {"name", "edit2"}, {"bkcolor", "white"}, {"width", "stretch"}, {"height", "stretch"}, {"hide_selection", "false"}, {"multiline", "true"}, {"auto_vscroll", "true"}, {"vscrollbar", "true"}, {"hscrollbar", "true"}, {"scrollbar_float", "true"}, {"vscrollbar_class", "vscrollbar2"}, {"hscrollbar_class", "hscrollbar2"}, {"vscrollbar_style", "auto_hide_scroll='false'"}, {"hscrollbar_style", "auto_hide_scroll='false'"}, {"want_return_msg", "true"}, {"rich", "false"}, {"margin", "4,0,0,0"}, {"enable_drag_drop", "true"}, {"enable_drop_file", "false"}});
+    auto* p114 = ui::Create<ui::RichEdit>(pWindow, {{DUI_T("class"), DUI_T("prompt")}, {DUI_T("name"), DUI_T("edit2")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("hide_selection"), DUI_T("false")}, {DUI_T("multiline"), DUI_T("true")}, {DUI_T("auto_vscroll"), DUI_T("true")}, {DUI_T("vscrollbar"), DUI_T("true")}, {DUI_T("hscrollbar"), DUI_T("true")}, {DUI_T("scrollbar_float"), DUI_T("true")}, {DUI_T("vscrollbar_class"), DUI_T("vscrollbar2")}, {DUI_T("hscrollbar_class"), DUI_T("hscrollbar2")}, {DUI_T("vscrollbar_style"), DUI_T("auto_hide_scroll='false'")}, {DUI_T("hscrollbar_style"), DUI_T("auto_hide_scroll='false'")}, {DUI_T("want_return_msg"), DUI_T("true")}, {DUI_T("rich"), DUI_T("false")}, {DUI_T("margin"), DUI_T("4,0,0,0")}, {DUI_T("enable_drag_drop"), DUI_T("true")}, {DUI_T("enable_drop_file"), DUI_T("false")}});
     ui::Attach(p112, p114);
 
     ui::Attach(p8, p112);

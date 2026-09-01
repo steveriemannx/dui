@@ -12,8 +12,8 @@ public:
     virtual ~MainForm() override = default;
 
     /** Resources are loaded from the executable directory. */
-    virtual DString GetSkinFolder() override { return ""; }
-    virtual DString GetSkinFile() override { return "hello.xml"; }
+    virtual DString GetSkinFolder() override { return DUI_T(""); }
+    virtual DString GetSkinFile() override { return DUI_T("hello.xml"); }
 
     /** Called after the window is created, for subclasses to do some initialization work
      */

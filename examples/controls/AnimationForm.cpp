@@ -11,18 +11,18 @@ AnimationForm::~AnimationForm()
 
 DString AnimationForm::GetSkinFolder()
 {
-    return "controls";
+    return DUI_T("controls");
 }
 
 DString AnimationForm::GetSkinFile()
 {
-    return "animation.xml";
+    return DUI_T("animation.xml");
 }
 
 void AnimationForm::OnInitWindow()
 {
     //Bind animation playback related events
-    ui::Control* pControl = ui::Find<ui::Control>(this, "animation_test");
+    ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("animation_test"));
     if (pControl != nullptr) {
         pControl->AttachImageAnimationStart([this](const ui::EventArgs& arg) {
             if (arg.wParam != 0) {
@@ -48,10 +48,10 @@ void AnimationForm::OnInitWindow()
     }
 
     m_bImagePlaying = false;
-    ui::Button* pButton = ui::Find<ui::Button>(this, "animation_btn");
+    ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
     if (pButton != nullptr) {
         pButton->AttachClick([this](const ui::EventArgs& arg) {
-            ui::Control* pControl = ui::Find<ui::Control>(this, "animation_test");
+            ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("animation_test"));
             if (pControl != nullptr) {
                 if (m_bImagePlaying) {
                     //Pause
@@ -66,21 +66,21 @@ void AnimationForm::OnInitWindow()
             });
     }
 
-    pButton = ui::Find<ui::Button>(this, "goto_frame_btn");
+    pButton = ui::Find<ui::Button>(this, DUI_T("goto_frame_btn"));
     if (pButton != nullptr) {
         pButton->AttachClick([this](const ui::EventArgs& arg) {
-            ui::Control* pControl = ui::Find<ui::Control>(this, "animation_test");
+            ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("animation_test"));
             if (pControl != nullptr) {
                 if (m_bImagePlaying) {
                     //Pause
                     pControl->StopImageAnimation();
                 }
                 int32_t nFrameIndex = 0;
-                ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, "goto_frame_number");
+                ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, DUI_T("goto_frame_number"));
                 if (pRichEdit != nullptr) {
                     nFrameIndex = (int32_t)pRichEdit->GetTextNumber();
                 }
-                pControl->SetImageAnimationFrame("bk_animation_test", nFrameIndex);
+                pControl->SetImageAnimationFrame(DUI_T("bk_animation_test"), nFrameIndex);
             }
             return true;
             });
@@ -92,11 +92,11 @@ void AnimationForm::OnAnimationEvents(ui::EventType eventType, const ui::ImageAn
     if (eventType == ui::EventType::kEventImageAnimationStart) {
         //Playback started
         m_bImagePlaying = true;
-        ui::Button* pButton = ui::Find<ui::Button>(this, "animation_btn");
+        ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
         if (pButton != nullptr) {
-            pButton->SetText("Pause");
+            pButton->SetText(DUI_T("Pause"));
         }
-        ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, "goto_frame_number");
+        ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, DUI_T("goto_frame_number"));
         if (pRichEdit != nullptr) {
             pRichEdit->SetMinNumber(0);
             pRichEdit->SetMaxNumber((int32_t)status.m_nFrameCount - 1);
@@ -105,22 +105,22 @@ void AnimationForm::OnAnimationEvents(ui::EventType eventType, const ui::ImageAn
     else if (eventType == ui::EventType::kEventImageAnimationStop) {
         //Playback stopped
         m_bImagePlaying = false;
-        ui::Button* pButton = ui::Find<ui::Button>(this, "animation_btn");
+        ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
         if (pButton != nullptr) {
-            pButton->SetText("Play");
+            pButton->SetText(DUI_T("Play"));
         }
     }
     else if (eventType == ui::EventType::kEventImageAnimationPlayFrame) {
         //Playing
         m_bImagePlaying = true;
-        ui::Button* pButton = ui::Find<ui::Button>(this, "animation_btn");
+        ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
         if (pButton != nullptr) {
-            pButton->SetText("Pause");
+            pButton->SetText(DUI_T("Pause"));
         }
 
-        ui::Label* pLabel = ui::Find<ui::Label>(this, "animation_frame");
+        ui::Label* pLabel = ui::Find<ui::Label>(this, DUI_T("animation_frame"));
         if (pLabel != nullptr) {
-            DString statusText = ui::StringUtil::Printf("[%d/%d]", status.m_nFrameIndex, status.m_nFrameCount);
+            DString statusText = ui::StringUtil::Printf(DUI_T("[%d/%d]"), status.m_nFrameIndex, status.m_nFrameCount);
             pLabel->SetText(statusText);
         }
     }

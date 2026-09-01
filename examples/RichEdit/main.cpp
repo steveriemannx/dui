@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<MainForm>("RichEdit Demo");
+    return ui::Run<MainForm>(DUI_T("RichEdit Demo"));
 }

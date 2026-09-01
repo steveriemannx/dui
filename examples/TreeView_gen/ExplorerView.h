@@ -69,11 +69,11 @@ private:
     */
     void Initialize();
 
-    /** Initialize the header of the "Computer" view
+    /** Initialize the header of the DUI_T("Computer") view
     */
     void InitViewHeader();
 
-    /** Double-click in the "Computer" view
+    /** Double-click in the DUI_T("Computer") view
     */
     bool OnExplorerViewDoubleClick(const ui::EventArgs& msg);
 

@@ -7,8 +7,8 @@ void MainForm::OnInitWindow()
     SetupWindow();
     BuildUI();
 
-    m_pLogEdit = ui::Find<ui::RichEdit>(this, "log_view");
-    m_pRunningTimeLabel = ui::Find<ui::Label>(this, "running_time");
+    m_pLogEdit = ui::Find<ui::RichEdit>(this, DUI_T("log_view"));
+    m_pRunningTimeLabel = ui::Find<ui::Label>(this, DUI_T("running_time"));
     m_startTime = std::chrono::steady_clock::now();
 
     BindEvents();
@@ -41,63 +41,63 @@ void MainForm::SetupWindow()
 void MainForm::BuildUI()
 {
     // Corresponding to the threads.xml layout
-    auto* pRoot = ui::Create<ui::VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}, {"visible", "true"}});
+    auto* pRoot = ui::Create<ui::VBox>(this, {{DUI_T("bkcolor"), DUI_T("bk_wnd_darkcolor")}, {DUI_T("visible"), DUI_T("true")}});
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
+    auto* pCaption = ui::Create<ui::HBox>(this, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}});
     pRoot->AddItem(pCaption);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{"text", "dui Multithreading Example"}, {"height", "32"}, {"text_align", "vcenter"}, {"margin", "10,0,0,0"}, {"mouse_enabled", "false"}});
+    auto* pTitle = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("dui Multithreading Example")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("margin"), DUI_T("10,0,0,0")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
     pCaption->AddItem(pTitle);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{"mouse_enabled", "false"}});
+    auto* pSpacer = ui::Create<ui::Control>(this, {{DUI_T("mouse_enabled"), DUI_T("false")}});
     pCaption->AddItem(pSpacer);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_min_11"}, {"name", "minbtn"}, {"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}});
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Minimize")}});
     pCaption->AddItem(pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
     pCaption->AddItem(pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_max_11"}, {"name", "maxbtn"}, {"height", "32"}, {"width", "stretch"}, {"tooltip_text", "Maximize"}});
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_max_11")}, {DUI_T("name"), DUI_T("maxbtn")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("tooltip_text"), DUI_T("Maximize")}});
     pMaxBox->AddItem(pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_restore_11"}, {"name", "restorebtn"}, {"height", "32"}, {"width", "stretch"}, {"visible", "false"}, {"tooltip_text", "Restore"}});
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_restore_11")}, {DUI_T("name"), DUI_T("restorebtn")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("visible"), DUI_T("false")}, {DUI_T("tooltip_text"), DUI_T("Restore")}});
     pMaxBox->AddItem(pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_close_11"}, {"name", "closebtn"}, {"height", "stretch"}, {"width", "40"}, {"margin", "0,0,0,2"}, {"tooltip_text", "Close"}});
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_close_11")}, {DUI_T("name"), DUI_T("closebtn")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,0,0,2")}, {DUI_T("tooltip_text"), DUI_T("Close")}});
     pCaption->AddItem(pCloseBtn);
 
     // Work area
-    auto* pContent = ui::Create<ui::VBox>(this, {{"padding", "6,6,6,6"}});
+    auto* pContent = ui::Create<ui::VBox>(this, {{DUI_T("padding"), DUI_T("6,6,6,6")}});
     pRoot->AddItem(pContent);
 
     // Toolbar
-    auto* pToolBar = ui::Create<ui::HBox>(this, {{"margin", "0,0,0,0"}, {"valign", "center"}, {"halign", "center"}, {"height", "48"}});
+    auto* pToolBar = ui::Create<ui::HBox>(this, {{DUI_T("margin"), DUI_T("0,0,0,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("halign"), DUI_T("center")}, {DUI_T("height"), DUI_T("48")}});
     pContent->AddItem(pToolBar);
 
-    auto* pStartBtn = ui::Create<ui::Button>(this, {{"class", "btn_global_blue_80x30"}, {"name", "start_threads"}, {"text", "Start Worker Threads"}, {"margin", "2,8,2,2"}});
+    auto* pStartBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_global_blue_80x30")}, {DUI_T("name"), DUI_T("start_threads")}, {DUI_T("text"), DUI_T("Start Worker Threads")}, {DUI_T("margin"), DUI_T("2,8,2,2")}});
     pToolBar->AddItem(pStartBtn);
 
-    auto* pStopBtn = ui::Create<ui::Button>(this, {{"class", "btn_global_blue_80x30"}, {"name", "stop_threads"}, {"text", "Stop Worker Threads"}, {"margin", "2,8,2,2"}});
+    auto* pStopBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_global_blue_80x30")}, {DUI_T("name"), DUI_T("stop_threads")}, {DUI_T("text"), DUI_T("Stop Worker Threads")}, {DUI_T("margin"), DUI_T("2,8,2,2")}});
     pToolBar->AddItem(pStopBtn);
 
-    auto* pLabel = ui::Create<ui::Label>(this, {{"text", "Run task in the following thread, thread identifier:"}, {"height", "100%"}, {"width", "auto"}, {"text_align", "right,vcenter"}, {"margin", "8,0,0,0"}});
+    auto* pLabel = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("Run task in the following thread, thread identifier:")}, {DUI_T("height"), DUI_T("100%")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("text_align"), DUI_T("right,vcenter")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
     pToolBar->AddItem(pLabel);
 
-    auto* pThreadId = ui::Create<ui::RichEdit>(this, {{"class", "rich_edit_spin simple_border"}, {"name", "threads_identifier"}, {"text", "1"}, {"bkcolor", "white"}, {"valign", "center"}});
+    auto* pThreadId = ui::Create<ui::RichEdit>(this, {{DUI_T("class"), DUI_T("rich_edit_spin simple_border")}, {DUI_T("name"), DUI_T("threads_identifier")}, {DUI_T("text"), DUI_T("1")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("valign"), DUI_T("center")}});
     pToolBar->AddItem(pThreadId);
 
-    auto* pRunTaskBtn = ui::Create<ui::Button>(this, {{"class", "btn_global_blue_80x30"}, {"name", "run_task_in_threads"}, {"text", "Run Task in Worker Thread"}, {"width", "180"}, {"margin", "8,8,2,2"}});
+    auto* pRunTaskBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_global_blue_80x30")}, {DUI_T("name"), DUI_T("run_task_in_threads")}, {DUI_T("text"), DUI_T("Run Task in Worker Thread")}, {DUI_T("width"), DUI_T("180")}, {DUI_T("margin"), DUI_T("8,8,2,2")}});
     pToolBar->AddItem(pRunTaskBtn);
 
-    auto* pRunningTime = ui::Create<ui::Label>(this, {{"name", "running_time"}, {"text", "00:00:00"}, {"height", "100%"}, {"width", "100%"}, {"text_align", "hcenter,vcenter"}, {"margin", "8,0,0,0"}});
+    auto* pRunningTime = ui::Create<ui::Label>(this, {{DUI_T("name"), DUI_T("running_time")}, {DUI_T("text"), DUI_T("00:00:00")}, {DUI_T("height"), DUI_T("100%")}, {DUI_T("width"), DUI_T("100%")}, {DUI_T("text_align"), DUI_T("hcenter,vcenter")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
     pToolBar->AddItem(pRunningTime);
 
-    auto* pLine = ui::Create<ui::Line>(this, {{"height", "1"}});
+    auto* pLine = ui::Create<ui::Line>(this, {{DUI_T("height"), DUI_T("1")}});
     pContent->AddItem(pLine);
 
-    auto* pLogView = ui::Create<ui::RichEdit>(this, {{"class", "simple simple_border"}, {"name", "log_view"}, {"text_align", "left,top"}, {"bkcolor", "white"}, {"width", "stretch"}, {"height", "stretch"}, {"hide_selection", "true"}, {"multi_line", "true"}, {"vscrollbar", "true"}, {"auto_vscroll", "true"}, {"hscrollbar", "false"}, {"normal_text_color", "darkcolor"}, {"want_return_msg", "true"}, {"rich_text", "false"}, {"default_context_menu", "true"}});
+    auto* pLogView = ui::Create<ui::RichEdit>(this, {{DUI_T("class"), DUI_T("simple simple_border")}, {DUI_T("name"), DUI_T("log_view")}, {DUI_T("text_align"), DUI_T("left,top")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("hide_selection"), DUI_T("true")}, {DUI_T("multi_line"), DUI_T("true")}, {DUI_T("vscrollbar"), DUI_T("true")}, {DUI_T("auto_vscroll"), DUI_T("true")}, {DUI_T("hscrollbar"), DUI_T("false")}, {DUI_T("normal_text_color"), DUI_T("darkcolor")}, {DUI_T("want_return_msg"), DUI_T("true")}, {DUI_T("rich_text"), DUI_T("false")}, {DUI_T("default_context_menu"), DUI_T("true")}});
     pContent->AddItem(pLogView);
 
     AttachBox(pRoot);
@@ -105,8 +105,8 @@ void MainForm::BuildUI()
 
 void MainForm::BindEvents()
 {
-    ui::Button* pButtonStart = ui::Find<ui::Button>(this, "start_threads");
-    ui::Button* pButtonStop = ui::Find<ui::Button>(this, "stop_threads");
+    ui::Button* pButtonStart = ui::Find<ui::Button>(this, DUI_T("start_threads"));
+    ui::Button* pButtonStop = ui::Find<ui::Button>(this, DUI_T("stop_threads"));
 
     if (pButtonStart != nullptr) {
         pButtonStart->SetEnabled(false);
@@ -135,12 +135,12 @@ void MainForm::BindEvents()
             });
     }
 
-    ui::Button* pRunTaskButton = ui::Find<ui::Button>(this, "run_task_in_threads");
+    ui::Button* pRunTaskButton = ui::Find<ui::Button>(this, DUI_T("run_task_in_threads"));
     if (pRunTaskButton != nullptr) {
         pRunTaskButton->AttachClick([this](const ui::EventArgs&) {
             // Execute the task in the worker thread
             int32_t nThreadIdentifier = 1;
-            ui::RichEdit* pThreadIdentifier = ui::Find<ui::RichEdit>(this, "threads_identifier");
+            ui::RichEdit* pThreadIdentifier = ui::Find<ui::RichEdit>(this, DUI_T("threads_identifier"));
             if (pThreadIdentifier != nullptr) {
                 // Get the worker thread identifier from the UI
                 nThreadIdentifier = (int32_t)pThreadIdentifier->GetTextNumber();
@@ -219,7 +219,7 @@ void MainForm::ExecuteTaskInThread()
     int32_t nUIThreadIdentifier = ui::GlobalManager::Instance().Thread().GetCurrentThreadIdentifier();
 
     // Execute the actual computing task; here it only displays a log message (inter-thread communication is also used to let the main thread update the log data to the UI)
-    DString log = ui::StringUtil::Printf("[OS Thread ID: %s][UI library thread identifier: %d]: MainForm::ExecuteTaskInThread is running in a worker thread",
+    DString log = ui::StringUtil::Printf(DUI_T("[OS Thread ID: %s][UI library thread identifier: %d]: MainForm::ExecuteTaskInThread is running in a worker thread"),
                                         systemThreadId.c_str(),
                                         nUIThreadIdentifier);
     PrintLog(log);
@@ -232,7 +232,7 @@ void MainForm::UpdateRunningTime()
         // Time shown in the UI: hours:minutes:seconds
         auto thisTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_startTime);
         int32_t seconds = (int32_t)thisTime.count();
-        DString msg = ui::StringUtil::Printf("%02d:%02d:%02d", seconds / 60 / 60, seconds / 60, seconds % 60);
+        DString msg = ui::StringUtil::Printf(DUI_T("%02d:%02d:%02d"), seconds / 60 / 60, seconds / 60, seconds % 60);
         m_pRunningTimeLabel->SetText(msg);
     }
 }
@@ -245,13 +245,13 @@ void MainForm::UpdateUI()
     }
     else {
         // Set parameters such as the number of threads
-        ui::RichEdit* pThreadIdentifier = ui::Find<ui::RichEdit>(this, "threads_identifier");
-        ui::Button* pRunTaskButton = ui::Find<ui::Button>(this, "run_task_in_threads");
+        ui::RichEdit* pThreadIdentifier = ui::Find<ui::RichEdit>(this, DUI_T("threads_identifier"));
+        ui::Button* pRunTaskButton = ui::Find<ui::Button>(this, DUI_T("run_task_in_threads"));
         if (pThreadIdentifier != nullptr) {
             if (GetPoolThreadCount() > 0) {
                 pThreadIdentifier->SetMinNumber(ui::kThreadUser);
                 pThreadIdentifier->SetMaxNumber(ui::kThreadUser + GetPoolThreadCount() - 1);
-                pThreadIdentifier->SetText("1");
+                pThreadIdentifier->SetText(DUI_T("1"));
                 if (pRunTaskButton != nullptr) {
                     pRunTaskButton->SetEnabled(true);
                 }
@@ -259,7 +259,7 @@ void MainForm::UpdateUI()
             else {
                 pThreadIdentifier->SetMinNumber(0);
                 pThreadIdentifier->SetMaxNumber(0);
-                pThreadIdentifier->SetText("0");
+                pThreadIdentifier->SetText(DUI_T("0"));
                 if (pRunTaskButton != nullptr) {
                     pRunTaskButton->SetEnabled(false);
                 }
@@ -277,9 +277,9 @@ void MainForm::PrintLog(const DString& log)
     else {
         // Currently executed in the main thread (UI thread): display the information on the UI
         if (m_pLogEdit != nullptr) {
-            DString line = ui::StringUtil::Printf("%04d: ", ++m_nLogLineNumber);
+            DString line = ui::StringUtil::Printf(DUI_T("%04d: "), ++m_nLogLineNumber);
             line += log;
-            line += "\n";
+            line += DUI_T("\n");
             m_pLogEdit->AppendText(line);
         }
     }

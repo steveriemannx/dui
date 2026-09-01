@@ -3,4 +3,4 @@
 #include "embedded_resources.inc"
 #include "dui/Utils/UiBuilder.h"
 
-int main() { return ui::RunMemory<MainForm>("XmlPreview (pure code)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize()); }
+int main() { return ui::RunMemory<MainForm>(DUI_T("XmlPreview (pure code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize()); }

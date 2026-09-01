@@ -26,13 +26,13 @@ void MainForm::OnInitWindow()
     // Build-time generated from rich_edit.xml
     InitRich_edit(this);
 
-    m_pRichEdit = ui::Find<ui::RichEdit>(this, "rich_edit");
+    m_pRichEdit = ui::Find<ui::RichEdit>(this, DUI_T("rich_edit"));
     ASSERT(m_pRichEdit != nullptr);
     m_findReplace.SetRichEdit(m_pRichEdit);
     LoadRichEditData();
 
     // Initialize font information
-    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, "combo_font_name");
+    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_name"));
     if (pFontNameCombo != nullptr) {
         m_fontList.clear();
         ui::GlobalManager::Instance().Font().GetFontNameList(m_fontList);
@@ -44,7 +44,7 @@ void MainForm::OnInitWindow()
             }
         }
     }
-    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, "combo_font_size");
+    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_size"));
     if (pFontSizeCombo != nullptr) {
         ui::GlobalManager::Instance().Font().GetFontSizeList(Dpi(), m_fontSizeList);
         for (size_t nIndex = 0; nIndex < m_fontSizeList.size(); ++nIndex) {
@@ -58,7 +58,7 @@ void MainForm::OnInitWindow()
 
     // Set color
     InitColorCombo();
-    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
+    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
     if (pColorComboBtn != nullptr) {
         DString textColor;
         if (m_pRichEdit != nullptr) {
@@ -73,13 +73,13 @@ void MainForm::OnInitWindow()
     UpdateZoomValue();
 
     // Whether to wrap text automatically
-    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, "btn_word_wrap");
+    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_word_wrap"));
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
         pCheckBox->SetSelected(m_pRichEdit->IsWordWrap());
     }
 
     // Whether rich text format is supported
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_rich_text");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_rich_text"));
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
         pCheckBox->SetSelected(m_pRichEdit->IsRichText());
 #if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
@@ -90,7 +90,7 @@ void MainForm::OnInitWindow()
     }
 
 #ifdef DUI_BUILD_FOR_SDL
-    ui::Control* pRowSpacingTips = ui::Find<ui::Control>(this, "row_spacing_tips");
+    ui::Control* pRowSpacingTips = ui::Find<ui::Control>(this, DUI_T("row_spacing_tips"));
     if (pRowSpacingTips != nullptr) {
         pRowSpacingTips->SetVisible(false);
     }
@@ -106,7 +106,7 @@ void MainForm::OnInitWindow()
 void MainForm::BindEvents()
 {
     // Hyperlink clicked in the test URL display
-    ui::RichEdit* pTestUrl = ui::Find<ui::RichEdit>(this, "test_url");
+    ui::RichEdit* pTestUrl = ui::Find<ui::RichEdit>(this, DUI_T("test_url"));
     if (pTestUrl != nullptr) {
         pTestUrl->AttachLinkClick([this, pTestUrl](const ui::EventArgs& args) {
                 if (args.GetSender() == pTestUrl) {
@@ -122,7 +122,7 @@ void MainForm::BindEvents()
     }
 
     // File operations: open, save, save as
-    ui::Button* pButton = ui::Find<ui::Button>(this, "open_file");
+    ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("open_file"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -131,7 +131,7 @@ void MainForm::BindEvents()
                 return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "save_file");
+    pButton = ui::Find<ui::Button>(this, DUI_T("save_file"));
     if (pButton != nullptr) {
         m_saveBtnText = pButton->GetText();
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
@@ -141,7 +141,7 @@ void MainForm::BindEvents()
                 return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "save_as_file");
+    pButton = ui::Find<ui::Button>(this, DUI_T("save_as_file"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -152,7 +152,7 @@ void MainForm::BindEvents()
     }
 
     // Edit operations
-    pButton = ui::Find<ui::Button>(this, "btn_copy");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_copy"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -164,7 +164,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_cut");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_cut"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -176,7 +176,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_paste");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_paste"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -188,7 +188,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_delete");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_delete"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -200,7 +200,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_sel_all");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_sel_all"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -212,7 +212,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_sel_none");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_sel_none"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -224,7 +224,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_undo");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_undo"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -236,7 +236,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_redo");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_redo"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -250,7 +250,7 @@ void MainForm::BindEvents()
     }
 
     // Find operations
-    pButton = ui::Find<ui::Button>(this, "btn_find_text");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_find_text"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -259,7 +259,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_find_next");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_find_next"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -268,7 +268,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_replace_text");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_replace_text"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -279,7 +279,7 @@ void MainForm::BindEvents()
     }
 
     // Set font
-    pButton = ui::Find<ui::Button>(this, "set_font");
+    pButton = ui::Find<ui::Button>(this, DUI_T("set_font"));
     if (pButton != nullptr) {
 #if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
@@ -294,7 +294,7 @@ void MainForm::BindEvents()
     }
 
     // Font name combo
-    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, "combo_font_name");
+    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_name"));
     if (pFontNameCombo != nullptr) {
         pFontNameCombo->AttachSelect([this, pFontNameCombo](const ui::EventArgs& args) {
             DString fontName = pFontNameCombo->GetText();
@@ -307,7 +307,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, "combo_font_size");
+    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_size"));
     if (pFontSizeCombo != nullptr) {
         pFontSizeCombo->AttachSelect([this, pFontSizeCombo](const ui::EventArgs& args) {
             DString fontName = pFontSizeCombo->GetText();
@@ -322,7 +322,7 @@ void MainForm::BindEvents()
     }
 
     // Font style: bold
-    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_bold");
+    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_bold"));
     if (pCheckBox != nullptr) {
         pCheckBox->AttachSelect([this, pCheckBox](const ui::EventArgs& args) {
             SetFontBold(pCheckBox->IsSelected());
@@ -334,7 +334,7 @@ void MainForm::BindEvents()
             });
     }
     // Font style: italic
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_italic");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_italic"));
     if (pCheckBox != nullptr) {
         pCheckBox->AttachSelect([this, pCheckBox](const ui::EventArgs& args) {
             SetFontItalic(pCheckBox->IsSelected());
@@ -346,7 +346,7 @@ void MainForm::BindEvents()
             });
     }
     // Font style: underline
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_underline");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_underline"));
     if (pCheckBox != nullptr) {
         pCheckBox->AttachSelect([this, pCheckBox](const ui::EventArgs& args) {
             SetFontUnderline(pCheckBox->IsSelected());
@@ -358,7 +358,7 @@ void MainForm::BindEvents()
             });
     }
     // Font style: strikethrough
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_strikeout");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_strikeout"));
     if (pCheckBox != nullptr) {
         pCheckBox->AttachSelect([this, pCheckBox](const ui::EventArgs& args) {
             SetFontStrikeOut(pCheckBox->IsSelected());
@@ -371,14 +371,14 @@ void MainForm::BindEvents()
     }
 
     // Increase/decrease font size
-    ui::Button* pFontButton = ui::Find<ui::Button>(this, "btn_font_size_increase");
+    ui::Button* pFontButton = ui::Find<ui::Button>(this, DUI_T("btn_font_size_increase"));
     if (pFontButton != nullptr) {
         pFontButton->AttachClick([this](const ui::EventArgs& args) {
             AdjustFontSize(true);
             return true;
             });
     }
-    pFontButton = ui::Find<ui::Button>(this, "btn_font_size_decrease");
+    pFontButton = ui::Find<ui::Button>(this, DUI_T("btn_font_size_decrease"));
     if (pFontButton != nullptr) {
         pFontButton->AttachClick([this](const ui::EventArgs& args) {
             AdjustFontSize(false);
@@ -387,7 +387,7 @@ void MainForm::BindEvents()
     }
 
     // Color: left button click
-    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
+    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
     if (pColorComboBtn != nullptr) {
         pColorComboBtn->AttachClick([this, pColorComboBtn](const ui::EventArgs& args) {
             ui::Label* pLeftColorLabel = pColorComboBtn->GetLabelBottom();
@@ -407,7 +407,7 @@ void MainForm::BindEvents()
     }
 
     // Zoom buttons
-    ui::Button* pZoomButtom = ui::Find<ui::Button>(this, "btn_zoom_in");
+    ui::Button* pZoomButtom = ui::Find<ui::Button>(this, DUI_T("btn_zoom_in"));
     if (pZoomButtom != nullptr) {
         pZoomButtom->AttachClick([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
@@ -418,7 +418,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pZoomButtom = ui::Find<ui::Button>(this, "btn_zoom_out");
+    pZoomButtom = ui::Find<ui::Button>(this, DUI_T("btn_zoom_out"));
     if (pZoomButtom != nullptr) {
         pZoomButtom->AttachClick([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
@@ -429,7 +429,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pZoomButtom = ui::Find<ui::Button>(this, "btn_zoom_off");
+    pZoomButtom = ui::Find<ui::Button>(this, DUI_T("btn_zoom_off"));
     if (pZoomButtom != nullptr) {
         pZoomButtom->AttachClick([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
@@ -441,26 +441,26 @@ void MainForm::BindEvents()
     }
 
     // Word wrap
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_word_wrap");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_word_wrap"));
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
         pCheckBox->AttachSelect([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
                 m_pRichEdit->SetWordWrap(true);
-                m_pRichEdit->SetAttribute("hscrollbar", "false");
+                m_pRichEdit->SetAttribute(DUI_T("hscrollbar"), DUI_T("false"));
             }
             return true;
             });
         pCheckBox->AttachUnSelect([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
                 m_pRichEdit->SetWordWrap(false);
-                m_pRichEdit->SetAttribute("hscrollbar", "true");
+                m_pRichEdit->SetAttribute(DUI_T("hscrollbar"), DUI_T("true"));
             }
             return true;
             });
     }
 
     // Rich text format
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_rich_text");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_rich_text"));
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
 #if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
         pCheckBox->AttachSelect([this](const ui::EventArgs& args) {
@@ -586,7 +586,7 @@ uint32_t MainForm::GetNextZoomPercent(uint32_t nOldZoomPercent, bool bZoomIn) co
 
 void MainForm::InitColorCombo()
 {
-    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
+    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
     if (pColorComboBtn == nullptr) {
         return;
     }
@@ -596,8 +596,8 @@ void MainForm::InitColorCombo()
         return;
     }
     pComboBox->SetWindow(this);
-    ui::GlobalManager::Instance().FillBoxWithCache(pComboBox, ui::FilePath("rich_edit/color_combox.xml"));
-    ui::ColorPickerRegular* pColorPicker = dynamic_cast<ui::ColorPickerRegular*>(pComboBox->FindSubControl("color_combo_picker"));
+    ui::GlobalManager::Instance().FillBoxWithCache(pComboBox, ui::FilePath(DUI_T("rich_edit/color_combox.xml")));
+    ui::ColorPickerRegular* pColorPicker = dynamic_cast<ui::ColorPickerRegular*>(pComboBox->FindSubControl(DUI_T("color_combo_picker")));
     if (pColorPicker != nullptr) {
         // Respond to the color selection event
         pColorPicker->AttachSelectColor([this, pColorComboBtn](const ui::EventArgs& args) {
@@ -612,7 +612,7 @@ void MainForm::InitColorCombo()
             });
     }
 
-    ui::Button* pMoreColorButton = dynamic_cast<ui::Button*>(pComboBox->FindSubControl("color_combo_picker_more"));
+    ui::Button* pMoreColorButton = dynamic_cast<ui::Button*>(pComboBox->FindSubControl(DUI_T("color_combo_picker_more")));
     if (pMoreColorButton != nullptr) {
         pMoreColorButton->AttachClick([this](const ui::EventArgs& args) {
             ShowColorPicker();
@@ -623,7 +623,7 @@ void MainForm::InitColorCombo()
 
 void MainForm::ShowColorPicker()
 {
-    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
+    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
     if (pColorComboBtn == nullptr) {
         return;
     }
@@ -637,7 +637,7 @@ void MainForm::ShowColorPicker()
     ui::WindowCreateParam createParam;
     createParam.m_dwStyle = ui::kWS_POPUP;
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = "ColorPicker";
+    createParam.m_windowTitle = DUI_T("ColorPicker");
     createParam.m_bCenterWindow = true;
 #ifdef DUI_BUILD_FOR_WIN
     pColorPicker->CreateWnd(nullptr, createParam);
@@ -688,7 +688,7 @@ void MainForm::UpdateFontStatus()
     const ui::UiFont fontInfo = pRichEdit->GetFontInfo();
 
     // Update the font name
-    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, "combo_font_name");
+    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_name"));
     if (pFontNameCombo != nullptr) {
         pFontNameCombo->SelectTextItem(fontInfo.m_fontName.c_str(), false);
     }
@@ -697,25 +697,25 @@ void MainForm::UpdateFontStatus()
     UpdateFontSizeStatus();
 
     // Update bold state
-    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_bold");
+    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_bold"));
     if (pCheckBox != nullptr) {
         pCheckBox->SetSelected(fontInfo.m_bBold);
     }
 
     // Update italic state
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_italic");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_italic"));
     if (pCheckBox != nullptr) {
         pCheckBox->SetSelected(fontInfo.m_bItalic);
     }
 
     // Update underline state
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_underline");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_underline"));
     if (pCheckBox != nullptr) {
         pCheckBox->SetSelected(fontInfo.m_bUnderline);
     }
 
     // Update strikethrough state
-    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_strikeout");
+    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_strikeout"));
     if (pCheckBox != nullptr) {
         pCheckBox->SetSelected(fontInfo.m_bStrikeOut);
     }
@@ -727,7 +727,7 @@ void MainForm::UpdateFontSizeStatus()
     if (pRichEdit == nullptr) {
         return;
     }
-    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, "combo_font_size");
+    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_size"));
     if (pFontSizeCombo == nullptr) {
         return;
     }
@@ -989,10 +989,10 @@ LRESULT MainForm::OnKeyUpMsg(ui::VirtualKeyCode vkCode, uint32_t modifierKey, co
 void MainForm::UpdateSaveStatus()
 {
     if (m_pRichEdit != nullptr) {
-        ui::Button* pButton = ui::Find<ui::Button>(this, "save_file");
+        ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("save_file"));
         if (m_pRichEdit->GetModify()) {
             if (pButton != nullptr) {
-                pButton->SetText(m_saveBtnText + "*");
+                pButton->SetText(m_saveBtnText + DUI_T("*"));
             }
         }
         else {
@@ -1043,7 +1043,7 @@ void MainForm::OnFindText()
         ui::WindowCreateParam createParam;
         createParam.m_dwStyle = ui::kWS_POPUP;
         createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-        createParam.m_windowTitle = "FindForm";
+        createParam.m_windowTitle = DUI_T("FindForm");
         createParam.m_bCenterWindow = true;
         m_pFindForm->CreateWnd(this, createParam);
         m_pFindForm->ShowWindow(ui::kSW_SHOW);
@@ -1074,7 +1074,7 @@ void MainForm::OnReplaceText()
         ui::WindowCreateParam createParam;
         createParam.m_dwStyle = ui::kWS_POPUP;
         createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-        createParam.m_windowTitle = "ReplaceForm";
+        createParam.m_windowTitle = DUI_T("ReplaceForm");
         createParam.m_bCenterWindow = true;
         m_pReplaceForm->CreateWnd(this, createParam);
         m_pReplaceForm->ShowWindow(ui::kSW_SHOW);
@@ -1130,10 +1130,10 @@ void MainForm::UpdateZoomValue()
         return;
     }
 
-    ui::Label* pZoomLabel = ui::Find<ui::Label>(this, "lavel_zoom_value");
+    ui::Label* pZoomLabel = ui::Find<ui::Label>(this, DUI_T("lavel_zoom_value"));
     if (pZoomLabel != nullptr) {
         uint32_t nZoomPercent = pRichEdit->GetZoomPercent();
-        DString strZoom = ui::StringUtil::Printf("%u%%", nZoomPercent);
+        DString strZoom = ui::StringUtil::Printf(DUI_T("%u%%"), nZoomPercent);
         pZoomLabel->SetText(strZoom);
     }
 }
@@ -1141,10 +1141,10 @@ void MainForm::UpdateZoomValue()
 void MainForm::OnOpenFile()
 {
     std::vector<ui::FileDialog::FileType> fileTypes;
-    fileTypes.push_back({ "All Files (*.*)", "*.*"});
-    fileTypes.push_back({ "Text Files (*.txt)", "*.txt" });
+    fileTypes.push_back({ DUI_T("All Files (*.*)"), DUI_T("*.*")});
+    fileTypes.push_back({ DUI_T("Text Files (*.txt)"), DUI_T("*.txt") });
 #if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
-    fileTypes.push_back({ "RTF Files (*.rtf)", "*.rtf" });
+    fileTypes.push_back({ DUI_T("RTF Files (*.rtf)"), DUI_T("*.rtf") });
 #endif
 
     DString defaultExt;
@@ -1184,10 +1184,10 @@ void MainForm::OnSaveFile()
 void MainForm::OnSaveAsFile()
 {
     std::vector<ui::FileDialog::FileType> fileTypes;
-    fileTypes.push_back({ "All Files (*.*)", "*.*" });
-    fileTypes.push_back({ "Text Files (*.txt)", "*.txt" });
+    fileTypes.push_back({ DUI_T("All Files (*.*)"), DUI_T("*.*") });
+    fileTypes.push_back({ DUI_T("Text Files (*.txt)"), DUI_T("*.txt") });
 #if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
-    fileTypes.push_back({ "RTF Files (*.rtf)", "*.rtf" });
+    fileTypes.push_back({ DUI_T("RTF Files (*.rtf)"), DUI_T("*.rtf") });
 #endif
 
     DString defaultExt;
@@ -1265,12 +1265,12 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
 bool MainForm::IsRtfFile(const DString& filePath) const
 {
     DString fileExt;
-    size_t pos = filePath.find_last_of(".");
+    size_t pos = filePath.find_last_of(DUI_T("."));
     if (pos != DString::npos) {
         fileExt = filePath.substr(pos);
         fileExt = ui::StringUtil::MakeLowerString(fileExt);
     }
-    return fileExt == ".rtf";
+    return fileExt == DUI_T(".rtf");
 }
 
 DWORD MainForm::StreamReadCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG FAR* pcb)
@@ -1447,7 +1447,7 @@ void MainForm::OnSetFont()
         SetCharFormat(charFormat);
 
         // Update color
-        ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
+        ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
         if (pColorComboBtn != nullptr) {
             if (pColorComboBtn->GetLabelBottom() != nullptr) {
                 ui::UiColor textColor;

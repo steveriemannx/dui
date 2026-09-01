@@ -20,8 +20,8 @@ public:
      *  This is the code-generation (gen) mode: the UI is built from generated
      *  C++ code (InitThreads, see BuildUI), so no XML skin is loaded.
      */
-    virtual DString GetSkinFolder() override { return "threads"; }
-    virtual DString GetSkinFile() override { return ""; }
+    virtual DString GetSkinFolder() override { return DUI_T("threads"); }
+    virtual DString GetSkinFile() override { return DUI_T(""); }
 
     /** Called after the window is created, for subclasses to do some initialization work
      */

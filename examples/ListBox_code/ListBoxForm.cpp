@@ -20,62 +20,62 @@ void ListBoxForm::SetupWindow()
 void ListBoxForm::BuildUI()
 {
     // Register the local style classes in item.xml (the Item template is now built in code)
-    AddClass("list_box_item_test",
-             " hot_color=\"bk_listitem_hovered\" pushed_color=\"bk_listitem_selected\" selected_normal_color=\"bk_listitem_selected\" fade_hot=\"false\"");
-    AddClass("list_box_item_checkbox_1",
-             " height=\"20\" text_padding=\"20,0,0,0\" font=\"system_14\" normal_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'\" disabled_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'\" selected_normal_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'\" selected_disabled_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'\"");
+    AddClass(DUI_T("list_box_item_test"),
+             DUI_T(" hot_color=\"bk_listitem_hovered\" pushed_color=\"bk_listitem_selected\" selected_normal_color=\"bk_listitem_selected\" fade_hot=\"false\""));
+    AddClass(DUI_T("list_box_item_checkbox_1"),
+             DUI_T(" height=\"20\" text_padding=\"20,0,0,0\" font=\"system_14\" normal_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center'\" disabled_image=\"file='public/CheckBox/checkbox-outline-unchecked.svg' margin='2,0,0,0' valign='center' fade='80'\" selected_normal_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center'\" selected_disabled_image=\"file='public/CheckBox/checkbox-outline-checked.svg' margin='2,0,0,0' valign='center' fade='80'\""));
 
     // Corresponding to the list_box.xml layout
     auto* pRoot = ui::Create<ui::VBox>(this, {});
-    pRoot->SetBkColor("bk_wnd_darkcolor");
+    pRoot->SetBkColor(DUI_T("bk_wnd_darkcolor"));
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}});
-    pCaption->SetBkColor("bk_wnd_lightcolor");
+    auto* pCaption = ui::Create<ui::HBox>(this, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}});
+    pCaption->SetBkColor(DUI_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{"font", "system_14"}, {"valign", "center"}, {"margin", "8"}, {"width", "stretch"}, {"mouse_enabled", "false"}});
-    pTitle->SetText("List (VTileListBox | HTileListBox | VListBox | HListBox)");
+    auto* pTitle = ui::Create<ui::Label>(this, {{DUI_T("font"), DUI_T("system_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+    pTitle->SetText(DUI_T("List (VTileListBox | HTileListBox | VListBox | HListBox)"));
     pCaption->AddItem(pTitle);
 
-    auto* pCaptionBtns = ui::Create<ui::HBox>(this, {{"width", "auto"}});
+    auto* pCaptionBtns = ui::Create<ui::HBox>(this, {{DUI_T("width"), DUI_T("auto")}});
     pCaption->AddItem(pCaptionBtns);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}});
-    pMinBtn->SetClass("btn_wnd_min_11");
-    pMinBtn->SetName("minbtn");
-    pMinBtn->SetToolTipText("Minimize");
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
+    pMinBtn->SetClass(DUI_T("btn_wnd_min_11"));
+    pMinBtn->SetName(DUI_T("minbtn"));
+    pMinBtn->SetToolTipText(DUI_T("Minimize"));
     pCaptionBtns->AddItem(pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
     pCaptionBtns->AddItem(pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "stretch"}});
-    pMaxBtn->SetClass("btn_wnd_max_11");
-    pMaxBtn->SetName("maxbtn");
-    pMaxBtn->SetToolTipText("Maximize");
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}});
+    pMaxBtn->SetClass(DUI_T("btn_wnd_max_11"));
+    pMaxBtn->SetName(DUI_T("maxbtn"));
+    pMaxBtn->SetToolTipText(DUI_T("Maximize"));
     pMaxBox->AddItem(pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"height", "32"}, {"width", "stretch"}});
-    pRestoreBtn->SetClass("btn_wnd_restore_11");
-    pRestoreBtn->SetName("restorebtn");
-    pRestoreBtn->SetToolTipText("Restore");
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}});
+    pRestoreBtn->SetClass(DUI_T("btn_wnd_restore_11"));
+    pRestoreBtn->SetName(DUI_T("restorebtn"));
+    pRestoreBtn->SetToolTipText(DUI_T("Restore"));
     pRestoreBtn->SetVisible(false);
     pMaxBox->AddItem(pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,0,0,2"}});
-    pCloseBtn->SetClass("btn_wnd_close_11");
-    pCloseBtn->SetName("closebtn");
-    pCloseBtn->SetToolTipText("Close");
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,0,0,2")}});
+    pCloseBtn->SetClass(DUI_T("btn_wnd_close_11"));
+    pCloseBtn->SetName(DUI_T("closebtn"));
+    pCloseBtn->SetToolTipText(DUI_T("Close"));
     pCaptionBtns->AddItem(pCloseBtn);
 
     // List area
     auto* pContent = ui::Create<ui::Box>(this, {});
     pRoot->AddItem(pContent);
 
-    auto* pListBox = ui::Create<ui::VListBox>(this, {{"vscrollbar", "true"}, {"hscrollbar", "true"}, {"multi_select", "false"}, {"scroll_select", "false"}});
-    pListBox->SetName("list");
-    pListBox->SetBkColor("bk_wnd_lightcolor");
+    auto* pListBox = ui::Create<ui::VListBox>(this, {{DUI_T("vscrollbar"), DUI_T("true")}, {DUI_T("hscrollbar"), DUI_T("true")}, {DUI_T("multi_select"), DUI_T("false")}, {DUI_T("scroll_select"), DUI_T("false")}});
+    pListBox->SetName(DUI_T("list"));
+    pListBox->SetBkColor(DUI_T("bk_wnd_lightcolor"));
     pContent->AddItem(pListBox);
 
     AttachBox(pRoot);
@@ -86,7 +86,7 @@ void ListBoxForm::OnInitWindow()
     SetupWindow();
     BuildUI();
 
-    m_pListBox = ui::Find<ui::ListBox>(this, "list");
+    m_pListBox = ui::Find<ui::ListBox>(this, DUI_T("list"));
     ASSERT(m_pListBox != nullptr);
     if (m_pListBox == nullptr) {
         return;
@@ -99,14 +99,14 @@ void ListBoxForm::OnInitWindow()
     if (bVTileListBox) {
         //VTileListBox: set to fixed 2 columns, auto-calculate the Item width
         //m_pListBox->SetAttribute("item_size", "200，80");
-        m_pListBox->SetAttribute("columns", "2");
-        m_pListBox->SetAttribute("auto_calc_item_size", "true");
+        m_pListBox->SetAttribute(DUI_T("columns"), DUI_T("2"));
+        m_pListBox->SetAttribute(DUI_T("auto_calc_item_size"), DUI_T("true"));
     }
     else if (bHTileListBox) {
         //HTileListBox: set to fixed 2 rows, auto-calculate the Item height
         //m_pListBox->SetAttribute("item_size", "200，80");
-        m_pListBox->SetAttribute("rows", "2");
-        m_pListBox->SetAttribute("auto_calc_item_size", "true");
+        m_pListBox->SetAttribute(DUI_T("rows"), DUI_T("2"));
+        m_pListBox->SetAttribute(DUI_T("auto_calc_item_size"), DUI_T("true"));
     }
 
     for (auto i = 0; i < 300; i++) {
@@ -131,8 +131,8 @@ void ListBoxForm::OnInitWindow()
             item->SetFixedHeight(ui::UiFixedInt::MakeAuto(), true, true);
         }
 
-        DString img = "icon.png";
-        DString title = ui::StringUtil::Printf("Task [%02d]", i);
+        DString img = DUI_T("icon.png");
+        DString title = ui::StringUtil::Printf(DUI_T("Task [%02d]"), i);
 
         item->InitSubControls(img, title);
         m_pListBox->AddItem(item);
@@ -212,22 +212,22 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
 {
     DString sInfo = ui::EventUtils::EventTypeToString(args.eventType);
     while (sInfo.size() < 24) {
-        sInfo += " ";
+        sInfo += DUI_T(" ");
     }
     if (args.eventType == ui::kEventSelect) {
         size_t nNewItemIndex = (size_t)args.wParam;
         size_t nOldItemIndex = (size_t)args.lParam;
         if (nOldItemIndex != ui::Box::InvalidIndex) {
-            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu, OldItemIndex=%zu",
+            sInfo += ui::StringUtil::Printf(DUI_T("NewItemIndex=%zu, OldItemIndex=%zu"),
                                             nNewItemIndex, nOldItemIndex);
         }
         else {
-            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu", nNewItemIndex);
+            sInfo += ui::StringUtil::Printf(DUI_T("NewItemIndex=%zu"), nNewItemIndex);
         }
     }
     else if (args.eventType == ui::kEventUnSelect) {
         size_t nItemIndex = (size_t)args.wParam;
-        sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
+        sInfo += ui::StringUtil::Printf(DUI_T("ItemIndex=%zu"), nItemIndex);
     }
     else if (args.eventType == ui::kEventSelChanged) {
         //No parameters
@@ -240,10 +240,10 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
              (args.eventType == ui::kEventReturn)) {
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += "no params";
+            sInfo += DUI_T("no params");
         }
         else {
-            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
+            sInfo += ui::StringUtil::Printf(DUI_T("ItemIndex=%zu"), nItemIndex);
         }
     }
     else if ((args.eventType == ui::kEventKeyDown) || (args.eventType == ui::kEventKeyUp)) {
@@ -252,31 +252,31 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
         DString modifierKey;
         if (args.vkCode != ui::VirtualKeyCode::kVK_CONTROL) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_CONTROL)) {
-                modifierKey += "Ctrl+";
+                modifierKey += DUI_T("Ctrl+");
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_SHIFT) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_SHIFT)) {
-                modifierKey += "Shift+";
+                modifierKey += DUI_T("Shift+");
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_MENU) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_MENU)) {
-                modifierKey += "Alt+";
+                modifierKey += DUI_T("Alt+");
             }
         }
-        sInfo += "<";
+        sInfo += DUI_T("<");
         sInfo += modifierKey;
         sInfo += keyName;
-        sInfo += ">";
-        sInfo += " ";
+        sInfo += DUI_T(">");
+        sInfo += DUI_T(" ");
 
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += "no params";
+            sInfo += DUI_T("no params");
         }
         else {
-            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
+            sInfo += ui::StringUtil::Printf(DUI_T("ItemIndex=%zu"), nItemIndex);
         }
     }
     else {

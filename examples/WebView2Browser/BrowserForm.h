@@ -24,8 +24,8 @@ public:
     virtual ~BrowserForm() override;
     
     //Override virtual functions
-    virtual DString GetSkinFolder() override { return "webview2_browser"; }
-    virtual DString GetSkinFile() override { return "webview2_browser.xml"; }
+    virtual DString GetSkinFolder() override { return DUI_T("webview2_browser"); }
+    virtual DString GetSkinFile() override { return DUI_T("webview2_browser.xml"); }
 
     /** Key pressed (WM_KEYDOWN or WM_SYSKEYDOWN)
     * @param [in] vkCode virtual key code

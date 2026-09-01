@@ -19,52 +19,52 @@ ReplaceForm::~ReplaceForm()
 
 DString ReplaceForm::GetSkinFolder()
 {
-    return "rich_edit";
+    return DUI_T("rich_edit");
 }
 
 DString ReplaceForm::GetSkinFile()
 {
     // No XML file - UI is generated at build time from replace.xml
-    return "";
+    return DUI_T("");
 }
 
 void ReplaceForm::BuildUI()
 {
     // Corresponds to the replace.xml layout
     ui::VBox* pRoot = new ui::VBox(this);
-    pRoot->SetBkColor("bk_wnd_darkcolor");
+    pRoot->SetBkColor(DUI_T("bk_wnd_darkcolor"));
 
     // Title bar
     ui::HBox* pCaption = new ui::HBox(this);
-    pCaption->SetAttribute("name", "window_caption_bar");
-    pCaption->SetAttribute("width", "stretch");
-    pCaption->SetAttribute("height", "35");
-    pCaption->SetBkColor("bk_wnd_lightcolor");
+    pCaption->SetAttribute(DUI_T("name"), DUI_T("window_caption_bar"));
+    pCaption->SetAttribute(DUI_T("width"), DUI_T("stretch"));
+    pCaption->SetAttribute(DUI_T("height"), DUI_T("35"));
+    pCaption->SetBkColor(DUI_T("bk_wnd_lightcolor"));
     pRoot->AddItem(pCaption);
 
     ui::Control* pLogo = new ui::Control(this);
-    pLogo->SetAttribute("width", "18");
-    pLogo->SetAttribute("height", "18");
-    pLogo->SetBkImage("public/caption/logo.svg");
-    pLogo->SetAttribute("valign", "center");
-    pLogo->SetAttribute("margin", "8");
+    pLogo->SetAttribute(DUI_T("width"), DUI_T("18"));
+    pLogo->SetAttribute(DUI_T("height"), DUI_T("18"));
+    pLogo->SetBkImage(DUI_T("public/caption/logo.svg"));
+    pLogo->SetAttribute(DUI_T("valign"), DUI_T("center"));
+    pLogo->SetAttribute(DUI_T("margin"), DUI_T("8"));
     pCaption->AddItem(pLogo);
 
     ui::Label* pTitle = new ui::Label(this);
-    pTitle->SetText("Replace");
-    pTitle->SetAttribute("valign", "center");
-    pTitle->SetAttribute("margin", "8");
+    pTitle->SetText(DUI_T("Replace"));
+    pTitle->SetAttribute(DUI_T("valign"), DUI_T("center"));
+    pTitle->SetAttribute(DUI_T("margin"), DUI_T("8"));
     pCaption->AddItem(pTitle);
 
     ui::Control* pSpacer = new ui::Control(this);
     pCaption->AddItem(pSpacer);
 
     ui::Button* pCloseBtn = new ui::Button(this);
-    pCloseBtn->SetClass("btn_wnd_close_11");
-    pCloseBtn->SetName("closebtn");
-    pCloseBtn->SetAttribute("width", "40");
-    pCloseBtn->SetAttribute("height", "32");
-    pCloseBtn->SetAttribute("margin", "4,0,0,0");
+    pCloseBtn->SetClass(DUI_T("btn_wnd_close_11"));
+    pCloseBtn->SetName(DUI_T("closebtn"));
+    pCloseBtn->SetAttribute(DUI_T("width"), DUI_T("40"));
+    pCloseBtn->SetAttribute(DUI_T("height"), DUI_T("32"));
+    pCloseBtn->SetAttribute(DUI_T("margin"), DUI_T("4,0,0,0"));
     pCaption->AddItem(pCloseBtn);
 
     // Content area
@@ -73,141 +73,141 @@ void ReplaceForm::BuildUI()
 
     // Find content row
     ui::HBox* pFindRow = new ui::HBox(this);
-    pFindRow->SetAttribute("height", "auto");
+    pFindRow->SetAttribute(DUI_T("height"), DUI_T("auto"));
     pContent->AddItem(pFindRow);
 
     ui::Label* pFindLabel = new ui::Label(this);
-    pFindLabel->SetText("Find What:");
-    pFindLabel->SetAttribute("height", "28");
-    pFindLabel->SetAttribute("text_align", "vcenter");
-    pFindLabel->SetAttribute("margin", "8,8,0,0");
+    pFindLabel->SetText(DUI_T("Find What:"));
+    pFindLabel->SetAttribute(DUI_T("height"), DUI_T("28"));
+    pFindLabel->SetAttribute(DUI_T("text_align"), DUI_T("vcenter"));
+    pFindLabel->SetAttribute(DUI_T("margin"), DUI_T("8,8,0,0"));
     pFindRow->AddItem(pFindLabel);
 
     ui::RichEdit* pFindText = new ui::RichEdit(this);
-    pFindText->SetClass("simple prompt simple_border");
-    pFindText->SetName("btn_find_text");
-    pFindText->SetAttribute("width", "stretch");
-    pFindText->SetAttribute("height", "28");
-    pFindText->SetAttribute("prompttext", "Find");
-    pFindText->SetAttribute("text_padding", "2,0,0,0");
-    pFindText->SetAttribute("text_align", "vcenter");
-    pFindText->SetBkColor("white");
-    pFindText->SetAttribute("margin", "2,8,4,0");
+    pFindText->SetClass(DUI_T("simple prompt simple_border"));
+    pFindText->SetName(DUI_T("btn_find_text"));
+    pFindText->SetAttribute(DUI_T("width"), DUI_T("stretch"));
+    pFindText->SetAttribute(DUI_T("height"), DUI_T("28"));
+    pFindText->SetAttribute(DUI_T("prompttext"), DUI_T("Find"));
+    pFindText->SetAttribute(DUI_T("text_padding"), DUI_T("2,0,0,0"));
+    pFindText->SetAttribute(DUI_T("text_align"), DUI_T("vcenter"));
+    pFindText->SetBkColor(DUI_T("white"));
+    pFindText->SetAttribute(DUI_T("margin"), DUI_T("2,8,4,0"));
     pFindRow->AddItem(pFindText);
 
     ui::Button* pFindNextBtn = new ui::Button(this);
-    pFindNextBtn->SetClass("btn_global_white_80x30");
-    pFindNextBtn->SetName("btn_find_next");
-    pFindNextBtn->SetText("Find Next");
-    pFindNextBtn->SetAttribute("width", "80");
-    pFindNextBtn->SetAttribute("height", "28");
-    pFindNextBtn->SetAttribute("margin", "4,8,8,0");
+    pFindNextBtn->SetClass(DUI_T("btn_global_white_80x30"));
+    pFindNextBtn->SetName(DUI_T("btn_find_next"));
+    pFindNextBtn->SetText(DUI_T("Find Next"));
+    pFindNextBtn->SetAttribute(DUI_T("width"), DUI_T("80"));
+    pFindNextBtn->SetAttribute(DUI_T("height"), DUI_T("28"));
+    pFindNextBtn->SetAttribute(DUI_T("margin"), DUI_T("4,8,8,0"));
     pFindRow->AddItem(pFindNextBtn);
 
     // Replace-with row
     ui::HBox* pReplaceRow = new ui::HBox(this);
-    pReplaceRow->SetAttribute("height", "auto");
+    pReplaceRow->SetAttribute(DUI_T("height"), DUI_T("auto"));
     pContent->AddItem(pReplaceRow);
 
     ui::Label* pReplaceLabel = new ui::Label(this);
-    pReplaceLabel->SetText(" Replace with:");
-    pReplaceLabel->SetAttribute("height", "28");
-    pReplaceLabel->SetAttribute("text_align", "vcenter");
-    pReplaceLabel->SetAttribute("margin", "8,8,0,0");
+    pReplaceLabel->SetText(DUI_T(" Replace with:"));
+    pReplaceLabel->SetAttribute(DUI_T("height"), DUI_T("28"));
+    pReplaceLabel->SetAttribute(DUI_T("text_align"), DUI_T("vcenter"));
+    pReplaceLabel->SetAttribute(DUI_T("margin"), DUI_T("8,8,0,0"));
     pReplaceRow->AddItem(pReplaceLabel);
 
     ui::RichEdit* pReplaceText = new ui::RichEdit(this);
-    pReplaceText->SetClass("simple prompt simple_border");
-    pReplaceText->SetName("btn_replace_text");
-    pReplaceText->SetAttribute("width", "stretch");
-    pReplaceText->SetAttribute("height", "28");
-    pReplaceText->SetAttribute("prompttext", "Replace");
-    pReplaceText->SetAttribute("text_padding", "2,0,0,0");
-    pReplaceText->SetAttribute("text_align", "vcenter");
-    pReplaceText->SetBkColor("white");
-    pReplaceText->SetAttribute("margin", "2,8,4,0");
+    pReplaceText->SetClass(DUI_T("simple prompt simple_border"));
+    pReplaceText->SetName(DUI_T("btn_replace_text"));
+    pReplaceText->SetAttribute(DUI_T("width"), DUI_T("stretch"));
+    pReplaceText->SetAttribute(DUI_T("height"), DUI_T("28"));
+    pReplaceText->SetAttribute(DUI_T("prompttext"), DUI_T("Replace"));
+    pReplaceText->SetAttribute(DUI_T("text_padding"), DUI_T("2,0,0,0"));
+    pReplaceText->SetAttribute(DUI_T("text_align"), DUI_T("vcenter"));
+    pReplaceText->SetBkColor(DUI_T("white"));
+    pReplaceText->SetAttribute(DUI_T("margin"), DUI_T("2,8,4,0"));
     pReplaceRow->AddItem(pReplaceText);
 
     ui::Button* pReplaceBtn = new ui::Button(this);
-    pReplaceBtn->SetClass("btn_global_white_80x30");
-    pReplaceBtn->SetName("btn_replace");
-    pReplaceBtn->SetText("Replace");
-    pReplaceBtn->SetAttribute("width", "80");
-    pReplaceBtn->SetAttribute("height", "28");
-    pReplaceBtn->SetAttribute("margin", "4,8,4,0");
+    pReplaceBtn->SetClass(DUI_T("btn_global_white_80x30"));
+    pReplaceBtn->SetName(DUI_T("btn_replace"));
+    pReplaceBtn->SetText(DUI_T("Replace"));
+    pReplaceBtn->SetAttribute(DUI_T("width"), DUI_T("80"));
+    pReplaceBtn->SetAttribute(DUI_T("height"), DUI_T("28"));
+    pReplaceBtn->SetAttribute(DUI_T("margin"), DUI_T("4,8,4,0"));
     pReplaceRow->AddItem(pReplaceBtn);
 
     ui::Button* pReplaceAllBtn = new ui::Button(this);
-    pReplaceAllBtn->SetClass("btn_global_white_80x30");
-    pReplaceAllBtn->SetName("btn_replace_all");
-    pReplaceAllBtn->SetText("Replace All");
-    pReplaceAllBtn->SetAttribute("width", "80");
-    pReplaceAllBtn->SetAttribute("height", "28");
-    pReplaceAllBtn->SetAttribute("margin", "4,8,8,0");
+    pReplaceAllBtn->SetClass(DUI_T("btn_global_white_80x30"));
+    pReplaceAllBtn->SetName(DUI_T("btn_replace_all"));
+    pReplaceAllBtn->SetText(DUI_T("Replace All"));
+    pReplaceAllBtn->SetAttribute(DUI_T("width"), DUI_T("80"));
+    pReplaceAllBtn->SetAttribute(DUI_T("height"), DUI_T("28"));
+    pReplaceAllBtn->SetAttribute(DUI_T("margin"), DUI_T("4,8,8,0"));
     pReplaceRow->AddItem(pReplaceAllBtn);
 
     // Search direction
     ui::GroupVBox* pDirectionGroup = new ui::GroupVBox(this);
-    pDirectionGroup->SetAttribute("margin", "10,6,10,6");
-    pDirectionGroup->SetAttribute("text", " Search Direction ");
-    pDirectionGroup->SetAttribute("height", "auto");
-    pDirectionGroup->SetAttribute("corner_size", "4,4");
+    pDirectionGroup->SetAttribute(DUI_T("margin"), DUI_T("10,6,10,6"));
+    pDirectionGroup->SetAttribute(DUI_T("text"), DUI_T(" Search Direction "));
+    pDirectionGroup->SetAttribute(DUI_T("height"), DUI_T("auto"));
+    pDirectionGroup->SetAttribute(DUI_T("corner_size"), DUI_T("4,4"));
     pContent->AddItem(pDirectionGroup);
 
     ui::HBox* pDirectionRow = new ui::HBox(this);
-    pDirectionRow->SetAttribute("height", "40");
-    pDirectionRow->SetAttribute("margin", "24,12,8,4");
-    pDirectionRow->SetAttribute("padding", "12,0,0,0");
+    pDirectionRow->SetAttribute(DUI_T("height"), DUI_T("40"));
+    pDirectionRow->SetAttribute(DUI_T("margin"), DUI_T("24,12,8,4"));
+    pDirectionRow->SetAttribute(DUI_T("padding"), DUI_T("12,0,0,0"));
     pDirectionGroup->AddItem(pDirectionRow);
 
     ui::Option* pOptionUp = new ui::Option(this);
-    pOptionUp->SetClass("option_1");
-    pOptionUp->SetAttribute("group", "option_direction_group");
-    pOptionUp->SetText("Search Up");
-    pOptionUp->SetAttribute("margin", "0,6,0,0");
+    pOptionUp->SetClass(DUI_T("option_1"));
+    pOptionUp->SetAttribute(DUI_T("group"), DUI_T("option_direction_group"));
+    pOptionUp->SetText(DUI_T("Search Up"));
+    pOptionUp->SetAttribute(DUI_T("margin"), DUI_T("0,6,0,0"));
     pDirectionRow->AddItem(pOptionUp);
 
     ui::Option* pOptionDown = new ui::Option(this);
-    pOptionDown->SetClass("option_1");
-    pOptionDown->SetAttribute("group", "option_direction_group");
-    pOptionDown->SetText("Search Down");
-    pOptionDown->SetName("option_direction_down");
-    pOptionDown->SetAttribute("margin", "16,6,0,0");
+    pOptionDown->SetClass(DUI_T("option_1"));
+    pOptionDown->SetAttribute(DUI_T("group"), DUI_T("option_direction_group"));
+    pOptionDown->SetText(DUI_T("Search Down"));
+    pOptionDown->SetName(DUI_T("option_direction_down"));
+    pOptionDown->SetAttribute(DUI_T("margin"), DUI_T("16,6,0,0"));
     pOptionDown->Selected(true);
     pDirectionRow->AddItem(pOptionDown);
 
     // Options row
     ui::HBox* pOptionRow = new ui::HBox(this);
-    pOptionRow->SetAttribute("height", "auto");
+    pOptionRow->SetAttribute(DUI_T("height"), DUI_T("auto"));
     pContent->AddItem(pOptionRow);
 
     ui::CheckBox* pCaseSensitive = new ui::CheckBox(this);
-    pCaseSensitive->SetClass("checkbox_1");
-    pCaseSensitive->SetName("check_box_case_sensitive");
-    pCaseSensitive->SetText("Case Sensitive");
-    pCaseSensitive->SetAttribute("valign", "center");
-    pCaseSensitive->SetAttribute("margin", "8,8,8,0");
+    pCaseSensitive->SetClass(DUI_T("checkbox_1"));
+    pCaseSensitive->SetName(DUI_T("check_box_case_sensitive"));
+    pCaseSensitive->SetText(DUI_T("Case Sensitive"));
+    pCaseSensitive->SetAttribute(DUI_T("valign"), DUI_T("center"));
+    pCaseSensitive->SetAttribute(DUI_T("margin"), DUI_T("8,8,8,0"));
     pCaseSensitive->Selected(true);
     pOptionRow->AddItem(pCaseSensitive);
 
     ui::CheckBox* pMatchWholeWord = new ui::CheckBox(this);
-    pMatchWholeWord->SetClass("checkbox_1");
-    pMatchWholeWord->SetName("check_box_match_whole_word");
-    pMatchWholeWord->SetText("Match Whole Word");
-    pMatchWholeWord->SetAttribute("valign", "center");
-    pMatchWholeWord->SetAttribute("margin", "8,8,8,0");
+    pMatchWholeWord->SetClass(DUI_T("checkbox_1"));
+    pMatchWholeWord->SetName(DUI_T("check_box_match_whole_word"));
+    pMatchWholeWord->SetText(DUI_T("Match Whole Word"));
+    pMatchWholeWord->SetAttribute(DUI_T("valign"), DUI_T("center"));
+    pMatchWholeWord->SetAttribute(DUI_T("margin"), DUI_T("8,8,8,0"));
     pOptionRow->AddItem(pMatchWholeWord);
 
     ui::Control* pOptionSpacer = new ui::Control(this);
     pOptionRow->AddItem(pOptionSpacer);
 
     ui::Button* pCancelBtn = new ui::Button(this);
-    pCancelBtn->SetClass("btn_global_white_80x30");
-    pCancelBtn->SetName("btn_cancel");
-    pCancelBtn->SetText("Cancel");
-    pCancelBtn->SetAttribute("width", "80");
-    pCancelBtn->SetAttribute("height", "28");
-    pCancelBtn->SetAttribute("margin", "4,8,8,0");
+    pCancelBtn->SetClass(DUI_T("btn_global_white_80x30"));
+    pCancelBtn->SetName(DUI_T("btn_cancel"));
+    pCancelBtn->SetText(DUI_T("Cancel"));
+    pCancelBtn->SetAttribute(DUI_T("width"), DUI_T("80"));
+    pCancelBtn->SetAttribute(DUI_T("height"), DUI_T("28"));
+    pCancelBtn->SetAttribute(DUI_T("margin"), DUI_T("4,8,8,0"));
     pOptionRow->AddItem(pCancelBtn);
 
     AttachBox(pRoot);
@@ -218,11 +218,11 @@ void ReplaceForm::OnInitWindow()
     // Hand-written pure code UI (corresponds to the replace.xml layout, equivalent to the generator output)
     BuildUI();
 
-    m_pFindText = ui::Find<ui::RichEdit>(this, "btn_find_text");
-    m_pReplaceText = ui::Find<ui::RichEdit>(this, "btn_replace_text");
-    m_pDirectionOption = ui::Find<ui::Option>(this, "option_direction_down");
-    m_pCaseSensitive = ui::Find<ui::CheckBox>(this, "check_box_case_sensitive");
-    m_pMatchWholeWord = ui::Find<ui::CheckBox>(this, "check_box_match_whole_word");
+    m_pFindText = ui::Find<ui::RichEdit>(this, DUI_T("btn_find_text"));
+    m_pReplaceText = ui::Find<ui::RichEdit>(this, DUI_T("btn_replace_text"));
+    m_pDirectionOption = ui::Find<ui::Option>(this, DUI_T("option_direction_down"));
+    m_pCaseSensitive = ui::Find<ui::CheckBox>(this, DUI_T("check_box_case_sensitive"));
+    m_pMatchWholeWord = ui::Find<ui::CheckBox>(this, DUI_T("check_box_match_whole_word"));
     ASSERT(m_pFindText != nullptr);
     ASSERT(m_pReplaceText != nullptr);
     ASSERT(m_pDirectionOption != nullptr);
@@ -252,7 +252,7 @@ void ReplaceForm::OnInitWindow()
 
 void ReplaceForm::BindEvents()
 {
-    ui::Button* pButton = ui::Find<ui::Button>(this, "btn_cancel");
+    ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("btn_cancel"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -261,7 +261,7 @@ void ReplaceForm::BindEvents()
                 return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_find_next");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_find_next"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -270,7 +270,7 @@ void ReplaceForm::BindEvents()
                 return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_replace");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_replace"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -279,7 +279,7 @@ void ReplaceForm::BindEvents()
                 return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, "btn_replace_all");
+    pButton = ui::Find<ui::Button>(this, DUI_T("btn_replace_all"));
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {

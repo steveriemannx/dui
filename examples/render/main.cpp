@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<RenderForm>("Render Test");
+    return ui::Run<RenderForm>(DUI_T("Render Test"));
 }

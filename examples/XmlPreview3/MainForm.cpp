@@ -4,17 +4,17 @@
 
 void MainForm::OnInitWindow()
 {
-    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, "xml_box_test");
+    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, DUI_T("xml_box_test"));
     if (pXmlBox == nullptr) {
         return;
     }
     m_xmlFilePath = pXmlBox->GetXmlFileFullPath();
-    if (ui::Label* pXmlFilePath = ui::Find<ui::Label>(this, "xml_file_path")) {
+    if (ui::Label* pXmlFilePath = ui::Find<ui::Label>(this, DUI_T("xml_file_path"))) {
         pXmlFilePath->SetText(pXmlBox->GetXmlFileFullPath().ToString());
     }
-    if (ui::Label* pXmlFileLoadResult = ui::Find<ui::Label>(this, "xml_file_load_result")) {
+    if (ui::Label* pXmlFileLoadResult = ui::Find<ui::Label>(this, DUI_T("xml_file_load_result"))) {
         if (!pXmlBox->GetXmlFileFullPath().IsEmpty()) {
-            pXmlFileLoadResult->SetText("OK");
+            pXmlFileLoadResult->SetText(DUI_T("OK"));
         }
     }
 
@@ -28,25 +28,25 @@ void MainForm::OnInitWindow()
 
 void MainForm::BindEvents()
 {
-    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, "xml_box_test");
+    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, DUI_T("xml_box_test"));
 
     if (pXmlBox != nullptr) {
         pXmlBox->AddLoadXmlCallback([this, pXmlBox](const ui::FilePath& xmlPath, bool bSuccess) {
             if (bSuccess) {
                 m_xmlFilePath = pXmlBox->GetXmlFileFullPath();
-                if (ui::Label* pXmlFilePath = ui::Find<ui::Label>(this, "xml_file_path")) {
+                if (ui::Label* pXmlFilePath = ui::Find<ui::Label>(this, DUI_T("xml_file_path"))) {
                     pXmlFilePath->SetText(pXmlBox->GetXmlFileFullPath().ToString());
                 }
-                if (ui::Label* pXmlFileLoadResult = ui::Find<ui::Label>(this, "xml_file_load_result")) {
-                    pXmlFileLoadResult->SetText("OK");
+                if (ui::Label* pXmlFileLoadResult = ui::Find<ui::Label>(this, DUI_T("xml_file_load_result"))) {
+                    pXmlFileLoadResult->SetText(DUI_T("OK"));
                 }
                 FillSourceEdits();
                 FillDemoCombos();
                 FillDemoList();
             }
             else {
-                if (ui::Label* pXmlFileLoadResult = ui::Find<ui::Label>(this, "xml_file_load_result")) {
-                    DString errMsg = ui::StringUtil::Printf("Failed [%s]", xmlPath.ToString().c_str());
+                if (ui::Label* pXmlFileLoadResult = ui::Find<ui::Label>(this, DUI_T("xml_file_load_result"))) {
+                    DString errMsg = ui::StringUtil::Printf(DUI_T("Failed [%s]"), xmlPath.ToString().c_str());
                     pXmlFileLoadResult->SetText(errMsg);
                 }
             }
@@ -54,14 +54,14 @@ void MainForm::BindEvents()
     }
 
     // Clear the preview
-    if (ui::Button* pClearXmlBtn = ui::Find<ui::Button>(this, "btn_clear_xml_file")) {
+    if (ui::Button* pClearXmlBtn = ui::Find<ui::Button>(this, DUI_T("btn_clear_xml_file"))) {
         pClearXmlBtn->AttachClick([this, pXmlBox](const ui::EventArgs&) {
             pXmlBox->ClearXmlBox();
             m_xmlFilePath.Clear();
-            if (ui::Label* pXmlFileLoadResult = ui::Find<ui::Label>(this, "xml_file_load_result")) {
-                pXmlFileLoadResult->SetText("");
+            if (ui::Label* pXmlFileLoadResult = ui::Find<ui::Label>(this, DUI_T("xml_file_load_result"))) {
+                pXmlFileLoadResult->SetText(DUI_T(""));
             }
-            if (ui::Label* pXmlFilePath = ui::Find<ui::Label>(this, "xml_file_path")) {
+            if (ui::Label* pXmlFilePath = ui::Find<ui::Label>(this, DUI_T("xml_file_path"))) {
                 pXmlFilePath->SetText(pXmlBox->GetXmlFileFullPath().ToString());
             }
             return true;
@@ -69,13 +69,13 @@ void MainForm::BindEvents()
     }
 
     // Open the XML file
-    if (ui::Button* pBrowseXmlBtn = ui::Find<ui::Button>(this, "btn_browse_xml_file")) {
+    if (ui::Button* pBrowseXmlBtn = ui::Find<ui::Button>(this, DUI_T("btn_browse_xml_file"))) {
         pBrowseXmlBtn->AttachClick([this, pXmlBox](const ui::EventArgs&) {
             ui::FilePath xmlFilePath;
             std::vector<ui::FileDialog::FileType> fileTypes;
             ui::FileDialog::FileType xmlFileType;
-            xmlFileType.szName = "XML Files";
-            xmlFileType.szExt = "*.xml";
+            xmlFileType.szName = DUI_T("XML Files");
+            xmlFileType.szExt = DUI_T("*.xml");
             fileTypes.push_back(xmlFileType);
             ui::FileDialog dlg;
             if (dlg.BrowseForFile(this, xmlFilePath, true, fileTypes)) {
@@ -91,7 +91,7 @@ void MainForm::BindEvents()
     if (pXmlBox != nullptr) {
         pXmlBox->SetEnableDragDrop(true);
         pXmlBox->SetEnableDropFile(true);
-        pXmlBox->SetDropFileTypes(".xml");
+        pXmlBox->SetDropFileTypes(DUI_T(".xml"));
         pXmlBox->AttachDropData([this, pXmlBox](const ui::EventArgs& args) {
             if (args.wParam == ui::kControlDropTypeWindows) {
                 // Windows SDK implementation, not cross-platform
@@ -114,8 +114,8 @@ void MainForm::BindEvents()
     }
 
     // Auto-refresh feature
-    ui::CheckBox* pCheckBoxRefresh = ui::Find<ui::CheckBox>(this, "checkbox_auto_refresh");
-    ui::RichEdit* pRefreshInterval = ui::Find<ui::RichEdit>(this, "auto_refresh_interval");
+    ui::CheckBox* pCheckBoxRefresh = ui::Find<ui::CheckBox>(this, DUI_T("checkbox_auto_refresh"));
+    ui::RichEdit* pRefreshInterval = ui::Find<ui::RichEdit>(this, DUI_T("auto_refresh_interval"));
     if (pCheckBoxRefresh != nullptr) {
         pCheckBoxRefresh->SetSelected(false);
     }
@@ -155,7 +155,7 @@ void MainForm::BindEvents()
 
 void MainForm::FillSourceEdits()
 {
-    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, "xml_box_test");
+    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, DUI_T("xml_box_test"));
     if (pXmlBox == nullptr) {
         return;
     }
@@ -164,8 +164,8 @@ void MainForm::FillSourceEdits()
         std::wstring xmlTextW;
         if (ui::StringCharset::GetDataAsString((const char*)xmlData.data(), (uint32_t)xmlData.size(), xmlTextW)) {
             DString xmlText = ui::StringConvert::WStringToT(xmlTextW);
-            ui::RichEdit* pSourceEdit = dynamic_cast<ui::RichEdit*>(pXmlBox->FindSubControl("edit"));
-            ui::RichEdit* pSourceEdit2 = dynamic_cast<ui::RichEdit*>(pXmlBox->FindSubControl("edit2"));
+            ui::RichEdit* pSourceEdit = dynamic_cast<ui::RichEdit*>(pXmlBox->FindSubControl(DUI_T("edit")));
+            ui::RichEdit* pSourceEdit2 = dynamic_cast<ui::RichEdit*>(pXmlBox->FindSubControl(DUI_T("edit2")));
             if (pSourceEdit != nullptr) {
                 pSourceEdit->SetText(xmlText);
             }
@@ -178,19 +178,19 @@ void MainForm::FillSourceEdits()
 
 void MainForm::FillDemoCombos()
 {
-    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, "xml_box_test");
+    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, DUI_T("xml_box_test"));
     if (pXmlBox == nullptr) {
         return;
     }
 
-    ui::Combo* pCombo = dynamic_cast<ui::Combo*>(pXmlBox->FindSubControl("combo"));
+    ui::Combo* pCombo = dynamic_cast<ui::Combo*>(pXmlBox->FindSubControl(DUI_T("combo")));
     if ((pCombo != nullptr) && (pCombo->GetCount() == 0)) {
         ui::TreeView* pTreeView = pCombo->GetTreeView();
         ui::TreeNode* pTreeNode = pTreeView->GetRootNode();
         for (int32_t i = 0; i < 10; ++i) {
             ui::TreeNode* node = new ui::TreeNode(pXmlBox->GetWindow());
-            node->SetClass("tree_node");
-            node->SetText(ui::StringUtil::Printf("ui::Combo::TreeNode %d", i));
+            node->SetClass(DUI_T("tree_node"));
+            node->SetText(ui::StringUtil::Printf(DUI_T("ui::Combo::TreeNode %d"), i));
             pTreeNode->AddChildNode(node);
         }
         // Adding items can create a hidden popup window; make sure it is
@@ -201,38 +201,38 @@ void MainForm::FillDemoCombos()
         }
     }
 
-    ui::FilterCombo* pFilterCombo = dynamic_cast<ui::FilterCombo*>(pXmlBox->FindSubControl("filter_combo"));
+    ui::FilterCombo* pFilterCombo = dynamic_cast<ui::FilterCombo*>(pXmlBox->FindSubControl(DUI_T("filter_combo")));
     if ((pFilterCombo != nullptr) && (pFilterCombo->GetCount() == 0)) {
         for (int32_t i = 0; i < 10; ++i) {
-            pFilterCombo->AddTextItem(ui::StringUtil::Printf("Item %d FilterCombo", i));
+            pFilterCombo->AddTextItem(ui::StringUtil::Printf(DUI_T("Item %d FilterCombo"), i));
         }
     }
 
-    ui::CheckCombo* pCheckCombo = dynamic_cast<ui::CheckCombo*>(pXmlBox->FindSubControl("check_combo"));
+    ui::CheckCombo* pCheckCombo = dynamic_cast<ui::CheckCombo*>(pXmlBox->FindSubControl(DUI_T("check_combo")));
     if ((pCheckCombo != nullptr) && (pCheckCombo->GetItemCount() == 0)) {
-        pCheckCombo->AddTextItem("Monday");
-        pCheckCombo->AddTextItem("Tuesday");
-        pCheckCombo->AddTextItem("Wednesday");
-        pCheckCombo->AddTextItem("Thursday");
-        pCheckCombo->AddTextItem("Friday");
-        pCheckCombo->AddTextItem("Saturday");
-        pCheckCombo->AddTextItem("Sunday");
+        pCheckCombo->AddTextItem(DUI_T("Monday"));
+        pCheckCombo->AddTextItem(DUI_T("Tuesday"));
+        pCheckCombo->AddTextItem(DUI_T("Wednesday"));
+        pCheckCombo->AddTextItem(DUI_T("Thursday"));
+        pCheckCombo->AddTextItem(DUI_T("Friday"));
+        pCheckCombo->AddTextItem(DUI_T("Saturday"));
+        pCheckCombo->AddTextItem(DUI_T("Sunday"));
     }
 }
 
 void MainForm::FillDemoList()
 {
-    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, "xml_box_test");
+    ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, DUI_T("xml_box_test"));
     if (pXmlBox == nullptr) {
         return;
     }
 
-    ui::ListBox* pList = dynamic_cast<ui::ListBox*>(pXmlBox->FindSubControl("list"));
+    ui::ListBox* pList = dynamic_cast<ui::ListBox*>(pXmlBox->FindSubControl(DUI_T("list")));
     if ((pList != nullptr) && (pList->GetItemCount() <= 1)) {
         for (int32_t i = 0; i < 30; ++i) {
             ui::ListBoxItem* item = new ui::ListBoxItem(pXmlBox->GetWindow());
-            item->SetClass("listitem");
-            item->SetText(ui::StringUtil::Printf("ui::VListBox::ListBoxItem %d", i));
+            item->SetClass(DUI_T("listitem"));
+            item->SetText(ui::StringUtil::Printf(DUI_T("ui::VListBox::ListBoxItem %d"), i));
             item->SetFixedHeight(ui::UiFixedInt(20), true, true);
             pList->AddItem(item);
         }
@@ -270,7 +270,7 @@ void MainForm::CheckXmlPreview()
         if (ui::FileUtil::ReadFileData(m_xmlFilePath, xmlFileData)) {
             if (xmlFileData != m_xmlFileData) {
                 // The file content changed; refresh the preview
-                ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, "xml_box_test");
+                ui::XmlBox* pXmlBox = ui::Find<ui::XmlBox>(this, DUI_T("xml_box_test"));
                 if (pXmlBox != nullptr) {
                     pXmlBox->SetXmlFilePath(m_xmlFilePath);
                 }
