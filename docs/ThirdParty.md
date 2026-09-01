@@ -6,7 +6,7 @@ All third-party dependencies are vendored under `third_party/` (skia and SDL3 ar
 | :---     | :---                      |:---                                  |:---               |:---               |
 |apng      |third_party/libpng  | APNG image format support                     |zlib/libpng License|zlib/libpng license, a permissive open-source license|
 |libpng    |third_party/libpng  | PNG image format support                      |[libpng.LICENSE.txt](../licenses/libpng.LICENSE.txt)|Custom BSD-style permissive license|
-|zlib      |third_party/zlib    | PNG/APNG image format support<br>Zip file decompression  |[zlib.LICENSE.txt](../licenses/zlib.LICENSE.txt)|zlib license, a permissive open-source license|
+|zlib      |third_party/zlib    | PNG/APNG image format support |[zlib.LICENSE.txt](../licenses/zlib.LICENSE.txt)|zlib license, a permissive open-source license|
 |cximage   |third_party/cximage | ICO image format support                      |[cximage.LICENSE.txt](../licenses/cximage.LICENSE.txt)|MIT-style license (non-standard MIT)|
 |giflib    |third_party/giflib  | GIF image format support                      |[giflib.LICENSE.txt](../licenses/giflib.LICENSE.txt)|MIT license|
 |libwebp   |third_party/libwebp | WebP image format support                     |[libWebP.LICENSE.txt](../licenses/libwebp.LICENSE.txt)|BSD 3-clause license|

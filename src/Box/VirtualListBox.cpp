@@ -53,11 +53,9 @@ VirtualListBox::VirtualListBox(Window* pWindow, Layout* pLayout)
     , m_nLastNoShiftIndex(0)
     , m_bEnableUpdateProvider(true)
 {
-    if (pLayout == nullptr) {
-        // Pure code mode: when no layout is specified, the vertical virtual layout is used by default
-        VirtualLayout* pVirtualLayout = dynamic_cast<VirtualVLayout*>(GetLayout());
-        SetVirtualLayout(pVirtualLayout);
-    }
+    // Keep the virtual layout when callers provide a specific layout variant.
+    VirtualLayout* pVirtualLayout = dynamic_cast<VirtualLayout*>(GetLayout());
+    SetVirtualLayout(pVirtualLayout);
 }
 
 void VirtualListBox::SetVirtualLayout(VirtualLayout* pVirtualLayout)

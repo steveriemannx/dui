@@ -822,6 +822,7 @@ protected:
     virtual bool OnSetFocus(const EventArgs& msg) override;
     virtual bool OnKillFocus(const EventArgs& msg) override;
     virtual bool OnImeStartComposition(const EventArgs& msg) override;
+    virtual bool OnImeComposition(const EventArgs& msg) override;
     virtual bool OnImeEndComposition(const EventArgs& msg) override;
     
     virtual bool OnKeyDown(const EventArgs& msg) override;
@@ -1038,6 +1039,10 @@ private:
     */
     UiRect GetTextDrawRect(const UiRect& rc) const;
 
+    /** Draw the IME composition (marked) text at the caret with an underline.
+    */
+    void PaintImeComposition(IRender* pRender);
+
     /** Redraw (but do not recalculate the layout)
     */
     void Redraw();
@@ -1112,6 +1117,17 @@ private:
 
 #if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     bool m_bIsComposition;      //Whether the IME composition window is visible
+#endif
+
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+    /** The current IME marked text (pinyin composition) while composing. */
+    DStringW m_imeMarkedText;
+
+    /** Whether an IME composition is currently active. */
+    bool m_bImeComposition = false;
+
+    /** The rendered width of the current marked text (used to place the caret). */
+    int32_t m_nImeMarkedTextWidth = 0;
 #endif
 
     bool m_bReadOnly;           //Whether it is read-only mode

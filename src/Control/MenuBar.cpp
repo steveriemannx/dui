@@ -405,6 +405,11 @@ void MenuBar::ShowPopupMenu(MenuBarButton* pButton)
 
     Menu* pMenu = new ui::Menu(pWindow, pButton, this);//The parent window needs to be set; otherwise, when the menu pops up, the program will become inactive
     m_pActiveMenu = pMenu;
+    // Configure the popup before creation so macOS applies rounded corners
+    // during the first composition pass.
+    pMenu->SetShadowAttached(true);
+    pMenu->SetShadowType(Shadow::ShadowType::kShadowSystemRound);
+    pMenu->SetRoundCorner(10, 10, false);
 
     if (topMenuData.m_menuBuilder) {
         //Pure-code mode: no XML template, menu items are added by the callback function

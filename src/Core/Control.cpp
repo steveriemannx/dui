@@ -4587,7 +4587,7 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
         imageLoadPath.m_imageFullPath = sImagePath;
     }
     else {
-        // Non-icon data: get the full path of the image resource (an absolute disk path or a relative path inside the zip archive)
+                // Non-icon data: get the full path of the image resource (an absolute disk path or a relative path inside the embedded resources)
         FilePath resPath(sImagePath);
         bool bLocalPath = true;
         bool bResPath = true;
@@ -4605,7 +4605,7 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
                 }
             }
             else {
-                imageLoadPath.m_pathType = ImageLoadPathType::kZipResPath;
+                imageLoadPath.m_pathType = ImageLoadPathType::kMemoryResPath;
             }
         }
     }

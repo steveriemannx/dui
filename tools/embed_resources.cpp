@@ -1,9 +1,13 @@
-// embed_resources - package a resources directory into a custom binary archive
+// embed_resources - embed resources into a custom binary data block
 // and generate a C++ .inc file with the embedded data (Qt qrc style, no zip).
 //
-// Usage: embed_resources <resources_dir> <out.inc>
+// Usage: embed_resources <resources_dir> <out.inc> [include1 include2 ...]
 //
-// Binary format (little-endian; must match ZipManager::OpenMemoryArchive):
+// Optional include filters restrict embedding to paths (relative to
+// <resources_dir>) that equal a filter or start with "filter/". With no
+// filters, the whole tree is embedded (backward compatible).
+//
+// Binary format (little-endian; must match MemoryResourceManager::Open):
 //   [magic "DUIR" u32][version u32][count u32]
 //   count x [u32 pathLen][path UTF-8][u64 dataOffset][u64 dataLen]
 //   [data blocks]
@@ -42,12 +46,18 @@ static void WriteU64(std::vector<uint8_t>& out, uint64_t value)
 
 int main(int argc, char** argv)
 {
-    if (argc != 3) {
-        std::fprintf(stderr, "Usage: embed_resources <resources_dir> <out.inc>\n");
+    if (argc < 3) {
+        std::fprintf(stderr, "Usage: embed_resources <resources_dir> <out.inc> [include1 include2 ...]\n");
         return 1;
     }
     const std::string resourceDir = argv[1];
     const std::string outPath = argv[2];
+
+    // Optional include filters (relative paths under resourceDir).
+    std::vector<std::string> filters;
+    for (int i = 3; i < argc; ++i) {
+        filters.push_back(argv[i]);
+    }
 
     if (!fs::exists(resourceDir) || !fs::is_directory(resourceDir)) {
         std::fprintf(stderr, "embed_resources: directory not found: %s\n", resourceDir.c_str());
@@ -66,6 +76,18 @@ int main(int argc, char** argv)
         }
         fs::path relPath = fs::relative(dirEntry.path(), fs::path(resourceDir));
         std::string relPathA = relPath.generic_string();  // '/' separators, UTF-8 on POSIX
+
+        // Apply include filters (if any): keep only paths under a filter.
+        if (!filters.empty()) {
+            bool keep = false;
+            for (const auto& f : filters) {
+                if (relPathA == f || relPathA.rfind(f + "/", 0) == 0) {
+                    keep = true;
+                    break;
+                }
+            }
+            if (!keep) continue;
+        }
 
         // Read the file content
         std::vector<uint8_t> data;

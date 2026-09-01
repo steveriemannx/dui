@@ -250,7 +250,7 @@ When defining a common style, if an attribute value is enclosed in double quotes
 | FontManager | [include/dui/Core/FontManager.h](../include/dui/Core/FontManager.h) | Management class of fonts |
 | ColorManager | [include/dui/Core/ColorManager.h](../include/dui/Core/ColorManager.h) | Management class of colors |
 | IconManager | [include/dui/Core/IconManager.h](../include/dui/Core/IconManager.h) | HICON handle manager |
-| ZipManager | [include/dui/Core/ZipManager.h](../include/dui/Core/ZipManager.h) | ZIP archive manager |
+| MemoryResourceManager | [include/dui/Core/MemoryResourceManager.h](../include/dui/Core/MemoryResourceManager.h) | Custom embedded binary resource manager |
 | DpiManager | [include/dui/Core/DpiManager.h](../include/dui/Core/DpiManager.h) | DPI manager, used to support features such as DPI adaptation |
 | TimerManager | [include/dui/Core/TimerManager.h](../include/dui/Core/TimerManager.h) | Timer manager |
 | LangManager | [include/dui/Core/LangManager.h](../include/dui/Core/LangManager.h) | Multi-language support manager |

@@ -276,7 +276,7 @@ ComboButton::ComboButton(Window* pWindow) :
     m_pLabelBottom(nullptr),
     m_pRightButton(nullptr),
     m_bDropListShown(false),
-    m_nShadowType(Shadow::ShadowType::kShadowMenu)
+    m_nShadowType(Shadow::ShadowType::kShadowSystemRound)
 {
     m_pComboBox = new Box(pWindow);
     SetDropBoxSize({0, 150}, true);

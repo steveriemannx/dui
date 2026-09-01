@@ -81,6 +81,10 @@ public:
     */
     bool IsChildWindow() const;
 
+    /** Whether it is a popup window (created with kWS_POPUP style)
+    */
+    bool IsPopupWindow() const;
+
     /** Sets or changes the parent window
     */
     bool SetParentWindow(NativeWindow_MacOS* pParentWindow);
@@ -545,6 +549,16 @@ public:
     */
     void SetTextInputArea(const UiRect* rect, int32_t nCursor);
 
+    /** Gets the text input region in client coordinates.
+    * @param [out] rect Receives the stored input rectangle
+    * @return true if an input area is currently set
+    */
+    bool GetTextInputArea(UiRect& rect) const;
+
+    /** Gets the text input cursor offset relative to the input rectangle left.
+    */
+    int32_t GetTextInputCursorOffset() const;
+
     /** Sets whether drag-and-drop is allowed
     * @param [in] bEnable true to allow drag-and-drop, false to disallow it
     */
@@ -587,6 +601,7 @@ public:
     /** The NSWindow finished moving
     */
     void OnNativeWindowDidMove();
+    void OnNativeWindowWillMove();
 
     /** The NSWindow became the key window
     */
@@ -757,6 +772,9 @@ private:
     */
     bool m_bIsLayeredWindow;
 
+    /** Whether the native window has been composited for the first time. */
+    bool m_bWindowShown;
+
     /** Current OS shadow state
     */
     NativeWindowShadowType m_systemShadowType = NativeWindowShadowType::kShadowSystemDisabled;
@@ -798,6 +816,18 @@ private:
     *   hiding the rounded corners/shadow while covering the screen looks right)
     */
     NativeWindowShadowType m_preFullscreenShadowType = NativeWindowShadowType::kShadowSystemDisabled;
+
+    /** Whether a text input area has been set by the focused edit control.
+    */
+    bool m_bHasTextInputArea = false;
+
+    /** The text input rectangle in client coordinates.
+    */
+    UiRect m_textInputArea;
+
+    /** The text input cursor offset relative to m_textInputArea.left.
+    */
+    int32_t m_nTextInputCursor = 0;
 };
 
 /** Defines an alias

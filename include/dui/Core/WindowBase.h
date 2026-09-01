@@ -264,6 +264,9 @@ public:
     */
     void Resize(int cx, int cy, bool bContainShadow /*= false*/, bool bNeedDpiScale);
 
+    /** Set the current window size without the initialization semantics of SetInitSize. */
+    void SetWindowSize(int cx, int cy);
+
     /** @} */
 
     /** Set the window icon (supports *.ico format; other formats are also supported, but the ICO format is recommended)
@@ -1471,4 +1474,3 @@ private:
 } // namespace ui
 
 #endif // UI_CORE_WINDOW_BASE_H_
-

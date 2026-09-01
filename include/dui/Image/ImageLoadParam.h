@@ -15,7 +15,7 @@ enum class DUI_API ImageLoadPathType
     kUnknownPath,   //Unknown type of path
     kLocalPath,     //Local absolute path (not a resource path)
     kLocalResPath,  //Local absolute path (inside the resource path)
-    kZipResPath,    //Relative path inside the archive
+    kMemoryResPath, //Relative path inside the embedded resources
     kVirtualPath    //Virtual path, e.g.: "icon:1"
 };
 
@@ -23,7 +23,7 @@ enum class DUI_API ImageLoadPathType
 */
 struct DUI_API ImageLoadPath
 {
-    //Image path (local absolute path or relative path inside the archive)
+    //Image path (local absolute path or relative path inside the embedded resources)
     FilePath m_imageFullPath;
 
     //The image path type
@@ -68,11 +68,11 @@ public:
     ImageLoadParam& operator= (const ImageLoadParam& r) = default;
 
 public:
-    /** Set the image path (local absolute path or relative path inside the archive)
+     /** Set the image path (local absolute path or relative path inside the embedded resources)
     */
     void SetImageLoadPath(const ImageLoadPath& imageLoadPath);
 
-    /** Get the image path (UTF8 or UTF16 encoded, local absolute path or relative path inside the archive)
+     /** Get the image path (UTF8 or UTF16 encoded, local absolute path or relative path inside the embedded resources)
     */
     const ImageLoadPath& GetImageLoadPath() const;
 
@@ -169,7 +169,7 @@ private:
     bool GetScaledFixedPercent(const DString& srcSize, float& fScaledPercent) const;
 
 private:
-    //(Attribute name: "file") Local absolute path or relative path inside the archive, excluding the attributes
+    //(Attribute name: "file") Local absolute path or relative path inside the embedded resources, excluding the attributes
     ImageLoadPath m_srcImageLoadPath;
 
     //Set the image width (attribute name: "width"), can enlarge or shrink the image: pixels or percentage %, e.g., 300, or 30%

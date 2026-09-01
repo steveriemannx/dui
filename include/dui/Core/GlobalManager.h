@@ -5,7 +5,7 @@
 #include "dui/Core/ColorManager.h"
 #include "dui/Core/FontManager.h"
 #include "dui/Core/ImageManager.h"
-#include "dui/Core/ZipManager.h"
+#include "dui/Core/MemoryResourceManager.h"
 #include "dui/Core/LangManager.h"
 #include "dui/Core/DpiManager.h"
 #include "dui/Core/TimerManager.h"
@@ -53,10 +53,8 @@ public:
      * @param [in] resParam The resource related parameter, with the following options depending on the resource type
      *                      1. In the form of local files, all resources exist as local files
      *                         Use the LocalFilesResParam type as the parameter
-     *                      2. The resource files are packaged into a zip archive and exist as local files
-     *                         Use the ZipFileResParam type as the parameter
-     *                      3. The resource files are packaged into a zip archive and placed in the resource file of the exe/dll
-     *                         Use the ResZipFileResParam type as the parameter
+     *                      2. Embedded resources, accessed directly from memory
+     *                         Use the MemoryResParam type as the parameter
      * @param [in] dpiInitParam The setting parameter of the DPI awareness mode and DPI value
      * @param [in] callback The global callback function when creating custom controls
      */
@@ -71,7 +69,7 @@ public:
 public:
     /** Set the path where the skin resources are located
      *   If resType == kLocalFiles, the local path (absolute path) where the resources are located needs to be set
-     *   If resType == kZipFile or resType == kResZip, set the starting directory (relative path) where the resources are located, e.g. _T("resources\\")
+     *   If resType == kMemoryRes, the resource path is the embedded theme path (e.g. _T("themes/macos26"))
      */
     void SetResourcePath(const FilePath& strPath);
 
@@ -88,11 +86,9 @@ public:
     * @param [in] resParam The resource related parameter, with the following options depending on the resource type
      *                      1. In the form of local files, all resources exist as local files
      *                         Use the LocalFilesResParam type as the parameter
-     *                      2. The resource files are packaged into a zip archive and exist as local files
-     *                         Use the ZipFileResParam type as the parameter
-     *                      3. The resource files are packaged into a zip archive and placed in the resource file of the exe/dll
-     *                         Use the ResZipFileResParam type as the parameter
-     * @param [in] bInvalidate Whether to refresh the UI display: true means refresh the UI display after updating the language file, false means do not refresh the UI display
+     *                      2. Embedded resources, accessed directly from memory
+     *                         Use the MemoryResParam type as the parameter
+    * @param [in] bInvalidate Whether to refresh the UI display: true means refresh the UI display after updating the language file, false means do not refresh the UI display
     */
     bool ReloadResource(const ResourceParam& resParam, bool bInvalidate = false);
 
@@ -131,7 +127,7 @@ public:
      * @param [in] languagePath The path where the language files are located
                    If it is an absolute path, the language files are searched in the directory of this absolute path;
                    If it is empty, the language file path initialized at Startup is used;
-                   If it is a relative path, it corresponds to the relative path in the zip package
+                    If it is a relative path, it corresponds to the relative path in the embedded resources
      * @param [in] languageFileName The file name of the currently used language file (without the path)
      * @param [in] bInvalidate Whether to refresh the UI display: true means refresh the UI display after updating the language file, false means do not refresh the UI display
      */
@@ -198,9 +194,9 @@ public:
     */
     IconManager& Icon();
 
-    /** Get the Zip manager
+    /** Get the custom memory resource manager
     */
-    ZipManager& Zip();
+    MemoryResourceManager& MemoryResources();
 
     /** Get the DPI manager
     */
@@ -233,12 +229,12 @@ public:
      * @param [in] windowXmlPath The relative directory where the XML corresponding to the window is located, e.g. "controls\\menu\\"
      * @param [in] resPath The resource file path, e.g. "../public/button/btn_wnd_gray_min_hovered.png"
      * @param [in] pControl The Control interface associated with the resource
-     * @param [out] bLocalPath Returns true if the file is a local path, returns false if the file is a path inside the zip package
+     * @param [out] bLocalPath Returns true if the file is a local path, returns false if the file is embedded
      * @param [out] bResPath Returns true if the file is within the program resource path, returns false if it is not
      * @return Returns the available complete resource path; returns empty if the resource path does not exist
                The valid path formats returned are as follows:
-              (1) If a ZIP package is used, returns: "resources\themes\default\public\button\btn_wnd_gray_min_hovered.png"
-              (2) If no ZIP package is used, returns: "<program directory>\resources\themes\default\public\button\btn_wnd_gray_min_hovered.png"
+               (1) If embedded resources are used, returns: "resources\themes\default\public\button\btn_wnd_gray_min_hovered.png"
+               (2) If local files are used, returns: "<program directory>\resources\themes\default\public\button\btn_wnd_gray_min_hovered.png"
      */
     FilePath GetExistsResFullPath(const FilePath& windowResPath, const FilePath& windowXmlPath, const FilePath& resPath);
     FilePath GetExistsResFullPath(const FilePath& windowResPath, const FilePath& windowXmlPath,
@@ -387,7 +383,7 @@ private:
 
     /** Check whether the image file path exists
     * @param [in,out] imageFullPath Cleared if it does not exist, kept if it exists
-    * @param [out] bLocalPath Returns true if the file is a local path, returns false if the file is a path inside the zip package
+     * @param [out] bLocalPath Returns true if the file is a local path, returns false if the file is embedded
     */
     void CheckImagePath(FilePath& imageFullPath, bool& bLocalPath);
 
@@ -469,9 +465,9 @@ private:
     */
     ImageDecoderFactory m_imageDecoderFactory;
 
-    /** The ZIP package manager
+    /** The memory resource manager
     */
-    ZipManager m_zipManager;
+    MemoryResourceManager m_memoryResourceManager;
 
     /** The DPI manager
     */

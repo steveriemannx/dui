@@ -182,7 +182,7 @@ endif()
 
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
 # Wayland build excludes CEF; MinGW does not support CEF (see the build scripts)
-if(DUI_ENABLE_WAYLAND OR NOT DUI_ENABLE_CEF)
+if(DUI_ENABLE_WAYLAND OR NOT (DUI_ENABLE_CEF OR DUI_BUILD_CEF_EXAMPLES))
     message(STATUS "CEF support disabled")
 elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW)
     aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl CEF_CONTROL_SRC)
@@ -223,16 +223,6 @@ aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/stb_image STB_SRC)
 aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/svg SVG_SRC)
 aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/convert_utf UTF_SRC)
 aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/xml XML_SRC)
-
-set(UNZIP_HDRS
-    ${DUI_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/ioapi.h
-    ${DUI_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/unzip.h
-)
-
-set(UNZIP_SRCS
-    ${DUI_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/ioapi.c
-    ${DUI_SRC_ROOT_DIR}/third_party/zlib/contrib/minizip/unzip.c
-)
 
 set(GIFLIB_HDRS
     ${DUI_SRC_ROOT_DIR}/third_party/giflib/gif_hash.h
@@ -315,8 +305,6 @@ set(LIBRARY_SOURCES
     ${SVG_SRC}
     ${UTF_SRC}
     ${XML_SRC}
-    ${UNZIP_HDRS}
-    ${UNZIP_SRCS}
     ${GIFLIB_HDRS}
     ${GIFLIB_SRCS}
     ${SKIA_HDRS}
@@ -337,6 +325,8 @@ endif()
 # Wayland build excludes CEF; MinGW does not support CEF (see the build scripts)
 if(DUI_ENABLE_WAYLAND)
     message(STATUS "CEF support disabled (Wayland build)")
+elseif(NOT (DUI_ENABLE_CEF OR DUI_BUILD_CEF_EXAMPLES))
+    message(STATUS "CEF support disabled")
 elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW)
     list(APPEND LIBRARY_SOURCES
         ${CEF_CONTROL_SRC}
@@ -462,4 +452,3 @@ add_subdirectory(../third_party third_party)
 
 # Ensure third-party libraries build before dui (dui sources reference some third-party headers)
 add_dependencies(${PROJECT_NAME} dui-cximage png_static dui-zlib dui-webp)
-

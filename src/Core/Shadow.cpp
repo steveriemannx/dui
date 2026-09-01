@@ -434,6 +434,9 @@ Shadow::ShadowType Shadow::GetSupportedShadowType(const Window* pWindow, ShadowT
         }
     }
 #if defined (DUI_BUILD_FOR_MACOS)
+    else if (nShadowType == ShadowType::kShadowSystemDefault) {
+        nShadowType = ShadowType::kShadowSystemRound;
+    }
     else if ((nShadowType == ShadowType::kShadowBig) ||
              (nShadowType == ShadowType::kShadowBigRound) ||
              (nShadowType == ShadowType::kShadowSmall) ||

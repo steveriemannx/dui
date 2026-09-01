@@ -94,6 +94,9 @@ public:
     */
     bool SetWindowIcon(const DString& iconFilePath);
 
+    /** UTF-8 narrow-string convenience overload, e.g. SetWindowIcon("public/caption/logo.ico"). */
+    bool SetWindowIcon(const char* iconFilePath);
+
 public:
     /** @name Window shadow related interfaces
     * @{

@@ -58,9 +58,11 @@ void CCheckComboWnd::InitComboWnd(CheckCombo* pOwner)
     UiRect rcWnd = GetComboWndRect();
     WindowCreateParam createWndParam;
     createWndParam.m_dwStyle = kWS_POPUP;
-    createWndParam.m_dwExStyle = kWS_EX_LAYERED;
 #if defined(DUI_BUILD_FOR_MACOS)
-    createWndParam.m_dwExStyle |= kWS_EX_NOACTIVATE;
+    // The dropdown must receive mouse events without becoming the key window.
+    createWndParam.m_dwExStyle = kWS_EX_NOACTIVATE;
+#else
+    createWndParam.m_dwExStyle = kWS_EX_LAYERED;
 #endif
     createWndParam.m_nX = rcWnd.left;
     createWndParam.m_nY = rcWnd.top;
@@ -70,10 +72,6 @@ void CCheckComboWnd::InitComboWnd(CheckCombo* pOwner)
     UpdateComboWnd();
 
 #if defined(DUI_BUILD_FOR_MACOS)
-    // Like the Combo popup, keep the owner window key and show the popup above it.
-    if (pOwner->GetWindow() != nullptr) {
-        pOwner->GetWindow()->SetWindowForeground();
-    }
     ShowWindow(ui::kSW_SHOW_NA);
 #else
     ShowWindow(ui::kSW_SHOW_NORMAL);
@@ -183,12 +181,7 @@ void CCheckComboWnd::CloseComboWnd()
     }
     //First switch the foreground window to the parent window to avoid switching to another window after the foreground window is closed
     CheckCombo* pOwner = m_pOwner;
-#if defined(DUI_BUILD_FOR_MACOS)
-    if ((pOwner != nullptr) && (pOwner->GetWindow() != nullptr) && pOwner->GetWindow()->IsWindow()) {
-        //Non-activating popup: make the owner explicitly key before closing.
-        pOwner->GetWindow()->SetWindowForeground();
-    }
-#else
+#if !defined(DUI_BUILD_FOR_MACOS)
     if ((pOwner != nullptr) && (pOwner->GetWindow() != nullptr)) {
         if (IsWindowForeground()) {
             pOwner->GetWindow()->SetWindowForeground();
@@ -247,7 +240,10 @@ void CCheckComboWnd::OnCloseWindow()
         pRootBox->RemoveAllItems();
     }
     m_pOwner->SetPos(m_pOwner->GetPos());
+#if !defined(DUI_BUILD_FOR_MACOS)
     m_pOwner->SetFocus();
+#endif
+    m_pOwner->UpdateSelectedListHeight();
     BaseClass::OnCloseWindow();
 }
 
@@ -265,6 +261,11 @@ LRESULT CCheckComboWnd::OnKillFocusMsg(WindowBase* pSetFocusWindow, const Native
 {
     LRESULT lResult = BaseClass::OnKillFocusMsg(pSetFocusWindow, nativeMsg, bHandled);
     //Focus lost, close the window, normal close
+#if defined(DUI_BUILD_FOR_MACOS)
+    if ((pSetFocusWindow == nullptr) || (m_pOwner != nullptr && pSetFocusWindow == m_pOwner->GetWindow())) {
+        return lResult;
+    }
+#endif
     if (pSetFocusWindow != this) {
         CloseComboWnd();
     }
@@ -299,7 +300,7 @@ CheckCombo::CheckCombo(Window* pWindow) :
     m_szDropBox(0, 0),
     m_bPopupTop(false),
     m_iOrgHeight(CHECK_COMBO_DEFAULT_HEIGHT),
-    m_nShadowType(Shadow::ShadowType::kShadowMenu)
+    m_nShadowType(Shadow::ShadowType::kShadowSystemRound)
 {
     SetDropBoxSize({0, 150}, true);
     SetMaxHeight(m_iOrgHeight * 3, true);
@@ -496,6 +497,7 @@ void CheckCombo::Activate(const EventArgs* /*pMsg*/)
         return;
     }
     if (m_pCheckComboWnd != nullptr) {
+        m_pCheckComboWnd->CloseComboWnd();
         return;
     }
 
@@ -656,7 +658,9 @@ bool CheckCombo::OnSelectItem(const ui::EventArgs& args)
     SetAttributeList(item, m_selectedItemClass.c_str());
     item->SetText(itemText);
     m_pList->AddItem(item);
-    UpdateSelectedListHeight();
+    if (m_pCheckComboWnd == nullptr) {
+        UpdateSelectedListHeight();
+    }
     return true;
 }
 
@@ -684,7 +688,9 @@ bool CheckCombo::OnUnSelectItem(const ui::EventArgs& args)
             }
         }
     }
-    UpdateSelectedListHeight();
+    if (m_pCheckComboWnd == nullptr) {
+        UpdateSelectedListHeight();
+    }
     return true;
 }
 

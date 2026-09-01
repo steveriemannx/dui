@@ -93,7 +93,7 @@ void CefControlNative::ReCreateBrowser()
 #endif
     UiRect rc = GetRect();
     Dpi().ClientSizeToWindowSize(rc);
-    CefRect rect = { rc.left, rc.top, rc.right, rc.bottom};
+    CefRect rect = { rc.left, rc.top, rc.Width(), rc.Height() };
 #ifdef DUI_BUILD_FOR_WIN
     //Windows
     window_info.SetAsChild(pWindow->NativeWnd()->GetHWND(), rect);
@@ -189,12 +189,15 @@ void CefControlNative::UpdateCefWindowPos()
 
 void CefControlNative::DoCloseAllNativeBrowsers(bool bForceClose)
 {
-    //Remove the parent-child relationship between the CEF child window and the parent window (to avoid the parent window also being closed when it closes, which would exit the program)
+    //Close the browser before detaching its native view. Detaching first can
+    //prevent CEF from delivering OnBeforeClose on macOS.
+    DoCloseAllBrowsers(bForceClose);
+    //Remove the parent-child relationship after requesting browser shutdown
+    //so closing the CEF view cannot close the host window.
     if (!m_bSetCefWindowParentNull) {
         m_bSetCefWindowParentNull = true;
         RemoveCefWindowFromParent(GetCefWindowHandle());
     }
-    DoCloseAllBrowsers(bForceClose);
 }
 
 void CefControlNative::CloseAllBrowsers()

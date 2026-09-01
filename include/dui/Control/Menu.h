@@ -152,9 +152,13 @@ public:
     */
     static void CloseMenusIfHostWindowMoved(WindowBase* pHostWindow);
 
+
     /** Close submenus whose window no longer contains the mouse pointer.
     */
     static void CloseSubmenusOutsidePointer();
+
+    /** Whether a native window belongs to an open menu. */
+    static bool IsOpenMenuWindow(void* pNativeWindow);
 
     /** Close all currently open submenus (keep top-level menus).
     */

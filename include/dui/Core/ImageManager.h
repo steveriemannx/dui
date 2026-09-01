@@ -143,13 +143,13 @@ private:
     /** Find the image for the specified DPI scale percentage; one image can be set per DPI to improve image quality at different DPIs
     *   For example, an image with a DPI scale of 120 (i.e., scaled up to 120%): "image.png" corresponds to "image@120.png"
     * @param [in] dpiScale The DPI scale percentage to look up
-    * @param [in] bIsUseZip Whether to use zip archive resources
+     * @param [in] bIsMemoryArchive Whether to use embedded resources
     * @param [in] imageFullPath The full path of the image resource
     * @param [out] dpiImageFullPath Returns the image resource path for the specified DPI, or an empty string if not found
     * @param [out] nImageFileDpiScale The DPI scale percentage corresponding to the image
     */
     bool GetDpiScaleImageFullPath(uint32_t dpiScale,
-                                  bool bIsUseZip,
+                                   bool bIsMemoryArchive,
                                   const DString& imageFullPath,
                                   DString& dpiImageFullPath,
                                   uint32_t& nImageFileDpiScale) const;
@@ -157,12 +157,12 @@ private:
     /** Find the image for the specified DPI scale percentage; one image can be set per DPI to improve image quality at different DPIs
     *   For example, an image with a DPI scale of 120 (i.e., scaled up to 120%): "image.png" corresponds to "image@120.png"
     * @param [in] dpiScale The DPI scale percentage to look up
-    * @param [in] bIsUseZip Whether to use zip archive resources
+     * @param [in] bIsMemoryArchive Whether to use embedded resources
     * @param [in] imageFullPath The full path of the image resource
     * @param [out] dpiImageFullPath Returns the image resource path for the specified DPI, or an empty string if not found
     */
     bool FindDpiScaleImageFullPath(uint32_t dpiScale,
-                                  bool bIsUseZip,
+                                   bool bIsMemoryArchive,
                                   const DString& imageFullPath,
                                   DString& dpiImageFullPath) const;
 

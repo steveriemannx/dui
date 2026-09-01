@@ -252,7 +252,7 @@ For detailed interface descriptions of each class, please refer to the associate
 | FontManager | [include/dui/Core/FontManager.h](../include/dui/Core/FontManager.h) | Management class of fonts |
 | ImageManager | [include/dui/Core/ImageManager.h](../include/dui/Core/ImageManager.h) | Management class of images |
 | IconManager | [include/dui/Core/IconManager.h](../include/dui/Core/IconManager.h) | Icon resource manager (thread-safe, suitable for small icon-type image resources), supports HICON handles on Windows |
-| ZipManager | [include/dui/Core/ZipManager.h](../include/dui/Core/ZipManager.h) | ZIP archive manager |
+| MemoryResourceManager | [include/dui/Core/MemoryResourceManager.h](../include/dui/Core/MemoryResourceManager.h) | Custom embedded binary resource manager |
 | DpiManager | [include/dui/Core/DpiManager.h](../include/dui/Core/DpiManager.h) | DPI manager, used to support features such as DPI adaptation |
 | TimerManager | [include/dui/Core/TimerManager.h](../include/dui/Core/TimerManager.h) | Timer manager |
 | LangManager | [include/dui/Core/LangManager.h](../include/dui/Core/LangManager.h) | Multi-language support manager |

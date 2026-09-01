@@ -50,6 +50,11 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
 
         // Use the same render process for the same site
         command_line->AppendSwitch("process-per-site");
+#if defined(DUI_BUILD_FOR_MACOS)
+        // Avoid prompting for Chromium Safe Storage in local development builds.
+        command_line->AppendSwitch("use-mock-keychain");
+        command_line->AppendSwitchWithValue("password-store", "basic");
+#endif
         command_line->AppendSwitch("disable-gpu");
         command_line->AppendSwitch("disable-gpu-compositing");
 

@@ -188,10 +188,10 @@ HICON TrayIconImpl::LoadIconFromFile(const Window* pWindow, const DString& iconF
     }
 
     std::vector<uint8_t> fileData;
-    if (GlobalManager::Instance().Zip().IsUseZip() &&
-        GlobalManager::Instance().Zip().IsZipResExist(iconFullPath)) {
-        //Use the compressed package (zip)        
-        GlobalManager::Instance().Zip().GetZipData(iconFullPath, fileData);
+    if (GlobalManager::Instance().MemoryResources().IsOpen() &&
+        GlobalManager::Instance().MemoryResources().IsDataExist(iconFullPath)) {
+        //Use embedded resources
+        GlobalManager::Instance().MemoryResources().GetData(iconFullPath, fileData);
         return LoadIconFromFileData(fileData, iconFullPath.ToString());
     }
     else {

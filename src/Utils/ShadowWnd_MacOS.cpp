@@ -124,6 +124,12 @@ Box* ShadowWnd::AttachShadow(Box* pRoot)
 
 bool ShadowWnd::NeedCreateShadowWnd() const
 {
+    // System shadows are provided by NSWindow. Creating the legacy external
+    // shadow window as well causes duplicate shadow compositing and visible
+    // darkening/flicker while popup windows are shown or closed.
+    if (Shadow::IsSystemShadowType(GetShadowType())) {
+        return false;
+    }
     if (IsLayeredWindow()) {
         //The layered window property is set, so do not create one
         return false;

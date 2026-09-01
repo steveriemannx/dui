@@ -29,7 +29,8 @@
 namespace ui {
 class NativeWindow_MacOS;
 
-bool ModifyNsWindowShadowType(void* pNSWindow, NativeWindowShadowType nativeShadowType);
+bool ModifyNsWindowShadowType(void* pNSWindow, NativeWindowShadowType nativeShadowType,
+                              bool bPopupWindow = false, bool bUseSystemCaption = false);
 void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType nativeShadowType);
 } // namespace ui
 
@@ -118,7 +119,10 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
 
 - (BOOL)isOpaque
 {
-    return NO;
+    // Popup windows use an opaque backing surface. Reporting the view as
+    // transparent makes AppKit clear dirty regions before the GL frame arrives,
+    // exposing a black intermediate frame.
+    return (self.window != nil) ? self.window.opaque : NO;
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -244,17 +248,44 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
 
 - (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(NSRangePointer)actualRange
 {
-    UNUSED_VARIABLE(range);
     if (actualRange != NULL) {
-        *actualRange = NSMakeRange(NSNotFound, 0);
+        *actualRange = range;
     }
-    //Approximate: report the window content rect so the IME candidate window
-    //appears near the window. dui's SetTextInputArea can refine this later.
     NSWindow* window = self.window;
-    if (window != nil) {
-        return [window contentRectForFrameRect:window.frame];
+    if (window == nil) {
+        return self.bounds;
     }
-    return self.bounds;
+
+    // Use the focused control's stored input rectangle so the IME candidate
+    // window follows the caret instead of appearing at the window corner.
+    if (m_pNativeWindow != nullptr) {
+        ui::UiRect inputRect;
+        if (m_pNativeWindow->GetTextInputArea(inputRect)) {
+            const int32_t nCursor = m_pNativeWindow->GetTextInputCursorOffset();
+            ui::UiPoint pt;
+            pt.x = inputRect.left + nCursor;
+            // firstRectForCharacterRange describes the insertion rectangle.
+            // Use its bottom edge so the candidate window is placed below the
+            // caret rather than at the top of the control.
+            pt.y = inputRect.bottom;
+            m_pNativeWindow->ClientToScreen(pt); // dui screen coords: top-left origin
+
+            const NSRect screenFrame = [window screen].frame;
+            const CGFloat width = 2.0;
+            // Use a very small height: the IME candidate window is positioned
+            // relative to this rect, so a large rect pushes it too far from the
+            // text. A 1pt caret-like rect keeps it just below the input.
+            const CGFloat height = 1.0;
+            const CGFloat x = (CGFloat)pt.x;
+            // Convert top-left screen coordinates to AppKit's bottom-left origin.
+            const CGFloat y = (CGFloat)(screenFrame.origin.y + screenFrame.size.height - pt.y) - height;
+            return NSMakeRect(x, y, width, height);
+        }
+    }
+
+    // Fallback: report the window content rect so the IME still appears near
+    // the window when no input rectangle has been set yet.
+    return [window contentRectForFrameRect:window.frame];
 }
 
 - (NSAttributedString*)attributedString
@@ -380,6 +411,13 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
 @end
 
 @implementation DuIWindowDelegate
+
+- (void)windowWillMove:(NSNotification*)notification
+{
+    if (m_pNativeWindow != nullptr) {
+        m_pNativeWindow->OnNativeWindowWillMove();
+    }
+}
 
 - (void)windowDidResize:(NSNotification*)notification
 {
@@ -662,6 +700,7 @@ NativeWindow_MacOS::NativeWindow_MacOS(INativeWindow* pOwner):
     m_bFakeModal(false),
     m_bDoModal(false),
     m_bIsLayeredWindow(false),
+    m_bWindowShown(false),
     m_ptLastMousePos(-1, -1)
 {
     ASSERT(m_pOwner != nullptr);
@@ -696,6 +735,11 @@ bool NativeWindow_MacOS::IsWindow() const
 bool NativeWindow_MacOS::IsChildWindow() const
 {
     return m_bChildWindow;
+}
+
+bool NativeWindow_MacOS::IsPopupWindow() const
+{
+    return (m_createParam.m_dwStyle & kWS_POPUP) != 0;
 }
 
 bool NativeWindow_MacOS::SetParentWindow(NativeWindow_MacOS* pParentWindow)
@@ -749,6 +793,8 @@ bool NativeWindow_MacOS::CreateWnd(NativeWindow_MacOS* pParentWindow,
 
     //Save the parameters
     m_createParam = createParam;
+    m_bUseSystemCaption = createAttributes.m_bUseSystemCaptionDefined &&
+                          createAttributes.m_bUseSystemCaption;
     if (m_createParam.m_dwStyle == 0) {
         m_createParam.m_dwStyle = kWS_OVERLAPPEDWINDOW;
     }
@@ -803,16 +849,27 @@ bool NativeWindow_MacOS::CreateWindowAndRender(NativeWindow_MacOS* pParentWindow
         }
     }
 
-    //dui draws its own caption bar on macOS (use_system_caption=false is the
-    //default, matching the SDL implementation). The native window must always be
-    //borderless: m_createParam.m_dwStyle carries the Windows WS_CAPTION bit by
-    //default (kWS_OVERLAPPEDWINDOW), which must NOT create system chrome here.
+    //Use the final AppKit style from the start. Previously normal dui windows
+    //were created borderless and converted to a titled window later when the
+    //system shadow was initialized. AppKit recalculates the frame and shadow
+    //during that conversion, which looks like a startup zoom.
+    const bool bPopupWindow = (m_createParam.m_dwStyle & kWS_POPUP) != 0;
+    const bool bUseSystemShadowChrome = !bIsChildWindow &&
+                                        !bPopupWindow &&
+                                        createAttributes.m_bShadowAttached;
     NSWindowStyleMask styleMask = NSWindowStyleMaskBorderless;
+    if (bUseSystemShadowChrome) {
+        styleMask = NSWindowStyleMaskTitled |
+                    NSWindowStyleMaskFullSizeContentView |
+                    NSWindowStyleMaskClosable |
+                    NSWindowStyleMaskMiniaturizable |
+                    NSWindowStyleMaskResizable;
+    }
 
     DuIWindow* window = [[DuIWindow alloc] initWithContentRect:contentRect
                                                     styleMask:styleMask
                                                       backing:NSBackingStoreBuffered
-                                                        defer:YES];
+                                                        defer:NO];
     if (window == nil) {
         return false;
     }
@@ -821,12 +878,38 @@ bool NativeWindow_MacOS::CreateWindowAndRender(NativeWindow_MacOS* pParentWindow
     window.duiCannotBecomeKey = (bIsChildWindow || bIsMenu || bIsNoActivate) ? YES : NO;
     [window setOpaque:NO];
     [window setBackgroundColor:[NSColor clearColor]];
+    // Keep the window out of the compositor while the framework builds the
+    // control tree and changes the native shadow/style. Some AppKit versions
+    // briefly composite a newly-created borderless window during that work.
+    // Menus and other popup windows are shown directly by SetWindowPos with
+    // kSWP_SHOWWINDOW, without a subsequent ShowWindow call to restore alpha.
+    // Keep them visible from the start; only normal windows need the hidden
+    // pre-render state below.
+    [window setAlphaValue:bPopupWindow ? 1.0 : 0.0];
+    if (bUseSystemShadowChrome) {
+        window.titlebarAppearsTransparent = YES;
+        window.titleVisibility = NSWindowTitleHidden;
+    }
+    // Disable AppKit's default window animation for all dui windows; the
+    // borderless->titled shadow conversion plus a deferred first paint would
+    // otherwise expose a one-frame transparent/white intermediate.
+    window.animationBehavior = NSWindowAnimationBehaviorNone;
     [window setAcceptsMouseMovedEvents:YES];
+    [window setIgnoresMouseEvents:NO];
     [window setReleasedWhenClosed:NO];
     if (bIsChildWindow) {
         //Child windows have no chrome of their own: no shadow, no rounded corners
         //(the parent window provides those)
         [window setHasShadow:NO];
+    }
+    else if (m_createParam.m_dwStyle == kWS_POPUP) {
+        // Combo/menu popups must receive their native shadow before the window
+        // enters the dui initialization callbacks. Applying it later makes
+        // AppKit rebuild the popup surface and causes an intermittent flicker.
+        [window setOpaque:YES];
+        [window setBackgroundColor:[NSColor whiteColor]];
+        [window setHasShadow:YES];
+        m_systemShadowType = NativeWindowShadowType::kShadowSystemDefault;
     }
 
     //Top-left positioning convention (macOS screen origin is bottom-left).
@@ -870,6 +953,19 @@ bool NativeWindow_MacOS::CreateWindowAndRender(NativeWindow_MacOS* pParentWindow
     //by the NSWindow/view hierarchy and released when the window is destroyed.
     m_nsWindow = (__bridge void*)window;
     m_nsView = (__bridge void*)view;
+
+    if (bIsMenu) {
+        // Menus use AppKit's shadow, but their borderless content view must be
+        // clipped to a native rounded shape from first paint.
+        [window setOpaque:NO];
+        [window setBackgroundColor:[NSColor clearColor]];
+        view.wantsLayer = YES;
+        CALayer* layer = view.layer;
+        if (layer != nil) {
+            layer.cornerRadius = 10.0;
+            layer.masksToBounds = YES;
+        }
+    }
 
     m_bIsLayeredWindow = createAttributes.m_bIsLayeredWindow;
     if (createAttributes.m_bIsLayeredWindow) {
@@ -918,7 +1014,7 @@ void NativeWindow_MacOS::InitNativeWindow()
     //Apply the system shadow for borderless windows (enables macOS native
     //shadow + rounded corners; the self-drawn traffic lights handle the rest).
     //Child windows never get chrome of their own: no shadow conversion either.
-    if (!m_bChildWindow && !m_bUseSystemCaption) {
+    if (!m_bChildWindow && (m_createParam.m_dwStyle != kWS_POPUP)) {
         SetSystemShadowType(NativeWindowShadowType::kShadowSystemDefault);
     }
 }
@@ -932,6 +1028,7 @@ bool NativeWindow_MacOS::ShowWindow(ShowWindowCommands nCmdShow)
         return false;
     }
     NSWindow* window = (__bridge NSWindow*)m_nsWindow;
+    const bool bWasVisible = [window isVisible];
 
     switch (nCmdShow) {
     case kSW_HIDE:
@@ -951,7 +1048,31 @@ bool NativeWindow_MacOS::ShowWindow(ShowWindowCommands nCmdShow)
         //here would steal key focus from the owner, which is fatal for
         //drag-out (the ghost DragWindow would resign the main window's key
         //status -> kill focus -> ClearDragStatus aborts the drag instantly)
-        [window orderFront:nil];
+        // Pre-render first frame before the window is composited. Borderless
+        // windows use clearColor for rounded corners; showing an empty backing
+        // store exposes the desktop for one frame.
+        if (!bWasVisible && !m_bChildWindow && m_createParam.m_dwStyle != kWS_POPUP) {
+            PaintWindow(true);
+        }
+        [window setAlphaValue:(m_nLayeredWindowAlpha / 255.0f)];
+        if (!bWasVisible && !m_bChildWindow && m_createParam.m_dwStyle != kWS_POPUP) {
+            //Commit the rendered backing store while the window is still out
+            //of the window server's visible ordering.
+            [window displayIfNeeded];
+        }
+        //Non-activating popups must still be above their active host window.
+        //orderFront: can leave them behind the host in AppKit's window level
+        //ordering, making the popup visible but not clickable.
+        if ((m_createParam.m_dwStyle & kWS_POPUP) != 0) {
+            [window orderFrontRegardless];
+        }
+        else {
+            [window orderFront:nil];
+        }
+        m_bWindowShown = true;
+        if (!bWasVisible && !m_bChildWindow && m_createParam.m_dwStyle != kWS_POPUP) {
+            [window displayIfNeeded];
+        }
         break;
     case kSW_MINIMIZE:
         ui::Menu::CloseAllMenus();
@@ -966,6 +1087,15 @@ bool NativeWindow_MacOS::ShowWindow(ShowWindowCommands nCmdShow)
     case kSW_SHOW_NORMAL:
     case kSW_SHOW:
     default:
+        // Pre-render first frame before the window is composited.
+        if (!bWasVisible && !m_bChildWindow && m_createParam.m_dwStyle != kWS_POPUP) {
+            PaintWindow(true);
+        }
+        [window setAlphaValue:(m_nLayeredWindowAlpha / 255.0f)];
+        if (!bWasVisible && !m_bChildWindow && m_createParam.m_dwStyle != kWS_POPUP) {
+            //Commit the rendered backing store before making the window visible.
+            [window displayIfNeeded];
+        }
         if (m_bChildWindow) {
             //Child windows never become the key window (same as Windows WS_CHILD).
             //orderOut detaches AppKit child windows from their parent, so
@@ -979,11 +1109,29 @@ bool NativeWindow_MacOS::ShowWindow(ShowWindowCommands nCmdShow)
             [window orderFront:nil];
         }
         else {
+            //Activate the app before ordering the window to the front.
+            //SimpleApp shows the window in FrameworkThread::OnInit, which runs
+            //before CheckInitMacOS() (called when the message loop starts)
+            //activates the application; without this, a window shown while
+            //another app is frontmost stays behind it.  Skip popups (menus,
+            //combo dropdowns), which must never steal the app's key status.
+            if (m_createParam.m_dwStyle != kWS_POPUP) {
+                [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+            }
+            //makeKeyAndOrderFront (with animationBehavior None above) is the
+            //one-step ordering that comes out ABOVE the previous frontmost
+            //app's windows (e.g. the Finder window when opening via Finder).
+            //orderFrontRegardless alone leaves the window sandwiched below it
+            //because the app-activation raise never picks it up.
             [window makeKeyAndOrderFront:nil];
             //Ensure the dui view is the first responder so keyDown/text input reaches it
             if (m_nsView != nullptr) {
                 [window makeFirstResponder:(__bridge NSView*)m_nsView];
             }
+        }
+        m_bWindowShown = true;
+        if (!bWasVisible && !m_bChildWindow && m_createParam.m_dwStyle != kWS_POPUP) {
+            [window displayIfNeeded];
         }
         //Mirror WM_WINDOWPOSCHANGED: lets listeners (e.g. ui::ChildWindow)
         //sync native child-window positions with the laid-out control rects.
@@ -1231,7 +1379,15 @@ void NativeWindow_MacOS::CloseWnd(int32_t nRet)
     m_closeParam = nRet;
     m_bCloseing = true;
     if (m_nsWindow != nullptr) {
-        [(__bridge NSWindow*)m_nsWindow close];
+        NSWindow* window = (__bridge NSWindow*)m_nsWindow;
+        // Hide popup windows before entering AppKit's close/deferred-release
+        // sequence. Otherwise the native shadow can remain composited for one
+        // frame after the popup content has been detached.
+        if (m_createParam.m_dwStyle == kWS_POPUP) {
+            [window orderOut:nil];
+            [window setHasShadow:NO];
+        }
+        [window close];
     }
 }
 
@@ -1570,7 +1726,7 @@ void NativeWindow_MacOS::ClientToScreen(UiPoint& pt) const
     NSPoint screen = [window convertPointToScreen:local];
     const NSRect screenFrame = [window screen].frame;
     pt.x = (int32_t)screen.x;
-    pt.y = (int32_t)(screenFrame.size.height - screen.y);
+    pt.y = (int32_t)(screenFrame.origin.y + screenFrame.size.height - screen.y);
 }
 
 void NativeWindow_MacOS::GetCursorPos(UiPoint& pt) const
@@ -1778,7 +1934,7 @@ bool NativeWindow_MacOS::IsLayeredWindow() const
 void NativeWindow_MacOS::SetLayeredWindowAlpha(int32_t nAlpha)
 {
     m_nLayeredWindowAlpha = (uint8_t)std::clamp(nAlpha, 0, 255);
-    if (m_nsWindow != nullptr) {
+    if (m_nsWindow != nullptr && m_bWindowShown) {
         [(__bridge NSWindow*)m_nsWindow setAlphaValue:(m_nLayeredWindowAlpha / 255.0f)];
     }
 }
@@ -1820,7 +1976,8 @@ bool NativeWindow_MacOS::SetSystemShadowType(NativeWindowShadowType nativeShadow
     //Reuse the pure-AppKit window-chrome helper below (converts a
     //borderless window into a titled document window with the title bar hidden,
     //giving the OS rounded corners and a deep shadow).
-    if (ModifyNsWindowShadowType(m_nsWindow, nativeShadowType)) {
+    const bool bPopupWindow = m_createParam.m_dwStyle == kWS_POPUP;
+    if (ModifyNsWindowShadowType(m_nsWindow, nativeShadowType, bPopupWindow, m_bUseSystemCaption)) {
         //The style-mask conversion must not detach our view from the window;
         //re-assert it as the content view defensively.
         if (m_nsView != nullptr) {
@@ -1916,6 +2073,8 @@ int32_t NativeWindow_MacOS::DoModal(NativeWindow_MacOS* pParentWindow,
 
     //Save the parameters and use the same window-creation path as CreateWnd.
     m_createParam = createParam;
+    m_bUseSystemCaption = createAttributes.m_bUseSystemCaptionDefined &&
+                          createAttributes.m_bUseSystemCaption;
     if (m_createParam.m_dwStyle == 0) {
         m_createParam.m_dwStyle = kWS_OVERLAPPEDWINDOW;
     }
@@ -2035,8 +2194,32 @@ void NativeWindow_MacOS::SetImeOpenStatus(bool /*bOpen*/)
 {
 }
 
-void NativeWindow_MacOS::SetTextInputArea(const UiRect* /*rect*/, int32_t /*nCursor*/)
+void NativeWindow_MacOS::SetTextInputArea(const UiRect* rect, int32_t nCursor)
 {
+    if (rect == nullptr) {
+        m_bHasTextInputArea = false;
+        m_textInputArea.Clear();
+        m_nTextInputCursor = 0;
+        return;
+    }
+
+    m_bHasTextInputArea = true;
+    m_textInputArea = *rect;
+    m_nTextInputCursor = nCursor;
+}
+
+bool NativeWindow_MacOS::GetTextInputArea(UiRect& rect) const
+{
+    if (!m_bHasTextInputArea) {
+        return false;
+    }
+    rect = m_textInputArea;
+    return true;
+}
+
+int32_t NativeWindow_MacOS::GetTextInputCursorOffset() const
+{
+    return m_nTextInputCursor;
 }
 
 void NativeWindow_MacOS::SetEnableDragDrop(bool bEnable)
@@ -2538,6 +2721,19 @@ void NativeWindow_MacOS::OnNativeWindowDidMove()
     pOwner->OnNativeMoveMsg(ptTopLeft, NativeMsg(0, 0, 0), bHandled);
 }
 
+void NativeWindow_MacOS::OnNativeWindowWillMove()
+{
+    if (m_pOwner == nullptr) {
+        return;
+    }
+    UiRect rcWindow;
+    GetWindowRect(rcWindow);
+    bool bHandled = false;
+    //Notify the host before AppKit moves the window so transient controls can
+    //close before the compositor presents a frame at the old position.
+    m_pOwner->OnNativeMoveMsg({rcWindow.left, rcWindow.top}, NativeMsg(0, 0, 0), bHandled);
+}
+
 void NativeWindow_MacOS::OnNativeWindowBecomeKey()
 {
     INativeWindow* pOwner = m_pOwner;
@@ -2572,7 +2768,8 @@ void NativeWindow_MacOS::OnNativeWindowResignKey()
  *  the title bar hidden (FullSizeContentView + titlebarAppearsTransparent).
  *  Returns true on success.
  */
-bool ModifyNsWindowShadowType(void* pNSWindow, NativeWindowShadowType nativeShadowType)
+bool ModifyNsWindowShadowType(void* pNSWindow, NativeWindowShadowType nativeShadowType,
+                              bool bPopupWindow, bool bUseSystemCaption)
 {
     if (pNSWindow == nullptr) {
         return false;
@@ -2581,7 +2778,7 @@ bool ModifyNsWindowShadowType(void* pNSWindow, NativeWindowShadowType nativeShad
     if (![NSThread isMainThread]) {
         __block bool result = false;
         dispatch_sync(dispatch_get_main_queue(), ^{
-            result = ModifyNsWindowShadowType(pNSWindow, nativeShadowType);
+            result = ModifyNsWindowShadowType(pNSWindow, nativeShadowType, bPopupWindow, bUseSystemCaption);
         });
         return result;
     }
@@ -2603,6 +2800,46 @@ bool ModifyNsWindowShadowType(void* pNSWindow, NativeWindowShadowType nativeShad
         return YES;
     }
 
+    // Keep popup windows borderless. Converting a popup to a titled/resizable
+    // window just to obtain a system shadow makes AppKit rebuild its surface,
+    // which appears as a dark shadow flicker when a Combo is shown or closed.
+    if (bPopupWindow) {
+        if (nativeShadowType == NativeWindowShadowType::kShadowSystemRound ||
+            nativeShadowType == NativeWindowShadowType::kShadowSystemSmallRound) {
+            // MenuBar pure-code menus need the same rounded AppKit shadow as
+            // XML-backed menus. A titled mask with a hidden title bar gives
+            // AppKit a rounded shadow instead of a rectangular popup shadow.
+            window.titlebarAppearsTransparent = YES;
+            window.titleVisibility = NSWindowTitleHidden;
+            NSWindowStyleMask requiredMask = NSWindowStyleMaskTitled |
+                                             NSWindowStyleMaskFullSizeContentView |
+                                             NSWindowStyleMaskClosable;
+            [window setStyleMask:requiredMask];
+            [[window standardWindowButton:NSWindowCloseButton] setHidden:YES];
+            [[window standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
+            [[window standardWindowButton:NSWindowZoomButton] setHidden:YES];
+            window.backgroundColor = [NSColor clearColor];
+            [window setHasShadow:YES];
+            [window invalidateShadow];
+        }
+        [window setHasShadow:(nativeShadowType != NativeWindowShadowType::kShadowSystemDisabled)];
+        if (nativeShadowType == NativeWindowShadowType::kShadowSystemRound ||
+            nativeShadowType == NativeWindowShadowType::kShadowSystemSmallRound) {
+            // Keep the shadow native to AppKit while clipping the borderless
+            // popup content to the matching rounded shape.
+            [window setOpaque:NO];
+            window.backgroundColor = [NSColor clearColor];
+            contentView.wantsLayer = YES;
+            CALayer* layer = contentView.layer;
+            if (layer != nil) {
+                layer.cornerRadius = (nativeShadowType == NativeWindowShadowType::kShadowSystemSmallRound) ? 5.0 : 10.0;
+                layer.masksToBounds = YES;
+            }
+            window.backgroundColor = [NSColor clearColor];
+        }
+        return YES;
+    }
+
     // Convert the borderless window into a titled document window with the
     // title bar hidden: gives the OS rounded corners, a deep shadow, and
     // hides the native traffic-light buttons (dui draws its own).
@@ -2620,10 +2857,12 @@ bool ModifyNsWindowShadowType(void* pNSWindow, NativeWindowShadowType nativeShad
         if ((window.styleMask & requiredMask) != requiredMask) {
             [window setStyleMask:requiredMask];
         }
-        // Hide the native traffic-light buttons: dui draws its own
-        [[window standardWindowButton:NSWindowCloseButton] setHidden:YES];
-        [[window standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
-        [[window standardWindowButton:NSWindowZoomButton] setHidden:YES];
+        if (!bUseSystemCaption) {
+            // Normal dui windows draw their own caption controls.
+            [[window standardWindowButton:NSWindowCloseButton] setHidden:YES];
+            [[window standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
+            [[window standardWindowButton:NSWindowZoomButton] setHidden:YES];
+        }
 
         // macOS-style rounded corners + hairline border on the content view
         window.backgroundColor = [NSColor clearColor];

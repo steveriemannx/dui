@@ -502,6 +502,11 @@ void WindowBase::Resize(int cx, int cy, bool bContainShadow, bool bNeedDpiScale)
     WindowBase::SetWindowPos(InsertAfterWnd(), 0, 0, cx, cy, kSWP_NOZORDER | kSWP_NOMOVE | kSWP_NOACTIVATE);
 }
 
+void WindowBase::SetWindowSize(int cx, int cy)
+{
+    Resize(cx, cy, true, false);
+}
+
 bool WindowBase::SetWindowIcon(const FilePath& iconFilePath)
 {
     return m_pNativeWindow->SetWindowIcon(iconFilePath);

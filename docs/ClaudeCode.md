@@ -12,7 +12,7 @@ After registration, Claude Code can use the following dui-specific skills in **a
 | `/dui-add-control` | Adds controls (XML snippets and C++ event binding code for 15+ controls) |
 | `/dui-event-handler` | Event handling (XML inline events and C++ Attach bindings) |
 | `/dui-theme` | Theme customization (predefined colors, fonts, quick reference for 100+ common style classes) |
-| `/dui-resource-pack` | Resource packaging and deployment (ZIP packaging, embedding in an EXE for single-file release) |
+| `/dui-resource-pack` | Resource packaging and deployment (local resources and custom binary embedding) |
 
 ## Quick Start
 

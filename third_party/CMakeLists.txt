@@ -22,9 +22,9 @@ add_subdirectory(libwebp)   # target: dui-webp
 
 # libcef 内建：统一从下载的 cef_binary 发行包构建 wrapper（Windows/Mac/Linux 一致；
 # FreeBSD 不编译 CEF；MinGW 不支持 CEF，见构建脚本；CEF 109 分支保留 libcef_win_109）
-if(WIN32 AND DUI_CEF_109)
+if((DUI_ENABLE_CEF OR DUI_BUILD_CEF_EXAMPLES) AND WIN32 AND DUI_CEF_109)
     add_subdirectory(libcef/libcef_win_109)
-elseif((WIN32 AND NOT MINGW) OR APPLE OR DUI_OS_LINUX)
+elseif((DUI_ENABLE_CEF OR DUI_BUILD_CEF_EXAMPLES) AND ((WIN32 AND NOT MINGW) OR APPLE OR DUI_OS_LINUX))
     # 发行包缺失时自动下载（幂等，缓存于 third_party/downloads/）；bat/sh 流程也会
     # 提前抓取到同一个目录。
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libcef/cef_binary/CMakeLists.txt")

@@ -22,6 +22,18 @@ if(NOT DEFINED GEN_FUNC_NAME)
     message(FATAL_ERROR "GEN_FUNC_NAME must be set before including dui_gen_code.cmake")
 endif()
 
+# Optional resource folders corresponding to GEN_XML_FILES by index. Each path
+# is relative to the active theme root, for example "chat" or "../shared".
+# Example:
+#   set(GEN_RESOURCE_FOLDERS chat shared)
+#   # applies "chat" to GEN_XML_FILES[0] and "shared" to GEN_XML_FILES[1]
+set(GEN_RESOURCE_ARGS)
+if(DEFINED GEN_RESOURCE_FOLDERS)
+    foreach(_resource_folder ${GEN_RESOURCE_FOLDERS})
+        list(APPEND GEN_RESOURCE_ARGS -r "${_resource_folder}")
+    endforeach()
+endif()
+
 # Output to source dir as .inc (not .cpp) to avoid duplicate compilation
 set(GENERATED_SRC "${CMAKE_CURRENT_SOURCE_DIR}/generated_ui.inc")
 set(RESOURCES_DIR "${DUI_ROOT}/resources")
@@ -90,7 +102,7 @@ if(DUI_OS_WINDOWS)
 
     add_custom_command(
         OUTPUT "${GENERATED_SRC}"
-        COMMAND "${TOOL_EXE}" ${GEN_TOOL_GLOBAL_ARGS} "${GENERATED_SRC}" "${GEN_FUNC_NAME}" ${XML_INPUT_FILES}
+        COMMAND "${TOOL_EXE}" ${GEN_TOOL_GLOBAL_ARGS} ${GEN_RESOURCE_ARGS} "${GENERATED_SRC}" "${GEN_FUNC_NAME}" ${XML_INPUT_FILES}
         DEPENDS "${TOOL_EXE}" ${XML_INPUT_FILES}
         COMMENT "Generating C++ UI code from XML: ${GENERATED_SRC}"
     )
@@ -126,7 +138,7 @@ else()
 
     add_custom_command(
         OUTPUT "${GENERATED_SRC}"
-        COMMAND "${TOOL_EXE}" ${GEN_TOOL_GLOBAL_ARGS} "${GENERATED_SRC}" "${GEN_FUNC_NAME}" ${XML_INPUT_FILES}
+        COMMAND "${TOOL_EXE}" ${GEN_TOOL_GLOBAL_ARGS} ${GEN_RESOURCE_ARGS} "${GENERATED_SRC}" "${GEN_FUNC_NAME}" ${XML_INPUT_FILES}
         DEPENDS "${TOOL_EXE}" ${XML_INPUT_FILES}
         COMMENT "Generating C++ UI code from XML: ${GENERATED_SRC}"
     )

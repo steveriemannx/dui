@@ -1888,6 +1888,9 @@ void RichEdit::Paint(IRender* pRender, const UiRect& rcPaint)
         }
     }
 
+    //Draw the macOS IME composition (marked) text at the caret.
+    PaintImeComposition(pRender);
+
     //Draw the caret
     PaintCaret(pRender, rcPaint);
 }
@@ -2033,10 +2036,6 @@ void RichEdit::ShowCaret(bool fShow)
         int32_t yPos = 0;
         GetCaretPos(xPos, yPos);
 
-        int32_t xWidth = 0;
-        int32_t yHeight = 0;
-        GetCaretSize(xWidth, yHeight);
-
         UiRect rc = GetRect();
         UiSize szScrollOffset = GetScrollOffset();
         rc.Offset(-szScrollOffset.cx, -szScrollOffset.cy);
@@ -2055,8 +2054,7 @@ void RichEdit::ShowCaret(bool fShow)
         ASSERT(m_nRowHeight > 0);
 
         //Set the input area
-        int32_t nCursorOffset = xWidth + Dpi().GetScaleInt(1); //The distance between the IME candidate box and the current caret position (horizontal), to avoid covering the caret        
-        pWindow->NativeWnd()->SetTextInputArea(&inputRect, nCursorOffset);
+        pWindow->NativeWnd()->SetTextInputArea(&inputRect, 0);
     }
 
     Invalidate();
@@ -2149,6 +2147,13 @@ void RichEdit::PaintCaret(IRender* pRender, const UiRect& /*rcPaint*/)
         int32_t yPos = 0;
         GetCaretPos(xPos, yPos);
 
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+        // While composing, show the caret after the marked pinyin text.
+        if (m_bImeComposition && !m_imeMarkedText.empty()) {
+            xPos += m_nImeMarkedTextWidth;
+        }
+#endif
+
         int32_t xWidth = 0;
         int32_t yHeight = 0;
         GetCaretSize(xWidth, yHeight);
@@ -2164,6 +2169,61 @@ void RichEdit::PaintCaret(IRender* pRender, const UiRect& /*rcPaint*/)
             pRender->DrawLine(UiPointF(xPos + 1, yPos), UiPointF(xPos + 1, yPos + yHeight), dwClrColor, (float)xWidth);
         }
     }
+}
+
+void RichEdit::PaintImeComposition(IRender* pRender)
+{
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+    if (pRender == nullptr || m_imeMarkedText.empty() || !m_bImeComposition) {
+        return;
+    }
+
+    DString sFontId = GetCurrentFontId();
+    IFont* pFont = GetIFontInternal(sFontId);
+    if (pFont == nullptr) {
+        return;
+    }
+
+    int32_t xPos = 0;
+    int32_t yPos = 0;
+    GetCaretPos(xPos, yPos);
+
+    UiRect rcDrawText = GetTextDrawRect(GetRect());
+    if ((xPos < rcDrawText.left) || (xPos > rcDrawText.right) ||
+        (yPos < rcDrawText.top) || (yPos > rcDrawText.bottom)) {
+        return;
+    }
+
+    DrawStringParam param;
+    param.textRect = UiRect(xPos, yPos, rcDrawText.right, yPos + m_nRowHeight);
+    param.dwTextColor = GetUiColor(GetTextColor());
+    if (param.dwTextColor.IsEmpty()) {
+        param.dwTextColor = UiColor(UiColors::Black);
+    }
+    param.pFont = pFont;
+    param.uFormat = GetTextStyle() | TEXT_SINGLELINE | TEXT_NOCLIP;
+
+#ifdef DUI_UNICODE
+    const DString text = m_imeMarkedText;
+#else
+    const DString text = StringConvert::WStringToUTF8(m_imeMarkedText);
+#endif
+    pRender->DrawString(text, param);
+
+    MeasureStringParam measureParam;
+    measureParam.pFont = pFont;
+    measureParam.uFormat = param.uFormat;
+    UiRect rcText = pRender->MeasureString(text, measureParam);
+    const int32_t nWidth = rcText.Width();
+    m_nImeMarkedTextWidth = nWidth;
+    if (nWidth > 0) {
+        const int32_t yLine = yPos + m_nRowHeight - Dpi().GetScaleInt(1);
+        pRender->DrawLine(UiPointF((float)xPos, (float)yLine),
+                          UiPointF((float)(xPos + nWidth), (float)yLine),
+                          param.dwTextColor,
+                          (float)Dpi().GetScaleInt(1));
+    }
+#endif
 }
 
 void RichEdit::PaintCurrentRowBkColor(IRender* pRender, const UiRect& /*rcPaint*/)
@@ -3449,6 +3509,32 @@ bool RichEdit::OnImeStartComposition(const EventArgs& /*msg*/)
     ::ImmSetCompositionWindow(hImc, &cfs);
     ::ImmReleaseContext(hWnd, hImc);
     m_bIsComposition = true;
+#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+    // A marked-text session replaces the current selection. Remove it before
+    // drawing the first pinyin syllable; otherwise the composition appears
+    // after the selected text and the selection is deleted only on commit.
+    if (HasSelText()) {
+        Clear();
+    }
+    m_bImeComposition = true;
+    m_imeMarkedText.clear();
+    m_nImeMarkedTextWidth = 0;
+#endif
+    return true;
+}
+
+bool RichEdit::OnImeComposition(const EventArgs& msg)
+{
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+    if ((msg.wParam != 0) && (msg.lParam > 0)) {
+        m_imeMarkedText = (DStringW::value_type*)msg.wParam;
+        m_bImeComposition = true;
+    }
+    else {
+        m_imeMarkedText.clear();
+        m_bImeComposition = false;
+    }
+    Invalidate();
 #endif
     return true;
 }
@@ -3457,6 +3543,11 @@ bool RichEdit::OnImeEndComposition(const EventArgs& /*msg*/)
 {
 #if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     m_bIsComposition = false;
+#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+    m_bImeComposition = false;
+    m_imeMarkedText.clear();
+    m_nImeMarkedTextWidth = 0;
+    Invalidate();
 #endif
     return true;
 }
@@ -3526,6 +3617,19 @@ bool RichEdit::OnKeyDown(const EventArgs& msg)
         OnInputChar(msg);
     }
     else if (msg.vkCode == kVK_BACK) {
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+        // While composing, Backspace should delete the pinyin marked text
+        // first, not the already committed text before the composition.
+        if (m_bImeComposition && !m_imeMarkedText.empty()) {
+            m_imeMarkedText.pop_back();
+            m_nImeMarkedTextWidth = 0;
+            if (m_imeMarkedText.empty()) {
+                m_bImeComposition = false;
+            }
+            Invalidate();
+            return true;
+        }
+#endif
         //Backspace key: delete the previous character
         OnInputChar(msg);
     }
@@ -4055,6 +4159,18 @@ bool RichEdit::OnChar(const EventArgs& msg)
         //The handling of the Enter key, TAB key, Delete key, and Backspace key is unified in KEYDOWN
         return true;
     }
+
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+    // insertText: commits the composition but does not send unmarkText: on
+    // macOS. Clear the marked text here so the pinyin does not remain visible
+    // after the Chinese characters have been inserted.
+    if (m_bImeComposition) {
+        m_bImeComposition = false;
+        m_imeMarkedText.clear();
+        m_nImeMarkedTextWidth = 0;
+    }
+#endif
+
     //Input a character
     OnInputChar(msg);
     return true;
@@ -4716,4 +4832,3 @@ void RichEdit::OnInputChar(const EventArgs& msg)
 } // namespace ui
 
 #endif //DUI_BUILD_FOR_MACOS
-

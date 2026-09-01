@@ -1,10 +1,42 @@
 #include "dui/Control/ChildWindowImpl.h"
+#include "dui/Core/WindowCreateAttributes.h"
 #include "dui/Core/GlobalManager.h"
 #include "dui/Core/Window.h"
 #include "dui/Core/Control.h"
 
+#if defined (DUI_BUILD_FOR_MACOS)
+#include "dui/Render/IRender.h"
+#endif
+
 namespace ui
 {
+
+#if defined (DUI_BUILD_FOR_MACOS)
+class ChildWindowRenderDpi : public IRenderDpi
+{
+public:
+    explicit ChildWindowRenderDpi(ChildWindowImpl* pChildWindow):
+        m_pChildWindow(pChildWindow), m_windowFlag(pChildWindow->GetWeakFlag()) {}
+
+    int32_t GetScaleInt(int32_t iValue) const override
+    {
+        const DpiManager& dpi = (m_pChildWindow != nullptr && !m_windowFlag.expired()) ?
+            m_pChildWindow->Dpi() : GlobalManager::Instance().Dpi();
+        return dpi.GetScaleInt(iValue);
+    }
+
+    float GetScaleFloat(float fValue) const override
+    {
+        const DpiManager& dpi = (m_pChildWindow != nullptr && !m_windowFlag.expired()) ?
+            m_pChildWindow->Dpi() : GlobalManager::Instance().Dpi();
+        return dpi.GetScaleFloat(fValue);
+    }
+
+private:
+    ChildWindowImpl* m_pChildWindow;
+    std::weak_ptr<WeakFlag> m_windowFlag;
+};
+#endif
 ChildWindowImpl::ChildWindowImpl(ChildWindowEvents* pChildWindowEvents):
     m_pChildWindowEvents(pChildWindowEvents)
 {
@@ -45,7 +77,18 @@ void ChildWindowImpl::OnInitWindow()
 
 void ChildWindowImpl::PostInitWindow()
 {
-    //Empty implementation
+#if defined (DUI_BUILD_FOR_MACOS)
+    if (m_render == nullptr) {
+        IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
+        ASSERT(pRenderFactory != nullptr);
+        if (pRenderFactory != nullptr) {
+            m_render.reset(pRenderFactory->CreateRender(
+                std::make_shared<ChildWindowRenderDpi>(this),
+                NativeWnd()->GetWindowHandle(),
+                RenderBackendType::kRaster_BackendType));
+        }
+    }
+#endif
 }
 
 void ChildWindowImpl::OnInitLayout()
@@ -88,7 +131,16 @@ void ChildWindowImpl::OnUseSystemCaptionBarChanged()
 
 bool ChildWindowImpl::OnPreparePaint()
 {
-    //Empty implementation, by default returns true to continue drawing
+#if defined (DUI_BUILD_FOR_MACOS)
+    if (m_render != nullptr) {
+        UiRect rcClient;
+        GetClientRect(rcClient);
+        if (!rcClient.IsEmpty() &&
+            (m_render->GetWidth() != rcClient.Width() || m_render->GetHeight() != rcClient.Height())) {
+            m_render->Resize(rcClient.Width(), rcClient.Height());
+        }
+    }
+#endif
     return true;
 }
 
@@ -167,8 +219,11 @@ void ChildWindowImpl::OnDisplayScaleChanged(uint32_t /*nOldScaleFactor*/, uint32
 
 IRender* ChildWindowImpl::GetRender() const
 {
-    //Empty implementation, by default returns nullptr
+#if defined (DUI_BUILD_FOR_MACOS)
+    return m_render.get();
+#else
     return nullptr;
+#endif
 }
 
 Control* ChildWindowImpl::OnFindControl(const UiPoint& /*pt*/) const

@@ -72,9 +72,15 @@ void CComboWnd::InitComboWnd(Combo* pOwner, bool bActivated)
     UiRect rcWnd = GetComboWndRect();
     WindowCreateParam createWndParam;
     createWndParam.m_dwStyle = kWS_POPUP;
+#if defined(DUI_BUILD_FOR_MACOS)
+    // Keep the owner key while the popup is open. This prevents AppKit from
+    // switching the active/inactive system shadow between the two windows.
+    createWndParam.m_dwExStyle = kWS_EX_NOACTIVATE;
+#else
     createWndParam.m_dwExStyle = kWS_EX_LAYERED;
-#if defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_MACOS)
+#if defined(DUI_BUILD_FOR_SDL)
     createWndParam.m_dwExStyle |= kWS_EX_NOACTIVATE;
+#endif
 #endif
     createWndParam.m_nX = rcWnd.left;
     createWndParam.m_nY = rcWnd.top;
@@ -82,14 +88,18 @@ void CComboWnd::InitComboWnd(Combo* pOwner, bool bActivated)
     createWndParam.m_nHeight = rcWnd.Height();
     CreateWnd(pOwner->GetWindow(), createWndParam);
 
-    UpdateComboWnd();
-#if defined(DUI_BUILD_FOR_MACOS)
-    // On macOS a combo popup must not take key focus away from the owner
-    // window. Make the owner foreground first, then show the non-activating
-    // popup above it so the popup remains visible while the owner stays key.
-    if (pOwner->GetWindow() != nullptr) {
-        pOwner->GetWindow()->SetWindowForeground();
+    if (Box::IsValidItemIndex(m_iOldSel)) {
+        // Position the selected item before presenting the popup. Showing it
+        // first exposes an intermediate frame when the popup is reopened fast.
+        pOwner->GetTreeView()->EnsureVisible(m_iOldSel, ListBoxVerVisible::kVisibleAtCenter);
     }
+
+    // Present a completed frame instead of exposing the newly-created GPU
+    // back buffer, which is black until its first paint on macOS.
+    InvalidateAll();
+    UpdateWindow();
+
+#if defined(DUI_BUILD_FOR_MACOS)
     ShowWindow(ui::kSW_SHOW_NA);
     pOwner->SetState(kControlStateHot);
 #else
@@ -104,12 +114,6 @@ void CComboWnd::InitComboWnd(Combo* pOwner, bool bActivated)
         ShowWindow(ui::kSW_SHOW_NA);
     }
 #endif
-    if (Box::IsValidItemIndex(m_iOldSel)) {
-        //When expanded, ensure the selection is visible
-        UpdateWindow();
-        pOwner->GetTreeView()->EnsureVisible(m_iOldSel, ListBoxVerVisible::kVisibleAtCenter);
-    }
-
     //Send an event
     pOwner->SendEvent(kEventWindowCreate);
 }
@@ -237,13 +241,7 @@ void CComboWnd::CloseComboWnd(bool bCanceled, bool needUpdateSelItem)
     }
     //Switch the foreground window to the parent window first, to avoid switching to another window after the foreground window is closed
     ControlPtrT<Combo> pOwner = m_pOwner;
-#if defined(DUI_BUILD_FOR_MACOS)
-    if ((pOwner != nullptr) && (pOwner->GetWindow() != nullptr) && pOwner->GetWindow()->IsWindow()) {
-        //The popup is non-activating; after selecting an item make sure the
-        //owner window is explicitly key again.
-        pOwner->GetWindow()->SetWindowForeground();
-    }
-#else
+#if !defined(DUI_BUILD_FOR_MACOS)
     if ((pOwner != nullptr) && (pOwner->GetWindow() != nullptr)) {
         if (IsWindowForeground()) {
             pOwner->GetWindow()->SetWindowForeground();
@@ -288,8 +286,10 @@ void CComboWnd::OnCloseWindow()
     }
     if ((m_pOwner->GetWindow() != nullptr) && m_pOwner->GetWindow()->IsWindow()) {
         m_pOwner->SetPos(m_pOwner->GetPos());
+#if !defined(DUI_BUILD_FOR_MACOS)
         m_pOwner->SetFocus();
-    }    
+#endif
+    }
     BaseClass::OnCloseWindow();
 }
 
@@ -311,6 +311,13 @@ LRESULT CComboWnd::OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& 
 {
     LRESULT lResult = BaseClass::OnKillFocusMsg(pSetFocusWindow, nativeMsg, bHandled);
     //Lost focus, close the window normally
+#if defined(DUI_BUILD_FOR_MACOS)
+    //The popup is non-activating on macOS. A nil focus target can be reported
+    //while the owner remains active, including when selecting an item.
+    if ((pSetFocusWindow == nullptr) || (m_pOwner != nullptr && pSetFocusWindow == m_pOwner->GetWindow())) {
+        return lResult;
+    }
+#endif
     if (pSetFocusWindow != this) {
         CloseComboWnd(false, false);
     }
@@ -348,7 +355,7 @@ Combo::Combo(Window* pWindow) :
     m_pButtonControl(nullptr),
     m_comboType(kCombo_DropDown),
     m_bDropListShown(false),
-    m_nShadowType(Shadow::ShadowType::kShadowMenu)
+    m_nShadowType(Shadow::ShadowType::kShadowSystemRound)
 {
     SetDropBoxSize({0, 150}, true);
     m_treeView.SetSelectNextWhenActiveRemoved(false);

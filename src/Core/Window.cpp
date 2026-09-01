@@ -12,6 +12,7 @@
 #include "dui/Utils/PerformanceUtil.h"
 #include "dui/Utils/FilePathUtil.h"
 #include "dui/Utils/AttributeUtil.h"
+#include "dui/Utils/StringConvert.h"
 
 namespace ui
 {
@@ -182,11 +183,11 @@ bool Window::SetWindowIcon(const DString& iconFilePath)
     if (iconFullPath.IsEmpty()) {
         return false;
     }
-    if (GlobalManager::Instance().Zip().IsUseZip() &&
-        GlobalManager::Instance().Zip().IsZipResExist(iconFullPath)) {
-        //Use the compressed package
+    if (GlobalManager::Instance().MemoryResources().IsOpen() &&
+        GlobalManager::Instance().MemoryResources().IsDataExist(iconFullPath)) {
+        //Use embedded resources
         std::vector<uint8_t> fileData;
-        GlobalManager::Instance().Zip().GetZipData(iconFullPath, fileData);
+        GlobalManager::Instance().MemoryResources().GetData(iconFullPath, fileData);
         ASSERT(!fileData.empty());
         if (!fileData.empty()) {
             bRet = WindowBase::SetWindowIcon(fileData, iconFilePath);
@@ -202,6 +203,11 @@ bool Window::SetWindowIcon(const DString& iconFilePath)
         }
     }
     return bRet;
+}
+
+bool Window::SetWindowIcon(const char* iconFilePath)
+{
+    return SetWindowIcon(ui::StringConvert::UTF8ToT(iconFilePath ? iconFilePath : ""));
 }
 
 void Window::InitSkin(const DString& skinFolder, const DString& skinFile)
@@ -321,7 +327,15 @@ void Window::PreInitWindow()
     //Creates the window shadow
     m_shadow = std::make_unique<Shadow>(this);
     if (m_shadow->IsUseDefaultShadowAttached()) {
+#if defined(DUI_BUILD_FOR_MACOS)
+        // macOS provides the shadow through NSWindow even for non-layered
+        // borderless popups. Do not detach it based on the layered flag: that
+        // would produce an enable -> disable -> enable sequence during popup
+        // creation and visibly flicker.
+        m_shadow->SetShadowAttached(!IsChildWindow() && !IsUseSystemCaption());
+#else
         m_shadow->SetShadowAttached(IsLayeredWindow());
+#endif
         m_shadow->SetUseDefaultShadowAttached(true);
     }
 
@@ -372,7 +386,15 @@ void Window::PostInitWindow()
 
     //Initialize the window size according to the size attribute in the XML
     if ((m_szInitSize.cx > 0) && (m_szInitSize.cy > 0)) {
-        Resize(m_szInitSize.cx, m_szInitSize.cy, true, false);
+        //Native backends may already have applied the parsed XML size during
+        //window creation. Avoid submitting the same frame a second time: on
+        //macOS that can trigger another compositor/layout pass during startup.
+        UiRect rcWindow;
+        GetWindowRect(rcWindow);
+        if ((rcWindow.Width() != m_szInitSize.cx) ||
+            (rcWindow.Height() != m_szInitSize.cy)) {
+            Resize(m_szInitSize.cx, m_szInitSize.cy, true, false);
+        }
     }
 
     //Check whether the window size needs to be set according to the auto type of the root node (e.g., menus use this)

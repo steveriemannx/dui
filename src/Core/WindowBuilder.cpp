@@ -198,12 +198,12 @@ bool WindowBuilder::IsXmlFileExists(const FilePath& xmlFilePath) const
     }
     bool bExists = false;
     const FilePath themeDefaultPath = GlobalManager::Instance().GetThemeDefaultPath();
-    if (GlobalManager::Instance().Zip().IsUseZip()) {
+    if (GlobalManager::Instance().MemoryResources().IsOpen()) {
         FilePath sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
-        bool bResExist = GlobalManager::Instance().Zip().IsZipResExist(sFile);
+        bool bResExist = GlobalManager::Instance().MemoryResources().IsDataExist(sFile);
         if (!bResExist && !themeDefaultPath.IsEmpty()) {
-            //Overlay theme: fall back to the default theme archive
-            bResExist = GlobalManager::Instance().Zip().IsZipResExist(
+            //Overlay theme: fall back to the default embedded resources
+            bResExist = GlobalManager::Instance().MemoryResources().IsDataExist(
                 FilePathUtil::JoinFilePath(themeDefaultPath, xmlFilePath));
         }
         bExists = bResExist;
@@ -232,7 +232,7 @@ bool WindowBuilder::ParseXmlData(const DString& xmlFileData, const FilePath& xml
     }
     bool isLoaded = false;
     //If the string starts with '<', it is treated as an XML string; otherwise it is treated as an XML file
-    //If a zip archive is used, read from memory
+    //If embedded resources are used, read directly from memory
     if (xmlFileData.front() == _T('<')) {
 #ifdef DUI_UNICODE
         pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf16;
@@ -285,19 +285,19 @@ bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& wi
     if (!themeDefaultPath.IsEmpty() && themeDefaultPath != resRoots[0]) {
         resRoots.push_back(themeDefaultPath);
     }
-    if (GlobalManager::Instance().Zip().IsUseZip()) {
+    if (GlobalManager::Instance().MemoryResources().IsOpen()) {
         std::vector<unsigned char> file_data;
         for (const FilePath& root : resRoots) {
             FilePath sFile = FilePathUtil::JoinFilePath(root, xmlFilePath);
-            if (!windowResPath.IsEmpty() && !GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+        if (!windowResPath.IsEmpty() && !GlobalManager::Instance().MemoryResources().IsDataExist(sFile)) {
                 //Searches in the window directory
                 sFile = FilePathUtil::JoinFilePath(root, windowResPath);
                 sFile = FilePathUtil::JoinFilePath(sFile, xmlFilePath);
             }
-            if (GlobalManager::Instance().Zip().GetZipData(sFile, file_data)) {
+            if (GlobalManager::Instance().MemoryResources().GetData(sFile, file_data)) {
                 pugi::xml_parse_result result = m_xml->load_buffer(file_data.data(), file_data.size());
                 if (result.status != pugi::status_ok) {
-                    ASSERT(!_T("WindowBuilder::ParseXmlFile load xml from zip data failed!"));
+                    ASSERT(!_T("WindowBuilder::ParseXmlFile load xml from memory data failed!"));
                     return false;
                 }
                 isLoaded = true;
@@ -804,6 +804,14 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         else if (strName == _T("drag_drop")) {
             knownNames.insert(strName);
             pWindow->SetEnableDragDrop(strValue == _T("true"));
+        }
+        else if ((strName == _T("position")) || (strName == _T("pos"))) {
+            knownNames.insert(strName);
+            UiPoint position;
+            AttributeUtil::ParsePointValue(strValue.c_str(), position);
+            UiRect windowRect = pWindow->GetWindowPos(false);
+            pWindow->MoveWindow(position.x, position.y,
+                                 windowRect.Width(), windowRect.Height(), true);
         }
     }
 

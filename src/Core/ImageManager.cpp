@@ -44,17 +44,17 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
 
     //Reload the resource
     const ImageLoadPath& imageLoadPath = loadParam.GetImageLoadPath();
-    DString imageFullPath = imageLoadPath.m_imageFullPath.ToString();   //Image path (local path or relative path in the archive)
+    DString imageFullPath = imageLoadPath.m_imageFullPath.ToString();   //Image path (local path or relative path in the embedded resources)
     uint32_t nImageFileDpiScale = 100;                                  //DPI scale of the original image is 100 when it is not DPI scaled
-    const bool isUseZip = GlobalManager::Instance().Zip().IsUseZip();   //Whether to use a Zip archive
+    const bool isMemoryArchive = GlobalManager::Instance().MemoryResources().IsOpen();
     const bool bImageDpiScaleEnabled = loadParam.IsImageDpiScaleEnabled();//Image attribute: load_scale="false", use only the original image, no scaling needed
     if (bImageDpiScaleEnabled && 
         ((imageLoadPath.m_pathType == ImageLoadPathType::kLocalResPath) ||
-         (imageLoadPath.m_pathType == ImageLoadPathType::kZipResPath))) {
+         (imageLoadPath.m_pathType == ImageLoadPathType::kMemoryResPath))) {
         //Only files in the resource directory get the DPI-adaptive image lookup
         DString dpiImageFullPath;
         uint32_t dpiImageDpiScale = nImageFileDpiScale;
-        if (GetDpiScaleImageFullPath(loadParam.GetLoadDpiScale(), isUseZip, imageFullPath, dpiImageFullPath, dpiImageDpiScale)) {
+        if (GetDpiScaleImageFullPath(loadParam.GetLoadDpiScale(), isMemoryArchive, imageFullPath, dpiImageFullPath, dpiImageDpiScale)) {
             //Mark the DPI-adaptive image attribute; if the path differs, a file for the corresponding DPI has been selected
             ASSERT((dpiImageDpiScale != 0) && !dpiImageFullPath.empty());
             if ((dpiImageDpiScale != 0) && !dpiImageFullPath.empty()) {
@@ -103,8 +103,8 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
         if (imageLoadPath.m_pathType != ImageLoadPathType::kVirtualPath) {
             //A physical image file must have image data for decoding
             FilePath imageFilePath(imageFullPath);
-            if (isUseZip && !imageFilePath.IsAbsolutePath()) {
-                GlobalManager::Instance().Zip().GetZipData(imageFilePath, fileData);
+            if (isMemoryArchive && !imageFilePath.IsAbsolutePath()) {
+                GlobalManager::Instance().MemoryResources().GetData(imageFilePath, fileData);
                 ASSERT(!fileData.empty());
                 if (fileData.empty()) {
                     //Load failed
@@ -390,13 +390,13 @@ bool ImageManager::IsImageAsyncLoad() const
 }
 
 bool ImageManager::GetDpiScaleImageFullPath(uint32_t dpiScale,
-                                            bool bIsUseZip,
+                                             bool bIsMemoryArchive,
                                             const DString& imageFullPath,
                                             DString& dpiImageFullPath,
                                             uint32_t& nImageFileDpiScale) const
 {
     nImageFileDpiScale = 0;
-    if (FindDpiScaleImageFullPath(dpiScale, bIsUseZip, imageFullPath, dpiImageFullPath)) {
+    if (FindDpiScaleImageFullPath(dpiScale, bIsMemoryArchive, imageFullPath, dpiImageFullPath)) {
         nImageFileDpiScale = dpiScale;
         return true;
     }
@@ -410,7 +410,7 @@ bool ImageManager::GetDpiScaleImageFullPath(uint32_t dpiScale,
     std::vector<uint32_t> allScales = {125, 150, 175, 200, 225, 250, 300};
     std::vector<std::pair<uint32_t, DString>> allDpiImagePath;
     for (auto scale : allScales) {
-        if (FindDpiScaleImageFullPath(scale, bIsUseZip, imageFullPath, dpiFullPath)) {
+        if (FindDpiScaleImageFullPath(scale, bIsMemoryArchive, imageFullPath, dpiFullPath)) {
             allDpiImagePath.push_back({ scale, dpiFullPath });
         }
     }
@@ -454,7 +454,7 @@ bool ImageManager::GetDpiScaleImageFullPath(uint32_t dpiScale,
 }
 
 bool ImageManager::FindDpiScaleImageFullPath(uint32_t dpiScale,
-                                             bool bIsUseZip,
+                                              bool bIsMemoryArchive,
                                              const DString& imageFullPath,
                                              DString& dpiImageFullPath) const
 {
@@ -469,8 +469,8 @@ bool ImageManager::FindDpiScaleImageFullPath(uint32_t dpiScale,
     }
 
     bool bExists = false;
-    if (bIsUseZip) {
-        bExists = GlobalManager::Instance().Zip().IsZipResExist(FilePath(dpiImageFullPath));
+    if (bIsMemoryArchive) {
+        bExists = GlobalManager::Instance().MemoryResources().IsDataExist(FilePath(dpiImageFullPath));
     }
     else {
         bExists = FilePath(dpiImageFullPath).IsExistsPath();

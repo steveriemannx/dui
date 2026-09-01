@@ -16,6 +16,10 @@ endif()
 # BEFORE src/CMakeLists.txt, which compiles Skia's tools/window sources into the dui library.
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/dui_common.cmake")
 
+# CEF examples enable CEF in their own scope, but the shared wrapper is built
+# from the top-level third-party directory before the examples are configured.
+option(DUI_BUILD_CEF_EXAMPLES "Build the cef/CefBrowser examples" ON)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if(POLICY CMP0177)

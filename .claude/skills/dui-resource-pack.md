@@ -25,99 +25,12 @@ resources/
 └── lang/...
 ```
 
-### Mode 2: ZIP archive (recommended for release)
+### Mode 2: Resources embedded into the executable (single-file release)
 ```cpp
-ui::ZipFileResParam resParam;
-resParam.resourcePath = _T("resources\\");     // Relative path inside the ZIP
-resParam.zipFilePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-resParam.zipFilePath += _T("resources.zip");   // ZIP file path
-resParam.zipPassword = _T("");                 // Optional password
+// Include the generated file in exactly one source file.
+#include "embedded_resources.inc"
+ui::MemoryResParam resParam(GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 ui::GlobalManager::Instance().Startup(resParam);
-```
-Release files:
-```
-MyApp.exe
-resources.zip        # contains the resources/ directory structure
-```
-
-### Mode 3: Resources embedded into the executable (single-file release, Windows only)
-```cpp
-#include "resource.h"
-
-ui::ResZipFileResParam resParam;
-resParam.resourcePath = _T("resources\\");
-resParam.hResModule = nullptr;                        // nullptr = the current EXE
-resParam.resourceName = MAKEINTRESOURCE(IDR_THEME);   // Resource ID
-resParam.resourceType = _T("THEME");                  // Resource type name
-resParam.zipPassword = _T("");
-ui::GlobalManager::Instance().Startup(resParam);
-```
-
-## Implementing a single-EXE release (detailed steps for Mode 3)
-
-### Step 1: Create resource.h
-```cpp
-// resource.h
-#ifndef RESOURCE_H_
-#define RESOURCE_H_
-
-#define IDR_THEME  101
-
-#endif // RESOURCE_H_
-```
-
-### Step 2: Create the .rc resource file
-```rc
-// MyApp.rc
-#include "resource.h"
-IDR_THEME  THEME  "..\\..\\bin\\resources.zip"
-```
-**Note**: the path is relative to the location of the .rc file.
-
-### Step 3: Create resources.zip
-Use 7-Zip to pack it (recommended parameters to ensure UTF-8 file names):
-```bash
-cd bin
-7z a -tzip -mcu=on resources.zip resources/
-```
-
-**ZIP requirements:**
-- Compression algorithm: Deflate only (Deflate64 is not supported)
-- File name encoding: UTF-8 (use the `-mcu=on` option in 7-Zip)
-- Password encryption: ZipCrypto only (ZIP legacy encryption)
-
-### Step 4: Switch the loading mode in MainThread
-```cpp
-void MainThread::OnInit()
-{
-#ifdef NDEBUG
-    // Release: use the ZIP resource embedded in the EXE
-    ui::ResZipFileResParam resParam;
-    resParam.resourcePath = _T("resources\\");
-    resParam.hResModule = nullptr;
-    resParam.resourceName = MAKEINTRESOURCE(IDR_THEME);
-    resParam.resourceType = _T("THEME");
-    resParam.zipPassword = _T("");
-    ui::GlobalManager::Instance().Startup(resParam);
-#else
-    // Debug: use the local folder (easier to modify and debug)
-    ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-    resourcePath += _T("resources\\");
-    ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
-#endif
-
-    // Create windows...
-}
-```
-
-### Step 5: Add the .rc file to the project
-- Visual Studio: right-click the project → Add → Existing Item → select the .rc file
-- CMakeLists.txt:
-```cmake
-# Add the resource file on Windows
-if(WIN32)
-    target_sources(MyApp PRIVATE MyApp.rc)
-endif()
 ```
 
 ## Packaging checklist: what to include
@@ -175,7 +88,7 @@ resources/
 | themes/default/xml_preview/ | example program directory |
 | themes/default/MultiLang/ | example program directory |
 | bin/*.exe, bin/*.dll | build artifacts |
-| bin/bin.zip | archive of build artifacts |
+| bin/*.zip | external distribution archive, not a runtime resource format |
 
 **Rule: only package global.xml + public/ + your own application directory + fonts/ (optional) + lang/ (optional)**
 
@@ -183,9 +96,9 @@ resources/
 
 | Platform | Supported resource modes |
 |------|--------------|
-| Windows | Local files / ZIP file / embedded EXE (single file) |
-| Linux | Local files / ZIP file |
-| macOS | Local files / ZIP file |
-| FreeBSD | Local files / ZIP file |
+| Windows | Local files / custom embedded binary |
+| Linux | Local files / custom embedded binary |
+| macOS | Local files / custom embedded binary |
+| FreeBSD | Local files / custom embedded binary |
 
-macOS/Linux do not support the embedded-EXE mode (there is no Windows RC resource mechanism); use the ZIP file mode for release.
+The custom binary archive is platform-independent and can be embedded in any executable. A ZIP may still be used as an external distribution wrapper, but dui does not read ZIP files at runtime.

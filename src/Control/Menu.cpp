@@ -195,6 +195,29 @@ void Menu::CloseSubmenusOutsidePointer()
     }
 }
 
+bool Menu::IsOpenMenuWindow(void* pNativeWindow)
+{
+    if (pNativeWindow == nullptr) {
+        return false;
+    }
+    const auto& openMenus = GetOpenMenuList();
+    for (Menu* menu : openMenus) {
+        if (menu == nullptr) {
+            continue;
+        }
+#if defined(DUI_BUILD_FOR_MACOS)
+        // NSEvent.window is an NSWindow, while GetWindowHandle() is the
+        // render NSView on macOS.
+        if (menu->NativeWnd()->GetNSWindow() == pNativeWindow) {
+#else
+        if (menu->GetWindowHandle() == pNativeWindow) {
+#endif
+            return true;
+        }
+    }
+    return false;
+}
+
 void Menu::CloseSubmenus()
 {
     const std::vector<Menu*> menus = GetOpenMenuList();
@@ -807,6 +830,7 @@ void Menu::PreInitWindow()
     SetShadowBorderSize(0);
     if (m_xml.empty() && (GetRoot() == nullptr)) {
         //Pure-code mode: when there is no XML template, build the root node layout (consistent with the MenuListBox in the XML template)
+        SetShadowAttached(true);
         MenuListBox* pListBox = new MenuListBox(this);
         pListBox->SetClass(_T("menu"));
         pListBox->SetAttribute(_T("name"), _T("main_menu"));
@@ -816,6 +840,12 @@ void Menu::PreInitWindow()
 
 void Menu::PostInitWindow()
 {
+    // Menu popups always use system native rounded shadow and corners,
+    // regardless of pure-code or XML mode.
+    SetShadowAttached(true);
+    SetShadowType(Shadow::ShadowType::kShadowSystemRound);
+    SetRoundCorner(10, 10, false);
+
     ASSERT(m_pListBox == nullptr);
     if (m_pOwner != nullptr) {
         m_pListBox = dynamic_cast<ui::ListBox*>(FindControl(m_submenuNodeName.c_str()));

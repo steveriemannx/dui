@@ -1,5 +1,5 @@
 /** xml_to_code - convert XML layout files to pure C++ initialization code
- *  Usage: xml_to_code [-g global.xml] <output.cpp> <function_name> <input_xml_files...>
+ *  Usage: xml_to_code [-g global.xml] [-r resource_folder ...] <output.cpp> <function_name> <input_xml_files...>
  *
  *  Parses XML at build time (via pugixml linked into this tool) and generates
  *  C++ code that creates the same UI at runtime via direct API calls -
@@ -144,9 +144,11 @@ static void expandIncludes(pugi::xml_node node, const std::string& currentDir, i
             }
         }
         for (int i = 0; i < nCount; ++i) {
+            pugi::xml_node insertionPoint = current;
             for (const auto& incChild : nodesToCopy) {
-                pugi::xml_node inserted = current.parent().insert_copy_after(incChild, current);
+                pugi::xml_node inserted = current.parent().insert_copy_after(incChild, insertionPoint);
                 expandIncludes(inserted, incDir, depth + 1);
+                insertionPoint = inserted;
             }
         }
         current.parent().remove_child(current);
@@ -241,8 +243,8 @@ static void genAttrs(std::ostream& out, const std::string& var,
         if (name.empty() || value.empty()) continue;
         if (name == "on_click" || name == "on_select" || name == "on_change") continue;
         if (name == "class") trackClass(value);  // Track class usage for image embedding
-        out << "        " << var << "->SetAttribute(_T(\"" << escapeCStr(name)
-            << "\"), _T(\"" << escapeCStr(value) << "\"));\n";
+        out << "        " << var << "->SetAttribute(\"" << escapeCStr(name)
+            << "\", \"" << escapeCStr(value) << "\");\n";
     }
 }
 
@@ -256,90 +258,214 @@ static std::string genAttrList(const pugi::xml_node& node) {
         if (name == "on_click" || name == "on_select" || name == "on_change") continue;
         if (name == "class") trackClass(value);  // Track class usage for image embedding
         if (!s.empty()) s += ", ";
-        s += "{_T(\"" + escapeCStr(name) + "\"), _T(\"" + escapeCStr(value) + "\")}";
+        s += "{\"" + escapeCStr(name) + "\", \"" + escapeCStr(value) + "\"}";
     }
     return s;
 }
 
-// Whether a node can be emitted as one nested ui::Create expression.
-// TreeView/TreeNode, RichText and window-resource nodes stay on the
-// sequential path because they need special add/parse handling.
-static bool canNestNode(const pugi::xml_node& node, const std::string& parentTag) {
-    std::string tag = nodeName(node);
-    if (tag.empty()) return false;
-    if (tag == "TreeNode" || tag == "RichText" || tag == "Class" ||
-        tag == "TextColor" || tag == "Font" || tag == "DefaultFontFamilyNames") {
-        return false;
-    }
-    if (cppClass(tag).empty()) return false;
-    if (parentTag == "TreeView" || parentTag == "TreeNode" || parentTag == "Combo") {
-        return false;
-    }
-    for (auto child : node.children()) {
-        if (child.type() == pugi::node_element) {
-            if (!canNestNode(child, tag)) return false;
+static std::vector<int> parseIntList(const std::string& value) {
+    std::vector<int> values;
+    std::stringstream stream(value);
+    std::string part;
+    while (std::getline(stream, part, ',')) {
+        try {
+            size_t parsed = 0;
+            int valueInt = std::stoi(part, &parsed);
+            if (parsed != part.size()) {
+                return {};
+            }
+            values.push_back(valueInt);
+        }
+        catch (...) {
+            return {};
         }
     }
-    return true;
+    return values;
 }
 
-// Build a nested ui::Create<T>(pWindow, attrs, child1, child2, ...) expression.
-static std::string genIndent(int depth) {
-    return std::string(depth * 4, ' ');
+// Map shadow_type XML attribute value to the C++ enum suffix (e.g. "system_default" -> "SystemDefault")
+static std::string shadowTypeCppName(const std::string& xmlValue) {
+    static const std::map<std::string, std::string> types = {
+        {"default", "Default"}, {"system_default", "SystemDefault"},
+        {"small", "Small"}, {"small_round", "SmallRound"},
+        {"big", "Big"}, {"big_round", "BigRound"},
+        {"system_round", "SystemRound"},
+        {"system_small_round", "SystemSmallRound"},
+        {"system_not_round", "SystemDoNotRound"},
+    };
+    auto it = types.find(xmlValue);
+    return (it != types.end()) ? it->second : "Default";
 }
 
-// Format XML attributes as a multi-line initializer list when there are many,
-// matching the handwritten code style; short lists stay inline.
-static std::string genAttrBlock(const pugi::xml_node& node, int depth) {
-    std::vector<std::string> items;
-    for (const auto& a : node.attributes()) {
-        std::string name = a.name();
-        std::string value = a.value();
-        if (name.empty() || value.empty()) continue;
-        if (name == "on_click" || name == "on_select" || name == "on_change") continue;
-        if (name == "class") trackClass(value);
-        items.push_back("{_T(\"" + escapeCStr(name) + "\"), _T(\"" + escapeCStr(value) + "\")}");
-    }
-    if (items.empty()) return "{}";
-    if (items.size() == 1) return "{" + items[0] + "}";
-    std::string s = "{\n";
-    for (size_t i = 0; i < items.size(); ++i) {
-        s += genIndent(depth + 1) + items[i];
-        if (i + 1 < items.size()) s += ",";
-        s += "\n";
-    }
-    s += genIndent(depth) + "}";
-    return s;
-}
+// Generate readable setter calls for the root Window attributes.
+static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
+                           const std::string& resourceFolder) {
+    out << "    auto& w = *pWindow;\n";
+    bool hasShadowAttached = false;
+    bool shadowAttached = false;
+    bool hasPosition = false;
+    std::vector<int> position;
+    bool hasSize = false;
+    bool hasShadowType = false;
+    std::string shadowTypeValue;
 
-static std::string genNodeExpr(const pugi::xml_node& node, const std::string& parentTag, int depth) {
-    std::string tag = nodeName(node);
-    std::string cls = cppClass(tag);
-    std::string attrs = genAttrBlock(node, depth);
-    std::string expr = "ui::Create<" + cls + ">(pWindow, " + attrs;
-    bool hasChildren = false;
-    for (auto child : node.children()) {
-        if (child.type() == pugi::node_element) {
-            hasChildren = true;
-            break;
+    for (const auto& a : root.attributes()) {
+        const std::string name = a.name();
+        const std::string value = a.value();
+        if (name == "shadow_attached" || name == "shadowattached") {
+            hasShadowAttached = true;
+            shadowAttached = value == "true";
         }
-    }
-    if (hasChildren) {
-        expr += ",";
-        for (auto child : node.children()) {
-            if (child.type() == pugi::node_element) {
-                expr += "\n" + genIndent(depth + 1) + genNodeExpr(child, tag, depth + 1) + ",";
+        else if (name == "position" || name == "pos") {
+            hasPosition = true;
+            position = parseIntList(value);
+        }
+        else if (name == "size") {
+            hasSize = true;
+            std::vector<int> size = parseIntList(value);
+            if (size.size() == 2) {
+                out << "    w.SetWindowSize(" << size[0] << ", " << size[1] << ");\n";
+            }
+            else {
+                out << "    { ui::UiSize size; bool scaledCX = false; bool scaledCY = false;\n"
+                    << "      bool percentCX = false; bool percentCY = false;\n"
+                    << "      ui::AttributeUtil::ParseWindowSize(pWindow, \"" << escapeCStr(value)
+                    << "\", size, &scaledCX, &scaledCY, &percentCX, &percentCY);\n"
+                     << "      w.SetWindowSize(size.cx, size.cy); }\n";
             }
         }
-        // Remove the trailing comma after the last child.
-        if (!expr.empty() && expr.back() == ',') expr.pop_back();
-        expr += "\n" + genIndent(depth) + ")";
-    } else {
-        expr += ")";
+        else if (name == "min_size" || name == "mininfo" || name == "max_size" || name == "maxinfo") {
+            std::vector<int> size = parseIntList(value);
+            if (size.size() == 2) {
+                const bool isMin = name == "min_size" || name == "mininfo";
+                out << "    w.SetWindow" << (isMin ? "Minimum" : "Maximum")
+                    << "Size(ui::UiSize(" << size[0] << ", " << size[1] << "), true);\n";
+            }
+        }
+        else if (name == "use_system_caption") {
+            out << "    w.SetUseSystemCaption(" << (value == "true" ? "true" : "false") << ");\n";
+        }
+        else if (name == "size_box" || name == "sizebox" || name == "caption" || name == "sys_menu_rect") {
+            std::vector<int> rect = parseIntList(value);
+            if (rect.size() == 4) {
+                std::string setter;
+                if (name == "size_box" || name == "sizebox") setter = "SetSizeBox";
+                else if (name == "caption") setter = "SetCaptionRect";
+                else setter = "SetSysMenuRect";
+                out << "    w." << setter << "(ui::UiRect(" << rect[0] << ", " << rect[1]
+                    << ", " << rect[2] << ", " << rect[3] << "), true);\n";
+            }
+        }
+        else if (name == "snap_layout_menu" || name == "sys_menu" || name == "shadow_snap" || name == "drag_drop") {
+            std::string setter;
+            if (name == "snap_layout_menu") setter = "SetEnableSnapLayoutMenu";
+            else if (name == "sys_menu") setter = "SetEnableSysMenu";
+            else if (name == "shadow_snap") setter = "SetEnableShadowSnap";
+            else setter = "SetEnableDragDrop";
+            out << "    w." << setter << "(" << (value == "true" ? "true" : "false") << ");\n";
+        }
+        else if (name == "icon" || name == "text" || name == "text_id" || name == "textid") {
+            const char* setter = name == "icon" ? "SetWindowIcon" :
+                                 (name == "text" ? "SetText" : "SetTextId");
+            out << "    w." << setter << "(\"" << escapeCStr(value) << "\");\n";
+        }
+        else if (name == "round_corner" || name == "roundcorner") {
+            std::vector<int> size = parseIntList(value);
+            if (size.size() == 2) {
+                out << "    w.SetRoundCorner(" << size[0] << ", " << size[1] << ", true);\n";
+            }
+        }
+        else if (name == "shadow_type") {
+            hasShadowType = true;
+            shadowTypeValue = value;
+            static const std::map<std::string, std::string> types = {
+                {"default", "kShadowDefault"}, {"system_default", "kShadowSystemDefault"},
+                {"small", "kShadowSmall"}, {"small_round", "kShadowSmallRound"},
+                {"big", "kShadowBig"}, {"big_round", "kShadowBigRound"},
+                {"system_round", "kShadowSystemRound"},
+                {"system_small_round", "kShadowSystemSmallRound"},
+                {"system_not_round", "kShadowSystemDoNotRound"},
+            };
+            auto it = types.find(value);
+            if (it != types.end()) {
+                out << "    w.SetShadowType(ui::Shadow::ShadowType::" << it->second << ");\n";
+            }
+        }
+        else if (name == "shadow_image" || name == "shadow_border_color") {
+            out << "    w." << (name == "shadow_image" ? "SetShadowImage" : "SetShadowBorderColor")
+                << "(\"" << escapeCStr(value) << "\");\n";
+        }
+        else if (name == "shadow_corner") {
+            std::vector<int> padding = parseIntList(value);
+            if (padding.size() == 4) {
+                out << "    w.SetShadowCorner(ui::UiPadding(" << padding[0] << ", " << padding[1]
+                    << ", " << padding[2] << ", " << padding[3] << "));\n";
+            }
+        }
+        else if (name == "shadow_border_round") {
+            std::vector<int> size = parseIntList(value);
+            if (size.size() == 2) {
+                out << "    w.SetShadowBorderRound(ui::UiSize(" << size[0] << ", " << size[1] << "));\n";
+            }
+        }
+        else if (name == "shadow_border_size" || name == "alpha" || name == "opacity") {
+            const char* setter = name == "shadow_border_size" ? "SetShadowBorderSize" :
+                                 (name == "alpha" ? "SetLayeredWindowAlpha" : "SetLayeredWindowOpacity");
+            out << "    w." << setter << "(" << value << ");\n";
+        }
+        else if (name == "layered_window" || name == "layeredwindow") {
+            out << "    w.SetLayeredWindow(" << (value == "true" ? "true" : "false") << ", false);\n";
+        }
+        else if (name == "render_backend_type") {
+            std::string backend = "kRaster_BackendType";
+            if (value == "GL" || value == "GPU") backend = "kNativeGL_BackendType";
+            else if (value == "Metal") backend = "kMetal_BackendType";
+            out << "    w.SetRenderBackendType(ui::RenderBackendType::" << backend << ");\n";
+        }
     }
-    return expr;
+
+    if (hasShadowAttached) {
+        out << "    w.SetShadowAttached(" << (shadowAttached ? "true" : "false") << ");\n";
+    }
+
+    // System shadow type post-processing: mirrors WindowBuilder::ParseWindowAttributes
+    // behavior. System shadow types require a non-layered window (OS draws the shadow),
+    // so we must override layered_window to false after all individual setters have run.
+    if (hasShadowType) {
+        static const std::set<std::string> kSystemTypes = {
+            "system_default", "system_round",
+            "system_small_round", "system_not_round"
+        };
+        if (kSystemTypes.count(shadowTypeValue)) {
+            std::string cppName = shadowTypeCppName(shadowTypeValue);
+            out << "    // System shadow type: normalize and force non-layered window\n";
+            out << "    { ui::Shadow::ShadowType supportedType =\n";
+            out << "          ui::Shadow::GetSupportedShadowType(pWindow, ui::Shadow::ShadowType::kShadow"
+                << cppName << ");\n";
+            out << "      if (supportedType != ui::Shadow::ShadowType::kShadow" << cppName << ") {\n";
+            out << "          w.SetShadowType(supportedType);\n";
+            out << "      }\n";
+            out << "      if (ui::Shadow::IsSystemShadowType(supportedType)) {\n";
+            out << "          w.SetLayeredWindow(false, false);\n";
+            out << "      }\n";
+            out << "    }\n";
+        }
+    }
+
+    if (hasPosition && position.size() == 2) {
+        out << "    { ui::UiRect windowRect = pWindow->GetWindowPos(false);\n"
+            << "      w.MoveWindow(" << position[0] << ", " << position[1]
+            << ", windowRect.Width(), windowRect.Height(), true); }\n";
+    }
+    else if (hasSize) {
+        out << "    w.CenterWindow();\n";
+    }
 }
 
+// Generate a node as a sequential (non-nested) statement: create the control
+// with ui::Create<T>(pWindow, {attrs}), recurse into children, then attach it
+// to its parent with ui::Attach(parent, var). This mirrors the handwritten
+// code style (see examples/hello_code), and avoids deeply nested expressions.
 static void genNode(std::ostream& out, const pugi::xml_node& node,
                     const std::string& parentVar, const std::string& parentTag, int depth) {
     std::string tag = nodeName(node);
@@ -354,40 +480,33 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
             if (name == "name") continue;
             attrs += " " + name + "=\"" + a.value() + "\"";
         }
-        out << "    pWindow->AddClass(_T(\"" << escapeCStr(clsName) << "\"), _T(\""
-            << escapeCStr(attrs) << "\"));\n";
+        out << "    pWindow->AddClass(\"" << escapeCStr(clsName) << "\", \""
+            << escapeCStr(attrs) << "\");\n";
         return;
     }
     if (tag == "TextColor") {
         std::string colorName = attr(node, "name");
         std::string colorValue = attr(node, "value");
-        out << "    pWindow->AddTextColor(_T(\"" << escapeCStr(colorName) << "\"), _T(\""
-            << escapeCStr(colorValue) << "\"));\n";
+        out << "    pWindow->AddTextColor(\"" << escapeCStr(colorName) << "\", \""
+            << escapeCStr(colorValue) << "\");\n";
         return;
     }
     if (tag == "Font") {
         // <Font id="..." name="..." size="12" bold="true" italic="true" default="true"/>
-        out << "    { ui::UiFont f; f.m_fontName = _T(\"" << escapeCStr(attr(node, "name")) << "\");\n";
+        out << "    { ui::UiFont f; f.m_fontName = \"" << escapeCStr(attr(node, "name")) << "\";\n";
         int fontSize = node.attribute("size").as_int(12);
         out << "      f.m_fontSize = " << fontSize << ";";
         if (attr(node, "bold") == "true")     out << " f.m_bBold = true;";
         if (attr(node, "underline") == "true") out << " f.m_bUnderline = true;";
         if (attr(node, "italic") == "true")   out << " f.m_bItalic = true;";
         bool isDefault = (attr(node, "default") == "true");
-        out << "\n      ui::GlobalManager::Instance().Font().AddFont(_T(\""
-            << escapeCStr(attr(node, "id")) << "\"), f, " << (isDefault ? "true" : "false") << "); }\n";
+        out << "\n      ui::GlobalManager::Instance().Font().AddFont(\""
+            << escapeCStr(attr(node, "id")) << "\", f, " << (isDefault ? "true" : "false") << "); }\n";
         return;
     }
     if (tag == "DefaultFontFamilyNames") {
-        out << "    ui::GlobalManager::Instance().Font().SetDefaultFontFamilyNames(_T(\""
-            << escapeCStr(attr(node, "value")) << "\"));\n";
-        return;
-    }
-
-    if (parentVar.empty() && canNestNode(node, parentTag)) {
-        std::string var = "p" + std::to_string(g_varId++);
-        out << "    auto* " << var << " = " << genNodeExpr(node, parentTag, depth) << ";\n";
-        out << "\n";
+        out << "    ui::GlobalManager::Instance().Font().SetDefaultFontFamilyNames(\""
+            << escapeCStr(attr(node, "value")) << "\");\n";
         return;
     }
 
@@ -408,7 +527,6 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
     }
 
     std::string var = "p" + std::to_string(g_varId++);
-    bool bAlreadyAttached = false;
 
     // Handle Virtual*ListBox variants (need Layout* in constructor)
     if (cls == "virtual_vtile") {
@@ -429,16 +547,8 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
         genAttrs(out, var, node);
     } else {
         std::string attrs = genAttrList(node);
-        bool bSpecialAdd = (tag == "TreeNode" || parentTag == "TreeView" ||
-                            parentTag == "TreeNode" || parentTag == "Combo");
-        if (parentVar.empty() || bSpecialAdd) {
-            out << "    auto* " << var << " = ui::Create<" << cls
-                << ">(pWindow, {" << attrs << "});\n";
-        } else {
-            out << "    auto* " << var << " = ui::Attach<" << cls
-                << ">(" << parentVar << ", {" << attrs << "});\n";
-            bAlreadyAttached = true;
-        }
+        out << "    auto* " << var << " = ui::Create<" << cls
+            << ">(pWindow, {" << attrs << "});\n";
     }
 
     if (tag == "RichText") {
@@ -459,25 +569,26 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
         }
     }
 
-    // Add to parent (TreeNode nodes are added via AddChildNode, see WindowBuilder.cpp).
-    // Nodes created with ui::Attach are already attached and must not be added again.
-    if (!parentVar.empty() && !bAlreadyAttached) {
+    // Attach to parent. The root control (parentVar empty) is attached by the
+    // caller via ui::Attach(pWindow, p0); see the generator's main loop.
+    // TreeNode / Combo nodes are added through their dedicated APIs instead.
+    if (!parentVar.empty()) {
         if (tag == "TreeNode") {
             if (parentTag == "TreeView") {
-                out << "        " << parentVar << "->GetRootNode()->AddChildNode(" << var << ");\n";
+                out << "    " << parentVar << "->GetRootNode()->AddChildNode(" << var << ");\n";
             }
             else if (parentTag == "TreeNode") {
-                out << "        " << parentVar << "->AddChildNode(" << var << ");\n";
+                out << "    " << parentVar << "->AddChildNode(" << var << ");\n";
             }
             else if (parentTag == "Combo") {
-                out << "        " << parentVar << "->GetTreeView()->GetRootNode()->AddChildNode(" << var << ");\n";
+                out << "    " << parentVar << "->GetTreeView()->GetRootNode()->AddChildNode(" << var << ");\n";
             }
             else {
-                out << "        " << parentVar << "->AddItem(" << var << ");\n";
+                out << "    " << parentVar << "->AddItem(" << var << ");\n";
             }
         }
         else {
-            out << "        " << parentVar << "->AddItem(" << var << ");\n";
+            out << "    ui::Attach(" << parentVar << ", " << var << ");\n";
         }
     }
     out << "\n";
@@ -561,11 +672,13 @@ static void parseGlobalClasses(const std::string& globalPath,
 int main(int argc, char** argv) {
     std::string outputPath, baseName, globalPath;
     std::vector<std::string> xmlFiles;
+    std::vector<std::string> resourceFolders;
     bool autoEmbed = false;
 
     for (int i = 1; i < argc; i++) {
         std::string a = argv[i];
         if (a == "-g" && i + 1 < argc) { globalPath = argv[++i]; autoEmbed = true; }
+        else if (a == "-r" && i + 1 < argc) { resourceFolders.push_back(argv[++i]); }
         else if (outputPath.empty()) outputPath = a;
         else if (baseName.empty()) baseName = a;
         else xmlFiles.push_back(a);
@@ -575,6 +688,7 @@ int main(int argc, char** argv) {
         std::cerr << "Usage: xml_to_code [-g global.xml] <output.inc> <base_func_name> <xml1> [xml2...]"
                   << std::endl;
         std::cerr << "  -g global.xml : auto-embed images referenced by classes" << std::endl;
+        std::cerr << "  -r folder     : resource folder for the corresponding XML file (repeatable)" << std::endl;
         return 1;
     }
 
@@ -597,15 +711,16 @@ int main(int argc, char** argv) {
         out << "//     " << baseName << stem(x) << "(ui::Window* pWindow)\n";
     }
     out << "//\n";
-    out << "//   Functions ending in 'Window' call AttachBox() automatically.\n";
-    out << "//   Other functions (templates, items) do NOT call AttachBox - the\n";
+     out << "//   Functions ending in 'Window' call ui::Attach(pWindow, p0) automatically.\n";
+    out << "//   Other functions (templates, items) do NOT attach the root - the\n";
     out << "//   caller must add the root control to a parent container.\n";
     out << "///////////////////////////////////////////////////////////////////////////\n\n";
     out << "#include \"dui/dui.h\"\n";
     out << "#include \"dui/Utils/UiBuilder.h\"\n\n";
 
     bool hasWindowFunc = false;
-    for (const auto& xmlFile : xmlFiles) {
+    for (size_t xmlIndex = 0; xmlIndex < xmlFiles.size(); ++xmlIndex) {
+        const auto& xmlFile = xmlFiles[xmlIndex];
         g_varId = 0;    // variable numbering starts at 0 per XML file, ensuring AttachBox(p0) is correct
         pugi::xml_document doc;
         if (!doc.load_file(xmlFile.c_str())) {
@@ -628,6 +743,29 @@ int main(int argc, char** argv) {
         out << "void " << funcName << "(ui::Window* pWindow) {\n";
 
         if (rootTag == "Window" || rootTag == "Global") {
+            if (rootTag == "Window") {
+                std::string resourceFolder;
+                const std::string marker = "/themes/";
+                std::string normalizedXmlFile = xmlFile;
+                for (char& ch : normalizedXmlFile) {
+                    if (ch == '\\') ch = '/';
+                }
+                size_t themeStart = normalizedXmlFile.find(marker);
+                if (themeStart != std::string::npos) {
+                    size_t folderStart = normalizedXmlFile.find('/', themeStart + marker.size());
+                    if (folderStart != std::string::npos) {
+                        folderStart++;
+                        size_t folderEnd = normalizedXmlFile.find('/', folderStart);
+                        if (folderEnd != std::string::npos) {
+                            resourceFolder = normalizedXmlFile.substr(folderStart, folderEnd - folderStart);
+                        }
+                    }
+                }
+                if (xmlIndex < resourceFolders.size()) {
+                    resourceFolder = resourceFolders[xmlIndex];
+                }
+                genWindowAttrs(out, root, resourceFolder);
+            }
             for (auto child : root.children()) {
                 if (child.type() == pugi::node_element) {
                     genNode(out, child, "", "", 1);
@@ -648,7 +786,7 @@ int main(int argc, char** argv) {
             }
         }
         if (rootTag == "Window" && !isTemplate) {
-            out << "    pWindow->AttachBox(p0);\n";
+            out << "    ui::Attach(pWindow, p0);\n";
         }
         out << "}\n\n";
     }
@@ -678,12 +816,12 @@ int main(int argc, char** argv) {
         out << "inline DString ImgToMemFd(const char* b64, const char* tag) {\n";
         out << "#if defined(__linux__)\n";
         out << "    // Linux: anonymous memory file, readable via /proc/self/fd\n";
-        out << "    int fd=memfd_create(tag,MFD_CLOEXEC); if(fd<0)return _T(\"\");\n";
+        out << "    int fd=memfd_create(tag,MFD_CLOEXEC); if(fd<0)return \"\";\n";
         out << "#else\n";
         out << "    // macOS / FreeBSD: memfd_create and /proc/self/fd are Linux-only;\n";
         out << "    // fall back to an anonymous temporary file\n";
         out << "    char tmpl[]=\"/tmp/dui_embedded_XXXXXX\";\n";
-        out << "    int fd=mkstemp(tmpl); if(fd<0)return _T(\"\");\n";
+        out << "    int fd=mkstemp(tmpl); if(fd<0)return \"\";\n";
         out << "#endif\n";
         out << "    unsigned char buf[8192];\n";
         out << "    const unsigned char* s=(const unsigned char*)b64;\n";
@@ -693,10 +831,10 @@ int main(int argc, char** argv) {
         out << "        val=(val<<6)|c;vb+=6;\n";
         out << "        if(vb>=0){buf[di++]=(unsigned char)((val>>vb)&0xFF);vb-=8;}\n";
         out << "    }\n";
-        out << "    if(write(fd,buf,di)!=(ssize_t)di){close(fd);return _T(\"\");}\n";
+        out << "    if(write(fd,buf,di)!=(ssize_t)di){close(fd);return \"\";}\n";
         out << "#if defined(__linux__)\n";
         out << "    char tmp[32];snprintf(tmp,sizeof(tmp),\"%d\",fd);\n";
-        out << "    DString p=_T(\"/proc/self/fd/\");\n";
+        out << "    DString p=\"/proc/self/fd/\";\n";
         out << "    for(char* x=tmp;*x;x++)p+=(DString::value_type)(unsigned char)*x;\n";
         out << "#else\n";
         out << "    DString p;\n";
@@ -758,15 +896,15 @@ int main(int argc, char** argv) {
                     if (fe != std::string::npos) {
                         std::string before = origAttr.substr(0, fp + 6);
                         std::string after = origAttr.substr(fe);
-                        out << "    attrs = _T(\"" << escapeCStr(before) << "\");\n";
+                        out << "    attrs = \"" << escapeCStr(before) << "\";\n";
                         out << "    attrs += GetPath_" << imgVar << "();\n";
-                        out << "    attrs += _T(\"" << escapeCStr(after) << "\");\n";
-                        out << "    pWindow->AddClass(_T(\"" << escapeCStr(cls) << "\"), attrs);\n";
+                        out << "    attrs += \"" << escapeCStr(after) << "\";\n";
+                        out << "    pWindow->AddClass(\"" << escapeCStr(cls) << "\", attrs);\n";
                         continue;
                     }
                 }
-                out << "    pWindow->AddClass(_T(\"" << escapeCStr(cls) << "\"), _T(\""
-                    << escapeCStr(origAttr) << "\"));\n";
+                out << "    pWindow->AddClass(\"" << escapeCStr(cls) << "\", \""
+                    << escapeCStr(origAttr) << "\");\n";
             }
             out << "}\n\n";
         }

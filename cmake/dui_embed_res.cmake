@@ -1,6 +1,5 @@
-# Embed a resources directory into the executable as a custom binary archive
-# (Qt qrc style, no zip container). Generates "embedded_resources.inc" in the
-# build directory; the resources are accessed directly from memory at runtime.
+# Embed resources into the executable. Generates "embedded_resources.inc" in the
+# build directory; embedded resources are accessed directly from memory at runtime.
 #
 # Usage in example CMakeLists.txt:
 #   set(EMBED_RES_DIR "${DUI_ROOT}/resources")
@@ -21,6 +20,23 @@
 
 if(NOT DEFINED EMBED_RES_DIR)
     set(EMBED_RES_DIR "${DUI_ROOT}/resources")
+endif()
+
+# Optional subset of resources to embed. When EMBED_RES_PATHS is set (list of
+# paths, absolute or relative to EMBED_RES_DIR), only those subpaths are
+# embedded; otherwise the whole EMBED_RES_DIR tree is embedded (default).
+# This lets an example package just the common (theme global.xml / public /
+# fonts) resources plus its own project resources, instead of everything.
+set(EMBED_RES_FILTERS)
+if(DEFINED EMBED_RES_PATHS)
+    foreach(_p ${EMBED_RES_PATHS})
+        if(IS_ABSOLUTE "${_p}")
+            file(RELATIVE_PATH _relp "${EMBED_RES_DIR}" "${_p}")
+        else()
+            set(_relp "${_p}")
+        endif()
+        list(APPEND EMBED_RES_FILTERS "${_relp}")
+    endforeach()
 endif()
 
 set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/tools/embed_resources.cpp")
@@ -59,12 +75,24 @@ else()
 endif()
 
 # Collect the resource files as dependencies
-file(GLOB_RECURSE RES_FILES "${EMBED_RES_DIR}/*")
+if(DEFINED EMBED_RES_PATHS)
+    set(RES_FILES)
+    foreach(_p ${EMBED_RES_PATHS})
+        if(IS_ABSOLUTE "${_p}")
+            file(GLOB_RECURSE _sub "${_p}")
+        else()
+            file(GLOB_RECURSE _sub "${EMBED_RES_DIR}/${_p}")
+        endif()
+        list(APPEND RES_FILES ${_sub})
+    endforeach()
+else()
+    file(GLOB_RECURSE RES_FILES "${EMBED_RES_DIR}/*")
+endif()
 
 # Generate the embedded resources .inc
 add_custom_command(
     OUTPUT "${GENERATED_INC}"
-    COMMAND "${TOOL_EXE}" "${EMBED_RES_DIR}" "${GENERATED_INC}"
+    COMMAND "${TOOL_EXE}" "${EMBED_RES_DIR}" "${GENERATED_INC}" ${EMBED_RES_FILTERS}
     DEPENDS "${TOOL_EXE}" ${RES_FILES}
     COMMENT "Embedding resources from ${EMBED_RES_DIR}"
 )

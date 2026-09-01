@@ -127,6 +127,9 @@ void WindowImplBase::BindCaptionButtons_MacOS()
     if (IsUseSystemCaption() || (GetRoot() == nullptr)) {
         return;
     }
+    if (NativeWnd() != nullptr && NativeWnd()->IsPopupWindow()) {
+        return;
+    }
     if (m_pMacTrafficLights != nullptr) {
         //Already applied (called from OnInitLayout and/or OnInitWindow).
         return;

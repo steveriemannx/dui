@@ -182,8 +182,18 @@ bool XmlBox::LoadXmlData(const FilePath& xmlPath)
             m_pShadow = std::make_unique<Shadow>(GetWindow());
             m_pShadow->SetEnableShadowSnap(false);
             m_pShadow->SetEnableClickThroughWindow(false);
+            // Normalize shadow type for this platform
+            Shadow::ShadowType supportedType =
+                Shadow::GetSupportedShadowType(GetWindow(), nShadowType);
+            if (supportedType != nShadowType) {
+                nShadowType = supportedType;
+            }
             m_pShadow->SetShadowType(nShadowType);
             pSubBox = m_pShadow->AttachShadow(pSubBox);
+            // System shadow types require a non-layered window (OS draws the shadow)
+            if (Shadow::IsSystemShadowType(nShadowType)) {
+                GetWindow()->SetLayeredWindow(false, false);
+            }
         }
 
         AddItem(pSubBox);
@@ -205,14 +215,14 @@ bool XmlBox::ReadXmlFileData(const FilePath& xmlInputPath, const FilePath& windo
     xmlOutputPath.Clear();
     xmlResPath.Clear();
     const FilePath xmlFilePath(xmlInputPath);
-    if (xmlFilePath.IsRelativePath() && GlobalManager::Instance().Zip().IsUseZip()) {
+    if (xmlFilePath.IsRelativePath() && GlobalManager::Instance().MemoryResources().IsOpen()) {
         bool bFoundXmlFile = false;
         FilePath sFile;
         if (!windowResPath.IsEmpty()) {
             //Search in the window directory
             sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), windowResPath);
             sFile = FilePathUtil::JoinFilePath(sFile, xmlFilePath);
-            if (GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+            if (GlobalManager::Instance().MemoryResources().IsDataExist(sFile)) {
                 //Successfully found in the window resource directory
                 bFoundXmlFile = true;
                 xmlResPath = windowResPath;
@@ -222,7 +232,7 @@ bool XmlBox::ReadXmlFileData(const FilePath& xmlInputPath, const FilePath& windo
             //Search in the configured resource path
             sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), m_resPath);
             sFile = FilePathUtil::JoinFilePath(sFile, xmlFilePath);
-            if (GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+            if (GlobalManager::Instance().MemoryResources().IsDataExist(sFile)) {
                 //Successfully found in the window resource directory
                 bFoundXmlFile = true;
                 xmlResPath = m_resPath;
@@ -230,13 +240,13 @@ bool XmlBox::ReadXmlFileData(const FilePath& xmlInputPath, const FilePath& windo
         }
         if (!bFoundXmlFile) {
             sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
-            if (GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+            if (GlobalManager::Instance().MemoryResources().IsDataExist(sFile)) {
                 //Successfully found in the resource root directory
                 bFoundXmlFile = true;
                 xmlResPath = GetFirstDirectory(xmlFilePath);
             }
         }        
-        if (bFoundXmlFile && GlobalManager::Instance().Zip().GetZipData(sFile, xmlFileData) && !xmlFileData.empty()) {
+        if (bFoundXmlFile && GlobalManager::Instance().MemoryResources().GetData(sFile, xmlFileData) && !xmlFileData.empty()) {
             //Load it as XML data
             xmlOutputPath = sFile;
             return true;

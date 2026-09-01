@@ -214,6 +214,18 @@ bool MessageLoop_MacOS::CheckInitMacOS()
             ui::Menu::CloseSubmenusOutsidePointer();
             return event;
         }];
+        static id s_menuClickMonitor = nil;
+        s_menuClickMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown |
+                                                                              NSEventMaskRightMouseDown |
+                                                                              NSEventMaskOtherMouseDown)
+                                                                  handler:^NSEvent* (NSEvent* event) {
+            //A click outside a menu must dismiss the complete menu chain
+            //before the target control processes the click.
+            if (!ui::Menu::IsOpenMenuWindow((__bridge void*)event.window)) {
+                ui::Menu::CloseAllMenus();
+            }
+            return event;
+        }];
     }
     s_bInitialized = true;
     return true;

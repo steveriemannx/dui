@@ -123,7 +123,7 @@ private:
      */
     int32_t GetCefMouseModifiers(const EventArgs& msg) const;
 
-#if defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND) || defined (DUI_BUILD_FOR_MACOS)
     /** Forward keyboard-related messages to BrowserHost
     */
     void SendKeyEvent(const EventArgs& msg, cef_key_event_type_t type);
@@ -189,6 +189,21 @@ private:
     // When a control like a combo box pops up on the web page, record the popup position
     CefRect m_rectPopup;
 
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+    /** Register the JS bridge entry used to update the IME caret after a
+     *  composition has been committed (for example after pressing Space).
+     */
+    void RegisterImeCaretUpdater();
+
+    /** Ask the focused page for the real caret rectangle after IME commit.
+     */
+    void QueryImeCaretFromJS();
+
+    /** Handle the caret rectangle reported by the page JS.
+     */
+    void OnUpdateImeCaretFromJS(const std::string& params);
+#endif
+
 private:
     //Properties of the focused element
     CefRect m_focusNodeRect;
@@ -198,6 +213,15 @@ private:
     /** Whether it is currently inside the OnGotFocus callback function
     */
     bool m_bInGotFocusEvent;
+
+    /** Whether an IME composition is active (macOS marked text).
+    */
+    bool m_bImeComposition = false;
+
+    /** The current IME marked text (used to replace the previous composition
+     *  correctly when macOS sends an updated, shorter composition).
+    */
+    DStringW m_imeMarkedText;
 };
 
 } //namespace ui

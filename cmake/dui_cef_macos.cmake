@@ -67,6 +67,9 @@ if(OS_MAC)
 
     # Output path for the main app bundle.
     set(CEF_APP "${CEF_TARGET_OUT_DIR}/${CEF_TARGET}.app")
+    # Unix Makefiles do not always create the bundle's link directory before
+    # invoking the linker for a MACOSX_BUNDLE target.
+    file(MAKE_DIRECTORY "${CEF_APP}/Contents/MacOS")
 
     # Variables referenced from the main Info.plist file.
     set(EXECUTABLE_NAME "${CEF_TARGET}")
@@ -201,9 +204,9 @@ if(OS_MAC)
     set(DUI_RES_TO "${CEF_APP}/Contents/Resources/dui")
     add_custom_command(TARGET ${CEF_TARGET} 
                        POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy_directory "${DUI_RES_FROM}/themes/default/public" "${DUI_RES_TO}/themes/default/public/"
-                       COMMAND ${CMAKE_COMMAND} -E copy_directory "${DUI_RES_FROM}/themes/default/${DUI_THEME_DIR_NAME}" "${DUI_RES_TO}/themes/default/${DUI_THEME_DIR_NAME}"
-                       COMMAND ${CMAKE_COMMAND} -E copy "${DUI_RES_FROM}/themes/default/global.xml" "${DUI_RES_TO}/themes/default/"
+                        COMMAND ${CMAKE_COMMAND} -E copy_directory "${DUI_RES_FROM}/themes/macos26/public" "${DUI_RES_TO}/themes/macos26/public/"
+                        COMMAND ${CMAKE_COMMAND} -E copy_directory "${DUI_RES_FROM}/themes/macos26/${DUI_THEME_DIR_NAME}" "${DUI_RES_TO}/themes/macos26/${DUI_THEME_DIR_NAME}"
+                        COMMAND ${CMAKE_COMMAND} -E copy "${DUI_RES_FROM}/themes/macos26/global.xml" "${DUI_RES_TO}/themes/macos26/"
                        COMMAND ${CMAKE_COMMAND} -E copy_directory "${DUI_RES_FROM}/lang/" "${DUI_RES_TO}/lang/"
                        COMMAND ${CMAKE_COMMAND} -E copy_directory "${DUI_RES_FROM}/fonts/" "${DUI_RES_TO}/fonts/"
                        VERBATIM)
@@ -214,6 +217,17 @@ if(OS_MAC)
     # Remove these prefixes from input file paths.
     set(PREFIXES "mac/")
     COPY_MAC_RESOURCES("${CEF_PROJECT_RESOURCES_SRCS}" "${PREFIXES}" "${CEF_TARGET}" "${DUI_PROJECT_SRC_DIR}" "${CEF_APP}")
+
+    # Remove any CEF runtime cache left inside the bundle by a previous run.
+    # It is user data, not part of the app, and it breaks "codesign --deep".
+    add_custom_command(TARGET ${CEF_TARGET} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E remove_directory "${CEF_APP}/Contents/MacOS/cef_cache"
+                       VERBATIM)
+
+    # Sign after all framework, helper, resource files, and cache cleanup.
+    add_custom_command(TARGET ${CEF_TARGET} POST_BUILD
+                       COMMAND /usr/bin/codesign --force --deep --sign - "${CEF_APP}"
+                       VERBATIM)
 endif()
 
 # In the top-level build: the cef examples link against the built-in libcef_dll_wrapper target,

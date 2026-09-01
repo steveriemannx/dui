@@ -84,10 +84,11 @@ void SetCefWindowPos(CefWindowHandle cefWindow, CefControl* pCefControl)
     }
     UiRect rc = pCefControl->GetPos();
     pCefControl->Dpi().ClientSizeToWindowSize(rc);
-    UiRect rcWindow;
-    pWindow->GetWindowRect(rcWindow);
-    //macOS的窗口顶点坐标是左下角（Windows是左上角）
-    SetNSViewFrame(pCefNSView, (CGFloat)rc.left, (CGFloat)(rcWindow.Height() - rc.bottom), (CGFloat)rc.Width(), (CGFloat)rc.Height());
+    UiRect rcClient;
+    pWindow->GetClientRect(rcClient);
+    // macOS view coordinates use a bottom-left origin; use the client height
+    // because the window height also includes the native title bar.
+    SetNSViewFrame(pCefNSView, (CGFloat)rc.left, (CGFloat)(rcClient.Height() - rc.bottom), (CGFloat)rc.Width(), (CGFloat)rc.Height());
 }
 
 void SetCefWindowVisible(CefWindowHandle cefWindow, CefControl* pCefControl)

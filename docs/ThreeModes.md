@@ -20,7 +20,7 @@ dui supports three UI development modes, and all 18 non-CEF examples provide ver
   ```
 - The generator supports: all control class names (aligned with the WindowBuilder factory table), `<Include src="x.xml" count="n"/>` expansion, `<RichText>` rich text content, and window-level `<Class>/<Font>/<TextColor>/<DefaultFontFamilyNames>` definitions
 - **Events**: `on_click`/`on_select` attributes and `<Event>` tags are skipped; they must be wired up manually in `MainForm::OnInitWindow` (`FindControl` + `AttachClick/AttachSelect`)
-- **Item templates** (files whose root element is `ListBoxItem`/`TreeNode`): not generated; build the Item classes in code following the `examples/genlist` pattern
+- **Item templates** (files whose root element is `ListBoxItem`/`TreeNode`): not generated; build the Item classes in code
 - `GEN_AUTO_EMBED` (image embedding) is available on Linux only (depends on memfd_create); keep it OFF on macOS, where images are read from disk
 
 ## Mode 3: Pure Code Mode
@@ -89,5 +89,5 @@ cmake ..          # Release by default when no build type is specified
 make -j6          # builds everything at once; make basic etc. builds only a single target
 ```
 - The third-party libraries are vendored under `third_party/`; skia and SDL3 are built automatically by the top-level build (`dui_skia` / `dui_sdl` targets) when their libraries are missing
-- Platform notes: WebView2/WebView2Browser are Windows-only; codeui/embedxml/genlist/genui are Linux-only (no macOS entry; genlist depends on memfd)
+- Platform notes: WebView2/WebView2Browser are Windows-only
 - Each example directory is still an independent CMake project and can be built alone with `cmake -S examples/<name> -B build/...`

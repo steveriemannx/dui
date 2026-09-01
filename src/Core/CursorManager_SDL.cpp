@@ -234,9 +234,9 @@ bool CursorManager::SetImageCursor(const Window* pWindow, const FilePath& curIma
     else {
         //Load the cursor
         std::vector<uint8_t> fileData;
-        if (GlobalManager::Instance().Zip().IsUseZip() && GlobalManager::Instance().Zip().IsZipResExist(cursorFullPath)) {
-            //Use the zip package
-            bool bRet = GlobalManager::Instance().Zip().GetZipData(cursorFullPath, fileData);
+        if (GlobalManager::Instance().MemoryResources().IsOpen() && GlobalManager::Instance().MemoryResources().IsDataExist(cursorFullPath)) {
+            //Use embedded resources
+            bool bRet = GlobalManager::Instance().MemoryResources().GetData(cursorFullPath, fileData);
             ASSERT_UNUSED_VARIABLE(bRet);
         }
         else {
