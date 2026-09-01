@@ -1,5 +1,5 @@
-# Register all examples in the top-level build (57 on Linux / 55 on Windows; varies with platform conditions)
-# Three modes: XML mode (21 original examples) + mode 2 XML-to-code generation (*_gen) + mode 3 pure code (*_code)
+# Register all examples in the top-level build (55 on Linux / 53 on Windows; varies with platform conditions)
+# Three modes: XML mode (19 original examples) + mode 2 XML-to-code generation (*_gen) + mode 3 pure code (*_code)
 
 # ---- Compile-time mode selection ----
 # DUI_EXAMPLES_MODE selects which development-mode examples to build, avoiding a full build every time:
@@ -35,8 +35,6 @@ add_subdirectory(controls)
 add_subdirectory(controls_round)
 add_subdirectory(DpiAware)
 add_subdirectory(hello)
-add_subdirectory(hello2)
-add_subdirectory(hello3)
 add_subdirectory(layout)
 add_subdirectory(ListBox)
 add_subdirectory(ListCtrl)
