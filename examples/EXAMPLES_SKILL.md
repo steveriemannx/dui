@@ -323,7 +323,7 @@ On macOS those caption buttons never render (the framework removes them and
 injects the self-drawn traffic lights), so a macOS entry only needs the
 caption bar placeholder. The macOS caption title is also framework-owned and
 off by default: declare the window title with `text="..."` plus
-`macos_caption_title="true"` (styling via `macos_caption_title_style`);
+`show_caption_title="true"` (styling via `caption_title_style`);
 do not place a title Label in the macOS caption bar by hand. Keep names and
 attributes identical across XML / generated / pure-code variants.
 

@@ -48,6 +48,10 @@ protected:
     */
     virtual void OnInitWindow() override;
 
+    /** Keep the standard self-drawn caption title synchronized with Window text.
+     */
+    virtual void OnWindowTextChanged(const DString& strText) override;
+
     /** Completes the initialization of the UI layout; the layout information such as the position and size of each control is initialized, for the subclass to adjust the layout after the UI starts
     */
     virtual void OnInitLayout() override;

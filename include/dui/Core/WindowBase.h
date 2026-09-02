@@ -90,30 +90,36 @@ public:
     */
     bool IsUseSystemCaption() const;
 
-    /** Set whether the caption bar title is rendered (macOS; default false).
-        Titles are opt-in: a window shows its centered title only when
-        macos_caption_title="true" (XML) or SetMacCaptionTitle(true) (code
-        mode) AND a title exists (Window text="..." / window create param),
-        which keeps the caption bar clean like native utility windows by
-        default. When enabled, the title dims to gray while the window is
-        inactive. Only read on macOS; other platforms ignore it.
+    /** Set whether the standard title is rendered in a self-drawn caption bar.
+        The title text comes from Window text (or the window create parameter).
+        Platform themes decide how the title is rendered. The framework
+        injects the title on macOS; Windows themes provide a
+        window_caption_title Label.
     */
-    void SetMacCaptionTitle(bool bMacCaptionTitle);
+    void SetShowCaptionTitle(bool bShowCaptionTitle);
 
-    /** Whether the caption bar title is rendered (macOS; default false).
+    /** Whether the standard self-drawn caption title is rendered.
     */
-    bool IsMacCaptionTitle() const;
+    bool IsShowCaptionTitle() const;
 
     /** Set a per-window caption title style (macOS; empty string keeps the
-        theme class "macos_caption_title"). The value is a dui attribute list,
+        theme class "caption_title"). The value is a dui attribute list,
         e.g. "font='system_bold_16' text_align='left,vcenter'" — applied on
-        top of the theme class. XML attribute: macos_caption_title_style="...".
+        top of the theme class. XML attribute: caption_title_style="...".
     */
-    void SetMacCaptionTitleStyle(const DString& strMacCaptionTitleStyle);
+    void SetCaptionTitleStyle(const DString& strCaptionTitleStyle);
 
     /** Get the per-window caption title style (empty when unset).
     */
-    const DString& GetMacCaptionTitleStyle() const;
+    const DString& GetCaptionTitleStyle() const;
+
+protected:
+    /** Called after the window title changes so derived windows can update
+        their self-drawn title controls.
+    */
+    virtual void OnWindowTextChanged(const DString& strText);
+
+public:
 
     /** Set whether it is a layered window
     * @param [in] bIsLayeredWindow true means set as a layered window, otherwise set as a non-layered window
@@ -1495,13 +1501,11 @@ private:
     //Whether the DragEnter message was sent, to keep DragLeave messages matched
     bool m_bSendDragEnterMsg;
 
-    //Whether the framework renders a caption bar title (macOS; default false).
-    //Opted in per window (macos_caption_title="true" / SetMacCaptionTitle(true));
-    //windows without a title never render one regardless.
-    bool m_bMacCaptionTitle = false;
+    //Whether the standard self-drawn caption title is rendered (default false).
+    bool m_bShowCaptionTitle = false;
 
     //Per-window caption title style (macOS; empty = use the theme class).
-    DString m_strMacCaptionTitleStyle;
+    DString m_strCaptionTitleStyle;
 };
 
 } // namespace ui

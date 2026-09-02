@@ -1,6 +1,7 @@
 #include "dui/Utils/WinImplBase.h"
 #include "dui/Core/WindowBuilder.h"
 #include "dui/Core/Box.h"
+#include "dui/Control/Label.h"
 #include "dui/Utils/FilePath.h"
 
 #ifdef DUI_BUILD_FOR_MACOS
@@ -120,6 +121,13 @@ void WindowImplBase::BindCaptionButtons_Default()
 void WindowImplBase::BindCaptionButtons_Windows()
 {
     BindCaptionButtons_Default();
+    if (!IsUseSystemCaption()) {
+        if (Label* pTitle = dynamic_cast<Label*>(FindControl(DUI_CTR_CAPTION_TITLE))) {
+            const DString strTitle = GetText();
+            pTitle->SetText(IsShowCaptionTitle() ? strTitle : DUI_T(""));
+            pTitle->SetVisible(IsShowCaptionTitle() && !strTitle.empty());
+        }
+    }
 }
 #elif defined(DUI_BUILD_FOR_MACOS)
 void WindowImplBase::BindCaptionButtons_MacOS()
@@ -188,24 +196,24 @@ void WindowImplBase::BindCaptionButtons_MacOS()
 
         //Native macOS behavior (opt-in): the window title is centered in the
         //caption bar and fades to gray when the window is inactive. Titles are
-        //off by default (macos_caption_title="true" opts a window in); the
+        //off by default (show_caption_title="true" opts a window in); the
         //native title bar is hidden (titleVisibility = NSWindowTitleHidden),
         //so we render the title ourselves from the window title. Windows
         //without a title keep a clean caption bar like native utility windows.
         if (m_pMacTitleLabel == nullptr) {
             const DString strTitle = GetText();
-            if (!strTitle.empty() && IsMacCaptionTitle()) {
+            if (!strTitle.empty() && IsShowCaptionTitle()) {
                 Label* pTitle = new Label(this);
-                pTitle->SetName(DUI_T("macos_caption_title"));
+                pTitle->SetName(DUI_CTR_CAPTION_TITLE);
                 pTitle->SetText(strTitle);
-                //Framework defaults; a theme class "macos_caption_title" in
+                //Framework defaults; a theme class "caption_title" in
                 //global.xml overrides them (font/align/width/color).
                 pTitle->ApplyAttributeList(DUI_T("width='stretch' height='stretch' text_align='hcenter,vcenter' font='system_14' normal_text_color='#FF000000' mouse_enabled='false'"));
-                pTitle->SetClass(DUI_T("macos_caption_title"));
-                //Per-window override: Window macos_caption_title_style="..." on
+                pTitle->SetClass(DUI_T("caption_title"));
+                //Per-window override: Window caption_title_style="..." on
                 //top of the theme class (framework defaults < class < window).
-                if (!GetMacCaptionTitleStyle().empty()) {
-                    pTitle->ApplyAttributeList(GetMacCaptionTitleStyle());
+                if (!GetCaptionTitleStyle().empty()) {
+                    pTitle->ApplyAttributeList(GetCaptionTitleStyle());
                 }
                 SetMacTitleActive(true);
                 if (pCaptionBox->AddItemAt(pTitle, 1)) {
@@ -279,6 +287,24 @@ void WindowImplBase::OnInitWindow()
     // derived class's OnInitWindow, so PreInitWindow could not find the caption
     // buttons yet. Bind them now (BindCaptionButtons is idempotent).
     BindCaptionButtons();
+}
+
+void WindowImplBase::OnWindowTextChanged(const DString& strText)
+{
+    BaseClass::OnWindowTextChanged(strText);
+#if defined(DUI_BUILD_FOR_WIN)
+    if (!IsUseSystemCaption()) {
+        if (Label* pTitle = dynamic_cast<Label*>(FindControl(DUI_CTR_CAPTION_TITLE))) {
+            pTitle->SetText(IsShowCaptionTitle() ? strText : DUI_T(""));
+            pTitle->SetVisible(IsShowCaptionTitle() && !strText.empty());
+        }
+    }
+#elif defined(DUI_BUILD_FOR_MACOS)
+    if (m_pMacTitleLabel != nullptr) {
+        static_cast<Label*>(m_pMacTitleLabel)->SetText(strText);
+        m_pMacTitleLabel->SetVisible(IsShowCaptionTitle() && !strText.empty());
+    }
+#endif
 }
 
 void WindowImplBase::OnInitLayout()
@@ -541,12 +567,12 @@ void WindowImplBase::SetMacTitleActive(bool bActive)
 {
     if (m_pMacTitleLabel != nullptr) {
         //Native macOS dims the caption title when the window is inactive; the
-        //color names come from global.xml (macos_caption_title_color /
-        //macos_caption_title_inactive_color) and may be restyled by a theme.
+        //color names come from global.xml (caption_title_color /
+        //caption_title_inactive_color) and may be restyled by a theme.
         //m_pMacTitleLabel is a ui::Label (set in BindCaptionButtons_MacOS).
         ui::Label* pTitle = static_cast<ui::Label*>(m_pMacTitleLabel);
         pTitle->SetStateTextColor(kControlStateNormal,
-            bActive ? DUI_T("macos_caption_title_color") : DUI_T("macos_caption_title_inactive_color"));
+            bActive ? DUI_T("caption_title_color") : DUI_T("caption_title_inactive_color"));
         pTitle->Invalidate();
     }
 }

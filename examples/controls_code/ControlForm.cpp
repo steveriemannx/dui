@@ -67,7 +67,7 @@ void ControlForm::BindEvents()
 {
 #ifdef DUI_BUILD_FOR_SDL
     //Display basic SDL information
-    ui::Label* pTitle = ui::Find<ui::Label>(this, DUI_T("window_title"));
+    ui::Label* pTitle = ui::Find<ui::Label>(this, DUI_CTR_CAPTION_TITLE);
     if (pTitle != nullptr) {
         DString title = pTitle->GetText();
         DString driverName = GetVideoDriverName();
@@ -875,7 +875,7 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
     auto* p2 = ui::Create<ui::Control>(pWindow, {{DUI_T("width"), DUI_T("18")}, {DUI_T("height"), DUI_T("18")}, {DUI_T("bkimage"), DUI_T("public/caption/logo.svg")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8")}});
     ui::Attach(p1, p2);
 
-    auto* p3 = ui::Create<ui::Label>(pWindow, {{DUI_T("name"), DUI_T("window_title")}, {DUI_T("text"), DUI_T("Controls")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+    auto* p3 = ui::Create<ui::Label>(pWindow, {{DUI_T("name"), DUI_CTR_CAPTION_TITLE}, {DUI_T("text"), DUI_T("Controls")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
     ui::Attach(p1, p3);
 
     auto* p4 = ui::Create<ui::Control>(pWindow, {{DUI_T("mouse_enabled"), DUI_T("false")}});

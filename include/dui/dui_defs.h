@@ -139,6 +139,7 @@ namespace ui
 
     //Window title bar buttons: names of maximize, minimize, close, restore and fullscreen buttons, hard-coded
     #define  DUI_CTR_CAPTION_BAR                     (DUI_T("window_caption_bar"))
+    #define  DUI_CTR_CAPTION_TITLE                   (DUI_T("window_caption_title"))
     #define  DUI_CTR_BUTTON_CLOSE                    (DUI_T("closebtn"))
     #define  DUI_CTR_BUTTON_MIN                      (DUI_T("minbtn"))
     #define  DUI_CTR_BUTTON_MAX                      (DUI_T("maxbtn"))
@@ -528,5 +529,4 @@ namespace ui
 }// namespace ui
 
 #endif //DUI_DEFS_H_
-
 

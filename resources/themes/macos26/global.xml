@@ -4,7 +4,7 @@
     <!-- Font note: "Microsoft YaHei", "SimSun" are used on Windows -->
     <!-- Font note: "PingFang SC" is used on macOS -->
     <!-- Font note: "Noto Sans CJK SC" is used on Zhongke Fangde systems -->
-    <DefaultFontFamilyNames value="Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC"/>
+    <DefaultFontFamilyNames value="Microsoft YaHei UI,Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC"/>
     
     <!--All fonts: default font size is No. 5-->
     <Font id="system_12" name="system" size="12"/>
@@ -94,13 +94,13 @@
     <TextColor name="bk_wnd_darkcolor" value="#ffffffff"/>
     <TextColor name="bk_wnd_lightcolor" value="#ffffffff"/>
     <!-- Caption bar window title colors (framework-injected, macOS only) -->
-    <TextColor name="macos_caption_title_color" value="#FF000000"/>
-    <TextColor name="macos_caption_title_inactive_color" value="#FF8E99A6"/>
+    <TextColor name="caption_title_color" value="#FF000000"/>
+    <TextColor name="caption_title_inactive_color" value="#FF8E99A6"/>
 
     <!-- macOS caption bar window title (framework-injected; optional: themes
          may override the title style by editing this class in their global.xml;
          removing it keeps the framework defaults) -->
-    <Class name="macos_caption_title" font="system_bold_14" text_align="hcenter,vcenter" width="stretch" height="stretch" normal_text_color="macos_caption_title_color"/>
+    <Class name="caption_title" font="system_bold_14" text_align="hcenter,vcenter" width="stretch" height="stretch" normal_text_color="caption_title_color"/>
     <TextColor name="bk_menuitem_hovered" value="#ffe1e6eb"/>
     <TextColor name="bk_menuitem_selected" value="#ffced4db"/>
     <TextColor name="bk_listitem_hovered" value="#fff0f2f5"/>
