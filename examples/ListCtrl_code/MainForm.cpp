@@ -42,6 +42,10 @@ void MainForm::BuildUI()
     ui::Attach(pRoot, pCaption);
     auto* pCaptionSpacer = ui::Create<ui::Control>(this, {{DUI_T("mouse_enabled"), DUI_T("false")}});
     ui::Attach(pCaption, pCaptionSpacer);
+#if defined(DUI_BUILD_FOR_WIN)
+    auto* pTitle = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("ListCtrl")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("text_align"), DUI_T("left,vcenter")}, {DUI_T("text_padding"), DUI_T("8,0,8,0")}, {DUI_T("mouse_enabled"), DUI_T("false")} });
+    ui::Attach(pCaption, pTitle);
+#endif
     auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_fullscreen_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("fullscreenbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Fullscreen, press ESC to exit fullscreen")}});
     ui::Attach(pCaption, pFullscreenBtn);
     auto* pMinBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Minimize")}});
