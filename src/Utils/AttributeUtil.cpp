@@ -354,12 +354,10 @@ void AttributeUtil::ParseWindowSize(const Window* pWindow, const DString::value_
     if (cy < 0) {
         cy = 0;
     }
-    if (needScaleCX && (pWindow != nullptr)) {
-        pWindow->Dpi().ScaleWindowSize(cx);
-    }
-    if (needScaleCY && (pWindow != nullptr)) {
-        pWindow->Dpi().ScaleWindowSize(cy);
-    }
+    //Window sizes are in physical pixels on all platforms: fixed values are used
+    //as-is (never scaled by display DPI), and percentages are resolved against the
+    //physical work rect above. This keeps XML/percent/SetWindowSize semantics uniform,
+    //and matches macOS where the DPI scale round-trip is a no-op.
     if (!rcWork.IsEmpty()) {
         if (cx > rcWork.Width()) {
             cx = rcWork.Width();

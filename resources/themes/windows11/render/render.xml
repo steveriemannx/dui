@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="85%,95%" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" caption="0,0,0,32" shadow_attached="true" size_box="4,4,4,4" text="Render Engine Test Program">
+<Window size="85%,95%" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" caption="0,0,0,32" shadow_attached="true" shadow_snap="true" shadow_type="system_default" shadow_border_size="0" size_box="4,4,4,4" text="Render Engine Test Program">
     <!-- All controls in the entire window are placed in this VBox container -->  
     <VBox bkcolor="bk_wnd_darkcolor">
         <!-- Title bar area -->  

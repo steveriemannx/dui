@@ -11,6 +11,16 @@ if(DUI_ENABLE_CEF)
         # Path to the cef library (.a/.so shared library path)
         link_directories("${DUI_CEF_LIB_PATH}")
     endif()
+
+    # Stage the CEF runtime (libcef.so, icudtl.dat, locales, ...) next to the
+    # executable, mirroring the Windows layout: "<exe_dir>/cef_binary".
+    # CefManager looks there at runtime, so the examples work regardless of the
+    # build directory name (no manual copy).
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory
+                               "${DUI_CEF_SRC_ROOT_DIR}/Release"
+                               "$<TARGET_FILE_DIR:${PROJECT_NAME}>/cef_binary"
+                       COMMENT "Copying CEF runtime to the output directory (cef_binary/)")
 endif()
 
 # Remove *.mm

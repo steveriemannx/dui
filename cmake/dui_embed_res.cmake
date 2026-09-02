@@ -74,14 +74,23 @@ else()
     )
 endif()
 
-# Collect the resource files as dependencies
+# Collect the resource files as dependencies.
+# EMBED_RES_PATHS entries are either single files (e.g. themes/windows11/global.xml)
+# or directories (e.g. themes/windows11/public); a plain GLOB_RECURSE over a
+# directory path matches nothing, so resolve the directory contents recursively
+# (otherwise editing a file inside such a folder never re-runs the embed step).
 if(DEFINED EMBED_RES_PATHS)
     set(RES_FILES)
     foreach(_p ${EMBED_RES_PATHS})
         if(IS_ABSOLUTE "${_p}")
-            file(GLOB_RECURSE _sub "${_p}")
+            set(_match "${_p}")
         else()
-            file(GLOB_RECURSE _sub "${EMBED_RES_DIR}/${_p}")
+            set(_match "${EMBED_RES_DIR}/${_p}")
+        endif()
+        if(IS_DIRECTORY "${_match}")
+            file(GLOB_RECURSE _sub "${_match}/*")
+        else()
+            set(_sub "${_match}")
         endif()
         list(APPEND RES_FILES ${_sub})
     endforeach()

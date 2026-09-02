@@ -1,4 +1,4 @@
-<Window size="90%,80%" size_box="4,4,4,4" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" caption="0,0,0,32" shadow_attached="true" text="RichEdit Control Test Program">
+<Window size="90%,80%" size_box="4,4,4,4" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" caption="0,0,0,32" shadow_attached="true" shadow_snap="true" shadow_type="system_default" shadow_border_size="0" text="RichEdit Control Test Program">
     <!-- Class definitions under this window --> 
     <Font id="btn_font_bold_14" name="Elephant" size="14" bold="true"/>
     <Font id="btn_font_italic_14" name="Elephant" size="14" bold="true" italic="true"/>

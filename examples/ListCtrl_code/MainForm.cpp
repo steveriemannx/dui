@@ -40,12 +40,14 @@ void MainForm::BuildUI()
     // ---- Title bar ----
     auto* pCaption = ui::Create<ui::HBox>(this, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}});
     ui::Attach(pRoot, pCaption);
+    // Title bar: display area at the top-left of the window (cross-platform)
+    auto* pCaptionLeft = ui::Create<ui::HBox>(this, {{DUI_T("margin"), DUI_T("0,0,30,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+    pCaption->AddItem(pCaptionLeft);
+    auto* pTitle = ui::Create<ui::Label>(this, {{DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+    pTitle->SetText(DUI_T("ListCtrl"));
+    pCaptionLeft->AddItem(pTitle);
     auto* pCaptionSpacer = ui::Create<ui::Control>(this, {{DUI_T("mouse_enabled"), DUI_T("false")}});
     ui::Attach(pCaption, pCaptionSpacer);
-#if defined(DUI_BUILD_FOR_WIN)
-    auto* pTitle = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("ListCtrl")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("text_align"), DUI_T("left,vcenter")}, {DUI_T("text_padding"), DUI_T("8,0,8,0")}, {DUI_T("mouse_enabled"), DUI_T("false")} });
-    ui::Attach(pCaption, pTitle);
-#endif
     auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_fullscreen_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("fullscreenbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Fullscreen, press ESC to exit fullscreen")}});
     ui::Attach(pCaption, pFullscreenBtn);
     auto* pMinBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Minimize")}});

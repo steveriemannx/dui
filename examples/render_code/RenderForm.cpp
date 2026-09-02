@@ -302,6 +302,22 @@ void BuildUIFromXmlRender(ui::Window* pWindow) {
     ui::Attach(p1, p5);
 
     auto* p6 = ui::Create<ui::HBox>(pWindow, {{DUI_T("margin"), DUI_T("0,0,0,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("height"), DUI_T("36")}});
+    // Window caption buttons (closebtn/minbtn/maxbtn/restorebtn) are wired automatically via their names.
+    auto* pMinBtn = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Minimize")}});
+    ui::Attach(p6, pMinBtn);
+
+    auto* pMaxBox = ui::Create<ui::Box>(pWindow, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
+    ui::Attach(p6, pMaxBox);
+
+    auto* pMaxBtn = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_max_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("name"), DUI_T("maxbtn")}, {DUI_T("tooltip_text"), DUI_T("Maximize")}});
+    ui::Attach(pMaxBox, pMaxBtn);
+
+    auto* pRestoreBtn = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_restore_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("name"), DUI_T("restorebtn")}, {DUI_T("visible"), DUI_T("false")}, {DUI_T("tooltip_text"), DUI_T("Restore")}});
+    ui::Attach(pMaxBox, pRestoreBtn);
+
+    auto* pCloseBtn = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_close_11")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("closebtn")}, {DUI_T("margin"), DUI_T("0,0,0,2")}, {DUI_T("tooltip_text"), DUI_T("Close")}});
+    ui::Attach(p6, pCloseBtn);
+
     ui::Attach(p1, p6);
 
     ui::Attach(p0, p1);
