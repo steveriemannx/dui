@@ -1,5 +1,10 @@
 # dui - Cross-Platform C++ UI Library
 
+## Commit Convention
+- Commit messages end with the co-author trailer exactly as:
+  `Co-Authored-By: Claude <noreply@anthropic.com>` (the name is "Claude",
+  never "Claude Code").
+
 ## Project Overview
 dui is a cross-platform C++ UI framework based on the Skia rendering engine, using a development model of XML-described UI layout + C++ control logic.
 - **Supported platforms**: Windows (7/10/11+), Linux, macOS (12+), FreeBSD

@@ -192,6 +192,13 @@ private:
      */
     class MacTrafficLights* m_pMacTrafficLights = nullptr;
 
+    /** The self-drawn caption bar window title (macOS only; nullptr when the
+     *  window has no title). Created by BindCaptionButtons_MacOS; always a
+     *  ui::Label (LabelTemplate<Control>), typed as Control* to stay light
+     *  in the header (Label is a typedef in dui/Control/Label.h).
+     */
+    Control* m_pMacTitleLabel = nullptr;
+
 protected:
     /** Track the window activation state so the self-drawn traffic lights
      *  gray out like the native macOS buttons when the window is inactive.
@@ -199,6 +206,11 @@ protected:
      */
     LRESULT OnSetFocusMsg(WindowBase* pLostFocusWindow, const NativeMsg& nativeMsg, bool& bHandled) override;
     LRESULT OnKillFocusMsg(WindowBase* pSetFocusWindow, const NativeMsg& nativeMsg, bool& bHandled) override;
+
+    /** Native macOS dims the caption title when the window is inactive;
+     *  keep the self-drawn title in sync with the activation state.
+     */
+    void SetMacTitleActive(bool bActive);
 #endif
 };
 }
