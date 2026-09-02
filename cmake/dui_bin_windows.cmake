@@ -145,6 +145,15 @@ endif()
 # link against it), so this only affects the examples' own compilation.
 if(DUI_ENABLE_CEF)
     target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_CEF=1)
+
+    # Stage the CEF runtime (libcef.dll, icudtl.dat, locales, ...) next to the
+    # executable. CefManager_Windows looks for "<exe_dir>/cef_binary"; this makes
+    # cef/CefBrowser examples run from any build directory name (no manual copy).
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory
+                               "${DUI_CEF_SRC_ROOT_DIR}/Release"
+                               "$<TARGET_FILE_DIR:${PROJECT_NAME}>/cef_binary"
+                       COMMENT "Copying CEF runtime to the output directory (cef_binary/)")
 else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_CEF=0)
 endif()
