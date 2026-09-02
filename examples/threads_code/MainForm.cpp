@@ -24,7 +24,14 @@ void MainForm::OnCloseWindow()
 
 void MainForm::SetupWindow()
 {
+    // The content is laid out at the OS display scale (e.g. 125%) on Windows,
+    // so the window must be that much larger to keep everything visible;
+    // other platforms lay out 1:1 and keep the original size.
+#if defined(DUI_BUILD_FOR_WIN)
+    SetWindowSize(1250, 875);
+#else
     SetWindowSize(1000, 700);
+#endif
     CenterWindow();
 
     // Use the OS-provided system shadow on all platforms.

@@ -1,8 +1,41 @@
 #include "MainForm.h"
 #include "dui/Utils/UiBuilder.h"
+#include <fstream>
 
 void MainForm::OnInitWindow()
 {
+    // TEMP DEBUG: dump font manager state
+    {
+        ui::IRenderFactory* pRenderFactory = ui::GlobalManager::Instance().GetRenderFactory();
+        if (pRenderFactory != nullptr) {
+            ui::IFontMgr* pFontMgr = pRenderFactory->GetFontMgr();
+            if (pFontMgr != nullptr) {
+                std::ofstream ofs("D:/projects-main/dui/font_dump.txt");
+                ofs << "count=" << pFontMgr->GetFontCount() << "\n";
+                uint32_t nCount = pFontMgr->GetFontCount();
+                for (uint32_t i = 0; i < nCount && i < 4000; ++i) {
+                    DString name;
+                    pFontMgr->GetFontName(i, name);
+                    std::string utf8 = ui::StringConvert::TToUTF8(name);
+                    if (utf8.find("YaHei") != std::string::npos || utf8.find("Segoe") != std::string::npos ||
+                        utf8.find("Sim") != std::string::npos || utf8.find("Noto") != std::string::npos ||
+                        utf8.find("PingFang") != std::string::npos || utf8.find("Roboto") != std::string::npos ||
+                        i < 40) {
+                        ofs << "fam[" << i << "]=" << utf8 << "\n";
+                    }
+                }
+                {
+                    DString s1 = ui::StringConvert::UTF8ToT("Microsoft YaHei");
+                    DString s2 = ui::StringConvert::UTF8ToT("Segoe UI Variable");
+                    DString s3 = ui::StringConvert::UTF8ToT("Microsoft YaHei UI");
+                    ofs << "HasFontName(Microsoft YaHei)=" << (int)pFontMgr->HasFontName(s1) << "\n";
+                    ofs << "HasFontName(Segoe UI Variable)=" << (int)pFontMgr->HasFontName(s2) << "\n";
+                    ofs << "HasFontName(Microsoft YaHei UI)=" << (int)pFontMgr->HasFontName(s3) << "\n";
+                }
+                ofs.close();
+            }
+        }
+    }
     BindEvents();
     BaseClass::OnInitWindow();
 }

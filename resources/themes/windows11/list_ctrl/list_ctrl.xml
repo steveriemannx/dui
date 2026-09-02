@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="85%,85%" min_size="80,50" use_system_caption="true" caption="0,0,0,32" shadow_attached="true" size_box="4,4,4,4">
+<Window size="85%,85%" min_size="80,50" use_system_caption="false" caption="0,0,0,36" shadow_attached="true" shadow_snap="true" size_box="4,4,4,4" shadow_type="system_default" shadow_border_size="0">
     <VBox bkcolor="bk_wnd_darkcolor" visible="true">    
         <!-- Title bar area -->
-        <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
+        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+            <!-- Title bar: display area at the top-left of the window -->
+            <HBox margin="0,0,30,0" valign="center" width="auto" height="auto" mouse_enabled="false">
+                <Label text="ListCtrl" valign="center" margin="8,0,0,0" mouse_enabled="false"/>
+            </HBox>
             <Control mouse_enabled="false"/>
-            <Button class="btn_wnd_fullscreen_11" height="32" width="46" name="fullscreenbtn" margin="0,0,0,0" tooltip_text="Fullscreen, press ESC to exit fullscreen"/>
-            <Button class="btn_wnd_min_11" height="32" width="46" name="minbtn" margin="0,0,0,0" tooltip_text="Minimize"/>
-            <Box height="stretch" width="46" margin="0,0,0,0">
+            <Button class="btn_wnd_fullscreen_11" height="32" width="40" name="fullscreenbtn" margin="0,2,0,2" tooltip_text="Fullscreen, press ESC to exit fullscreen"/>
+            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+            <Box height="stretch" width="40" margin="0,2,0,2">
                 <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
                 <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
             </Box>
-            <Button class="btn_wnd_close_11" height="stretch" width="46" name="closebtn" margin="0,0,0,0" tooltip_text="Close"/>
+            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
         </HBox>
         
         <!-- Work area: everything outside the title bar goes into this large Box area -->
         <VBox>
             <HBox height="auto">
                 <Label text="Table Type:" valign="center" margin="2,0,2,0"/>
-                <Combo class="combo" name="list_ctrl_type_combo" combo_type="drop_list" dropbox_size="0,300" combo_icon_class="" shadow_type="system_default" height="26" width="80" margin="0,0,0,1" valign="center">
+                <Combo class="combo" name="list_ctrl_type_combo" combo_type="drop_list" dropbox_size="0,300" shadow_type="system_default" height="26" width="80" margin="0,0,0,1" valign="center">
                     <TreeNode class="tree_node" padding="4" text="Report" user_dataid="0"/>
                     <TreeNode class="tree_node" padding="4" text="Icon" user_dataid="1"/>
                     <TreeNode class="tree_node" padding="4" text="List" user_dataid="2"/>
@@ -53,7 +57,7 @@
                     
                     <HBox minheight="18" bkcolor="bk_wnd_darkcolor" height="auto" margin="4,0,4,0">
                         <Label text="Column Controls:" valign="center" margin="2,0,2,0"/>                
-                        <Combo class="combo" name="column_combo" combo_type="drop_list" dropbox_size="0,300" combo_icon_class="" shadow_type="system_default" height="26" width="80" margin="0,0,0,1" valign="center"/>
+                        <Combo class="combo" name="column_combo" combo_type="drop_list" dropbox_size="0,300" shadow_type="system_default" height="26" width="80" margin="0,0,0,1" valign="center"/>
                         <Line vertical="true" margin="8,4,4,4" width="2"/>
                         <CheckBox class="checkbox_1" name="checkbox_column_show" text="Show This Column" margin="4,0,0,0" valign="center"/>
                         <CheckBox class="checkbox_1" name="checkbox_column_width" text="Resizable Width" margin="4,0,0,0" valign="center"/>

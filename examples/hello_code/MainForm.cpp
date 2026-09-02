@@ -41,6 +41,24 @@ void MainForm::BuildUI()
     });
     ui::Attach(pRoot, pCaption);
 
+    // Title bar: display area at the top-left of the window (cross-platform)
+    auto* pCaptionLeft = ui::Create<ui::HBox>(this, {
+        {DUI_T("margin"), DUI_T("0,0,30,0")},
+        {DUI_T("valign"), DUI_T("center")},
+        {DUI_T("width"), DUI_T("auto")},
+        {DUI_T("height"), DUI_T("auto")},
+        {DUI_T("mouse_enabled"), DUI_T("false")}
+    });
+    ui::Attach(pCaption, pCaptionLeft);
+
+    auto* pTitle = ui::Create<ui::Label>(this, {
+        {DUI_T("valign"), DUI_T("center")},
+        {DUI_T("margin"), DUI_T("8,0,0,0")},
+        {DUI_T("mouse_enabled"), DUI_T("false")}
+    });
+    pTitle->SetText(DUI_T("Hello"));
+    pCaptionLeft->AddItem(pTitle);
+
     auto* pSpacer = ui::Create<ui::Control>(this, {
         {DUI_T("mouse_enabled"), DUI_T("false")}
     });

@@ -9,8 +9,6 @@
             <Control width="18" height="18" bkimage="public/caption/logo.svg" valign="center" margin="8"/>
             <Label name="window_title" text="Combo - Square Corners" valign="center" margin="8" mouse_enabled="false"/>
             <Control mouse_enabled="false"/>
-            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,8,2" tooltip_text="Close"/>
         </HBox>
 
         <!-- Work area -->

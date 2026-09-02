@@ -9,17 +9,8 @@
                 <Control width="18" height="18" bkimage="public/caption/logo.svg" valign="center" margin="8,0,0,0"/>
                 <Label text="Container Layout Test" valign="center" margin="8,0,0,0" mouse_enabled="false"/>
             </HBox>
-            <Control mouse_enabled="false"/>            
-            <!-- Title bar: window control area on the right; minimize, maximize, restore, and close buttons -->
-            <HBox margin="0,0,0,0" valign="center" width="auto" height="36">
-                <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-                <Box height="stretch" width="40" margin="0,2,0,2">
-                    <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
-                    <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
-                </Box>
-                <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
-            </HBox>
-        </HBox> <!-- End of title bar area --> 
+            <Control mouse_enabled="false"/>
+        </HBox> <!-- End of title bar area -->
         
         <!-- Display area --> 
         <VBox width="stretch" height="stretch">

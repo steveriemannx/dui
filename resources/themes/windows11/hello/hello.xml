@@ -2,10 +2,14 @@
 <Window size="800,600" min_size="240,100"
         caption="0,0,0,36" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36"
         shadow_type="system_default" shadow_attached="true" shadow_snap="true"
-        alpha="255" size_box="4,4,4,4" icon="public/caption/logo.ico">
+        alpha="255" size_box="4,4,4,4" size_contain_shadow="true" shadow_border_size="0" icon="public/caption/logo.ico">
     <VBox bkcolor="bk_wnd_darkcolor" visible="true">
         <!-- Title bar area -->
         <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+            <!-- Title bar: display area at the top-left of the window -->
+            <HBox margin="0,0,30,0" valign="center" width="auto" height="auto" mouse_enabled="false">
+                <Label text="Hello" valign="center" margin="8,0,0,0" mouse_enabled="false"/>
+            </HBox>
             <Control mouse_enabled="false"/>
             <Button class="btn_wnd_fullscreen_11" height="32" width="40" name="fullscreenbtn" margin="0,2,0,2" tooltip_text="Fullscreen, press ESC to exit fullscreen"/>
             <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>

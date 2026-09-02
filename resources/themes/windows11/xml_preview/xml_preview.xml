@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="75%,85%" min_size="300,200" 
-        caption="0,0,0,32" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" 
-        shadow_type="system_default" shadow_attached="true" shadow_snap="true" layered_window="true" shadow_border_size="0"
-        size_box="4,4,4,4" icon="public/caption/logo.ico">
+<Window size="75%,75%" caption="0,0,0,36" use_system_caption="false" shadow_attached="true" shadow_snap="true" min_size="750,500" size_box="4,4,4,4" shadow_type="system_default" shadow_border_size="0">
     <VBox bkcolor="bk_wnd_darkcolor" visible="true">    
         <!-- Title bar area -->  
-        <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
+        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
             <!-- Title bar: display area at the top-left of the window -->  
             <HBox margin="0,0,30,0" valign="center" width="auto" height="auto" mouse_enabled="false">
                 <Label text="XML File UI Preview Test" valign="center" margin="8,0,0,0" mouse_enabled="false"/>
