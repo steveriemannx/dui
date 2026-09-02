@@ -9,6 +9,8 @@
 | icon              | Title bar  |         | string | SetWindowIcon           |Sets the icon file path of the window; supports the ico format |
 | text              | Title bar  |         | string | SetText                 |The window title string |
 | textid            | Title bar  |         | string | SetTextId               |The ID of the window title string; the ID is specified in the multilingual file, e.g. (STRID_MIANWINDOW_TITLE) |
+| macos_caption_title | Title bar| false   | bool   | SetMacCaptionTitle      |macOS only: renders the window title centered inside the self-drawn caption bar (the native titlebar is hidden, so the title would never appear otherwise). The title dims to gray while the window is inactive; ignored on other platforms. Off by default: keep the caption bar clean, or the window keeps a plain caption bar. Defaults and per-window style are layered, see the platform note below. |
+| macos_caption_title_style | Title bar| | string | SetMacCaptionTitleStyle |macOS only: per-window style of the caption title, a dui attribute list applied on top of the theme class "macos_caption_title", e.g. macos_caption_title_style="font='system_bold_16' text_align='left,vcenter'" |
 | drag_drop         | Drag & drop    | true    | bool   | SetEnableDragDrop       |Sets whether drag-and-drop operations are allowed (dragging in files and dragging in text)<br>When drag_drop="true", the controls in this window support dragging in files and text<br>When drag_drop="false", the controls in this window do not support dragging in files and text |
 | shadow_attached   | Window shadow| true    | bool   | SetShadowAttached       |Whether the window has a shadow effect attached, e.g. (true) |
 | shadow_type       | Window shadow|         | string | SetShadowType           |Sets the shadow type of the window:<br> "default": default shadow <br> "big": shadow (big), square corners, with border (suitable for normal windows)<br> "big_round": shadow (big), rounded corners, with border (suitable for normal windows)<br> "small": shadow (small), square corners, with border (suitable for normal windows)<br> "small_round": shadow (small), rounded corners, with border (suitable for normal windows)<br> "menu": shadow (small), square corners, with border (suitable for pop-up windows, such as menus)<br> "menu_round": shadow (small), rounded corners, with border (suitable for pop-up windows, such as menus)<br> "none": no shadow, square corners, with border<br> "none_round": no shadow, rounded corners, with border |
@@ -38,3 +40,26 @@ Usage example:
         shadow_attached="true" layered_window="true" alpha="255" size_box="4,4,4,4">
 </Window>
 ```
+
+## Platform note (title bar / themes)
+
+Theme trees are **self-contained per platform** and never fall back to each other:
+`windows11`, `macos26` (and future per-platform roots) each carry the complete
+layouts and resources for that platform; a missing resource is reported, not
+silently resolved from `themes/default`. The `themes/default` tree is used by
+platforms without a dedicated root and as a base for them only.
+
+Platform differences follow three expression layers — do not add ad-hoc ways:
+
+1. **Generic attributes** interpreted per platform backend: `use_system_caption`,
+   `caption`, `shadow_type`, `render_backend_type`.
+2. **`macos_`-prefixed attributes** for macOS-only capabilities: `macos_caption_title`,
+   `macos_caption_title_style`.
+3. **Platform chrome expressed in the platform's own theme file** (e.g. the
+   Windows caption bar keeps its title Label + buttons; the macOS caption bar
+   stays minimal because the framework injects traffic lights and the title).
+
+Title-by-example: Windows draws the title as a `Label` inside the caption bar
+(free layout/theme); macOS declares it on the Window (semantic one-source with
+the window title): `text="..."` + `macos_caption_title="true"` (+ optional
+`macos_caption_title_style`).

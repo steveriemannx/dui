@@ -111,6 +111,26 @@ bool WindowBase::IsUseSystemCaption() const
     return m_pNativeWindow->IsUseSystemCaption();
 }
 
+void WindowBase::SetMacCaptionTitle(bool bMacCaptionTitle)
+{
+    m_bMacCaptionTitle = bMacCaptionTitle;
+}
+
+bool WindowBase::IsMacCaptionTitle() const
+{
+    return m_bMacCaptionTitle;
+}
+
+void WindowBase::SetMacCaptionTitleStyle(const DString& strMacCaptionTitleStyle)
+{
+    m_strMacCaptionTitleStyle = strMacCaptionTitleStyle;
+}
+
+const DString& WindowBase::GetMacCaptionTitleStyle() const
+{
+    return m_strMacCaptionTitleStyle;
+}
+
 void WindowBase::SetLayeredWindowAlpha(int32_t nAlpha)
 {
     m_pNativeWindow->SetLayeredWindowAlpha(nAlpha);

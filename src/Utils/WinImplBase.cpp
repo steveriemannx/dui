@@ -5,6 +5,7 @@
 
 #ifdef DUI_BUILD_FOR_MACOS
 #include "dui/Control/MacTrafficLights.h"
+#include "dui/Control/Label.h"
 #endif
 
 namespace ui
@@ -183,6 +184,63 @@ void WindowImplBase::BindCaptionButtons_MacOS()
         }
         else {
             delete pTrafficLights;
+        }
+
+        //Native macOS behavior (opt-in): the window title is centered in the
+        //caption bar and fades to gray when the window is inactive. Titles are
+        //off by default (macos_caption_title="true" opts a window in); the
+        //native title bar is hidden (titleVisibility = NSWindowTitleHidden),
+        //so we render the title ourselves from the window title. Windows
+        //without a title keep a clean caption bar like native utility windows.
+        if (m_pMacTitleLabel == nullptr) {
+            const DString strTitle = GetText();
+            if (!strTitle.empty() && IsMacCaptionTitle()) {
+                Label* pTitle = new Label(this);
+                pTitle->SetName(DUI_T("macos_caption_title"));
+                pTitle->SetText(strTitle);
+                //Framework defaults; a theme class "macos_caption_title" in
+                //global.xml overrides them (font/align/width/color).
+                pTitle->ApplyAttributeList(DUI_T("width='stretch' height='stretch' text_align='hcenter,vcenter' font='system_14' normal_text_color='#FF000000' mouse_enabled='false'"));
+                pTitle->SetClass(DUI_T("macos_caption_title"));
+                //Per-window override: Window macos_caption_title_style="..." on
+                //top of the theme class (framework defaults < class < window).
+                if (!GetMacCaptionTitleStyle().empty()) {
+                    pTitle->ApplyAttributeList(GetMacCaptionTitleStyle());
+                }
+                SetMacTitleActive(true);
+                if (pCaptionBox->AddItemAt(pTitle, 1)) {
+                    m_pMacTitleLabel = pTitle;
+                    //Mirror the traffic-light gutter on the right so the title's
+                    //stretch region is symmetric and its text truly centers on
+                    //the title bar (a 76pt gutter only on the left would shift
+                    //the text left by half the gutter, 38pt).
+                    Control* pTrailingGutter = new Control(this);
+                    pTrailingGutter->SetMouseEnabled(false);
+                    pTrailingGutter->SetFixedWidth(UiFixedInt(76), true, true);
+                    pCaptionBox->AddItemAt(pTrailingGutter, 2);
+                    //XML caption bars often end with an unnamed plain Control
+                    //spacer with a stretch width. It would split the stretch
+                    //region with the title and push the text off-center; the
+                    //traffic lights, title and gutter own the mac title bar,
+                    //so hide such plain spacers (named/fixed-width controls
+                    //like logos, labels and settings keep their role).
+                    for (size_t nItem = 0; nItem < pCaptionBox->GetItemCount(); ++nItem) {
+                        Control* pChild = pCaptionBox->GetItemAt(nItem);
+                        if ((pChild == nullptr) || (pChild == pTrafficLights) ||
+                            (pChild == pTitle) || (pChild == pTrailingGutter)) {
+                            continue;
+                        }
+                        if ((pChild->GetType() == DUI_CTR_CONTROL) &&
+                            pChild->GetName().empty() &&
+                            pChild->GetFixedWidth().IsStretch()) {
+                            pChild->SetVisible(false);
+                        }
+                    }
+                }
+                else {
+                    delete pTitle;
+                }
+            }
         }
     }
 }
@@ -465,6 +523,7 @@ LRESULT WindowImplBase::OnSetFocusMsg(WindowBase* /*pLostFocusWindow*/, const Na
     if (m_pMacTrafficLights != nullptr) {
         m_pMacTrafficLights->SetWindowActive(true);
     }
+    SetMacTitleActive(true);
     return lResult;
 }
 
@@ -474,7 +533,22 @@ LRESULT WindowImplBase::OnKillFocusMsg(WindowBase* /*pSetFocusWindow*/, const Na
     if (m_pMacTrafficLights != nullptr) {
         m_pMacTrafficLights->SetWindowActive(false);
     }
+    SetMacTitleActive(false);
     return lResult;
+}
+
+void WindowImplBase::SetMacTitleActive(bool bActive)
+{
+    if (m_pMacTitleLabel != nullptr) {
+        //Native macOS dims the caption title when the window is inactive; the
+        //color names come from global.xml (macos_caption_title_color /
+        //macos_caption_title_inactive_color) and may be restyled by a theme.
+        //m_pMacTitleLabel is a ui::Label (set in BindCaptionButtons_MacOS).
+        ui::Label* pTitle = static_cast<ui::Label*>(m_pMacTitleLabel);
+        pTitle->SetStateTextColor(kControlStateNormal,
+            bActive ? DUI_T("macos_caption_title_color") : DUI_T("macos_caption_title_inactive_color"));
+        pTitle->Invalidate();
+    }
 }
 #endif
 

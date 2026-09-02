@@ -93,6 +93,14 @@
     <TextColor name="bk_main_wnd_search" value="#ff1e7ad7"/>
     <TextColor name="bk_wnd_darkcolor" value="#ffffffff"/>
     <TextColor name="bk_wnd_lightcolor" value="#ffffffff"/>
+    <!-- Caption bar window title colors (framework-injected, macOS only) -->
+    <TextColor name="macos_caption_title_color" value="#FF000000"/>
+    <TextColor name="macos_caption_title_inactive_color" value="#FF8E99A6"/>
+
+    <!-- macOS caption bar window title (framework-injected; optional: themes
+         may override the title style by editing this class in their global.xml;
+         removing it keeps the framework defaults) -->
+    <Class name="macos_caption_title" font="system_bold_14" text_align="hcenter,vcenter" width="stretch" height="stretch" normal_text_color="macos_caption_title_color"/>
     <TextColor name="bk_menuitem_hovered" value="#ffe1e6eb"/>
     <TextColor name="bk_menuitem_selected" value="#ffced4db"/>
     <TextColor name="bk_listitem_hovered" value="#fff0f2f5"/>

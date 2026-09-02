@@ -873,6 +873,13 @@ bool NativeWindow_MacOS::CreateWindowAndRender(NativeWindow_MacOS* pParentWindow
     if (window == nil) {
         return false;
     }
+    //Apply the create-param window title so the NSWindow carries it (Mission
+    //Control, app menu) like a native window; dui renders its own caption
+    //title from GetText() when the native titlebar is hidden.
+    if (!m_createParam.m_windowTitle.empty()) {
+        const std::string strTitle = StringConvert::TToUTF8(m_createParam.m_windowTitle);
+        [window setTitle:[NSString stringWithUTF8String:strTitle.c_str()]];
+    }
     const bool bIsMenu = dynamic_cast<ui::Menu*>(m_pOwner) != nullptr;
     const bool bIsNoActivate = (m_createParam.m_dwExStyle & kWS_EX_NOACTIVATE) != 0;
     window.duiCannotBecomeKey = (bIsChildWindow || bIsMenu || bIsNoActivate) ? YES : NO;
