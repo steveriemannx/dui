@@ -38,7 +38,7 @@ void ControlForm::BindEvents()
 {
 #ifdef DUI_BUILD_FOR_SDL
     //Display basic SDL information
-    ui::Label* pTitle = ui::Find<ui::Label>(this, DUI_T("window_title"));
+    ui::Label* pTitle = ui::Find<ui::Label>(this, DUI_CTR_CAPTION_TITLE);
     if (pTitle != nullptr) {
         DString title = pTitle->GetText();
         DString driverName = GetVideoDriverName();

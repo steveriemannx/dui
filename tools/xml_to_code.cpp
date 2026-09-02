@@ -345,6 +345,12 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
         else if (name == "use_system_caption") {
             out << "    w.SetUseSystemCaption(" << (value == "true" ? "true" : "false") << ");\n";
         }
+        else if (name == "show_caption_title") {
+            out << "    w.SetShowCaptionTitle(" << (value == "true" ? "true" : "false") << ");\n";
+        }
+        else if (name == "caption_title_style") {
+            out << "    w.SetCaptionTitleStyle(DUI_T(\"" << escapeCStr(value) << "\"));\n";
+        }
         else if (name == "size_box" || name == "sizebox" || name == "caption" || name == "sys_menu_rect") {
             std::vector<int> rect = parseIntList(value);
             if (rect.size() == 4) {

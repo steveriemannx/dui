@@ -111,24 +111,24 @@ bool WindowBase::IsUseSystemCaption() const
     return m_pNativeWindow->IsUseSystemCaption();
 }
 
-void WindowBase::SetMacCaptionTitle(bool bMacCaptionTitle)
+void WindowBase::SetShowCaptionTitle(bool bShowCaptionTitle)
 {
-    m_bMacCaptionTitle = bMacCaptionTitle;
+    m_bShowCaptionTitle = bShowCaptionTitle;
 }
 
-bool WindowBase::IsMacCaptionTitle() const
+bool WindowBase::IsShowCaptionTitle() const
 {
-    return m_bMacCaptionTitle;
+    return m_bShowCaptionTitle;
 }
 
-void WindowBase::SetMacCaptionTitleStyle(const DString& strMacCaptionTitleStyle)
+void WindowBase::SetCaptionTitleStyle(const DString& strCaptionTitleStyle)
 {
-    m_strMacCaptionTitleStyle = strMacCaptionTitleStyle;
+    m_strCaptionTitleStyle = strCaptionTitleStyle;
 }
 
-const DString& WindowBase::GetMacCaptionTitleStyle() const
+const DString& WindowBase::GetCaptionTitleStyle() const
 {
-    return m_strMacCaptionTitleStyle;
+    return m_strCaptionTitleStyle;
 }
 
 void WindowBase::SetLayeredWindowAlpha(int32_t nAlpha)
@@ -540,6 +540,11 @@ bool WindowBase::SetWindowIcon(const std::vector<uint8_t>& iconFileData, const D
 void WindowBase::SetText(const DString& strText)
 {
     m_pNativeWindow->SetText(strText);
+    OnWindowTextChanged(strText);
+}
+
+void WindowBase::OnWindowTextChanged(const DString& /*strText*/)
+{
 }
 
 DString WindowBase::GetText() const

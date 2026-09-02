@@ -7,7 +7,7 @@
         <!-- Title bar area -->
         <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
             <Control width="18" height="18" bkimage="public/caption/logo.svg" valign="center" margin="8"/>
-            <Label name="window_title" text="Combo - Square Corners" valign="center" margin="8" mouse_enabled="false"/>
+            <Label name="window_caption_title" text="Combo - Square Corners" valign="center" margin="8" mouse_enabled="false"/>
             <Control mouse_enabled="false"/>
         </HBox>
 

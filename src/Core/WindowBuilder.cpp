@@ -654,13 +654,13 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
             knownNames.insert(strName);
             pWindow->SetUseSystemCaption(strValue == DUI_T("true"));
         }
-        else if (strName == DUI_T("macos_caption_title")) {
+        else if (strName == DUI_T("show_caption_title")) {
             knownNames.insert(strName);
-            pWindow->SetMacCaptionTitle(strValue == DUI_T("true"));
+            pWindow->SetShowCaptionTitle(strValue == DUI_T("true"));
         }
-        else if (strName == DUI_T("macos_caption_title_style")) {
+        else if (strName == DUI_T("caption_title_style")) {
             knownNames.insert(strName);
-            pWindow->SetMacCaptionTitleStyle(strValue);
+            pWindow->SetCaptionTitleStyle(strValue);
         }
     }
     //Whether the size configured for the window includes the shadow
