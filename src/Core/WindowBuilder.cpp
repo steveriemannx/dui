@@ -542,14 +542,7 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
         int32_t cy = createAttributes.m_szInitSize.cy;
         UiSize minSize = szMinSize;
         UiSize maxSize = szMaxSize;
-        if (bScaledCX) {
-            GlobalManager::Instance().Dpi().ScaleWindowSize(minSize.cx);
-            GlobalManager::Instance().Dpi().ScaleWindowSize(maxSize.cx);
-        }
-        if (bScaledCY) {
-            GlobalManager::Instance().Dpi().ScaleWindowSize(minSize.cy);
-            GlobalManager::Instance().Dpi().ScaleWindowSize(maxSize.cy);
-        }
+        //Window sizes are physical pixels on every platform (see ParseWindowSize)
         if ((minSize.cx > 0) && (cx < minSize.cx)) {
             cx = minSize.cx;
         }
@@ -561,12 +554,6 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
         }
         if ((maxSize.cy > 0) && (cy > maxSize.cy)) {
             cy = maxSize.cy;
-        }
-        if (!bScaledCX) {
-            GlobalManager::Instance().Dpi().ScaleWindowSize(cx);
-        }
-        if (!bScaledCY) {
-            GlobalManager::Instance().Dpi().ScaleWindowSize(cy);
         }
         if (!bSizeContainShadow) {
             if (!bPercentCX) {
@@ -653,17 +640,27 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
             knownNames.insert(strName);
             UiSize size;
             AttributeUtil::ParseSizeValue(strValue.c_str(), size);
-            pWindow->SetWindowMinimumSize(size, true);
+            //Window sizes/min sizes are physical pixels: no DPI scaling
+            pWindow->SetWindowMinimumSize(size, false);
         }
         else if ((strName == DUI_T("max_size")) || (strName == DUI_T("maxinfo"))) {
             knownNames.insert(strName);
             UiSize size;
             AttributeUtil::ParseSizeValue(strValue.c_str(), size);
-            pWindow->SetWindowMaximumSize(size, true);
+            //Window sizes/max sizes are physical pixels: no DPI scaling
+            pWindow->SetWindowMaximumSize(size, false);
         }
         else if (strName == DUI_T("use_system_caption")) {
             knownNames.insert(strName);
             pWindow->SetUseSystemCaption(strValue == DUI_T("true"));
+        }
+        else if (strName == DUI_T("macos_caption_title")) {
+            knownNames.insert(strName);
+            pWindow->SetMacCaptionTitle(strValue == DUI_T("true"));
+        }
+        else if (strName == DUI_T("macos_caption_title_style")) {
+            knownNames.insert(strName);
+            pWindow->SetMacCaptionTitleStyle(strValue);
         }
     }
     //Whether the size configured for the window includes the shadow
