@@ -4,9 +4,9 @@
     <!-- Font note: "Microsoft YaHei", "SimSun" are used on Windows -->
     <!-- Font note: "PingFang SC" is used on macOS -->
     <!-- Font note: "Noto Sans CJK SC" is used on Zhongke Fangde systems -->
-    <!-- System fonts first (English + Chinese); SimHei from resources/fonts is the
-         fallback so text still renders where the OS font enumeration is empty -->
-    <DefaultFontFamilyNames value="Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC,SimHei"/>
+    <!-- System fonts first (English + Chinese); Windows DirectWrite reports
+         Microsoft YaHei UI, so keep it ahead of the legacy Microsoft YaHei name -->
+    <DefaultFontFamilyNames value="Microsoft YaHei UI,Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC"/>
     
     <!--All fonts: default font size is No. 5-->
     <Font id="system_12" name="system" size="12"/>
@@ -60,7 +60,6 @@
     
     <!-- Font files (placed in the fonts directory at the resource root) are loaded at program startup; after loading, they can be used in the same way as system fonts -->
     <!-- Note: the RobotoMono font can only display English letters; it does not support Chinese characters -->
-    <FontFile file="simhei.ttf" desc="Font: SimHei (Chinese)"/>
     <FontFile file="RobotoMono-Regular.ttf" desc="Font: Roboto Mono, Regular"/>
     <FontFile file="RobotoMono-Bold.ttf" desc="Font: Roboto Mono, Bold"/>
     <FontFile file="RobotoMono-Italic.ttf" desc="Font: Roboto Mono, Italic"/>
