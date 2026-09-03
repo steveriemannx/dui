@@ -2,11 +2,10 @@
 <Global>
     <!--Default font names, in list form, matched in order until the first valid font is found as the default font name; multiple font names are separated by commas-->
     <!-- Font note: "Microsoft YaHei", "SimSun" are used on Windows -->
-    <!-- Font note: "PingFang SC" is used on macOS -->
-    <!-- Font note: "Noto Sans CJK SC" is used on Zhongke Fangde systems -->
+    <!-- Windows system fonts -->
     <!-- System fonts first (English + Chinese); Windows DirectWrite reports
          Microsoft YaHei UI, so keep it ahead of the legacy Microsoft YaHei name -->
-    <DefaultFontFamilyNames value="Microsoft YaHei UI,Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC"/>
+    <DefaultFontFamilyNames value="Microsoft YaHei UI,Microsoft YaHei,SimSun"/>
     
     <!--All fonts: default font size is No. 5-->
     <Font id="system_12" name="system" size="12"/>
