@@ -54,7 +54,7 @@ public:
     uint32_t uElapseMs;
 
     // Number of repetitions
-    uint32_t uRepeatTime;
+    int32_t uRepeatTime;
 
     // Trigger time of the timer
     std::chrono::steady_clock::time_point trigerTime;
@@ -80,24 +80,30 @@ void TimerManager::Initialize(void* platformData)
 
 void TimerManager::Clear()
 {
-    std::unique_lock<std::mutex> guard(m_taskMutex);
+    std::lock_guard<std::mutex> lifecycleGuard(m_lifecycleMutex);
+    std::unique_ptr<std::thread> worker;
+    {
+        std::lock_guard<std::mutex> guard(m_taskMutex);
+        m_bRunning = false;
+        worker = std::move(m_pWorkerThread);
+    }
+    m_cv.notify_all();
+    if (worker != nullptr && worker->joinable()) {
+        worker->join();
+    }
     m_threadMsg.Clear();
+    std::lock_guard<std::mutex> guard(m_taskMutex);
     while (!m_aTimers.empty()) {
         m_aTimers.pop();
     }
     m_removedTimerIds.clear();
-    m_bRunning = false;
-    if (m_pWorkerThread != nullptr) {
-        m_cv.notify_one();
-        guard.unlock();
-        m_pWorkerThread->join();
-        m_pWorkerThread = nullptr;
-    }
+    m_bHasPenddingPoll = false;
 }
 
 size_t TimerManager::AddTimer(const std::weak_ptr<WeakFlag>& weakFlag, const TimerCallback& callback,
                               uint32_t uElapseMs, int32_t iRepeatTime)
 {
+    std::lock_guard<std::mutex> lifecycleGuard(m_lifecycleMutex);
     ASSERT((callback != nullptr) && (uElapseMs > 0) && (iRepeatTime != 0));
     if ((callback == nullptr) || (uElapseMs == 0) || (iRepeatTime == 0)) {
         return 0;
@@ -105,18 +111,18 @@ size_t TimerManager::AddTimer(const std::weak_ptr<WeakFlag>& weakFlag, const Tim
     if (iRepeatTime < 0) {
         iRepeatTime = -1;
     }
-    size_t nTimerId = m_nNextTimerId++;
     TimerInfo pTimer;
-    pTimer.m_nTimerId = nTimerId;
 
     pTimer.timerCallback = callback;
     pTimer.uElapseMs = uElapseMs;
     pTimer.trigerTime = std::chrono::steady_clock::now();
     pTimer.trigerTime += std::chrono::milliseconds(uElapseMs); // Calculate the next trigger time (current time + interval in milliseconds)
-    pTimer.uRepeatTime = static_cast<uint32_t>(iRepeatTime);
+    pTimer.uRepeatTime = iRepeatTime;
     pTimer.weakFlag = weakFlag;
 
     std::lock_guard<std::mutex> threadGuard(m_taskMutex);
+    const size_t nTimerId = m_nNextTimerId++;
+    pTimer.m_nTimerId = nTimerId;
     m_aTimers.push(pTimer);
     if (m_pWorkerThread == nullptr) {
         // Start the thread
@@ -133,6 +139,7 @@ void TimerManager::RemoveTimer(size_t nTimerId)
 {
     std::lock_guard<std::mutex> threadGuard(m_taskMutex);
     m_removedTimerIds.insert(nTimerId);
+    m_cv.notify_all();
 }
 
 bool TimerManager::IsTimerRemoved(size_t nTimerId) const
@@ -217,7 +224,7 @@ void TimerManager::WorkerThreadProc()
         }
         if (m_aTimers.empty()) {
             // Empty, wait for tasks
-            m_cv.wait(taskGuard);
+            m_cv.wait(taskGuard, [this]() { return !m_bRunning || !m_aTimers.empty(); });
             if (!m_bRunning) {
                 break;
             }
@@ -247,7 +254,8 @@ void TimerManager::WorkerThreadProc()
                 // Note: it was found that both the gcc version and the glibc version have problems with wait_for (they use system time); only gcc >= 10 and glibc >= 2.30 have no impact on program behavior.
                 m_cv.wait_for(taskGuard, std::chrono::milliseconds(nDetaTimeMs));
             }
-            // Notify for processing (sent to the main thread for execution; the lock must not be held at this time to avoid deadlock issues)
+            // Mark the UI poll as pending while protected by the same mutex
+            // used by Poll and Clear, then release it before posting.
             m_bHasPenddingPoll = true;
             taskGuard.unlock();
 
@@ -278,13 +286,19 @@ void TimerManager::WorkerThreadProc()
             }
 #endif
             taskGuard.lock();
+            if (m_bRunning && !bRet) {
+                // A failed post cannot be acknowledged by the UI thread.
+                // Clear the pending state so shutdown or a later timer can
+                // make progress instead of waiting forever.
+                m_bHasPenddingPoll = false;
+            }
             if (m_bRunning) {
                 ASSERT_UNUSED_VARIABLE(bRet);
             }            
             //LogUtil::OutputLine(StringUtil::Printf(DUI_T("PostMessage: send timer event")));
 
             if (m_bRunning && m_bHasPenddingPoll) {
-                m_cv.wait(taskGuard);
+                m_cv.wait(taskGuard, [this]() { return !m_bRunning || !m_bHasPenddingPoll; });
             }
         }        
     }
@@ -292,5 +306,3 @@ void TimerManager::WorkerThreadProc()
 }
 
 }
-
-

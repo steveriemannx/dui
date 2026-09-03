@@ -93,10 +93,9 @@ public:
     */
     T* operator->() const
     {
-        if (m_weak_flag.expired()) {
-            return nullptr;
-        }
-        return m_pControl;
+        T* control = get();
+        ASSERT(control != nullptr);
+        return control;
     }
 
     /** Clear

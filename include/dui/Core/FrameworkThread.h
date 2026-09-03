@@ -57,7 +57,7 @@ public:
     */
     bool Start();
 
-    /** Stop the worker thread (asynchronous stop)
+    /** Stop the worker thread and wait for it to exit
     */
     bool Stop();
 
@@ -212,15 +212,15 @@ private:
 
     /** Whether it is the UI thread
     */
-    bool m_bThreadUI;
+    std::atomic<bool> m_bThreadUI;
 
     /** Whether it is running
     */
-    volatile bool m_bRunning;
+    std::atomic<bool> m_bRunning;
 
     /** true means the Idle feature is supported; when the message queue is empty, the OnMessageLoopIdle virtual function is called for the application layer to process business
     */
-    bool m_bSupportIdle;
+    std::atomic<bool> m_bSupportIdle;
 
 private:
     /** The worker thread

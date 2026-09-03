@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Global>
     <!--Default font names, in list form, matched in order until the first valid font is found as the default font name; multiple font names are separated by commas-->
-    <!-- Font note: "Microsoft YaHei", "SimSun" are used on Windows -->
-    <!-- Windows system fonts -->
-    <!-- System fonts first (English + Chinese); Windows DirectWrite reports
-         Microsoft YaHei UI, so keep it ahead of the legacy Microsoft YaHei name -->
-    <DefaultFontFamilyNames value="Microsoft YaHei UI,Microsoft YaHei,SimSun"/>
+    <!-- Windows 11 default UI font -->
+    <DefaultFontFamilyNames value="Microsoft YaHei UI"/>
     
     <!--All fonts: default font size is No. 5-->
     <Font id="system_12" name="system" size="12"/>

@@ -15,7 +15,10 @@ set(DUI_MACOS_LIBS pthread dl)
 # macOS uses the native (Cocoa/AppKit) backend only; SDL is not supported
 # on this platform, so SDL3 is never linked here.
 
-if(DUI_ENABLE_CEF)
+# DUI_ENABLE_CEF controls whether the core library contains CEF support. Only
+# the two CEF examples provide the bundle resources required by this packaging
+# path, identified by their dedicated theme directory.
+if(DUI_ENABLE_CEF AND DEFINED DUI_THEME_DIR_NAME)
     # The CEF implementation on macOS is complex; related code is kept in a separate file
     include("${CMAKE_CURRENT_LIST_DIR}/dui_cef_macos.cmake") 
 else()
@@ -34,7 +37,6 @@ else()
         -Wno-unused-parameter           # Don't warn about unused parameters
     )
     set(DUI_CXX_COMPILER_FLAGS
-        -fno-threadsafe-statics         # Don't generate thread-safe statics
         -fvisibility-inlines-hidden     # Give hidden visibility to inlined class member functions
         -frtti
         -Wno-narrowing                  # Don't warn about type narrowing
@@ -65,12 +67,18 @@ else()
     # the bin folder, which MACOSX_BUNDLE would otherwise create eagerly).
     add_executable(${PROJECT_NAME} ${SRC_FILES})
 
+    if(DUI_MULTI_CONFIG)
+        set(_dui_config_dir "$<CONFIG>/")
+    else()
+        set(_dui_config_dir "")
+    endif()
+
     # Keep the plain executable in a hidden staging dir (not in the bin top
     # level) so the bin folder only shows the assembled .app bundles. We do
     # NOT delete it afterwards, otherwise CMake would relink the target on
     # every build (it would see its output file missing).
     set_target_properties(${PROJECT_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${DUI_BIN_PATH}/.bin")
+        RUNTIME_OUTPUT_DIRECTORY "${DUI_BIN_PATH}/${_dui_config_dir}.bin")
 
     # Generate the Info.plist into a per-target temp location (NOT into bin),
     # so no bundle skeleton is created at configure time.
@@ -83,7 +91,7 @@ else()
     set(BUNDLE_VERSION "1.0")
     configure_file("${_dui_plist_in}" "${_dui_plist_out}" @ONLY)
 
-    set(_dui_bundle_dir "${DUI_BIN_PATH}/${PROJECT_NAME}.app")
+    set(_dui_bundle_dir "${DUI_BIN_PATH}/${_dui_config_dir}${PROJECT_NAME}.app")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${_dui_bundle_dir}/Contents/MacOS"
         COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${PROJECT_NAME}>"
@@ -109,16 +117,14 @@ else()
         add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_gen_xml_code")
     endif()
 
-    # Per-config Skia link directories (multi-config generators: VS, Xcode)
-    dui_target_skia_link_dirs(${PROJECT_NAME})
-
     # Set the compiler arguments
     target_compile_options(${PROJECT_NAME} PRIVATE ${DUI_COMPILER_FLAGS} ${DUI_CXX_COMPILER_FLAGS})
     
     # macOS platform: set the link libraries (mind the order!)
     target_link_libraries(${PROJECT_NAME}
                             # Third-party libraries (in dependency order)
-                            ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS}
+                            dui dui-cximage dui-webp png_static
+                             dui_skia_libs
                             # System libraries
                             ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS} ${DUI_MACOS_LIBS}
                             # Explicit framework declarations (must come last)

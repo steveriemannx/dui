@@ -88,6 +88,17 @@ cmake --build build --config Release
 cmake --build build --config Debug
 ```
 
+Run the project tests and install the library for use by another CMake project:
+
+```
+ctest --test-dir build --output-on-failure
+cmake --build build --target dui_entry
+cmake --install build --prefix /path/to/dui-install
+```
+
+Installed consumers can use `find_package(dui CONFIG REQUIRED)` and link against
+`dui::dui` or `dui::dui_entry`.
+
 The compiled example programs are in `bin/`. Platform prerequisites and detailed build steps: [docs/Build.md](docs/Build.md).
 
 ## Documentation

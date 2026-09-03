@@ -9,6 +9,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <atomic>
 
 namespace ui 
 {
@@ -52,7 +53,7 @@ public:
     */
     void RemoveTimer(size_t nTimerId);
 
-    /** Shut down the timer manager and release resources
+     /** Stop the timer worker and release timer resources
      */
     void Clear();
 
@@ -94,11 +95,11 @@ private:
 private:
     /** Whether it is running
     */
-    volatile bool m_bRunning;
+    std::atomic<bool> m_bRunning;
 
     /** Whether it is waiting for the main thread to process the timer callback events
     */
-    volatile bool m_bHasPenddingPoll;
+    bool m_bHasPenddingPoll;
 
     /** The background thread
     */
@@ -111,6 +112,9 @@ private:
     /** The lock for the task data container
     */
     std::mutex m_taskMutex;
+
+    /** Serializes Clear with timer registration and worker creation. */
+    std::mutex m_lifecycleMutex;
 
     /** The inter-thread communication mechanism (with the main thread)
     */

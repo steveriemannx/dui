@@ -4,6 +4,7 @@
 #include "dui/dui_defs.h"
 #include <memory>
 #include <functional>
+#include <mutex>
 
 namespace ui
 {
@@ -94,8 +95,9 @@ public:
 
     std::weak_ptr<WeakFlag> GetWeakFlag()
     {
+        std::lock_guard<std::mutex> guard(m_weakFlagMutex);
         if (m_weakFlag.use_count() == 0) {
-            m_weakFlag.reset((WeakFlag*)nullptr);
+            m_weakFlag = std::make_shared<WeakFlag>();
         }
         return m_weakFlag;
     }
@@ -117,6 +119,7 @@ private:
 
 protected:
     std::shared_ptr<WeakFlag> m_weakFlag;
+    mutable std::mutex m_weakFlagMutex;
 };
 
 // WeakCallbackFlag is generally used as a class member variable; for inheritance, use SupportWeakCallback without the Cancel() function
@@ -128,11 +131,13 @@ class DUI_API WeakCallbackFlag final : public SupportWeakCallback
 public:
     void Cancel()
     {
+        std::lock_guard<std::mutex> guard(m_weakFlagMutex);
         m_weakFlag.reset();
     }
 
     bool HasUsed()
     {
+        std::lock_guard<std::mutex> guard(m_weakFlagMutex);
         return m_weakFlag.use_count() != 0;
     }
 };

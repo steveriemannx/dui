@@ -66,6 +66,7 @@ void ThreadMessage::Initialize(void* platformData)
     if (m_impl->m_hMessageWnd != nullptr) {
         return;
     }
+    m_impl->m_bTerm = false;
     auto hInstance = platformData != nullptr ? (HMODULE)platformData : ::GetModuleHandle(nullptr);
     WNDCLASSEXW wc = { 0 };
     wc.cbSize = sizeof(wc);

@@ -13,58 +13,41 @@ if(DUI_LOG)
     message(STATUS "CXX compiler: ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 endif()
 
-# Set the project include path (dui)
-include_directories(${DUI_ROOT})
-include_directories(${DUI_ROOT}/include)
-
-# Add this program's root directory to the include path
-include_directories(${DUI_PROJECT_SRC_DIR})
-
-# Set the project link directories
-link_directories("${DUI_LIB_PATH}")          # path to the dui library
-
-if(DUI_MULTI_CONFIG)
-    # Per-config Skia paths are added via dui_target_skia_link_dirs() in the platform
-    # files (generator expressions can't be used with global link_directories).
-else()
-    link_directories("${DUI_SKIA_LIB_PATH}") # path to the skia library (single-config)
-endif()
-
-# ---- Helper: add per-config Skia link directories to a target (multi-config generators) ----
+# Linux and FreeBSD still use this helper. Keep the link directories target
+# local; native macOS/Windows paths link through dui_skia_libs directly.
 macro(dui_target_skia_link_dirs _target)
     if(DUI_MULTI_CONFIG)
         target_link_directories(${_target} PRIVATE
             "$<$<CONFIG:Debug>:${DUI_SKIA_LIB_PATH_DEBUG}>"
             "$<$<NOT:$<CONFIG:Debug>>:${DUI_SKIA_LIB_PATH_RELEASE}>"
         )
+    else()
+        target_link_directories(${_target} PRIVATE "${DUI_SKIA_LIB_PATH}")
     endif()
 endmacro()
-
-# ---- Helper: add per-config CEF link directories (Windows multi-config only) ----
-macro(dui_target_cef_link_dirs _target)
-    if(DUI_MULTI_CONFIG AND DUI_ENABLE_CEF AND DUI_OS_WINDOWS)
-        target_link_directories(${_target} PRIVATE
-            "$<$<CONFIG:Debug>:${DUI_CEF_LIB_PATH_DEBUG}>"
-            "$<$<NOT:$<CONFIG:Debug>>:${DUI_CEF_LIB_PATH_RELEASE}>"
-        )
-    endif()
-endmacro()
-
-if(DUI_ENABLE_SDL)
-    link_directories("${DUI_SDL_LIB_PATH}")  # path to the SDL library
-endif()
 
 # Set the executable output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${DUI_BIN_PATH}")
 
-# Add sources and store them in the SRC_FILES variable
-aux_source_directory(${DUI_PROJECT_SRC_DIR} SRC_FILES)
+# Add sources and store them in the SRC_FILES variable. CONFIGURE_DEPENDS
+# replaces the old aux_source_directory() scan while retaining automatic source
+# discovery for standalone example projects.
+file(GLOB SRC_FILES CONFIGURE_DEPENDS
+    "${DUI_PROJECT_SRC_DIR}/*.c"
+    "${DUI_PROJECT_SRC_DIR}/*.cc"
+    "${DUI_PROJECT_SRC_DIR}/*.cpp"
+    "${DUI_PROJECT_SRC_DIR}/*.mm"
+)
 
 # Add source files from subdirectories
 if(DUI_SRC_SUB_DIRS)
     foreach(ITEM IN LISTS DUI_SRC_SUB_DIRS)
-        # Add them one subdirectory at a time
-        aux_source_directory("${DUI_PROJECT_SRC_DIR}/${ITEM}" SUB_DIR_SRC_FILES)
+        file(GLOB SUB_DIR_SRC_FILES CONFIGURE_DEPENDS
+            "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.c"
+            "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.cc"
+            "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.cpp"
+            "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.mm"
+        )
         list(APPEND SRC_FILES ${SUB_DIR_SRC_FILES})  # merge the list
     endforeach()
 endif()
@@ -84,6 +67,17 @@ elseif(DUI_OS_FREEBSD)
     include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_freebsd.cmake") 
 else()
     message(FATAL_ERROR "Unknown OS!")
+endif()
+
+# Keep example-only headers private to this target. Generated includes are also
+# target-local, preventing one example's generated files from leaking to others.
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${DUI_ROOT} ${DUI_ROOT}/include ${DUI_PROJECT_SRC_DIR}
+    ${DUI_GENERATED_INCLUDE_DIRS}
+)
+
+if(DUI_OS_WINDOWS)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
 endif()
 
 # Development run support: copy the dui resource tree next to the executable.

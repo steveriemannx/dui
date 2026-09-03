@@ -5,6 +5,7 @@
 #include "dui/Core/ControlPtrT.h"
 #include <map>
 #include <atomic>
+#include <vector>
 
 namespace ui 
 {
@@ -77,7 +78,7 @@ public:
     size_t GetNextTaskId();
 
 public:
-    /** Shut down the thread manager and release resources
+    /** Stop registered worker threads and release manager resources
     */
     void Clear();
 

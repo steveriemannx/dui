@@ -28,25 +28,12 @@ endif()
 include("${CMAKE_CURRENT_LIST_DIR}/../cmake/dui_common.cmake")
 
 if(MSVC)
-    # Source files use UTF-8 encoding
-    add_compile_options("/utf-8")
-    
     # Get the number of logical CPU cores
     cmake_host_system_information(RESULT CPU_CORES QUERY NUMBER_OF_LOGICAL_CORES)
-    # Set C/C++ compile options (enable multi-threaded compilation)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:/MP${CPU_CORES}>)
-    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/MP${CPU_CORES}>)
 endif()
 
 set(CMAKE_CXX_STANDARD 20) # C++20
 set(CMAKE_CXX_STANDARD_REQUIRED ON) # C++20
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows
-    add_definitions(-DUNICODE -D_UNICODE)
-endif()
-
-# Skia build options
-add_definitions(-DSK_GANESH -DSK_GL -DSK_RELEASE)
 
 # Set the libcef directory path
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")  # macOS
@@ -69,10 +56,9 @@ else()
     message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
 endif()
 
-# Set include directories
+# Set source/dependency paths
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
 get_filename_component(SKIA_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/skia/" ABSOLUTE)
-get_filename_component(SDL_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/SDL3/" ABSOLUTE)
 
 # Wayland option (Linux only, alternative to SDL)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -134,43 +120,33 @@ if(DUI_ENABLE_WAYLAND)
     )
 
     
-    include_directories(${WAYLAND_GEN_DIR})
     list(APPEND DUI_WAYLAND_INCLUDE_DIRS ${WAYLAND_GEN_DIR})
-endif()
-
-# Always include these directories
-include_directories(${DUI_SRC_ROOT_DIR})
-include_directories(${DUI_SRC_ROOT_DIR}/include)
-include_directories(${SKIA_SRC_ROOT_DIR})
-if(DUI_ENABLE_WAYLAND)
-    include_directories(${DUI_WAYLAND_INCLUDE_DIRS})
-elseif(DUI_ENABLE_SDL)
-    include_directories("${SDL_SRC_ROOT_DIR}/include")
 endif()
 
 # Conditionally include CEF directory
 if(CEF_LIB_DIR AND NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW)
     get_filename_component(CEF_INCLUDE_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/libcef/${CEF_LIB_DIR}/" ABSOLUTE)
-    include_directories(${CEF_INCLUDE_ROOT_DIR})
 else()
     message(STATUS "CEF includes disabled - not supported on this platform")
 endif()
 
-# Set the library output directory
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
-
-# Add source code files
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR} DIR_LIB_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Animation ANIMATION_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Box BOX_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Layout LAYOUT_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Control CONTROL_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Core CORE_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Image IMAGE_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Render RENDER_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/RenderSkia RENDER_SKIA_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/Utils UTILS_SRC)
+# Add source code files. CONFIGURE_DEPENDS keeps new source files visible on the
+# next configure without relying on directory-wide include/link settings.
+file(GLOB DIR_LIB_SRC CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_LIST_DIR}/*.c"
+    "${CMAKE_CURRENT_LIST_DIR}/*.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/*.mm"
+)
+file(GLOB ANIMATION_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Animation/*.[cm]*")
+file(GLOB BOX_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Box/*.[cm]*")
+file(GLOB LAYOUT_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Layout/*.[cm]*")
+file(GLOB CONTROL_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Control/*.[cm]*")
+file(GLOB CORE_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Core/*.[cm]*")
+file(GLOB IMAGE_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Image/*.[cm]*")
+file(GLOB RENDER_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Render/*.[cm]*")
+file(GLOB RENDER_SKIA_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/*.[cm]*")
+file(GLOB UTILS_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Utils/*.[cm]*")
 
 # When SDL is disabled (Windows/macOS native-only), exclude every SDL backend
 # source so the library does not require SDL3 headers/libs.
@@ -185,8 +161,8 @@ endif()
 if(DUI_ENABLE_WAYLAND OR NOT (DUI_ENABLE_CEF OR DUI_BUILD_CEF_EXAMPLES))
     message(STATUS "CEF support disabled")
 elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW)
-    aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl CEF_CONTROL_SRC)
-    aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl/internal CEF_CONTROL_INTERNAL_SRC)
+    file(GLOB CEF_CONTROL_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/CEFControl/*.[cm]*")
+    file(GLOB CEF_CONTROL_INTERNAL_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/CEFControl/internal/*.[cm]*")
     list(APPEND PROJECT_SOURCES ${CEF_CONTROL_SRC} ${CEF_CONTROL_INTERNAL_SRC})
     message(STATUS "CEF support enabled (${CMAKE_SYSTEM_NAME})")
 else()
@@ -215,14 +191,15 @@ if(NOT DUI_SRC_MACOS)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND NOT MINGW)  # Windows CEF internals (not on MinGW)
-    aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/CEFControl/internal/Windows CEF_CONTROL_INTERNAL_WINDOWS_SRC)
+    file(GLOB CEF_CONTROL_INTERNAL_WINDOWS_SRC CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_LIST_DIR}/CEFControl/internal/Windows/*.[cm]*")
 endif()
 
-aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/apng APNG_SRC)
-aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/stb_image STB_SRC)
-aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/svg SVG_SRC)
-aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/convert_utf UTF_SRC)
-aux_source_directory(${DUI_SRC_ROOT_DIR}/third_party/xml XML_SRC)
+file(GLOB APNG_SRC CONFIGURE_DEPENDS "${DUI_SRC_ROOT_DIR}/third_party/apng/*.[cm]*")
+file(GLOB STB_SRC CONFIGURE_DEPENDS "${DUI_SRC_ROOT_DIR}/third_party/stb_image/*.[cm]*")
+file(GLOB SVG_SRC CONFIGURE_DEPENDS "${DUI_SRC_ROOT_DIR}/third_party/svg/*.[cm]*")
+file(GLOB UTF_SRC CONFIGURE_DEPENDS "${DUI_SRC_ROOT_DIR}/third_party/convert_utf/*.[cm]*")
+file(GLOB XML_SRC CONFIGURE_DEPENDS "${DUI_SRC_ROOT_DIR}/third_party/xml/*.[cm]*")
 
 set(GIFLIB_HDRS
     ${DUI_SRC_ROOT_DIR}/third_party/giflib/gif_hash.h
@@ -356,6 +333,40 @@ else()
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
 endif()
 
+if(DUI_MULTI_CONFIG)
+    foreach(_config ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER "${_config}" _config_upper)
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY_${_config_upper} "${DUI_LIB_PATH}/${_config}")
+    endforeach()
+else()
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${DUI_LIB_PATH}")
+endif()
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${DUI_SRC_ROOT_DIR}
+        ${DUI_SRC_ROOT_DIR}/include
+        ${SKIA_SRC_ROOT_DIR}
+        ${DUI_WAYLAND_INCLUDE_DIRS}
+        ${CEF_INCLUDE_ROOT_DIR}
+)
+target_compile_definitions(${PROJECT_NAME} PRIVATE SK_GANESH SK_GL SK_RELEASE)
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        "/utf-8"
+        $<$<COMPILE_LANGUAGE:C>:/MP${CPU_CORES}>
+        $<$<COMPILE_LANGUAGE:CXX>:/MP${CPU_CORES}>
+    )
+endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
+endif()
+if(DUI_ENABLE_WAYLAND)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_WAYLAND=1)
+endif()
+
 # Optional Qt-like platform entry shim.
 # Applications that write a normal C++ main() on Windows can link dui_entry;
 # it provides WinMain/wWinMain and forwards to main().
@@ -369,13 +380,6 @@ if(TARGET dui_sdl)
 endif()
 if(TARGET dui_skia)
     add_dependencies(${PROJECT_NAME} dui_skia)
-endif()
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    if(DUI_ENABLE_WAYLAND)
-        # Enable Wayland support for Linux (alternative to SDL)
-        target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_WAYLAND=1)
-    endif()
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows, WebView2
@@ -448,6 +452,9 @@ endif()
 
 # Third-party libraries are included in the build (following the develop2 branch: third_party/CMakeLists.txt)
 # skia/SDL are not built here; keep them prebuilt in sibling directories
+# The project owns the public install layout below; suppress vendored projects'
+# independent install rules (libpng otherwise assumes its original output name).
+set(SKIP_INSTALL_ALL ON)
 add_subdirectory(../third_party third_party)
 
 # Ensure third-party libraries build before dui (dui sources reference some third-party headers)

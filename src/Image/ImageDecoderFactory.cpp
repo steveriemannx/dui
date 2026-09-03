@@ -20,6 +20,7 @@ bool ImageDecoderFactory::AddImageDecoder(const std::shared_ptr<IImageDecoder>& 
     auto iter = std::find(m_imageDecoders.begin(), m_imageDecoders.end(), pImageDecoder);
     if (iter == m_imageDecoders.end()) {
         m_imageDecoders.push_back(pImageDecoder);
+        return true;
     }
     return false;
 }
@@ -140,10 +141,10 @@ std::shared_ptr<IBitmap> ImageDecoderFactory::DecodeImageData(const ImageDecodeP
                 if ((newDecodeParam.m_rcMaxDestRectSize.cx > 0) && (pImage->GetWidth() > 0)) {
                     fRealScaleX = (float)newDecodeParam.m_rcMaxDestRectSize.cx / (float)pImage->GetWidth();
                 }
-                if (newDecodeParam.m_rcMaxDestRectSize.cy > 0) {
+                if ((newDecodeParam.m_rcMaxDestRectSize.cy > 0) && (pImage->GetHeight() > 0)) {
                     fRealScaleY = (float)newDecodeParam.m_rcMaxDestRectSize.cy / (float)pImage->GetHeight();
                 }
-                float fRealScale = std::max(fRealScaleX, fRealScaleY);
+                float fRealScale = std::min(fRealScaleX, fRealScaleY);
                 if (!ui::IsFloatEqual(fRealScale, 1.0f)) {
                     szImageSize.cx = (int32_t)std::round(szImageSize.cx * fRealScale);
                     szImageSize.cy = (int32_t)std::round(szImageSize.cy * fRealScale);

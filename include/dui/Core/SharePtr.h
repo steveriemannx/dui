@@ -219,7 +219,7 @@ public:
      *  object.
      */
     SharePtr<T>& operator=(const SharePtr<T>& that) {
-        if (this != &that) {
+        if ((this != &that) && (m_ptr != that.get())) {
             this->reset(SafeAddRef(that.get()));
         }
         return *this;
@@ -227,7 +227,9 @@ public:
     template <typename U,
               typename = typename std::enable_if<std::is_convertible<U*, T*>::value>::type>
     SharePtr<T>& operator=(const SharePtr<U>& that) {
-        this->reset(SafeAddRef(that.get()));
+        if (m_ptr != that.get()) {
+            this->reset(SafeAddRef(that.get()));
+        }
         return *this;
     }
 
@@ -237,6 +239,9 @@ public:
      *  will be made.
      */
     SharePtr<T>& operator=(SharePtr<T>&& that) {
+        if (this == &that) {
+            return *this;
+        }
         this->reset(that.release());
         return *this;
     }
@@ -262,6 +267,9 @@ public:
      *  No call to ref() will be made.
      */
     void reset(T* ptr = nullptr) {
+        if (m_ptr == ptr) {
+            return;
+        }
         // Calling m_ptr->Release() may call this->~() or this->reset(T*).
         // http://wg21.cmeerw.net/lwg/issue998
         // http://wg21.cmeerw.net/lwg/issue2262

@@ -54,14 +54,11 @@ FrameworkThread::FrameworkThread(const DString& threadName, int32_t nThreadIdent
 
 FrameworkThread::~FrameworkThread()
 {
+    Stop();
     if (m_nThreadIdentifier != kThreadNone) {
         GlobalManager::Instance().Thread().UnregisterThread(m_nThreadIdentifier);
     }
     m_threadMsg.Clear();
-    ASSERT(!m_bRunning);
-    if (m_bRunning) {
-        Stop();
-    }
 }
 
 bool FrameworkThread::RunMessageLoop(bool bSupportIdle)
@@ -113,6 +110,13 @@ bool FrameworkThread::Start()
 
 bool FrameworkThread::Stop()
 {
+    if (m_pWorkerThread != nullptr &&
+        m_pWorkerThread->get_id() == std::this_thread::get_id()) {
+        // A thread cannot join itself. Detaching here would allow the owner to
+        // be destroyed while WorkerThreadProc is still using this object.
+        ASSERT(false);
+        return false;
+    }
     if (m_nThreadIdentifier != kThreadNone) {
         GlobalManager::Instance().Thread().UnregisterThread(m_nThreadIdentifier);
     }
@@ -418,7 +422,7 @@ void FrameworkThread::WorkerThreadProc()
         std::unique_lock lk(m_penddingTaskMutex);
         std::vector<size_t> penddingTaskIds;
         if (m_penddingTaskIds.empty()) {
-            m_cv.wait(lk);
+            m_cv.wait(lk, [this]() { return !m_bRunning || !m_penddingTaskIds.empty(); });
         }              
         if (!m_penddingTaskIds.empty()) {
             penddingTaskIds.swap(m_penddingTaskIds);
@@ -487,6 +491,3 @@ void FrameworkThread::OnMessageLoopIdle()
 }
 
 }//namespace ui 
-
-
-

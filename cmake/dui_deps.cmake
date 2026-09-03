@@ -371,6 +371,34 @@ function(dui_deps_add_targets)
         endif()
     endif()
 
+    # Expose Skia as a target instead of relying on directory-wide linker
+    # search paths. This keeps Debug/Release selection correct for multi-config
+    # generators and makes the build-order dependency explicit.
+    if(NOT TARGET dui_skia_libs)
+        add_library(dui_skia_libs INTERFACE)
+        if(MSVC)
+            set(_skia_lib_prefix "")
+            set(_skia_lib_suffix ".lib")
+        else()
+            set(_skia_lib_prefix "lib")
+            set(_skia_lib_suffix ".a")
+        endif()
+        foreach(_skia_lib ${DUI_SKIA_LIBS})
+            if(DUI_MULTI_CONFIG)
+                target_link_libraries(dui_skia_libs INTERFACE
+                    "$<$<CONFIG:Debug>:${DUI_SKIA_LIB_PATH_DEBUG}/${_skia_lib_prefix}${_skia_lib}${_skia_lib_suffix}>"
+                    "$<$<NOT:$<CONFIG:Debug>>:${DUI_SKIA_LIB_PATH_RELEASE}/${_skia_lib_prefix}${_skia_lib}${_skia_lib_suffix}>"
+                )
+            else()
+                target_link_libraries(dui_skia_libs INTERFACE
+                    "${DUI_SKIA_LIB_PATH}/${_skia_lib_prefix}${_skia_lib}${_skia_lib_suffix}")
+            endif()
+        endforeach()
+    endif()
+    if(TARGET dui_skia)
+        add_dependencies(dui_skia_libs dui_skia)
+    endif()
+
     # ---- SDL3: cmake configure + build + install into the build dir (keeps the source dir clean).
     if(DUI_ENABLE_SDL AND DUI_BUILD_SDL_FROM_SOURCE)
         if(NOT EXISTS "${DUI_SDL_SRC_ROOT_DIR}/lib" AND NOT EXISTS "${DUI_SDL_SRC_ROOT_DIR}/lib64")

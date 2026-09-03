@@ -13,23 +13,16 @@ if(MSVC)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     endif()
     
-    # Source files use UTF-8 encoding
-    add_compile_options("/utf-8")
-    
     # Get the number of logical CPU cores
     cmake_host_system_information(RESULT CPU_CORES QUERY NUMBER_OF_LOGICAL_CORES)
-    # Set C/C++ compile options (enable multi-threaded compilation)
-    add_compile_options($<$<COMPILE_LANGUAGE:C>:/MP${CPU_CORES}>)
-    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/MP${CPU_CORES}>)
 endif()
 
-# Use Unicode encoding on Windows
-add_definitions(-DUNICODE -D_UNICODE) 
-
 if(MSVC)
-    # MSVC needs Debug/Release set explicitly; otherwise it creates Debug/Release subdirectories automatically
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${DUI_BIN_PATH}/Debug")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${DUI_BIN_PATH}/Release")
+    # Keep every configuration in a predictable, matching output directory.
+    foreach(_config ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER "${_config}" _config_upper)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_config_upper} "${DUI_BIN_PATH}/${_config}")
+    endforeach()
 endif()
 
 # Settings for MinGW-w64 builds
@@ -44,20 +37,10 @@ if(DUI_MINGW)
 endif()
 
 if(DUI_ENABLE_CEF)
-    # Using the CEF module: add the CEF source root to the include path
-    include_directories(${DUI_CEF_SRC_ROOT_DIR})
-
-    if(DUI_MULTI_CONFIG)
-        # Per-config CEF paths via dui_target_cef_link_dirs (called after target creation below)
-    else()
-        # Path to the cef library (.lib path)
-        link_directories("${DUI_CEF_LIB_PATH}")
-    endif()
+    # CEF headers are private to this executable.
 endif()
 
 if(DUI_WEBVIEW2_EXE)    
-    # WebView2 library path (.lib path)
-    link_directories("${DUI_ROOT}/third_party/Microsoft.Web.WebView2/build/native/${DUI_SYSTEM_PROCESSOR}") 
 endif()
 
 # Remove *.mm
@@ -76,10 +59,27 @@ if(TARGET "${PROJECT_NAME}_gen_xml_code")
     add_dependencies(${PROJECT_NAME} "${PROJECT_NAME}_gen_xml_code")
 endif()
 
-# Per-config Skia / CEF link directories (multi-config generators: VS, Xcode)
-dui_target_skia_link_dirs(${PROJECT_NAME})
 if(DUI_ENABLE_CEF)
-    dui_target_cef_link_dirs(${PROJECT_NAME})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${DUI_CEF_SRC_ROOT_DIR})
+    if(DUI_MULTI_CONFIG)
+        target_link_directories(${PROJECT_NAME} PRIVATE
+            "$<$<CONFIG:Debug>:${DUI_CEF_LIB_PATH_DEBUG}>"
+            "$<$<NOT:$<CONFIG:Debug>>:${DUI_CEF_LIB_PATH_RELEASE}>"
+        )
+    else()
+        target_link_directories(${PROJECT_NAME} PRIVATE "${DUI_CEF_LIB_PATH}")
+    endif()
+endif()
+if(DUI_WEBVIEW2_EXE)
+    target_link_directories(${PROJECT_NAME} PRIVATE
+        "${DUI_ROOT}/third_party/Microsoft.Web.WebView2/build/native/${DUI_SYSTEM_PROCESSOR}")
+endif()
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        "/utf-8"
+        $<$<COMPILE_LANGUAGE:C>:/MP${CPU_CORES}>
+        $<$<COMPILE_LANGUAGE:CXX>:/MP${CPU_CORES}>
+    )
 endif()
 
 # The manifest file path must be embedded
@@ -164,4 +164,5 @@ if(DUI_USE_MAIN_ENTRY AND TARGET dui_entry)
     list(APPEND DUI_WINDOWS_LIBS dui_entry)
 endif()
 
-target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_WINDOWS_LIBS})
+target_link_libraries(${PROJECT_NAME} dui dui-cximage dui-webp png_static
+    dui_skia_libs ${DUI_CEF_LIBS} ${DUI_WINDOWS_LIBS})

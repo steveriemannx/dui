@@ -34,7 +34,12 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/dec DEC_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/demux DEMUX_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/dsp DSP_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/enc ENC_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/utils UTILS_SRC)
+aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/utils WEBP_UTILS_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/src/webp WEBP_SRC)
 
-add_library(dui-webp STATIC ${DEC_SRC} ${DEMUX_SRC} ${DSP_SRC} ${ENC_SRC} ${UTILS_SRC} ${WEBP_SRC})
+add_library(dui-webp STATIC ${DEC_SRC} ${DEMUX_SRC} ${DSP_SRC} ${ENC_SRC} ${WEBP_UTILS_SRC} ${WEBP_SRC})
+target_include_directories(dui-webp PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}
+    ${DUI_SRC_ROOT_DIR}
+    ${DUI_SRC_ROOT_DIR}/include
+)

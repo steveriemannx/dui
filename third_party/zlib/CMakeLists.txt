@@ -162,7 +162,10 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${DUI_LIB_PATH}/")
 
 add_library(dui-zlib STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-target_include_directories(dui-zlib PUBLIC ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(dui-zlib PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+    "$<INSTALL_INTERFACE:include/dui/third_party/zlib>"
+)
 
 # dui end
-

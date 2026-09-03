@@ -72,6 +72,9 @@ namespace NanoSvgDecoder
         }
 
         std::unique_ptr<NSVGimage, SvgDeleter> svg((NSVGimage*)svgData);
+        if (svg == nullptr) {
+            return false;
+        }
         int width = (int)std::ceil(svg->width);
         int height = (int)std::ceil(svg->height);
         if (width <= 0 || height <= 0) {

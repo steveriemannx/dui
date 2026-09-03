@@ -1,0 +1,20 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# dui is a static library. Consumers still need the platform libraries used by
+# the native window implementation; the exported target carries those options.
+if(APPLE)
+    find_library(DUI_APPKIT_FRAMEWORK AppKit REQUIRED)
+    find_library(DUI_FOUNDATION_FRAMEWORK Foundation REQUIRED)
+elseif(WIN32)
+    # The Windows system libraries are represented on dui::dui by the export.
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/duiTargets.cmake")
+
+set(DUI_RESOURCES_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_DATADIR@/dui/resources")
+set(dui_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
+set(dui_LIBRARIES dui::dui)
+
+check_required_components(dui)

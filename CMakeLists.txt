@@ -8,7 +8,7 @@ project(dui)
 
 # Default to Release when no build type is explicitly specified (e.g. mkdir build && cd build && cmake .. && make)
 # Note: with an empty build type there is no optimization, and some inline symbols won't be inlined, causing link failures
-if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type (Debug/Release)" FORCE)
 endif()
 
@@ -39,6 +39,15 @@ function(force_set_folder_recursive dir folder_name)
 endfunction()
 
 add_subdirectory(src)
+option(DUI_BUILD_TESTS "Build dui unit tests" ON)
+if(DUI_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/dui_install.cmake")
+dui_install_package(VERSION 0.1.0)
+
 add_subdirectory(examples)
 
 force_set_folder_recursive("${CMAKE_CURRENT_SOURCE_DIR}/examples" "examples")

@@ -175,13 +175,16 @@ bool GlobalManager::Startup(const ResourceParam& resParam,
     }
 
     //Initialize the thread pool
-    StartInnerThread(ThreadIdentifier::kThreadWorker);
-    StartInnerThread(ThreadIdentifier::kThreadImage1);
-    StartInnerThread(ThreadIdentifier::kThreadImage2);
+    if (!StartInnerThread(ThreadIdentifier::kThreadWorker) ||
+        !StartInnerThread(ThreadIdentifier::kThreadImage1) ||
+        !StartInnerThread(ThreadIdentifier::kThreadImage2)) {
+        Shutdown();
+        return false;
+    }
 
     //Load the resources
     if (!ReloadResource(resParam, false)) {
-        m_renderFactory.reset();
+        Shutdown();
         return false;
     }
     return true;
@@ -199,6 +202,7 @@ void GlobalManager::Shutdown()
 
     m_threadManager.Clear();
     m_timerManager.Clear();
+    m_imageDecoderFactory.Clear();
     m_colorManager.Clear();    
     m_fontManager.RemoveAllFonts();
     m_fontManager.RemoveAllFontFiles();

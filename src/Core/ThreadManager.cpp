@@ -150,8 +150,19 @@ bool ThreadManager::CancelTask(size_t nTaskId)
 
 void ThreadManager::Clear()
 {
-    ScopedLock threadGuard(m_threadMutex);
-    m_threadsMap.clear();
+    std::vector<FrameworkThreadPtr> threads;
+    {
+        ScopedLock threadGuard(m_threadMutex);
+        for (auto& entry : m_threadsMap) {
+            threads.push_back(entry.second);
+        }
+        m_threadsMap.clear();
+    }
+    for (FrameworkThreadPtr& thread : threads) {
+        if (thread != nullptr && !thread->IsUIThread()) {
+            thread->Stop();
+        }
+    }
 }
 
 size_t ThreadManager::GetNextTaskId()

@@ -34,8 +34,8 @@ if(DEFINED GEN_RESOURCE_FOLDERS)
     endforeach()
 endif()
 
-# Output to source dir as .inc (not .cpp) to avoid duplicate compilation
-set(GENERATED_SRC "${CMAKE_CURRENT_SOURCE_DIR}/generated_ui.inc")
+# Keep generated files in the build tree so source checkouts never retain stale UI code.
+set(GENERATED_SRC "${CMAKE_CURRENT_BINARY_DIR}/generated_ui.inc")
 set(RESOURCES_DIR "${DUI_ROOT}/resources")
 
 # GEN_AUTO_EMBED ON: pass -g global.xml so the tool emits RegisterEmbeddedClasses()
@@ -145,7 +145,7 @@ else()
 endif()
 
 add_custom_target("${PROJECT_NAME}_gen_xml_code" DEPENDS "${GENERATED_SRC}")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+list(APPEND DUI_GENERATED_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 
 # Stash for dui_bin.cmake to add dependency
 set(DUI_GEN_CODE_SRC "${GENERATED_SRC}")

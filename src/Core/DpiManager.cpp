@@ -158,7 +158,11 @@ bool DpiManager::IsDisplayScaleChanged(float fDisplayScale, float fPixelDensity)
         //The pixel density has changed
         return true;
     }
-    uint32_t nScaleFactor = (uint32_t)(fDisplayScale * fPixelDensity * 100 + 0.5f); //Save the integer value scaled by 100, keeping 2 significant digits of precision
+#ifdef DUI_HDPI_TEST_PIXEL_DENSITY
+    uint32_t nScaleFactor = (uint32_t)(fDisplayScale * fPixelDensity * 100 + 0.5f);
+#else
+    uint32_t nScaleFactor = (uint32_t)(fDisplayScale * 100 + 0.5f);
+#endif
     return nScaleFactor != m_nScaleFactor;
 }
 

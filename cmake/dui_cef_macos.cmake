@@ -77,6 +77,12 @@ if(OS_MAC)
 
     # Main app bundle target.
     add_executable(${CEF_TARGET} MACOSX_BUNDLE ${CEF_PROJECT_RESOURCES_SRCS} ${CEF_PROJECT_SRCS})
+    target_include_directories(${CEF_TARGET} PRIVATE
+        "${DUI_ROOT}"
+        "${DUI_ROOT}/include"
+        "${DUI_PROJECT_SRC_DIR}"
+        "${CEF_ROOT}/include"
+    )
     
     # dui
     set(CEF_COMPILER_FLAGS
@@ -94,7 +100,6 @@ if(OS_MAC)
     )
         
     set(CEF_CXX_COMPILER_FLAGS
-        -fno-threadsafe-statics         # Don't generate thread-safe statics
         -fvisibility-inlines-hidden     # Give hidden visibility to inlined class member functions
         -frtti
         -Wno-narrowing                  # Don't warn about type narrowing
@@ -126,8 +131,9 @@ if(OS_MAC)
     target_link_libraries(${CEF_TARGET} ${CEF_STANDARD_LIBS})
     
     target_link_libraries(${CEF_TARGET}
-                            ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS}
-                            ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS} ${DUI_MACOS_LIBS}
+                             dui dui-cximage dui-webp png_static
+                             ${DUI_SDL_LIBS} dui_skia_libs ${DUI_CEF_LIBS}
+                             ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS}
                             "-framework AppKit" "-framework Foundation" "-framework Metal"
                           )
     
@@ -166,8 +172,16 @@ if(OS_MAC)
 
         # Create Helper executable target.
         add_executable(${_helper_target} MACOSX_BUNDLE ${CEF_PROJECT_HELPER_SRCS})
+        target_include_directories(${_helper_target} PRIVATE
+            "${DUI_ROOT}"
+            "${DUI_ROOT}/include"
+            "${DUI_PROJECT_SRC_DIR}"
+            "${CEF_ROOT}/include"
+        )
         SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target})
-        target_link_libraries(${_helper_target} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${CEF_STANDARD_LIBS})
+         target_link_libraries(${_helper_target}
+             dui dui-cximage dui-webp png_static ${DUI_SDL_LIBS}
+             dui_skia_libs ${DUI_CEF_LIBS} ${CEF_STANDARD_LIBS})
         # Build-order wiring: helpers also link the skia/SDL archives built at make time
         if(TARGET dui_skia)
             add_dependencies(${_helper_target} dui_skia)
