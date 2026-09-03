@@ -32,6 +32,9 @@
 #include "dui/Core/MessageLoop_MacOS.h"
 #endif
 
+#define DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value) DUI_T(value)
+#define DUI_TEST_SOURCE_ROOT_TEXT(value) DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value)
+
 namespace {
 
 ui::ImageDecodeParam MemoryImage(const std::vector<uint8_t>& data)
@@ -150,7 +153,7 @@ void TestRealImageDecoding()
 #endif
     }) {
         const ui::FilePath path = ui::FilePathUtil::JoinFilePath(
-            ui::FilePath(DUI_T(DUI_TEST_SOURCE_ROOT)), ui::FilePath(relativePath));
+            ui::FilePath(DUI_TEST_SOURCE_ROOT_TEXT(DUI_TEST_SOURCE_ROOT)), ui::FilePath(relativePath));
         std::vector<uint8_t> fileData;
         assert(ui::FileUtil::ReadFileData(path, fileData));
         ui::ImageDecodeParam param = MemoryImage(fileData);
@@ -223,7 +226,7 @@ void TestGeometryAndDpi()
 
 void TestFilePathAndXml()
 {
-    const ui::FilePath root(DUI_T(DUI_TEST_SOURCE_ROOT));
+    const ui::FilePath root(DUI_TEST_SOURCE_ROOT_TEXT(DUI_TEST_SOURCE_ROOT));
     assert(root.IsAbsolutePath() && root.IsExistsDirectory());
     ui::FilePath global = ui::FilePathUtil::JoinFilePath(
         root, ui::FilePath(DUI_T("resources/themes/default/global.xml")));
@@ -244,7 +247,7 @@ void TestFilePathAndXml()
 
 void TestResourceFileDecode()
 {
-    const ui::FilePath root(DUI_T(DUI_TEST_SOURCE_ROOT));
+    const ui::FilePath root(DUI_TEST_SOURCE_ROOT_TEXT(DUI_TEST_SOURCE_ROOT));
     ui::ImageDecoderFactory factory;
     factory.AddImageDecoder(std::make_shared<ui::ImageDecoder_PNG>());
     factory.AddImageDecoder(std::make_shared<ui::ImageDecoder_WEBP>());
@@ -323,7 +326,7 @@ void TestGlobalManager(bool failure)
 {
     ui::GlobalManager& global = ui::GlobalManager::Instance();
     if (!failure) {
-        const ui::FilePath sourceRoot(DUI_T(DUI_TEST_SOURCE_ROOT));
+        const ui::FilePath sourceRoot(DUI_TEST_SOURCE_ROOT_TEXT(DUI_TEST_SOURCE_ROOT));
         ui::LocalFilesResParam resources(ui::FilePathUtil::JoinFilePath(
             sourceRoot, ui::FilePath(DUI_T("resources"))));
         assert(global.Startup(resources));

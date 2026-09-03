@@ -4,6 +4,9 @@
 
 #include <cassert>
 
+#define DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value) DUI_T(value)
+#define DUI_TEST_SOURCE_ROOT_TEXT(value) DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value)
+
 namespace {
 
 class TestWindow final : public ui::Window {
@@ -25,7 +28,7 @@ protected:
 
 int main()
 {
-    const ui::FilePath root(DUI_T(DUI_TEST_SOURCE_ROOT));
+    const ui::FilePath root(DUI_TEST_SOURCE_ROOT_TEXT(DUI_TEST_SOURCE_ROOT));
     ui::LocalFilesResParam resources(ui::FilePathUtil::JoinFilePath(
         root, ui::FilePath(DUI_T("resources"))));
     assert(ui::GlobalManager::Instance().Startup(resources));
