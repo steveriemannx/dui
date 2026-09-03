@@ -6,7 +6,7 @@
     <!-- Font note: "Noto Sans CJK SC" is used on Zhongke Fangde systems -->
     <!-- System fonts first (English + Chinese); SimHei from resources/fonts is the
          fallback so text still renders where the OS font enumeration is empty -->
-    <DefaultFontFamilyNames value="Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC,SimHei"/>
+    <DefaultFontFamilyNames value="Microsoft YaHei UI,Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC,SimHei"/>
     
     <!--All fonts: default font size is No. 5-->
     <Font id="system_12" name="system" size="12"/>

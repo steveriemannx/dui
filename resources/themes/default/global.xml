@@ -4,7 +4,7 @@
     <!-- Font note: "Microsoft YaHei", "SimSun" are used on Windows -->
     <!-- Font note: "PingFang SC" is used on macOS -->
     <!-- Font note: "Noto Sans CJK SC" is used on Zhongke Fangde systems -->
-    <DefaultFontFamilyNames value="Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC"/>
+    <DefaultFontFamilyNames value="Microsoft YaHei UI,Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC"/>
     
     <!--All fonts: default font size is No. 5-->
     <Font id="system_12" name="system" size="12"/>
