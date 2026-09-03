@@ -16,6 +16,18 @@ target_compile_features(dui_core_tests PRIVATE cxx_std_17)
 target_compile_definitions(dui_core_tests PRIVATE
     DUI_TEST_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
+if(WIN32)
+    target_compile_definitions(dui_core_tests PRIVATE UNICODE _UNICODE)
+    if(MSVC)
+        if(DUI_MD)
+            set_property(TARGET dui_core_tests PROPERTY MSVC_RUNTIME_LIBRARY
+                "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
+        else()
+            set_property(TARGET dui_core_tests PROPERTY MSVC_RUNTIME_LIBRARY
+                "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+        endif()
+    endif()
+endif()
 target_include_directories(dui_core_tests PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/../include"
 )
@@ -48,6 +60,18 @@ if(DUI_RUN_GUI_TESTS)
     target_compile_definitions(dui_gui_tests PRIVATE
         DUI_TEST_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/.."
     )
+    if(WIN32)
+        target_compile_definitions(dui_gui_tests PRIVATE UNICODE _UNICODE)
+        if(MSVC)
+            if(DUI_MD)
+                set_property(TARGET dui_gui_tests PROPERTY MSVC_RUNTIME_LIBRARY
+                    "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
+            else()
+                set_property(TARGET dui_gui_tests PROPERTY MSVC_RUNTIME_LIBRARY
+                    "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+            endif()
+        endif()
+    endif()
     target_include_directories(dui_gui_tests PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/../include"
     )
