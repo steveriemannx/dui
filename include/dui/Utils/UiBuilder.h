@@ -571,13 +571,23 @@ int RunMemory(const DString& title, const uint8_t* data, size_t size,
 
             WindowT* window = new WindowT();
             m_window = window;
-            if (!window->CreateWnd(nullptr, WindowCreateParam(m_title, true))) {
+            WindowCreateParam createParam(m_title, true);
+#if defined(DUI_BUILD_FOR_WIN)
+            // Code-only windows configure their custom caption in OnInitWindow,
+            // which runs after native creation. Start without the system frame.
+            createParam.m_dwStyle = kWS_POPUP;
+#endif
+            if (!window->CreateWnd(nullptr, createParam)) {
                 SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to create the window."), DUI_T("dui"));
                 delete window;
                 m_window = nullptr;
                 return;
             }
             window->PostQuitMsgWhenClosed(true);
+            // Render the initial frame while the window is still hidden so
+            // showing it never exposes the native default background.
+            window->InvalidateAll();
+            window->UpdateWindow();
             window->ShowWindow(kSW_SHOW_NORMAL);
         }
         void OnCleanup() override

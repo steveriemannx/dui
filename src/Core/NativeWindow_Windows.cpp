@@ -27,6 +27,12 @@
 #ifndef DWMWA_WINDOW_CORNER_PREFERENCE
 #define DWMWA_WINDOW_CORNER_PREFERENCE 33
 #endif
+#ifndef DWMWA_TRANSITIONS_FORCEDISABLED
+#define DWMWA_TRANSITIONS_FORCEDISABLED 3
+#endif
+#ifndef DWMWA_CLOAK
+#define DWMWA_CLOAK 13
+#endif
 #ifndef DWMWA_BORDER_COLOR
 #define DWMWA_BORDER_COLOR 34
 #endif
@@ -60,6 +66,7 @@ NativeWindow_Windows::NativeWindow_Windows(INativeWindow* pOwner):
     m_hParentWnd(nullptr),
     m_hDcPaint(nullptr),
     m_bIsLayeredWindow(false),
+    m_bDwmStartupCloaked(false),
     m_nLayeredWindowAlpha(255),
     m_nLayeredWindowOpacity(255),
     m_systemShadowType(NativeWindowShadowType::kShadowSystemDisabled),
@@ -219,7 +226,10 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
     wc.lpfnWndProc = NativeWindow_Windows::__WndProc;
     wc.hInstance = hModule;
     wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-    wc.hbrBackground = nullptr;
+    // Match the default Windows 11 theme while the first Skia frame is not
+    // available yet. This prevents a white native surface from flashing.
+    HBRUSH hBackgroundBrush = ::CreateSolidBrush(RGB(243, 243, 243));
+    wc.hbrBackground = hBackgroundBrush;
     wc.lpszMenuName = nullptr;
     wc.lpszClassName = className.c_str();
     wc.hIcon = nullptr;
@@ -228,13 +238,20 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
     ATOM ret = ::RegisterClassEx(&wc);
     bool bRet = (ret != 0 || ::GetLastError() == ERROR_CLASS_ALREADY_EXISTS);
     ASSERT(bRet);
+    if (ret == 0 && hBackgroundBrush != nullptr) {
+        ::DeleteObject(hBackgroundBrush);
+        hBackgroundBrush = nullptr;
+    }
     if (!bRet) {
         return false;
     }
 
     //Unregister the ATOM when the module exits
-    GlobalManager::Instance().AddAtExitFunction([className, hModule]() {
+    GlobalManager::Instance().AddAtExitFunction([className, hModule, hBackgroundBrush]() {
         ::UnregisterClassW(className.c_str(), hModule);
+        if (hBackgroundBrush != nullptr) {
+            ::DeleteObject(hBackgroundBrush);
+        }
         });
 
     //Save the parameters
@@ -282,6 +299,18 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
     if (m_hWnd == nullptr) {
         m_hParentWnd = nullptr;
         return false;
+    }
+    // Do not let the Windows 11 open transition expose the unpainted native
+    // surface before the first Skia frame has been presented.
+    BOOL bDisableDwmTransitions = TRUE;
+    ::DwmSetWindowAttribute(m_hWnd, DWMWA_TRANSITIONS_FORCEDISABLED,
+                            &bDisableDwmTransitions, sizeof(bDisableDwmTransitions));
+    if (!IsChildWindow()) {
+        BOOL bCloak = TRUE;
+        if (SUCCEEDED(::DwmSetWindowAttribute(m_hWnd, DWMWA_CLOAK,
+                                              &bCloak, sizeof(bCloak)))) {
+            m_bDwmStartupCloaked = true;
+        }
     }
     if (IsLayeredWindow() && IsWindowVisible()) {
         //For layered windows, drawing must be triggered manually; otherwise the window may not draw after creation
@@ -1039,6 +1068,14 @@ bool NativeWindow_Windows::ShowWindow(ShowWindowCommands nCmdShow)
         // Paint the first frame synchronously so the newly shown window does
         // not briefly expose the default white client surface.
         ::UpdateWindow(m_hWnd);
+        if (m_bDwmStartupCloaked) {
+            // Wait until DWM has accepted the first painted frame before
+            // making the window visible to the compositor.
+            ::DwmFlush();
+            BOOL bCloak = FALSE;
+            ::DwmSetWindowAttribute(m_hWnd, DWMWA_CLOAK, &bCloak, sizeof(bCloak));
+            m_bDwmStartupCloaked = false;
+        }
     }
     if (IsLayeredWindow() && IsWindowVisible()) {
         //For layered windows, drawing must be triggered manually; otherwise the window may not draw after creation

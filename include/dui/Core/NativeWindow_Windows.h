@@ -744,6 +744,10 @@ private:
     //Whether it is a layered window
     bool m_bIsLayeredWindow;
 
+    //Whether the window is temporarily hidden from DWM until its first frame
+    //has been painted
+    bool m_bDwmStartupCloaked;
+
     //Current OS-provided shadow state (Windows DWM); kShadowSystemDisabled when
     //the window uses a self-drawn shadow instead
     NativeWindowShadowType m_systemShadowType;
@@ -858,4 +862,3 @@ typedef NativeWindow_Windows NativeWindow;
 #endif //DUI_BUILD_FOR_WIN
 
 #endif // UI_CORE_NATIVE_WINDOW_WINDOWS_H_
-
