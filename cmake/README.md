@@ -115,14 +115,16 @@ set(CMAKE_CXX_STANDARD 20)             # C++20
 set(CMAKE_CXX_STANDARD_REQUIRED ON)    # C++20 required
 ```
 
-#### 2.2 Path configuration
+#### 2.2 Target-local configuration
 ```cmake
-include_directories(${DUI_ROOT})              # dui root directory
-include_directories(${DUI_PROJECT_SRC_DIR})   # project source directory
-link_directories("${DUI_LIB_PATH}")           # dui library directory
-link_directories("${DUI_SKIA_LIB_PATH}")      # Skia library directory
-link_directories("${DUI_SDL_LIB_PATH}")       # SDL library directory (if enabled)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${DUI_ROOT} ${DUI_ROOT}/include ${DUI_PROJECT_SRC_DIR}
+)
+target_link_libraries(${PROJECT_NAME} PRIVATE dui dui_skia_libs)
 ```
+
+Native targets use target-level include, definition, and link settings. Global
+directory-wide include/link configuration is intentionally avoided.
 
 #### 2.3 Output directory
 ```cmake
@@ -131,8 +133,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${DUI_BIN_PATH}")
 
 #### 2.4 Source collection
 ```cmake
-aux_source_directory(${DUI_PROJECT_SRC_DIR} SRC_FILES)
-# Subdirectories are supported via the DUI_SRC_SUB_DIRS variable
+file(GLOB SRC_FILES CONFIGURE_DEPENDS
+    "${DUI_PROJECT_SRC_DIR}/*.c"
+    "${DUI_PROJECT_SRC_DIR}/*.cc"
+    "${DUI_PROJECT_SRC_DIR}/*.cpp"
+    "${DUI_PROJECT_SRC_DIR}/*.mm"
+)
+# Subdirectories are collected with the same CONFIGURE_DEPENDS patterns.
 ```
 
 #### 2.5 Platform dispatch
@@ -168,14 +175,16 @@ endif()
 
 #### 3.2 MSVC compile options
 ```cmake
-add_compile_options("/utf-8")                      # UTF-8 source encoding
-add_compile_options($<$<COMPILE_LANGUAGE:C>:/MP${CPU_CORES}>)   # Multi-core compile
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/MP${CPU_CORES}>)
+target_compile_options(${PROJECT_NAME} PRIVATE
+    "/utf-8"
+    $<$<COMPILE_LANGUAGE:C>:/MP${CPU_CORES}>
+    $<$<COMPILE_LANGUAGE:CXX>:/MP${CPU_CORES}>
+)
 ```
 
 #### 3.3 Unicode encoding
 ```cmake
-add_definitions(-DUNICODE -D_UNICODE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
 ```
 
 #### 3.4 MinGW-w64 special handling

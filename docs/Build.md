@@ -53,6 +53,33 @@ Note 2: if dui uses dynamic runtime libraries, the Skia library must also use dy
 ```
 The compiled example programs are in the bin directory.
 
+### IV. Top-level CMake examples, tests, and installation
+
+The repository's top-level CMake build supports all three example development
+modes. Use `DUI_EXAMPLES_MODE=ALL|XML|GEN|CODE`; `ALL` is the default. To avoid
+large optional downloads while validating the native examples:
+
+```bat
+cmake -S . -B build -DDUI_BUILD_CEF_EXAMPLES=OFF -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF -DDUI_EXAMPLES_MODE=ALL
+cmake --build build --target hello hello_gen hello_code --config Release
+```
+
+The default tests are enabled with `DUI_BUILD_TESTS=ON` and run through CTest:
+
+```bat
+cmake -S . -B build -DDUI_BUILD_TESTS=ON
+cmake --build build --target dui_core_tests --config Release
+ctest --test-dir build -C Release --output-on-failure
+```
+
+The library install package exports `dui::dui` and `dui::dui_entry`:
+
+```bat
+cmake --install build --prefix D:/dui-install
+```
+
+Consumers use `find_package(dui CONFIG REQUIRED)` and link `dui::dui`.
+
 ### III. Notes for Visual Studio (sln) builds
 1. CEF module notes:    
 (1) The CEF module depends on the Windows 11 SDK; a lower SDK version will cause build errors.    

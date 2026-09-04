@@ -67,7 +67,9 @@ void <FormName>::OnInitWindow()
 ```
 
 ### 4. Generate the XML layout file
-Create `<skin_file>.xml` under `bin/resources/themes/default/<skin_folder>/`:
+Create `<skin_file>.xml` under `resources/themes/default/<skin_folder>/`:
+
+`bin/resources/` is a generated runtime copy and must not be edited directly.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

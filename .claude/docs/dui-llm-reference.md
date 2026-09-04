@@ -555,10 +555,11 @@ Child controls use the `row_span`/`col_span` attributes to merge cells.
 | hscrollbar_class | string | Horizontal scrollbar style |
 
 ## 9. File Path Conventions
-- Theme resource root directory: `bin/resources/themes/default/`
-- Global configuration: `bin/resources/themes/default/global.xml`
-- Window XML: `bin/resources/themes/default/<skin_folder>/<skin_file>.xml`
-- Common images: `bin/resources/themes/default/public/`
+- Theme source root directory: `resources/themes/default/`
+- Runtime theme copy: `bin/resources/themes/default/` (generated at configure time)
+- Global configuration: `resources/themes/default/global.xml`
+- Window XML: `resources/themes/default/<skin_folder>/<skin_file>.xml`
+- Common images: `resources/themes/default/public/`
 - Font files: `bin/resources/fonts/`
-- Language files: `bin/resources/themes/default/lang/` (zh_CN.txt, en_US.txt)
+- Language files: `resources/themes/default/lang/` (zh_CN.txt, en_US.txt)
 - Example source code: `examples/<example_name>/`

@@ -1,17 +1,18 @@
 # Three Modes: XML / XML-to-code Generation / Pure Code
 
-dui supports three UI development modes, and all 18 non-CEF examples provide versions of all three modes.
+dui supports three UI development modes. The XML, XML-to-code, and pure-code example
+variants are selected independently by the top-level CMake build.
 
 ## Mode 1: XML Mode (traditional)
 
-- Layout is written in `bin/resources/themes/default/<skin>/<file>.xml` and parsed at runtime by WindowBuilder
-- Examples: 22 original examples (`examples/basic`, `examples/controls`, ...)
+- Layout is edited in `resources/themes/<theme>/<skin>/<file>.xml` and parsed at runtime by WindowBuilder
+- Configure-time resource synchronization copies the source tree to the runtime `bin/resources/` directory
 - The window overrides `GetSkinFolder()` / `GetSkinFile()` to return the layout file
 
 ## Mode 2: XML-to-code Generation (XML is the design-time format)
 
 - **Workflow**: write/debug the UI in XML (parsed at runtime for immediate visual feedback) → at build time `tools/xml_to_code.cpp` converts the XML into pure C++ code → the final program has zero layout XML parsing
-- Examples: `examples/<name>_gen` (18 of them); build-time generation produces `generated_ui.inc`, and `MainForm::OnInitWindow` calls the generated `InitXxx(this)`
+- Examples: `examples/<name>_gen`; build-time generation produces `generated_ui.inc` in the build tree, and `MainForm::OnInitWindow` calls the generated `InitXxx(this)`
 - CMake configuration (see `cmake/dui_gen_code.cmake`):
   ```cmake
   set(GEN_XML_FILES layout.xml)     # Layout XML list (multiple files supported)
@@ -21,20 +22,21 @@ dui supports three UI development modes, and all 18 non-CEF examples provide ver
 - The generator supports: all control class names (aligned with the WindowBuilder factory table), `<Include src="x.xml" count="n"/>` expansion, `<RichText>` rich text content, and window-level `<Class>/<Font>/<TextColor>/<DefaultFontFamilyNames>` definitions
 - **Events**: `on_click`/`on_select` attributes and `<Event>` tags are skipped; they must be wired up manually in `MainForm::OnInitWindow` (`FindControl` + `AttachClick/AttachSelect`)
 - **Item templates** (files whose root element is `ListBoxItem`/`TreeNode`): not generated; build the Item classes in code
-- `GEN_AUTO_EMBED` (image embedding) is available on Linux only (depends on memfd_create); keep it OFF on macOS, where images are read from disk
+- Embedded-resource examples use `dui_embed_res.cmake`; generated and pure-code hello variants embed their selected theme resources on macOS and Windows
 
 ## Mode 3: Pure Code Mode
 
 - The layout is built entirely in C++ code — no layout XML at all, no build-time generator
-- Examples: `examples/<name>_code` (18 of them); `MainForm::BuildUI()` uses `new ui::Xxx(this)` + `SetAttribute()` + `AddItem()`, and finally `AttachBox(pRoot)`
-- Window properties are set in `GetCreateWindowAttributes()`; the control `name` must match the `FindControl` references in the logic code
-- The theme (fonts/colors/global Class) is provided automatically by `GlobalManager::Startup` parsing the `global.xml` on disk; window-level Classes are registered with `AddClass()`
+- Examples: `examples/<name>_code`; `MainForm::BuildUI()` uses `ui::Create`/`ui::Attach` (or equivalent `new ui::Xxx` + `SetAttribute` + `AddItem`) and finally attaches the root box
+- Window properties are set in the window initialization code; the control `name` must match the `FindControl` references in the logic code
+- The theme (fonts/colors/global Class) is provided by `GlobalManager::Startup`; embedded-resource examples use `MemoryResParam`, while disk-backed examples use `LocalFilesResParam`
 
 ## Common Conventions
 
 - Window creation is identical in all three modes: `CreateWnd` → `ShowWindow`
 - Title bar buttons (minbtn/maxbtn/restorebtn/closebtn/fullscreenbtn) are wired up automatically by `WindowImplBase`
-- Images/fonts/themes are read from the `bin/resources/` directory on disk (`Startup(LocalFilesResParam(module directory + "resources\\"))`)
+- XML mode reads runtime resources from `bin/resources/`; generated/pure-code examples may embed resources and use `MemoryResParam`
+- Generated control trees call `SetArrange(false)` after the root is attached so the first paint performs a complete final layout
 
 ## Internal Library Skin Assets (documented exception)
 
@@ -70,13 +72,13 @@ Library support (on the dui side):
 The repository uses **top-level CMake management** (following the develop2 branch): the root CMakeLists.txt uniformly manages dui, the third-party libraries, and all examples.
 
 ```bash
-# Top-level build (default: configure + build everything at once; use --target <example name> to build only a single target)
+# Top-level build (default: configure + build everything at once; use --target to build selected targets)
 ./scripts/macos_build.sh                 # macOS
 ./scripts/linux_build.sh                 # Linux
 ./scripts/linux_build_wayland.sh         # Linux (Wayland)
 ./scripts/macos_build.sh --fresh         # clean and re-configure
 
-# Per-example standalone build (old way)
+# Per-example standalone build (legacy workflow)
 ./scripts/macos_build.sh --standalone
 ```
 
@@ -91,3 +93,37 @@ make -j6          # builds everything at once; make basic etc. builds only a sin
 - The third-party libraries are vendored under `third_party/`; skia and SDL3 are built automatically by the top-level build (`dui_skia` / `dui_sdl` targets) when their libraries are missing
 - Platform notes: WebView2/WebView2Browser are Windows-only
 - Each example directory is still an independent CMake project and can be built alone with `cmake -S examples/<name> -B build/...`
+
+### Selecting Example Modes
+
+Use one top-level build directory and select the example family at configure time:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DDUI_BUILD_CEF_EXAMPLES=OFF -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF \
+  -DDUI_EXAMPLES_MODE=ALL
+cmake --build build --target hello hello_gen hello_code
+```
+
+`XML`, `GEN`, and `CODE` select only the corresponding example family. `ALL`
+includes all three families. CEF and WebView2 examples are only considered in
+the `ALL` and `XML` modes.
+
+### Tests and Installation
+
+Enable the default non-GUI tests with `DUI_BUILD_TESTS=ON`:
+
+```bash
+cmake -S . -B build -DDUI_BUILD_TESTS=ON
+cmake --build build --target dui_core_tests
+ctest --test-dir build --output-on-failure
+```
+
+The install package exports `dui::dui` and `dui::dui_entry`:
+
+```bash
+cmake --install build --prefix /path/to/dui-install
+```
+
+An installed CMake consumer can use `find_package(dui CONFIG REQUIRED)` and
+link `dui::dui`.

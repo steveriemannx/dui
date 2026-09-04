@@ -2,7 +2,11 @@
 
 The Global style provides a common style list, avoiding redundant code caused by repeating the same descriptions in multiple XML files and saving developers time spent on UI setup.
 
-After calling the GlobalManager::Startup method, [global.xml](../bin/resources/themes/default/global.xml) is looked up under the configured skin resource path as the global style resource. In the existing samples example code,
+After calling the GlobalManager::Startup method, `global.xml` is looked up under
+the configured resource path as the global style resource. Edit the source file
+at [resources/themes/default/global.xml](../resources/themes/default/global.xml);
+the runtime copy under `bin/resources/` is generated during configuration.
+In the existing samples example code,
 some preset global styles are included, such as fonts, colors and some common styles.
 
 ## 1. Default font names (DefaultFontFamilyNames)
@@ -15,7 +19,9 @@ The setting above determines the default font name in the order of Microsoft YaH
 
 ## 2. Fonts (Font)
 
-If you want to add a font, add the following code to [global.xml](../bin/resources/themes/default/global.xml). After the program starts, all fonts in the list are loaded into the cache, distinguished by their ID.
+If you want to add a font, add the following code to
+[global.xml](../resources/themes/default/global.xml). After the program starts,
+all fonts in the list are loaded into the cache, distinguished by their ID.
 
 ```xml
 <!-- name is the font name, size is the font size, bold specifies whether the text is bold, underline specifies whether it contains an underline -->

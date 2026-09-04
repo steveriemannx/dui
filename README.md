@@ -15,7 +15,7 @@ Besides the English translation, the project structure has been reorganized comp
 
 dui supports three ways to build a UI; every example provides all three variants (`examples/<name>`, `examples/<name>_gen`, `examples/<name>_code`):
 
-1. **XML mode** — the UI is described in XML (`bin/resources/themes/default/<skin>/<file>.xml`) and parsed at runtime; the classic workflow.
+1. **XML mode** — the UI is edited in source XML (`resources/themes/<theme>/<skin>/<file>.xml`), synchronized to `bin/resources/` at configure time, and parsed at runtime; the classic workflow.
 2. **XML-to-code generation mode** (`*_gen`) — the XML is converted into pure C++ code at build time (`generated_ui.inc`), so the final program has no layout-XML parsing while the XML remains the design-time format.
 3. **Pure code mode** (`*_code`) — the UI is built entirely in C++ (`new ui::Xxx` + `SetAttribute` + `AddItem`), with no XML involved.
 
