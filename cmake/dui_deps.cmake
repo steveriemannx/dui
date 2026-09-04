@@ -1,14 +1,13 @@
 # dui_deps.cmake
-# Dependency management for Skia / SDL3 / CEF:
-#   - Skia and SDL3 sources are vendored as zip downloads (third_party/skia, third_party/SDL3);
+# Dependency management for Skia / CEF:
+#   - Skia sources are vendored as zip downloads (third_party/skia);
 #     when missing they are downloaded and extracted automatically at configure time
 #     (see dui_deps_download_skia / dui_deps_download_sdl below), so they are present
 #     at configure time (src/CMakeLists.txt compiles skia's tools/window sources directly
 #     into the dui library). The zip archives are kept in third_party/downloads/
 #     (gitignored) so that deleting the extracted source and reconfiguring re-extracts
 #     from the cached archive without re-downloading.
-#   - The actual BUILD happens at make time via add_custom_target (dui_skia / dui_sdl):
-#     Skia is built with gn + ninja, SDL3 with cmake --build --target install into the build dir.
+#   - The actual BUILD happens at make time via add_custom_target (dui_skia).
 #   - CEF is a binary distribution (not source); when missing it is downloaded and extracted
 #     automatically at configure time (URLs follow docs/CEF.md). Its archive is also cached
 #     in third_party/downloads/.
@@ -17,11 +16,6 @@
 
 # ---- Configure-time: source guards, skia args.gn, CEF download ----
 function(dui_deps_configure)
-    # SDL3/Skia source zips (idempotent; the fetch scripts are the manual/offline equivalent).
-    # Download order: SDL3 first, then skia (mirrors the make-time build order).
-    if(DUI_ENABLE_SDL)
-        dui_deps_download_sdl()
-    endif()
     dui_deps_download_skia()
     dui_deps_download_gn()
 
@@ -51,13 +45,6 @@ function(dui_deps_configure)
             "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip\n"
             "into ${DUI_SKIA_SRC_ROOT_DIR} manually.\n"
             "(or set -DDUI_BUILD_SKIA_FROM_SOURCE=OFF and provide Skia yourself)")
-    endif()
-    if(DUI_ENABLE_SDL AND NOT EXISTS "${DUI_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
-        message(FATAL_ERROR
-            "SDL3 source not found at ${DUI_SDL_SRC_ROOT_DIR}.\n"
-            "The automatic clone failed; retry cmake configure, or run manually:\n"
-            "  git clone --depth 1 https://github.com/libsdl-org/SDL.git ${DUI_SDL_SRC_ROOT_DIR}\n"
-            "(or set -DDUI_BUILD_SDL_FROM_SOURCE=OFF and provide SDL3 yourself)")
     endif()
 
     # Write Skia's args.gn now (gn gen reads it at make time; DEPENDS on it re-triggers gn gen
@@ -399,51 +386,6 @@ function(dui_deps_add_targets)
         add_dependencies(dui_skia_libs dui_skia)
     endif()
 
-    # ---- SDL3: cmake configure + build + install into the build dir (keeps the source dir clean).
-    if(DUI_ENABLE_SDL AND DUI_BUILD_SDL_FROM_SOURCE)
-        if(NOT EXISTS "${DUI_SDL_SRC_ROOT_DIR}/lib" AND NOT EXISTS "${DUI_SDL_SRC_ROOT_DIR}/lib64")
-            set(SDL_BUILD_DIR "${CMAKE_BINARY_DIR}/sdl3-build")
-            set(SDL_INSTALL_DIR "${CMAKE_BINARY_DIR}/sdl3-install")
-            set(SDL_STAMP "${SDL_INSTALL_DIR}/.dui_built")
-
-            set(_sdl_build_type "${CMAKE_BUILD_TYPE}")
-            if(NOT _sdl_build_type)
-                set(_sdl_build_type Release)
-            endif()
-
-            # On MSVC the linked library name is SDL3-static.lib -> build SDL statically there.
-            # Note: SDL static builds default to /MD; with -DDUI_MD=OFF (/MT) there may be a
-            # runtime library mismatch.
-            set(_sdl_shared ON)
-            set(_sdl_static OFF)
-            if(DUI_OS_WINDOWS AND NOT MINGW)
-                set(_sdl_shared OFF)
-                set(_sdl_static ON)
-            endif()
-
-            add_custom_command(
-                OUTPUT "${SDL_STAMP}"
-                COMMAND ${CMAKE_COMMAND} -S "${DUI_SDL_SRC_ROOT_DIR}" -B "${SDL_BUILD_DIR}"
-                    -DCMAKE_INSTALL_PREFIX=${SDL_INSTALL_DIR}
-                    -DCMAKE_INSTALL_LIBDIR=lib
-                    -DSDL_SHARED=${_sdl_shared} -DSDL_STATIC=${_sdl_static}
-                    -DSDL_TEST_LIBRARY=OFF
-                    -DCMAKE_BUILD_TYPE=${_sdl_build_type}
-                COMMAND ${CMAKE_COMMAND} --build "${SDL_BUILD_DIR}" --target install
-                COMMAND ${CMAKE_COMMAND} -E touch "${SDL_STAMP}"
-                DEPENDS "${DUI_SDL_SRC_ROOT_DIR}/CMakeLists.txt"
-                COMMENT "Building SDL3 (cmake --build --target install)..."
-                USES_TERMINAL VERBATIM
-            )
-            add_custom_target(dui_sdl DEPENDS "${SDL_STAMP}")
-            # Build order: gn first, then SDL3 (and skia after that)
-            if(TARGET dui_gn)
-                add_dependencies(dui_sdl dui_gn)
-            endif()
-        else()
-            message(STATUS "Using prebuilt SDL3: ${DUI_SDL_SRC_ROOT_DIR}")
-        endif()
-    endif()
 endfunction()
 
 # ---- Download helper: verify cached archive, retry on failure (shared by skia/SDL3/CEF/WebView2) ----
@@ -568,43 +510,6 @@ function(dui_deps_download_skia)
     file(WRITE "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" "${_skia_version}")
     message(STATUS "Skia source ready: ${DUI_SKIA_SRC_ROOT_DIR} (${_skia_version})")
 endfunction()
-
-# ---- SDL3 source: shallow clone (idempotent; fetched at configure time) ----
-# git clone --depth 1 of the main branch (matches nim_duilib's "clone latest";
-# --depth 1 keeps it small - no full history). SDL 3.4.14's macOS cocoa backend
-# breaks clicks on custom title-bar buttons of system-shadow (titled) windows;
-# fixed on the main branch (3.5.0+).
-function(dui_deps_download_sdl)
-    if(EXISTS "${DUI_SDL_SRC_ROOT_DIR}/.git")
-        message(STATUS "SDL3 source present (git): ${DUI_SDL_SRC_ROOT_DIR}")
-        return()
-    endif()
-    if(EXISTS "${DUI_SDL_SRC_ROOT_DIR}/CMakeLists.txt")
-        message(STATUS "SDL3 source present: ${DUI_SDL_SRC_ROOT_DIR}")
-        return()
-    endif()
-
-    set(_sdl_tmp_dir "${DUI_SDL_SRC_ROOT_DIR}.tmp")
-    file(REMOVE_RECURSE "${_sdl_tmp_dir}")
-
-    set(_attempt 0)
-    while(_attempt LESS 3)
-        math(EXPR _attempt "${_attempt}+1")
-        message(STATUS "Shallow-cloning SDL3 (attempt ${_attempt}/3)...")
-        execute_process(
-            COMMAND git clone --depth 1 https://github.com/libsdl-org/SDL.git "${_sdl_tmp_dir}"
-            RESULT_VARIABLE _sdl_clone_result
-            OUTPUT_QUIET ERROR_QUIET)
-        if(_sdl_clone_result EQUAL 0 AND EXISTS "${_sdl_tmp_dir}/CMakeLists.txt")
-            file(RENAME "${_sdl_tmp_dir}" "${DUI_SDL_SRC_ROOT_DIR}")
-            message(STATUS "SDL3 source ready (cloned): ${DUI_SDL_SRC_ROOT_DIR}")
-            return()
-        endif()
-        file(REMOVE_RECURSE "${_sdl_tmp_dir}")
-    endwhile()
-    message(FATAL_ERROR "Failed to clone SDL3 source from https://github.com/libsdl-org/SDL.git")
-endfunction()
-
 
 # ---- GN source clone (idempotent; the build itself happens at make time) ----
 # Building skia requires gn. Prebuilt CIPD binaries only cover amd64 reliably, so clone the

@@ -26,8 +26,3 @@ set(EMBED_RES_PATHS
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
 
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")
-
-# Path to the SDL library headers (ChildWindowPaint_SDL.cpp uses SDL headers directly)
-if(DUI_ENABLE_SDL)
-    include_directories("${DUI_SDL_SRC_ROOT_DIR}/include")
-endif()

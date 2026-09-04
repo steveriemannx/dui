@@ -48,26 +48,26 @@ endif()
 # Switch for the skia lib subdirectory name (by default Windows assembles the path by rules; other platforms can pin a fixed directory, e.g. the llvm build)
 option(DUI_SKIA_LIB_SUBPATH "Skia lib sub path" OFF)
 
-# Wayland support (optional on Linux; replaces SDL)
-if(DUI_OS_LINUX)
-    option(DUI_ENABLE_WAYLAND "Enable Wayland (alternative to SDL)" OFF)
+# Linux and FreeBSD use native X11 by default and can opt into Wayland.
+if(DUI_OS_LINUX OR DUI_OS_FREEBSD)
+    option(DUI_ENABLE_WAYLAND "Enable the native Wayland backend" OFF)
 endif()
 
-# SDL support: removed on Windows (native Win32/DWM backend only) and macOS
-# (native Cocoa/AppKit backend only); on by default on other platforms.
-# If Wayland is enabled, SDL is disabled by default.
-if(DUI_OS_WINDOWS OR DUI_OS_MACOS)
-    # Pin the cache variable OFF so an old cache value or a script
-    # -DDUI_ENABLE_SDL=ON can never re-enable it.
-    set(DUI_ENABLE_SDL OFF CACHE BOOL "Enable SDL (Windows/macOS: always OFF)" FORCE)
+if(DUI_OS_LINUX)
+    set(DUI_EXAMPLE_THEME gnome46 CACHE STRING "Theme used by Linux examples" FORCE)
+elseif(DUI_OS_FREEBSD)
+    set(DUI_EXAMPLE_THEME freebsd CACHE STRING "Theme used by FreeBSD examples" FORCE)
+elseif(DUI_OS_WINDOWS)
+    set(DUI_EXAMPLE_THEME windows11 CACHE STRING "Theme used by Windows examples" FORCE)
+elseif(DUI_OS_MACOS)
+    set(DUI_EXAMPLE_THEME macos26 CACHE STRING "Theme used by macOS examples" FORCE)
 else()
-    if(DUI_ENABLE_WAYLAND)
-        set(DUI_ENABLE_SDL_DEFAULT OFF)
-    else()
-        set(DUI_ENABLE_SDL_DEFAULT ON)
-    endif()
-    option(DUI_ENABLE_SDL "Enable SDL" ${DUI_ENABLE_SDL_DEFAULT})
+    set(DUI_EXAMPLE_THEME default CACHE STRING "Theme used by examples" FORCE)
 endif()
+
+# SDL has been removed from every supported platform. Pin the cache entry so
+# stale build directories cannot select the deleted backend.
+set(DUI_ENABLE_SDL OFF CACHE BOOL "SDL is not supported" FORCE)
 
 # CEF support: off by default, only enabled by specific projects
 option(DUI_ENABLE_CEF "Enable CEF" OFF)
@@ -198,37 +198,12 @@ set(DUI_SKIA_LIBS svg skshaper skottie sksg jsonreader skia)
 # ON: auto-build with gn + ninja; OFF: use a prebuilt Skia you provide yourself.
 option(DUI_BUILD_SKIA_FROM_SOURCE "Build Skia from the downloaded source (gn + ninja)" ON)
 
-# Build SDL3 from the shallow-cloned source at make time (see cmake/dui_deps.cmake: dui_sdl target).
-# ON: auto-build with cmake; OFF: use a prebuilt SDL3 you provide yourself.
-option(DUI_BUILD_SDL_FROM_SOURCE "Build SDL3 from the downloaded source" ON)
-
-# SDL source root and library directories (optional on Windows, required on other platforms)
-if(DUI_ENABLE_SDL)
-    get_filename_component(DUI_SDL_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/SDL3/" ABSOLUTE)
-    if(EXISTS "${DUI_SDL_SRC_ROOT_DIR}/lib64/")
-        set(DUI_SDL_LIB_PATH "${DUI_SDL_SRC_ROOT_DIR}/lib64")
-    elseif(EXISTS "${DUI_SDL_SRC_ROOT_DIR}/lib/")
-        set(DUI_SDL_LIB_PATH "${DUI_SDL_SRC_ROOT_DIR}/lib")
-    elseif(DUI_BUILD_SDL_FROM_SOURCE)
-        # SDL3 built from the fetched source at make time; installed into the build directory
-        set(DUI_SDL_LIB_PATH "${CMAKE_BINARY_DIR}/sdl3-install/lib")
-    else()
-        set(DUI_SDL_LIB_PATH "${DUI_SDL_SRC_ROOT_DIR}/lib")
-    endif()
-    if(DUI_OS_WINDOWS AND NOT MINGW)
-        set(DUI_SDL_LIBS SDL3-static.lib)
-    else()
-        set(DUI_SDL_LIBS SDL3)
-    endif()
-endif()
-
-# Wayland library (optional on Linux; replaces SDL)
+# Native Wayland libraries (optional on Linux and FreeBSD).
 if(DUI_ENABLE_WAYLAND)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(WAYLAND_CLIENT REQUIRED wayland-client)
     pkg_check_modules(WAYLAND_EGL REQUIRED wayland-egl)
     pkg_check_modules(WAYLAND_CURSOR REQUIRED wayland-cursor)
-    pkg_check_modules(WLROOTS REQUIRED wlroots-0.18)
     pkg_check_modules(XKBCOMMON REQUIRED xkbcommon)
     pkg_check_modules(EGL REQUIRED egl)
     pkg_check_modules(GLESV2 REQUIRED glesv2)
@@ -238,7 +213,6 @@ if(DUI_ENABLE_WAYLAND)
         ${WAYLAND_CLIENT_LIBRARIES}
         ${WAYLAND_EGL_LIBRARIES}
         ${WAYLAND_CURSOR_LIBRARIES}
-        ${WLROOTS_LIBRARIES}
         ${XKBCOMMON_LIBRARIES}
         ${EGL_LIBRARIES}
         ${GLESV2_LIBRARIES}
@@ -247,7 +221,6 @@ if(DUI_ENABLE_WAYLAND)
         ${WAYLAND_CLIENT_INCLUDE_DIRS}
         ${WAYLAND_EGL_INCLUDE_DIRS}
         ${WAYLAND_CURSOR_INCLUDE_DIRS}
-        ${WLROOTS_INCLUDE_DIRS}
         ${XKBCOMMON_INCLUDE_DIRS}
         ${EGL_INCLUDE_DIRS}
         ${GLESV2_INCLUDE_DIRS}
@@ -328,12 +301,6 @@ if(DUI_LOG)
         message(STATUS "") 
     endif()
     
-    message(STATUS "DUI_ENABLE_SDL: ${DUI_ENABLE_SDL}")
-    if(DUI_ENABLE_SDL)        
-        message(STATUS "DUI_SDL_SRC_ROOT_DIR: ${DUI_SDL_SRC_ROOT_DIR}")
-        message(STATUS "DUI_SDL_LIB_PATH: ${DUI_SDL_LIB_PATH}")
-        message(STATUS "DUI_SDL_LIBS: ${DUI_SDL_LIBS}")
-    endif()
     message(STATUS "DUI_ENABLE_WAYLAND: ${DUI_ENABLE_WAYLAND}")
     if(DUI_ENABLE_WAYLAND)
         message(STATUS "DUI_WAYLAND_LIBS: ${DUI_WAYLAND_LIBS}")
@@ -342,12 +309,31 @@ if(DUI_LOG)
     message(STATUS "")
 endif()
 
-# ---- Resources remain in the repository root; binaries load them directly.
+# ---- Copy resources once per configured output configuration.
 function(dui_sync_resources)
-    message(STATUS "Resources are loaded directly from ${DUI_ROOT}/resources")
+    if(NOT EXISTS "${DUI_ROOT}/resources")
+        message(WARNING "Resource directory not found: ${DUI_ROOT}/resources")
+        return()
+    endif()
+
+    if(DUI_OS_MACOS)
+        message(STATUS "Resources are linked into macOS app bundles")
+        return()
+    endif()
+
+    if(DUI_MULTI_CONFIG)
+        foreach(_dui_config Debug Release)
+            file(COPY "${DUI_ROOT}/resources"
+                 DESTINATION "${DUI_BIN_PATH}/${_dui_config}")
+        endforeach()
+        message(STATUS "Copied resources to ${DUI_BIN_PATH}/Debug and ${DUI_BIN_PATH}/Release")
+    else()
+        file(COPY "${DUI_ROOT}/resources" DESTINATION "${DUI_BIN_PATH}")
+        message(STATUS "Copied resources to ${DUI_BIN_PATH}")
+    endif()
 endfunction()
 
-# Dependency management: Skia/SDL3 sources are downloaded/extracted from zips at
+# Dependency management: Skia sources are downloaded/extracted from zips at
 # configure time when missing (see dui_deps.cmake) and are built at make time;
 # CEF is downloaded at configure time when missing.
 # Both functions are idempotent (GLOBAL-property guarded).
@@ -441,4 +427,3 @@ include("${CMAKE_CURRENT_LIST_DIR}/dui_deps.cmake")
 dui_deps_configure()
 dui_deps_add_targets()
 dui_sync_resources()
-

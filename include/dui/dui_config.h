@@ -63,13 +63,13 @@
 #else
     // Non-Windows platforms
     #if (DUI_WAYLAND)
-        //Use Wayland + wlroots window and mouse/keyboard events (replacing SDL)
+        //Use the native Wayland window and input backend.
         #define DUI_BUILD_FOR_WAYLAND 1
     #elif defined(DUI_BUILD_FOR_MACOS)
-        //macOS native (Cocoa/AppKit) backend: SDL is not supported on this platform
+        //macOS native Cocoa/AppKit backend.
     #else
-        //Whether to use SDL window and mouse/keyboard events (currently only SDL3 is supported)
-        #define DUI_BUILD_FOR_SDL    1
+        //Linux and FreeBSD use the native X11 backend by default.
+        #define DUI_BUILD_FOR_X11    1
     #endif
     //Defines whether CEF is supported
     #define DUI_BUILD_FOR_CEF    1
@@ -149,4 +149,3 @@
 #include "dui_string.h"
 
 #endif //DUI_CONFIG_H_
-

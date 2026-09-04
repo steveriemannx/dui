@@ -80,27 +80,7 @@ if(DUI_OS_WINDOWS)
     target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
 endif()
 
-# Development run support: copy the dui resource tree next to the executable.
-# Without this, binaries under build/bin/Release|Debug cannot find themes/global.xml
-# when they use LocalFilesResParam(GetCurrentModuleDirectory() + "resources").
-# On macOS the .app bundle already symlinks bin/resources into the bundle
-# (see dui_bin_macos.cmake), so we must NOT also copy here (the two would collide
-# on the same "resources" name).
-if(NOT DUI_OS_MACOS)
-    if(EXISTS "${DUI_ROOT}/resources")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    "${DUI_ROOT}/resources"
-                    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
-            COMMENT "Copying dui resources next to the executable")
-    endif()
-endif()
-
-# Build-order wiring: the executable links ${DUI_SKIA_LIBS}/${DUI_SDL_LIBS} by name, so the
-# archives built by cmake/dui_deps.cmake must exist before linking (parallel make safety).
+# Build-order wiring for the Skia archive built by cmake/dui_deps.cmake.
 if(TARGET dui_skia)
     add_dependencies(${PROJECT_NAME} dui_skia)
-endif()
-if(TARGET dui_sdl)
-    add_dependencies(${PROJECT_NAME} dui_sdl)
 endif()

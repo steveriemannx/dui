@@ -575,7 +575,15 @@ bool NativeWindow_Windows::SetParentWindow(NativeWindow_Windows* pParentWindow)
 void NativeWindow_Windows::SyncCreateWindowAttributes(const WindowCreateAttributes& createAttributes)
 {
     m_bUseSystemCaption = false;
-    if (createAttributes.m_bUseSystemCaptionDefined && createAttributes.m_bUseSystemCaption) {
+    if (createAttributes.m_bUseSystemCaptionDefined && !createAttributes.m_bUseSystemCaption) {
+        // Create custom-caption windows without the native frame from the start.
+        // Leaving WS_OVERLAPPEDWINDOW in place causes the legacy title bar to
+        // flash before the XML-defined caption is rendered.
+        m_createParam.m_dwStyle &= ~(WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX |
+                                     WS_MAXIMIZEBOX | WS_THICKFRAME | WS_DLGFRAME);
+        m_createParam.m_dwStyle |= WS_POPUP;
+    }
+    else if (createAttributes.m_bUseSystemCaptionDefined && createAttributes.m_bUseSystemCaption) {
         //Use the system title bar
         if (m_createParam.m_dwStyle & WS_POPUP) {
             //Popup window
@@ -1027,6 +1035,11 @@ bool NativeWindow_Windows::ShowWindow(ShowWindowCommands nCmdShow)
         break;
     }
     bRet = ::ShowWindow(m_hWnd, nWindowCmdShow) != FALSE;
+    if (IsWindowVisible()) {
+        // Paint the first frame synchronously so the newly shown window does
+        // not briefly expose the default white client surface.
+        ::UpdateWindow(m_hWnd);
+    }
     if (IsLayeredWindow() && IsWindowVisible()) {
         //For layered windows, drawing must be triggered manually; otherwise the window may not draw after creation
         UiRect rcClient;

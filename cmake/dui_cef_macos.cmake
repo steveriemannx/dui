@@ -132,7 +132,7 @@ if(OS_MAC)
     
     target_link_libraries(${CEF_TARGET}
                              dui dui-cximage dui-webp png_static
-                             ${DUI_SDL_LIBS} dui_skia_libs ${DUI_CEF_LIBS}
+                             dui_skia_libs ${DUI_CEF_LIBS}
                              ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS}
                             "-framework AppKit" "-framework Foundation" "-framework Metal"
                           )
@@ -180,7 +180,7 @@ if(OS_MAC)
         )
         SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target})
          target_link_libraries(${_helper_target}
-             dui dui-cximage dui-webp png_static ${DUI_SDL_LIBS}
+             dui dui-cximage dui-webp png_static
              dui_skia_libs ${DUI_CEF_LIBS} ${CEF_STANDARD_LIBS})
         # Build-order wiring: helpers also link the skia/SDL archives built at make time
         if(TARGET dui_skia)

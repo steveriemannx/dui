@@ -12,8 +12,7 @@ find_library(COREGRAPHICS CoreGraphics)
 # Platform standard libraries
 set(DUI_MACOS_LIBS pthread dl)
 
-# macOS uses the native (Cocoa/AppKit) backend only; SDL is not supported
-# on this platform, so SDL3 is never linked here.
+# macOS uses the native Cocoa/AppKit backend only.
 
 # DUI_ENABLE_CEF controls whether the core library contains CEF support. Only
 # the two CEF examples provide the bundle resources required by this packaging

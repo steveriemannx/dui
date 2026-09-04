@@ -329,6 +329,8 @@ inline int RunWindow(const DString& title, std::function<void(WindowImplBase*)> 
                 return;
             }
             window->PostQuitMsgWhenClosed(true);
+            window->InvalidateAll();
+            window->UpdateWindow();
             window->ShowWindow(kSW_SHOW_NORMAL);
         }
         void OnCleanup() override
@@ -401,6 +403,8 @@ inline int RunXml(const DString& title, const DString& skinFolder, const DString
                 return;
             }
             window->PostQuitMsgWhenClosed(true);
+            window->InvalidateAll();
+            window->UpdateWindow();
             window->ShowWindow(kSW_SHOW_NORMAL);
         }
         void OnCleanup() override
@@ -455,6 +459,8 @@ int RunXml(const DString& title)
                 return;
             }
             window->PostQuitMsgWhenClosed(true);
+            window->InvalidateAll();
+            window->UpdateWindow();
             window->ShowWindow(kSW_SHOW_NORMAL);
         }
 
@@ -502,13 +508,21 @@ int Run(const DString& title, const std::function<void(WindowT*)>& idleCallback 
 
             WindowT* window = new WindowT();
             m_window = window;
-            if (!window->CreateWnd(nullptr, WindowCreateParam(m_title, true))) {
+            WindowCreateParam createParam(m_title, true);
+#if defined(DUI_BUILD_FOR_WIN)
+            // Code-only windows configure their custom caption in OnInitWindow,
+            // which runs after native creation. Start without the system frame.
+            createParam.m_dwStyle = kWS_POPUP;
+#endif
+            if (!window->CreateWnd(nullptr, createParam)) {
                 SystemUtil::ShowMessageBox(nullptr, DUI_T("Failed to create the window."), DUI_T("dui"));
                 delete window;
                 m_window = nullptr;
                 return;
             }
             window->PostQuitMsgWhenClosed(true);
+            window->InvalidateAll();
+            window->UpdateWindow();
             window->ShowWindow(kSW_SHOW_NORMAL);
         }
         void OnCleanup() override

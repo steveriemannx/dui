@@ -3,6 +3,10 @@ if(NOT DUI_OS_LINUX)
     message(FATAL_ERROR "NOT DUI_OS_LINUX!")
 endif()
 
+find_package(Freetype REQUIRED)
+find_package(Fontconfig REQUIRED)
+find_package(X11 REQUIRED)
+
 if(DUI_ENABLE_CEF)
     # Using the CEF module: add the CEF source root to the include path
     include_directories(${DUI_CEF_SRC_ROOT_DIR})
@@ -49,10 +53,7 @@ set(DUI_LINUX_LIBS X11 freetype fontconfig pthread dl)
 if(DUI_ENABLE_WAYLAND)
     target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_WAYLAND=1)
     target_include_directories(${PROJECT_NAME} PRIVATE ${DUI_WAYLAND_INCLUDE_DIRS})
-    set(DUI_WAYLAND_NOX11_LIBS freetype fontconfig pthread dl)
-    target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_WAYLAND_LIBS} ${DUI_SKIA_LIBS} ${DUI_WAYLAND_NOX11_LIBS})
+    target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_WAYLAND_LIBS} ${DUI_SKIA_LIBS} freetype fontconfig pthread dl)
 else()
-    # Libraries required on Linux (SDL3)
-    target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_LINUX_LIBS})
+    target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_LINUX_LIBS})
 endif()
-

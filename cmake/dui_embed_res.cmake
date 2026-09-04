@@ -30,6 +30,9 @@ endif()
 set(EMBED_RES_FILTERS)
 if(DEFINED EMBED_RES_PATHS)
     foreach(_p ${EMBED_RES_PATHS})
+        if(DUI_EXAMPLE_THEME AND "${_p}" MATCHES "^themes/default(/|$)")
+            string(REPLACE "themes/default" "themes/${DUI_EXAMPLE_THEME}" _p "${_p}")
+        endif()
         if(IS_ABSOLUTE "${_p}")
             file(RELATIVE_PATH _relp "${EMBED_RES_DIR}" "${_p}")
         else()
@@ -66,6 +69,7 @@ if(DUI_OS_WINDOWS)
 else()
     # macOS / Linux / FreeBSD: compile from source at build time
     set(TOOL_EXE "${TOOL_BIN}")
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/tools")
     add_custom_command(
         OUTPUT "${TOOL_EXE}"
         COMMAND ${CMAKE_CXX_COMPILER} -std=c++17 -O2 "${TOOL_SRC}" -o "${TOOL_EXE}"

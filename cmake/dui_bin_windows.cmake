@@ -146,14 +146,21 @@ endif()
 if(DUI_ENABLE_CEF)
     target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_CEF=1)
 
-    # Stage the CEF runtime (libcef.dll, icudtl.dat, locales, ...) next to the
-    # executable. CefManager_Windows looks for "<exe_dir>/cef_binary"; this makes
-    # cef/CefBrowser examples run from any build directory name (no manual copy).
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy_directory
-                               "${DUI_CEF_SRC_ROOT_DIR}/Release"
-                               "$<TARGET_FILE_DIR:${PROJECT_NAME}>/cef_binary"
-                       COMMENT "Copying CEF runtime to the output directory (cef_binary/)")
+    # Stage the CEF runtime once during configure. CefManager_Windows looks for
+    # "<exe_dir>/cef_binary"; all CEF examples share the same runtime directory.
+    get_property(_dui_cef_runtime_staged GLOBAL PROPERTY DUI_CEF_RUNTIME_STAGED)
+    if(NOT _dui_cef_runtime_staged)
+        foreach(_dui_config Debug Release)
+            set(_dui_cef_runtime_dir "${DUI_BIN_PATH}/${_dui_config}/cef_binary")
+            file(MAKE_DIRECTORY "${_dui_cef_runtime_dir}")
+            file(COPY "${DUI_CEF_SRC_ROOT_DIR}/Release/."
+                 DESTINATION "${_dui_cef_runtime_dir}")
+            file(COPY "${DUI_CEF_SRC_ROOT_DIR}/Resources/."
+                 DESTINATION "${_dui_cef_runtime_dir}")
+        endforeach()
+        set_property(GLOBAL PROPERTY DUI_CEF_RUNTIME_STAGED TRUE)
+        message(STATUS "Copied CEF runtime to Debug and Release output directories")
+    endif()
 else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_CEF=0)
 endif()

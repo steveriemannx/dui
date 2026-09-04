@@ -12,7 +12,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type (Debug/Release)" FORCE)
 endif()
 
-# Dependency management (Skia/SDL3 submodule build targets + CEF download) must be in place
+# Dependency management (Skia build targets + CEF download) must be in place
 # BEFORE src/CMakeLists.txt, which compiles Skia's tools/window sources into the dui library.
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/dui_common.cmake")
 

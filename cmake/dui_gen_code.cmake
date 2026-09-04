@@ -42,21 +42,24 @@ set(RESOURCES_DIR "${DUI_ROOT}/resources")
 # with the images referenced by classes in global.xml embedded into the binary
 set(GEN_TOOL_GLOBAL_ARGS)
 if(GEN_AUTO_EMBED)
-    set(GEN_TOOL_GLOBAL_ARGS -g "${RESOURCES_DIR}/themes/default/global.xml")
+    set(GEN_TOOL_GLOBAL_ARGS -g "${RESOURCES_DIR}/themes/${DUI_EXAMPLE_THEME}/global.xml")
 endif()
 
 # Find XML files
 set(XML_INPUT_FILES)
 foreach(xml_file ${GEN_XML_FILES})
+    if(DUI_EXAMPLE_THEME AND "${xml_file}" MATCHES "/themes/default/")
+        string(REPLACE "/themes/default/" "/themes/${DUI_EXAMPLE_THEME}/" xml_file "${xml_file}")
+    endif()
     if(IS_ABSOLUTE "${xml_file}")
         list(APPEND XML_INPUT_FILES "${xml_file}")
     elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${xml_file}")
         list(APPEND XML_INPUT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${xml_file}")
     else()
-        # Prefer the default theme for generated C++ UI code.  If we globbed
+        # Prefer the active platform theme for generated C++ UI code.  If we globbed
         # every theme (default, windows11, ...), the same XML basename would
         # produce duplicate InitXxx() functions in generated_ui.inc.
-        file(GLOB_RECURSE found_files "${RESOURCES_DIR}/themes/default/${xml_file}")
+        file(GLOB_RECURSE found_files "${RESOURCES_DIR}/themes/${DUI_EXAMPLE_THEME}/${xml_file}")
         if(NOT found_files)
             file(GLOB_RECURSE found_files "${RESOURCES_DIR}/themes/*/${xml_file}")
         endif()
@@ -108,9 +111,8 @@ if(DUI_OS_WINDOWS)
     )
 else()
     # macOS / Linux / FreeBSD: build the tool once at CONFIGURE time into the
-    # source tree and share it across all *_gen examples (the same approach as
-    # the xml_to_code.exe on Windows, avoiding rebuilding the tool once per
-    # example at build time).
+    # build tree and share it across all *_gen examples, avoiding rebuilding the
+    # tool once per example at build time.
     set(TOOL_SRC "${DUI_SRC_ROOT_DIR}/tools/xml_to_code.cpp")
     set(PUGIXML_SRC "${DUI_SRC_ROOT_DIR}/third_party/xml/pugixml.cpp")
     set(PUGIXML_DIR "${DUI_SRC_ROOT_DIR}/third_party/xml")

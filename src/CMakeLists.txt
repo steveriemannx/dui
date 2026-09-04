@@ -5,7 +5,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
 endif()
 
 # project() must run before dui_common.cmake: it populates CMAKE_SYSTEM_NAME,
-# which dui_common.cmake uses to pick the platform (and the SDL window-backend
+# which dui_common.cmake uses to pick the platform and native window backend
 # switch). Without it, a standalone "cmake -S src" configure saw an empty
 # CMAKE_SYSTEM_NAME and wrongly evaluated the non-Windows branch.
 project(dui CXX C)
@@ -59,11 +59,6 @@ endif()
 # Set source/dependency paths
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
 get_filename_component(SKIA_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/skia/" ABSOLUTE)
-
-# Wayland option (Linux only, alternative to SDL)
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    option(DUI_ENABLE_WAYLAND "Enable Wayland (alternative to SDL)" OFF)
-endif()
 
 # Wayland library detection
 if(DUI_ENABLE_WAYLAND)
@@ -148,13 +143,11 @@ file(GLOB RENDER_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Render/*.[cm]*
 file(GLOB RENDER_SKIA_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/*.[cm]*")
 file(GLOB UTILS_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Utils/*.[cm]*")
 
-# When SDL is disabled (Windows/macOS native-only), exclude every SDL backend
-# source so the library does not require SDL3 headers/libs.
-if(NOT DUI_ENABLE_SDL)
-    foreach(_sdl_src_list DIR_LIB_SRC ANIMATION_SRC BOX_SRC LAYOUT_SRC CONTROL_SRC CORE_SRC IMAGE_SRC RENDER_SRC RENDER_SKIA_SRC UTILS_SRC)
-        list(FILTER ${_sdl_src_list} EXCLUDE REGEX ".*_SDL\\..*")
-    endforeach()
-endif()
+# SDL sources are not part of the native build. Wayland sources are selected by
+# DUI_ENABLE_WAYLAND; X11 uses the native Linux/FreeBSD source set.
+foreach(_sdl_src_list DIR_LIB_SRC ANIMATION_SRC BOX_SRC LAYOUT_SRC CONTROL_SRC CORE_SRC IMAGE_SRC RENDER_SRC RENDER_SKIA_SRC UTILS_SRC)
+    list(FILTER ${_sdl_src_list} EXCLUDE REGEX ".*_SDL\\..*")
+endforeach()
 
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
 # Wayland build excludes CEF; MinGW does not support CEF (see the build scripts)
@@ -372,12 +365,8 @@ endif()
 # it provides WinMain/wWinMain and forwards to main().
 add_library(dui_entry STATIC "${CMAKE_CURRENT_SOURCE_DIR}/Entry/EntryPoint_main.cpp")
 
-# Build-order wiring: the SDL3/Skia archives (built by cmake/dui_deps.cmake at make time)
+# Build-order wiring: the Skia archive built by cmake/dui_deps.cmake at make time
 # must exist before this library links (dui_bin*.cmake links them into the executables).
-# SDL3 is wired first so it builds before Skia (faster feedback on SDL issues).
-if(TARGET dui_sdl)
-    add_dependencies(${PROJECT_NAME} dui_sdl)
-endif()
 if(TARGET dui_skia)
     add_dependencies(${PROJECT_NAME} dui_skia)
 endif()

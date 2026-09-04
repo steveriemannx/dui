@@ -1,6 +1,6 @@
 # 第三方库统一纳入顶层构建（参照 develop2 分支的做法，按 dui 适配）
 # 说明：
-#   - skia/SDL 不在此内建：保持兄弟目录外部预编译（gn/ninja 构建 skia，cmake 构建 SDL3）
+#   - Skia 不在此内建：保持兄弟目录外部预编译（由 gn/ninja 构建）
 #   - 各库 target 名与 cmake/dui_common.cmake 的 DUI_LIBS 一致
 #     （dui dui-cximage dui-webp dui-png dui-zlib）
 
