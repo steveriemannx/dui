@@ -793,6 +793,9 @@ int main(int argc, char** argv) {
         }
         if (rootTag == "Window" && !isTemplate) {
             out << "    ui::Attach(pWindow, p0);\n";
+            // The generated tree is attached after all children are created;
+            // force the first paint to calculate the final window layout.
+            out << "    pWindow->SetArrange(false);\n";
         }
         out << "}\n\n";
     }
