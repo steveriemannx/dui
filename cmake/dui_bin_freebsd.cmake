@@ -27,7 +27,6 @@ set(DUI_FREEBSD_LIBS pthread dl)
 
 find_package(Freetype REQUIRED)
 find_package(Fontconfig REQUIRED)
-find_package(X11 REQUIRED)
 
 # Libraries required on FreeBSD
 if(DUI_ENABLE_WAYLAND)
@@ -35,6 +34,6 @@ if(DUI_ENABLE_WAYLAND)
     target_include_directories(${PROJECT_NAME} PRIVATE ${DUI_WAYLAND_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_WAYLAND_LIBS} ${DUI_FREEBSD_LIBS} Freetype::Freetype Fontconfig::Fontconfig)
 else()
+    find_package(X11 REQUIRED)
     target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_FREEBSD_LIBS} ${X11_LIBRARIES} Freetype::Freetype Fontconfig::Fontconfig)
 endif()
-
