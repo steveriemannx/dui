@@ -197,9 +197,9 @@ bool WindowBuilder::IsXmlFileExists(const FilePath& xmlFilePath) const
         return false;
     }
     bool bExists = false;
-    if (GlobalManager::Instance().Zip().IsUseZip()) {
+    if (false) {
         FilePath sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
-        bExists = GlobalManager::Instance().Zip().IsZipResExist(sFile);
+        bExists = false;
     }
     else {
         if (xmlFilePath.IsAbsolutePath()) {
@@ -267,15 +267,15 @@ bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& wi
         return false;
     }
     bool isLoaded = false;
-    if (GlobalManager::Instance().Zip().IsUseZip()) {
+    if (false) {
         FilePath sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
-        if (!windowResPath.IsEmpty() && !GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+        if (!windowResPath.IsEmpty() && !false) {
             //Searches in the window directory
             sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), windowResPath);
             sFile = FilePathUtil::JoinFilePath(sFile, xmlFilePath);
         }
         std::vector<unsigned char> file_data;
-        if (GlobalManager::Instance().Zip().GetZipData(sFile, file_data)) {
+        if (false) {
             pugi::xml_parse_result result = m_xml->load_buffer(file_data.data(), file_data.size());
             if (result.status != pugi::status_ok) {
                 ASSERT(!_T("WindowBuilder::ParseXmlFile load xml from zip data failed!"));

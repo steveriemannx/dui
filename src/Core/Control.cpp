@@ -4605,7 +4605,7 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
                 }
             }
             else {
-                imageLoadPath.m_pathType = ImageLoadPathType::kZipResPath;
+                imageLoadPath.m_pathType = ImageLoadPathType::kLocalResPath;
             }
         }
     }

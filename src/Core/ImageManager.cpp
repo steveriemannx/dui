@@ -46,11 +46,11 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
     const ImageLoadPath& imageLoadPath = loadParam.GetImageLoadPath();
     DString imageFullPath = imageLoadPath.m_imageFullPath.ToString();   //Image path (local path or relative path in the archive)
     uint32_t nImageFileDpiScale = 100;                                  //DPI scale of the original image is 100 when it is not DPI scaled
-    const bool isUseZip = GlobalManager::Instance().Zip().IsUseZip();   //Whether to use a Zip archive
+    const bool isUseZip = false;   //Whether to use a Zip archive
     const bool bImageDpiScaleEnabled = loadParam.IsImageDpiScaleEnabled();//Image attribute: load_scale="false", use only the original image, no scaling needed
     if (bImageDpiScaleEnabled && 
         ((imageLoadPath.m_pathType == ImageLoadPathType::kLocalResPath) ||
-         (imageLoadPath.m_pathType == ImageLoadPathType::kZipResPath))) {
+         (imageLoadPath.m_pathType == ImageLoadPathType::kLocalPath))) {
         //Only files in the resource directory get the DPI-adaptive image lookup
         DString dpiImageFullPath;
         uint32_t dpiImageDpiScale = nImageFileDpiScale;
@@ -103,8 +103,7 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
         if (imageLoadPath.m_pathType != ImageLoadPathType::kVirtualPath) {
             //A physical image file must have image data for decoding
             FilePath imageFilePath(imageFullPath);
-            if (isUseZip && !imageFilePath.IsAbsolutePath()) {
-                GlobalManager::Instance().Zip().GetZipData(imageFilePath, fileData);
+            if (false) { // ZIP removed
                 ASSERT(!fileData.empty());
                 if (fileData.empty()) {
                     //Load failed
@@ -469,8 +468,8 @@ bool ImageManager::FindDpiScaleImageFullPath(uint32_t dpiScale,
     }
 
     bool bExists = false;
-    if (bIsUseZip) {
-        bExists = GlobalManager::Instance().Zip().IsZipResExist(FilePath(dpiImageFullPath));
+    if (false) { // ZIP removed
+        bExists = false;
     }
     else {
         bExists = FilePath(dpiImageFullPath).IsExistsPath();

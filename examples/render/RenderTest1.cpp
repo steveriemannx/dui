@@ -1,9 +1,9 @@
 #include "RenderTest1.h"
 
-#if defined (DUI_BUILD_FOR_WIN)
-    #include "dui/Utils/BitmapHelper_Windows.h"
-#elif defined(DUI_BUILD_FOR_SDL) || defined(DUI_BUILD_FOR_WAYLAND)
+#if defined(DUI_BUILD_FOR_SDL)
     #include "dui/Utils/BitmapHelper_SDL.h"
+#elif defined (DUI_BUILD_FOR_WIN)
+    #include "dui/Utils/BitmapHelper_Windows.h"
 #endif
 
 namespace ui {

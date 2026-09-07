@@ -26,57 +26,28 @@
 #endif
 
 
-//Macro definitions for different platforms
-#if defined DUI_BUILD_FOR_WIN
-    //Whether to use SDL window and mouse/keyboard events (currently only SDL3 is supported)
-    #if (DUI_SDL)
-        //To enable SDL, change SDLEnabled to 1 in msvc\PropertySheets\SDLSettings.props
-        #define DUI_BUILD_FOR_SDL    1
-    #endif
+// SDL-only: always use SDL window and event system (cross-platform)
+#define DUI_BUILD_FOR_SDL    1
 
-    //WebView2 control feature switch
-    #if (DUI_WEBVIEW2)
-        //To enable WebView2, change WebView2Enabled to 1 in msvc\PropertySheets\WebView2Settings.props
-        #define DUI_BUILD_FOR_WEBVIEW2   1
-    #endif
-
-    //CEF control feature switch
-    #ifndef DUI_CEF
-        //Enabled by default
-        #define DUI_BUILD_FOR_CEF        1
-    #else
-        #if (DUI_CEF)
-            //To enable CEF, change LibCefEnabled to 1 in msvc\PropertySheets\CEFSettings.props
-            #define DUI_BUILD_FOR_CEF    1
-        #endif
-    #endif
-
-    /** Whether the RichEdit control drawing optimization option is enabled (Windows version of RichEdit)
-    */
-    #define DUI_RICH_EDIT_DRAW_OPT 1
-
-    /** Whether the libjpeg-turbo library is used to decode JPEG format
-    */
-    #if (DUI_JPEG_TURBO)
-        #define DUI_IMAGE_SUPPORT_JPEG_TURBO 1
-    #endif
-
-    /** Whether the libpag library is used to decode PAG format
-    */
-    #if (DUI_LIB_PAG)
-        #define DUI_IMAGE_SUPPORT_LIB_PAG 1
-    #endif
+// CEF support (enabled by default; disabled via DUI_CEF=0)
+#ifndef DUI_CEF
+    #define DUI_BUILD_FOR_CEF        1
 #else
-    // Non-Windows platforms
-    #if (DUI_WAYLAND)
-        //Use Wayland + wlroots window and mouse/keyboard events (replacing SDL)
-        #define DUI_BUILD_FOR_WAYLAND 1
-    #else
-        //Whether to use SDL window and mouse/keyboard events (currently only SDL3 is supported)
-        #define DUI_BUILD_FOR_SDL    1
+    #if (DUI_CEF)
+        #define DUI_BUILD_FOR_CEF    1
     #endif
-    //Defines whether CEF is supported
-    #define DUI_BUILD_FOR_CEF    1
+#endif
+
+/** Whether the libjpeg-turbo library is used to decode JPEG format
+*/
+#if (DUI_JPEG_TURBO)
+    #define DUI_IMAGE_SUPPORT_JPEG_TURBO 1
+#endif
+
+/** Whether the libpag library is used to decode PAG format
+*/
+#if (DUI_LIB_PAG)
+    #define DUI_IMAGE_SUPPORT_LIB_PAG 1
 #endif
 
 #if defined (__MINGW32__) || defined (__MINGW64__)

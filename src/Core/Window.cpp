@@ -176,11 +176,11 @@ bool Window::SetWindowIcon(const DString& iconFilePath)
     if (iconFullPath.IsEmpty()) {
         return false;
     }
-    if (GlobalManager::Instance().Zip().IsUseZip() &&
-        GlobalManager::Instance().Zip().IsZipResExist(iconFullPath)) {
+    if (false &&
+        false) {
         //Use the compressed package
         std::vector<uint8_t> fileData;
-        GlobalManager::Instance().Zip().GetZipData(iconFullPath, fileData);
+        false;
         ASSERT(!fileData.empty());
         if (!fileData.empty()) {
             bRet = WindowBase::SetWindowIcon(fileData, iconFilePath);

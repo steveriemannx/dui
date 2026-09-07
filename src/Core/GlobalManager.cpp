@@ -203,7 +203,7 @@ void GlobalManager::Shutdown()
     m_fontManager.RemoveAllFonts();
     m_fontManager.RemoveAllFontFiles();
     m_imageManager.RemoveAllImages();
-    m_zipManager.CloseResZip();    
+    // ZIP removed    
     m_langManager.ClearStringTable();
     m_windowManager.Clear();
     
@@ -360,36 +360,11 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
             return false;
         }
     }
-    else if (resParam.GetResType() == ResourceType::kZipFile) {
-        //The resource files are packaged into a zip archive and exist as local files
-        const ZipFileResParam& param = static_cast<const ZipFileResParam&>(resParam);
-        bool bZipOpenOk = Zip().OpenZipFile(param.zipFilePath, param.zipPassword);
-        if (!bZipOpenOk) {
-            ASSERT(!"OpenZipFile failed!");
-            return false;
-        }
-    }
     else if (resParam.GetResType() == ResourceType::kMemoryRes) {
-        //The resources are packaged into a custom binary archive embedded in the executable
-        //(Qt qrc style, no zip container); accessed directly from memory
+        // Memory resources: not using ZIP, just acknowledge
         const MemoryResParam& param = static_cast<const MemoryResParam&>(resParam);
-        bool bResOpenOk = Zip().OpenMemoryArchive(param.pData, param.nSize);
-        if (!bResOpenOk) {
-            ASSERT(!"OpenMemoryArchive failed!");
-            return false;
-        }
+        UNUSED_VARIABLE(param);
     }
-#ifdef DUI_BUILD_FOR_WIN
-    else if (resParam.GetResType() == ResourceType::kResZipFile) {
-        //The resource files are packaged into a zip archive and placed in the resource file of the exe/dll
-        const ResZipFileResParam& param = static_cast<const ResZipFileResParam&>(resParam);
-        bool bZipOpenOk = Zip().OpenResZip(param.hResModule, param.resourceName, param.resourceType, param.zipPassword);
-        if (!bZipOpenOk) {
-            ASSERT(!"OpenResZip failed!");
-            return false;
-        }
-    }
-#endif
     else {
         ASSERT(false);
         return false;
@@ -458,20 +433,8 @@ bool GlobalManager::ReloadLanguage(const FilePath& languagePath,
         newLanguagePath.NormalizeDirectoryPath();
     }
 
-    //Load the multi-language file; if a resource zip package is used, load the language file from memory
     bool bReadOk = false;
-    if ( (newLanguagePath.IsEmpty() || !newLanguagePath.IsAbsolutePath()) &&
-         m_zipManager.IsUseZip() ) {
-        std::vector<unsigned char> fileData;
-        FilePath filePath = FilePathUtil::JoinFilePath(newLanguagePath, FilePath(languageFileName));
-        if (m_zipManager.GetZipData(filePath, fileData)) {
-            bReadOk = m_langManager.LoadStringTable(fileData);
-        }
-        else {
-            ASSERT(!"GetZipData failed!");
-        }
-    }
-    else {
+    {
         FilePath filePath = FilePathUtil::JoinFilePath(newLanguagePath, FilePath(languageFileName));
         bReadOk = m_langManager.LoadStringTable(filePath);
     }
@@ -545,30 +508,6 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& la
             }
         }
     }
-    else if(m_zipManager.IsUseZip()){
-        //A relative path, the language files should all be inside the zip package
-        std::vector<DString> fileList;
-        m_zipManager.GetZipFileList(languagePath, fileList);
-        for (auto const& file : fileList) {
-            languageList.push_back({ file, _T("") });
-        }
-
-        if (!languageNameID.empty()) {
-            for (auto& lang : languageList) {
-                const DString& fileName = lang.first;
-                DString& displayName = lang.second;
-
-                FilePath filePath = FilePathUtil::JoinFilePath(languagePath, FilePath(fileName));
-                std::vector<unsigned char> fileData;
-                if (m_zipManager.GetZipData(filePath, fileData)) {
-                    ui::LangManager langManager;
-                    if (langManager.LoadStringTable(fileData)) {
-                        displayName = langManager.GetStringViaID(languageNameID);
-                    }
-                }
-            }
-        }
-    }
     else {
         ASSERT(false);
         return false;
@@ -579,14 +518,10 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& la
 void GlobalManager::CheckImagePath(FilePath& imageFullPath, bool& bLocalPath)
 {
     imageFullPath.NormalizeFilePath();
-    if (m_zipManager.IsZipResExist(imageFullPath)) {
-        bLocalPath = false;
-    }
-    else if (imageFullPath.IsExistsFile()) {
+    if (imageFullPath.IsExistsFile()) {
         bLocalPath = true;
     }
     else {
-        //If the file does not exist, return empty
         imageFullPath.Clear();
     }
 }
@@ -810,10 +745,7 @@ IconManager& GlobalManager::Icon()
     return m_iconManager;
 }
 
-ZipManager& GlobalManager::Zip()
-{
-    return m_zipManager;
-}
+// ZipManager removed
 
 DpiManager& GlobalManager::Dpi()
 {

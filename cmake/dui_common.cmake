@@ -125,10 +125,10 @@ else()
     set(DUI_MULTI_CONFIG FALSE)
 endif()
 
-# dui source root, library directory, and bin directory
+# dui source root, library directory, and bin directory (bin placed in build folder as in main)
 get_filename_component(DUI_ROOT "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
 set(DUI_LIB_PATH "${DUI_ROOT}/lib")
-set(DUI_BIN_PATH "${DUI_ROOT}/bin")
+set(DUI_BIN_PATH "${CMAKE_BINARY_DIR}/bin")
 set(DUI_LIBS dui dui-cximage dui-webp dui-png dui-zlib)
 
 # CEF module source root (the CEF module is optional)
@@ -336,9 +336,7 @@ if(DUI_LOG)
 endif()
 
 # ---- Resource sync: keep the runtime resource tree in bin/ in sync with the repo-root
-# resources/ directory (fonts/lang/themes) and generate the resources.zip archive.
-# bin/ is build output and may be deleted at any time; configure re-creates it.
-# Idempotent per configure run (GLOBAL-property guarded); safe to call per scope.
+# resources/ directory (fonts/lang/themes). ZIP mode removed - only file system mode.
 function(dui_sync_resources)
     get_property(_dui_res_synced GLOBAL PROPERTY DUI_RESOURCES_SYNCED)
     if(_dui_res_synced)
@@ -351,40 +349,11 @@ function(dui_sync_resources)
         return()  # resources/ not present (e.g. library-only build)
     endif()
 
-    # 1. Generate resources.zip next to resources/ (zip with a "resources/" top-level folder,
-    #    matching the runtime path convention used by ZipManager / the embedded-zip flow)
-    set(_res_zip "${_res_src}/resources.zip")
-    if(WIN32)
-        # Use relative paths: libarchive's bsdtar may parse Windows
-        # drive-letter paths (D:/...) as remote URLs, causing
-        # "Cannot connect to D: resolve failed".
-        execute_process(
-            COMMAND tar -a -cf resources/resources.zip resources
-            WORKING_DIRECTORY "${DUI_ROOT}"
-            RESULT_VARIABLE _zip_result
-        )
-    else()
-        execute_process(
-            COMMAND zip -q -r "${_res_zip}" resources
-            WORKING_DIRECTORY "${DUI_ROOT}"
-            RESULT_VARIABLE _zip_result
-        )
-    endif()
-    if(_zip_result EQUAL 0 AND EXISTS "${_res_zip}")
-        message(STATUS "resources.zip: ${_res_zip}")
-    else()
-        message(WARNING "resources.zip creation failed; the zip resource mode will be unavailable")
-    endif()
-
-    # 2. Copy resources/ + resources.zip into bin/ (create bin/ if missing - it is build
-    #    output and may have been deleted; configure must re-create the resource tree)
+    # Copy resources/ into bin/ (ZIP generation removed)
     file(MAKE_DIRECTORY "${DUI_BIN_PATH}/resources")
     file(COPY "${_res_src}/fonts" "${_res_src}/lang" "${_res_src}/themes"
          DESTINATION "${DUI_BIN_PATH}/resources")
-    if(EXISTS "${_res_zip}")
-        file(COPY "${_res_zip}" DESTINATION "${DUI_BIN_PATH}")
-    endif()
-    message(STATUS "Resources synced to ${DUI_BIN_PATH}")
+    message(STATUS "Resources synced to ${DUI_BIN_PATH} (no ZIP)")
 endfunction()
 
 # Dependency management: Skia/SDL3 sources are downloaded/extracted from zips at

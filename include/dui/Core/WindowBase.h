@@ -6,13 +6,7 @@
 #include "dui/Utils/FilePath.h"
 #include "dui/Core/EventArgs.h"
 
-#if defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
-    #include "dui/Core/NativeWindow_SDL.h"
-#elif defined (DUI_BUILD_FOR_WIN)
-    #include "dui/Core/NativeWindow_Windows.h"
-#else
-    class NativeWindow;
-#endif
+#include "dui/Core/NativeWindow_SDL.h"
 
 namespace ui
 {

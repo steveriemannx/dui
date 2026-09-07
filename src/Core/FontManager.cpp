@@ -287,9 +287,9 @@ bool FontManager::AddFontFile(const DString& strFontFile, const DString& /*strFo
     }
 
     bool bRet = false;
-    if (GlobalManager::Instance().Zip().IsUseZip()) {
+    if (false) {
         std::vector<unsigned char> file_data;
-        if (GlobalManager::Instance().Zip().GetZipData(fontFilePath, file_data)) {
+        if (false) {
             //Load from the memory stream
             bRet = pFontMgr->LoadFontFileData(file_data.data(), file_data.size());
         }

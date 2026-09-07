@@ -5,7 +5,6 @@
 #include "dui/Core/ColorManager.h"
 #include "dui/Core/FontManager.h"
 #include "dui/Core/ImageManager.h"
-#include "dui/Core/ZipManager.h"
 #include "dui/Core/LangManager.h"
 #include "dui/Core/DpiManager.h"
 #include "dui/Core/TimerManager.h"
@@ -49,47 +48,33 @@ public:
     static FilePath GetDefaultResourcePath(bool bMacOsAppBundle);
 
 public:
-    /** The global settings initialization function
-     * @param [in] resParam The resource related parameter, with the following options depending on the resource type
-     *                      1. In the form of local files, all resources exist as local files
-     *                         Use the LocalFilesResParam type as the parameter
-     *                      2. The resource files are packaged into a zip archive and exist as local files
-     *                         Use the ZipFileResParam type as the parameter
-     *                      3. The resource files are packaged into a zip archive and placed in the resource file of the exe/dll
-     *                         Use the ResZipFileResParam type as the parameter
-     * @param [in] dpiInitParam The setting parameter of the DPI awareness mode and DPI value
-     * @param [in] callback The global callback function when creating custom controls
-     */
-    bool Startup(const ResourceParam& resParam,
-                 DpiInitParam dpiInitParam = DpiInitParam(),
-                 const CreateControlCallback& callback = nullptr);
+     /** The global settings initialization function
+      * @param [in] resParam The resource related parameter (only kLocalFiles/kMemoryRes)
+      * @param [in] dpiInitParam The setting parameter of the DPI awareness mode and DPI value
+      * @param [in] callback The global callback function when creating custom controls
+      */
+     bool Startup(const ResourceParam& resParam,
+                  DpiInitParam dpiInitParam = DpiInitParam(),
+                  const CreateControlCallback& callback = nullptr);
 
-    /** Release the global resources
-     */
-    void Shutdown();
+     /** Release the global resources
+      */
+     void Shutdown();
 
 public:
-    /** Set the path where the skin resources are located
-     *   If resType == kLocalFiles, the local path (absolute path) where the resources are located needs to be set
-     *   If resType == kZipFile or resType == kResZip, set the starting directory (relative path) where the resources are located, e.g. _T("resources\\")
-     */
-    void SetResourcePath(const FilePath& strPath);
+     /** Set the path where the skin resources are located
+      */
+     void SetResourcePath(const FilePath& strPath);
 
-    /** Get the path where the current resources are located
-     */
-    const FilePath& GetResourcePath() const;
+     /** Get the path where the current resources are located
+      */
+     const FilePath& GetResourcePath() const;
 
-    /** Reload the skin resources (dynamic skin changing can be implemented through this interface)
-    * @param [in] resParam The resource related parameter, with the following options depending on the resource type
-     *                      1. In the form of local files, all resources exist as local files
-     *                         Use the LocalFilesResParam type as the parameter
-     *                      2. The resource files are packaged into a zip archive and exist as local files
-     *                         Use the ZipFileResParam type as the parameter
-     *                      3. The resource files are packaged into a zip archive and placed in the resource file of the exe/dll
-     *                         Use the ResZipFileResParam type as the parameter
-     * @param [in] bInvalidate Whether to refresh the UI display: true means refresh the UI display after updating the language file, false means do not refresh the UI display
-    */
-    bool ReloadResource(const ResourceParam& resParam, bool bInvalidate = false);
+     /** Reload the skin resources (dynamic skin changing can be implemented through this interface)
+      * @param [in] resParam The resource related parameter (only kLocalFiles/kMemoryRes)
+      * @param [in] bInvalidate Whether to refresh the UI display: true means refresh the UI display after updating the language file, false means do not refresh the UI display
+     */
+     bool ReloadResource(const ResourceParam& resParam, bool bInvalidate = false);
 
     /** Set the platform related data, used on the Windows platform; when using a dynamic link library, set it to the module handle of the DLL (HMODULE)
     */
@@ -190,15 +175,11 @@ public:
     ImageDecoderFactory& ImageDecoders();
 
     /** Get the ICON resource manager
-    */
+     */
     IconManager& Icon();
 
-    /** Get the Zip manager
-    */
-    ZipManager& Zip();
-
     /** Get the DPI manager
-    */
+     */
     DpiManager& Dpi();
 
     /** Get the timer manager
@@ -454,16 +435,12 @@ private:
     */
     ImageManager m_imageManager;
 
-    /** The image format decoders
-    */
+     /** The image format decoders
+     */
     ImageDecoderFactory m_imageDecoderFactory;
 
-    /** The ZIP package manager
-    */
-    ZipManager m_zipManager;
-
     /** The DPI manager
-    */
+     */
     DpiManager m_dpiManager;
 
     /** The timer manager

@@ -1,5 +1,5 @@
 #include "RenderTest2.h"
-#include "dui/Utils/BitmapHelper_Windows.h"
+#include "dui/Utils/BitmapHelper_SDL.h"
 
 namespace ui {
 

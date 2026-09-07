@@ -205,14 +205,14 @@ bool XmlBox::ReadXmlFileData(const FilePath& xmlInputPath, const FilePath& windo
     xmlOutputPath.Clear();
     xmlResPath.Clear();
     const FilePath xmlFilePath(xmlInputPath);
-    if (xmlFilePath.IsRelativePath() && GlobalManager::Instance().Zip().IsUseZip()) {
+    if (xmlFilePath.IsRelativePath() && false) {
         bool bFoundXmlFile = false;
         FilePath sFile;
         if (!windowResPath.IsEmpty()) {
             //Search in the window directory
             sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), windowResPath);
             sFile = FilePathUtil::JoinFilePath(sFile, xmlFilePath);
-            if (GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+            if (false) {
                 //Successfully found in the window resource directory
                 bFoundXmlFile = true;
                 xmlResPath = windowResPath;
@@ -222,7 +222,7 @@ bool XmlBox::ReadXmlFileData(const FilePath& xmlInputPath, const FilePath& windo
             //Search in the configured resource path
             sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), m_resPath);
             sFile = FilePathUtil::JoinFilePath(sFile, xmlFilePath);
-            if (GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+            if (false) {
                 //Successfully found in the window resource directory
                 bFoundXmlFile = true;
                 xmlResPath = m_resPath;
@@ -230,13 +230,13 @@ bool XmlBox::ReadXmlFileData(const FilePath& xmlInputPath, const FilePath& windo
         }
         if (!bFoundXmlFile) {
             sFile = FilePathUtil::JoinFilePath(GlobalManager::Instance().GetResourcePath(), xmlFilePath);
-            if (GlobalManager::Instance().Zip().IsZipResExist(sFile)) {
+            if (false) {
                 //Successfully found in the resource root directory
                 bFoundXmlFile = true;
                 xmlResPath = GetFirstDirectory(xmlFilePath);
             }
         }        
-        if (bFoundXmlFile && GlobalManager::Instance().Zip().GetZipData(sFile, xmlFileData) && !xmlFileData.empty()) {
+        if (bFoundXmlFile && false && !xmlFileData.empty()) {
             //Load it as XML data
             xmlOutputPath = sFile;
             return true;
