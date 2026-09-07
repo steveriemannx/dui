@@ -134,7 +134,7 @@ Window* Window::GetParentWindow() const
 
 bool Window::SetRenderBackendType(RenderBackendType backendType)
 {
-#if (defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)) || defined (DUI_BUILD_FOR_MACOS)
+#if (defined (DUI_BUILD_FOR_WIN)) || defined (DUI_BUILD_FOR_MACOS)
     //Windows native and macOS native both support the GPU (GL) backend
     m_renderBackendType = backendType;
 #else
@@ -939,7 +939,7 @@ void Window::SetShadowType(Shadow::ShadowType nShadowType)
 
 Shadow::ShadowType Window::GetShadowType() const
 {
-    Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDefault;
+    Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDrawDefault;
     Shadow* pShadow = GetShadow();
     if (pShadow != nullptr) {
         nShadowType = pShadow->GetShadowType();
@@ -1167,17 +1167,17 @@ LRESULT Window::OnSizeMsg(WindowSizeType sizeType, const UiSize& /*newWindowSize
     //Resize the Render to match the client area size
     ResizeRenderToClientSize();
 
+    //Update shadow padding and maximized margins before arranging the root.
+    //Otherwise restore lays out with the maximized padding and leaves a blank ring.
+    if (sizeType == WindowSizeType::kSIZE_MAXIMIZED) {
+        ProcessWindowMaximized();
+    }
+    else if (sizeType == WindowSizeType::kSIZE_RESTORED) {
+        ProcessWindowRestored();
+    }
     Box* pRoot = GetRoot();
     if (pRoot != nullptr) {
         pRoot->Arrange();
-    }
-    if (sizeType == WindowSizeType::kSIZE_MAXIMIZED) {
-        //Maximize
-        ProcessWindowMaximized();        
-    }
-    else if (sizeType == WindowSizeType::kSIZE_RESTORED) {
-        //Restore
-        ProcessWindowRestored();
     }
     if (m_pFocus != nullptr) {        
         EventArgs msgData;
@@ -2080,6 +2080,8 @@ void Window::OnButtonDown(EventType eventType, const UiPoint& pt, const NativeMs
     Shadow* pShadow = GetShadow();
     SetLastMousePos(pt);
     Control* pControl = FindControl(pt);
+    fprintf(stderr, "[WBtnDown] pt=%d,%d control=%p name=%s\n", pt.x, pt.y, (void*)pControl, pControl ? pControl->GetName().c_str() : "");
+    fflush(stderr);
     if (pControl != nullptr) {
         std::weak_ptr<WeakFlag> controlFlag = pControl->GetWeakFlag();
         std::weak_ptr<WeakFlag> clickFlag;
@@ -2139,6 +2141,8 @@ void Window::OnButtonUp(EventType eventType, const UiPoint& pt, const NativeMsg&
         return;
     }
     SetLastMousePos(pt);
+    fprintf(stderr, "[WBtnUp] pt=%d,%d eventClick=%p\n", pt.x, pt.y, (void*)m_pEventClick.get());
+    fflush(stderr);
     if (m_pEventClick != nullptr) {
         EventArgs msgData;
         msgData.modifierKey = modifierKey;
@@ -2467,7 +2471,7 @@ bool Window::AutoResizeWindow(bool bRepaint)
             if (estSize.cy.IsStretch()) {
                 newSize.cy = rcWindow.Height();
             }
-            //The window height and width must not be set to 0 (note: not supported internally by SDL)
+            //The window height and width must not be set to 0 (note: not supported internally by native backend)
             newSize.cx = std::max(newSize.cx, 1);
             newSize.cy = std::max(newSize.cy, 1);
             if ((rcWindow.Width() != newSize.cx) || (rcWindow.Height() != newSize.cy)) {

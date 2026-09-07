@@ -10,7 +10,7 @@ This example will guide you through quickly deploying a basic application based 
 git clone https://github.com/steveriemannx/dui dui
 ```
 
-2. Note on dependencies: the dependencies (Skia rendering engine, SDL3, etc.) are vendored in the `third_party` directory and are downloaded/built automatically by the build scripts — no separate manual preparation is needed.
+2. Note on dependencies: the Skia rendering engine is downloaded/built automatically by the build scripts — no separate manual preparation is needed.
 3. In the working directory, the basic directory structure of the source code of the projects is as follows    
 
 <img src="./Images/vs00.png"/>

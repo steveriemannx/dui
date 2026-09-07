@@ -6,7 +6,7 @@
 #include "dui/Utils/UiBuilder.h"
 #include <chrono>
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
     #include <iostream>
 #endif
 
@@ -217,11 +217,11 @@ void BrowserForm::OnInitWindow()
         pButton->SetVisible(false);
     }
 
-#ifdef DUI_BUILD_FOR_SDL
-    //Show basic SDL information
+#ifdef DUI_BUILD_FOR_WAYLAND
+    //Show basic native backend information
     DString driverName = GetVideoDriverName();
     DString renderName = GetWindowRenderName();
-    DString logMsg = ui::StringUtil::Printf(DUI_T("[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
+    DString logMsg = ui::StringUtil::Printf(DUI_T("[native backend: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
     std::cout << logMsg << std::endl;
 #endif
 

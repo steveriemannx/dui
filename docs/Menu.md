@@ -7,7 +7,7 @@ This preview is the menu in the `examples/controls` example program.
 3. The main content of `settings_menu.xml`:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<Window shadow_type="menu_round" shadow_attached="true" layered_window="true" >
+<Window shadow_type="draw_menu_round" shadow_attached="true" layered_window="true" >
     <MenuListBox class="menu" name="main_menu">
         <!-- Top-level menu -->
         <MenuItem class="menu_element" name="first" width="180">
@@ -99,7 +99,7 @@ This preview is the menu in the `examples/controls` example program.
 4. The main content of `submenu.xml`:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<Window shadow_type="menu_round" shadow_attached="true" layered_window="true">
+<Window shadow_type="draw_menu_round" shadow_attached="true" layered_window="true">
   <MenuListBox class="menu" name="submenu">
    
   </MenuListBox>

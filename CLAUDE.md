@@ -90,7 +90,7 @@ DUI_APP_ENTRY(TestApplication)        // AppClass must provide void Run();
 ```
 
 - Invoke the macro exactly once per executable, at global scope, in one `.cpp` file (never in a header)
-- Exceptions: `cef`/`CefBrowser` keep `main_macos.mm` (Objective-C++ for CEF) and guard the macro with `#if !defined(__APPLE__)`; `controls` has a custom `main.cpp` (SDL video driver argument)
+- Exceptions: `cef`/`CefBrowser` keep `main_macos.mm` (Objective-C++ for CEF) and guard the macro with `#if !defined(__APPLE__)`; `controls` has a custom `main.cpp` (native backend video driver argument)
 
 ## Documentation References
 - Full documentation: `docs/Summary.md` (documentation index)

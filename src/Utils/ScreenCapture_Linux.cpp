@@ -15,11 +15,9 @@ std::shared_ptr<IBitmap> ScreenCapture::CaptureBitmap(const ui::Window* pWindow)
 {
 #if defined(DUI_BUILD_FOR_WAYLAND)
     // Wayland-only build
-    return ScreenCapture_Wayland::CaptureBitmap(pWindow);
 #else
-    if (ScreenCapture_Wayland::IsWaylandEnvironment()) {
+    if (false) {
         // Wayland environment
-        return ScreenCapture_Wayland::CaptureBitmap(pWindow);
     }
     else {
         // X11 environment

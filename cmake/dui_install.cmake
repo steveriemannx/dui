@@ -2,7 +2,7 @@
 #
 # Include this file after add_subdirectory(src), then call:
 #   dui_install_package()
-# It intentionally does not add targets or alter SDL configuration.
+# It intentionally does not add targets or alter native backend configuration.
 
 include_guard(GLOBAL)
 
@@ -52,18 +52,18 @@ function(dui_install_package)
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     )
 
-    foreach(_dui_dependency dui-cximage dui-webp png_static dui-zlib)
+    foreach(_dui_dependency dui-cximage dui-webp dui-png dui-zlib)
         if(TARGET "${_dui_dependency}")
-            target_link_libraries(dui INTERFACE "${_dui_dependency}")
+            target_link_libraries(dui "${_dui_dependency}")
         endif()
     endforeach()
 
     if(WIN32)
-        target_link_libraries(dui INTERFACE
+        target_link_libraries(dui
             user32 gdi32 shell32 ole32 oleaut32 imm32 comctl32 dwmapi version winmm ws2_32
         )
     elseif(APPLE)
-        target_link_libraries(dui INTERFACE
+        target_link_libraries(dui
             "-framework AppKit"
             "-framework Foundation"
             "-framework Metal"

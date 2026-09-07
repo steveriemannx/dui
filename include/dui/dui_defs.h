@@ -261,7 +261,7 @@ namespace ui
     enum ControlDropType
     {
         kControlDropTypeWindows = 0, //Indicates an event from the ControlDropTarget_Windows interface
-        kControlDropTypeSDL     = 1, //Indicates an event from the ControlDropTarget_SDL interface
+        kControlDropTypeWayland     = 1, //Indicates an event from the ControlDropTarget_Wayland interface
     };
 
     //Windows platform drop data: for the related values, see the IDropTarget interface declaration
@@ -278,8 +278,8 @@ namespace ui
         std::vector<DString> m_fileList;    //The text content contained in m_pDataObj; each element represents a file path
     };
 
-    //SDL drag-and-drop data
-    struct ControlDropData_SDL
+    //native backend drag-and-drop data
+    struct ControlDropData_Wayland
     {
         bool m_bHandled;                    //Whether the event has been fully handled; returning true means it was handled and is not dispatched to UI controls
         bool m_bTextData;                   // true means m_textList holds the valid data; false means m_fileList does
@@ -296,7 +296,7 @@ namespace ui
     struct WindowDisplayScaleData
     {
         float m_fNewDisplayScale;   //The new window UI display scale; 1.0f means no scaling
-        float m_fNewPixelDensity;   //The new window pixel density (only used in the SDL implementation)
+        float m_fNewPixelDensity;   //The new window pixel density (only used in the native backend implementation)
     };
 
     //The resolution of the screen containing the window changed; related data
@@ -441,7 +441,7 @@ namespace ui
         kEventDropLeave,            //No additional description
         kEventDropData,             //wParam is ControlDropType, representing the source type, 
                                     //lParam represents the associated data: when wParam is kControlDropTypeWindows, lParam is a pointer to ControlDropData_Windows
-                                    //                   When wParam is kControlDropTypeSDL, lParam is a pointer to ControlDropData_SDL
+                                    //                   When wParam is kControlDropTypeWayland, lParam is a pointer to ControlDropData_Wayland
 
         kEventImageAnimationStart,      // Starts playing the image animation (background image): wParam is a data pointer: ui::ImageAnimationStatus*
         kEventImageAnimationPlayFrame,  // A frame of the image animation is played (background image): wParam is a data pointer: ui::ImageAnimationStatus*
@@ -496,13 +496,13 @@ namespace ui
         kWindowCaptureChangedMsg,   //The window lost mouse capture
         kWindowDropEnterMsg,        //Window drag-and-drop: drag in; wParam is ControlDropType, representing the source type
                                     //                  When wParam is kControlDropTypeWindows, lParam is a pointer to ControlDropData_Windows
-                                    //                  When wParam is kControlDropTypeSDL, lParam is a pointer to ControlDropData_SDL
+                                    //                  When wParam is kControlDropTypeWayland, lParam is a pointer to ControlDropData_Wayland
         kWindowDropOverMsg,         //Window drag-and-drop: drag over; wParam is ControlDropType, representing the source type
                                     //                  When wParam is kControlDropTypeWindows, lParam is a pointer to ControlDropData_Windows
-                                    //                  When wParam is kControlDropTypeSDL, lParam is a pointer to ControlDropData_SDL
+                                    //                  When wParam is kControlDropTypeWayland, lParam is a pointer to ControlDropData_Wayland
         kWindowDropMsg,             //Window drag-and-drop: drop operation; wParam is ControlDropType, representing the source type
                                     //                  When wParam is kControlDropTypeWindows, lParam is a pointer to ControlDropData_Windows
-                                    //                  When wParam is kControlDropTypeSDL, lParam is a pointer to ControlDropData_SDL
+                                    //                  When wParam is kControlDropTypeWayland, lParam is a pointer to ControlDropData_Wayland
         kWindowDropLeaveMsg,        //Window drag-and-drop: leave, no parameters
         kWindowMsgEnd               //The end of window messages
     };

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Window size="800,600" min_size="300,200" caption="0,0,0,36" size_box="4,4,4,4" textid="STRID_CEF_BROWSER_MULTI_TAB" shadow_attached="true" icon="public/caption/logo.ico">
+<Window size="800,600" min_size="300,200" caption="0,0,0,32" size_box="4,4,4,4" textid="STRID_CEF_BROWSER_MULTI_TAB" shadow_type="system_default" shadow_attached="true" shadow_snap="true" icon="public/caption/logo.ico">
 <!--New tab button: solid color button-->
 <Class name="tab_item_new_add_btn" font="system_18" text_align="hcenter,vcenter" valign="center" 
                                    normal_text_color="black" 
@@ -24,15 +24,15 @@
         <Button class="tab_item_new_add_btn" name="btn_add" text="+" tooltip_text="New Tab" width="24" height="24" border_round="8,8" text_padding="0,0,0,2"/>
 		
         <!-- Title bar area -->
-        <HBox name="window_caption_bar" width="auto" height="36" bkcolor="">
+        <HBox name="window_caption_bar" width="auto" height="32" bkcolor="">
             <Control mouse_enabled="false"/>
             <Control width="36" mouse_enabled="false"/>
-            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-            <Box height="stretch" width="40" margin="0,2,0,2">
+            <Button class="btn_wnd_min_11" height="32" width="46" name="minbtn" margin="0,0,0,0" tooltip_text="Minimize"/>
+            <Box height="stretch" width="46" margin="0,0,0,0">
                 <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
                 <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
             </Box>
-            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+            <Button class="btn_wnd_close_11" height="stretch" width="46" name="closebtn" margin="0,0,0,0" tooltip_text="Close"/>
         </HBox>
     </HBox>
     <!-- Back/forward/refresh buttons, address bar, tab bar area -->

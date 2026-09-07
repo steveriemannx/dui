@@ -1,6 +1,6 @@
 #include "dui/Core/CursorManager.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Core/GlobalManager.h"
 #include "dui/Core/Window.h"

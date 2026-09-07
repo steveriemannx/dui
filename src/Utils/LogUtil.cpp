@@ -2,9 +2,6 @@
 #include "dui/Utils/StringUtil.h"
 #include <chrono>
 
-#ifdef DUI_BUILD_FOR_SDL
-    #include <SDL3/SDL.h>
-#endif
 
 namespace ui 
 {
@@ -36,8 +33,6 @@ void LogUtil::Output(const DString& log, bool bPrintTime)
     }
 #ifdef DUI_BUILD_FOR_WIN
     ::OutputDebugString(logMsg.c_str());
-#elif defined (DUI_BUILD_FOR_SDL)
-    SDL_Log("%s", logMsg.c_str());
 #elif defined (DUI_BUILD_FOR_WAYLAND)
     fprintf(stderr, "%s\n", logMsg.c_str());
 #endif

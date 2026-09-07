@@ -128,7 +128,7 @@ private:
     */
     uint32_t GetNextZoomPercent(uint32_t nOldZoomPercent, bool bZoomIn) const;
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
     // Determine whether a file extension is an RTF file
     bool IsRtfFile(const DString& filePath) const;

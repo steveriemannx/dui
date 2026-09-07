@@ -3,7 +3,7 @@
 
 #include "dui/Core/UiTypes.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 //Implemented using Windows' ITextHost
 #include <Richedit.h>

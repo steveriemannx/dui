@@ -1,4 +1,4 @@
-#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Core/NativeWindow_Wayland.h"
 #include "dui/Core/MessageLoop_Wayland.h"
 #include "dui/Core/Keycode.h"
 #include "dui/Core/Keyboard.h"
@@ -6,6 +6,7 @@
 #ifdef DUI_BUILD_FOR_WAYLAND
 
 #include <wayland-client.h>
+#include <wayland-cursor.h>
 #include <xdg-shell-client-protocol.h>
 #include <xkbcommon/xkbcommon.h>
 #include <linux/input-event-codes.h>
@@ -31,18 +32,124 @@ static struct xkb_context* s_xkbContext = nullptr;
 static struct xkb_keymap* s_xkbKeymap = nullptr;
 static struct xkb_state* s_xkbState = nullptr;
 
-static NativeWindow_SDL* s_pPointerFocusWindow = nullptr;
-static NativeWindow_SDL* s_pKeyboardFocusWindow = nullptr;
+static NativeWindow_Wayland* s_pPointerFocusWindow = nullptr;
+static NativeWindow_Wayland* s_pKeyboardFocusWindow = nullptr;
 static uint32_t s_serial = 0;
+static uint32_t s_pointerEnterSerial = 0;
 static uint32_t s_modifiers = 0;
+
+static wl_cursor_theme* s_cursorTheme = nullptr;
+static wl_surface* s_cursorSurface = nullptr;
+static CursorType s_currentWaylandCursor = CursorType::kCursorArrow;
 
 static UiPoint s_pointerPos;
 static MouseButtonState s_leftButton;
 static MouseButtonState s_rightButton;
 static MouseButtonState s_middleButton;
 
-// Map wl_surface to NativeWindow_SDL
-static std::map<wl_surface*, NativeWindow_SDL*> s_surfaceToWindow;
+// Map wl_surface to NativeWindow_Wayland
+static std::map<wl_surface*, NativeWindow_Wayland*> s_surfaceToWindow;
+
+static bool InitWaylandCursor()
+{
+    if (s_cursorTheme != nullptr) {
+        return true;
+    }
+    wl_shm* shm = MessageLoop_Wayland::GetShm();
+    wl_compositor* compositor = MessageLoop_Wayland::GetCompositor();
+    if (shm == nullptr || compositor == nullptr) {
+        return false;
+    }
+    s_cursorTheme = wl_cursor_theme_load(nullptr, 24, shm);
+    s_cursorSurface = wl_compositor_create_surface(compositor);
+    if (s_cursorTheme == nullptr || s_cursorSurface == nullptr) {
+        if (s_cursorSurface != nullptr) {
+            wl_surface_destroy(s_cursorSurface);
+            s_cursorSurface = nullptr;
+        }
+        if (s_cursorTheme != nullptr) {
+            wl_cursor_theme_destroy(s_cursorTheme);
+            s_cursorTheme = nullptr;
+        }
+        return false;
+    }
+    return true;
+}
+
+static const char* GetWaylandCursorName(CursorType cursorType)
+{
+    switch (cursorType) {
+    case CursorType::kCursorSizeWE:   return "ew-resize";
+    case CursorType::kCursorSizeNS:   return "ns-resize";
+    case CursorType::kCursorSizeNWSE: return "nwse-resize";
+    case CursorType::kCursorSizeNESW: return "nesw-resize";
+    case CursorType::kCursorSizeAll:  return "all-scroll";
+    case CursorType::kCursorHand:     return "pointer";
+    case CursorType::kCursorIBeam:    return "text";
+    case CursorType::kCursorWait:     return "wait";
+    default:                          return "default";
+    }
+}
+
+static void SetWaylandCursor(CursorType cursorType, uint32_t serial)
+{
+    if (s_pPointer == nullptr || serial == 0 || !InitWaylandCursor()) {
+        return;
+    }
+    if (cursorType == s_currentWaylandCursor) {
+        return;
+    }
+
+    wl_cursor* cursor = wl_cursor_theme_get_cursor(s_cursorTheme, GetWaylandCursorName(cursorType));
+    if (cursor == nullptr) {
+        cursor = wl_cursor_theme_get_cursor(s_cursorTheme, "default");
+    }
+    if (cursor == nullptr || cursor->image_count == 0) {
+        return;
+    }
+    wl_cursor_image* image = cursor->images[0];
+    wl_buffer* buffer = wl_cursor_image_get_buffer(image);
+    if (buffer == nullptr) {
+        return;
+    }
+    wl_surface_attach(s_cursorSurface, buffer, 0, 0);
+    wl_surface_damage(s_cursorSurface, 0, 0, image->width, image->height);
+    wl_surface_commit(s_cursorSurface);
+    wl_pointer_set_cursor(s_pPointer, serial, s_cursorSurface,
+                          image->hotspot_x, image->hotspot_y);
+    s_currentWaylandCursor = cursorType;
+}
+
+static CursorType GetResizeCursor(NativeWindow_Wayland* window, const UiPoint& pt)
+{
+    if (window == nullptr || window->IsWindowMaximized() || window->IsWindowFullscreen()) {
+        return CursorType::kCursorArrow;
+    }
+    INativeWindow* owner = window->GetOwner();
+    if (owner == nullptr) {
+        return CursorType::kCursorArrow;
+    }
+
+    UiRect client;
+    window->GetClientRect(client);
+    UiPadding shadow;
+    owner->OnNativeGetShadowCorner(shadow);
+    client.Deflate(shadow);
+    UiRect sizeBox = owner->OnNativeGetSizeBox();
+
+    const bool left = pt.x >= client.left && pt.x < client.left + sizeBox.left;
+    const bool right = pt.x > client.right - sizeBox.right && pt.x <= client.right;
+    const bool top = pt.y >= client.top && pt.y < client.top + sizeBox.top;
+    const bool bottom = pt.y > client.bottom - sizeBox.bottom && pt.y <= client.bottom;
+
+    if (left && top) return CursorType::kCursorSizeNWSE;
+    if (right && top) return CursorType::kCursorSizeNESW;
+    if (left && bottom) return CursorType::kCursorSizeNESW;
+    if (right && bottom) return CursorType::kCursorSizeNWSE;
+    if (left || right) return CursorType::kCursorSizeWE;
+    if (top || bottom) return CursorType::kCursorSizeNS;
+    return CursorType::kCursorArrow;
+}
 
 // Forward declare keyboard repeat state
 static int s_keyRepeatRate = 25;
@@ -156,7 +263,7 @@ static uint32_t GetModifiersFromXkb()
 }
 
 // Register a surface-to-window mapping
-void RegisterWaylandSurface(wl_surface* surface, NativeWindow_SDL* window)
+void RegisterWaylandSurface(wl_surface* surface, NativeWindow_Wayland* window)
 {
     s_surfaceToWindow[surface] = window;
 }
@@ -170,7 +277,7 @@ void UnregisterWaylandSurface(wl_surface* surface)
     s_surfaceToWindow.erase(surface);
 }
 
-static NativeWindow_SDL* FindWindow(wl_surface* surface)
+static NativeWindow_Wayland* FindWindow(wl_surface* surface)
 {
     auto it = s_surfaceToWindow.find(surface);
     if (it != s_surfaceToWindow.end()) return it->second;
@@ -198,10 +305,12 @@ static void pointer_enter_handler(void* data, wl_pointer* pointer, uint32_t seri
     wl_surface* surface, wl_fixed_t sx, wl_fixed_t sy)
 {
     (void)data; (void)pointer; (void)serial;
-    NativeWindow_SDL* window = FindWindow(surface);
+    NativeWindow_Wayland* window = FindWindow(surface);
     s_pPointerFocusWindow = window;
+    s_pointerEnterSerial = serial;
     s_pointerPos.x = wl_fixed_to_int(sx);
     s_pointerPos.y = wl_fixed_to_int(sy);
+    SetWaylandCursor(CursorType::kCursorArrow, serial);
 }
 
 static void pointer_leave_handler(void* data, wl_pointer* pointer, uint32_t serial,
@@ -209,6 +318,7 @@ static void pointer_leave_handler(void* data, wl_pointer* pointer, uint32_t seri
 {
     (void)data; (void)pointer; (void)serial; (void)surface;
     if (s_pPointerFocusWindow) {
+        SetWaylandCursor(CursorType::kCursorArrow, s_pointerEnterSerial);
         INativeWindow* pOwner = s_pPointerFocusWindow->GetOwner();
         if (pOwner && !s_pPointerFocusWindow->IsClosingWnd()) {
             bool bHandled = false;
@@ -226,6 +336,8 @@ static void pointer_motion_handler(void* data, wl_pointer* pointer, uint32_t tim
     s_pointerPos.y = wl_fixed_to_int(sy);
 
     if (s_pPointerFocusWindow && !s_pPointerFocusWindow->IsClosingWnd()) {
+        SetWaylandCursor(GetResizeCursor(s_pPointerFocusWindow, s_pointerPos),
+                         s_pointerEnterSerial);
         INativeWindow* pOwner = s_pPointerFocusWindow->GetOwner();
         if (pOwner) {
             uint32_t mod = GetModifiersFromXkb();
@@ -306,7 +418,7 @@ static void pointer_axis_handler(void* data, wl_pointer* pointer, uint32_t time,
     int32_t delta = wl_fixed_to_int(value);
     if (delta == 0) return;
     // Wayland axis values are typically in scroll units (e.g., 15 per notch)
-    // Scale to match dui/SDL wheel delta
+    // Scale to match dui/native backend wheel delta
     delta = -delta * 8; // Negate and scale to match typical wheel delta
 
     uint32_t mod = GetModifiersFromXkb();
@@ -368,7 +480,7 @@ static void keyboard_enter_handler(void* data, wl_keyboard* keyboard, uint32_t s
     wl_surface* surface, wl_array* keys)
 {
     (void)data; (void)keyboard; (void)serial; (void)keys;
-    NativeWindow_SDL* window = FindWindow(surface);
+    NativeWindow_Wayland* window = FindWindow(surface);
     s_pKeyboardFocusWindow = window;
 }
 
@@ -497,6 +609,14 @@ void MessageLoop_Wayland::InitWaylandInput()
 
 void MessageLoop_Wayland::ShutdownWaylandInput()
 {
+    if (s_cursorSurface) {
+        wl_surface_destroy(s_cursorSurface);
+        s_cursorSurface = nullptr;
+    }
+    if (s_cursorTheme) {
+        wl_cursor_theme_destroy(s_cursorTheme);
+        s_cursorTheme = nullptr;
+    }
     if (s_pPointer) {
         wl_pointer_release(s_pPointer);
         s_pPointer = nullptr;
@@ -519,6 +639,8 @@ void MessageLoop_Wayland::ShutdownWaylandInput()
     }
     s_pPointerFocusWindow = nullptr;
     s_pKeyboardFocusWindow = nullptr;
+    s_pointerEnterSerial = 0;
+    s_currentWaylandCursor = CursorType::kCursorArrow;
     s_surfaceToWindow.clear();
 }
 

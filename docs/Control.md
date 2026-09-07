@@ -324,7 +324,7 @@ The CheckCombo control inherits the `Box` attributes; for more available attribu
 | :--- | :--- | :--- | :--- |
 | format | | string | The format of the date; see the function documentation in `DateTime.h` for details |
 | edit_format | | string | The edit format of the date in the editing state. Valid values: "date_calendar": year-month-day; the date is modified through a month calendar shown in a drop-down box; "date_up_down": when editing, displays year-month-day; the date is modified via an up-down control placed on the right side of the control; "date_time_up_down": when editing, displays year-month-day hour:minute:second; "date_minute_up_down": when editing, displays year-month-day hour:minute; "time_up_down": when editing, displays hour:minute:second; "minute_up_down": when editing, displays hour:minute |
-| spin_class | | string | The Class attribute of the Spin control in the date; only valid when using SDL; default value: "rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down" |
+| spin_class | | string | The Class attribute of the Spin control in the date; only valid when using native backend; default value: "rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down" |
 
 The DateTime control inherits the `Label` attributes; for more available attributes, refer to the `Label` attributes
 
@@ -411,12 +411,12 @@ The CircleProgress control inherits the `Progress` attributes; for more availabl
 | :--- | :--- | :--- | :--- |
 | vscrollbar | false | bool | Whether to use a vertical scroll bar, e.g. "true" |
 | hscrollbar | false | bool | Whether to use a horizontal scroll bar, e.g. "true" |
-| auto_vscroll | false | bool | Whether to scroll vertically with input, e.g. "true" (not valid for the SDL implementation) |
-| auto_hscroll | false | bool | Whether to scroll horizontally with input, e.g. "true" (not valid for the SDL implementation) |
+| auto_vscroll | false | bool | Whether to scroll vertically with input, e.g. "true" (not valid for the native backend implementation) |
+| auto_hscroll | false | bool | Whether to scroll horizontally with input, e.g. "true" (not valid for the native backend implementation) |
 | want_tab | false | bool | Whether to accept the Tab key message, e.g. "true" |
 | want_return | false | bool | Whether to accept the Enter (Return) key message, e.g. "true" |
 | want_ctrl_return | false | bool | Whether to accept the Ctrl+Return key message, e.g. "true" |
-| rich_text | false | bool | Whether to use rich text format, e.g. "true" (not valid for the SDL implementation) |
+| rich_text | false | bool | Whether to use rich text format, e.g. "true" (not valid for the native backend implementation) |
 | single_line | true | bool | Whether to use a single line, e.g. "true" |
 | multi_line | false | bool | Whether to use multiple lines; mutually exclusive with the single_line attribute, e.g. "true" |
 | readonly | false | bool | Whether it is read-only, e.g. "false" |
@@ -440,13 +440,13 @@ The CircleProgress control inherits the `Progress` attributes; for more availabl
 | prompt_text_id |  | string | The ID of the multilingual feature, e.g. (TEXT_OUT) |
 | prompt_color |  | string | The color of the prompt text inside the text box |
 | focused_image |  | string | Image in the focused state |
-| auto_detect_url | false | bool | Whether to automatically detect URLs; if it is a URL, it is displayed as a hyperlink (not valid for the SDL implementation) |
+| auto_detect_url | false | bool | Whether to automatically detect URLs; if it is a URL, it is displayed as a hyperlink (not valid for the native backend implementation) |
 | limit_text | | int | Limits the maximum number of characters |
 | limit_chars | | string | Limits which characters are allowed; for example, "abc" means only the characters a, b and c can be entered, and other characters are not allowed |
-| allow_beep | false | bool | Whether a Beep sound is allowed (not valid for the SDL implementation) |
+| allow_beep | false | bool | Whether a Beep sound is allowed (not valid for the native backend implementation) |
 | word_wrap | false| bool | Whether to wrap lines automatically |
 | no_caret_readonly |false| bool | In read-only mode, do not show the caret |
-| save_selection |false| bool | If true, the selection boundaries should be saved when the control is in an inactive state (not valid for the SDL implementation) |
+| save_selection |false| bool | If true, the selection boundaries should be saved when the control is in an inactive state (not valid for the native backend implementation) |
 | hide_selection | true | bool | Whether to hide the selection |
 | zoom | | size | Sets the zoom ratio: wParam is the numerator of the zoom ratio and lParam is the denominator. "wParam,lParam" means zooming displayed at the numerator/denominator of the zoom ratio; the valid range is 1/64 < (wParam / lParam) < 64. For example: "0,0" means zoom is disabled, "2,1" means zoomed in to 200%, "1,2" means zoomed out to 50% |
 | wheel_zoom | | bool | Whether Ctrl + mouse wheel is allowed to adjust the zoom ratio |
@@ -464,8 +464,8 @@ The CircleProgress control inherits the `Progress` attributes; for more availabl
 | enable_drag_drop |false| bool   | Whether drag-and-drop operations are allowed |
 | enable_drop_file |false| bool   | Whether file drag-and-drop operations are allowed |
 | drop_file_types  |     | string | The list of file extensions supported by the drag-and-drop file operation, e.g. ".txt;.csv" means only txt and csv files are supported; if empty, all files are supported |
-| row_spacing_mul  | 1.0 | float  | Line spacing multiplier, e.g. 1.5 means 1.5 times the line spacing<br>Windows platform: only valid when the rich_text attribute is "true", because the RichEdit control on Windows only supports setting line spacing in rich text mode;<br>when using SDL, it is always valid; that is, on other platforms, the line spacing attributes are always valid |
-| row_spacing_add  |0    | float  | Line spacing additional amount: a fixed additional pixel value (default is usually 0), used to add a fixed offset (in pixels) on top of the proportional adjustment; only valid when using SDL |
+| row_spacing_mul  | 1.0 | float  | Line spacing multiplier, e.g. 1.5 means 1.5 times the line spacing<br>Windows platform: only valid when the rich_text attribute is "true", because the RichEdit control on Windows only supports setting line spacing in rich text mode;<br>when using native backend, it is always valid; that is, on other platforms, the line spacing attributes are always valid |
+| row_spacing_add  |0    | float  | Line spacing additional amount: a fixed additional pixel value (default is usually 0), used to add a fixed offset (in pixels) on top of the proportional adjustment; only valid when using native backend |
 
 The RichEdit control inherits the `ScrollBox` attributes; for more available attributes, refer to the `ScrollBox` attributes
 

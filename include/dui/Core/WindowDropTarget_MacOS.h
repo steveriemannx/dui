@@ -45,7 +45,7 @@ protected:
     /** Find the control interface corresponding to a point coordinate
     * @param [in] clientPt Client area coordinate point
     */
-    ControlPtrT<ControlDropTarget_SDL> GetControlDropTarget(const UiPoint& clientPt) const;
+    ControlPtrT<ControlDropTarget_Wayland> GetControlDropTarget(const UiPoint& clientPt) const;
 
     /** Clean up the state when the drag operation is complete
     */
@@ -54,7 +54,7 @@ protected:
 private:
     /** The control interface currently in the Hover state
     */
-    ControlPtrT<ControlDropTarget_SDL> m_pHoverDropTarget;
+    ControlPtrT<ControlDropTarget_Wayland> m_pHoverDropTarget;
 
     /** The associated Native window implementation
     */

@@ -2,7 +2,7 @@
 
 ## Current Scope
 
-- SDL implementation and SDL-specific logic are intentionally not being fixed.
+- native backend implementation and native backend-specific logic are intentionally not being fixed.
 - macOS is the current verification platform.
 - Windows code paths were reviewed but have not been built on a Windows host.
 - No git commit has been created.
@@ -33,10 +33,10 @@
 - Added include paths to macOS CEF main and Helper targets.
 - Fixed duplicate zlib linkage in native executable link lists.
 - Moved generated XML code into the build tree.
-- Added non-SDL multi-config output handling.
+- Added non-native backend multi-config output handling.
 - Disabled vendored third-party default install rules that conflicted with renamed dui archives.
 - Fixed zlib build/install interface include paths.
-- Replaced remaining non-SDL `aux_source_directory()` source discovery with `file(GLOB CONFIGURE_DEPENDS)`.
+- Replaced remaining non-native backend `aux_source_directory()` source discovery with `file(GLOB CONFIGURE_DEPENDS)`.
 
 ### Tests
 
@@ -133,7 +133,7 @@ cmake -S . -B build-macos-cef \
   -DDUI_ENABLE_CEF=ON \
   -DDUI_BUILD_CEF_EXAMPLES=ON \
   -DDUI_EXAMPLES_MODE=XML \
-  -DDUI_BUILD_SDL_FROM_SOURCE=OFF \
+  -DDUI_BUILD_Native_FROM_SOURCE=OFF \
   -DDUI_BUILD_TESTS=ON
 
 cmake --build build-macos-cef --target cef CefBrowser dui_core_tests --parallel 8

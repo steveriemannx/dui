@@ -186,7 +186,7 @@ public:
                                       bool bEditable,
                                       const CefRect& nodeRect) = 0;
 
-    /** Set the cursor (only valid in off-screen rendering mode, and only when using SDL)
+    /** Set the cursor (only valid in off-screen rendering mode, and only when using native backend)
     */
     virtual void OnCursorChange(cef_cursor_type_t type) = 0;
 

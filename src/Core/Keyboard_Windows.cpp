@@ -1,6 +1,6 @@
 #include "dui/Core/Keyboard.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 namespace ui
 {

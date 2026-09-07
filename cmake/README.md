@@ -59,7 +59,6 @@ DUI_BUILD_TYPE        # "debug" or "release"
 |----------|--------|------|
 | `DUI_LOG` | OFF | Print dui debug logs |
 | `DUI_SKIA_LIB_SUBPATH` | OFF | Skia library subdirectory (OFF = auto-composed) |
-| `DUI_ENABLE_SDL` | Windows: always OFF (removed), others=ON | Enable SDL input support (Linux/macOS) |
 | `DUI_ENABLE_CEF` | OFF | Enable CEF browser support |
 | `DUI_CEF_109` | OFF | Use CEF 109 (supports Win7) |
 | `DUI_WEBVIEW2_EXE` | OFF | WebView2 executable (Windows only) |
@@ -74,8 +73,6 @@ DUI_BUILD_TYPE        # "debug" or "release"
 | `DUI_BIN_PATH` | dui executable output directory |
 | `DUI_SKIA_SRC_ROOT_DIR` | Skia source directory |
 | `DUI_SKIA_LIB_PATH` | Skia library directory |
-| `DUI_SDL_SRC_ROOT_DIR` | SDL3 source directory |
-| `DUI_SDL_LIB_PATH` | SDL3 library directory |
 | `DUI_CEF_SRC_ROOT_DIR` | libCEF source directory |
 | `DUI_CEF_LIB_PATH` | libCEF library directory |
 
@@ -85,7 +82,6 @@ DUI_BUILD_TYPE        # "debug" or "release"
 |--------|------|
 | `DUI_LIBS` | dui base library list |
 | `DUI_SKIA_LIBS` | Skia library list (svg, skshaper, skottie, sksg, jsonreader, skia) |
-| `DUI_SDL_LIBS` | SDL3 library list |
 | `DUI_CEF_LIBS` | libCEF library list |
 
 **Skia path composition rule:**
@@ -230,7 +226,7 @@ endif()
 #### 3.9 Windows system dependency libraries
 ```cmake
 set(DUI_WINDOWS_LIBS Comctl32 Imm32 Opengl32 User32 shlwapi)
-# Optional: Version.lib Winmm.lib Setupapi.lib (SDL dependencies)
+# Optional: Version.lib Winmm.lib Setupapi.lib (native backend dependencies)
 ```
 
 ---
@@ -252,7 +248,7 @@ endif()
 set(DUI_LINUX_LIBS X11 freetype fontconfig pthread dl)
 
 # Link command
-target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_LINUX_LIBS})
+ target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_LINUX_LIBS})
 ```
 
 ---
@@ -294,7 +290,7 @@ set(DUI_CXX_COMPILER_FLAGS
 #### 5.3 Link command
 ```cmake
 target_link_libraries(${PROJECT_NAME}
-    ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS}
+    ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS}
     ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS} ${DUI_MACOS_LIBS}
     "-framework AppKit" "-framework Foundation" "-framework Metal" "-framework Cocoa"
 )
@@ -316,7 +312,7 @@ find_package(Freetype REQUIRED)
 find_package(Fontconfig REQUIRED)
 find_package(X11 REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_FREEBSD_LIBS} ${X11_LIBRARIES} Freetype::Freetype Fontconfig::Fontconfig)
+ target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_FREEBSD_LIBS} ${X11_LIBRARIES} Freetype::Freetype Fontconfig::Fontconfig)
 ```
 
 ---
@@ -400,19 +396,13 @@ cmake --build . --config Release
 
 ### Advanced Examples
 
-#### 1. Enable SDL support (Linux/macOS)
-
-```bash
-cmake -S .. -B . -DDUI_ENABLE_SDL=ON -DCMAKE_BUILD_TYPE=Release
-```
-
-#### 2. Enable CEF support
+#### 1. Enable CEF support
 
 ```bash
 cmake -S .. -B . -DDUI_ENABLE_CEF=ON -DCMAKE_BUILD_TYPE=Release
 ```
 
-#### 3. Use CEF 109 (supports Win7)
+#### 2. Use CEF 109 (supports Win7)
 
 ```bash
 cmake -S .. -B . -DDUI_ENABLE_CEF=ON -DDUI_CEF_109=ON -DCMAKE_BUILD_TYPE=Release
@@ -470,7 +460,6 @@ cmake --build ./build_llvm
 |----------|------|--------|------|
 | `DUI_LOG` | BOOL | OFF | Print debug logs |
 | `DUI_SKIA_LIB_SUBPATH` | STRING | OFF | Skia library subdirectory |
-| `DUI_ENABLE_SDL` | BOOL | Windows: always OFF (removed), others=ON | Enable SDL support |
 | `DUI_ENABLE_CEF` | BOOL | OFF | Enable CEF support |
 | `DUI_CEF_109` | BOOL | OFF | CEF 109 version (Win7) |
 | `DUI_WEBVIEW2_EXE` | BOOL | OFF | WebView2 executable |
@@ -488,9 +477,9 @@ cmake --build ./build_llvm
 | C++ standard | C++20 | C++20 | C++20 | C++20 |
 | Encoding | Unicode | UTF-8 | UTF-8 | UTF-8 |
 | Graphics | Skia + GDI | Skia + X11 | Skia + Metal | Skia + X11 |
-| Input support | Win32/SDL | X11/SDL | Cocoa/SDL | X11/SDL |
+| Input support | Win32/native backend | X11/native backend | Cocoa/native backend | X11/native backend |
 | Browser | CEF/WebView2 | CEF | CEF | ❌ |
-| SDL default | OFF | ON | ON | ON |
+| native backend default | OFF | ON | ON | ON |
 
 ### MSVC vs MinGW-w64
 

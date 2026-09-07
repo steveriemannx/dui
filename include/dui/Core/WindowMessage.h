@@ -127,8 +127,8 @@ public:
 /** Window message definitions; only the messages that are used are defined (consistent with the Windows system definitions, WinUser.h)
 */
 enum WindowMessage{
-#ifdef DUI_BUILD_FOR_SDL
-    kWM_USER = 0x8000 + 32, //SDL_EVENT_USER / Wayland user event
+#ifdef DUI_BUILD_FOR_WAYLAND
+    kWM_USER = 0x8000 + 32, //Native_EVENT_USER / Wayland user event
 #else
     kWM_USER = 0x0400, //WM_USER
 #endif

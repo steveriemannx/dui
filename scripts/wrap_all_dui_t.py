@@ -25,7 +25,7 @@ NARROW_MARKERS = (
     '.NativePath()', 'UTF8ToT', 'TToUTF8', 'MBCSToT', 'TToMBCS',
     'std::ifstream', 'std::ofstream', 'std::fstream',
     'printf(', 'fprintf(', 'sprintf(', 'snprintf(',
-    'SDL_', 'setenv(', 'getenv(',
+    'Native_', 'setenv(', 'getenv(',
     # Not DString at all: language linkage, static assertions, pragmas.
     'extern "C"', 'static_assert(', '_Pragma(', 'deprecated(',
 )

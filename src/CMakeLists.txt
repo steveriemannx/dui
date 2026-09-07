@@ -143,11 +143,18 @@ file(GLOB RENDER_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Render/*.[cm]*
 file(GLOB RENDER_SKIA_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/*.[cm]*")
 file(GLOB UTILS_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Utils/*.[cm]*")
 
-# SDL sources are not part of the native build. Wayland sources are selected by
-# DUI_ENABLE_WAYLAND; X11 uses the native Linux/FreeBSD source set.
-foreach(_sdl_src_list DIR_LIB_SRC ANIMATION_SRC BOX_SRC LAYOUT_SRC CONTROL_SRC CORE_SRC IMAGE_SRC RENDER_SRC RENDER_SKIA_SRC UTILS_SRC)
-    list(FILTER ${_sdl_src_list} EXCLUDE REGEX ".*_SDL\\..*")
-endforeach()
+# Select the native backend source set. Platform files remain in the glob so
+# Windows/macOS builds keep their native implementations, but Linux/FreeBSD
+# must never pull Wayland-only sources into the X11 build (or vice versa).
+if(DUI_ENABLE_WAYLAND)
+    foreach(_native_src_list DIR_LIB_SRC ANIMATION_SRC BOX_SRC LAYOUT_SRC CONTROL_SRC CORE_SRC IMAGE_SRC RENDER_SRC RENDER_SKIA_SRC UTILS_SRC)
+        list(FILTER ${_native_src_list} EXCLUDE REGEX ".*_X11\\..*")
+    endforeach()
+else()
+    foreach(_native_src_list DIR_LIB_SRC ANIMATION_SRC BOX_SRC LAYOUT_SRC CONTROL_SRC CORE_SRC IMAGE_SRC RENDER_SRC RENDER_SKIA_SRC UTILS_SRC)
+        list(FILTER ${_native_src_list} EXCLUDE REGEX ".*_Wayland\\..*")
+    endforeach()
+endif()
 
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
 # Wayland build excludes CEF; MinGW does not support CEF (see the build scripts)
@@ -164,8 +171,6 @@ endif()
 
 # On non-macOS platforms, remove macOS-only source files to avoid compile errors.
 if(NOT DUI_SRC_MACOS)
-    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/SDL_MacOS.mm)
-    list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/SDL_MacOS.h)
     list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/ClickThrough_MacOS.mm)
     list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/NativeWindow_MacOS.mm)
     list(REMOVE_ITEM CORE_SRC ${CMAKE_CURRENT_LIST_DIR}/Core/MessageLoop_MacOS.mm)
@@ -221,6 +226,7 @@ set(SKIA_HDRS
 set(SKIA_SRCS
     ${SKIA_SRC_ROOT_DIR}/tools/window/WindowContext.cpp
     ${SKIA_SRC_ROOT_DIR}/tools/window/GLWindowContext.cpp
+    ${SKIA_SRC_ROOT_DIR}/tools/window/unix/RasterWindowContext_unix.cpp
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -324,6 +330,11 @@ elseif(DUI_ENABLE_WAYLAND)
 else()
     # Create the library with the filtered sources
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
+    find_package(X11 REQUIRED)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
+    find_package(Freetype REQUIRED)
+    find_package(Fontconfig REQUIRED)
+    target_link_libraries(${PROJECT_NAME} ${X11_LIBRARIES} Freetype::Freetype Fontconfig::Fontconfig)
 endif()
 
 if(DUI_MULTI_CONFIG)
@@ -358,6 +369,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 if(DUI_ENABLE_WAYLAND)
     target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_WAYLAND=1)
+elseif(DUI_OS_LINUX OR DUI_OS_FREEBSD)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DUI_X11=1)
 endif()
 
 # Optional Qt-like platform entry shim.
@@ -440,7 +453,7 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 # Third-party libraries are included in the build (following the develop2 branch: third_party/CMakeLists.txt)
-# skia/SDL are not built here; keep them prebuilt in sibling directories
+# skia/native backend are not built here; keep them prebuilt in sibling directories
 # The project owns the public install layout below; suppress vendored projects'
 # independent install rules (libpng otherwise assumes its original output name).
 set(SKIP_INSTALL_ALL ON)

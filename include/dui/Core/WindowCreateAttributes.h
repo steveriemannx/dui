@@ -54,9 +54,9 @@ public:
     UiSize m_szInitSize;
     bool m_bInitSizeDefined = false;//Whether a valid value is included
 
-    /** The desired SDL Render name (optional parameter)
+    /** The desired native backend Render name (optional parameter)
     */
-    DString m_sdlRenderName;
+    DString m_nativeRenderName;
 };
 
 } // namespace ui

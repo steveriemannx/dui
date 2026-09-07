@@ -11,8 +11,8 @@
 #include "dui/Utils/StringUtil.h"
 #include "dui/Core/WindowCreateParam.h"
 
-#ifdef DUI_BUILD_FOR_SDL
-    #include "dui/Core/DragWindowFilter_SDL.h"
+#ifdef DUI_BUILD_FOR_WAYLAND
+#include "dui/Core/DragWindowFilter_Wayland.h"
 #endif
 
 // The shortest pixel distance for a drag operation
@@ -242,7 +242,7 @@ private:
     */
     DragWindow* m_pDragWindow;
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
     /** The message filter of the drag window
     */
     std::unique_ptr<IUIMessageFilter> m_pDragWindowFilter;
@@ -645,7 +645,7 @@ void ControlDragableT<T>::ClearDragStatus()
         }
     }
     if (m_pDragWindow != nullptr) {
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
         if (m_pDragWindowFilter != nullptr) {
             m_pDragWindow->RemoveMessageFilter(m_pDragWindowFilter.get());
         }
@@ -657,7 +657,7 @@ void ControlDragableT<T>::ClearDragStatus()
         m_pDragWindow->Release();
         m_pDragWindow = nullptr;
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
         m_pDragWindowFilter.reset();
 #endif
     }
@@ -1203,7 +1203,7 @@ bool ControlDragableT<T>::DragOutMouseMove(const EventArgs& msg)
     // Drag out of the parent container
     if ((m_pDragWindow == nullptr) || m_pDragWindow->IsClosingWnd()) {
         if (m_pDragWindow != nullptr) {
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
             if (m_pDragWindowFilter != nullptr) {
                 m_pDragWindow->RemoveMessageFilter(m_pDragWindowFilter.get());
             }
@@ -1211,7 +1211,7 @@ bool ControlDragableT<T>::DragOutMouseMove(const EventArgs& msg)
             m_pDragWindow->Release();
             m_pDragWindow = nullptr;
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
             m_pDragWindowFilter.reset();
 #endif
         }
@@ -1231,7 +1231,7 @@ bool ControlDragableT<T>::DragOutMouseMove(const EventArgs& msg)
             m_pDragWindow->SetDragImage(pDragImage);
             m_pDragWindow->ShowWindow(kSW_SHOW_NA);
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
             m_pDragWindowFilter = std::make_unique<DragWindowFilter>(this->GetWindow(), m_pDragWindow);
             m_pDragWindow->AddMessageFilter(m_pDragWindowFilter.get());
             // Alleviate the black screen phenomenon during display

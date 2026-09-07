@@ -243,7 +243,7 @@ private:
     */
     ThreadMessage m_threadMsg;
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 private:
     /** The delayed messages and their container lock (main thread)
     */

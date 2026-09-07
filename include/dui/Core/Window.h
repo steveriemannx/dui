@@ -621,10 +621,10 @@ protected:
     */
     virtual LRESULT OnShowWindowMsg(bool bShow, const NativeMsg& nativeMsg, bool& bHandled) override;
 
-    /** Window painting (SDL_EVENT_WINDOW_EXPOSED/WM_PAINT)
+    /** Window painting (Native_EVENT_WINDOW_EXPOSED/WM_PAINT)
     * @param [in] rcPaint The rectangle to repaint in this draw pass
     * @param [in] nativeMsg The raw message content received from the system
-    *             SDL implementation: nativeMsg.uMsg is SDL_EVENT_WINDOW_EXPOSED, nativeMsg.wParam is an SDL_Window* pointer
+    *             native backend implementation: nativeMsg.uMsg is Native_EVENT_WINDOW_EXPOSED, nativeMsg.wParam is an Native_Window* pointer
     *             Windows implementation: nativeMsg.uMsg is WM_PAINT, nativeMsg.wParam is the HWND of the window
     * @param [out] bHandled Whether the message has been handled. Returning true means the message has been successfully handled and does not need to be passed to the window procedure; returning false means the message continues to be passed to the window procedure
     * @return Returns the result of processing the message; if the application handled the message it should return zero
@@ -887,7 +887,7 @@ protected:
     * @param [in] dropType The source type of the drag-and-drop operation
     * @param [in,out] pDropData The concrete type depends on dropType:
     *                 When dropType is kControlDropTypeWindows (the Windows platform SDK implementation), pDropData is of type ControlDropData_Windows*
-    *                 When dropType is kControlDropTypeSDL (the SDL implementation), pDropData is of type ControlDropData_SDL*
+    *                 When dropType is kControlDropTypeWayland (the native backend implementation), pDropData is of type ControlDropData_Wayland*
     *                 pDropData->m_bHandled is the message handling flag; returning true means the event has been handled and is not forwarded to other UI controls, effectively intercepting the message
     *                 pDropData->m_hResult is the return value after handling the message, returned to the OS; on Windows, success returns S_OK
     */
@@ -905,7 +905,7 @@ protected:
 
     /** Handles the system notification message for DPI changes (WM_DPICHANGED)
     * @param [in] fNewDisplayScale The new window UI display scale; 1.0f means no scaling
-    * @param [in] fNewPixelDensity The new pixel density of the window (only used in the SDL implementation)
+    * @param [in] fNewPixelDensity The new pixel density of the window (only used in the native backend implementation)
     */
     virtual void OnDisplayScaleChangedMsg(float fNewDisplayScale, float fNewPixelDensity) override;
 

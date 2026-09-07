@@ -1,6 +1,6 @@
 #include "dui/Core/ControlDropTargetImpl_Windows.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Core/Control.h"
 #include "dui/Core/ControlDropTargetUtils.h"

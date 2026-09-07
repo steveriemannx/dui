@@ -27,6 +27,15 @@ void MainForm::OnInitWindow()
     BaseClass::OnInitWindow();
 }
 
+void MainForm::OnInitLayout()
+{
+    BaseClass::OnInitLayout();
+    if (m_isLogin) {
+        // Center after XML auto sizing and control arrangement are complete.
+        CenterWindow();
+    }
+}
+
 void MainForm::BindEvents()
 {
 }

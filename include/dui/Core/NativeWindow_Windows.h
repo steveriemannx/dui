@@ -6,7 +6,7 @@
 #include "dui/Core/WindowCreateAttributes.h"
 #include "dui/Utils/FilePath.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/dui_config_windows.h"
 #include <oleidl.h>

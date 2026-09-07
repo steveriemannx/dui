@@ -122,7 +122,7 @@ else()
     # macOS platform: set the link libraries (mind the order!)
     target_link_libraries(${PROJECT_NAME}
                             # Third-party libraries (in dependency order)
-                            dui dui-cximage dui-webp png_static
+                             dui dui-cximage dui-webp dui-png
                              dui_skia_libs
                             # System libraries
                             ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS} ${DUI_MACOS_LIBS}

@@ -41,9 +41,9 @@ void WindowDropTarget::OnDropComplete()
     // TODO: macOS native drag and drop is not implemented yet
 }
 
-ControlPtrT<ControlDropTarget_SDL> WindowDropTarget::GetControlDropTarget(const UiPoint& /*clientPt*/) const
+ControlPtrT<ControlDropTarget_Wayland> WindowDropTarget::GetControlDropTarget(const UiPoint& /*clientPt*/) const
 {
-    return ControlPtrT<ControlDropTarget_SDL>();
+    return ControlPtrT<ControlDropTarget_Wayland>();
 }
 
 void WindowDropTarget::ClearDropStatus()

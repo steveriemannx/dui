@@ -6,8 +6,8 @@
 #include "dui/Utils/StringUtil.h"
 #include "dui/Utils/StringConvert.h"
 
-#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_SDL)
-    #include "dui/Core/MessageLoop_SDL.h"
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_WAYLAND)
+    #include "dui/Core/MessageLoop_Wayland.h"
 #endif
 
 #pragma warning (push)
@@ -18,14 +18,14 @@
 #include "include/cef_v8.h"
 #pragma warning (pop)
 
-#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_WAYLAND)
     #include <cstdlib> // for getenv
 #endif
 
 namespace ui
 {
 
-#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_WAYLAND)
     static bool IsWaylandEnvironment()
     {
         // The following environment variables are usually set in a Wayland environment
@@ -58,12 +58,12 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
         command_line->AppendSwitch("disable-gpu");
         command_line->AppendSwitch("disable-gpu-compositing");
 
-#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_WAYLAND)
         // Disable the GPU sandbox; when this option is enabled, the GPU process cannot start properly on the Linux platform
         command_line->AppendSwitch("disable-gpu-sandbox");
 
-        DString currentVideoDriver = StringUtil::MakeLowerString(MessageLoop_SDL::GetCurrentVideoDriverName());
-        // The backend rendering mode of CEF must stay consistent with SDL, otherwise the child window mode will not work properly
+        DString currentVideoDriver = StringUtil::MakeLowerString(MessageLoop_Wayland::GetCurrentVideoDriverName());
+        // The backend rendering mode of CEF must stay consistent with native backend, otherwise the child window mode will not work properly
         if (currentVideoDriver == DUI_T("wayland")) {
             // Force the Ozone platform to Wayland (disable X11)
             command_line->AppendSwitchWithValue("ozone-platform", "wayland");
@@ -76,7 +76,7 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
         if (IsWaylandEnvironment() && (currentVideoDriver == DUI_T("x11"))) {
             // XWayland environment: fix the issue where the DPI adaptation feature of the CEF page fails
             DString dpiFactor;
-            float scale = MessageLoop_SDL::GetPrimaryDisplayContentScale();
+            float scale = MessageLoop_Wayland::GetPrimaryDisplayContentScale();
             if (scale > 0.001f) {
                 dpiFactor = StringUtil::Printf(DUI_T("%.02f"), scale);
             }
@@ -85,7 +85,7 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
             }
         }
 
-#endif //DUI_BUILD_FOR_LINUX && DUI_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_LINUX && DUI_BUILD_FOR_WAYLAND
 
         // Enable off-screen rendering
         if (CefManager::GetInstance()->IsEnableOffScreenRendering()) {

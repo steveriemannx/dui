@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Window size="600,500" min_size="80,50" text="Animation Test"
         caption="0,0,0,36" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" 
-        shadow_type="default" shadow_attached="true" shadow_snap="true" 
+        shadow_type="draw_default" shadow_attached="true" shadow_snap="true" 
         alpha="255" size_box="4,4,4,4" icon="public/caption/logo.ico">
     <VBox bkcolor="bk_wnd_darkcolor" visible="true">    
         <!-- Title bar area -->

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="600,520" min_size="80,50" caption="0,0,0,35" use_system_caption="false" shadow_attached="true" alpha="255" size_box="4,4,4,4">
+<Window size="600,520" min_size="80,50" caption="0,0,0,32" use_system_caption="false" shadow_type="system_default" shadow_attached="true" size_box="4,4,4,4">
   
   <TextColor name="color_picker_bkcolor" value="#FFF0F0F0"/>
   <TextColor name="color_picker_box_bkcolor" value="#FFF9F9F9"/>
@@ -10,15 +10,15 @@
   <VBox bkcolor="bk_wnd_darkcolor" border_size="0,0,0,0" border_color="lightcolor" visible="true">
     
     <!-- Title bar area -->
-    <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+    <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
         <Label text="Select Color" valign="center" margin="8" mouse_enabled="false"/>
         <Control mouse_enabled="false"/>
-        <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-        <Box height="stretch" width="40" margin="0,2,0,2">
+        <Button class="btn_wnd_min_11" height="32" width="46" name="minbtn" margin="0,0,0,0" tooltip_text="Minimize"/>
+        <Box height="stretch" width="46" margin="0,0,0,0">
             <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
             <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
         </Box>
-        <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+        <Button class="btn_wnd_close_11" height="stretch" width="46" name="closebtn" margin="0,0,0,0" tooltip_text="Close"/>
     </HBox>
     
     <!-- Work area: everything outside the title bar goes into this large Box area -->

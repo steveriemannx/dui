@@ -9,7 +9,7 @@ namespace ui
 {
 /** The implementation of the drag and drop support interface of the control (macOS native)
 */
-class ControlDropTargetImpl_MacOS : public ControlDropTarget_SDL
+class ControlDropTargetImpl_MacOS : public ControlDropTarget_Wayland
 {
 public:
     explicit ControlDropTargetImpl_MacOS(Control* pControl);

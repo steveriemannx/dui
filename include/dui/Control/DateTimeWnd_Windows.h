@@ -4,7 +4,7 @@
 #include "dui/Core/UiTypes.h"
 #include <ctime>
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 namespace ui
 {
@@ -62,6 +62,6 @@ private:
 
 } //namespace ui
 
-#endif // (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif // (DUI_BUILD_FOR_WIN)
 
 #endif // _UI_CONTROL_DATETIME_WND_WINDOWS_H_

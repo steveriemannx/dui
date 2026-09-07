@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="1000,700" min_size="80,60" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" shadow_attached="true" alpha="255" size_box="4,4,4,4" icon="public/caption/logo.ico">
+<Window size="1250,875" min_size="80,60" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" caption="0,0,0,32" shadow_attached="true" shadow_snap="true" shadow_type="system_default" shadow_border_size="0" size_box="4,4,4,4" icon="public/caption/logo.ico">
     <VBox bkcolor="bk_wnd_darkcolor" visible="true">    
         <!-- Title bar area -->
-        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+        <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
             <Label text="dui Multithreading Example" height="32" text_align="vcenter" margin="10,0,0,0" mouse_enabled="false"/>
             <Control mouse_enabled="false"/>
-            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-            <Box height="stretch" width="40" margin="0,2,0,2">
+            <Button class="btn_wnd_min_11" height="32" width="46" name="minbtn" margin="0,0,0,0" tooltip_text="Minimize"/>
+            <Box height="stretch" width="46" margin="0,0,0,0">
                 <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
                 <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
             </Box>
-            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+            <Button class="btn_wnd_close_11" height="stretch" width="46" name="closebtn" margin="0,0,0,0" tooltip_text="Close"/>
         </HBox>
         
         <!-- Work area: everything outside the title bar goes into this large Box area -->

@@ -229,7 +229,7 @@ Shadow::Shadow(Window* pWindow):
     //does not composite with the legacy GL surface (renders as a black box).
     SetShadowType(Shadow::ShadowType::kShadowSystemDefault);
 #else
-    SetShadowType(Shadow::ShadowType::kShadowDefault);
+    SetShadowType(Shadow::ShadowType::kShadowDrawDefault);
 #endif
 }
 
@@ -359,7 +359,7 @@ bool Shadow::IsShadowTypeNeedLayeredWindow(ShadowType nShadowType)
     if (IsSystemShadowType(nShadowType)) {
         return false;
     }
-    if (nShadowType == ShadowType::kShadowNone) {
+    if (nShadowType == ShadowType::kShadowDrawNone) {
         return false;
     }
     return true;
@@ -382,11 +382,14 @@ Shadow::ShadowType Shadow::GetDefaultShadowType(const Window* pWindow)
     //relies on window transparency, which does not composite with the legacy
     //GL surface (the shadow area renders black).
     return ShadowType::kShadowSystemDefault;
+#elif defined(DUI_BUILD_FOR_LINUX) && defined(DUI_BUILD_FOR_WAYLAND)
+    // Prefer an application-drawn shadow on Linux Wayland by default.
+    return ShadowType::kShadowDrawBigRound;
 #else
     if (pWindow != nullptr) {
         if (pWindow->IsLayeredWindow()) {
             //Layered window: self-drawn shadow with rounded corners
-            return ShadowType::kShadowBigRound;
+            return ShadowType::kShadowDrawBigRound;
         }
         else if (pWindow->NativeWnd()->IsSystemShadowSupported()) {
             //The platform supports OS-provided shadows
@@ -397,20 +400,20 @@ Shadow::ShadowType Shadow::GetDefaultShadowType(const Window* pWindow)
     if (pWindow != nullptr && pWindow->NativeWnd()->IsSystemShadowSupported()) {
         return ShadowType::kShadowSystemDefault;
     }
-    return ShadowType::kShadowBigRound;
+    return ShadowType::kShadowDrawBigRound;
 #elif defined(DUI_BUILD_FOR_MACOS)
     //macOS supports OS-provided shadows
     return ShadowType::kShadowSystemDefault;
 #else
     //Other platforms: self-drawn shadow with rounded corners
-    return ShadowType::kShadowBigRound;
+    return ShadowType::kShadowDrawBigRound;
 #endif
 #endif
 }
 
 Shadow::ShadowType Shadow::GetSupportedShadowType(const Window* pWindow, ShadowType nShadowType)
 {
-    if (nShadowType == ShadowType::kShadowDefault) {
+    if (nShadowType == ShadowType::kShadowDrawDefault) {
         nShadowType = GetDefaultShadowType(pWindow);
     }
     if (pWindow == nullptr) {
@@ -420,16 +423,16 @@ Shadow::ShadowType Shadow::GetSupportedShadowType(const Window* pWindow, ShadowT
         //OS shadows unsupported: fall back to self-drawn shadows
         if (IsSystemShadowType(nShadowType)) {
             if (nShadowType == ShadowType::kShadowSystemDefault) {
-                nShadowType = ShadowType::kShadowBigRound;
+                nShadowType = ShadowType::kShadowDrawBigRound;
             }
             else if (nShadowType == ShadowType::kShadowSystemDoNotRound) {
-                nShadowType = ShadowType::kShadowNone;
+                nShadowType = ShadowType::kShadowDrawNone;
             }
             else if (nShadowType == ShadowType::kShadowSystemRound) {
-                nShadowType = ShadowType::kShadowBigRound;
+                nShadowType = ShadowType::kShadowDrawBigRound;
             }
             else if (nShadowType == ShadowType::kShadowSystemSmallRound) {
-                nShadowType = ShadowType::kShadowSmallRound;
+                nShadowType = ShadowType::kShadowDrawSmallRound;
             }
         }
     }
@@ -437,17 +440,17 @@ Shadow::ShadowType Shadow::GetSupportedShadowType(const Window* pWindow, ShadowT
     else if (nShadowType == ShadowType::kShadowSystemDefault) {
         nShadowType = ShadowType::kShadowSystemRound;
     }
-    else if ((nShadowType == ShadowType::kShadowBig) ||
-             (nShadowType == ShadowType::kShadowBigRound) ||
-             (nShadowType == ShadowType::kShadowSmall) ||
-             (nShadowType == ShadowType::kShadowSmallRound) ||
-             (nShadowType == ShadowType::kShadowMenu) ||
-             (nShadowType == ShadowType::kShadowMenuRound)) {
+    else if ((nShadowType == ShadowType::kShadowDrawBig) ||
+             (nShadowType == ShadowType::kShadowDrawBigRound) ||
+             (nShadowType == ShadowType::kShadowDrawSmall) ||
+             (nShadowType == ShadowType::kShadowDrawSmallRound) ||
+             (nShadowType == ShadowType::kShadowDrawMenu) ||
+             (nShadowType == ShadowType::kShadowDrawMenuRound)) {
         //macOS: self-drawn shadows rely on per-pixel window transparency, which
         //does not composite (the shadow margin renders black, see
         //GetDefaultShadowType). Remap these types to the OS-provided shadow.
-        if ((nShadowType == ShadowType::kShadowBig) ||
-            (nShadowType == ShadowType::kShadowBigRound)) {
+        if ((nShadowType == ShadowType::kShadowDrawBig) ||
+            (nShadowType == ShadowType::kShadowDrawBigRound)) {
             nShadowType = ShadowType::kShadowSystemDefault;
         }
         else {
@@ -460,6 +463,18 @@ Shadow::ShadowType Shadow::GetSupportedShadowType(const Window* pWindow, ShadowT
 
 void Shadow::SetShadowType(Shadow::ShadowType nShadowType)
 {
+#if defined(DUI_BUILD_FOR_LINUX)
+    if (nShadowType == ShadowType::kShadowSystemDefault ||
+        nShadowType == ShadowType::kShadowSystemRound) {
+        nShadowType = ShadowType::kShadowDrawBigRound;
+    }
+    else if (nShadowType == ShadowType::kShadowSystemSmallRound) {
+        nShadowType = ShadowType::kShadowDrawSmallRound;
+    }
+    else if (nShadowType == ShadowType::kShadowSystemDoNotRound) {
+        nShadowType = ShadowType::kShadowDrawNone;
+    }
+#endif
     ASSERT(nShadowType >= Shadow::ShadowType::kShadowFirst);
     ASSERT(nShadowType < Shadow::ShadowType::kShadowCount);
     if ((nShadowType >= Shadow::ShadowType::kShadowFirst) &&
@@ -486,35 +501,35 @@ Shadow::ShadowType Shadow::GetShadowType() const
 
 bool Shadow::GetShadowType(const DString& typeString, ShadowType& nShadowType)
 {
-    if (typeString == DUI_T("big")) {
-        nShadowType = Shadow::ShadowType::kShadowBig;
+    if (typeString == DUI_T("draw_big")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawBig;
     }
-    else if (typeString == DUI_T("big_round")) {
-        nShadowType = Shadow::ShadowType::kShadowBigRound;
+    else if (typeString == DUI_T("draw_big_round")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawBigRound;
     }
-    else if (typeString == DUI_T("small")) {
-        nShadowType = Shadow::ShadowType::kShadowSmall;
+    else if (typeString == DUI_T("draw_small")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawSmall;
     }
-    else if (typeString == DUI_T("small_round")) {
-        nShadowType = Shadow::ShadowType::kShadowSmallRound;
+    else if (typeString == DUI_T("draw_small_round")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawSmallRound;
     }
-    else if (typeString == DUI_T("menu")) {
-        nShadowType = Shadow::ShadowType::kShadowMenu;
+    else if (typeString == DUI_T("draw_menu")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawMenu;
     }
-    else if (typeString == DUI_T("menu_round")) {
-        nShadowType = Shadow::ShadowType::kShadowMenuRound;
+    else if (typeString == DUI_T("draw_menu_round")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawMenuRound;
     }
-    else if (typeString == DUI_T("none")) {
-        nShadowType = Shadow::ShadowType::kShadowNone;
+    else if (typeString == DUI_T("draw_none")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawNone;
     }
-    else if (typeString == DUI_T("none_round")) {
-        nShadowType = Shadow::ShadowType::kShadowNoneRound;
+    else if (typeString == DUI_T("draw_none_round")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawNoneRound;
     }
-    else if (typeString == DUI_T("custom")) {
-        nShadowType = Shadow::ShadowType::kShadowCustom;
+    else if (typeString == DUI_T("draw_custom")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawCustom;
     }
-    else if (typeString == DUI_T("default")) {
-        nShadowType = Shadow::ShadowType::kShadowDefault;
+    else if (typeString == DUI_T("draw_default")) {
+        nShadowType = Shadow::ShadowType::kShadowDrawDefault;
     }
     else if (typeString == DUI_T("system_default")) {
         nShadowType = Shadow::ShadowType::kShadowSystemDefault;
@@ -542,7 +557,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
                             Shadow* pShadowObj)
 {
     bool bRet = false;
-    if (nShadowType == Shadow::ShadowType::kShadowBig) {
+    if (nShadowType == Shadow::ShadowType::kShadowDrawBig) {
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(30, 30, 34, 36);
@@ -552,7 +567,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
                                              rcShadowCorner.right + szBorderRound.cx,
                                              rcShadowCorner.bottom + szBorderRound.cx);
     }
-    else if (nShadowType == Shadow::ShadowType::kShadowBigRound) {
+    else if (nShadowType == Shadow::ShadowType::kShadowDrawBigRound) {
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(30, 30, 34, 36);
@@ -562,7 +577,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
                                          rcShadowCorner.right + szBorderRound.cx,
                                          rcShadowCorner.bottom + szBorderRound.cx);
     }
-    else if (nShadowType == Shadow::ShadowType::kShadowSmall) {
+    else if (nShadowType == Shadow::ShadowType::kShadowDrawSmall) {
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
@@ -572,7 +587,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
                                              rcShadowCorner.right + szBorderRound.cx,
                                              rcShadowCorner.bottom + szBorderRound.cx);
     }
-    else if (nShadowType == Shadow::ShadowType::kShadowSmallRound) {
+    else if (nShadowType == Shadow::ShadowType::kShadowDrawSmallRound) {
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
@@ -582,7 +597,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
                                          rcShadowCorner.right + szBorderRound.cx,
                                          rcShadowCorner.bottom + szBorderRound.cx);
     }
-    else if (nShadowType == Shadow::ShadowType::kShadowMenu) {
+    else if (nShadowType == Shadow::ShadowType::kShadowDrawMenu) {
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
@@ -592,7 +607,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
                                              rcShadowCorner.right + szBorderRound.cx,
                                              rcShadowCorner.bottom + szBorderRound.cx);
     }
-    else if (nShadowType == Shadow::ShadowType::kShadowMenuRound) {
+    else if (nShadowType == Shadow::ShadowType::kShadowDrawMenuRound) {
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
@@ -602,19 +617,19 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
                                          rcShadowCorner.right + szBorderRound.cx,
                                          rcShadowCorner.bottom + szBorderRound.cx);
     }
-    else if (nShadowType == Shadow::ShadowType::kShadowNone) {
+    else if (nShadowType == Shadow::ShadowType::kShadowDrawNone) {
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(0, 0, 0, 0);// Set one pixel to accommodate the border line (see the following code)
         shadowImage.clear();
     }
-    else if (nShadowType == Shadow::ShadowType::kShadowNoneRound) {
+    else if (nShadowType == Shadow::ShadowType::kShadowDrawNoneRound) {
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(0, 0, 0, 0);// Set one pixel to accommodate the border line (see the following code)
         shadowImage.clear();
     }
-    else if (nShadowType == Shadow::ShadowType::kShadowCustom) {
+    else if (nShadowType == Shadow::ShadowType::kShadowDrawCustom) {
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(0, 0, 0, 0);
@@ -626,8 +641,8 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         shadowImage.clear();
     }
 
-    if ((pShadowObj != nullptr) && ((nShadowType == Shadow::ShadowType::kShadowNone) ||
-                                    (nShadowType == Shadow::ShadowType::kShadowNoneRound))) {
+    if ((pShadowObj != nullptr) && ((nShadowType == Shadow::ShadowType::kShadowDrawNone) ||
+                                    (nShadowType == Shadow::ShadowType::kShadowDrawNoneRound))) {
         int32_t nShadowBorderSize = pShadowObj->GetShadowBorderSize();
         if (pShadowObj->GetShadowBorderColor().empty()) {
             nShadowBorderSize = 0;
@@ -653,7 +668,7 @@ void Shadow::OnShadowAttached(Shadow::ShadowType nShadowType)
     DString shadowImage;
     if (GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage, this)) {
         // User-defined type: do not overwrite the original values; the user-set values take precedence
-        if (nShadowType != Shadow::ShadowType::kShadowCustom) {
+        if (nShadowType != Shadow::ShadowType::kShadowDrawCustom) {
             SetShadowCorner(rcShadowCorner);
             SetShadowBorderRound(szBorderRound);
             SetShadowImage(shadowImage);
@@ -667,6 +682,12 @@ void Shadow::OnShadowAttached(Shadow::ShadowType nShadowType)
         SetShadowCorner(UiPadding(0, 0, 0, 0));
         SetShadowBorderRound(UiSize(0, 0));
         SetShadowImage(DString());
+    }
+    //Self-drawn shadows need per-pixel transparency (layered window) so the
+    //shadow margin shows the desktop behind it instead of an opaque window color.
+    if ((m_pWindow != nullptr) && IsShadowAttached() &&
+        IsShadowTypeNeedLayeredWindow(nShadowType) && !m_pWindow->IsLayeredWindow()) {
+        m_pWindow->SetLayeredWindow(true, false);
     }
     UpdateShadow();
 
@@ -902,7 +923,7 @@ void Shadow::CheckMouseClickOnShadow(EventType eventType, const UiPoint& pt)
         return;
     }
     Shadow::ShadowType shadowType = GetShadowType();
-    if ((shadowType == Shadow::ShadowType::kShadowNone) || (shadowType == Shadow::ShadowType::kShadowNoneRound)) {
+    if ((shadowType == Shadow::ShadowType::kShadowDrawNone) || (shadowType == Shadow::ShadowType::kShadowDrawNoneRound)) {
         // No-shadow mode
         return;
     }

@@ -435,7 +435,7 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
     //Shadow related parameters
     bool bShadowAttached = false;
     bool bHasShadowAttached = false;
-    Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDefault;
+    Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDrawDefault;
     UiPadding rcShadowCorner;
 
     RenderBackendType backendType = RenderBackendType::kRaster_BackendType;
@@ -507,9 +507,9 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
         else if ((strName == DUI_T("max_size")) || (strName == DUI_T("maxinfo"))) {
             AttributeUtil::ParseSizeValue(strValue.c_str(), szMaxSize);
         }
-        else if (strName == DUI_T("sdl_render_name")) {
-            //The expected SDL Render name
-            createAttributes.m_sdlRenderName = strValue;
+        else if (strName == DUI_T("native_render_name")) {
+            //The expected native backend Render name
+            createAttributes.m_nativeRenderName = strValue;
         }
         else if ((strName == DUI_T("shadow_attached")) || (strName == DUI_T("shadowattached"))) {
             //Set whether window shadow is supported (there are two shadow implementations: layered windows and normal windows)
@@ -571,7 +571,7 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
         createAttributes.m_szInitSize.cx = cx;
         createAttributes.m_szInitSize.cy = cy;
     }
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if (backendType == RenderBackendType::kNativeGL_BackendType) {
         //When using OpenGL, layered windows cannot be used
         if (!createAttributes.m_bLayeredWindowOpacityDefined || (createAttributes.m_nLayeredWindowOpacity == 255)) {
@@ -891,7 +891,7 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         }
     }
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if (pWindow->GetRenderBackendType() == RenderBackendType::kNativeGL_BackendType) {
         //When using OpenGL, layered windows cannot be used
         if (!bLayeredWindowOpacityDefined || (pWindow->GetLayeredWindowOpacity() == 255)) {

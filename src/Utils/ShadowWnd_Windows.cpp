@@ -2,7 +2,7 @@
 #include "dui/Core/Box.h"
 #include "dui/Core/Shadow.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 namespace ui {
 

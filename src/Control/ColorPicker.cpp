@@ -568,10 +568,10 @@ private:
                 uint32_t colorValue = pPixelBits[colorXY];
                 selColor = UiColor(colorValue);
 #ifdef DUI_BUILD_FOR_WIN
-                //SDL_PIXELFORMAT_BGRA32
+                //Native_PIXELFORMAT_BGRA32
                 selColor = UiColor(selColor.GetR(), selColor.GetG(), selColor.GetB());
 #else
-                //SDL_PIXELFORMAT_RGBA32
+                //Native_PIXELFORMAT_RGBA32
                 selColor = UiColor(selColor.GetB(), selColor.GetG(), selColor.GetR());
 #endif
             }
@@ -756,10 +756,10 @@ void ColorPicker::OnPickColorFromScreen()
     if (pCheckBox != nullptr) {
         bHideWindow = pCheckBox->IsSelected();
     }
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
     bHideWindow = false;
 #else
-    //In the SDL implementation, if the window is hidden, all child windows are hidden too, so this window cannot be hidden
+    //In the native backend implementation, if the window is hidden, all child windows are hidden too, so this window cannot be hidden
     if (bHideWindow) {
         //Hide this window
         ShowWindow(kSW_HIDE);

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.18)
 option(DUI_RUN_GUI_TESTS "Build tests that create native GUI windows" OFF)
 
 # Include this file after the repository's src/CMakeLists.txt so the core
-# library target is available. This keeps test wiring independent from SDL.
+# library target is available. This keeps test wiring independent from native backend.
 if(NOT TARGET dui)
     message(FATAL_ERROR "tests requires the dui target; add_subdirectory(src) before add_subdirectory(tests)")
 endif()

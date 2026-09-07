@@ -15,7 +15,10 @@ if(APPLE)
 elseif(WIN32)
     set(CONTROLS_THEME windows11)
 else()
-    set(CONTROLS_THEME default)
+    set(CONTROLS_THEME "${DUI_EXAMPLE_THEME}")
+    if(CONTROLS_THEME STREQUAL "")
+        set(CONTROLS_THEME default)
+    endif()
 endif()
 set(GEN_XML_FILES
     "${DUI_ROOT}/resources/themes/${CONTROLS_THEME}/controls/controls.xml"

@@ -63,10 +63,10 @@ public:
      */
     virtual LRESULT OnShowWindowMsg(bool bShow, const ui::NativeMsg& nativeMsg, bool& bHandled) { (void)bShow; (void)nativeMsg; (void)bHandled; return 0; }
 
-    /** Window drawing (SDL_EVENT_WINDOW_EXPOSED/WM_PAINT)
+    /** Window drawing (Native_EVENT_WINDOW_EXPOSED/WM_PAINT)
      * @param [in] rcPaint The rectangular area that needs to be updated for this drawing
      * @param [in] nativeMsg The original message content received from the system
-     *             SDL implementation: nativeMsg.uMsg is SDL_EVENT_WINDOW_EXPOSED, and nativeMsg.wParam is a SDL_Window* pointer
+     *             native backend implementation: nativeMsg.uMsg is Native_EVENT_WINDOW_EXPOSED, and nativeMsg.wParam is a Native_Window* pointer
      *             Windows implementation: nativeMsg.uMsg is WM_PAINT, and nativeMsg.wParam is the HWND handle of the window
      * @param [out] bHandled Whether the message has been handled; returning true means the message has been handled successfully and no longer needs to be passed to the window procedure; returning false means the message continues to be passed to the window procedure for processing
      * @return Returns the processing result of the message; if the application handles this message, it should return zero

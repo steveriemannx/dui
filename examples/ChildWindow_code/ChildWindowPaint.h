@@ -13,10 +13,10 @@ public:
     ~ChildWindowPaint();
 
 public:
-    /** Window drawing (SDL_EVENT_WINDOW_EXPOSED/WM_PAINT)
+    /** Window drawing (Native_EVENT_WINDOW_EXPOSED/WM_PAINT)
      * @param [in] rcPaint The rectangular area that needs to be updated for this drawing
      * @param [in] nativeMsg The raw message content received from the system
-     *             SDL implementation: nativeMsg.uMsg is SDL_EVENT_WINDOW_EXPOSED, and nativeMsg.wParam is an SDL_Window* pointer
+     *             native backend implementation: nativeMsg.uMsg is Native_EVENT_WINDOW_EXPOSED, and nativeMsg.wParam is an Native_Window* pointer
      *             Windows implementation: nativeMsg.uMsg is WM_PAINT, and nativeMsg.wParam is the HWND handle of the window
      * @param [in] bPaintFps Whether it is currently in the dynamic drawing state (to demonstrate the child window drawing feature)
      */

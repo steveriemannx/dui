@@ -1003,7 +1003,7 @@ private:
 
 private:
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     /** Get the associated window handle
     */
     HWND GetWindowHWND() const;
@@ -1115,11 +1115,11 @@ private:
     bool m_bNoSelOnKillFocus;   //When losing focus, cancel the text selection (for m_bEnabled && IsReadOnly())
     bool m_bSelAllOnFocus;      //When gaining focus, select all text (for m_bEnabled && !IsReadOnly())
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     bool m_bIsComposition;      //Whether the IME composition window is visible
 #endif
 
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
     /** The current IME marked text (pinyin composition) while composing. */
     DStringW m_imeMarkedText;
 

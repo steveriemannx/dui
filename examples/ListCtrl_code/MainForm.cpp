@@ -15,9 +15,15 @@ void MainForm::SetupWindow()
     SetWindowMinimumSize(ui::UiSize(80, 50), true);
     SetUseSystemCaption(false);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+#if !defined(DUI_BUILD_FOR_LINUX)
     SetLayeredWindow(false, false);
+#endif
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+#endif
     SetShadowBorderSize(0);
     SetShadowAttached(true);
     // System shadow type: normalize and force non-layered window
@@ -27,7 +33,9 @@ void MainForm::SetupWindow()
         SetShadowType(supportedType);
     }
     if (ui::Shadow::IsSystemShadowType(supportedType)) {
+#if !defined(DUI_BUILD_FOR_LINUX)
         SetLayeredWindow(false, false);
+#endif
     }
     CenterWindow();
 }
@@ -730,7 +738,7 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     ui::ListCtrlHeader* pHeaderCtrl = pListCtrl->GetHeaderCtrl();
     if (pHeaderCtrl != nullptr) {
         pHeaderCtrl->AttachRClick([this](const ui::EventArgs&) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
             if (::MessageBox(nullptr, DUI_T("ListCtrlHeader RClick! Run function test?"), DUI_T(""), MB_YESNO) == IDYES) {
                 RunListCtrlTest();
             }

@@ -6,14 +6,14 @@
 #include "dui/Utils/FilePath.h"
 #include "dui/Core/EventArgs.h"
 
-#if defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
-    #include "dui/Core/NativeWindow_SDL.h"
+#if defined (DUI_BUILD_FOR_WAYLAND)
+    #include "dui/Core/NativeWindow_Wayland.h"
+#elif defined (DUI_BUILD_FOR_X11)
+    #include "dui/Core/NativeWindow_X11.h"
 #elif defined (DUI_BUILD_FOR_WIN)
     #include "dui/Core/NativeWindow_Windows.h"
 #elif defined (DUI_BUILD_FOR_MACOS)
     #include "dui/Core/NativeWindow_MacOS.h"
-#else
-    class NativeWindow;
 #endif
 
 namespace ui
@@ -599,11 +599,11 @@ public:
     */
     void SetLastMousePos(const UiPoint& pt);
 
-    /** Get the window handle (on the Windows platform, the window handle HWND is returned; in the SDL implementation, SDL_Window* is returned)
+    /** Get the window handle (on the Windows platform, the window handle HWND is returned; in the native backend implementation, Native_Window* is returned)
     */
     void* GetWindowHandle() const;
 
-#ifdef DUI_BUILD_FOR_SDL
+#if defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_X11)
     /** Get the driver name of the current window implementation
     */
     DString GetVideoDriverName() const;
@@ -1294,7 +1294,7 @@ protected:
     * @param [in] dropType The source type of the drag-and-drop operation
     * @param [in,out] pDropData The specific type is determined by dropType:
     *                 When dropType is kControlDropTypeWindows (representing the Windows platform SDK implementation), the type of pDropData is ControlDropData_Windows*
-    *                 When dropType is kControlDropTypeSDL (representing the SDL implementation), the type of pDropData is ControlDropData_SDL*
+    *                 When dropType is kControlDropTypeWayland (representing the native backend implementation), the type of pDropData is ControlDropData_Wayland*
     *                 pDropData->m_bHandled is the message handling flag; if true is returned, it means the event has been handled and will not be forwarded to other UI controls in the interface for handling, which is equivalent to intercepting this message
     *                 pDropData->m_hResult is the return value after the message is handled, finally returned to the operating system; on the Windows platform, success returns S_OK
     */
@@ -1312,7 +1312,7 @@ protected:
 
     /** Handle the system notification message for DPI changes (WM_DPICHANGED)
     * @param [in] fNewDisplayScale The new interface display scale value of the window; 1.0f means no scaling
-    * @param [in] fNewPixelDensity The new pixel density value of the window (only used in the SDL implementation)
+    * @param [in] fNewPixelDensity The new pixel density value of the window (only used in the native backend implementation)
     */
     virtual void OnDisplayScaleChangedMsg(float fNewDisplayScale, float fNewPixelDensity) = 0;
 
@@ -1327,7 +1327,7 @@ protected:
 
     /** Handle the system notification message for DPI changes
     * @param [in] fNewDisplayScale The new interface display scale value of the window; 1.0f means no scaling
-    * @param [in] fNewPixelDensity The new pixel density value of the window (only used in the SDL implementation)
+    * @param [in] fNewPixelDensity The new pixel density value of the window (only used in the native backend implementation)
     */
     void OnProcessDisplayScaleChangedMsg(float fNewDisplayScale, float fNewPixelDensity);
 
