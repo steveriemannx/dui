@@ -10,7 +10,7 @@
 <Window size="800,600" min_size="80,60"
         caption="0,0,0,36" use_system_caption="false"
         snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36"
-        shadow_type="default" shadow_attached="true"
+        shadow_type="draw_default" shadow_attached="true"
         layered_window="true" alpha="255" size_box="4,4,4,4"
         icon="../public/caption/logo.ico">
   <VBox bkcolor="bk_wnd_darkcolor">

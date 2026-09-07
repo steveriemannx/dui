@@ -3,7 +3,7 @@
 #include "dui/Core/ControlPtrT.h"
 #include "dui/Core/GlobalManager.h"
 #include "dui/Core/WindowBuilder.h"
-#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Core/NativeWindow_Wayland.h"
 #include "dui/Control/Label.h"
 
 #ifdef DUI_BUILD_FOR_WAYLAND
@@ -106,7 +106,7 @@ void ToolTip::TImpl::SetMouseTracking(WindowBase* pParentWnd, bool bTracking)
         ControlPtrT<WindowBase> spParentWnd(pParentWnd);
         auto hoverCallback = [this, pParentWnd]() {
             if (pParentWnd != nullptr) {
-                pParentWnd->PostMsg(NativeWindow_SDL::GetHoverMsgId());
+                pParentWnd->PostMsg(NativeWindow_Wayland::GetHoverMsgId());
                 m_nTimerId = 0;
                 m_bMouseTracking = false;
                 m_hoverFlag.reset();

@@ -1,7 +1,7 @@
 #include "CefForm.h"
 #include "dui/Utils/UiBuilder.h"
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
     #include <iostream>
 #endif
 
@@ -36,7 +36,7 @@ void CefForm::OnInitWindow()
         if (ui::CefManager::GetInstance()->IsEnableOffScreenRendering()) {
             //OSR needs a layered window on Windows. On macOS, keep the window
             //opaque so the system shadow does not draw a translucent edge.
-#if defined(DUI_BUILD_FOR_WIN)
+#if defined(DUI_BUILD_FOR_WIN) || defined(DUI_BUILD_FOR_X11)
             SetLayeredWindow(true, true);
 #else
             SetLayeredWindow(false, true);
@@ -83,11 +83,11 @@ void CefForm::OnInitWindow()
     //Set the callback function that controls the main process singleton
     ui::CefManager::GetInstance()->SetAlreadyRunningAppRelaunch(UiBind(&CefForm::OnAlreadyRunningAppRelaunch, this, std::placeholders::_1));
 
-#ifdef DUI_BUILD_FOR_SDL
-    //Show basic SDL information
+#ifdef DUI_BUILD_FOR_WAYLAND
+    //Show basic native backend information
     DString driverName = GetVideoDriverName();
     DString renderName = GetWindowRenderName();
-    DString logMsg = ui::StringUtil::Printf(DUI_T("[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
+    DString logMsg = ui::StringUtil::Printf(DUI_T("[native backend: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
     std::cout << logMsg << std::endl;
 #endif
 

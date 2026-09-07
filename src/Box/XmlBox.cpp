@@ -171,11 +171,11 @@ bool XmlBox::LoadXmlData(const FilePath& xmlPath)
             bShadowAttached = (iter->second == DUI_T("true")) ? true : false;
         }
 
-        Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDefault;
+        Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDrawDefault;
         if (!shadowTypeString.empty() && !Shadow::GetShadowType(shadowTypeString, nShadowType)) {
             bShadowAttached = false;
         }
-        else if (nShadowType == Shadow::ShadowType::kShadowCustom) {
+        else if (nShadowType == Shadow::ShadowType::kShadowDrawCustom) {
             bShadowAttached = false;
         }
         if (bShadowAttached) {

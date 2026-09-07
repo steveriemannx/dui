@@ -287,8 +287,8 @@ static std::vector<int> parseIntList(const std::string& value) {
 static std::string shadowTypeCppName(const std::string& xmlValue) {
     static const std::map<std::string, std::string> types = {
         {"default", "Default"}, {"system_default", "SystemDefault"},
-        {"small", "Small"}, {"small_round", "SmallRound"},
-        {"big", "Big"}, {"big_round", "BigRound"},
+        {"draw_small", "DrawSmall"}, {"draw_small_round", "DrawSmallRound"},
+        {"draw_big", "DrawBig"}, {"draw_big_round", "DrawBigRound"},
         {"system_round", "SystemRound"},
         {"system_small_round", "SystemSmallRound"},
         {"system_not_round", "SystemDoNotRound"},
@@ -385,9 +385,9 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
             hasShadowType = true;
             shadowTypeValue = value;
             static const std::map<std::string, std::string> types = {
-                {"default", "kShadowDefault"}, {"system_default", "kShadowSystemDefault"},
-                {"small", "kShadowSmall"}, {"small_round", "kShadowSmallRound"},
-                {"big", "kShadowBig"}, {"big_round", "kShadowBigRound"},
+                {"draw_default", "kShadowDrawDefault"}, {"system_default", "kShadowSystemDefault"},
+                {"draw_small", "kShadowDrawSmall"}, {"draw_small_round", "kShadowDrawSmallRound"},
+                {"draw_big", "kShadowDrawBig"}, {"draw_big_round", "kShadowDrawBigRound"},
                 {"system_round", "kShadowSystemRound"},
                 {"system_small_round", "kShadowSystemSmallRound"},
                 {"system_not_round", "kShadowSystemDoNotRound"},
@@ -420,7 +420,14 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
             out << "    w." << setter << "(" << value << ");\n";
         }
         else if (name == "layered_window" || name == "layeredwindow") {
-            out << "    w.SetLayeredWindow(" << (value == "true" ? "true" : "false") << ", false);\n";
+            if (value == "true") {
+                out << "    w.SetLayeredWindow(true, false);\n";
+            }
+            else {
+                out << "#if !defined(DUI_BUILD_FOR_LINUX)\n";
+                out << "    w.SetLayeredWindow(false, false);\n";
+                out << "#endif\n";
+            }
         }
         else if (name == "render_backend_type") {
             std::string backend = "kRaster_BackendType";
@@ -796,6 +803,7 @@ int main(int argc, char** argv) {
             // The generated tree is attached after all children are created;
             // force the first paint to calculate the final window layout.
             out << "    pWindow->SetArrange(false);\n";
+            out << "    pWindow->CenterWindow();\n";
         }
         out << "}\n\n";
     }

@@ -5,9 +5,11 @@ endif()
 
 find_package(Freetype REQUIRED)
 find_package(Fontconfig REQUIRED)
-find_package(X11 REQUIRED)
+if(NOT DUI_ENABLE_WAYLAND)
+    find_package(X11 REQUIRED)
+endif()
 
-if(DUI_ENABLE_CEF)
+if(DUI_ENABLE_CEF AND NOT DUI_ENABLE_WAYLAND)
     # Using the CEF module: add the CEF source root to the include path
     include_directories(${DUI_CEF_SRC_ROOT_DIR})
 
@@ -20,11 +22,6 @@ if(DUI_ENABLE_CEF)
     # executable, mirroring the Windows layout: "<exe_dir>/cef_binary".
     # CefManager looks there at runtime, so the examples work regardless of the
     # build directory name (no manual copy).
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy_directory
-                               "${DUI_CEF_SRC_ROOT_DIR}/Release"
-                               "$<TARGET_FILE_DIR:${PROJECT_NAME}>/cef_binary"
-                       COMMENT "Copying CEF runtime to the output directory (cef_binary/)")
 endif()
 
 # Remove *.mm
@@ -32,6 +29,23 @@ list(REMOVE_ITEM SRC_FILES ${DUI_PROJECT_SRC_DIR}/main_macos.mm)
 
 # Set the sources the executable depends on
 add_executable(${PROJECT_NAME} ${SRC_FILES})
+
+if(DUI_ENABLE_CEF AND NOT DUI_ENABLE_WAYLAND)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+                          BUILD_RPATH "\$ORIGIN/cef_binary")
+endif()
+
+if(DUI_ENABLE_CEF AND NOT DUI_ENABLE_WAYLAND)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory
+                               "${DUI_CEF_SRC_ROOT_DIR}/Release"
+                               "$<TARGET_FILE_DIR:${PROJECT_NAME}>/cef_binary"
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory
+                               "${DUI_CEF_SRC_ROOT_DIR}/Resources"
+                               "$<TARGET_FILE_DIR:${PROJECT_NAME}>/cef_binary"
+                       COMMENT "Copying CEF runtime to the executable directory")
+endif()
+
 
 # Embedded resources dependency
 if(DEFINED DUI_EMBED_RES_SRC AND TARGET "${PROJECT_NAME}_embed_res")
@@ -47,7 +61,7 @@ if(TARGET "${PROJECT_NAME}_gen_xml_code")
 endif()
 
 # Platform standard libraries
-set(DUI_LINUX_LIBS X11 freetype fontconfig pthread dl)
+set(DUI_LINUX_LIBS X11 freetype fontconfig pthread dl freetype fontconfig)
 
 # Wayland support
 if(DUI_ENABLE_WAYLAND)

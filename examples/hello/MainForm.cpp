@@ -3,8 +3,8 @@
 
 void MainForm::OnInitWindow()
 {
-    BindEvents();
     BaseClass::OnInitWindow();
+    BindEvents();
 }
 
 void MainForm::BindEvents()

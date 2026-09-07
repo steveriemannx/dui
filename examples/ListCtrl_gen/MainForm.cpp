@@ -444,7 +444,7 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     ui::ListCtrlHeader* pHeaderCtrl = pListCtrl->GetHeaderCtrl();
     if (pHeaderCtrl != nullptr) {
         pHeaderCtrl->AttachRClick([this](const ui::EventArgs&) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
             if (::MessageBox(nullptr, DUI_T("ListCtrlHeader RClick! Run function test?"), DUI_T(""), MB_YESNO) == IDYES) {
                 RunListCtrlTest();
             }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window shadow_type="none" shadow_attached="false" layered_window="true" use_system_caption="false" alpha="255">
+<Window shadow_type="draw_none" shadow_attached="false" layered_window="true" use_system_caption="false" alpha="255">
     <VBox width="auto" height="auto" visible="true" bkcolor="white" border_size="1" border_color="#FFE0E0E0" border_round="4,4">
         <Label name="tooltip_text" font="system_12" multi_line="true" valign="center" text_align="vcenter,hcenter" text_padding="6,4,6,4" mouse_enabled="false"/>
     </VBox>

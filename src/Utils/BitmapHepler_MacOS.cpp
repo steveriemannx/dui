@@ -1,4 +1,4 @@
-#include "dui/Utils/BitmapHelper_SDL.h"
+#include "dui/Utils/BitmapHelper_Native.h"
 #include "dui/Core/GlobalManager.h"
 
 #if defined(DUI_BUILD_FOR_MACOS)

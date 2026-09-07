@@ -25,7 +25,7 @@ class IRender;
 class IRenderPaint;
 
 /** CPU-raster window context for macOS native windows.
- *  The SkSurface wraps our own raster memory (like the SDL version); the
+ *  The SkSurface wraps our own raster memory (like the native backend version); the
  *  pixels are blitted into the NSView's current CGContext on swap.
  */
 class SkRasterWindowContext_MacOS: public skwindow::internal::RasterWindowContext

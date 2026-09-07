@@ -34,7 +34,7 @@ RichEdit::RichEdit(Window* pWindow) :
     m_bSelAllOnFocus(false),    
     m_bNoCaretReadonly(false),
     m_bIsCaretVisiable(false),
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     m_bIsComposition(false),
 #endif
     m_iCaretPosX(0),
@@ -660,7 +660,7 @@ DString RichEdit::GetFontId() const
 
 DString RichEdit::GetInternalFontId() const
 {
-    return StringUtil::Printf(DUI_T("RichEdit_SDL(0x%p)"), this);
+    return StringUtil::Printf(DUI_T("RichEdit_Native(0x%p)"), this);
 }
 
 DString RichEdit::GetCurrentFontId() const
@@ -1587,7 +1587,7 @@ void RichEdit::SetUndoLimit(uint32_t nLimit)
     m_pTextData->SetUndoLimit(nLimit);
 }
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 HWND RichEdit::GetWindowHWND() const
 {
     auto window = GetWindow();
@@ -2138,7 +2138,7 @@ void RichEdit::PaintCaret(IRender* pRender, const UiRect& /*rcPaint*/)
     if (IsReadOnly() && m_bNoCaretReadonly) {
         return;
     }
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if (m_bIsCaretVisiable && !m_bIsComposition) {
 #else
     if (m_bIsCaretVisiable) {
@@ -2147,7 +2147,7 @@ void RichEdit::PaintCaret(IRender* pRender, const UiRect& /*rcPaint*/)
         int32_t yPos = 0;
         GetCaretPos(xPos, yPos);
 
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
         // While composing, show the caret after the marked pinyin text.
         if (m_bImeComposition && !m_imeMarkedText.empty()) {
             xPos += m_nImeMarkedTextWidth;
@@ -2173,7 +2173,7 @@ void RichEdit::PaintCaret(IRender* pRender, const UiRect& /*rcPaint*/)
 
 void RichEdit::PaintImeComposition(IRender* pRender)
 {
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
     if (pRender == nullptr || m_imeMarkedText.empty() || !m_bImeComposition) {
         return;
     }
@@ -3475,7 +3475,7 @@ void RichEdit::CheckSelAllOnFocus()
 
 bool RichEdit::OnImeStartComposition(const EventArgs& /*msg*/)
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     HWND hWnd = GetWindowHWND();
     if (hWnd == nullptr) {
         return true;
@@ -3509,7 +3509,7 @@ bool RichEdit::OnImeStartComposition(const EventArgs& /*msg*/)
     ::ImmSetCompositionWindow(hImc, &cfs);
     ::ImmReleaseContext(hWnd, hImc);
     m_bIsComposition = true;
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     // A marked-text session replaces the current selection. Remove it before
     // drawing the first pinyin syllable; otherwise the composition appears
     // after the selected text and the selection is deleted only on commit.
@@ -3525,7 +3525,7 @@ bool RichEdit::OnImeStartComposition(const EventArgs& /*msg*/)
 
 bool RichEdit::OnImeComposition(const EventArgs& msg)
 {
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
     if ((msg.wParam != 0) && (msg.lParam > 0)) {
         m_imeMarkedText = (DStringW::value_type*)msg.wParam;
         m_bImeComposition = true;
@@ -3541,9 +3541,9 @@ bool RichEdit::OnImeComposition(const EventArgs& msg)
 
 bool RichEdit::OnImeEndComposition(const EventArgs& /*msg*/)
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     m_bIsComposition = false;
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     m_bImeComposition = false;
     m_imeMarkedText.clear();
     m_nImeMarkedTextWidth = 0;
@@ -3617,7 +3617,7 @@ bool RichEdit::OnKeyDown(const EventArgs& msg)
         OnInputChar(msg);
     }
     else if (msg.vkCode == kVK_BACK) {
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
         // While composing, Backspace should delete the pinyin marked text
         // first, not the already committed text before the composition.
         if (m_bImeComposition && !m_imeMarkedText.empty()) {
@@ -4160,7 +4160,7 @@ bool RichEdit::OnChar(const EventArgs& msg)
         return true;
     }
 
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
     // insertText: commits the composition but does not send unmarkText: on
     // macOS. Clear the marked text here so the pinyin does not remain visible
     // after the Chinese characters have been inserted.
@@ -4640,9 +4640,6 @@ void RichEdit::OnInputChar(const EventArgs& msg)
     DStringW text;
     if ((msg.vkCode == kVK_RETURN) || (msg.vkCode == kVK_TAB) || (msg.vkCode == kVK_DELETE) || (msg.vkCode == kVK_BACK)) {
         //The handling of the Enter key, TAB key, Delete key, and Backspace key, no input text
-        #if defined(DUI_BUILD_FOR_SDL)
-        ASSERT(msg.eventData != SDL_EVENT_TEXT_INPUT);
-#endif
         if (msg.vkCode == kVK_RETURN) {
             //Enter: convert to a newline: "\r\n" or "\n"
 #if defined (DUI_BUILD_FOR_WIN)
@@ -4657,15 +4654,8 @@ void RichEdit::OnInputChar(const EventArgs& msg)
         }
     }
     else {
-        #if defined(DUI_BUILD_FOR_SDL)
-        ASSERT(msg.eventData == SDL_EVENT_TEXT_INPUT);
-#endif
         ASSERT(msg.vkCode == kVK_None);
-        #if defined(DUI_BUILD_FOR_SDL)
-        if ((msg.eventData == SDL_EVENT_TEXT_INPUT) && (msg.wParam != 0) && (msg.lParam > 0)) {
-#else
         if ((msg.wParam != 0) && (msg.lParam > 0)) {
-#endif
             //The currently entered character or string (e.g. for Chinese input, the candidate word is entered at once, unlike the Windows SDK which enters character by character)
             text = (DStringW::value_type*)msg.wParam;
         }

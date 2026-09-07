@@ -2,7 +2,7 @@
 # Dependency management for Skia / CEF:
 #   - Skia sources are vendored as zip downloads (third_party/skia);
 #     when missing they are downloaded and extracted automatically at configure time
-#     (see dui_deps_download_skia / dui_deps_download_sdl below), so they are present
+#     (see dui_deps_download_skia below), so they are present
 #     at configure time (src/CMakeLists.txt compiles skia's tools/window sources directly
 #     into the dui library). The zip archives are kept in third_party/downloads/
 #     (gitignored) so that deleting the extracted source and reconfiguring re-extracts
@@ -200,7 +200,7 @@ function(dui_deps_add_targets)
                     "then re-run cmake configure.")
         endif()
 
-        # ---- gn: built from source at make time (ordered before SDL3/skia) ----
+        # ---- gn: built from source at make time (ordered before Skia) ----
         set(DUI_GN_BIN "")  # set when the gn source build is available; skia uses it below
         if(EXISTS "${DUI_ROOT}/third_party/gn/build/gen.py")
             find_program(DUI_GN_PYTHON NAMES python3 python)
@@ -388,7 +388,7 @@ function(dui_deps_add_targets)
 
 endfunction()
 
-# ---- Download helper: verify cached archive, retry on failure (shared by skia/SDL3/CEF/WebView2) ----
+# ---- Download helper: verify cached archive, retry on failure (shared by Skia/CEF/WebView2) ----
 # Checks the integrity of a cached archive before it is used, so a partial download left by an
 # interrupted previous configure is detected and re-downloaded instead of failing at extraction.
 # Retries the download up to 3 times and removes the partial file after each failure, so the
@@ -515,7 +515,7 @@ endfunction()
 # Building skia requires gn. Prebuilt CIPD binaries only cover amd64 reliably, so clone the
 # gn source at configure time and build it at make time via the dui_gn target
 # (build/gen.py + ninja -C out, per https://gn.googlesource.com/gn/+/refs/heads/main/README.md),
-# ordered before the SDL3/skia builds. The binary lands in build/tools/gn/gn (gn.exe on
+# ordered before the Skia build. The binary lands in build/tools/gn/gn (gn.exe on
 # Windows). A system gn is preferred and skips the clone entirely; if the clone is
 # unavailable, configure falls back to a system gn or skia's bin/ at make time.
 function(dui_deps_download_gn)
@@ -633,7 +633,7 @@ function(dui_deps_download_gn)
 endfunction()
 
 # ---- CEF binary distribution download (only when missing) ----
-# The tar.bz2 is cached in third_party/downloads/ (gitignored), like the skia/SDL3 zips;
+# The tar.bz2 is cached in third_party/downloads/ (gitignored), like the Skia zips;
 # only the extraction target (third_party/libcef/cef_binary) is re-created when missing.
 function(dui_deps_download_cef)
     if(DEFINED CEF_ROOT)
@@ -714,7 +714,7 @@ function(dui_deps_download_cef)
 endfunction()
 
 # ---- WebView2 SDK NuGet package download (only when missing) ----
-# The .nupkg is cached in third_party/downloads/ (gitignored), like the skia/SDL3 zips.
+# The .nupkg is cached in third_party/downloads/ (gitignored), like the Skia zips.
 function(dui_deps_download_webview2)
     set(_wv2_dest "${DUI_ROOT}/third_party/Microsoft.Web.WebView2")
     if(EXISTS "${_wv2_dest}/build/native/${DUI_SYSTEM_PROCESSOR}/WebView2Loader.dll.lib")

@@ -902,13 +902,13 @@ bool CefBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> browser,
     }
     else {
         // Off-screen rendering mode: the cursor needs to be set        
-#ifdef DUI_BUILD_FOR_SDL
-        // Since SDL does not expose cursor setting events internally, the SDL cursor must be set proactively to ensure the cursor is correct (SDL internally sets the cursor, which overrides the cursor set here)
+#ifdef DUI_BUILD_FOR_WAYLAND
+        // Since native backend does not expose cursor setting events internally, the native backend cursor must be set proactively to ensure the cursor is correct (native backend internally sets the cursor, which overrides the cursor set here)
         if (m_pHandlerDelegate && !m_bHostWindowClosed) {
             GlobalManager::Instance().Thread().PostTask(ui::kThreadUI, UiBind(&CefBrowserHandlerDelegate::OnCursorChange, m_pHandlerDelegate, type));
         }
 #else
-        // In non-SDL mode, the cursor must be set proactively
+        // In non-native backend mode, the cursor must be set proactively
         SetCefWindowCursor(GetCefWindowHandle(), cursor);
 #endif
         return true;

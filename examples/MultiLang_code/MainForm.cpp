@@ -89,8 +89,12 @@ void MainForm::SetupWindow()
     SetWindowSize(600, 400);
     CenterWindow();
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);

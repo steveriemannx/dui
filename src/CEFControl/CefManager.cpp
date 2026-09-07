@@ -329,6 +329,16 @@ void CefManager::GetCefSetting(CefSettings& settings)
     }
     settings.no_sandbox = true;
 
+#if defined(DUI_BUILD_FOR_LINUX)
+    // The Linux CEF library is linked from its Release directory, while the
+    // application stages runtime resources beside the executable.
+    FilePath resourcePath = FilePathUtil::GetCurrentModuleDirectory();
+    resourcePath += DUI_T("cef_binary");
+    FilePath localePath = FilePathUtil::JoinFilePath(resourcePath, FilePath(DUI_T("locales")));
+    CefString(&settings.resources_dir_path) = resourcePath.NativePath();
+    CefString(&settings.locales_dir_path) = localePath.NativePath();
+#endif
+
     //Set localstorage; do not add "\\" at the end of the path, otherwise an error will be reported at runtime
     if (!appDataRootDir.empty()) {
         const DString cachePath = appDataRootDir + DUI_T("CefLocalStorage");

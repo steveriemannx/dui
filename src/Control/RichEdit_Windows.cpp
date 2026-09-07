@@ -18,7 +18,7 @@
 #include "dui/Box/VBox.h"
 #include "dui/Control/Button.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Core/ControlDropTargetImpl_Windows.h"
 #include "dui/Core/ControlDropTargetUtils.h"
@@ -681,7 +681,7 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
     }
 #endif
 
-    //Some properties supported by SDL versions but not by this version; these need to be skipped
+    //Some properties supported by native backend versions but not by this version; these need to be skipped
     else if (strName == DUI_T("selection_bkcolor")) {
     }
     else if (strName == DUI_T("inactive_selection_bkcolor")) {
@@ -3899,7 +3899,7 @@ ControlDropTarget_Windows* RichEdit::GetControlDropTarget()
     return m_pControlDropTarget;
 }
 
-ControlDropTarget_SDL* RichEdit::GetControlDropTarget_SDL()
+ControlDropTarget_Wayland* RichEdit::GetControlDropTarget_Wayland()
 {
     return nullptr;
 }

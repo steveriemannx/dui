@@ -137,7 +137,7 @@ void MainForm::BuildUI()
     pScroll->SetName(DUI_T("xml_preview_scroll"));
     pContent->AddItem(pScroll);
 
-    auto* pXmlBox = ui::Create<ui::XmlBox>(this, {{DUI_T("border_color"), DUI_T("splitline_level1")}, {DUI_T("border_size"), DUI_T("1")}, {DUI_T("border_dash_style"), DUI_T("dash")}, {DUI_T("margin"), DUI_T("0")}, {DUI_T("width"), DUI_T("1100")}, {DUI_T("height"), DUI_T("800")}, {DUI_T("mouse_child"), DUI_T("true")}, {DUI_T("res_path"), DUI_T("controls")}, {DUI_T("xml_file_path"), DUI_T("controls.xml")}});
+    auto* pXmlBox = ui::Create<ui::XmlBox>(this, {{DUI_T("border_color"), DUI_T("splitline_level1")}, {DUI_T("border_size"), DUI_T("1")}, {DUI_T("border_dash_style"), DUI_T("dash")}, {DUI_T("margin"), DUI_T("4")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("mouse_child"), DUI_T("true")}, {DUI_T("res_path"), DUI_T("controls")}, {DUI_T("xml_file_path"), DUI_T("controls.xml")}});
     pXmlBox->SetName(DUI_T("xml_box_test"));
     pXmlBox->SetBkColor(DUI_T("white"));
     pScroll->AddItem(pXmlBox);
@@ -157,8 +157,12 @@ void MainForm::SetupWindow()
     CenterWindow();
 
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
@@ -341,9 +345,9 @@ void MainForm::BindEvents()
                 pXmlBox->SetXmlFilePath(xmlFilePath);
             }
         }
-        else if (args.wParam == ui::kControlDropTypeSDL) {
-            // SDL implementation, cross-platform
-            ui::ControlDropData_SDL* dropData = (ui::ControlDropData_SDL*)args.lParam;
+        else if (args.wParam == ui::kControlDropTypeWayland) {
+            // native backend implementation, cross-platform
+            ui::ControlDropData_Wayland* dropData = (ui::ControlDropData_Wayland*)args.lParam;
             if ((dropData != nullptr) && !dropData->m_fileList.empty()) {
                 ui::FilePath xmlFilePath = ui::FilePath(dropData->m_fileList[0]);
                 pXmlBox->SetXmlFilePath(xmlFilePath);

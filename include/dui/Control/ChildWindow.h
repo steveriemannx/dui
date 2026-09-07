@@ -10,7 +10,7 @@ class ChildWindowImpl;
 
 /** Child window control; the control itself is an operating system child window. The UI library internally handles the creation and destruction of the child window, but the UI library does not perform the drawing of the child window
  *  The application layer is responsible for the drawing of the child window
- *  Implementation of the child window: on the Windows platform it is a system native child window (with the WS_CHILD attribute); on other platforms it is a SDL popup window, not a native child window, because SDL does not support native child windows
+ *  Implementation of the child window: on the Windows platform it is a system native child window (with the WS_CHILD attribute); on other platforms it is a native backend popup window, not a native child window, because native backend does not support native child windows
  */
 class DUI_API ChildWindow : public Box
 {
@@ -77,7 +77,7 @@ public:
     IRender* GetChildWindowRender() const;
 
     /** Set whether the child window is a layered window (a layered window has the WS_EX_LAYERED attribute; child windows are only supported on Windows 8 and later platforms)
-     *  Invalid when using SDL; SDL does not support dynamic modification, this attribute can only be applied at creation time
+     *  Invalid when using native backend; native backend does not support dynamic modification, this attribute can only be applied at creation time
      */
     void SetChildWindowLayered(bool bWindowLayered);
 

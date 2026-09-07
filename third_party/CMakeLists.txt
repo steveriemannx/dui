@@ -18,6 +18,7 @@ endif()
 
 add_subdirectory(cximage)   # target: dui-cximage
 add_subdirectory(libpng)    # target: png_static（OUTPUT_NAME dui-png）
+add_library(dui-png ALIAS png_static)
 add_subdirectory(libwebp)   # target: dui-webp
 
 # libcef 内建：统一从下载的 cef_binary 发行包构建 wrapper（Windows/Mac/Linux 一致；

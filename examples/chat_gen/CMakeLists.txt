@@ -14,7 +14,12 @@ if(APPLE)
 elseif(WIN32)
     set(CHAT_THEME windows11)
 else()
-    set(CHAT_THEME default)
+    # Keep Linux/X11 examples on the configured Linux theme (for example
+    # gnome), rather than silently generating code from the default theme.
+    set(CHAT_THEME "${DUI_EXAMPLE_THEME}")
+    if(CHAT_THEME STREQUAL "")
+        set(CHAT_THEME default)
+    endif()
 endif()
 set(GEN_XML_FILES
     "${DUI_ROOT}/resources/themes/${CHAT_THEME}/chat/wechat.xml"

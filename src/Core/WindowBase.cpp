@@ -918,7 +918,7 @@ void* WindowBase::GetWindowHandle() const
     return m_pNativeWindow->GetWindowHandle();
 }
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
 DString WindowBase::GetVideoDriverName() const
 {
     return m_pNativeWindow->GetVideoDriverName();
@@ -1533,8 +1533,8 @@ static bool IsDragDropMsgHandled(ControlDropType dropType, void* pDropData)
             bHandled = dropData->m_bHandled;
         }
     }
-    else if (dropType == ui::kControlDropTypeSDL) {
-        const ui::ControlDropData_SDL* dropData = (const ui::ControlDropData_SDL*)pDropData;
+    else if (dropType == ui::kControlDropTypeWayland) {
+        const ui::ControlDropData_Wayland* dropData = (const ui::ControlDropData_Wayland*)pDropData;
         if (dropData != nullptr) {
             bHandled = dropData->m_bHandled;
         }

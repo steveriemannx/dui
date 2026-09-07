@@ -25,6 +25,7 @@ public:
     /** Called after the window is created, for subclasses to do some initialization work
      */
     virtual void OnInitWindow() override;
+    virtual void OnInitLayout() override;
 
 private:
     void BindEvents();

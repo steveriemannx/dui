@@ -5,7 +5,7 @@
 #include "dui/Utils/UiBuilder.h"
 #include <fstream>
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 #include <ShellApi.h>
 #include <commdlg.h>
 #endif
@@ -82,14 +82,14 @@ void MainForm::OnInitWindow()
     pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_rich_text"));
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
         pCheckBox->SetSelected(m_pRichEdit->IsRichText());
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 #else
-        // Rich text format is not supported in the SDL implementation
+        // Rich text format is not supported in the native backend implementation
         pCheckBox->SetEnabled(false);
 #endif
     }
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
     ui::Control* pRowSpacingTips = ui::Find<ui::Control>(this, DUI_T("row_spacing_tips"));
     if (pRowSpacingTips != nullptr) {
         pRowSpacingTips->SetVisible(false);
@@ -112,7 +112,7 @@ void MainForm::BindEvents()
                 if (args.GetSender() == pTestUrl) {
                     const DString::value_type* pUrl = (const DString::value_type*)args.wParam;
                     if (pUrl != nullptr) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
                         ::ShellExecuteW(NativeWnd()->GetHWND(), L"open", ui::StringConvert::TToWString(pUrl).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 #endif
                     }
@@ -281,7 +281,7 @@ void MainForm::BindEvents()
     // Set font
     pButton = ui::Find<ui::Button>(this, DUI_T("set_font"));
     if (pButton != nullptr) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
                 OnSetFont();
@@ -462,7 +462,7 @@ void MainForm::BindEvents()
     // Rich text format
     pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_rich_text"));
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
         pCheckBox->AttachSelect([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
                 m_pRichEdit->SetRichText(true);
@@ -483,7 +483,7 @@ void MainForm::BindEvents()
         m_pRichEdit->AttachLinkClick([this](const ui::EventArgs& args) {
             const DString::value_type* url = (const DString::value_type*)args.wParam;
             if (url != nullptr) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
                 ::MessageBoxW(NativeWnd()->GetHWND(), ui::StringConvert::TToWString(url).c_str(), L"RichEdit Click HyperLink", MB_OK);
 #endif
             }
@@ -1143,13 +1143,13 @@ void MainForm::OnOpenFile()
     std::vector<ui::FileDialog::FileType> fileTypes;
     fileTypes.push_back({ DUI_T("All Files (*.*)"), DUI_T("*.*")});
     fileTypes.push_back({ DUI_T("Text Files (*.txt)"), DUI_T("*.txt") });
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     fileTypes.push_back({ DUI_T("RTF Files (*.rtf)"), DUI_T("*.rtf") });
 #endif
 
     DString defaultExt;
     int32_t nFileTypeIndex = 1;
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if ((m_pRichEdit != nullptr) && m_pRichEdit->IsRichText()) {
         nFileTypeIndex = 2;
     }
@@ -1186,13 +1186,13 @@ void MainForm::OnSaveAsFile()
     std::vector<ui::FileDialog::FileType> fileTypes;
     fileTypes.push_back({ DUI_T("All Files (*.*)"), DUI_T("*.*") });
     fileTypes.push_back({ DUI_T("Text Files (*.txt)"), DUI_T("*.txt") });
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     fileTypes.push_back({ DUI_T("RTF Files (*.rtf)"), DUI_T("*.rtf") });
 #endif
 
     DString defaultExt;
     int32_t nFileTypeIndex = 1;
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if ((m_pRichEdit != nullptr) && m_pRichEdit->IsRichText()) {
         nFileTypeIndex = 2;
     }
@@ -1212,7 +1212,7 @@ void MainForm::OnSaveAsFile()
     }
 }
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 bool MainForm::LoadFile(const ui::FilePath& filePath)
 {
@@ -1491,7 +1491,7 @@ void MainForm::SetCharFormat(CHARFORMAT2W& charFormat)
     }
 }
 
-#else //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#else //defined (DUI_BUILD_FOR_WIN)
 
 bool MainForm::LoadFile(const ui::FilePath& filePath)
 {
@@ -1556,4 +1556,4 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
     return bRet;
 }
 
-#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN)

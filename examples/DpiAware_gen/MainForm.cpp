@@ -124,39 +124,39 @@ void MainForm::UpdateUI()
         auto text = ui::StringUtil::Printf(DUI_T("W:%d, H:%d [Left:%d, Top:%d]"), rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
         pLabel->SetText(text);
     }
-#ifdef DUI_BUILD_FOR_SDL
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetWindowSize"))) {
+#ifdef DUI_BUILD_FOR_WAYLAND
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetWindowSize"))) {
         int32_t w = 0;
         int32_t h = 0;
         NativeWnd()->GetWindowSize(&w, &h);
         auto text = ui::StringUtil::Printf(DUI_T("W:%d, H:%d"), w, h);
         pLabel->SetText(text);
     }
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetWindowSizeInPixels"))) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetWindowSizeInPixels"))) {
         int32_t w = 0;
         int32_t h = 0;
         NativeWnd()->GetWindowSizeInPixels(&w, &h);
         auto text = ui::StringUtil::Printf(DUI_T("W:%d, H:%d"), w, h);
         pLabel->SetText(text);
     }
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetDisplayContentScale"))) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetDisplayContentScale"))) {
         float scale = NativeWnd()->GetDisplayContentScale();
         auto text = ui::StringUtil::Printf(DUI_T("%.02f"), scale);
         pLabel->SetText(text);
     }
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetWindowDisplayScale"))) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetWindowDisplayScale"))) {
         float scale = NativeWnd()->GetWindowDisplayScale();
         auto text = ui::StringUtil::Printf(DUI_T("%.02f"), scale);
         pLabel->SetText(text);
     }
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetWindowPixelDensity"))) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetWindowPixelDensity"))) {
         float scale = NativeWnd()->GetWindowPixelDensity();
         auto text = ui::StringUtil::Printf(DUI_T("%.02f"), scale);
         pLabel->SetText(text);
     }
 #else
-    if (auto* pSDL = ui::Find<ui::Control>(this, DUI_T("SDL"))) {
-        pSDL->SetVisible(false);
+    if (auto* pnative_backend = ui::Find<ui::Control>(this, DUI_T("native backend"))) {
+        pnative_backend->SetVisible(false);
     }
 #endif
 }

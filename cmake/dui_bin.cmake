@@ -36,8 +36,11 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
     "${DUI_PROJECT_SRC_DIR}/*.c"
     "${DUI_PROJECT_SRC_DIR}/*.cc"
     "${DUI_PROJECT_SRC_DIR}/*.cpp"
-    "${DUI_PROJECT_SRC_DIR}/*.mm"
 )
+if(NOT DUI_OS_LINUX AND NOT DUI_OS_FREEBSD)
+    file(GLOB SRC_MM_FILES CONFIGURE_DEPENDS "${DUI_PROJECT_SRC_DIR}/*.mm")
+    list(APPEND SRC_FILES ${SRC_MM_FILES})
+endif()
 
 # Add source files from subdirectories
 if(DUI_SRC_SUB_DIRS)
@@ -46,8 +49,12 @@ if(DUI_SRC_SUB_DIRS)
             "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.c"
             "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.cc"
             "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.cpp"
-            "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.mm"
         )
+        if(NOT DUI_OS_LINUX AND NOT DUI_OS_FREEBSD)
+            file(GLOB SUB_DIR_SRC_MM_FILES CONFIGURE_DEPENDS
+                "${DUI_PROJECT_SRC_DIR}/${ITEM}/*.mm")
+            list(APPEND SUB_DIR_SRC_FILES ${SUB_DIR_SRC_MM_FILES})
+        endif()
         list(APPEND SRC_FILES ${SUB_DIR_SRC_FILES})  # merge the list
     endforeach()
 endif()

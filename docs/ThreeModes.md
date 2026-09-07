@@ -90,7 +90,7 @@ mkdir build && cd build
 cmake ..          # Release by default when no build type is specified
 make -j6          # builds everything at once; make basic etc. builds only a single target
 ```
-- The third-party libraries are vendored under `third_party/`; skia and SDL3 are built automatically by the top-level build (`dui_skia` / `dui_sdl` targets) when their libraries are missing
+- Skia is vendored under `third_party/` and built automatically by the top-level build (`dui_skia` target) when its library is missing
 - Platform notes: WebView2/WebView2Browser are Windows-only
 - Each example directory is still an independent CMake project and can be built alone with `cmake -S examples/<name> -B build/...`
 

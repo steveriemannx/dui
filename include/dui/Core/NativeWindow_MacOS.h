@@ -13,7 +13,7 @@ namespace ui {
 class WindowDropTarget;
 
 /** macOS native (Cocoa/AppKit) implementation of window functionality.
- *  Mirrors the NativeWindow_SDL public interface; the window is an NSWindow
+ *  Mirrors the NativeWindow_Wayland public interface; the window is an NSWindow
  *  hosting an NSView, events arrive through the AppKit event loop
  *  (MessageLoop_MacOS) and are translated to INativeWindow messages.
  */

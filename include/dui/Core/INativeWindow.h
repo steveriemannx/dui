@@ -152,13 +152,13 @@ public:
 
     /** Handle the system notification message of DPI changes (WM_DPICHANGED), for internal processing
     * @param [in] fNewDisplayScale The new UI display scale value of the window; 1.0f means no scaling
-    * @param [in] fNewPixelDensity The new pixel density value of the window (only used by the SDL implementation)
+    * @param [in] fNewPixelDensity The new pixel density value of the window (only used by the native backend implementation)
     */
     virtual void OnNativeProcessDisplayScaleChangedMsg(float fNewDisplayScale, float fNewPixelDensity) = 0;
 
     /** Handle the system notification message of DPI changes (WM_DPICHANGED), to notify the application layer
     * @param [in] fNewDisplayScale The new UI display scale value of the window; 1.0f means no scaling
-    * @param [in] fNewPixelDensity The new pixel density value of the window (only used by the SDL implementation)
+    * @param [in] fNewPixelDensity The new pixel density value of the window (only used by the native backend implementation)
     */
     virtual void OnNativeDisplayScaleChangedMsg(float fNewDisplayScale, float fNewPixelDensity) = 0;
 
@@ -201,10 +201,10 @@ public:
     */
     virtual LRESULT OnNativeShowWindowMsg(bool bShow, const NativeMsg& nativeMsg, bool& bHandled) = 0;
 
-    /** The window paints (SDL_EVENT_WINDOW_EXPOSED/WM_PAINT)
+    /** The window paints (Native_EVENT_WINDOW_EXPOSED/WM_PAINT)
     * @param [in] rcPaint The rectangular area that needs to be updated in this paint
     * @param [in] nativeMsg The original message content received from the system
-    *             SDL implementation: nativeMsg.uMsg value is SDL_EVENT_WINDOW_EXPOSED, nativeMsg.wParam value is the SDL_Window* pointer
+    *             native backend implementation: nativeMsg.uMsg value is Native_EVENT_WINDOW_EXPOSED, nativeMsg.wParam value is the Native_Window* pointer
     *             Windows implementation: nativeMsg.uMsg value is WM_PAINT, nativeMsg.wParam value is the HWND handle of the window
     * @param [out] bHandled Whether the message has been handled; returns true if the message has been handled successfully and does not need to be passed to the window procedure; returns false to continue passing the message to the window procedure
     * @return Returns the result of message handling; if the application handles this message, it should return zero
@@ -451,7 +451,7 @@ public:
     * @param [in] dropType The source type of the drag-and-drop operation
     * @param [in,out] pDropData The concrete type is determined by dropType:
     *                 When dropType is kControlDropTypeWindows (representing the Windows platform SDK implementation), the type of pDropData is ControlDropData_Windows*
-    *                 When dropType is kControlDropTypeSDL (representing the SDL implementation), the type of pDropData is ControlDropData_SDL*
+    *                 When dropType is kControlDropTypeWayland (representing the native backend implementation), the type of pDropData is ControlDropData_Wayland*
     *                 pDropData->m_bHandled is the message handling flag; if it returns true, the event has been handled and is no longer forwarded to other UI controls in the interface, equivalent to intercepting the message
     *                 pDropData->m_hResult is the return value after message handling, finally returned to the operating system; on the Windows platform, success returns S_OK
     */

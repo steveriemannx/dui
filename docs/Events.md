@@ -68,7 +68,7 @@ The event-related content of controls is defined in the files [`include/dui/Core
 |kEventDropEnter            | ControlDropType|When wParam is kControlDropTypeWindows,<br>lParam is a pointer to ControlDropData_Windows|     |     |       |     |  No parameters   |
 |kEventDropOver             | ControlDropType|When wParam is kControlDropTypeWindows,<br>lParam is a pointer to ControlDropData_Windows|     |     |       |     |  No parameters   |
 |kEventDropLeave            |     |     |     |     |       |     |  No parameters   |
-|kEventDropData             | ControlDropType | When wParam is kControlDropTypeWindows,<br>lParam is a pointer to ControlDropData_Windows; <br>when wParam is kControlDropTypeSDL,<br>lParam is a pointer to ControlDropData_SDL|     |     |       |     |  No parameters   |
+|kEventDropData             | ControlDropType | When wParam is kControlDropTypeWindows,<br>lParam is a pointer to ControlDropData_Windows; <br>when wParam is kControlDropTypeWayland,<br>lParam is a pointer to ControlDropData_Wayland|     |     |       |     |  No parameters   |
 |kEventImageAnimationStart  | wParam is a data pointer: ui::ImageAnimationStatus*|     |     |     |       |     |  No parameters   |
 |kEventImageAnimationPlayFrame  | wParam is a data pointer: ui::ImageAnimationStatus*|     |     |     |       |     |  No parameters   |
 |kEventImageAnimationStop   | wParam is a data pointer: ui::ImageAnimationStatus*|     |     |     |       |     |  No parameters   |

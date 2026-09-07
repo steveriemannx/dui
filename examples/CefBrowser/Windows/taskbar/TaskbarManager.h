@@ -4,7 +4,7 @@
 // dui
 #include "dui/dui.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include <shobjidl_core.h>
 
@@ -239,6 +239,6 @@ private:
     ITaskbarList4* m_pTaskbarList;
 };
 
-#endif //(DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //(DUI_BUILD_FOR_WIN)
 
 #endif //EXAMPLES_TASKBAR_MANAGER_H_

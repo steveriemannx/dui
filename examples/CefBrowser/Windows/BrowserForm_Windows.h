@@ -4,7 +4,7 @@
 // dui
 #include "dui/dui.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "Browser/BrowserForm.h"
 #include "Windows/taskbar/TaskbarManager.h"
@@ -75,5 +75,5 @@ private:
     TaskbarManager m_taskbarManager;
 };
 
-#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN)
 #endif //EXAMPLES_BROWSER_FORM_WINDOWS_H_

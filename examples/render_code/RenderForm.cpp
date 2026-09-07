@@ -13,8 +13,12 @@ void RenderForm::SetupWindow()
     CenterWindow();
 
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
@@ -280,10 +284,16 @@ void BuildUIFromXmlRender(ui::Window* pWindow) {
     w.SetEnableSysMenu(true);
     w.SetSysMenuRect(ui::UiRect(0, 0, 36, 36), true);
     w.SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
+#if !defined(DUI_BUILD_FOR_LINUX)
     w.SetLayeredWindow(false, false);
+#endif
     w.SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     w.SetText(DUI_T("Render Engine Test Program"));
+#if defined(DUI_BUILD_FOR_LINUX)
+    w.SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     w.SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+#endif
     w.SetShadowBorderSize(0);
     w.SetShadowAttached(true);
     w.CenterWindow();

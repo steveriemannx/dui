@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="85%,95%" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" shadow_attached="true" size_box="4,4,4,4" text="Render Engine Test Program">
+<Window size="85%,95%" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" caption="0,0,0,32" shadow_attached="true" shadow_snap="true" shadow_type="system_default" shadow_border_size="0" size_box="4,4,4,4" text="Render Engine Test Program">
     <!-- All controls in the entire window are placed in this VBox container -->  
     <VBox bkcolor="bk_wnd_darkcolor">
         <!-- Title bar area -->  
-        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+        <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
             <!-- Title bar: display area at the top-left of the window -->  
             <HBox margin="0,0,30,0" valign="center" width="auto" height="auto" mouse_enabled="false">
                 <Control width="18" height="18" bkimage="public/caption/logo.svg" valign="center" margin="8,0,0,0"/>
@@ -12,12 +12,12 @@
             <Control mouse_enabled="false"/>            
             <!-- Title bar: window control area on the right; minimize, maximize, restore, and close buttons -->
             <HBox margin="0,0,0,0" valign="center" width="auto" height="36">
-                <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-                <Box height="stretch" width="40" margin="0,2,0,2">
+                <Button class="btn_wnd_min_11" height="32" width="46" name="minbtn" margin="0,0,0,0" tooltip_text="Minimize"/>
+                <Box height="stretch" width="46" margin="0,0,0,0">
                     <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
                     <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
                 </Box>
-                <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+                <Button class="btn_wnd_close_11" height="stretch" width="46" name="closebtn" margin="0,0,0,0" tooltip_text="Close"/>
             </HBox>
         </HBox> <!-- End of title bar area --> 
         

@@ -98,7 +98,7 @@ public:
     */
     enum class EditFormat
     {
-        kDateCalendar,      //When editing, displays: year-month-day; the date is modified through a drop-down month calendar, selecting the time is not supported (in the SDL implementation, same as kDateUpDown)
+        kDateCalendar,      //When editing, displays: year-month-day; the date is modified through a drop-down month calendar, selecting the time is not supported (in the native backend implementation, same as kDateUpDown)
         kDateUpDown,        //When editing, displays: year-month-day; the date is modified through an up-down control placed on the right side of the control, selecting the time is not supported
         kDateTimeUpDown,    //When editing, displays: year-month-day hour:minute:second; the date and time are modified through an up-down control placed on the right side of the control
         kDateMinuteUpDown,  //When editing, displays: year-month-day hour:minute; the date and time are modified through an up-down control placed on the right side of the control

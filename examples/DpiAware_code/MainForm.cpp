@@ -8,8 +8,14 @@ void MainForm::SetupWindow()
     CenterWindow();
     SetWindowMinimumSize(ui::UiSize(240, 100), true);
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+#endif
+#if !defined(DUI_BUILD_FOR_LINUX)
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
@@ -116,21 +122,21 @@ void MainForm::BuildUI()
     pLabel = ui::Create<ui::Label>(this, {{DUI_T("name"), DUI_T("window_client_size")}, {DUI_T("text"), DUI_T("L:0,T:0,W:0,H:0")}});
     ui::Attach(pRow6, pLabel);
 
-    // SDL info area
-    auto* pSDLVBox = ui::Create<ui::VBox>(this, {{DUI_T("name"), DUI_T("SDL")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("width"), DUI_T("100%")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("padding"), DUI_T("20,0,0,0")}, {DUI_T("margin"), DUI_T("0,4,0,0")}});
-    ui::Attach(pGroupBox, pSDLVBox);
+    // native backend info area
+    auto* backendVBox = ui::Create<ui::VBox>(this, {{DUI_T("name"), DUI_T("native backend")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("width"), DUI_T("100%")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("padding"), DUI_T("20,0,0,0")}, {DUI_T("margin"), DUI_T("0,4,0,0")}});
+    ui::Attach(pGroupBox, backendVBox);
 
     struct SdlRow { DString name; DString label; DString init; };
-    const SdlRow sdlRows[] = {
-        { DUI_T("SDL_GetWindowSize"), DUI_T("SDL_GetWindowSize："), DUI_T("W:0,H:0") },
-        { DUI_T("SDL_GetWindowSizeInPixels"), DUI_T("SDL_GetWindowSizeInPixels："), DUI_T("W:0,H:0") },
-        { DUI_T("SDL_GetDisplayContentScale"), DUI_T("SDL_GetDisplayContentScale："), DUI_T("0") },
-        { DUI_T("SDL_GetWindowDisplayScale"), DUI_T("SDL_GetWindowDisplayScale："), DUI_T("0") },
-        { DUI_T("SDL_GetWindowPixelDensity"), DUI_T("SDL_GetWindowPixelDensity："), DUI_T("0") },
+    const SdlRow nativeRows[] = {
+        { DUI_T("Native_GetWindowSize"), DUI_T("Native_GetWindowSize："), DUI_T("W:0,H:0") },
+        { DUI_T("Native_GetWindowSizeInPixels"), DUI_T("Native_GetWindowSizeInPixels："), DUI_T("W:0,H:0") },
+        { DUI_T("Native_GetDisplayContentScale"), DUI_T("Native_GetDisplayContentScale："), DUI_T("0") },
+        { DUI_T("Native_GetWindowDisplayScale"), DUI_T("Native_GetWindowDisplayScale："), DUI_T("0") },
+        { DUI_T("Native_GetWindowPixelDensity"), DUI_T("Native_GetWindowPixelDensity："), DUI_T("0") },
     };
-    for (const auto& row : sdlRows) {
+    for (const auto& row : nativeRows) {
     auto* pSdlRow = ui::Create<ui::HBox>(this, {{DUI_T("height"), DUI_T("auto")}});
-        ui::Attach(pSDLVBox, pSdlRow);
+        ui::Attach(backendVBox, pSdlRow);
 
         auto* pSdlLabel = ui::Create<ui::Label>(this, {{DUI_T("width"), DUI_T("300")}, {DUI_T("text_align"), DUI_T("right,vcenter")}, {DUI_T("text"), row.label}});
         ui::Attach(pSdlRow, pSdlLabel);
@@ -304,39 +310,39 @@ void MainForm::UpdateUI()
         auto text = ui::StringUtil::Printf(DUI_T("W:%d, H:%d [Left:%d, Top:%d]"), rcClient.Width(), rcClient.Height(), rcClient.left, rcClient.top);
         pLabel->SetText(text);
     }
-#ifdef DUI_BUILD_FOR_SDL
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetWindowSize"))) {
+#ifdef DUI_BUILD_FOR_WAYLAND
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetWindowSize"))) {
         int32_t w = 0;
         int32_t h = 0;
         NativeWnd()->GetWindowSize(&w, &h);
         auto text = ui::StringUtil::Printf(DUI_T("W:%d, H:%d"), w, h);
         pLabel->SetText(text);
     }
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetWindowSizeInPixels"))) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetWindowSizeInPixels"))) {
         int32_t w = 0;
         int32_t h = 0;
         NativeWnd()->GetWindowSizeInPixels(&w, &h);
         auto text = ui::StringUtil::Printf(DUI_T("W:%d, H:%d"), w, h);
         pLabel->SetText(text);
     }
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetDisplayContentScale"))) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetDisplayContentScale"))) {
         float scale = NativeWnd()->GetDisplayContentScale();
         auto text = ui::StringUtil::Printf(DUI_T("%.02f"), scale);
         pLabel->SetText(text);
     }
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetWindowDisplayScale"))) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetWindowDisplayScale"))) {
         float scale = NativeWnd()->GetWindowDisplayScale();
         auto text = ui::StringUtil::Printf(DUI_T("%.02f"), scale);
         pLabel->SetText(text);
     }
-    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("SDL_GetWindowPixelDensity"))) {
+    if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("Native_GetWindowPixelDensity"))) {
         float scale = NativeWnd()->GetWindowPixelDensity();
         auto text = ui::StringUtil::Printf(DUI_T("%.02f"), scale);
         pLabel->SetText(text);
     }
 #else
-    if (auto* pSDL = ui::Find<ui::Control>(this, DUI_T("SDL"))) {
-        pSDL->SetVisible(false);
+    if (auto* nativeBackend = ui::Find<ui::Control>(this, DUI_T("native backend"))) {
+        nativeBackend->SetVisible(false);
     }
 #endif
 }

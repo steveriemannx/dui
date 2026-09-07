@@ -47,7 +47,7 @@ enum WindowExStyle : uint32_t
     kWS_EX_TOPMOST        = 0x00000008L, //The window should be placed above all non-topmost windows and should stay above them even when the window is deactivated.
     kWS_EX_ACCEPTFILES    = 0x00000010L, //The window accepts drag and drop files
     kWS_EX_TRANSPARENT    = 0x00000020L, //The window is displayed as transparent
-    kWS_EX_TOOLTIP_WINDOW = 0x00000040L, //The window is intended to be used as a ToolTip window (only used with SDL)
+    kWS_EX_TOOLTIP_WINDOW = 0x00000040L, //The window is intended to be used as a ToolTip window (only used with native backend)
     kWS_EX_TOOLWINDOW     = 0x00000080L, //The window is intended to be used as a floating toolbar. A tool window has a title bar shorter than a normal title bar and a window title drawn with a smaller font. A tool window does not appear in the taskbar or in the dialog displayed when the user presses Alt+TAB. If a tool window has a system menu, its icon is not displayed on the title bar.
     kWS_EX_LAYERED        = 0x00080000L, //The window is a layered window
     kWS_EX_NOACTIVATE     = 0x08000000L  //A top-level window created with this style does not become the foreground window when the user clicks it. The system does not bring this window to the foreground when the user minimizes or closes the foreground window.

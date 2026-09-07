@@ -15,8 +15,15 @@ void MainForm::SetupWindow()
     SetWindowSize(800, 600);
 
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+#endif
+#if !defined(DUI_BUILD_FOR_LINUX)
+    // Linux self-drawn shadows require a layered window for alpha compositing.
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
@@ -60,6 +67,7 @@ void MainForm::BuildUI()
     pCaptionLeft->AddItem(pTitle);
 
     auto* pSpacer = ui::Create<ui::Control>(this, {
+        {DUI_T("width"), DUI_T("stretch")},
         {DUI_T("mouse_enabled"), DUI_T("false")}
     });
     ui::Attach(pCaption, pSpacer);
