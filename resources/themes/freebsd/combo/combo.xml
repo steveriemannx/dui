@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Window size="700,320" min_size="400,300"
         caption="0,0,0,36" use_system_caption="false"
-        shadow_type="system_default" shadow_attached="true"
+        shadow_type="draw_default" shadow_attached="true"
         alpha="255" icon="public/caption/logo.ico">
     <VBox bkcolor="bk_wnd_darkcolor">
         <!-- Title bar area -->
@@ -21,22 +21,22 @@
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_not_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <Combo class="combo" name="combo_default" combo_type="drop_list"
-                           shadow_type="system_not_round" dropbox_size="160,150" height="28"/>
+                           shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_default" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <Combo class="combo" name="combo_small_round" combo_type="drop_list"
-                           shadow_type="system_default" dropbox_size="160,150" height="28"/>
+                           shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_small_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <Combo class="combo" name="combo_round" combo_type="drop_list"
-                           shadow_type="system_small_round" dropbox_size="160,150" height="28"/>
+                           shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160">
                     <Label text="system_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <Combo class="combo" name="combo_not_round" combo_type="drop_list"
-                           shadow_type="system_round" dropbox_size="160,150" height="28"/>
+                           shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
             </HBox>
 
@@ -46,22 +46,22 @@
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_not_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <Combo class="combo" name="combo_edit_default" combo_type="drop_down"
-                           shadow_type="system_not_round" dropbox_size="160,150" height="28"/>
+                           shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_default" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <Combo class="combo" name="combo_edit_small_round" combo_type="drop_down"
-                           shadow_type="system_default" dropbox_size="160,150" height="28"/>
+                           shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_small_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <Combo class="combo" name="combo_edit_round" combo_type="drop_down"
-                           shadow_type="system_small_round" dropbox_size="160,150" height="28"/>
+                           shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160">
                     <Label text="system_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <Combo class="combo" name="combo_edit_not_round" combo_type="drop_down"
-                           shadow_type="system_round" dropbox_size="160,150" height="28"/>
+                           shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
             </HBox>
 
@@ -71,22 +71,22 @@
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_not_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <FilterCombo class="filter_combo" name="filter_default"
-                                 shadow_type="system_not_round" dropbox_size="160,150" height="28"/>
+                                 shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_default" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <FilterCombo class="filter_combo" name="filter_small_round"
-                                 shadow_type="system_default" dropbox_size="160,150" height="28"/>
+                                 shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160" margin="0,0,8,0">
                     <Label text="system_small_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <FilterCombo class="filter_combo" name="filter_round"
-                                 shadow_type="system_small_round" dropbox_size="160,150" height="28"/>
+                                 shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
                 <VBox width="160">
                     <Label text="system_round" height="18" font="system_12" text_align="hcenter" margin="0,0,0,4"/>
                     <FilterCombo class="filter_combo" name="filter_not_round"
-                                 shadow_type="system_round" dropbox_size="160,150" height="28"/>
+                                 shadow_type="draw_default" dropbox_size="160,150" height="28"/>
                 </VBox>
             </HBox>
         </VBox>

@@ -126,8 +126,8 @@ void MainForm::BuildUI()
     auto* backendVBox = ui::Create<ui::VBox>(this, {{DUI_T("name"), DUI_T("native backend")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("width"), DUI_T("100%")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("padding"), DUI_T("20,0,0,0")}, {DUI_T("margin"), DUI_T("0,4,0,0")}});
     ui::Attach(pGroupBox, backendVBox);
 
-    struct SdlRow { DString name; DString label; DString init; };
-    const SdlRow nativeRows[] = {
+    struct NativeRow { DString name; DString label; DString init; };
+    const NativeRow nativeRows[] = {
         { DUI_T("Native_GetWindowSize"), DUI_T("Native_GetWindowSize："), DUI_T("W:0,H:0") },
         { DUI_T("Native_GetWindowSizeInPixels"), DUI_T("Native_GetWindowSizeInPixels："), DUI_T("W:0,H:0") },
         { DUI_T("Native_GetDisplayContentScale"), DUI_T("Native_GetDisplayContentScale："), DUI_T("0") },
@@ -135,14 +135,14 @@ void MainForm::BuildUI()
         { DUI_T("Native_GetWindowPixelDensity"), DUI_T("Native_GetWindowPixelDensity："), DUI_T("0") },
     };
     for (const auto& row : nativeRows) {
-    auto* pSdlRow = ui::Create<ui::HBox>(this, {{DUI_T("height"), DUI_T("auto")}});
-        ui::Attach(backendVBox, pSdlRow);
+    auto* pNativeRow = ui::Create<ui::HBox>(this, {{DUI_T("height"), DUI_T("auto")}});
+        ui::Attach(backendVBox, pNativeRow);
 
-        auto* pSdlLabel = ui::Create<ui::Label>(this, {{DUI_T("width"), DUI_T("300")}, {DUI_T("text_align"), DUI_T("right,vcenter")}, {DUI_T("text"), row.label}});
-        ui::Attach(pSdlRow, pSdlLabel);
+        auto* pNativeLabel = ui::Create<ui::Label>(this, {{DUI_T("width"), DUI_T("300")}, {DUI_T("text_align"), DUI_T("right,vcenter")}, {DUI_T("text"), row.label}});
+        ui::Attach(pNativeRow, pNativeLabel);
 
-        auto* pSdlValue = ui::Create<ui::Label>(this, {{DUI_T("name"), row.name}, {DUI_T("text"), row.init}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("text_align"), DUI_T("left,vcenter")}});
-        ui::Attach(pSdlRow, pSdlValue);
+        auto* pNativeValue = ui::Create<ui::Label>(this, {{DUI_T("name"), row.name}, {DUI_T("text"), row.init}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("text_align"), DUI_T("left,vcenter")}});
+        ui::Attach(pNativeRow, pNativeValue);
     }
 
     // Rich text area

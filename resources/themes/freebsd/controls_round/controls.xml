@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window shadow_type="system_round" round_corner="10,10" size="1000,760" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" use_system_caption="false" shadow_attached="true" size_box="2,2,2,2" min_size="400,320" icon="public/caption/logo.ico">
+<Window shadow_type="draw_default" round_corner="10,10" size="1000,760" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" use_system_caption="false" shadow_attached="true" size_box="2,2,2,2" min_size="400,320" icon="public/caption/logo.ico">
     <Class name="checkbox_1" height="20" text_padding="20,0,0,0" text_align="vcenter" valign="center"
            normal_image="file='checkbox_round_unchecked.svg' width='16' height='16' valign='center'"
            disabled_image="file='checkbox_round_unchecked.svg' width='16' height='16' valign='center' fade='80'"
@@ -98,12 +98,12 @@
             <HBox border_round="6,6" height="220">
                 <!-- Combo/RichEdit/FilterCombo/CheckCombo -->
                 <VBox border_round="6,6" width="300" margin="0,0,10">
-                    <Combo border_round="6,6" class="combo" name="combo" combo_type="drop_list" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::Combo" shadow_type="system_small_round"/>
-                    <FilterCombo border_round="6,6" class="filter_combo" name="filter_combo" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::FilterCombo" shadow_type="system_small_round"/>
+                    <Combo border_round="6,6" class="combo" name="combo" combo_type="drop_list" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::Combo" shadow_type="draw_default"/>
+                    <FilterCombo border_round="6,6" class="filter_combo" name="filter_combo" dropbox_size="0,150" height="30" margin="0,12,0,0" tooltip_text="ui::FilterCombo" shadow_type="draw_default"/>
                     <RichEdit border_round="6,6" class="simple prompt simple_border_bottom" height="30" margin="0,3" font="system_14" 
                               text_align="vcenter" text_padding="8,4,8,4" default_context_menu="true"
                               prompt_text="ui::RichEdit: single line text" />
-                    <CheckCombo border_round="6,6" class="check_combo" name="check_combo" height="30" margin="0,3" tooltip_text="nim_comp::CheckCombo" shadow_type="system_small_round"/>
+                    <CheckCombo border_round="6,6" class="check_combo" name="check_combo" height="30" margin="0,3" tooltip_text="nim_comp::CheckCombo" shadow_type="draw_default"/>
                     <Button class="btn_global_color_gray" text="Fullscreen RichEdit" name="rich_edit_fullscreen_btn" width="160" height="30" border_round="8,8" margin="0,2,0,0"/>
                 </VBox>
                 
