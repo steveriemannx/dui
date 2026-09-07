@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "dui/Core/Control.h"
 #include "dui/Core/ControlLoading.h"
 #include "dui/Core/Window.h"
@@ -16,12 +17,8 @@
 #include "dui/Utils/AttributeUtil.h"
 #include "dui/Utils/PerformanceUtil.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     #include "dui/Core/ControlDropTargetImpl_Windows.h"
-#endif
-
-#ifdef DUI_BUILD_FOR_SDL
-    #include "dui/Core/ControlDropTargetImpl_SDL.h"
 #endif
 
 namespace ui 
@@ -2824,6 +2821,8 @@ bool Control::ButtonUp(const EventArgs& msg)
     if (!CheckEventType(msg, kEventMouseButtonUp)) {
         return true;
     }
+    fprintf(stderr, "[Control::ButtonUp] focused=%d pt=%d,%d\n", (int)IsMouseFocused(), msg.ptMouse.x, msg.ptMouse.y);
+    fflush(stderr);
     if( IsMouseFocused() ) {
         SetMouseFocused(false);
         // Stop the Hot state animation
@@ -2833,6 +2832,8 @@ bool Control::ButtonUp(const EventArgs& msg)
         }
         Invalidate();
         if( IsPointInWithScrollOffset(msg.ptMouse) ) {
+            fprintf(stderr, "[Control::ButtonUp] Activate\n");
+            fflush(stderr);
             PrivateSetState(kControlStateHot);
             m_nHotAlpha = 255;
             Activate(&msg);
@@ -5473,7 +5474,7 @@ DString Control::GetDropFileTypes() const
 
 ControlDropTarget_Windows* Control::GetControlDropTarget()
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if (IsEnableDragDrop() && IsEnabled()) {
         if (m_pDragDropData == nullptr) {
             m_pDragDropData = std::make_unique<TDragDropData>();
@@ -5486,18 +5487,8 @@ ControlDropTarget_Windows* Control::GetControlDropTarget()
     return nullptr;
 }
 
-ControlDropTarget_SDL* Control::GetControlDropTarget_SDL()
+ControlDropTarget_Wayland* Control::GetControlDropTarget_Wayland()
 {
-#ifdef DUI_BUILD_FOR_SDL
-    if (IsEnableDragDrop() && IsEnabled()) {
-        if (m_pDragDropData == nullptr) {
-            m_pDragDropData = std::make_unique<TDragDropData>();
-            m_pDragDropData->m_bDragDropEnabled = true;
-        }
-        m_pDragDropData->m_pDropTargetSDL = std::make_shared<ControlDropTargetImpl_SDL>(this);
-        return m_pDragDropData->m_pDropTargetSDL.get();
-    }
-#endif
     return nullptr;
 }
 

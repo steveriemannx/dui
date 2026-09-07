@@ -4,7 +4,7 @@
 #include "dui/Box/ScrollBox.h"
 #include "dui/Image/Image.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Control/RichEditCtrl_Windows.h"
 
@@ -746,10 +746,10 @@ public:
     */
     virtual ControlDropTarget_Windows* GetControlDropTarget() override;
 
-    /** Get the drag and drop interface (SDL)
+    /** Get the drag and drop interface (native backend)
     * @return Returns the drag and drop target interface; if nullptr is returned, drag and drop is not supported
     */
-    virtual ControlDropTarget_SDL* GetControlDropTarget_SDL() override;
+    virtual ControlDropTarget_Wayland* GetControlDropTarget_Wayland() override;
 
 #ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
 public:

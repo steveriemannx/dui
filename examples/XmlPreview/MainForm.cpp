@@ -172,9 +172,9 @@ void MainForm::BindEvents()
                 pXmlBox->SetXmlFilePath(xmlFilePath);
             }
         }
-        else if (args.wParam == ui::kControlDropTypeSDL) {
-            // SDL implementation, cross-platform
-            ui::ControlDropData_SDL* dropData = (ui::ControlDropData_SDL*)args.lParam;
+        else if (args.wParam == ui::kControlDropTypeWayland) {
+            // native backend implementation, cross-platform
+            ui::ControlDropData_Wayland* dropData = (ui::ControlDropData_Wayland*)args.lParam;
             if ((dropData != nullptr) && !dropData->m_fileList.empty()) {
                 ui::FilePath xmlFilePath = ui::FilePath(dropData->m_fileList[0]);
                 pXmlBox->SetXmlFilePath(xmlFilePath);

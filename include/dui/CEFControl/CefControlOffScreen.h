@@ -10,7 +10,7 @@
 
 #ifdef DUI_BUILD_FOR_CEF
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 namespace client
 {
     class OsrImeHandlerWin;
@@ -123,7 +123,7 @@ private:
      */
     int32_t GetCefMouseModifiers(const EventArgs& msg) const;
 
-#if defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND) || defined (DUI_BUILD_FOR_MACOS)
+#if defined (DUI_BUILD_FOR_WAYLAND) || defined (DUI_BUILD_FOR_X11) || defined (DUI_BUILD_FOR_MACOS)
     /** Forward keyboard-related messages to BrowserHost
     */
     void SendKeyEvent(const EventArgs& msg, cef_key_event_type_t type);
@@ -131,7 +131,7 @@ private:
 
 protected:
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     /** Forward keyboard-related messages to BrowserHost
      * @param[in] uMsg The message
      * @param[in] wParam Additional parameters of the message
@@ -189,7 +189,7 @@ private:
     // When a control like a combo box pops up on the web page, record the popup position
     CefRect m_rectPopup;
 
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
     /** Register the JS bridge entry used to update the IME caret after a
      *  composition has been committed (for example after pressing Space).
      */

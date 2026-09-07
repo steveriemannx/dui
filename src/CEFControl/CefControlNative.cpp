@@ -131,7 +131,7 @@ void CefControlNative::OnGotFocus()
 
     Window* pWindow = GetWindow();
     if (pWindow != nullptr) {
-        //When the page gains focus, disable text input on the main UI (fixes: on macOS, typing in the page triggers multiple inputs per key press; the input is likely triggered again internally by SDL)
+        //When the page gains focus, disable text input on the main UI (fixes: on macOS, typing in the page triggers multiple inputs per key press; the input is likely triggered again internally by native backend)
         pWindow->NativeWnd()->SetImeOpenStatus(false);
         pWindow->NativeWnd()->SetTextInputArea(nullptr, 0);
     }

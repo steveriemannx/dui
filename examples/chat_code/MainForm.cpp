@@ -8,8 +8,12 @@ void MainForm::SetupWindow()
         CenterWindow();
     }
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), false);
@@ -115,10 +119,12 @@ void MainForm::BuildLoginUI()
     auto* pRoot = ui::Create<ui::VBox>(this, {{DUI_T("width"), DUI_T("304")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}});
 
     // macOS traffic lights are inserted into this caption bar by WindowImplBase.
+#if defined(DUI_BUILD_FOR_MACOS)
     auto* pCaptionBar = ui::Create<ui::HBox>(this, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}});
     auto* pCaptionFiller = ui::Create<ui::Control>(this, {{DUI_T("mouse_enabled"), DUI_T("false")}});
     ui::Attach(pCaptionBar, pCaptionFiller);
     ui::Attach(pRoot, pCaptionBar);
+#endif
 
     auto* pContent = ui::Create<ui::Box>(this, {{DUI_T("width"), DUI_T("304")}, {DUI_T("height"), DUI_T("auto")}});
     ui::Attach(pRoot, pContent);
@@ -284,9 +290,12 @@ void MainForm::OnInitWindow()
     BuildUI();
 
     if (m_layoutType == kLogin) {
-        // The pure-code tree is created after SetupWindow; apply the full
-        // content size once the root exists (matches login.xml).
-        SetWindowSize(304, 696);
+        // Size the window from the actual pure-code tree before centering it.
+        // The old fixed height left the visible login panel above center.
+        if (ui::Box* root = GetRoot()) {
+            const ui::UiEstSize size = root->EstimateSize(ui::UiSize(999999, 999999));
+            SetWindowSize(size.cx.GetInt32(), size.cy.GetInt32());
+        }
         CenterWindow();
         // A layout example mimicking the WeChat window (layout built by C++ code),
         // shown behind the login window.
@@ -295,6 +304,14 @@ void MainForm::OnInitWindow()
 
     BindEvents();
     BaseClass::OnInitWindow();
+}
+
+void MainForm::OnInitLayout()
+{
+    BaseClass::OnInitLayout();
+    if (m_layoutType == kLogin) {
+        CenterWindow();
+    }
 }
 
 void MainForm::BindEvents()

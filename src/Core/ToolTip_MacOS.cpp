@@ -162,7 +162,7 @@ void ToolTip::TImpl::SetMouseTracking(WindowBase* pParentWnd, bool bTracking)
     }
     if (bTracking && !m_bMouseTracking) {
         // Start the timer to post the synthetic hover message after the tooltip
-        // delay, matching the SDL/Windows tooltip timing.
+        // delay, matching the native backend/Windows tooltip timing.
         m_hoverFlag = pParentWnd->GetWeakFlag();
         auto hoverCallback = [this, pParentWnd]() {
                 if (pParentWnd != nullptr) {

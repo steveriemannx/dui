@@ -4,7 +4,7 @@
 // dui
 #include "dui/dui.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #define WM_DWMSENDICONICTHUMBNAIL           0x0323
 #define WM_DWMSENDICONICLIVEPREVIEWBITMAP   0x0326
@@ -35,6 +35,6 @@ HRESULT DwmSetIconicLivePreviewBitmap(HWND hwnd, HBITMAP hbmp, POINT *pptClient,
 HRESULT DwmInvalidateIconicBitmaps(HWND hwnd);
 HRESULT DwmSetWindowAttribute(HWND hwnd, DWORD dwAttribute, LPCVOID pvAttribute, DWORD cbAttribute);
 
-#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN)
 
 #endif //EXAMPLES_DWM_UTIL_H_

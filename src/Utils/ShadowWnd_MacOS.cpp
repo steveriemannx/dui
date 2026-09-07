@@ -26,8 +26,8 @@ public:
     */
     uint32_t GetWindowID() const
     {
-        // Stub: the SDL implementation maps the native window handle to an SDL
-        // window ID via SDL_GetWindowID(); that mapping is meaningless in the
+        // Stub: the native backend implementation maps the native window handle to an native backend
+        // window ID via Native_GetWindowID(); that mapping is meaningless in the
         // native AppKit backend, so return the default.
         (void)m_pWindow;
         return 0;
@@ -65,13 +65,13 @@ bool ShadowWndBase::Create(Window* window)
 
     // Note: the shadow-following effect while dragging is handled by the native
     // macOS window position callbacks (see NativeWindow_MacOS) instead of the
-    // SDL event watch used in the SDL implementation.
+    // native backend event watch used in the native backend implementation.
     return Window::CreateWnd(nullptr, createParam);
 }
 
 LRESULT ShadowWndBase::FilterMessage(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, bool& bHandled)
 {
-    // Stub: the SDL implementation reacts to SDL_EVENT_WINDOW_* events to keep the
+    // Stub: the native backend implementation reacts to Native_EVENT_WINDOW_* events to keep the
     // shadow window positioned around the followed window. On the native macOS
     // backend, window moving/shown/hidden/minimized events arrive through the
     // AppKit event loop (MessageLoop_MacOS / NativeWindow_MacOS), so the shadow

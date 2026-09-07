@@ -2,7 +2,7 @@
 #include "dui/Core/WindowBase.h"
 #include "dui/Core/DpiManager.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 #include "dui/Utils/ApiWrapper_Windows.h"
 #include "dui/dui_config_windows.h"
 #include <VersionHelpers.h>

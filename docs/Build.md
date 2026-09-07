@@ -112,6 +112,13 @@ On different operating systems, install the required software following the list
 |Fedora                   |GNOME (Wayland)|`sudo dnf install -y gcc g++ gdb make git ninja-build gn python cmake llvm clang unzip fontconfig-devel mesa-libGL-devel mesa-libGLU-devel mesa-libGLES-devel mesa-libEGL-devel vulkan-devel libXext-devel libXcursor-devel libXi-devel libXrandr-devel dbus-devel ibus-devel wayland-devel libxkbcommon-devel`|
 |OpenSuse                 |KDE (X11)      |`sudo zypper install -y gcc gcc-c++ gdb make git ninja gn python cmake llvm clang unzip fontconfig-devel Mesa-libGL-devel Mesa-libEGL-devel Mesa-libGLESv3-devel glu-devel vulkan-devel libXext-devel libXcursor-devel libXi-devel libXrandr-devel dbus-1-devel ibus-devel`|
 
+dui uses native Linux window backends. X11 is the default for X11 or headless sessions; Wayland is selected automatically when the current session is Wayland. Override the selection explicitly during configuration:
+
+    cmake -S . -B build-x11 -DDUI_ENABLE_WAYLAND=OFF
+    cmake -S . -B build-wayland -DDUI_ENABLE_WAYLAND=ON
+
+The X11 backend requires X11, Freetype, Fontconfig, pthread, and libdl development packages. The Wayland backend additionally requires wayland-client, wayland-egl, wayland-cursor, wayland-protocols, and xkbcommon development packages. FreeBSD uses the same native X11/Wayland backends and the resources/themes/freebsd theme tree is kept in sync with the GNOME theme resources.
+
 ### II. Automated build with a script (recommended)
 The script automatically handles downloading and building the relevant source code.    
 Choose a working directory (note: the path must not contain spaces, or the build script will fail), create a script `build.sh`, copy the script below into it, and save the file.    

@@ -194,7 +194,7 @@ static const std::vector<std::string> kSkipSuffixes = {
 };
 static const std::vector<std::string> kSkipDirs = {
     "build_temp", ".git", "third_party", "lib", "bin/cef",
-    "CefBrowser.app", "cef.app", "SDL", "skia"
+    "CefBrowser.app", "cef.app", "native backend", "skia"
 };
 
 static bool isSkipped(const fs::path& rel) {

@@ -31,6 +31,7 @@ void ControlForm::OnInitWindow()
     BindEvents();
 
     BaseClass::OnInitWindow();
+    CenterWindow();
 }
 
 void ControlForm::SetupWindow()
@@ -43,8 +44,12 @@ void ControlForm::SetupWindow()
 
     // Use the OS-provided system shadow on all platforms.
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
@@ -65,14 +70,14 @@ void ControlForm::BuildUI()
 
 void ControlForm::BindEvents()
 {
-#ifdef DUI_BUILD_FOR_SDL
-    //Display basic SDL information
+#ifdef DUI_BUILD_FOR_WAYLAND
+    //Display basic native backend information
     ui::Label* pTitle = ui::Find<ui::Label>(this, DUI_CTR_CAPTION_TITLE);
     if (pTitle != nullptr) {
         DString title = pTitle->GetText();
         DString driverName = GetVideoDriverName();
         DString renderName = GetWindowRenderName();
-        DString newTitle = ui::StringUtil::Printf(DUI_T("%s[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), title.c_str(), driverName.c_str(), renderName.c_str());
+        DString newTitle = ui::StringUtil::Printf(DUI_T("%s[native backend: VideoDriver:\"%s\", RenderName:\"%s\"]"), title.c_str(), driverName.c_str(), renderName.c_str());
         pTitle->SetText(newTitle);
     }
 #endif
@@ -194,6 +199,12 @@ void ControlForm::BindEvents()
             ui::UiPoint point;
             point.x = rect.left;
             point.y = rect.bottom;
+#if defined(DUI_BUILD_FOR_X11)
+            // GetPos() is relative to the caption HBox; include the window shadow origin.
+            ui::UiPadding shadow;
+            GetShadowCorner(shadow);
+            point.Offset(shadow.left, shadow.top);
+#endif
             ClientToScreen(point);
 
             //Show the menu and keep the settings button in the Push state
@@ -389,8 +400,8 @@ void ControlForm::AttachRichEditEvents(ui::RichEdit* edit)
                 filePath = dropData->m_fileList[0];
             }
         }
-        else if (args.wParam == ui::kControlDropTypeSDL) {
-            const ui::ControlDropData_SDL* dropData = (const ui::ControlDropData_SDL*)args.lParam;
+        else if (args.wParam == ui::kControlDropTypeWayland) {
+            const ui::ControlDropData_Wayland* dropData = (const ui::ControlDropData_Wayland*)args.lParam;
             if ((dropData != nullptr) && !dropData->m_fileList.empty()) {
                 filePath = dropData->m_fileList[0];
             }
@@ -851,7 +862,11 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
     w.SetSysMenuRect(ui::UiRect(0, 0, 36, 36), true);
     w.SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
     w.SetUseSystemCaption(false);
+#if defined(DUI_BUILD_FOR_LINUX)
+    w.SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     w.SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
+#endif
     w.SetEnableShadowSnap(true);
     w.SetShadowBorderSize(0);
     w.SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
@@ -887,8 +902,15 @@ static void BuildUIFromXmlControls(ui::Window* pWindow) {
     auto* p6 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Minimize")}});
     ui::Attach(p1, p6);
 
-    auto* p7 = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_close_11")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("closebtn")}, {DUI_T("margin"), DUI_T("0,0,8,2")}, {DUI_T("tooltip_text"), DUI_T("Close")}});
-    ui::Attach(p1, p7);
+    auto* pMaxBox = ui::Create<ui::Box>(pWindow, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")} });
+    auto* pMaxBtn = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_max_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("name"), DUI_T("maxbtn")}, {DUI_T("tooltip_text"), DUI_T("Maximize")} });
+    ui::Attach(pMaxBox, pMaxBtn);
+    auto* pRestoreBtn = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_restore_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("name"), DUI_T("restorebtn")}, {DUI_T("visible"), DUI_T("false")}, {DUI_T("tooltip_text"), DUI_T("Restore")} });
+    ui::Attach(pMaxBox, pRestoreBtn);
+    ui::Attach(p1, pMaxBox);
+
+    auto* pCloseBtn = ui::Create<ui::Button>(pWindow, {{DUI_T("class"), DUI_T("btn_wnd_close_11")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("closebtn")}, {DUI_T("margin"), DUI_T("0,0,8,2")}, {DUI_T("tooltip_text"), DUI_T("Close")}});
+    ui::Attach(p1, pCloseBtn);
 
     ui::Attach(p0, p1);
 

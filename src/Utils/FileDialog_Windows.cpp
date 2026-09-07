@@ -1,6 +1,6 @@
 #include "dui/Utils/FileDialog.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Core/Window.h"
 #include "dui/Core/Control.h"

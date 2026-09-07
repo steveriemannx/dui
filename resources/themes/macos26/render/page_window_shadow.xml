@@ -33,7 +33,7 @@
         <VBox>
             <Label text="Window Shadow Function Test:" valign="center" margin="12,30,10,0"/>
             <Option class="checkbox_2" group="shadow_type" text="Shadow type: default, default shadow" selected="true" valign="center" margin="30,4,0,2">
-                <Event type="select" receiver="#window#" apply_attribute="shadow_type={default}" />
+                <Event type="select" receiver="#window#" apply_attribute="shadow_type={draw_default}" />
             </Option>
             <Option class="checkbox_2" group="shadow_type" text="Shadow type: big, large shadow, square corners (suitable for normal windows)" selected="false" valign="center" margin="30,4,0,2">
                 <Event type="select" receiver="#window#" apply_attribute="shadow_type={big}" />

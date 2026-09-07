@@ -3,7 +3,7 @@
 #include "dui/Utils/FileUtil.h"
 #include "dui/Core/GlobalManager.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Utils/ApiWrapper_Windows.h"
 #include "dui/Utils/InlineHook_Windows.h"
@@ -170,7 +170,7 @@ bool NativeWindow_Windows::SetSystemShadowType(NativeWindowShadowType nativeShad
     //Win11: DWM rounded corners (a harmless no-op on older Windows)
     ::DwmSetWindowAttribute(m_hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPreference, sizeof(cornerPreference));
     //Force DWM to re-render the frame so the drop shadow appears immediately
-    //(matches the SDL backend's ModifyDwmStyle: the shadow state is cached by
+    //(matches the native backend backend's ModifyDwmStyle: the shadow state is cached by
     //DWM until the frame is invalidated)
     ::SetWindowPos(m_hWnd, nullptr, 0, 0, 0, 0,
                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);

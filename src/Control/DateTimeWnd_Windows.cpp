@@ -5,7 +5,7 @@
 #include "dui/Utils/StringUtil.h"
 #include "dui/Utils/StringConvert.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include <windowsx.h>
 #include <ctime>
@@ -373,4 +373,4 @@ SYSTEMTIME DateTimeWnd::StdTimeToSystemTime(const struct tm& tmTime) const
 
 }//namespace ui
 
-#endif // (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif // (DUI_BUILD_FOR_WIN)

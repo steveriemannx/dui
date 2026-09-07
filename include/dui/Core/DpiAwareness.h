@@ -66,7 +66,7 @@ public:
     */
     float m_fDisplayScale = 1.0f;
 
-    /** Whether UI pixel density is supported (this value is only valid when SDL is enabled, and only takes effect in system environments that support high-DPI screens)
+    /** Whether UI pixel density is supported (this value is only valid when native backend is enabled, and only takes effect in system environments that support high-DPI screens)
      *  In macOS/Wayland desktop environments: true means high-DPI screens are supported, false means high-DPI screens are not supported
      *  In Windows/X11 desktop environments: this parameter is invalid and will be ignored
      */

@@ -3,10 +3,10 @@
 #include <sstream>
 #include <iomanip>
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     #include "dui/Control/DateTimeWnd_Windows.h"
-#elif defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
-    #include "dui/Control/DateTimeWnd_SDL.h"
+#elif defined (DUI_BUILD_FOR_WAYLAND) || defined (DUI_BUILD_FOR_X11)
+    #include "dui/Control/DateTimeWnd_Native.h"
 #elif defined (DUI_BUILD_FOR_MACOS)
     #include "dui/Control/DateTimeWnd_MacOS.h"
 #endif
@@ -25,7 +25,7 @@ DateTime::DateTime(Window* pWindow):
     SetAttribute(DUI_T("border_color"), DUI_T("gray"));
     SetAttribute(DUI_T("text_align"), DUI_T("vcenter"));
     SetAttribute(DUI_T("text_padding"), DUI_T("2,0,0,0"));
-#ifdef DUI_BUILD_FOR_SDL
+#if defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_X11)
     SetAttribute(DUI_T("padding"), DUI_T("1,1,1,1"));
     SetAttribute(DUI_T("spin_class"), DUI_T("rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down"));
 #endif

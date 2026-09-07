@@ -1,4 +1,5 @@
 #include "dui/Utils/WinImplBase.h"
+#include <stdio.h>
 #include "dui/Core/WindowBuilder.h"
 #include "dui/Core/Box.h"
 #include "dui/Control/Label.h"
@@ -100,8 +101,8 @@ void WindowImplBase::BindCaptionButtons_Default()
         bFoundAny = true;
     }
 
-#if defined (DUI_BUILD_FOR_SDL) && !defined (DUI_BUILD_FOR_WIN)
-    //Title bar: since SDL does not support double-clicking the title bar to maximize/restore the window, implement this logic ourselves (non-Windows platforms)
+#if defined (DUI_BUILD_FOR_WAYLAND) && !defined (DUI_BUILD_FOR_WIN)
+    //Title bar: since native backend does not support double-clicking the title bar to maximize/restore the window, implement this logic ourselves (non-Windows platforms)
     pControl = FindControl(DUI_CTR_CAPTION_BAR);
     if (pControl) {
         pControl->AttachBubbledEvent(ui::kEventMouseDoubleClick, UiBind(&WindowImplBase::OnTitleBarDoubleClick, this, std::placeholders::_1), 0);
@@ -338,6 +339,8 @@ bool WindowImplBase::OnButtonClick(const EventArgs& msg)
         return true;
     }
     Control* pSender = msg.GetSender();
+    fprintf(stderr, "[WinImplBase::OnButtonClick] sender=%s\n", pSender ? pSender->GetName().c_str() : "null");
+    fflush(stderr);
     ASSERT(pSender != nullptr);
     if (pSender == nullptr) {
         return false;

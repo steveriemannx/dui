@@ -17,7 +17,10 @@ if(APPLE)
 elseif(WIN32)
     set(CONTROLS_EMBED_THEME windows11)
 else()
-    set(CONTROLS_EMBED_THEME default)
+    set(CONTROLS_EMBED_THEME "${DUI_EXAMPLE_THEME}")
+    if(CONTROLS_EMBED_THEME STREQUAL "")
+        set(CONTROLS_EMBED_THEME default)
+    endif()
 endif()
 # Embed only the platform theme (self-contained: macos26/public now carries all
 # shared images, no default-theme fallback) plus this example's own skin

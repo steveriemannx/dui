@@ -24,15 +24,15 @@ public:
     {
         kShadowFirst        = 0,            //The starting value of valid values
 
-        kShadowBig          = 0,            //Large shadow, square corners (suitable for normal windows)
-        kShadowBigRound     = 1,            //Large shadow, rounded corners (suitable for normal windows)
-        kShadowSmall        = 2,            //Small shadow, square corners (suitable for normal windows)
-        kShadowSmallRound   = 3,            //Small shadow, rounded corners (suitable for normal windows)
-        kShadowMenu         = 4,            //Small shadow, square corners (suitable for popup windows, such as menus)
-        kShadowMenuRound    = 5,            //Small shadow, rounded corners (suitable for popup windows, such as menus)
-        kShadowNone         = 6,            //No shadow, with border, square corners
-        kShadowNoneRound    = 7,            //No shadow, with border, rounded corners
-        kShadowCustom       = 8,                //User-defined shadow (setting it clears the default shadow properties; subsequently call SetShadowImage, SetShadowCorner, SetShadowBorderRound to set the shadow properties)
+        kShadowDrawBig          = 0,            //Large shadow, square corners (suitable for normal windows)
+        kShadowDrawBigRound     = 1,            //Large shadow, rounded corners (suitable for normal windows)
+        kShadowDrawSmall        = 2,            //Small shadow, square corners (suitable for normal windows)
+        kShadowDrawSmallRound   = 3,            //Small shadow, rounded corners (suitable for normal windows)
+        kShadowDrawMenu         = 4,            //Small shadow, square corners (suitable for popup windows, such as menus)
+        kShadowDrawMenuRound    = 5,            //Small shadow, rounded corners (suitable for popup windows, such as menus)
+        kShadowDrawNone         = 6,            //No shadow, with border, square corners
+        kShadowDrawNoneRound    = 7,            //No shadow, with border, rounded corners
+        kShadowDrawCustom       = 8,                //User-defined shadow (setting it clears the default shadow properties; subsequently call SetShadowImage, SetShadowCorner, SetShadowBorderRound to set the shadow properties)
 
         //System shadows (provided by the OS, e.g. macOS NSWindow / Windows DWM).
         //When one of these is selected the window must be non-layered
@@ -43,7 +43,7 @@ public:
         kShadowSystemSmallRound = 12,            //OS shadow, small rounded corners
         kShadowCount,                           //The maximum value of valid values
 
-        kShadowDefault      = kShadowBigRound   //Default shadow (used by default when not set)
+        kShadowDrawDefault  = kShadowDrawBigRound   //Default self-drawn shadow (used by default when not set)
     };
 
     /** Get the corresponding shadow type from a string
@@ -56,11 +56,11 @@ public:
     static bool IsSystemShadowType(ShadowType nShadowType);
 
     /** Whether the type requires a layered window (self-drawn shadows do;
-     *  system shadows and kShadowNone do not).
+     *  system shadows and kShadowDrawNone do not).
     */
     static bool IsShadowTypeNeedLayeredWindow(ShadowType nShadowType);
 
-    /** Resolve kShadowDefault to a concrete type based on the window and the
+    /** Resolve kShadowDrawDefault to a concrete type based on the window and the
      *  platform (layered window -> self-drawn; macOS -> system shadow).
     */
     static ShadowType GetDefaultShadowType(const Window* pWindow);

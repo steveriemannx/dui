@@ -26,8 +26,13 @@ void MainForm::OnInitWindow()
     BuildUI();
 
     if (m_layoutType == kLogin) {
-        // Apply the full content size once the generated root exists.
-        SetWindowSize(304, 696);
+        // Let the generated root determine its natural height. A fixed height
+        // leaves an empty transparent area below the login panel on X11.
+        if (ui::Box* root = GetRoot()) {
+            const ui::UiEstSize size = root->EstimateSize(ui::UiSize(999999, 999999));
+            SetWindowSize(size.cx.GetInt32(), size.cy.GetInt32());
+        }
+        CenterWindow();
         // Also show the WeChat window behind the login window.
         ShowCustomWindow(kWechat);
     }

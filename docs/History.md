@@ -17,7 +17,7 @@
     <tr><td align="left">6. Replaced the XML parsing engine with the pugixml parser for better performance</td></tr>
     <tr><td align="left">7. Removed the dependency on the base library; the message loop and thread communication functionality are now implemented in-house</td></tr>
     <tr><td align="left">8. Integrated the Skia engine as the default rendering engine</td></tr>
-    <tr><td align="left">9. SDL3 support for cross-platform use (Windows, Linux, macOS, and FreeBSD platforms adapted)</td></tr>
+    <tr><td align="left">9. Native X11/Wayland backend support for Linux and FreeBSD</td></tr>
     <tr><td align="left">10. Moved the CEF component into the dui project and upgraded the CEF version (supports libcef 109 for Win7 compatibility; supports libcef 142 for Win10 and above)</td></tr>
     <tr><td align="left">11. Redesigned the image management interfaces and loading flow (Image directory), supporting multi-threaded image loading for better extensibility of other image formats</td></tr>
     <tr>
@@ -68,7 +68,7 @@
     <tr><td align="left">18. HFlowBox/VFlowBox/HFlowScrollBox/VFlowScrollBox: controls based on horizontal and vertical flow layouts</td></tr>
     <tr><td align="left">19. MenuBar: menu bar control</td></tr>
     <tr><td align="left">20. IconControl/BitmapControl: display in-memory small icons and bitmap data</td></tr>
-    <tr><td align="left">21. ChildWindow: child window control; the Windows implementation is a native system child window (with the WS_CHILD property); other platforms use SDL popup windows, which are not native child windows because SDL does not support native child windows</td></tr>
+    <tr><td align="left">21. ChildWindow: child window control; the Windows implementation is a native system child window (with the WS_CHILD property); other platforms use native backend popup windows, which are not native child windows because native backend does not support native child windows</td></tr>
     <tr><td align="left">22. ControlDragableT (template class, including the four standard controls ControlDragable/BoxDragable/HBoxDragable/VBoxDragable): supports reordering child controls within the same Box by dragging, and adjusting a control's container by dragging between different Boxes</td></tr>
     <tr><td align="left">23. ControlMovableT (template class, including the four standard controls ControlMovable/BoxMovable/HBoxMovable/VBoxMovable): supports adjusting a control's position by mouse dragging, and adjusting the parent container's position by dragging</td></tr>
     <tr><td align="left">24. ControlResizableT (template class, including the four standard controls ControlResizable/BoxResizable/HBoxResizable/VBoxResizable): supports resizing a control by mouse dragging, similar to resizing a window</td></tr>
@@ -107,5 +107,5 @@
 
 ## Development Plans
  - Continue enriching the UI library's controls and improving its features
- - Continuous testing and refinement of the cross-platform (Windows/Linux/macOS/FreeBSD) window engine based on [SDL3.0](https://www.libsdl.org/) (currently stable under X11/XWayland desktop environments, but with more problems under pure Wayland)
+ - Continuous testing and refinement of the cross-platform (Windows/Linux/macOS/FreeBSD) native window engine.
  - Test the UI library, find and fix defects, and continuously improve the code

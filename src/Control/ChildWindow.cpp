@@ -126,8 +126,8 @@ void ChildWindow::AdjustChildWindowPos()
         UiPoint pt;
         pt.x = rc.left;
         pt.y = rc.top;
-#if defined (DUI_BUILD_FOR_SDL) && !defined (DUI_BUILD_FOR_WIN)
-        //SDL uses screen coordinates, while the Windows SDK uses client area coordinates
+#if defined (DUI_BUILD_FOR_WAYLAND) && !defined (DUI_BUILD_FOR_WIN)
+        //native backend uses screen coordinates, while the Windows SDK uses client area coordinates
         UiRect rcWindow;
         if (GetWindow() != nullptr) {
             GetWindow()->GetWindowRect(rcWindow);

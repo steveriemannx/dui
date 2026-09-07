@@ -171,5 +171,5 @@ if(DUI_USE_MAIN_ENTRY AND TARGET dui_entry)
     list(APPEND DUI_WINDOWS_LIBS dui_entry)
 endif()
 
-target_link_libraries(${PROJECT_NAME} dui dui-cximage dui-webp png_static
+target_link_libraries(${PROJECT_NAME} dui dui-cximage dui-webp dui-png
     dui_skia_libs ${DUI_CEF_LIBS} ${DUI_WINDOWS_LIBS})

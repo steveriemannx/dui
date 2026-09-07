@@ -4,7 +4,7 @@
 
 namespace ui {
 
-WindowDropTarget::WindowDropTarget(NativeWindow_SDL* pWindow):
+WindowDropTarget::WindowDropTarget(NativeWindow_Wayland* pWindow):
     m_pWindow(pWindow)
 {
 }

@@ -250,13 +250,15 @@ bool SkRasterWindowContext_Wayland::PaintAndSwapBuffers(IRender* pRender, IRende
     uint8_t nLayeredWindowAlpha = pRenderPaint->GetLayeredWindowAlpha();
     const bool bFullPaint = (rcPaint.Width() == width()) && (rcPaint.Height() == height());
 
-    SkCanvas* skCanvas = nullptr;
-    if (!bFullPaint) {
-        skCanvas = m_fBackbufferSurface->getCanvas();
-        if (skCanvas != nullptr) {
-            skCanvas->save();
+    SkCanvas* skCanvas = m_fBackbufferSurface->getCanvas();
+    if (skCanvas != nullptr) {
+        skCanvas->save();
+        if (!bFullPaint) {
             skCanvas->clipIRect(SkIRect::MakeLTRB(rcPaint.left, rcPaint.top, rcPaint.right, rcPaint.bottom));
         }
+        // Clear before repainting transparent shadows; otherwise repeated
+        // partial paints accumulate the shadow alpha in the backbuffer.
+        skCanvas->clear(SK_ColorTRANSPARENT);
     }
 
     bool bRet = pRenderPaint->DoPaint(rcPaint);

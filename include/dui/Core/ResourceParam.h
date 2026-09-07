@@ -21,7 +21,7 @@ enum class ResourceType
 
 /** Select the default theme directory for the current platform.
  *  Windows uses the Windows 11 theme, macOS uses the native macOS light theme,
- *  and the other platforms use the generic default theme.
+ *  Linux uses the GNOME theme, while other platforms use the generic default theme.
  */
 inline FilePath GetDefaultThemePath()
 {
@@ -29,6 +29,8 @@ inline FilePath GetDefaultThemePath()
     return FilePath(DUI_T("themes\\windows11"));
 #elif defined (DUI_BUILD_FOR_MACOS)
     return FilePath(DUI_T("themes/macos26"));
+#elif defined (DUI_BUILD_FOR_LINUX)
+    return FilePath(DUI_T("themes/gnome"));
 #else
     return FilePath(DUI_T("themes/default"));
 #endif

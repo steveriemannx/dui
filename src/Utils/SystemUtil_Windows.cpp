@@ -1,6 +1,6 @@
 #include "dui/Utils/SystemUtil.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Utils/StringConvert.h"
 #include "dui/Core/Window.h"

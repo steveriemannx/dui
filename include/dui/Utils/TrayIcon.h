@@ -16,12 +16,12 @@ class Window;
 enum class TrayIconMessageType
 {
     kLeftClick,        // Left button click
-    kLeftDoubleClick,  // Left button double-click      (not available on non-Windows platforms using SDL)
+    kLeftDoubleClick,  // Left button double-click      (not available on non-Windows platforms using native backend)
     kRightClick,       // Right button click
-    kRightDoubleClick, // Right button double-click      (not available on non-Windows platforms using SDL)
+    kRightDoubleClick, // Right button double-click      (not available on non-Windows platforms using native backend)
     kMiddleClick,      // Middle button click
-    kMouseMove,        // Mouse move      (not available on non-Windows platforms using SDL)
-    kShowBalloon,      // Balloon notification clicked (not available on non-Windows platforms using SDL)
+    kMouseMove,        // Mouse move      (not available on non-Windows platforms using native backend)
+    kShowBalloon,      // Balloon notification clicked (not available on non-Windows platforms using native backend)
 };
 
 /** Tray icon message callback function
@@ -94,7 +94,7 @@ public:
     virtual bool Remove() = 0;
 
     /** Get the tray handle of the internal implementation
-    *@return Returns an SDL_Tray* in the SDL implementation, and the tray window handle HWND in the Windows SDK implementation
+    *@return Returns an Native_Tray* in the native backend implementation, and the tray window handle HWND in the Windows SDK implementation
     */
     virtual void* GetTrayHandle() const = 0;
 

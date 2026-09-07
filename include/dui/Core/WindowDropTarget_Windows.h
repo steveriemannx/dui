@@ -3,7 +3,7 @@
 
 #include "dui/Core/ControlDropTarget.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include <oleidl.h>
 
@@ -89,6 +89,6 @@ private:
 
 } // namespace ui
 
-#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN)
 
 #endif // UI_CORE_WINDOW_DROP_TARGET_WINDOWS_H_

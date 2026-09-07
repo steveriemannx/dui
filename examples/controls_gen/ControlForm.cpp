@@ -30,6 +30,7 @@ void ControlForm::OnInitWindow()
     BindEvents();
 
     BaseClass::OnInitWindow();
+    CenterWindow();
 }
 
 void ControlForm::SetupWindow()
@@ -41,8 +42,12 @@ void ControlForm::SetupWindow()
 
     // Use the OS-provided system shadow on all platforms.
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
 
@@ -63,14 +68,14 @@ void ControlForm::BuildUI()
 
 void ControlForm::BindEvents()
 {
-#ifdef DUI_BUILD_FOR_SDL
-    //Display basic SDL information
+#ifdef DUI_BUILD_FOR_WAYLAND
+    //Display basic native backend information
     ui::Label* pTitle = ui::Find<ui::Label>(this, DUI_CTR_CAPTION_TITLE);
     if (pTitle != nullptr) {
         DString title = pTitle->GetText();
         DString driverName = GetVideoDriverName();
         DString renderName = GetWindowRenderName();
-        DString newTitle = ui::StringUtil::Printf(DUI_T("%s[SDL: VideoDriver:\"%s\", RenderName:\"%s\"]"), title.c_str(), driverName.c_str(), renderName.c_str());
+        DString newTitle = ui::StringUtil::Printf(DUI_T("%s[native backend: VideoDriver:\"%s\", RenderName:\"%s\"]"), title.c_str(), driverName.c_str(), renderName.c_str());
         pTitle->SetText(newTitle);
     }
 #endif
@@ -182,6 +187,12 @@ void ControlForm::BindEvents()
             ui::UiPoint point;
             point.x = rect.left;
             point.y = rect.bottom;
+#if defined(DUI_BUILD_FOR_X11)
+            // GetPos() is relative to the caption HBox; include the window shadow origin.
+            ui::UiPadding shadow;
+            GetShadowCorner(shadow);
+            point.Offset(shadow.left, shadow.top);
+#endif
             ClientToScreen(point);
 
             //Show the menu and keep the settings button in the Push state
@@ -377,8 +388,8 @@ void ControlForm::AttachRichEditEvents(ui::RichEdit* edit)
                 filePath = dropData->m_fileList[0];
             }
         }
-        else if (args.wParam == ui::kControlDropTypeSDL) {
-            const ui::ControlDropData_SDL* dropData = (const ui::ControlDropData_SDL*)args.lParam;
+        else if (args.wParam == ui::kControlDropTypeWayland) {
+            const ui::ControlDropData_Wayland* dropData = (const ui::ControlDropData_Wayland*)args.lParam;
             if ((dropData != nullptr) && !dropData->m_fileList.empty()) {
                 filePath = dropData->m_fileList[0];
             }

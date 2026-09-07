@@ -48,13 +48,31 @@ endif()
 # Switch for the skia lib subdirectory name (by default Windows assembles the path by rules; other platforms can pin a fixed directory, e.g. the llvm build)
 option(DUI_SKIA_LIB_SUBPATH "Skia lib sub path" OFF)
 
-# Linux and FreeBSD use native X11 by default and can opt into Wayland.
+# Linux and FreeBSD select the native backend from the desktop session unless
+# the caller explicitly provides DUI_ENABLE_WAYLAND.
 if(DUI_OS_LINUX OR DUI_OS_FREEBSD)
-    option(DUI_ENABLE_WAYLAND "Enable the native Wayland backend" OFF)
+    add_link_options(-Wl,--no-as-needed)
+    if(NOT DEFINED DUI_ENABLE_WAYLAND)
+        set(DUI_ENABLE_WAYLAND_DEFAULT OFF)
+        if("$ENV{XDG_SESSION_TYPE}" STREQUAL "wayland" OR DEFINED ENV{WAYLAND_DISPLAY})
+            set(DUI_ENABLE_WAYLAND_DEFAULT ON)
+        endif()
+        set(DUI_ENABLE_WAYLAND "${DUI_ENABLE_WAYLAND_DEFAULT}" CACHE BOOL
+            "Enable the native Wayland backend (auto-detected from the desktop session)")
+        if(DUI_ENABLE_WAYLAND)
+            message(STATUS "Desktop session detected as Wayland; enabling native Wayland backend")
+        else()
+            message(STATUS "Desktop session detected as X11 or headless; enabling native X11 backend")
+        endif()
+    else()
+        set(DUI_ENABLE_WAYLAND "${DUI_ENABLE_WAYLAND}" CACHE BOOL
+            "Enable the native Wayland backend (explicit override)")
+        message(STATUS "Native backend explicitly selected: ${DUI_ENABLE_WAYLAND}")
+    endif()
 endif()
 
 if(DUI_OS_LINUX)
-    set(DUI_EXAMPLE_THEME gnome46 CACHE STRING "Theme used by Linux examples" FORCE)
+    set(DUI_EXAMPLE_THEME gnome CACHE STRING "Theme used by Linux examples" FORCE)
 elseif(DUI_OS_FREEBSD)
     set(DUI_EXAMPLE_THEME freebsd CACHE STRING "Theme used by FreeBSD examples" FORCE)
 elseif(DUI_OS_WINDOWS)
@@ -64,10 +82,6 @@ elseif(DUI_OS_MACOS)
 else()
     set(DUI_EXAMPLE_THEME default CACHE STRING "Theme used by examples" FORCE)
 endif()
-
-# SDL has been removed from every supported platform. Pin the cache entry so
-# stale build directories cannot select the deleted backend.
-set(DUI_ENABLE_SDL OFF CACHE BOOL "SDL is not supported" FORCE)
 
 # CEF support: off by default, only enabled by specific projects
 option(DUI_ENABLE_CEF "Enable CEF" OFF)

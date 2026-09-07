@@ -78,7 +78,7 @@ void CComboWnd::InitComboWnd(Combo* pOwner, bool bActivated)
     createWndParam.m_dwExStyle = kWS_EX_NOACTIVATE;
 #else
     createWndParam.m_dwExStyle = kWS_EX_LAYERED;
-#if defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_WAYLAND)
     createWndParam.m_dwExStyle |= kWS_EX_NOACTIVATE;
 #endif
 #endif
