@@ -92,6 +92,7 @@ make -j6          # builds everything at once; make basic etc. builds only a sin
 ```
 - Skia is vendored under `third_party/` and built automatically by the top-level build (`dui_skia` target) when its library is missing
 - Platform notes: WebView2/WebView2Browser are Windows-only
+- FreeBSD uses the GNOME theme resources copied to resources/themes/freebsd; its native window backend is selected with the same X11/Wayland CMake option as Linux.
 - Each example directory is still an independent CMake project and can be built alone with `cmake -S examples/<name> -B build/...`
 
 ### Selecting Example Modes

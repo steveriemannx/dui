@@ -35,7 +35,7 @@ namespace ui {
 
 class WindowDropTarget;
 
-/** Windows platform implementation of window functionality
+/** X11 platform implementation of window functionality
 */
 class DUI_API NativeWindow_X11
 {
@@ -46,10 +46,10 @@ public:
     ~NativeWindow_X11();
 
 public:
-    /** Gets the window ID associated with the SDL event
+    /** Gets the window ID associated with the X11 event
     * @return Returns 0 if there is no associated window ID
     */
-    static X11_WindowID GetWindowIdFromEvent(const X11_Event& sdlEvent);
+    static X11_WindowID GetWindowIdFromEvent(const X11_Event& x11Event);
 
     /** Gets the window pointer by the window ID
     */
@@ -60,10 +60,10 @@ public:
     static uint32_t GetHoverMsgId();
 
     /** The window message handler; the first handler entered after a message is received from the system
-    * @param [in] sdlEvent The message data
+    * @param [in] x11Event The message data
     * @return Returns true if the message was handled internally, otherwise false
     */
-    bool OnX11WindowEvent(const X11_Event& sdlEvent);
+    bool OnX11WindowEvent(const X11_Event& x11Event);
 
 public:
     /** Creates the window
@@ -624,7 +624,7 @@ public:
     */
     LRESULT CallDefaultWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    /** The SDL Hit Test callback function
+    /** The X11 hit-test callback function
     */
     int32_t X11_HitTest(X11_Window* win, const X11_Point* area, void* data);
 
@@ -691,12 +691,12 @@ private:
     * @param [out] rcMonitor The monitor rectangle
     * @param [out] rcWork The work area rectangle of the monitor
     */
-    bool GetMonitorRect(X11_Window* sdlWindow, UiRect& rcMonitor, UiRect& rcWork) const;
+    bool GetMonitorRect(X11_Window* x11Window, UiRect& rcMonitor, UiRect& rcWork) const;
 
     /** Gets the window rect of the current window
     * @param [out] rcWindow Returns the screen coordinates of the window top-left and bottom-right corners
     */
-    void GetWindowRect(X11_Window* sdlWindow, UiRect& rcWindow) const;
+    void GetWindowRect(X11_Window* x11Window, UiRect& rcWindow) const;
 
     /** Synchronizes the window creation attributes
     * @param [in] bSupportTransparent Whether transparency is supported; only valid on non-Windows systems
@@ -713,7 +713,7 @@ private:
 
     /** Creates the Render associated with the X11 window
     */
-    X11_Renderer* CreateX11Renderer(const DString& sdlRenderName) const;
+    X11_Renderer* CreateX11Renderer(const DString& nativeRenderName) const;
 
     /** Gets the Render name list (in priority order)
     */
@@ -752,7 +752,7 @@ private:
     */
     static void ClearWindowFromID(X11_WindowID id, NativeWindow_X11* pNativeWindow);
 
-    /** Converts an SDL key to the internal ModifierKey
+    /** Converts an X11 key to the internal ModifierKey
     */
     static uint32_t GetModifiers(X11_Keymod keymod);
 
@@ -761,30 +761,30 @@ private:
     * @{ */
     friend class WindowDropTarget;
 
-    /** SDL_EVENT_DROP_BEGIN
+    /** X11 drag-and-drop begin event
     */
     void OnDropBegin();
 
-    /** SDL_EVENT_DROP_POSITION
+    /** X11 drag-and-drop position event
     * @param [in] pt A point in client coordinates
     * @param [out] bHandled If true is returned, the event has been handled and will not be forwarded to other UI controls
     */
     void OnDropPosition(const UiPoint& pt, bool& bHandled);
 
-    /** SDL_EVENT_DROP_TEXT
+    /** X11 drag-and-drop text event
     * @param [in] textList The text content; each element in the container represents one line of text
     * @param [out] bHandled If true is returned, the event has been handled and will not be forwarded to other UI controls
     */
     void OnDropTexts(const std::vector<DString>& textList, const UiPoint& pt, bool& bHandled);
 
-    /** SDL_EVENT_DROP_FILE
+    /** X11 drag-and-drop file event
     * @param [in] source The drag-and-drop source
     * @param [in] fileList The file paths; each element in the container represents one file
     * @param [out] bHandled If true is returned, the event has been handled and will not be forwarded to other UI controls
     */
     void OnDropFiles(const DString& source, const std::vector<DString>& fileList, const UiPoint& pt, bool& bHandled);
 
-    /** SDL_EVENT_DROP_COMPLETE or another message that causes the leave
+    /** X11 drag-and-drop completion or another message that causes the leave
     */
     void OnDropLeave();
 

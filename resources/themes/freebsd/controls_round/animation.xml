@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Window size="600,500" min_size="80,50" text="Animation Test"
-        caption="0,0,0,36" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" 
-        shadow_type="system_round" round_corner="10,10" shadow_attached="true" shadow_snap="true" 
+        caption="0,0,0,36" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36"
+        shadow_type="draw_default" round_corner="10,10" shadow_attached="true" shadow_snap="true"
         alpha="255" size_box="4,4,4,4" icon="public/caption/logo.ico">
-    <VBox border_round="6,6" bkcolor="bk_wnd_darkcolor" visible="true">    
+    <VBox border_round="6,6" bkcolor="bk_wnd_darkcolor" visible="true">
         <!-- Title bar area -->
         <HBox border_round="6,6" name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
             <Control border_round="6,6" mouse_enabled="false"/>
@@ -15,7 +15,7 @@
             </Box>
             <Button border_round="6,6" class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
         </HBox>
-        
+
         <!-- Work area: everything outside the title bar goes into this large Box area -->
         <VBox border_round="6,6" child_halign="center" child_valign="center">
             <HBox border_round="6,6" height="40" margin="8,0,0,0">

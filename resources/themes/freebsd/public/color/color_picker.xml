@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="600,520" min_size="80,50" caption="0,0,0,32" use_system_caption="false" shadow_type="system_default" shadow_attached="true" size_box="4,4,4,4">
+<Window size="600,520" min_size="80,50" caption="0,0,0,32" use_system_caption="false" shadow_type="draw_default" shadow_attached="true" size_box="4,4,4,4">
   
   <TextColor name="color_picker_bkcolor" value="#FFF0F0F0"/>
   <TextColor name="color_picker_box_bkcolor" value="#FFF9F9F9"/>

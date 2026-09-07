@@ -715,7 +715,7 @@ private:
 
     /** Creates the Render associated with the Wayland window
     */
-    Wayland_Renderer* CreateSdlRenderer(const DString& nativeRenderName) const;
+    Wayland_Renderer* CreateWaylandRenderer(const DString& nativeRenderName) const;
 
     /** Gets the Render name list (in priority order)
     */
@@ -735,7 +735,7 @@ private:
 
     /** Creates an Wayland window
     */
-    Wayland_Window* CreateSdlWindow(NativeWindow_Wayland* pParentWindow, const WindowCreateAttributes& createAttributes);
+    Wayland_Window* CreateWaylandWindow(NativeWindow_Wayland* pParentWindow, const WindowCreateAttributes& createAttributes);
 
     /** Calculates the centered window position
     */
