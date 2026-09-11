@@ -239,16 +239,24 @@ function(dui_deps_add_targets)
                             COMMAND "${DUI_NINJA_BIN}" -C "${CMAKE_BINARY_DIR}/tools/gn")
                     endif()
                 else()
+                    # Build gn the way upstream does: in its own tree, with a
+                    # RELATIVE --out-path. gen.py derives every path it emits
+                    # from that argument, and it also hardcodes "../build/gen.py"
+                    # into the regen rule - so an absolute (or out-of-tree) path
+                    # makes ninja consider build.ninja perpetually dirty and it
+                    # loops ("still dirty after 100 tries"). The binary is then
+                    # copied where the rest of the build expects it.
                     set(_gn_commands
-                        COMMAND "${DUI_GN_PYTHON}" build/gen.py --out-path "${CMAKE_BINARY_DIR}/tools/gn"
-                        COMMAND "${DUI_NINJA_BIN}" -C "${CMAKE_BINARY_DIR}/tools/gn")
+                        COMMAND "${DUI_GN_PYTHON}" build/gen.py --out-path "out"
+                        COMMAND "${DUI_NINJA_BIN}" -C "${DUI_ROOT}/third_party/gn/out" gn
+                        COMMAND "${CMAKE_COMMAND}" -E copy "${DUI_ROOT}/third_party/gn/out/gn" "${DUI_GN_BIN}")
                 endif()
                 add_custom_command(
                     OUTPUT "${DUI_GN_BIN}"
                     ${_gn_commands}
                     WORKING_DIRECTORY "${DUI_ROOT}/third_party/gn"
                     DEPENDS "${DUI_ROOT}/third_party/gn/build/gen.py"
-                    COMMENT "Building gn (python build/gen.py + ninja -C ${CMAKE_BINARY_DIR}/tools/gn)..."
+                    COMMENT "Building gn (python build/gen.py + ninja)..."
                     USES_TERMINAL VERBATIM
                 )
                 add_custom_target(dui_gn DEPENDS "${DUI_GN_BIN}")
