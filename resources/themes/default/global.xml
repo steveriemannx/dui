@@ -2,7 +2,11 @@
 <Global>
     <!--Default font names, in list form, matched in order until the first valid font is found as the default font name; multiple font names are separated by commas-->
     <!-- Windows 11 default UI font -->
-    <DefaultFontFamilyNames value="Microsoft YaHei UI"/>
+    <!-- Font note: "Microsoft YaHei", "SimSun" are used on Windows -->
+    <!-- Font note: "PingFang SC" is used on macOS -->
+    <!-- Font note: "Noto Sans CJK SC" is used on Zhongke Fangde systems -->
+    <!-- Font note: "Source Han Sans SC" / "Droid Sans Fallback" are the FreeBSD/Linux CJK fallbacks -->
+    <DefaultFontFamilyNames value="Microsoft YaHei,SimSun,PingFang SC,Noto Sans CJK SC,Source Han Sans SC,Droid Sans Fallback"/>
     
     <!--All fonts: default font size is No. 5-->
     <Font id="system_12" name="system" size="12"/>

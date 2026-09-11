@@ -9,7 +9,11 @@
 #include <wayland-cursor.h>
 #include <xdg-shell-client-protocol.h>
 #include <xkbcommon/xkbcommon.h>
+#if defined(__linux__)
 #include <linux/input-event-codes.h>
+#elif defined(__FreeBSD__)
+#include <dev/evdev/input-event-codes.h>
+#endif
 #include <sys/mman.h>
 #include <unistd.h>
 #include <cstring>
