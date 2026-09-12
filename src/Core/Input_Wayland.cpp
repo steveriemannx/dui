@@ -2,6 +2,7 @@
 #include "dui/Core/MessageLoop_Wayland.h"
 #include "dui/Core/Keycode.h"
 #include "dui/Core/Keyboard.h"
+#include "dui/Utils/StringConvert.h"
 
 #ifdef DUI_BUILD_FOR_WAYLAND
 
@@ -18,6 +19,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <map>
+#include <string>
 
 namespace ui {
 
@@ -523,12 +525,28 @@ static void keyboard_key_handler(void* data, wl_keyboard* keyboard, uint32_t ser
         if (sym != XKB_KEY_NoSymbol) {
             char buf[8] = {};
             int len = xkb_keysym_to_utf8(sym, buf, sizeof(buf));
-            if (len > 0 && len < 8) {
-                // Post character message
-                for (int i = 0; i < len; i++) {
-                    uint32_t ch = (uint8_t)buf[i];
+            // Control keys have UTF-8 representations too -- BackSpace is
+            // 0x08, Return 0x0D, Escape 0x1B -- and sending them as text puts
+            // them *into* the field: the caret moves along and a glyph the font
+            // does not have is drawn in the space.  They are key events, not
+            // characters; RichEdit handles them from the key handler that has
+            // already run above.  Only printable characters are sent as text.
+            const unsigned char firstByte = len > 0 ? (unsigned char)buf[0] : 0;
+            if (len > 0 && len < 8 && firstByte >= 0x20 && firstByte != 0x7F) {
+                // dui's RichEdit reads the character from msg.wParam (a
+                // wide-string pointer) and msg.lParam (its length), NOT from
+                // vkCode -- see RichEdit::OnInputChar.  Sending the character
+                // as vkCode, which is what this used to do, left the edit
+                // control with an empty string to insert: characters arrived
+                // and nothing appeared in the field.  The keysym's UTF-8 is
+                // converted and passed the way the Windows backend passes it,
+                // with vkCode = kVK_None, so multi-byte input (Chinese) works
+                // as well as ASCII.
+                DStringW textW = StringConvert::UTF8ToWString(std::string(buf, len));
+                if (!textW.empty()) {
                     bHandled = false;
-                    pOwner->OnNativeCharMsg((VirtualKeyCode)ch, mod, NativeMsg(0, 0, 0), bHandled);
+                    NativeMsg charMsg(0, (WPARAM)textW.c_str(), (LPARAM)textW.size());
+                    pOwner->OnNativeCharMsg(VirtualKeyCode::kVK_None, mod, charMsg, bHandled);
                 }
             }
         }
