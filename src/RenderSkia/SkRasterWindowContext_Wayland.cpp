@@ -92,7 +92,16 @@ void SkRasterWindowContext_Wayland::resize(int nWidth, int nHeight)
         return;
     }
 
-    SkImageInfo info = SkImageInfo::Make(nWidth, nHeight, pDisplayParams->colorType(),
+    // The surface is wrapped around a wl_shm buffer declared ARGB8888. In a
+    // little-endian 32-bit word that format is A[31:24] R[23:16] G[15:8]
+    // B[7:0], so the bytes in memory run B,G,R,A -- which is Skia's
+    // kBGRA_8888, not its "native" kN32. This Skia fork builds kN32 as RGBA
+    // (see the note in SkRasterWindowContext_MacOS.mm), so leaving the color
+    // type at the display default made Skia write R,G,B,A into a buffer the
+    // compositor read as B,G,R,A: every colour in every window came out with
+    // red and blue swapped. Declaring the layout the buffer actually
+    // describes is what fixes it, and it holds whichever way kN32 is built.
+    SkImageInfo info = SkImageInfo::Make(nWidth, nHeight, SkColorType::kBGRA_8888_SkColorType,
                                           SkAlphaType::kPremul_SkAlphaType, pDisplayParams->colorSpace());
     m_fBackbufferSurface = SkSurfaces::WrapPixels(info, pixels, sizeof(uint32_t) * nWidth);
     if (m_fBackbufferSurface == nullptr) {
