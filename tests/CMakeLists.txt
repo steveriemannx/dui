@@ -12,7 +12,7 @@ add_executable(dui_core_tests
     core_tests.cpp
 )
 
-target_compile_features(dui_core_tests PRIVATE cxx_std_17)
+target_compile_features(dui_core_tests PRIVATE cxx_std_20)
 target_compile_definitions(dui_core_tests PRIVATE
     DUI_TEST_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
@@ -56,7 +56,7 @@ if(DUI_RUN_GUI_TESTS)
     add_executable(dui_gui_tests
         gui_tests.cpp
     )
-    target_compile_features(dui_gui_tests PRIVATE cxx_std_17)
+    target_compile_features(dui_gui_tests PRIVATE cxx_std_20)
     target_compile_definitions(dui_gui_tests PRIVATE
         DUI_TEST_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/.."
     )

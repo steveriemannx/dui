@@ -15,7 +15,7 @@ dui is a cross-platform C++ UI framework based on the Skia rendering engine, usi
 ## Project Structure
 ```
 dui/
-├── dui/                 # core library source code
+├── include/dui/         # public headers (one directory per module)
 │   ├── Core/            # window, control base classes, events, managers
 │   ├── Control/         # UI controls (Button, Label, RichEdit, TreeView...)
 │   ├── Box/             # container controls (VBox, HBox, ListBox, TabBox...)
@@ -25,14 +25,20 @@ dui/
 │   ├── Render/          # rendering interfaces
 │   ├── RenderSkia/      # Skia rendering implementation
 │   ├── Utils/           # utility classes (WindowImplBase, FilePath...)
+│   ├── Binding/         # optional data-binding module (DUI_ENABLE_MVVM; see docs/Binding.md)
 │   ├── CEFControl/      # CEF browser integration
 │   └── WebView2/        # WebView2 control
-├── examples/            # 21 example programs
+├── src/                 # implementation only (.cpp/.mm); module layout mirrors include/dui/
+├── examples/            # example programs (XML, _gen and _code variants of each)
 ├── docs/                # full documentation
-├── bin/                 # build output (example programs; resources synced from resources/)
-├── resources/           # theme resources (XML layouts, images, fonts; synced into bin/ at configure time)
-├── scripts/             # build scripts and solutions
-└── cmake/               # CMake configuration
+├── resources/           # theme resources (XML layouts, images, fonts)
+├── tests/               # test suite (plain assert(); registered with CTest)
+├── tools/               # xml_to_code generator
+├── third_party/         # vendored dependencies (Skia, pugixml, libpng, libjpeg-turbo, ...)
+├── cmake/               # CMake configuration
+├── scripts/             # helper scripts
+├── build/               # build tree (build/bin holds the example programs and the synced resources)
+└── lib/                 # built libraries
 ```
 
 ## Development Modes (XML + C++)
@@ -54,21 +60,21 @@ Each window usually requires three files:
 **Initialize global resources:**
 ```cpp
 ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-resourcePath += _T("resources\\");
+resourcePath += DUI_T("resources\\");
 ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 ```
 
 **Create a window:**
 ```cpp
 MainForm* window = new MainForm();
-window->CreateWnd(nullptr, ui::WindowCreateParam(_T("WindowTitle"), true));
+window->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("WindowTitle"), true));
 window->PostQuitMsgWhenClosed(true);
 window->ShowWindow(ui::kSW_SHOW_NORMAL);
 ```
 
 **Find a control:**
 ```cpp
-ui::Button* btn = dynamic_cast<ui::Button*>(FindControl(_T("btn_name")));
+ui::Button* btn = dynamic_cast<ui::Button*>(FindControl(DUI_T("btn_name")));
 ```
 
 **Event binding:**
@@ -104,8 +110,8 @@ DUI_APP_ENTRY(TestApplication)        // AppClass must provide void Run();
 - Detailed LLM reference: `.claude/docs/dui-llm-reference.md`
 
 ## Coding Standards
-- Strings use the `DString` type; literals are wrapped with the `_T("...")` macro
-- Control lookup uses `FindControl(_T("name"))` and requires `dynamic_cast` to the concrete type
+- Strings use the `DString` type; literals are wrapped with the `DUI_T("...")` macro
+- Control lookup uses `FindControl(DUI_T("name"))` and requires `dynamic_cast` to the concrete type
 - Event callbacks return `true` to indicate the event was handled
 - Embedded quotes in XML attribute values use single quotes `'` or curly braces `{}` instead of double quotes
 - Control classes support template variants: `Label` (Control-based), `LabelBox` (Box-based), `LabelHBox` (HBox-based), `LabelVBox` (VBox-based)

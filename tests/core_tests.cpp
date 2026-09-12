@@ -164,16 +164,24 @@ void TestRealImageDecoding()
 
 void TestStringAndAttributes()
 {
-    std::string text = "  AbC AbC  ";
+    // Trim has two overloads with different semantics: Trim(const char*) returns a
+    // copy, Trim(std::string&) trims in place (it returns std::string&). Passing an
+    // lvalue std::string picks the in-place one, so both are checked here.
+    const std::string strPadded = "  AbC AbC  ";
+    assert(ui::StringUtil::Trim("  AbC AbC  ") == "AbC AbC");   // by value
+    std::string text = strPadded;
     assert(ui::StringUtil::Trim(text) == "AbC AbC");
+    assert(text == "AbC AbC");                                   // in place
     assert(ui::StringUtil::ReplaceAll(std::string("AbC"), std::string("x"), text) == 2);
-    assert(text == "  x x  ");
+    assert(text == "x x");
     assert(ui::StringUtil::MakeLowerString("HeLLo") == "hello");
     assert(ui::StringUtil::IsEqualNoCase("abc", "ABC"));
     assert(ui::StringUtil::StringToInt32("42") == 42);
     assert(ui::StringUtil::StringToDouble("2.5") == 2.5);
 
-    const std::string utf8 = u8"hello 世界";
+    // C++20 made u8"" a char8_t array, which no longer converts to std::string.
+    // This source file is UTF-8, so a plain literal carries the same bytes.
+    const std::string utf8 = "hello 世界";
     auto wide = ui::StringConvert::UTF8ToWString(utf8);
     assert(ui::StringConvert::WStringToUTF8(wide) == utf8);
     assert(ui::StringConvert::UTF32ToUTF8(ui::StringConvert::UTF8ToUTF32(utf8)) == utf8);
@@ -230,7 +238,11 @@ void TestFilePathAndXml()
     assert(root.IsAbsolutePath() && root.IsExistsDirectory());
     ui::FilePath global = ui::FilePathUtil::JoinFilePath(
         root, ui::FilePath(DUI_T("resources/themes/default/global.xml")));
-    assert(global.IsExistsFile() && global.GetFileExtension() == DUI_T("xml"));
+    // FilePath::GetFileExtension() keeps the dot -- std::filesystem semantics, and
+    // NativeWindow_Windows.cpp compares its result against ".ico". The static
+    // FilePathUtil::GetFileExtension() strips it, and the image decoders rely on
+    // that. The two are correct as-is but are not interchangeable.
+    assert(global.IsExistsFile() && global.GetFileExtension() == DUI_T(".xml"));
     assert(global.GetFileName() == DUI_T("global.xml"));
     assert(global.GetParentPath().IsExistsDirectory());
     assert(ui::FilePathUtil::NormalizeFilePath(DUI_T("a/./b/../c")) == DUI_T("a/c"));

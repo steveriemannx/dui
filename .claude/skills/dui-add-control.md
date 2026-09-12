@@ -135,7 +135,7 @@ Add the following in the window's `OnInitWindow()`:
 
 ```cpp
 // Button click
-if (auto* btn = dynamic_cast<ui::Button*>(FindControl(_T("btn_submit")))) {
+if (auto* btn = dynamic_cast<ui::Button*>(FindControl(DUI_T("btn_submit")))) {
     btn->AttachClick([this](const ui::EventArgs&) {
         // Handle the click
         return true;
@@ -143,13 +143,13 @@ if (auto* btn = dynamic_cast<ui::Button*>(FindControl(_T("btn_submit")))) {
 }
 
 // CheckBox
-if (auto* chk = dynamic_cast<ui::CheckBox*>(FindControl(_T("chk_agree")))) {
+if (auto* chk = dynamic_cast<ui::CheckBox*>(FindControl(DUI_T("chk_agree")))) {
     chk->AttachSelect([this](const ui::EventArgs&) { /* selected */ return true; });
     chk->AttachUnSelect([this](const ui::EventArgs&) { /* deselected */ return true; });
 }
 
 // Text change in the input box
-if (auto* edit = dynamic_cast<ui::RichEdit*>(FindControl(_T("edit_input")))) {
+if (auto* edit = dynamic_cast<ui::RichEdit*>(FindControl(DUI_T("edit_input")))) {
     edit->AttachTextChange([this](const ui::EventArgs&) {
         // Text changed
         return true;
@@ -157,7 +157,7 @@ if (auto* edit = dynamic_cast<ui::RichEdit*>(FindControl(_T("edit_input")))) {
 }
 
 // Combo selection changed
-if (auto* combo = dynamic_cast<ui::Combo*>(FindControl(_T("combo_type")))) {
+if (auto* combo = dynamic_cast<ui::Combo*>(FindControl(DUI_T("combo_type")))) {
     combo->AttachSelect([this](const ui::EventArgs& args) {
         size_t selIndex = args.wParam;
         return true;
@@ -165,7 +165,7 @@ if (auto* combo = dynamic_cast<ui::Combo*>(FindControl(_T("combo_type")))) {
 }
 
 // List selection
-if (auto* list = dynamic_cast<ui::ListBox*>(FindControl(_T("list_items")))) {
+if (auto* list = dynamic_cast<ui::ListBox*>(FindControl(DUI_T("list_items")))) {
     list->AttachSelect([this](const ui::EventArgs& args) {
         size_t newSel = args.wParam;
         return true;
@@ -177,24 +177,24 @@ if (auto* list = dynamic_cast<ui::ListBox*>(FindControl(_T("list_items")))) {
 
 ```cpp
 // Add options to the Combo
-if (auto* combo = dynamic_cast<ui::Combo*>(FindControl(_T("combo_type")))) {
+if (auto* combo = dynamic_cast<ui::Combo*>(FindControl(DUI_T("combo_type")))) {
     auto* treeView = combo->GetTreeView();
     auto* root = treeView->GetRootNode();
     for (int i = 0; i < 5; i++) {
         auto* node = new ui::TreeNode(this);
-        node->SetClass(_T("tree_node"));
-        node->SetText(ui::StringUtil::Printf(_T("Option %d"), i));
+        node->SetClass(DUI_T("tree_node"));
+        node->SetText(ui::StringUtil::Printf(DUI_T("Option %d"), i));
         root->AddChildNode(node);
     }
     combo->SetCurSel(0);
 }
 
 // Add items to the ListBox
-if (auto* list = dynamic_cast<ui::ListBox*>(FindControl(_T("list_items")))) {
+if (auto* list = dynamic_cast<ui::ListBox*>(FindControl(DUI_T("list_items")))) {
     for (int i = 0; i < 20; i++) {
         auto* item = new ui::ListBoxItem(this);
-        item->SetClass(_T("listitem"));
-        item->SetText(ui::StringUtil::Printf(_T("List item %d"), i));
+        item->SetClass(DUI_T("listitem"));
+        item->SetText(ui::StringUtil::Printf(DUI_T("List item %d"), i));
         item->SetFixedHeight(ui::UiFixedInt(28), true, true);
         list->AddItem(item);
     }
