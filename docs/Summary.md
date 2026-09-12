@@ -12,6 +12,7 @@
 * [Control Events/Messages](Events.md)
 * [XML Node Names of Controls](XmlNode.md)
 * [Responding to Control Events Directly in XML](XmlEvents.md)
+* [Data Binding (ui::binding)](Binding.md)
 * [CEF Control](CEF.md)
 * [Build Process per Platform](Build.md)
 * [Build-related Documents and Scripts](../scripts/build.md)

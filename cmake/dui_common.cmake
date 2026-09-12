@@ -89,6 +89,29 @@ option(DUI_ENABLE_CEF "Enable CEF" OFF)
 # Whether to enable CEF 109 (off by default; CEF 109 supports Windows 7, while other CEF versions only run on Windows 10 and later)
 option(DUI_CEF_109 "Enable CEF 109" OFF)
 
+# MVVM data-binding module. Purely additive: it adds new files under src/Binding
+# and include/dui/Binding and modifies no existing library source, so enabling it
+# cannot change the behavior of code that does not call it.
+# The options keep the "MVVM" name (the feature people ask for); the code --
+# namespace ui::binding, src/Binding, include/dui/Binding -- is named after the
+# mechanism, since the binding engine also serves a plain MVC-style model.
+#   DUI_ENABLE_MVVM         - compile the module into the dui library
+#   DUI_BUILD_MVVM_EXAMPLES - build the binding demo examples
+# The library is compiled once, at root scope; an example cannot switch the module
+# on for the library, so src/CMakeLists.txt builds it when EITHER option is on.
+# This mirrors DUI_ENABLE_CEF / DUI_BUILD_CEF_EXAMPLES.
+option(DUI_ENABLE_MVVM "Enable the MVVM data-binding module" OFF)
+option(DUI_BUILD_MVVM_EXAMPLES "Build the Mvvm examples" ON)
+
+# Derived: true when the MVVM module is actually compiled into the dui library.
+# Consumers (examples, tests) should gate on this rather than on DUI_ENABLE_MVVM,
+# so they stay in sync with what src/CMakeLists.txt actually builds.
+if(DUI_ENABLE_MVVM OR DUI_BUILD_MVVM_EXAMPLES)
+    set(DUI_MVVM_AVAILABLE ON)
+else()
+    set(DUI_MVVM_AVAILABLE OFF)
+endif()
+
 # WebView2 control binaries
 if(DUI_OS_WINDOWS)
     option(DUI_WEBVIEW2_EXE "Is Windows WebView2 exe" OFF)

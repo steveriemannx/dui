@@ -106,6 +106,7 @@ DUI_APP_ENTRY(TestApplication)        // AppClass must provide void Run();
 - Window properties: `docs/Window.md`
 - Event system: `docs/Events.md`
 - XML events: `docs/XmlEvents.md`
+- Data binding / MVVM (optional module, `DUI_ENABLE_MVVM`): `docs/Binding.md`
 - XML node names: `docs/XmlNode.md`
 - Detailed LLM reference: `.claude/docs/dui-llm-reference.md`
 

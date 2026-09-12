@@ -16,6 +16,11 @@ target_compile_features(dui_core_tests PRIVATE cxx_std_20)
 target_compile_definitions(dui_core_tests PRIVATE
     DUI_TEST_SOURCE_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
+# The binding module is optional, so tests covering it must not reference symbols
+# that were never compiled in.
+if(DUI_MVVM_AVAILABLE)
+    target_compile_definitions(dui_core_tests PRIVATE DUI_MVVM=1)
+endif()
 if(WIN32)
     target_compile_definitions(dui_core_tests PRIVATE UNICODE _UNICODE)
     if(MSVC)

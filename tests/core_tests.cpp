@@ -21,6 +21,10 @@
 #include "dui/Utils/StringConvert.h"
 #include "dui/Utils/StringUtil.h"
 
+#if defined(DUI_MVVM)
+#include "dui/Binding/ObservableObject.h"
+#endif
+
 #include <cassert>
 #include <chrono>
 #include <functional>
@@ -388,6 +392,106 @@ void TestTimerMessageLoop()
 #endif
 }
 
+#if defined(DUI_MVVM)
+
+/** Minimal observable used to exercise the binding substrate; needs no GUI. */
+class TestObservable : public ui::binding::ObservableObject
+{
+public:
+    TestObservable()
+    {
+        RegisterProperty(DUI_T("name"), m_sName);
+        RegisterProperty(DUI_T("title"), m_sTitle);
+    }
+
+    void SetName(const DString& strName)
+    {
+        if (m_sName == strName) {
+            return; // an unchanged value must not raise, or every binding re-pulls
+        }
+        m_sName = strName;
+        RaisePropertyChanged(DUI_T("name"));
+    }
+
+    void RaiseEverything()
+    {
+        RaiseAllPropertiesChanged();
+    }
+
+    /** Re-point "name" at other storage, to cover the re-register path. */
+    void RebindName(DString& refValue)
+    {
+        RegisterProperty(DUI_T("name"), refValue);
+    }
+
+private:
+    DString m_sName;
+    DString m_sTitle;
+};
+
+void TestBindingObservable()
+{
+    TestObservable observable;
+    DString strValue;
+
+    // Registered properties are readable and writable by name.
+    assert(observable.GetProperty(DUI_T("name"), strValue));
+    assert(strValue.empty());
+    assert(observable.SetProperty(DUI_T("name"), DUI_T("hello")));
+    assert(observable.GetProperty(DUI_T("name"), strValue));
+    assert(strValue == DUI_T("hello"));
+
+    // Unknown names are rejected outright. This is what lets Bind() turn a typo
+    // into a false return instead of a silent no-op.
+    assert(!observable.GetProperty(DUI_T("nope"), strValue));
+    assert(!observable.SetProperty(DUI_T("nope"), DUI_T("x")));
+
+    // Notifications carry the property name.
+    std::vector<DString> changedNames;
+    const size_t nCallbackID = observable.AttachPropertyChanged(
+        [&changedNames](const DString& strName) { changedNames.push_back(strName); });
+    assert(nCallbackID != 0);
+
+    observable.SetName(DUI_T("first"));
+    assert(changedNames.size() == 1);
+    assert(changedNames[0] == DUI_T("name"));
+
+    // An unchanged value raises nothing (the guard lives in the subclass).
+    observable.SetName(DUI_T("first"));
+    assert(changedNames.size() == 1);
+
+    // Bulk invalidation reports an empty name, meaning "everything changed".
+    observable.RaiseEverything();
+    assert(changedNames.size() == 2);
+    assert(changedNames[1].empty());
+
+    // Detaching stops delivery.
+    observable.DetachPropertyChanged(nCallbackID);
+    observable.SetName(DUI_T("second"));
+    assert(changedNames.size() == 2);
+
+    // A callback may detach itself while the notification is being delivered;
+    // the engine iterates a copy for exactly this reason.
+    size_t nSelfDetachID = 0;
+    int nSelfDetachCalls = 0;
+    nSelfDetachID = observable.AttachPropertyChanged([&](const DString&) {
+        ++nSelfDetachCalls;
+        observable.DetachPropertyChanged(nSelfDetachID);
+    });
+    observable.SetName(DUI_T("third"));
+    assert(nSelfDetachCalls == 1);
+    observable.SetName(DUI_T("fourth"));
+    assert(nSelfDetachCalls == 1);
+
+    // Re-registering a name re-points it at the new storage.
+    DString strRebound;
+    observable.RebindName(strRebound);
+    assert(observable.SetProperty(DUI_T("name"), DUI_T("moved")));
+    assert(strRebound == DUI_T("moved"));
+}
+
+#endif // DUI_MVVM
+
 } // namespace
 
 int main(int argc, char** argv)
@@ -414,5 +518,8 @@ int main(int argc, char** argv)
     TestResourceFileDecode();
     TestFrameworkThread();
     TestTimerManager();
+#if defined(DUI_MVVM)
+    TestBindingObservable();
+#endif
     return 0;
 }

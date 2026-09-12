@@ -105,6 +105,7 @@ The compiled example programs are in `bin/`. Platform prerequisites and detailed
 - [Getting Started](docs/Getting-Started.md) · [Example Programs](docs/Examples.md)
 - [Global styles](docs/Global.md) · [Window](docs/Window.md) · [Box](docs/Box.md) · [Control](docs/Control.md) · [Menu](docs/Menu.md)
 - [Events](docs/Events.md) · [XML node names](docs/XmlNode.md) · [XML inline events](docs/XmlEvents.md)
+- [Data binding](docs/Binding.md) — optional module; makes MVVM possible, works with a plain MVC-style model too
 - [CEF control](docs/CEF.md)
 - [Third-party libraries & licenses](docs/ThirdParty.md)
 - [History: modifications vs. NIM_Duilib_Framework](docs/History.md)

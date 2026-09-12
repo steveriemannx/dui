@@ -297,6 +297,18 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows, WebView2
     )
 endif()
 
+# Optional MVVM data-binding module. Additive: new files only, no existing source
+# changed, so nothing here affects builds that do not call into it.
+# Gated on the OR of both options for the same reason as CEF above -- the library is
+# built once at root scope, so examples cannot enable the module for the library.
+if(DUI_ENABLE_MVVM OR DUI_BUILD_MVVM_EXAMPLES)
+    file(GLOB BINDING_SRC CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/Binding/*.[cm]*")
+    list(APPEND LIBRARY_SOURCES ${BINDING_SRC})
+    message(STATUS "Binding module enabled")
+else()
+    message(STATUS "Binding module disabled")
+endif()
+
 # Only include CEF sources on supported platforms (Windows, Linux, macOS)
 # Wayland build excludes CEF; MinGW does not support CEF (see the build scripts)
 if(DUI_ENABLE_WAYLAND)
