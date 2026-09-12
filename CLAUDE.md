@@ -45,7 +45,7 @@ dui/
 
 ### XML Layout Files
 - Edit location: `resources/themes/default/<skin_folder>/<skin_file>.xml` (repo root — the single source of truth)
-- Runtime location: `bin/resources/themes/default/<skin_folder>/<skin_file>.xml` — an automatic copy synced at configure time; never edit files under `bin/` (changes are overwritten at the next configure)
+- Runtime location: copied into the build output at configure time — `<build>/bin/resources/themes/default/<skin_folder>/<skin_file>.xml` (`DUI_BIN_PATH`, set in `cmake/dui_common.cmake`); on macOS each `.app` bundle links to the source tree instead. Never edit any copy: `resources/` is the single source of truth and the copies are regenerated at the next configure
 - Global resources: `resources/themes/default/global.xml` (fonts, colors, common styles)
 - Encoding: UTF-8
 

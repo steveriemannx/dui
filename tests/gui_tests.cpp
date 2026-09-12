@@ -1,3 +1,8 @@
+// The Release configuration defines NDEBUG, which would compile every assert() in
+// this file away; see the same note in core_tests.cpp. Undo it before any header
+// processes <cassert>.
+#undef NDEBUG
+
 #include "dui/Core/GlobalManager.h"
 #include "dui/Core/MessageLoop_MacOS.h"
 #include "dui/Core/Window.h"

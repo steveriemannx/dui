@@ -52,10 +52,10 @@ The following internal control skins continue to be read from XML on disk; none 
 
 ```cpp
 ui::Menu* menu = new ui::Menu(this, pRelatedControl);
-menu->ShowMenu(_T(""), point);          // empty XML = pure code mode
+menu->ShowMenu(DUI_T(""), point);          // empty XML = pure code mode
 ui::MenuItem* pItem = new ui::MenuItem(menu);
-pItem->SetClass(_T("menu_element"));
-pItem->SetText(_T("Menu item"));
+pItem->SetClass(DUI_T("menu_element"));
+pItem->SetText(DUI_T("Menu item"));
 pItem->SetFixedWidth(ui::UiFixedInt(180), true, true);
 menu->AddMenuItem(pItem);               // sub-menus use pItem->AddSubMenuItem(pSub)
 menu->AddMenuControl(pControl);         // add ordinary controls such as separators

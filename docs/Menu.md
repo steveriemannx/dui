@@ -120,17 +120,17 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
 {
     ui::Menu* menu = new ui::Menu(this, pRelatedControl);// the parent window must be set; otherwise the program status bar becomes inactive when the menu pops up
     menu->SetSkinFolder(GetResourcePath().ToString());
-    DString xml(_T("menu/settings_menu.xml"));
+    DString xml(DUI_T("menu/settings_menu.xml"));
     menu->ShowMenu(xml, point);
 
     // add sub-menu items to a sub-menu
-    ui::MenuItem* menu_fourth = static_cast<ui::MenuItem*>(menu->FindControl(_T("fourth")));
+    ui::MenuItem* menu_fourth = static_cast<ui::MenuItem*>(menu->FindControl(DUI_T("fourth")));
     if (menu_fourth != nullptr) {
         ui::MenuItem* menu_item = new ui::MenuItem(menu);
-        menu_item->SetText(_T("Dynamically created"));
-        menu_item->SetClass(_T("menu_element"));
+        menu_item->SetText(DUI_T("Dynamically created"));
+        menu_item->SetClass(DUI_T("menu_element"));
         menu_item->SetFixedWidth(ui::UiFixedInt(180), true, true);
-        menu_item->SetFontId(_T("system_14"));
+        menu_item->SetFontId(DUI_T("system_14"));
         menu_item->SetTextPadding({ 20, 0, 20, 0 }, true);
         menu_fourth->AddSubMenuItemAt(menu_item, 1);// after adding, the resources are managed by the menu
     }
@@ -139,14 +139,14 @@ void ControlForm::ShowPopupMenu(const ui::UiPoint& point, ui::Control* pRelatedC
 Add the response function associated with the menu item:
 ```cpp
     /* About menu */
-    ui::MenuItem* menu_about = static_cast<ui::MenuItem*>(menu->FindControl(_T("about")));
+    ui::MenuItem* menu_about = static_cast<ui::MenuItem*>(menu->FindControl(DUI_T("about")));
     if (menu_about != nullptr) {
         menu_about->AttachClick([this](const ui::EventArgs& args) {
             AboutForm* about_form = new AboutForm();
             ui::WindowCreateParam createParam;
             createParam.m_dwStyle = ui::kWS_POPUP;
             createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-            createParam.m_windowTitle = _T("AboutForm");
+            createParam.m_windowTitle = DUI_T("AboutForm");
             createParam.m_bCenterWindow = true;
             about_form->CreateWnd(this, createParam);
             about_form->ShowModalFake();

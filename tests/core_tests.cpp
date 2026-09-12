@@ -1,3 +1,9 @@
+// The Release configuration defines NDEBUG (CMake does it via
+// CMAKE_CXX_FLAGS_RELEASE), which compiles every assert() in this file away -- the
+// suite would then pass while testing nothing at all. Undo it before any header
+// gets a chance to process <cassert>.
+#undef NDEBUG
+
 #include "dui/Core/Callback.h"
 #include "dui/Core/DpiManager.h"
 #include "dui/Core/FrameworkThread.h"
