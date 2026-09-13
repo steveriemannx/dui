@@ -436,4 +436,134 @@ int SkUTF32_CountUnichars(const void* text, size_t byteLength) {
     return SkToInt(byteLength >> 2);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+//Moved here from SkTextBox.cpp so that the rest of the render path can share them.
+SkUnichar SkUTF_NextUnichar(const void** ptr, SkTextEncoding textEncoding)
+{
+    if (textEncoding == SkTextEncoding::kUTF16) {
+        return SkUTF16_NextUnichar((const uint16_t**)ptr);
+    }
+    else if (textEncoding == SkTextEncoding::kUTF32) {
+        const uint32_t** srcPtr = (const uint32_t**)ptr;
+        const uint32_t* src = *srcPtr;
+        SkUnichar c = *src;
+        *srcPtr = ++src;
+        return c;
+    }
+    else {
+        return SkUTF8_NextUnichar((const char**)ptr);
+    }
+}
+
+SkUnichar SkUTF_ToUnichar(const void* utf, SkTextEncoding textEncoding)
+{
+    if (textEncoding == SkTextEncoding::kUTF16) {
+        const uint16_t* srcPtr = (const uint16_t*)utf;
+        return SkUTF16_NextUnichar(&srcPtr);
+    }
+    else if (textEncoding == SkTextEncoding::kUTF32) {
+        const uint32_t* srcPtr = (const uint32_t*)utf;
+        SkUnichar c = *srcPtr;
+        return c;
+    }
+    else {
+        return SkUTF8_ToUnichar((const char*)utf);
+    }
+}
+
+int SkUTF_CountUTFBytes(const void* utf, SkTextEncoding textEncoding)
+{
+    if (textEncoding == SkTextEncoding::kUTF16) {
+        // 2 or 4
+        int numChars = 1;
+        const uint16_t* src = static_cast<const uint16_t*>(utf);
+        unsigned c = *src++;
+        if (SkUTF16_IsHighSurrogate(c)) {
+            c = *src++;
+            if (!SkUTF16_IsLowSurrogate(c)) {
+                SkASSERT(false);
+            }
+            numChars = 2;
+        }
+        return numChars * 2;
+    }
+    else if (textEncoding == SkTextEncoding::kUTF32) {
+        //only 4
+        return 4;
+    }
+    else {
+        //1 or 2 or 3 or 4
+        return SkUTF8_CountUTF8Bytes((const char*)utf);
+    }
+}
+
+SkUnicharExtent SkUTF_NextUnicharExtent(const char** ppText, const char* pEnd,
+                                        SkTextEncoding textEncoding)
+{
+    SkUnicharExtent extent;
+    if ((ppText == nullptr) || (*ppText == nullptr)) {
+        return extent;                      //Nothing to decode: nBytes stays 0
+    }
+    const char* pCur = *ppText;
+    extent.pText = pCur;
+    if (pCur >= pEnd) {
+        return extent;                      //End of buffer: nBytes stays 0
+    }
+    const int32_t nRemain = (int32_t)(pEnd - pCur);
+
+    if (textEncoding == SkTextEncoding::kUTF16) {
+        if (nRemain < 2) {
+            //A trailing odd byte; consume it rather than reading past the end
+            extent.unichar = 0xFFFD;
+            extent.nBytes = nRemain;
+        }
+        else {
+            const uint16_t* pSrc = reinterpret_cast<const uint16_t*>(pCur);
+            if ((nRemain >= 4) && SkUTF16_IsHighSurrogate(pSrc[0]) && SkUTF16_IsLowSurrogate(pSrc[1])) {
+                //A surrogate pair is one code point, never two separate ones
+                const uint16_t* pNext = pSrc;
+                extent.unichar = SkUTF16_NextUnichar(&pNext);
+                extent.nBytes = 4;
+            }
+            else {
+                //A single code unit. A lone surrogate is passed through as-is:
+                //Skia will draw its replacement glyph. Note that this must not
+                //assert, because a Windows DString can legitimately hold one.
+                extent.unichar = (SkUnichar)pSrc[0];
+                extent.nBytes = 2;
+            }
+        }
+    }
+    else if (textEncoding == SkTextEncoding::kUTF32) {
+        if (nRemain < 4) {
+            extent.unichar = 0xFFFD;
+            extent.nBytes = nRemain;
+        }
+        else {
+            extent.unichar = (SkUnichar)(*reinterpret_cast<const uint32_t*>(pCur));
+            extent.nBytes = 4;
+        }
+    }
+    else {
+        //kUTF8 (and the default): this function is safe and leaves the pointer
+        //unchanged when the sequence is invalid.
+        const char* pNext = pCur;
+        const SkUnichar unichar = SkUTF8_NextUnicharWithError(&pNext, pEnd);
+        if (unichar < 0) {
+            //Invalid or truncated sequence: substitute and advance one byte, so
+            //that the caller is guaranteed to make progress.
+            extent.unichar = 0xFFFD;
+            extent.nBytes = 1;
+        }
+        else {
+            extent.unichar = unichar;
+            extent.nBytes = (int32_t)(pNext - pCur);
+        }
+    }
+
+    *ppText = pCur + extent.nBytes;
+    return extent;
+}
+
 } //namespace ui

@@ -49,64 +49,8 @@ static inline bool SkUTF_IsLineBreaker(int c)
     return true;
 }
 
-static SkUnichar SkUTF_NextUnichar(const void** ptr, SkTextEncoding textEncoding)
-{
-    if (textEncoding == SkTextEncoding::kUTF16) {
-        return SkUTF16_NextUnichar((const uint16_t**)ptr);
-    }
-    else if (textEncoding == SkTextEncoding::kUTF32) {
-        const uint32_t** srcPtr = (const uint32_t**)ptr;
-        const uint32_t* src = *srcPtr;
-        SkUnichar c = *src;
-        *srcPtr = ++src;
-        return c;
-    }
-    else {
-        return SkUTF8_NextUnichar((const char**)ptr);
-    }
-}
-
-static SkUnichar SkUTF_ToUnichar(const void* utf, SkTextEncoding textEncoding)
-{
-    if (textEncoding == SkTextEncoding::kUTF16) {
-        const uint16_t* srcPtr = (const uint16_t*)utf;
-        return SkUTF16_NextUnichar(&srcPtr);
-    }
-    else if (textEncoding == SkTextEncoding::kUTF32) {
-        const uint32_t* srcPtr = (const uint32_t*)utf;
-        SkUnichar c = *srcPtr;
-        return c;
-    }
-    else {
-        return SkUTF8_ToUnichar((const char*)utf);
-    }
-}
-
-static int SkUTF_CountUTFBytes(const void* utf, SkTextEncoding textEncoding)
-{
-    if (textEncoding == SkTextEncoding::kUTF16) {
-        // 2 or 4
-        int numChars = 1;
-        const uint16_t* src = static_cast<const uint16_t*>(utf);
-        unsigned c = *src++;
-        if (SkUTF16_IsHighSurrogate(c)) {
-            c = *src++;
-            if (!SkUTF16_IsLowSurrogate(c)) {
-                SkASSERT(false);
-            }
-            numChars = 2;
-        }
-        return numChars * 2;
-    }
-    else if (textEncoding == SkTextEncoding::kUTF32) {
-        //only 4
-        return 4;
-    }
-    else {
-        //1 or 2 or 3 or 4
-        return SkUTF8_CountUTF8Bytes((const char*)utf);
-    }
-}
+//Note: SkUTF_NextUnichar / SkUTF_ToUnichar / SkUTF_CountUTFBytes used to be file-local
+//here; they now live in SkUtils.h so that the rest of the render path can share them.
 
 static size_t linebreak(const char text[], const char stop[], SkTextEncoding textEncoding,
                         const SkFont& font, const SkPaint& paint, 

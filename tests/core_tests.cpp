@@ -16,6 +16,7 @@
 #include "dui/Core/Window.h"
 #include "dui/Core/Box.h"
 #include "dui/Core/SharePtr.h"
+#include "dui/RenderSkia/SkUtils.h"
 #include "dui/Image/ImageDecoder_PNG.h"
 #include "dui/Image/ImageDecoder_JPEG.h"
 #include "dui/Image/ImageDecoder_WEBP.h"
@@ -500,6 +501,105 @@ void TestBindingObservable()
 
 } // namespace
 
+/** The render path walks text one code point at a time, in whatever encoding the
+*   platform's DString uses. These are the helpers it uses to do that.
+*
+*   The UTF-16 branch matters most here: on macOS DString is UTF-8, so nothing else
+*   in the suite ever exercises it. It is driven with explicit UTF-16 input instead,
+*   which is also how a Windows build would reach it.
+*/
+void TestTextEncodingHelpers()
+{
+    //The encoding is a compile-time property of the character type's width.
+    static_assert(ui::GetTextEncodingForCharType<char>() == SkTextEncoding::kUTF8);
+    static_assert(ui::GetTextEncodingForCharType<char16_t>() == SkTextEncoding::kUTF16);
+    static_assert(ui::GetTextEncodingForCharType<char32_t>() == SkTextEncoding::kUTF32);
+    assert(ui::GetDStringTextEncoding() == ui::GetTextEncodingForCharType<DString::value_type>());
+
+    //A surrogate pair is ONE code point spanning 4 bytes, not two separate ones.
+    //Getting this wrong is what used to split an emoji in half.
+    {
+        const char16_t text[] = { 0xD83D, 0xDE00, 0x0041 };//U+1F600, then 'A'
+        const char* pCur = reinterpret_cast<const char*>(text);
+        const char* pEnd = pCur + sizeof(text);
+
+        ui::SkUnicharExtent cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF16);
+        assert(cp.unichar == 0x1F600);
+        assert(cp.nBytes == 4);
+
+        cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF16);
+        assert(cp.unichar == 0x0041);
+        assert(cp.nBytes == 2);
+
+        cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF16);
+        assert(cp.nBytes == 0);//Nothing left to decode
+        assert(pCur == pEnd);
+    }
+
+    //A lone high surrogate must not assert, must not read past the end, and must
+    //still advance. A Windows DString can legitimately hold one, and this is the
+    //case that used to abort inside Skia's glyph lookup.
+    {
+        const char16_t text[] = { 0x0041, 0xD83D };//'A', then an unpaired high surrogate
+        const char* pCur = reinterpret_cast<const char*>(text);
+        const char* pEnd = pCur + sizeof(text);
+
+        ui::SkUnicharExtent cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF16);
+        assert(cp.unichar == 0x0041);
+
+        cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF16);
+        assert(cp.nBytes == 2);//Consumed the lone surrogate as a single unit
+        assert(pCur == pEnd);  //Stopped exactly at the end, never past it
+    }
+
+    //UTF-8: a 4-byte sequence is one code point.
+    {
+        const char text[] = "\xF0\x9F\x98\x80" "A";//U+1F600, then 'A'
+        const char* pCur = text;
+        const char* pEnd = text + sizeof(text) - 1;//Exclude the terminator
+
+        ui::SkUnicharExtent cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF8);
+        assert(cp.unichar == 0x1F600);
+        assert(cp.nBytes == 4);
+
+        cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF8);
+        assert(cp.unichar == 'A');
+        assert(cp.nBytes == 1);
+        assert(pCur == pEnd);
+    }
+
+    //UTF-8: a truncated sequence substitutes U+FFFD and still advances, so a caller
+    //looping until the end terminates instead of over-reading.
+    {
+        const char text[] = "\xF0\x9F";//A 4-byte lead with only one continuation byte
+        const char* pCur = text;
+        const char* pEnd = text + sizeof(text) - 1;
+
+        ui::SkUnicharExtent cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF8);
+        assert(cp.unichar == 0xFFFD);
+        assert(cp.nBytes == 1);
+        assert(pCur <= pEnd);
+
+        cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF8);
+        assert(pCur == pEnd);
+    }
+
+    //UTF-32: one code point per 4 bytes.
+    {
+        const char32_t text[] = { 0x1F600, 0x0041 };
+        const char* pCur = reinterpret_cast<const char*>(text);
+        const char* pEnd = pCur + sizeof(text);
+
+        ui::SkUnicharExtent cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF32);
+        assert(cp.unichar == 0x1F600);
+        assert(cp.nBytes == 4);
+
+        cp = ui::SkUTF_NextUnicharExtent(&pCur, pEnd, SkTextEncoding::kUTF32);
+        assert(cp.unichar == 0x0041);
+        assert(pCur == pEnd);
+    }
+}
+
 int main(int argc, char** argv)
 {
     if (argc == 2 && std::string(argv[1]) == "--global-startup") {
@@ -524,6 +624,7 @@ int main(int argc, char** argv)
     TestResourceFileDecode();
     TestFrameworkThread();
     TestTimerManager();
+    TestTextEncodingHelpers();
 #if defined(DUI_MVVM)
     TestBindingObservable();
 #endif

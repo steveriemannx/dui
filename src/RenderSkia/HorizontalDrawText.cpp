@@ -1,8 +1,8 @@
 #include "dui/RenderSkia/HorizontalDrawText.h"
 #include "dui/RenderSkia/Font_Skia.h"
+#include "dui/RenderSkia/SkUtils.h"
 
 #include "dui/Utils/StringUtil.h"
-#include "dui/Utils/StringConvert.h"
 #include "dui/Utils/PerformanceUtil.h"
 
 #include "dui/RenderSkia/SkiaHeaderBegin.h"
@@ -21,7 +21,7 @@ HorizontalDrawText::HorizontalDrawText(SkCanvas* pSkCanvas, SkPaint* pSkPaint, S
 {
 }
 
-UTF16String HorizontalDrawText::GetDrawStringUTF16(const DString& strText, bool bSingleLineMode) const
+DString HorizontalDrawText::GetDrawStringText(const DString& strText, bool bSingleLineMode) const
 {
     DString text = strText;
     StringUtil::ReplaceAll(DUI_T("\r\n"), DUI_T("\n"), text);
@@ -30,28 +30,30 @@ UTF16String HorizontalDrawText::GetDrawStringUTF16(const DString& strText, bool 
     if (bSingleLineMode) {
         StringUtil::ReplaceAll(DUI_T("\n"), DUI_T(" "), text);
     }
-#if defined DUI_UNICODE && defined WCHAR_T_IS_UTF16
+    //Note: the text keeps its native encoding. Skia is told which encoding it is
+    //rather than being handed a converted copy, so nothing is transcoded here.
     return text;
-#else
-    std::string textUTF8 = StringConvert::TToUTF8(text);
-    return StringConvert::UTF8ToUTF16(textUTF8.c_str(), textUTF8.size());
-#endif
 }
 
 /** Character attributes for horizontally drawn text
 */
 struct THorizontalChar
 {
-    DUTF16Char ch;
-    bool bNewLine;  //Whether it is a newline character
-    SkSize size;    //The width and height after drawing the character
-    SkRect bounds;  //The bounding information after drawing the character
+    //The character is identified by its extent in the preprocessed draw string
+    //rather than by a copy of a code unit, so that characters outside the BMP
+    //(which take a surrogate pair in UTF-16, or 4 bytes in UTF-8) stay whole.
+    //Both fields are only meaningful against that one DString instance.
+    int32_t nTextOffset = 0;  //Byte offset of the character in the draw string
+    int32_t nTextLen = 0;     //Length of the character in bytes
+    bool bNewLine;            //Whether it is a newline character
+    SkSize size;              //The width and height after drawing the character
+    SkRect bounds;            //The bounding information after drawing the character
 };
 
-bool HorizontalDrawText::CalculateTextCharBounds(const UTF16String& textUTF16, const SkFont* pSkFont, const SkPaint* skPaint,
+bool HorizontalDrawText::CalculateTextCharBounds(const DString& text, const SkFont* pSkFont, const SkPaint* skPaint,
                                                  float fFontHeight, std::vector<THorizontalChar>& charRects) const
 {
-    if (textUTF16.empty()) {
+    if (text.empty()) {
         return false;
     }
     ASSERT(fFontHeight > 0);
@@ -68,12 +70,24 @@ bool HorizontalDrawText::CalculateTextCharBounds(const UTF16String& textUTF16, c
     }
     //The rectangle range occupied by the drawing of each character
     charRects.clear();
-    charRects.reserve(textUTF16.size());
+    charRects.reserve(text.size());//An upper bound: there is at least one byte per character
 
-    THorizontalChar horizontalChar;
-    for (DUTF16Char ch : textUTF16) {
-        horizontalChar.ch = ch;
-        if (ch == L'\n') {
+    const SkTextEncoding textEncoding = GetDStringTextEncoding();
+    const char* const pBase = text.data();
+    const char* const pEnd = pBase + text.size() * sizeof(DString::value_type);
+
+    //Iterate by code point, in whatever encoding this DString happens to use. Each code
+    //point is measured and drawn as a whole, so characters outside the BMP (a surrogate
+    //pair in UTF-16, four bytes in UTF-8) are neither split nor measured twice.
+    const char* pCur = pBase;
+    while (pCur < pEnd) {
+        const SkUnicharExtent codepoint = SkUTF_NextUnicharExtent(&pCur, pEnd, textEncoding);
+
+        THorizontalChar horizontalChar;
+        horizontalChar.nTextOffset = (int32_t)(codepoint.pText - pBase);
+        horizontalChar.nTextLen = codepoint.nBytes;
+
+        if (codepoint.unichar == '\n') {
             //Newline character
             horizontalChar.bNewLine = true;
             horizontalChar.size = SkSize();
@@ -82,17 +96,19 @@ bool HorizontalDrawText::CalculateTextCharBounds(const UTF16String& textUTF16, c
         }
         else {
             horizontalChar.bNewLine = false;
-            SkScalar fTextWidth = pSkFont->measureText(&ch,
-                                                       sizeof(DUTF16Char),
-                                                       SkTextEncoding::kUTF16,
+            SkScalar fTextWidth = pSkFont->measureText(codepoint.pText,
+                                                       (size_t)codepoint.nBytes,
+                                                       textEncoding,
                                                        &horizontalChar.bounds,//For italic text, this width includes the extended width
                                                        skPaint);
             if ((horizontalChar.bounds.width() <= 0) || (horizontalChar.bounds.height() <= 0)) {
-                //Space or invisible character (the display area is determined using a lowercase letter)
-                ch = 'a';
-                fTextWidth = pSkFont->measureText(&ch,
-                                                  sizeof(DUTF16Char),
-                                                  SkTextEncoding::kUTF16,
+                //Space or invisible character (the display area is determined using a lowercase letter).
+                //Note that only the measurement is substituted: what gets drawn is still the character
+                //at nTextOffset/nTextLen, which this branch never touches.
+                static constexpr const char kFallbackGlyph[] = "a";//ASCII, so the same code point in any encoding
+                fTextWidth = pSkFont->measureText(kFallbackGlyph,
+                                                  sizeof(kFallbackGlyph) - 1,
+                                                  SkTextEncoding::kUTF8,
                                                   &horizontalChar.bounds,//For italic text, this width includes the extended width
                                                   skPaint);
             }
@@ -102,7 +118,9 @@ bool HorizontalDrawText::CalculateTextCharBounds(const UTF16String& textUTF16, c
             charRects.push_back(horizontalChar);
         }
     }
-    return (charRects.size() == textUTF16.size());
+    //The whole buffer must have been consumed. A short count would mean a decode that
+    //failed to advance, so treat it as a failure rather than drawing nonsense.
+    return (pCur == pEnd);
 }
 
 SkRect HorizontalDrawText::CalculateHorizontalTextBounds(const std::vector<THorizontalChar>& charRects, int32_t width, bool bSingleLineMode,
@@ -285,11 +303,11 @@ float HorizontalDrawText::CalculateDefaultCharWidth(const SkFont* pSkFont, const
     if ((pSkFont == nullptr) || (skPaint == nullptr)) {
         return 0;
     }
-    DUTF16Char ch = L'W';
+    static constexpr const char kSampleGlyph[] = "W";//ASCII, so the same code point in any encoding
     SkRect bounds;
-    SkScalar fCharWidth = pSkFont->measureText(&ch,
-                                               sizeof(DUTF16Char),
-                                               SkTextEncoding::kUTF16,
+    SkScalar fCharWidth = pSkFont->measureText(kSampleGlyph,
+                                               sizeof(kSampleGlyph) - 1,
+                                               SkTextEncoding::kUTF8,
                                                &bounds,//For italic text, this width includes the extended width
                                                skPaint);
 
@@ -348,14 +366,10 @@ UiRect HorizontalDrawText::MeasureString(const DString& strText, const MeasureSt
     }
 
     //Text is always drawn using UTF16 encoding
-    const UTF16String textUTF16 = GetDrawStringUTF16(strText, bSingleLineMode);
+    const DString text = GetDrawStringText(strText, bSingleLineMode);
 
     std::vector<THorizontalChar> charRects;
-    if (!CalculateTextCharBounds(textUTF16, pSkFont, &skPaint, (float)fFontHeight, charRects)) {
-        return UiRect();
-    }
-    ASSERT(charRects.size() == textUTF16.size());
-    if (charRects.size() != textUTF16.size()) {
+    if (!CalculateTextCharBounds(text, pSkFont, &skPaint, (float)fFontHeight, charRects)) {
         return UiRect();
     }
 
@@ -455,14 +469,11 @@ void HorizontalDrawText::DrawString(const DString& strText, const DrawStringPara
     }
 
     //Text is always drawn using UTF16 encoding
-    const UTF16String textUTF16 = GetDrawStringUTF16(strText, bSingleLineMode);
+    const DString text = GetDrawStringText(strText, bSingleLineMode);
+    const SkTextEncoding textEncoding = GetDStringTextEncoding();
 
     std::vector<THorizontalChar> charRects;
-    if (!CalculateTextCharBounds(textUTF16, pSkFont, &skPaint, (float)fFontHeight, charRects)) {
-        return;
-    }
-    ASSERT(charRects.size() == textUTF16.size());
-    if (charRects.size() != textUTF16.size()) {
+    if (!CalculateTextCharBounds(text, pSkFont, &skPaint, (float)fFontHeight, charRects)) {
         return;
     }
 
@@ -485,7 +496,8 @@ void HorizontalDrawText::DrawString(const DString& strText, const DrawStringPara
     //Record the drawing position of each character; alignment will be handled later
     struct TDrawCharPos
     {
-        DUTF16Char ch = 0;          //Character
+        int32_t nTextOffset = 0;    //Byte offset of the character in the draw string
+        int32_t nTextLen = 0;       //Length of the character in bytes
         int32_t nRowIndex = 0;      //Row number
         int32_t nColumnIndex = 0;   //Column number
         SkScalar xPos = 0;          //The X coordinate when drawing
@@ -521,7 +533,8 @@ void HorizontalDrawText::DrawString(const DString& strText, const DrawStringPara
             const THorizontalChar& horizontalChar = charRects[nCharIndex];
 
             //Record the drawing position of the character; draw it after handling alignment
-            charPos.ch = horizontalChar.ch;
+            charPos.nTextOffset = horizontalChar.nTextOffset;
+            charPos.nTextLen = horizontalChar.nTextLen;
             charPos.nRowIndex = (int32_t)nRowIndex;
             charPos.nColumnIndex = (int32_t)nColIndex;
             charPos.chWidth = (int32_t)horizontalChar.size.width();
@@ -728,8 +741,10 @@ void HorizontalDrawText::DrawString(const DString& strText, const DrawStringPara
         }
 
         charPos.bDrew = true;
-        skCanvas->drawSimpleText(&charPos.ch, sizeof(charPos.ch), SkTextEncoding::kUTF16,
-                                 charPos.xPos, charPos.yPos,
+        ASSERT((charPos.nTextOffset >= 0) && (charPos.nTextLen > 0) &&
+               ((size_t)(charPos.nTextOffset + charPos.nTextLen) <= text.size() * sizeof(DString::value_type)));
+        skCanvas->drawSimpleText(text.data() + charPos.nTextOffset, (size_t)charPos.nTextLen,
+                                 textEncoding, charPos.xPos, charPos.yPos,
                                  *pSkFont, skPaint);
     }
 

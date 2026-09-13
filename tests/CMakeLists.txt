@@ -36,6 +36,9 @@ endif()
 target_include_directories(dui_core_tests PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/../include"
 )
+# The text-encoding tests include dui/RenderSkia/SkUtils.h, and that public header
+# pulls in Skia headers, so the test needs Skia's include root just as dui does.
+target_include_directories(dui_core_tests PRIVATE "${DUI_SKIA_SRC_ROOT_DIR}")
 target_link_libraries(dui_core_tests PRIVATE
     dui
     dui-cximage
