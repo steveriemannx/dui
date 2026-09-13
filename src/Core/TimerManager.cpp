@@ -188,7 +188,14 @@ void TimerManager::Poll()
             if (timerTask.uRepeatTime > 0) {
                 timerTask.uRepeatTime--;
             }
-            if ((timerTask.uRepeatTime > 0) &&
+            // A count of zero is the only "finished" value: AddTimer's header
+            // documents a negative count as "repeat indefinitely", and the
+            // count is left negative here because only a positive one is
+            // decremented. Testing "> 0" instead threw those timers away after
+            // a single trigger, so every caller that left the count at its
+            // default -- the scroll bar's drag, the animation player, the
+            // caret blink -- ran exactly once and then went dead.
+            if ((timerTask.uRepeatTime != 0) &&
                 !timerTask.weakFlag.expired() &&
                 !IsTimerRemoved(timerTask.m_nTimerId)) {
                 // If the trigger count limit has not been reached, reset the next trigger time
