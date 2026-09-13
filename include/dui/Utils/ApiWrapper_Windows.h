@@ -59,7 +59,7 @@ namespace ui
     * @param [out] hBigIcon The handle of the large icon; the icon handle is released by the caller
     */
     bool CreateIconsFromData(const std::vector<uint8_t>& iconFileData,
-                             const DString& imageFilePath,
+                             const std::string& imageFilePath,
                              uint32_t uDpiScaleFactor,
                              HICON* hSmallIcon, HICON* hBigIcon);
 }

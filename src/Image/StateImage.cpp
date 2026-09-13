@@ -36,7 +36,7 @@ void StateImage::SetControl(Control* pControl)
 }
 
 void StateImage::SetImageString(ControlStateType stateType, 
-                                const DString& strImageString,
+                                const std::string& strImageString,
                                 const DpiManager& dpi)
 {
     Image* pImage = nullptr;
@@ -58,9 +58,9 @@ void StateImage::SetImageString(ControlStateType stateType,
     pImage->SetImageString(strImageString, dpi);
 }
 
-DString StateImage::GetImageString(ControlStateType stateType) const
+std::string StateImage::GetImageString(ControlStateType stateType) const
 {
-    DString imageString;
+    std::string imageString;
     auto iter = m_stateImageMap.find(stateType);
     if (iter != m_stateImageMap.end()) {
         imageString = iter->second->GetImageString();
@@ -68,9 +68,9 @@ DString StateImage::GetImageString(ControlStateType stateType) const
     return imageString;
 }
 
-DString StateImage::GetImagePath(ControlStateType stateType) const
+std::string StateImage::GetImagePath(ControlStateType stateType) const
 {
-    DString imageFilePath;
+    std::string imageFilePath;
     auto iter = m_stateImageMap.find(stateType);
     if (iter != m_stateImageMap.end()) {
         imageFilePath = iter->second->GetImagePath();
@@ -124,7 +124,7 @@ bool StateImage::HasImage() const
 }
 
 bool StateImage::PaintStateImage(IRender* pRender, ControlStateType stateType, 
-                                 const DString& sImageModify, UiRect* pDestRect)
+                                 const std::string& sImageModify, UiRect* pDestRect)
 {
     if (m_pControl != nullptr) {        
         if (((stateType == kControlStateNormal) || (stateType == kControlStateHot)) &&
@@ -276,7 +276,7 @@ void StateImage::PauseImageAnimation()
     }
 }
 
-Image* StateImage::FindImageByName(const DString& imageName) const
+Image* StateImage::FindImageByName(const std::string& imageName) const
 {
     if (imageName.empty()) {
         return nullptr;

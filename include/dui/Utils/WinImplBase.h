@@ -27,21 +27,21 @@ public:
     /** Called when the window is created; implemented by the subclass to obtain the window skin folder
     * @return The subclass must implement and return the window skin folder, as a relative path
     */
-    virtual DString GetSkinFolder() override;
+    virtual std::string GetSkinFolder() override;
 
     /** Called when the window is created; implemented by the subclass to obtain the window skin XML description file
     * @return The subclass must implement and return the window skin XML description file
     *         The returned content can be the XML file content (a string starting with the character '<'),
     *         or a file path (a string not starting with the character '<'); the file must be findable under the GetSkinFolder() path
     */
-    virtual DString GetSkinFile() override;
+    virtual std::string GetSkinFile() override;
 
 public:
     /** Called when the control to be created is not a standard control name
     * @param [in] strClass The control name
     * @return Returns a pointer to a custom control; in general, create the custom control according to the strClass parameter
     */
-    virtual Control* CreateControl(const DString& strClass) override;
+    virtual Control* CreateControl(const std::string& strClass) override;
 
 protected:
     /** Called after the window has been created, for the subclass to do some initialization work
@@ -50,7 +50,7 @@ protected:
 
     /** Keep the standard self-drawn caption title synchronized with Window text.
      */
-    virtual void OnWindowTextChanged(const DString& strText) override;
+    virtual void OnWindowTextChanged(const std::string& strText) override;
 
     /** Completes the initialization of the UI layout; the layout information such as the position and size of each control is initialized, for the subclass to adjust the layout after the UI starts
     */

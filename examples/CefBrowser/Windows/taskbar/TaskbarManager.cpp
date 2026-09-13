@@ -29,14 +29,14 @@ std::string& TaskbarTabItem::GetId()
     return m_id;
 }
 
-void TaskbarTabItem::Init(const DString& /*taskbarTitle*/, const std::string& id)
+void TaskbarTabItem::Init(const std::string& /*taskbarTitle*/, const std::string& id)
 {
     m_id = id;
     if (!m_bWin7orGreater) {
         return;
     }
 
-    CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("CefBrowser")));
+    CreateWnd(nullptr, ui::WindowCreateParam("CefBrowser"));
 
     HRESULT ret = S_OK;
     BOOL truth = TRUE;
@@ -54,9 +54,9 @@ void TaskbarTabItem::UnInit()
     }
 }
 
-void TaskbarTabItem::SetTaskbarTitle(const DString& title)
+void TaskbarTabItem::SetTaskbarTitle(const std::string& title)
 {
-    DString localText = StringConvert::TToLocal(title);
+    std::string localText = StringConvert::TToLocal(title);
     ::SetWindowText(NativeWnd()->GetHWND(), localText.c_str());
 }
 

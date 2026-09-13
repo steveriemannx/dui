@@ -15,7 +15,7 @@ ListCtrlLabel::ListCtrlLabel(Window* pWindow) :
     SetKeyboardEnabled(false);
 }
 
-DString ListCtrlLabel::GetType() const { return DUI_T("ListCtrlLabel"); }
+std::string ListCtrlLabel::GetType() const { return "ListCtrlLabel"; }
 
 void ListCtrlLabel::HandleEvent(const EventArgs& msg)
 {

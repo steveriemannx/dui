@@ -315,12 +315,12 @@ bool NativeWindow_Wayland::IsWindowVisible() const {
     return m_bWaylandVisible;
 }
 
-DString NativeWindow_Wayland::GetVideoDriverName() const {
-    return DUI_T("wayland");
+std::string NativeWindow_Wayland::GetVideoDriverName() const {
+    return "wayland";
 }
 
-DString NativeWindow_Wayland::GetWindowRenderName() const {
-    return DUI_T("software");
+std::string NativeWindow_Wayland::GetWindowRenderName() const {
+    return "software";
 }
 
 bool NativeWindow_Wayland::IsVideoDriverX11() const { return false; }
@@ -464,14 +464,14 @@ bool NativeWindow_Wayland::IsDoModal() const { return false; }
 bool NativeWindow_Wayland::SetWindowPos(const NativeWindow_Wayland* p, InsertAfterFlag f, int32_t X, int32_t Y, int32_t cx, int32_t cy, uint32_t u) { (void)p;(void)f;(void)X;(void)Y;(void)cx;(void)cy;(void)u; return true; }
 bool NativeWindow_Wayland::MoveWindow(int32_t X, int32_t Y, int32_t nW, int32_t nH, bool bR) { (void)X;(void)Y;(void)nW;(void)nH;(void)bR; return true; }
 bool NativeWindow_Wayland::SetWindowIcon(const FilePath& f) { (void)f; return false; }
-bool NativeWindow_Wayland::SetWindowIcon(const std::vector<uint8_t>& d, const DString& n) { (void)d;(void)n; return false; }
-void NativeWindow_Wayland::SetText(const DString& s) {
+bool NativeWindow_Wayland::SetWindowIcon(const std::vector<uint8_t>& d, const std::string& n) { (void)d;(void)n; return false; }
+void NativeWindow_Wayland::SetText(const std::string& s) {
     if (m_pXdgToplevel && !s.empty()) {
         std::string title = StringConvert::TToUTF8(s);
         xdg_toplevel_set_title(m_pXdgToplevel, title.c_str());
     }
 }
-DString NativeWindow_Wayland::GetText() const { return DUI_T(""); }
+std::string NativeWindow_Wayland::GetText() const { return ""; }
 void NativeWindow_Wayland::SetWindowMaximumSize(const UiSize& s) { (void)s; }
 const UiSize& NativeWindow_Wayland::GetWindowMaximumSize() const { static UiSize s; return s; }
 void NativeWindow_Wayland::SetWindowMinimumSize(const UiSize& s) { (void)s; }
@@ -598,12 +598,12 @@ int32_t NativeWindow_Wayland::Wayland_HitTest(Wayland_Window* win, const Wayland
 void NativeWindow_Wayland::CheckWindowSnap(Wayland_Window* window) { (void)window; }
 void NativeWindow_Wayland::OnDropBegin() { }
 void NativeWindow_Wayland::OnDropPosition(const UiPoint& pt, bool& h) { (void)pt; h=false; }
-void NativeWindow_Wayland::OnDropTexts(const std::vector<DString>& t, const UiPoint& pt, bool& h) { (void)t;(void)pt; h=false; }
-void NativeWindow_Wayland::OnDropFiles(const DString& s, const std::vector<DString>& f, const UiPoint& pt, bool& h) { (void)s;(void)f;(void)pt; h=false; }
+void NativeWindow_Wayland::OnDropTexts(const std::vector<std::string>& t, const UiPoint& pt, bool& h) { (void)t;(void)pt; h=false; }
+void NativeWindow_Wayland::OnDropFiles(const std::string& s, const std::vector<std::string>& f, const UiPoint& pt, bool& h) { (void)s;(void)f;(void)pt; h=false; }
 void NativeWindow_Wayland::OnDropLeave() { }
-void NativeWindow_Wayland::GetRenderNameList(const DString& n, std::vector<DString>& l) const { (void)n; l.clear(); }
-void NativeWindow_Wayland::QueryRenderProperties(const DString& n, bool& gl, bool& es, bool& t) const { (void)n; gl=false; es=false; t=false; }
-bool NativeWindow_Wayland::IsRenderSupportTransparent(const DString& n) const { (void)n; return false; }
+void NativeWindow_Wayland::GetRenderNameList(const std::string& n, std::vector<std::string>& l) const { (void)n; l.clear(); }
+void NativeWindow_Wayland::QueryRenderProperties(const std::string& n, bool& gl, bool& es, bool& t) const { (void)n; gl=false; es=false; t=false; }
+bool NativeWindow_Wayland::IsRenderSupportTransparent(const std::string& n) const { (void)n; return false; }
 float MonitorUtil::GetPrimaryMonitorDisplayScale() { return 1.0f; }
 float MonitorUtil::GetWindowDisplayScale(const WindowBase* b, float& d) { (void)b; d=1.0f; return 1.0f; }
 

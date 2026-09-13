@@ -309,16 +309,16 @@ public:
     *  @param [in] iconFileData The data of the icon file
     *  @param [in] iconFileName The file name with the extension, used to identify the image type
     */
-    bool SetWindowIcon(const std::vector<uint8_t>& iconFileData, const DString& iconFileName);
+    bool SetWindowIcon(const std::vector<uint8_t>& iconFileData, const std::string& iconFileName);
 
     /** Set the window title bar text
     * @param [in] strText The window title bar text
     */
-    void SetText(const DString& strText);
+    void SetText(const std::string& strText);
 
     /** Get the window title bar text
     */
-    DString GetText() const;
+    std::string GetText() const;
 
     /** Set the minimum size of the window (width and height; the size is not adjusted by DPI internally, DPI adaptation needs to be done by the caller)
     * @param [in] szMaxWindow The maximum width and minimum height of the window; if the value is 0, it means no restriction
@@ -846,11 +846,11 @@ private:
 
     /** The text data associated with the drag
     */
-    std::vector<DString> m_textList;
+    std::vector<std::string> m_textList;
 
     /** The file data associated with the drag
     */
-    std::vector<DString> m_fileList;
+    std::vector<std::string> m_fileList;
 };
 
 /** Defines an alias

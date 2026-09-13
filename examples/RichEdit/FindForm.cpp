@@ -15,22 +15,22 @@ FindForm::~FindForm()
 {
 }
 
-DString FindForm::GetSkinFolder()
+std::string FindForm::GetSkinFolder()
 {
-    return DUI_T("rich_edit");
+    return "rich_edit";
 }
 
-DString FindForm::GetSkinFile()
+std::string FindForm::GetSkinFile()
 {
-    return DUI_T("find.xml");
+    return "find.xml";
 }
 
 void FindForm::OnInitWindow()
 {
-    m_pFindText = ui::Find<ui::RichEdit>(this, DUI_T("btn_find_text"));
-    m_pDirectionOption = ui::Find<ui::Option>(this, DUI_T("option_direction_down"));
-    m_pCaseSensitive = ui::Find<ui::CheckBox>(this, DUI_T("check_box_case_sensitive"));
-    m_pMatchWholeWord = ui::Find<ui::CheckBox>(this, DUI_T("check_box_match_whole_word"));
+    m_pFindText = ui::Find<ui::RichEdit>(this, "btn_find_text");
+    m_pDirectionOption = ui::Find<ui::Option>(this, "option_direction_down");
+    m_pCaseSensitive = ui::Find<ui::CheckBox>(this, "check_box_case_sensitive");
+    m_pMatchWholeWord = ui::Find<ui::CheckBox>(this, "check_box_match_whole_word");
     ASSERT(m_pFindText != nullptr);
     ASSERT(m_pDirectionOption != nullptr);
     ASSERT(m_pCaseSensitive != nullptr);
@@ -43,7 +43,7 @@ void FindForm::OnInitWindow()
         if (m_pMainForm != nullptr) {
             pRichEdit = m_pMainForm->GetRichEdit();
         }
-        DString selText;
+        std::string selText;
         if (pRichEdit != nullptr) {
             selText = pRichEdit->GetSelText();
         }
@@ -59,7 +59,7 @@ void FindForm::OnInitWindow()
 
 void FindForm::BindEvents()
 {
-    ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("btn_cancel"));
+    ui::Button* pButton = ui::Find<ui::Button>(this, "btn_cancel");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -68,7 +68,7 @@ void FindForm::BindEvents()
                 return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_find_next"));
+    pButton = ui::Find<ui::Button>(this, "btn_find_next");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -84,7 +84,7 @@ void FindForm::OnFindNext()
     if (m_pFindText == nullptr) {
         return;
     }
-    DString findText = m_pFindText->GetText();
+    std::string findText = m_pFindText->GetText();
     if (findText.empty()) {
         return;
     }

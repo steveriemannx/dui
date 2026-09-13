@@ -22,8 +22,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window you are drawing
      * The GetSkinFile interface sets the xml description file of the window you are drawing
      */
-    virtual DString GetSkinFolder() override { return DUI_T("tree_view"); }
-    virtual DString GetSkinFile() override { return DUI_T("tree_view.xml"); }
+    virtual std::string GetSkinFolder() override { return "tree_view"; }
+    virtual std::string GetSkinFile() override { return "tree_view.xml"; }
 
     /** Called after the window is created, allowing subclasses to do some initialization work
     */
@@ -49,7 +49,7 @@ private:
                               const std::shared_ptr<std::vector<ui::DirectoryTree::PathInfo>>& folderList,
                               const std::shared_ptr<std::vector<ui::DirectoryTree::PathInfo>>& fileList);
 
-    /** Show the content of the DUI_T("Computer") node
+    /** Show the content of the "Computer" node
     * @param [in] pTreeNode the current node
     * @param [in] diskInfoList the information list of all disks
     */
@@ -103,7 +103,7 @@ private:
 
     /** Show the address in the address bar
     */
-    bool OnShowAddressPath(const DString& newFilePath);
+    bool OnShowAddressPath(const std::string& newFilePath);
 
 private:
     /** View types of the TabBox (enum values follow the same order as defined in the XML)
@@ -155,7 +155,7 @@ private:
     ui::TabBox* m_pTabBox;
 
 private:
-    /** DUI_T("Computer") view
+    /** "Computer" view
     */
     std::unique_ptr<ComputerView> m_pComputerView;
 

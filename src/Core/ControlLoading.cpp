@@ -58,7 +58,7 @@ ControlLoading::~ControlLoading()
 {
 }
 
-bool ControlLoading::SetLoadingAttribute(const DString& loadingAttribute)
+bool ControlLoading::SetLoadingAttribute(const std::string& loadingAttribute)
 {
     ASSERT(!m_bIsLoading);
     if (m_bIsLoading) {
@@ -67,64 +67,64 @@ bool ControlLoading::SetLoadingAttribute(const DString& loadingAttribute)
     return InitAttribute(*m_pLoadingAttribute, loadingAttribute);
 }
 
-bool ControlLoading::InitAttribute(LoadingAttribute& loadingAttribute, const DString& loadingString)
+bool ControlLoading::InitAttribute(LoadingAttribute& loadingAttribute, const std::string& loadingString)
 {
     loadingAttribute = LoadingAttribute();
-    if (loadingString.find(DUI_T('=')) == DString::npos) {
+    if (loadingString.find('=') == std::string::npos) {
         //No equals sign, meaning there are no attributes, return directly
         return false;
     }
-    std::vector<std::pair<DString, DString>> attributeList;
-    AttributeUtil::ParseAttributeList(loadingString, DUI_T('\''), attributeList);
+    std::vector<std::pair<std::string, std::string>> attributeList;
+    AttributeUtil::ParseAttributeList(loadingString, '\'', attributeList);
     for (const auto& attribute : attributeList) {
-        const DString& name = attribute.first;
-        const DString& value = attribute.second;
+        const std::string& name = attribute.first;
+        const std::string& value = attribute.second;
         if (name.empty() || value.empty()) {
             continue;
         }
-        if (name == DUI_T("file")) {
+        if (name == "file") {
             //The XML resource file name, used to load the XML resource which is finally displayed in a Box container
             loadingAttribute.m_sXmlPath = value;
         }
-        else if (name == DUI_T("width")) {
+        else if (name == "width") {
             //Set the width
             loadingAttribute.m_nWidth = StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("height")) {
+        else if (name == "height") {
             //Set the height
             loadingAttribute.m_nHeight = StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("offset_x")) {
+        else if (name == "offset_x") {
             //Set the X offset
             loadingAttribute.m_nOffsetX = StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("offset_y")) {
+        else if (name == "offset_y") {
             //Set the Y offset
             loadingAttribute.m_nOffsetY = StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("halign")) {
+        else if (name == "halign") {
             //Set the horizontal alignment in the target area
-            ASSERT((value == DUI_T("left")) || (value == DUI_T("center")) || (value == DUI_T("right")));
-            if ((value == DUI_T("left")) || (value == DUI_T("center")) || (value == DUI_T("right"))) {
+            ASSERT((value == "left") || (value == "center") || (value == "right"));
+            if ((value == "left") || (value == "center") || (value == "right")) {
                 loadingAttribute.m_hAlign = value;
             }
         }
-        else if (name == DUI_T("valign")) {
+        else if (name == "valign") {
             //Set the vertical alignment in the target area
-            ASSERT((value == DUI_T("top")) || (value == DUI_T("center")) || (value == DUI_T("bottom")));
-            if ((value == DUI_T("top")) || (value == DUI_T("center")) || (value == DUI_T("bottom"))) {
+            ASSERT((value == "top") || (value == "center") || (value == "bottom"));
+            if ((value == "top") || (value == "center") || (value == "bottom")) {
                 loadingAttribute.m_vAlign = value;
             }
         }
-        else if (name == DUI_T("fade")) {
+        else if (name == "fade") {
             //The transparency of the loading control
             loadingAttribute.m_bFade = (uint8_t)StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("auto_stop")) {
+        else if (name == "auto_stop") {
             //After the loading animation finishes playing, automatically stop the loading status
-            loadingAttribute.m_bAutoStopWhenAnimationEnd = value == DUI_T("true");
+            loadingAttribute.m_bAutoStopWhenAnimationEnd = value == "true";
         }
-        else if (name == DUI_T("animation_control")) {
+        else if (name == "animation_control") {
             //The name of the animation control, used for interaction between the Loading feature and the animation control on the loading control
             loadingAttribute.m_sAnimationControlName = value;
         }
@@ -215,11 +215,11 @@ void ControlLoading::UpdateLoadingPos()
         rcLoading.left = rect.left + nOffsetX;
     }
     else {
-        if (m_pLoadingAttribute->m_hAlign == DUI_T("left")) {
+        if (m_pLoadingAttribute->m_hAlign == "left") {
             //Align to the left
             rcLoading.left = rect.left;
         }
-        else if (m_pLoadingAttribute->m_hAlign == DUI_T("right")) {
+        else if (m_pLoadingAttribute->m_hAlign == "right") {
             //Align to the right
             rcLoading.left = rect.right - nBoxWidth;
         }
@@ -235,10 +235,10 @@ void ControlLoading::UpdateLoadingPos()
         rcLoading.top = rect.top + nOffsetY;
     }
     else {
-        if (m_pLoadingAttribute->m_vAlign == DUI_T("top")) {
+        if (m_pLoadingAttribute->m_vAlign == "top") {
             rcLoading.top = rect.top;
         }
-        else if (m_pLoadingAttribute->m_vAlign == DUI_T("bottom")) {
+        else if (m_pLoadingAttribute->m_vAlign == "bottom") {
             rcLoading.top = rect.bottom - nBoxHeight;
         }
         else {

@@ -98,16 +98,16 @@ public:
 public:
     /** Get the loading KEY of the image
     */
-    DString GetLoadKey() const;
+    std::string GetLoadKey() const;
 
     /** Set the KEY of the actual image, used for the lifecycle management of the image
     * @param [in] imageKey The KEY of the actual image
     */
-    void SetImageKey(const DString& imageKey);
+    void SetImageKey(const std::string& imageKey);
 
     /** Get the KEY of the actual image
     */
-    DString GetImageKey() const;
+    std::string GetImageKey() const;
 
     /** Set the original image data interface
     * @param [in] loadParam The loading parameters

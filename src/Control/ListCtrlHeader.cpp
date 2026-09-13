@@ -18,11 +18,11 @@ ListCtrlHeader::~ListCtrlHeader()
 {
 }
 
-DString ListCtrlHeader::GetType() const { return DUI_T("ListCtrlHeader"); }
+std::string ListCtrlHeader::GetType() const { return "ListCtrlHeader"; }
 
-void ListCtrlHeader::SetAttribute(const DString& strName, const DString& strValue)
+void ListCtrlHeader::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("icon_spacing")) {
+    if (strName == "icon_spacing") {
         SetIconSpacing(StringUtil::StringToInt32(strValue), true);
     }
     else {
@@ -482,7 +482,7 @@ bool ListCtrlHeader::SetShowCheckBox(bool bShow)
     if (bShow) {
         ListCtrl* pListCtrl = GetListCtrl();
         if (pListCtrl != nullptr) {
-            DString checkBoxClass = pListCtrl->GetCheckBoxClass();
+            std::string checkBoxClass = pListCtrl->GetCheckBoxClass();
             if (!checkBoxClass.empty()) {
                 SetClass(checkBoxClass);
                 bRet = IsShowCheckBox();

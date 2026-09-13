@@ -28,37 +28,37 @@ PropertyGrid::PropertyGrid(Window* pWindow):
     SetColumnGridLineWidth(1, true);
 }
 
-DString PropertyGrid::GetType() const { return DUI_CTR_PROPERTY_GRID; }
+std::string PropertyGrid::GetType() const { return DUI_CTR_PROPERTY_GRID; }
 
-void PropertyGrid::SetAttribute(const DString& strName, const DString& strValue)
+void PropertyGrid::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("property_grid_xml")) {
+    if (strName == "property_grid_xml") {
         if (!strValue.empty()) {
             m_configXml = strValue;
         }
     }
-    else if (strName == DUI_T("row_grid_line_width")) {
+    else if (strName == "row_grid_line_width") {
         SetRowGridLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("row_grid_line_color")) {
+    else if (strName == "row_grid_line_color") {
         SetRowGridLineColor(strValue);
     }
-    else if (strName == DUI_T("column_grid_line_width")) {
+    else if (strName == "column_grid_line_width") {
         SetColumnGridLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("column_grid_line_color")) {
+    else if (strName == "column_grid_line_color") {
         SetColumnGridLineColor(strValue);
     }
-    else if (strName == DUI_T("header_class")) {
+    else if (strName == "header_class") {
         SetHeaderClass(strValue);
     }
-    else if (strName == DUI_T("group_class")) {
+    else if (strName == "group_class") {
         SetGroupClass(strValue);
     }
-    else if (strName == DUI_T("propterty_class")) {
+    else if (strName == "propterty_class") {
         SetPropertyClass(strValue);
     }
-    else if (strName == DUI_T("left_column_width")) {
+    else if (strName == "left_column_width") {
         SetLeftColumnWidth(StringUtil::StringToInt32(strValue), true);
     }
     else {
@@ -97,13 +97,13 @@ void PropertyGrid::OnInit()
     //Initialize the basic structure
     if (m_configXml.empty()) {
         //Default configuration file
-        m_configXml = DUI_T("public/property_grid/property_grid.xml");
+        m_configXml = "public/property_grid/property_grid.xml";
     }
     ui::GlobalManager::Instance().FillBoxWithCache(this, FilePath(m_configXml.c_str()));
-    m_pHeaderCtrl = FindSubControl(DUI_T("dui_property_grid_header"));
-    m_pHeaderLeft = dynamic_cast<Label*>(FindSubControl(DUI_T("dui_property_grid_header_left")));
-    m_pHeaderRight = dynamic_cast<Label*>(FindSubControl(DUI_T("dui_property_grid_header_right")));
-    m_pHeaderSplit = dynamic_cast<Split*>(FindSubControl(DUI_T("dui_property_grid_header_split")));
+    m_pHeaderCtrl = FindSubControl("dui_property_grid_header");
+    m_pHeaderLeft = dynamic_cast<Label*>(FindSubControl("dui_property_grid_header_left"));
+    m_pHeaderRight = dynamic_cast<Label*>(FindSubControl("dui_property_grid_header_right"));
+    m_pHeaderSplit = dynamic_cast<Split*>(FindSubControl("dui_property_grid_header_split"));
     if (m_pHeaderCtrl != nullptr) {
         ASSERT(m_pHeaderLeft != nullptr);
         ASSERT(m_pHeaderRight != nullptr);
@@ -114,11 +114,11 @@ void PropertyGrid::OnInit()
         m_bHeaderCtrl = false;
     }
 
-    m_pDescriptionArea = dynamic_cast<RichText*>(FindSubControl(DUI_T("dui_property_grid_description_area")));
+    m_pDescriptionArea = dynamic_cast<RichText*>(FindSubControl("dui_property_grid_description_area"));
     m_bDescriptionArea = m_pDescriptionArea != nullptr;
-    m_pDescriptionAreaSplit = dynamic_cast<Split*>(FindSubControl(DUI_T("dui_property_grid_description_area_split")));
+    m_pDescriptionAreaSplit = dynamic_cast<Split*>(FindSubControl("dui_property_grid_description_area_split"));
 
-    m_pTreeView = dynamic_cast<TreeView*>(FindSubControl(DUI_T("dui_property_grid_tree")));
+    m_pTreeView = dynamic_cast<TreeView*>(FindSubControl("dui_property_grid_tree"));
     ASSERT(m_pTreeView != nullptr);
 
     //Attach the drag response event to adjust the column width
@@ -140,8 +140,8 @@ void PropertyGrid::OnInit()
             if (nItem != Box::InvalidIndex) {
                 pItem = m_pTreeView->GetItemAt(nItem);
             }
-            DString description;
-            DString name;
+            std::string description;
+            std::string name;
             if (pItem != nullptr) {
                 PropertyGridGroup* pGroup = dynamic_cast<PropertyGridGroup*>(pItem);
                 if (pGroup != nullptr) {
@@ -158,7 +158,7 @@ void PropertyGrid::OnInit()
             }
             if (m_pDescriptionArea != nullptr) {
                 if (!name.empty()) {
-                    description = DUI_T("<b>") + name + DUI_T("</b><br/>") + description;
+                    description = "<b>" + name + "</b><br/>" + description;
                 }
                 m_pDescriptionArea->SetText(description);
             }
@@ -184,7 +184,7 @@ void PropertyGrid::PaintGridLines(IRender* pRender)
     int32_t nRowLineWidth = GetRowGridLineWidth();   //Horizontal edge line width
     UiColor columnLineColor;
     UiColor rowLineColor;
-    DString color = GetColumnGridLineColor();
+    std::string color = GetColumnGridLineColor();
     if (!color.empty()) {
         columnLineColor = GetUiColor(color);
     }
@@ -338,8 +338,8 @@ void PropertyGrid::ResizePropertyColumn(TreeNode* pPropertyNode, int32_t nLeftCo
 }
 
 void PropertyGrid::SetEnableHeaderCtrl(bool bEnable,
-                                       const DString& sLeftColumn,
-                                       const DString& sRightColumn)
+                                       const std::string& sLeftColumn,
+                                       const std::string& sRightColumn)
 {
     ASSERT(IsInited());
     m_bHeaderCtrl = bEnable;
@@ -404,7 +404,7 @@ int32_t PropertyGrid::GetRowGridLineWidth() const
     return m_nRowGridLineWidth;
 }
 
-void PropertyGrid::SetRowGridLineColor(const DString& color)
+void PropertyGrid::SetRowGridLineColor(const std::string& color)
 {
     if (m_rowGridLineColor != color) {
         m_rowGridLineColor = color;
@@ -412,7 +412,7 @@ void PropertyGrid::SetRowGridLineColor(const DString& color)
     }
 }
 
-DString PropertyGrid::GetRowGridLineColor() const
+std::string PropertyGrid::GetRowGridLineColor() const
 {
     return m_rowGridLineColor.c_str();
 }
@@ -436,7 +436,7 @@ int32_t PropertyGrid::GetColumnGridLineWidth() const
     return m_nColumnGridLineWidth;
 }
 
-void PropertyGrid::SetColumnGridLineColor(const DString& color)
+void PropertyGrid::SetColumnGridLineColor(const std::string& color)
 {
     if (m_columnGridLineColor != color) {
         m_columnGridLineColor = color;
@@ -444,12 +444,12 @@ void PropertyGrid::SetColumnGridLineColor(const DString& color)
     }
 }
 
-DString PropertyGrid::GetColumnGridLineColor() const
+std::string PropertyGrid::GetColumnGridLineColor() const
 {
     return m_columnGridLineColor.c_str();
 }
 
-void PropertyGrid::SetHeaderClass(const DString& headerClass)
+void PropertyGrid::SetHeaderClass(const std::string& headerClass)
 {
     if (m_headerClass != headerClass) {
         m_headerClass = headerClass;
@@ -459,12 +459,12 @@ void PropertyGrid::SetHeaderClass(const DString& headerClass)
     }
 }
 
-DString PropertyGrid::GetHeaderClass() const
+std::string PropertyGrid::GetHeaderClass() const
 {
     return m_headerClass.c_str();
 }
 
-void PropertyGrid::SetGroupClass(const DString& groupClass)
+void PropertyGrid::SetGroupClass(const std::string& groupClass)
 {
     if (m_groupClass != groupClass) {
         m_groupClass = groupClass;
@@ -478,12 +478,12 @@ void PropertyGrid::SetGroupClass(const DString& groupClass)
     }
 }
 
-DString PropertyGrid::GetGroupClass() const
+std::string PropertyGrid::GetGroupClass() const
 {
     return m_groupClass.c_str();
 }
 
-void PropertyGrid::SetPropertyClass(const DString& propertyClass)
+void PropertyGrid::SetPropertyClass(const std::string& propertyClass)
 {
     if (m_propertyClass != propertyClass) {
         m_propertyClass = propertyClass;
@@ -504,13 +504,13 @@ void PropertyGrid::SetPropertyClass(const DString& propertyClass)
     }
 }
 
-DString PropertyGrid::GetPropertyClass() const
+std::string PropertyGrid::GetPropertyClass() const
 {
     return m_propertyClass.c_str();
 }
 
-PropertyGridGroup* PropertyGrid::AddGroup(const DString& groupName,
-                                          const DString& description,
+PropertyGridGroup* PropertyGrid::AddGroup(const std::string& groupName,
+                                          const std::string& description,
                                           size_t nGroupData)
 {
     ASSERT(m_pTreeView != nullptr);
@@ -577,9 +577,9 @@ bool PropertyGrid::AddProperty(PropertyGridGroup* pGroup, PropertyGridProperty* 
 }
 
 PropertyGridTextProperty* PropertyGrid::AddTextProperty(PropertyGridGroup* pGroup,
-                                                        const DString& propertyName,
-                                                        const DString& propertyValue,
-                                                        const DString& description,
+                                                        const std::string& propertyName,
+                                                        const std::string& propertyValue,
+                                                        const std::string& description,
                                                         size_t nPropertyData)
 {
     PropertyGridTextProperty* pProperty = new PropertyGridTextProperty(GetWindow(), propertyName, propertyValue, description, nPropertyData);
@@ -591,9 +591,9 @@ PropertyGridTextProperty* PropertyGrid::AddTextProperty(PropertyGridGroup* pGrou
 }
 
 PropertyGridComboProperty* PropertyGrid::AddComboProperty(PropertyGridGroup* pGroup,
-                                                          const DString& propertyName,
-                                                          const DString& propertyValue,
-                                                          const DString& description,
+                                                          const std::string& propertyName,
+                                                          const std::string& propertyValue,
+                                                          const std::string& description,
                                                           size_t nPropertyData)
 {
     PropertyGridComboProperty* pProperty = new PropertyGridComboProperty(GetWindow(), propertyName, propertyValue, description, nPropertyData);
@@ -605,9 +605,9 @@ PropertyGridComboProperty* PropertyGrid::AddComboProperty(PropertyGridGroup* pGr
 }
 
 PropertyGridFontProperty* PropertyGrid::AddFontProperty(PropertyGridGroup* pGroup,
-                                                        const DString& propertyName,
-                                                        const DString& propertyValue,
-                                                        const DString& description,
+                                                        const std::string& propertyName,
+                                                        const std::string& propertyValue,
+                                                        const std::string& description,
                                                         size_t nPropertyData)
 {
     PropertyGridFontProperty* pProperty = new PropertyGridFontProperty(GetWindow(), propertyName, propertyValue, description, nPropertyData);
@@ -619,9 +619,9 @@ PropertyGridFontProperty* PropertyGrid::AddFontProperty(PropertyGridGroup* pGrou
 }
 
 PropertyGridFontSizeProperty* PropertyGrid::AddFontSizeProperty(PropertyGridGroup* pGroup,
-                                                                const DString& propertyName,
-                                                                const DString& propertyValue,
-                                                                const DString& description,
+                                                                const std::string& propertyName,
+                                                                const std::string& propertyValue,
+                                                                const std::string& description,
                                                                 size_t nPropertyData)
 {
     PropertyGridFontSizeProperty* pProperty = new PropertyGridFontSizeProperty(GetWindow(), propertyName, propertyValue, description, nPropertyData);
@@ -633,9 +633,9 @@ PropertyGridFontSizeProperty* PropertyGrid::AddFontSizeProperty(PropertyGridGrou
 }
 
 PropertyGridColorProperty* PropertyGrid::AddColorProperty(PropertyGridGroup* pGroup,
-                                                          const DString& propertyName,
-                                                          const DString& propertyValue,
-                                                          const DString& description,
+                                                          const std::string& propertyName,
+                                                          const std::string& propertyValue,
+                                                          const std::string& description,
                                                           size_t nPropertyData)
 {
     PropertyGridColorProperty* pProperty = new PropertyGridColorProperty(GetWindow(), propertyName, propertyValue, description, nPropertyData);
@@ -647,9 +647,9 @@ PropertyGridColorProperty* PropertyGrid::AddColorProperty(PropertyGridGroup* pGr
 }
 
 PropertyGridDateTimeProperty* PropertyGrid::AddDateTimeProperty(PropertyGridGroup* pGroup,
-                                                                const DString& propertyName,
-                                                                const DString& dateTimeValue,                                                                
-                                                                const DString& description,
+                                                                const std::string& propertyName,
+                                                                const std::string& dateTimeValue,                                                                
+                                                                const std::string& description,
                                                                 size_t nPropertyData,
                                                                 DateTime::EditFormat editFormat)
 {
@@ -662,9 +662,9 @@ PropertyGridDateTimeProperty* PropertyGrid::AddDateTimeProperty(PropertyGridGrou
 }
 
 PropertyGridIPAddressProperty* PropertyGrid::AddIPAddressProperty(PropertyGridGroup* pGroup,
-                                                                  const DString& propertyName,
-                                                                  const DString& propertyValue,
-                                                                  const DString& description,
+                                                                  const std::string& propertyName,
+                                                                  const std::string& propertyValue,
+                                                                  const std::string& description,
                                                                   size_t nPropertyData)
 {
     PropertyGridIPAddressProperty* pProperty = new PropertyGridIPAddressProperty(GetWindow(), propertyName, propertyValue, description, nPropertyData);
@@ -676,9 +676,9 @@ PropertyGridIPAddressProperty* PropertyGrid::AddIPAddressProperty(PropertyGridGr
 }
 
 PropertyGridHotKeyProperty* PropertyGrid::AddHotKeyProperty(PropertyGridGroup* pGroup,
-                                                            const DString& propertyName,
-                                                            const DString& propertyValue,
-                                                            const DString& description,
+                                                            const std::string& propertyName,
+                                                            const std::string& propertyValue,
+                                                            const std::string& description,
                                                             size_t nPropertyData)
 {
     PropertyGridHotKeyProperty* pProperty = new PropertyGridHotKeyProperty(GetWindow(), propertyName, propertyValue, description, nPropertyData);
@@ -690,14 +690,14 @@ PropertyGridHotKeyProperty* PropertyGrid::AddHotKeyProperty(PropertyGridGroup* p
 }
 
 PropertyGridFileProperty* PropertyGrid::AddFileProperty(PropertyGridGroup* pGroup,
-                                                        const DString& propertyName,
-                                                        const DString& propertyValue,                                                        
-                                                        const DString& description,
+                                                        const std::string& propertyName,
+                                                        const std::string& propertyValue,                                                        
+                                                        const std::string& description,
                                                         size_t nPropertyData,
                                                         bool bOpenFileDialog,
                                                         const std::vector<FileDialog::FileType>& fileTypes,
                                                         int32_t nFileTypeIndex,
-                                                        const DString& defaultExt)
+                                                        const std::string& defaultExt)
 {
     PropertyGridFileProperty* pProperty = new PropertyGridFileProperty(GetWindow(), propertyName, propertyValue,
                                                                        description, nPropertyData,
@@ -711,9 +711,9 @@ PropertyGridFileProperty* PropertyGrid::AddFileProperty(PropertyGridGroup* pGrou
 }
 
 PropertyGridDirectoryProperty* PropertyGrid::AddDirectoryProperty(PropertyGridGroup* pGroup,
-                                                                  const DString& propertyName,
-                                                                  const DString& propertyValue,
-                                                                  const DString& description,
+                                                                  const std::string& propertyName,
+                                                                  const std::string& propertyValue,
+                                                                  const std::string& description,
                                                                   size_t nPropertyData)
 {
     PropertyGridDirectoryProperty* pProperty = new PropertyGridDirectoryProperty(GetWindow(), propertyName, propertyValue, description, nPropertyData);
@@ -776,8 +776,8 @@ int32_t PropertyGrid::GetLeftColumnWidthValue() const
 ///
 
 PropertyGridGroup::PropertyGridGroup(Window* pWindow, 
-                                     const DString& groupName,
-                                     const DString& description,
+                                     const std::string& groupName,
+                                     const std::string& description,
                                      size_t nGroupData) :
     TreeNode(pWindow),
     m_pLabelBox(nullptr),
@@ -881,9 +881,9 @@ public:
 };
 
 PropertyGridProperty::PropertyGridProperty(Window* pWindow, 
-                                           const DString& propertyName,
-                                           const DString& propertyValue,
-                                           const DString& description,
+                                           const std::string& propertyName,
+                                           const std::string& propertyValue,
+                                           const std::string& description,
                                            size_t nPropertyData):
     TreeNode(pWindow),
     m_pHBox(nullptr),
@@ -908,7 +908,7 @@ void PropertyGridProperty::OnInit()
     m_pHBox = new HBox(GetWindow());
     AddItem(m_pHBox);
     //Background color: defined in property_grid.xml
-    m_pHBox->SetBkColor(DUI_T("property_grid_propterty_bkcolor"));
+    m_pHBox->SetBkColor("property_grid_propterty_bkcolor");
 
     m_pHBox->SetMouseEnabled(false);
     m_pHBox->SetNoFocus();
@@ -921,7 +921,7 @@ void PropertyGridProperty::OnInit()
     m_pHBox->AddItem(m_pLabelBoxRight);
     m_pLabelBoxRight->SetText(m_propertyValue.c_str());
     //Normal font for property values: defined in property_grid.xml
-    m_pLabelBoxRight->SetFontId(DUI_T("property_grid_propterty_font_normal"));
+    m_pLabelBoxRight->SetFontId("property_grid_propterty_font_normal");
 
     //Attach the mouse left button press event
     m_pLabelBoxRight->AttachButtonDown([this](const EventArgs&) {
@@ -967,21 +967,21 @@ int32_t PropertyGridProperty::GetEditControlMarginRight() const
     return nWidth;
 }
 
-void PropertyGridProperty::SetPropertyText(const DString& text, bool bChanged)
+void PropertyGridProperty::SetPropertyText(const std::string& text, bool bChanged)
 {
     ASSERT(m_pLabelBoxRight != nullptr);
     if (m_pLabelBoxRight != nullptr) {
         m_pLabelBoxRight->SetText(text);
         if (bChanged) {
-            m_pLabelBoxRight->SetFontId(DUI_T("property_grid_propterty_font_bold"));
+            m_pLabelBoxRight->SetFontId("property_grid_propterty_font_bold");
         }
         else {
-            m_pLabelBoxRight->SetFontId(DUI_T("property_grid_propterty_font_normal"));
+            m_pLabelBoxRight->SetFontId("property_grid_propterty_font_normal");
         }
     }
 }
 
-void PropertyGridProperty::SetPropertyTextColor(const DString& textColor)
+void PropertyGridProperty::SetPropertyTextColor(const std::string& textColor)
 {
     if (GetUiColor(textColor).IsEmpty()) {
         //Invalid color value
@@ -993,9 +993,9 @@ void PropertyGridProperty::SetPropertyTextColor(const DString& textColor)
     }
 }
 
-DString PropertyGridProperty::GetPropertyText() const
+std::string PropertyGridProperty::GetPropertyText() const
 {
-    DString text;
+    std::string text;
     ASSERT(m_pLabelBoxRight != nullptr);
     if (m_pLabelBoxRight != nullptr) {
         text = m_pLabelBoxRight->GetText();
@@ -1052,7 +1052,7 @@ void PropertyGridProperty::SetReadOnly(bool bReadOnly)
     }
 }
 
-DString PropertyGridProperty::GetPropertyNewValue() const
+std::string PropertyGridProperty::GetPropertyNewValue() const
 {
     return GetPropertyValue();
 }
@@ -1114,9 +1114,9 @@ InheritType(pWindow)
 typedef PropertyGridEditTemplate<RichEdit> PropertyGridRichEdit;
 
 PropertyGridTextProperty::PropertyGridTextProperty(Window* pWindow,
-                                                   const DString& propertyName,
-                                                   const DString& propertyValue,
-                                                   const DString& description,
+                                                   const std::string& propertyName,
+                                                   const std::string& propertyValue,
+                                                   const std::string& description,
                                                    size_t nPropertyData):
     PropertyGridProperty(pWindow, propertyName, propertyValue, description, nPropertyData),
     m_pRichEdit(nullptr),
@@ -1138,7 +1138,7 @@ void PropertyGridTextProperty::EnableEditControl(bool bEnable)
         return;
     }
     m_pRichEdit = new PropertyGridRichEdit(GetWindow());
-    m_pRichEdit->SetClass(DUI_T("property_grid_propterty_edit"));
+    m_pRichEdit->SetClass("property_grid_propterty_edit");
     if (!AddPropertySubItem(m_pRichEdit)) {
         delete m_pRichEdit;
         m_pRichEdit = nullptr;
@@ -1175,11 +1175,11 @@ Control* PropertyGridTextProperty::ShowEditControl(bool bShow)
         m_pRichEdit->SetFocus();
     }
     else {
-        DString newText = m_pRichEdit->GetText();
+        std::string newText = m_pRichEdit->GetText();
         bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
         if (IsPasswordMode()) {
-            DString showText;
-            showText.resize(newText.size(), DUI_T('*'));
+            std::string showText;
+            showText.resize(newText.size(), '*');
             SetPropertyText(showText, bChanged);
         }
         else {
@@ -1198,11 +1198,11 @@ void PropertyGridTextProperty::SetPasswordMode(bool bPasswordMode)
     }
     m_pRichEdit->SetPasswordMode(bPasswordMode);
     m_pRichEdit->SetFlashPasswordChar(true);
-    DString text = m_pRichEdit->GetText();
+    std::string text = m_pRichEdit->GetText();
     bool bChanged = text != GetPropertyValue(); //Compared with the original value, whether there is a modification
     if (bPasswordMode) {
-        DString showText;
-        showText.resize(text.size(), DUI_T('*'));
+        std::string showText;
+        showText.resize(text.size(), '*');
         SetPropertyText(showText, bChanged);
     }
     else {
@@ -1217,28 +1217,28 @@ void PropertyGridTextProperty::SetEnableSpin(bool bEnable, int32_t nMin, int32_t
         ASSERT(pRichEdit != nullptr);
     }    
     if (pRichEdit != nullptr) {
-        DString spinClass = DUI_T("property_grid_spin_box,property_grid_spin_btn_up,property_grid_spin_btn_down");
+        std::string spinClass = "property_grid_spin_box,property_grid_spin_btn_up,property_grid_spin_btn_down";
         pRichEdit->SetEnableSpin(bEnable, spinClass, nMin, nMax);
     }
 }
 
-DString PropertyGridTextProperty::GetPropertyNewValue() const
+std::string PropertyGridTextProperty::GetPropertyNewValue() const
 {
-    DString propertyValue = GetPropertyValue();
+    std::string propertyValue = GetPropertyValue();
     if (!IsReadOnly() && (m_pRichEdit != nullptr)) {
         propertyValue = m_pRichEdit->GetText();
     }
     return propertyValue;
 }
 
-void PropertyGridTextProperty::SetNewTextValue(const DString& newText)
+void PropertyGridTextProperty::SetNewTextValue(const std::string& newText)
 {
     if (!IsReadOnly() && (m_pRichEdit != nullptr)) {
         m_pRichEdit->SetText(newText);
         bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
         if (IsPasswordMode()) {
-            DString showText;
-            showText.resize(newText.size(), DUI_T('*'));
+            std::string showText;
+            showText.resize(newText.size(), '*');
             SetPropertyText(showText, bChanged);
         }
         else {
@@ -1255,9 +1255,9 @@ void PropertyGridTextProperty::SetNewTextValue(const DString& newText)
 typedef PropertyGridEditTemplate<Combo> PropertyGridCombo;
 
 PropertyGridComboProperty::PropertyGridComboProperty(Window* pWindow, 
-                                                     const DString& propertyName,
-                                                     const DString& propertyValue,
-                                                     const DString& description,
+                                                     const std::string& propertyName,
+                                                     const std::string& propertyValue,
+                                                     const std::string& description,
                                                      size_t nPropertyData) :
     PropertyGridProperty(pWindow, propertyName, propertyValue, description, nPropertyData),
     m_pCombo(nullptr)
@@ -1278,7 +1278,7 @@ void PropertyGridComboProperty::EnableEditControl(bool bEnable)
         return;
     }
     m_pCombo = new PropertyGridCombo(GetWindow());
-    m_pCombo->SetClass(DUI_T("property_grid_combo"));
+    m_pCombo->SetClass("property_grid_combo");
     if (!AddPropertySubItem(m_pCombo)) {
         delete m_pCombo;
         m_pCombo = nullptr;
@@ -1306,7 +1306,7 @@ Control* PropertyGridComboProperty::ShowEditControl(bool bShow)
         m_pCombo->SetFocus();
     }
     else {
-        DString newText = m_pCombo->GetText();
+        std::string newText = m_pCombo->GetText();
         bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
         SetPropertyText(newText, bChanged);
         m_pCombo->SetVisible(false);
@@ -1321,16 +1321,16 @@ void PropertyGridComboProperty::OnScrollPosChanged()
     }
 }
 
-DString PropertyGridComboProperty::GetPropertyNewValue() const
+std::string PropertyGridComboProperty::GetPropertyNewValue() const
 {
-    DString propertyValue = GetPropertyValue();
+    std::string propertyValue = GetPropertyValue();
     if (!IsReadOnly() && (m_pCombo != nullptr)) {
         propertyValue = m_pCombo->GetText();
     }
     return propertyValue;
 }
 
-size_t PropertyGridComboProperty::AddOption(const DString& optionText)
+size_t PropertyGridComboProperty::AddOption(const std::string& optionText)
 {
     size_t nIndex = Box::InvalidIndex;
     ASSERT(m_pCombo != nullptr);
@@ -1368,9 +1368,9 @@ size_t PropertyGridComboProperty::GetOptionCount() const
     return nCount;
 }
 
-DString PropertyGridComboProperty::GetOption(size_t nIndex) const
+std::string PropertyGridComboProperty::GetOption(size_t nIndex) const
 {
-    DString text;
+    std::string text;
     ASSERT(m_pCombo != nullptr);
     if (m_pCombo != nullptr) {
         text = m_pCombo->GetItemText(nIndex);
@@ -1427,15 +1427,15 @@ void PropertyGridComboProperty::SetComboListMode(bool bListMode)
 ////////////////////////////////////////////////////////////////////////////
 ///
 PropertyGridFontProperty::PropertyGridFontProperty(Window* pWindow, 
-                                                   const DString& propertyName,
-                                                   const DString& propertyValue,
-                                                   const DString& description,
+                                                   const std::string& propertyName,
+                                                   const std::string& propertyValue,
+                                                   const std::string& description,
                                                    size_t nPropertyData) :
     PropertyGridComboProperty(pWindow, propertyName, propertyValue, description, nPropertyData)
 {
 }
 
-DString PropertyGridFontProperty::GetPropertyNewValue() const
+std::string PropertyGridFontProperty::GetPropertyNewValue() const
 {
     return BaseClass::GetPropertyNewValue();
 }
@@ -1446,9 +1446,9 @@ void PropertyGridFontProperty::OnInit()
         return;
     }
     BaseClass::OnInit();
-    std::vector<DString> fontList; 
+    std::vector<std::string> fontList; 
     GlobalManager::Instance().Font().GetFontNameList(fontList);
-    for (const DString& fontName : fontList) {
+    for (const std::string& fontName : fontList) {
         AddOption(fontName);
     }
 }
@@ -1456,15 +1456,15 @@ void PropertyGridFontProperty::OnInit()
 ////////////////////////////////////////////////////////////////////////////
 ///
 PropertyGridFontSizeProperty::PropertyGridFontSizeProperty(Window* pWindow, 
-                                                           const DString& propertyName,
-                                                           const DString& propertyValue,
-                                                           const DString& description,
+                                                           const std::string& propertyName,
+                                                           const std::string& propertyValue,
+                                                           const std::string& description,
                                                            size_t nPropertyData) :
     PropertyGridComboProperty(pWindow, propertyName, propertyValue, description, nPropertyData)
 {
 }
 
-DString PropertyGridFontSizeProperty::GetPropertyNewValue() const
+std::string PropertyGridFontSizeProperty::GetPropertyNewValue() const
 {
     return BaseClass::GetPropertyNewValue();
 }
@@ -1485,14 +1485,14 @@ void PropertyGridFontSizeProperty::OnInit()
     }    
 }
 
-DString PropertyGridFontSizeProperty::GetFontSize() const
+std::string PropertyGridFontSizeProperty::GetFontSize() const
 {
-    DString fontSize;
+    std::string fontSize;
     size_t nCurSel = GetCurSel();
     if (nCurSel != Box::InvalidIndex) {
         size_t nIndex = GetOptionData(nCurSel);
         if (nIndex < m_fontSizeList.size()) {
-            fontSize = StringUtil::Printf(DUI_T("%.01f"), m_fontSizeList[nIndex].fFontSize);
+            fontSize = StringUtil::Printf("%.01f", m_fontSizeList[nIndex].fFontSize);
         }
     }
     if (fontSize.empty()) {
@@ -1501,14 +1501,14 @@ DString PropertyGridFontSizeProperty::GetFontSize() const
     return fontSize;
 }
 
-DString PropertyGridFontSizeProperty::GetDpiFontSize() const
+std::string PropertyGridFontSizeProperty::GetDpiFontSize() const
 {
-    DString fontSize;
+    std::string fontSize;
     size_t nCurSel = GetCurSel();
     if (nCurSel != Box::InvalidIndex) {
         size_t nIndex = GetOptionData(nCurSel);
         if (nIndex < m_fontSizeList.size()) {
-            fontSize = StringUtil::Printf(DUI_T("%.01f"), m_fontSizeList[nIndex].fDpiFontSize);
+            fontSize = StringUtil::Printf("%.01f", m_fontSizeList[nIndex].fDpiFontSize);
         }
     }
     if (fontSize.empty()) {
@@ -1517,26 +1517,26 @@ DString PropertyGridFontSizeProperty::GetDpiFontSize() const
     return fontSize;
 }
 
-DString PropertyGridFontSizeProperty::GetFontSize(const DString& fontSizeName) const
+std::string PropertyGridFontSizeProperty::GetFontSize(const std::string& fontSizeName) const
 {
-    DString fontSize;
+    std::string fontSize;
     const size_t nCount = m_fontSizeList.size();
     for (size_t nIndex = 0; nIndex < nCount; ++nIndex) {
         if (m_fontSizeList[nIndex].fontSizeName == fontSizeName) {
-            fontSize = StringUtil::Printf(DUI_T("%.01f"), m_fontSizeList[nIndex].fFontSize);
+            fontSize = StringUtil::Printf("%.01f", m_fontSizeList[nIndex].fFontSize);
             break;
         }
     }
     return fontSize;
 }
 
-DString PropertyGridFontSizeProperty::GetDpiFontSize(const DString& fontSizeName) const
+std::string PropertyGridFontSizeProperty::GetDpiFontSize(const std::string& fontSizeName) const
 {
-    DString fontSize;
+    std::string fontSize;
     const size_t nCount = m_fontSizeList.size();
     for (size_t nIndex = 0; nIndex < nCount; ++nIndex) {
         if (m_fontSizeList[nIndex].fontSizeName == fontSizeName) {
-            fontSize = StringUtil::Printf(DUI_T("%.01f"), m_fontSizeList[nIndex].fDpiFontSize);
+            fontSize = StringUtil::Printf("%.01f", m_fontSizeList[nIndex].fDpiFontSize);
             break;
         }
     }
@@ -1546,9 +1546,9 @@ DString PropertyGridFontSizeProperty::GetDpiFontSize(const DString& fontSizeName
 ////////////////////////////////////////////////////////////////////////////
 ///
 PropertyGridColorProperty::PropertyGridColorProperty(Window* pWindow, 
-                                                     const DString& propertyName,
-                                                     const DString& propertyValue,
-                                                     const DString& description,
+                                                     const std::string& propertyName,
+                                                     const std::string& propertyValue,
+                                                     const std::string& description,
                                                      size_t nPropertyData) :
     PropertyGridProperty(pWindow, propertyName, propertyValue, description, nPropertyData),
     m_pComboButton(nullptr)
@@ -1568,7 +1568,7 @@ void PropertyGridColorProperty::EnableEditControl(bool bEnable)
     }
     m_pComboButton = new ComboButton(GetWindow());
     //Properties: defined in property_grid.xml
-    m_pComboButton->SetClass(DUI_T("property_grid_combo_button"));
+    m_pComboButton->SetClass("property_grid_combo_button");
     if (!AddPropertySubItem(m_pComboButton)) {
         delete m_pComboButton;
         m_pComboButton = nullptr;
@@ -1609,7 +1609,7 @@ Control* PropertyGridColorProperty::ShowEditControl(bool bShow)
         m_pComboButton->SetFocus();
     }
     else {
-        DString newText;
+        std::string newText;
         Label* pColorLabel = m_pComboButton->GetLabelTop();
         if (pColorLabel != nullptr) {
             newText = pColorLabel->GetText();
@@ -1641,7 +1641,7 @@ void PropertyGridColorProperty::InitColorCombo()
         return;
     }
     pComboBox->SetWindow(GetWindow());
-    GlobalManager::Instance().FillBoxWithCache(pComboBox, FilePath(DUI_T("public/property_grid/color_combox.xml")));
+    GlobalManager::Instance().FillBoxWithCache(pComboBox, FilePath("public/property_grid/color_combox.xml"));
     pComboBox->SetFixedHeight(UiFixedInt(boxSize.cy), false, false);
     pComboBox->SetFixedWidth(UiFixedInt(boxSize.cx), false, false);
 
@@ -1650,7 +1650,7 @@ void PropertyGridColorProperty::InitColorCombo()
         pComboBox->GetItemAt(0)->SetFixedWidth(UiFixedInt(boxSize.cx), false, false);
     }
 
-    ColorPickerRegular* pColorPicker = dynamic_cast<ColorPickerRegular*>(pComboBox->FindSubControl(DUI_T("color_combo_picker")));
+    ColorPickerRegular* pColorPicker = dynamic_cast<ColorPickerRegular*>(pComboBox->FindSubControl("color_combo_picker"));
     if (pColorPicker != nullptr) {
         //Respond to the color selection event
         pColorPicker->AttachSelectColor([this, pColorComboBtn](const EventArgs& args) {
@@ -1665,7 +1665,7 @@ void PropertyGridColorProperty::InitColorCombo()
             });
     }
 
-    Button* pMoreColorButton = dynamic_cast<Button*>(pComboBox->FindSubControl(DUI_T("color_combo_picker_more")));
+    Button* pMoreColorButton = dynamic_cast<Button*>(pComboBox->FindSubControl("color_combo_picker_more"));
     if (pMoreColorButton != nullptr) {
         pMoreColorButton->AttachClick([this](const EventArgs& /*args*/) {
             ShowColorPicker();
@@ -1688,7 +1688,7 @@ void PropertyGridColorProperty::ShowColorPicker()
     if (pWindow == nullptr) {
         return;
     }
-    DString oldTextColor = pColorLabel->GetBkColor(); //The original color
+    std::string oldTextColor = pColorLabel->GetBkColor(); //The original color
 
     ColorPicker* pColorPicker = new ColorPicker;
     WindowCreateParam createWndParam;
@@ -1726,7 +1726,7 @@ void PropertyGridColorProperty::ShowColorPicker()
         });
 }
 
-void PropertyGridColorProperty::OnSelectColor(const DString& color)
+void PropertyGridColorProperty::OnSelectColor(const std::string& color)
 {
     if (m_pComboButton == nullptr) {
         return;
@@ -1748,9 +1748,9 @@ void PropertyGridColorProperty::OnSelectColor(const DString& color)
 typedef PropertyGridEditTemplate<DateTime> PropertyGridDateTime;
 
 PropertyGridDateTimeProperty::PropertyGridDateTimeProperty(Window* pWindow, 
-                                                           const DString& propertyName,
-                                                           const DString& dateTimeValue,
-                                                           const DString& description,
+                                                           const std::string& propertyName,
+                                                           const std::string& dateTimeValue,
+                                                           const std::string& description,
                                                            size_t nPropertyData,
                                                            DateTime::EditFormat editFormat):
     PropertyGridProperty(pWindow, propertyName, dateTimeValue, description, nPropertyData),
@@ -1772,7 +1772,7 @@ void PropertyGridDateTimeProperty::EnableEditControl(bool bEnable)
     }
     m_pDateTime = new PropertyGridDateTime(GetWindow());
     //Properties: defined in property_grid.xml
-    m_pDateTime->SetClass(DUI_T("property_grid_date_time"));
+    m_pDateTime->SetClass("property_grid_date_time");
     if (!AddPropertySubItem(m_pDateTime)) {
         delete m_pDateTime;
         m_pDateTime = nullptr;
@@ -1811,7 +1811,7 @@ Control* PropertyGridDateTimeProperty::ShowEditControl(bool bShow)
         m_pDateTime->SetFocus();
     }
     else {
-        DString newText = m_pDateTime->GetText();
+        std::string newText = m_pDateTime->GetText();
         bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
         SetPropertyText(newText, bChanged);
         m_pDateTime->SetVisible(false);
@@ -1829,9 +1829,9 @@ void PropertyGridDateTimeProperty::OnScrollPosChanged()
 ////////////////////////////////////////////////////////////////////////////
 ///
 PropertyGridIPAddressProperty::PropertyGridIPAddressProperty(Window* pWindow, 
-                                                             const DString& propertyName,
-                                                             const DString& propertyValue,
-                                                             const DString& description,
+                                                             const std::string& propertyName,
+                                                             const std::string& propertyValue,
+                                                             const std::string& description,
                                                              size_t nPropertyData) :
     PropertyGridProperty(pWindow, propertyName, propertyValue, description, nPropertyData),
     m_pIPAddress(nullptr)
@@ -1851,7 +1851,7 @@ void PropertyGridIPAddressProperty::EnableEditControl(bool bEnable)
     }
     m_pIPAddress = new IPAddress(GetWindow());
     //Properties: defined in property_grid.xml
-    m_pIPAddress->SetClass(DUI_T("property_grid_ip_address"));
+    m_pIPAddress->SetClass("property_grid_ip_address");
     if (!AddPropertySubItem(m_pIPAddress)) {
         delete m_pIPAddress;
         m_pIPAddress = nullptr;
@@ -1879,7 +1879,7 @@ Control* PropertyGridIPAddressProperty::ShowEditControl(bool bShow)
         m_pIPAddress->SetFocus();
     }
     else {
-        DString newText = m_pIPAddress->GetIPAddress();
+        std::string newText = m_pIPAddress->GetIPAddress();
         bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
         SetPropertyText(newText, bChanged);
         m_pIPAddress->SetVisible(false);
@@ -1887,13 +1887,13 @@ Control* PropertyGridIPAddressProperty::ShowEditControl(bool bShow)
     return m_pIPAddress;
 }
 
-void PropertyGridIPAddressProperty::SetNewIPAddressValue(const DString& newIP)
+void PropertyGridIPAddressProperty::SetNewIPAddressValue(const std::string& newIP)
 {
     if (IsReadOnly() || (m_pIPAddress == nullptr)) {
         return;
     }
     m_pIPAddress->SetIPAddress(newIP);
-    DString newText = m_pIPAddress->GetIPAddress();
+    std::string newText = m_pIPAddress->GetIPAddress();
     bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
     SetPropertyText(newText, bChanged);
 }
@@ -1901,9 +1901,9 @@ void PropertyGridIPAddressProperty::SetNewIPAddressValue(const DString& newIP)
 ////////////////////////////////////////////////////////////////////////////
 ///
 PropertyGridHotKeyProperty::PropertyGridHotKeyProperty(Window* pWindow, 
-                                                       const DString& propertyName,
-                                                       const DString& propertyValue,
-                                                       const DString& description,
+                                                       const std::string& propertyName,
+                                                       const std::string& propertyValue,
+                                                       const std::string& description,
                                                        size_t nPropertyData) :
     PropertyGridProperty(pWindow, propertyName, propertyValue, description, nPropertyData),
     m_pHotKey(nullptr)
@@ -1923,7 +1923,7 @@ void PropertyGridHotKeyProperty::EnableEditControl(bool bEnable)
     }
     m_pHotKey = new HotKey(GetWindow());
     //Properties: defined in property_grid.xml
-    m_pHotKey->SetClass(DUI_T("property_grid_hot_key"));
+    m_pHotKey->SetClass("property_grid_hot_key");
     if (!AddPropertySubItem(m_pHotKey)) {
         delete m_pHotKey;
         m_pHotKey = nullptr;
@@ -1951,7 +1951,7 @@ Control* PropertyGridHotKeyProperty::ShowEditControl(bool bShow)
         m_pHotKey->SetFocus();
     }
     else {
-        DString newText = m_pHotKey->GetHotKeyName();
+        std::string newText = m_pHotKey->GetHotKeyName();
         bool bChanged = newText != GetPropertyValue(); //Compared with the original value, whether there is a modification
         SetPropertyText(newText, bChanged);
         m_pHotKey->SetVisible(false);
@@ -1962,14 +1962,14 @@ Control* PropertyGridHotKeyProperty::ShowEditControl(bool bShow)
 ////////////////////////////////////////////////////////////////////////////
 ///
 PropertyGridFileProperty::PropertyGridFileProperty(Window* pWindow, 
-                                                   const DString& propertyName,
-                                                   const DString& propertyValue,
-                                                   const DString& description,
+                                                   const std::string& propertyName,
+                                                   const std::string& propertyValue,
+                                                   const std::string& description,
                                                    size_t nPropertyData,
                                                    bool bOpenFileDialog,
                                                    const std::vector<FileDialog::FileType>& fileTypes,
                                                    int32_t nFileTypeIndex,
-                                                   const DString& defaultExt) :
+                                                   const std::string& defaultExt) :
     PropertyGridTextProperty(pWindow, propertyName, propertyValue, description, nPropertyData),
     m_pBrowseBtn(nullptr),
     m_bOpenFileDialog(bOpenFileDialog),
@@ -1997,7 +1997,7 @@ void PropertyGridFileProperty::EnableEditControl(bool bEnable)
     }
     if (m_pBrowseBtn == nullptr) {
         m_pBrowseBtn = new Button(GetWindow());
-        m_pBrowseBtn->SetClass(DUI_T("property_grid_button"));
+        m_pBrowseBtn->SetClass("property_grid_button");
         m_pBrowseBtn->SetNoFocus();
         pRichEdit->AddItem(m_pBrowseBtn);
 
@@ -2024,9 +2024,9 @@ void PropertyGridFileProperty::OnBrowseButtonClicked()
 ////////////////////////////////////////////////////////////////////////////
 ///
 PropertyGridDirectoryProperty::PropertyGridDirectoryProperty(Window* pWindow, 
-                                                             const DString& propertyName,
-                                                             const DString& propertyValue,
-                                                             const DString& description,
+                                                             const std::string& propertyName,
+                                                             const std::string& propertyValue,
+                                                             const std::string& description,
                                                              size_t nPropertyData) :
     PropertyGridTextProperty(pWindow, propertyName, propertyValue, description, nPropertyData),
     m_pBrowseBtn(nullptr)
@@ -2051,7 +2051,7 @@ void PropertyGridDirectoryProperty::EnableEditControl(bool bEnable)
     }
     if (m_pBrowseBtn == nullptr) {
         m_pBrowseBtn = new Button(GetWindow());
-        m_pBrowseBtn->SetClass(DUI_T("property_grid_button"));
+        m_pBrowseBtn->SetClass("property_grid_button");
         m_pBrowseBtn->SetNoFocus();
         pRichEdit->AddItem(m_pBrowseBtn);
 

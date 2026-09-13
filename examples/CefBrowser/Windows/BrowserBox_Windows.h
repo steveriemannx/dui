@@ -27,12 +27,12 @@ public:
 
     /** Control type
     */
-    virtual DString GetType() const override { return DUI_T("BrowserBox_Windows"); }
+    virtual std::string GetType() const override { return "BrowserBox_Windows"; }
 
     /** Initialize the browser box
     * @param [in] url the initial URL
     */
-    virtual void InitBrowserBox(const DString& url);
+    virtual void InitBrowserBox(const std::string& url);
 
     /** Uninitialize the browser box
     */
@@ -49,7 +49,7 @@ public:
 
     /** Title changed (callback thread: UI thread of the main process)
     */
-    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title) override;
+    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const std::string& title) override;
 
      /** Website icon download finished event (callback thread: UI thread of the main process)
     */

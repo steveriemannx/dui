@@ -12,23 +12,23 @@ TabCtrl::TabCtrl(Window* pWindow):
 {
 }
 
-DString TabCtrl::GetType() const { return DUI_CTR_TAB_CTRL; }
+std::string TabCtrl::GetType() const { return DUI_CTR_TAB_CTRL; }
 
-void TabCtrl::SetAttribute(const DString& strName, const DString& strValue)
+void TabCtrl::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("selected_id")) {
+    if (strName == "selected_id") {
         int32_t nValue = StringUtil::StringToInt32(strValue);
         if (nValue >= 0) {
             m_nSelectedId = nValue;
         }
     }
-    else if (strName == DUI_T("tab_box_name")) {
+    else if (strName == "tab_box_name") {
         //Name of the bound TabBox control; after binding, when the TabCtrl selection changes, the TabBox selection follows
         SetTabBoxName(strValue);
     }
-    else if (strName == DUI_T("drag_order")) {
+    else if (strName == "drag_order") {
         //Whether dragging to adjust the order is supported (within the same tab), enabled by default
-        SetEnableDragOrder(strValue == DUI_T("true"));
+        SetEnableDragOrder(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -101,7 +101,7 @@ void TabCtrl::HandleEvent(const EventArgs& msg)
     }
 }
 
-void TabCtrl::SetTabBoxName(const DString& tabBoxName)
+void TabCtrl::SetTabBoxName(const std::string& tabBoxName)
 {
     if (m_tabBoxName != tabBoxName) {
         m_tabBoxName = tabBoxName;
@@ -122,7 +122,7 @@ void TabCtrl::SetTabBoxName(const DString& tabBoxName)
     }
 }
 
-DString TabCtrl::GetTabBoxName() const
+std::string TabCtrl::GetTabBoxName() const
 {
     return m_tabBoxName.c_str();
 }
@@ -244,51 +244,51 @@ TabCtrlItem::TabCtrlItem(Window* pWindow):
     m_hotPadding.bottom = 0;
 }
 
-DString TabCtrlItem::GetType() const { return DUI_CTR_TAB_CTRL_ITEM; }
+std::string TabCtrlItem::GetType() const { return DUI_CTR_TAB_CTRL_ITEM; }
 
-void TabCtrlItem::SetAttribute(const DString& strName, const DString& strValue)
+void TabCtrlItem::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("tab_box_item_index")) {
+    if (strName == "tab_box_item_index") {
         SetTabBoxItemIndex((size_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("title")) {
+    else if (strName == "title") {
         SetTitle(strValue);
     }
-    else if (strName == DUI_T("title_id")) {
+    else if (strName == "title_id") {
         SetTitleId(strValue);
     }
-    else if (strName == DUI_T("icon")) {
+    else if (strName == "icon") {
         SetIcon(strValue);
     }
-    else if (strName == DUI_T("icon_class")) {
+    else if (strName == "icon_class") {
         SetIconClass(strValue);
     }
-    else if (strName == DUI_T("title_class")) {
+    else if (strName == "title_class") {
         SetTitleClass(strValue);
     }
-    else if (strName == DUI_T("close_button_class")) {
+    else if (strName == "close_button_class") {
         SetCloseButtonClass(strValue);
     }
-    else if (strName == DUI_T("line_class")) {
+    else if (strName == "line_class") {
         SetLineClass(strValue);
     }
-    else if (strName == DUI_T("selected_round_corner")) {
+    else if (strName == "selected_round_corner") {
         UiSize sz;
         AttributeUtil::ParseSizeValue(strValue.c_str(), sz);
         SetSelectedRoundCorner(sz, true);
     }
-    else if (strName == DUI_T("hot_round_corner")) {
+    else if (strName == "hot_round_corner") {
         UiSize sz;
         AttributeUtil::ParseSizeValue(strValue.c_str(), sz);
         SetHotRoundCorner(sz, true);
     }
-    else if (strName == DUI_T("hot_padding")) {
+    else if (strName == "hot_padding") {
         UiPadding rcPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcPadding);
         SetHotPadding(rcPadding, true);
     }
-    else if (strName == DUI_T("auto_hide_close_button")) {
-        SetAutoHideCloseButton(strValue == DUI_T("true"));
+    else if (strName == "auto_hide_close_button") {
+        SetAutoHideCloseButton(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -331,9 +331,9 @@ void TabCtrlItem::OnSetVisible(bool bChanged)
     AdjustItemLineStatus();
 }
 
-DString TabCtrlItem::GetToolTipText() const
+std::string TabCtrlItem::GetToolTipText() const
 {
-    DString tooltip = BaseClass::GetToolTipText();
+    std::string tooltip = BaseClass::GetToolTipText();
     if (tooltip.empty()) {
         if (m_pLabel != nullptr) {
             tooltip = m_pLabel->GetToolTipText();
@@ -342,7 +342,7 @@ DString TabCtrlItem::GetToolTipText() const
     return tooltip;
 }
 
-void TabCtrlItem::SetIconClass(const DString& iconClass)
+void TabCtrlItem::SetIconClass(const std::string& iconClass)
 {
     bool bChanged = m_iconClass != iconClass;
     if (bChanged) {
@@ -373,12 +373,12 @@ void TabCtrlItem::SetIconClass(const DString& iconClass)
     }
 }
 
-DString TabCtrlItem::GetIconClass() const
+std::string TabCtrlItem::GetIconClass() const
 {
     return m_iconClass.c_str();
 }
 
-void TabCtrlItem::SetTitleClass(const DString& titleClass)
+void TabCtrlItem::SetTitleClass(const std::string& titleClass)
 {
     bool bChanged = m_titleClass != titleClass;
     if (bChanged) {
@@ -414,12 +414,12 @@ void TabCtrlItem::SetTitleClass(const DString& titleClass)
     }
 }
 
-DString TabCtrlItem::GetTitleClass() const
+std::string TabCtrlItem::GetTitleClass() const
 {
     return m_titleClass.c_str();
 }
 
-void TabCtrlItem::SetCloseButtonClass(const DString& closeButtonClass)
+void TabCtrlItem::SetCloseButtonClass(const std::string& closeButtonClass)
 {
     bool bChanged = m_closeBtnClass != closeButtonClass;
     if (bChanged) {
@@ -447,12 +447,12 @@ void TabCtrlItem::SetCloseButtonClass(const DString& closeButtonClass)
     }
 }
 
-DString TabCtrlItem::GetCloseButtonClass() const
+std::string TabCtrlItem::GetCloseButtonClass() const
 {
     return m_closeBtnClass.c_str();
 }
 
-void TabCtrlItem::SetLineClass(const DString& lineClass)
+void TabCtrlItem::SetLineClass(const std::string& lineClass)
 {
     bool bChanged = m_lineClass != lineClass;
     if (bChanged) {
@@ -480,7 +480,7 @@ void TabCtrlItem::SetLineClass(const DString& lineClass)
     }
 }
 
-DString TabCtrlItem::GetLineClass() const
+std::string TabCtrlItem::GetLineClass() const
 {
     return m_lineClass.c_str();
 }
@@ -525,7 +525,7 @@ bool TabCtrlItem::IsItemLineVisible() const
     if ((m_pLine == nullptr) || !m_pLine->IsVisible()) {
         return false;
     }
-    DString bkColor = m_pLine->GetBkColor();
+    std::string bkColor = m_pLine->GetBkColor();
     if (bkColor.empty()) {
         return false;
     }
@@ -538,7 +538,7 @@ void TabCtrlItem::SetItemLineVisible(bool bVisible)
     if (m_pLine == nullptr) {
         return;
     }
-    DString bkColor = m_pLine->GetBkColor();
+    std::string bkColor = m_pLine->GetBkColor();
     if (bkColor.empty()) {
         return;
     }
@@ -733,7 +733,7 @@ void TabCtrlItem::PaintTabItemSelected(IRender* pRender)
         roundSize.cx = rc.Width() / 3;
     }
 
-    DString color = GetSelectStateColor(ControlStateType::kControlStateNormal);
+    std::string color = GetSelectStateColor(ControlStateType::kControlStateNormal);
     if (color.empty()) {
         return;
     }
@@ -803,7 +803,7 @@ void TabCtrlItem::PaintTabItemHot(IRender* pRender)
     rc.bottom -= hotPadding.bottom;
  
     UiSize roundSize = GetHotRoundCorner();
-    DString color = GetStateColor(ControlStateType::kControlStateHot);
+    std::string color = GetStateColor(ControlStateType::kControlStateHot);
     if (color.empty()) {
         return;
     }
@@ -815,7 +815,7 @@ void TabCtrlItem::PaintTabItemHot(IRender* pRender)
     pRender->FillRoundRect(UiRectF::MakeFromRect(rc), (float)roundSize.cx, (float)roundSize.cy, dwColor, uFade);
 }
 
-void TabCtrlItem::SetIcon(const DString& iconImageString)
+void TabCtrlItem::SetIcon(const std::string& iconImageString)
 {
     Control* pIconControl = GetIconControl();
     if (pIconControl != nullptr) {
@@ -828,9 +828,9 @@ void TabCtrlItem::SetIcon(const DString& iconImageString)
     }
 }
 
-DString TabCtrlItem::GetIcon() const
+std::string TabCtrlItem::GetIcon() const
 {
-    DString iconString;
+    std::string iconString;
     Control* pIconControl = GetIconControl();
     if (pIconControl != nullptr) {
         iconString = pIconControl->GetBkImage();
@@ -876,7 +876,7 @@ void TabCtrlItem::CheckIconVisible()
     }
 }
 
-void TabCtrlItem::SetTitle(const DString& title)
+void TabCtrlItem::SetTitle(const std::string& title)
 {
     Label* pLabel = GetTextLabel();
     if (pLabel != nullptr) {
@@ -888,9 +888,9 @@ void TabCtrlItem::SetTitle(const DString& title)
     }
 }
 
-DString TabCtrlItem::GetTitle() const
+std::string TabCtrlItem::GetTitle() const
 {
-    DString title;
+    std::string title;
     Label* pLabel = GetTextLabel();
     if (pLabel != nullptr) {
         title = pLabel->GetText();
@@ -901,7 +901,7 @@ DString TabCtrlItem::GetTitle() const
     return title;
 }
 
-void TabCtrlItem::SetTitleId(const DString& titleId)
+void TabCtrlItem::SetTitleId(const std::string& titleId)
 {
     Label* pLabel = GetTextLabel();
     if (pLabel != nullptr) {
@@ -913,9 +913,9 @@ void TabCtrlItem::SetTitleId(const DString& titleId)
     }
 }
 
-DString TabCtrlItem::GetTitleId() const
+std::string TabCtrlItem::GetTitleId() const
 {
-    DString titleId;
+    std::string titleId;
     Label* pLabel = GetTextLabel();
     if (pLabel != nullptr) {
         titleId = pLabel->GetTextId();

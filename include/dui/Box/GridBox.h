@@ -21,7 +21,7 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override { return DUI_CTR_GRIDBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_GRIDBOX; }
 
 public:
     /** Get the number of rows (0 means auto-calculated)
@@ -161,7 +161,7 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override { return DUI_CTR_GRIDBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_GRIDBOX; }
 };
 
 /** A container with a grid layout (supports a scroll bar)
@@ -177,7 +177,7 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override { return DUI_CTR_GRID_SCROLLBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_GRID_SCROLLBOX; }
 };
 
 } //namespace ui

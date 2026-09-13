@@ -19,7 +19,7 @@ public:
     * @param [in] stateType Which state's color value to get; refer to the ControlStateType enum
     * @return The color string set for the specified state
     */
-    DString GetStateColor(ControlStateType stateType) const;
+    std::string GetStateColor(ControlStateType stateType) const;
 
     /** Get the color rectangle outer margin of the control in a certain state
      * @param [in] stateType Which state's color value to get; refer to the ControlStateType enum
@@ -39,7 +39,7 @@ public:
      * @param [in] colorMargin The color rectangle outer margin to set; if not set, the color rectangle coincides with the control rectangle
      * @param [in] colorRound The color rectangle corner radius size to set; if not set, the color rectangle follows the shape of the control rectangle
      */
-    void SetStateColor(ControlStateType stateType, const DString& color);
+    void SetStateColor(ControlStateType stateType, const std::string& color);
     void SetStateColorMargin(ControlStateType stateType, const UiMargin& colorMargin);
     void SetStateColorRound(ControlStateType stateType, const UiSize& colorRound);
 

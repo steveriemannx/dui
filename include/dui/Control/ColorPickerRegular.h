@@ -17,7 +17,7 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
     /** Select a color
     */
@@ -46,7 +46,7 @@ public:
 
     /** Set the attribute
     */
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
 private:
     /** The regular color data provider

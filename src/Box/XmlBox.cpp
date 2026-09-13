@@ -22,14 +22,14 @@ XmlBox::~XmlBox()
     m_pShadow.reset();
 }
 
-DString XmlBox::GetType() const { return DUI_CTR_XMLBOX; }
+std::string XmlBox::GetType() const { return DUI_CTR_XMLBOX; }
 
-void XmlBox::SetAttribute(const DString& strName, const DString& strValue)
+void XmlBox::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("xml_file_path")) {
+    if (strName == "xml_file_path") {
         SetXmlFilePath(FilePath(strValue));
     }
-    else if (strName == DUI_T("res_path")) {
+    else if (strName == "res_path") {
         SetResPath(FilePath(strValue));
     }
     else {
@@ -159,16 +159,16 @@ bool XmlBox::LoadXmlData(const FilePath& xmlPath)
         ClearLoadedXmlData(xmlPreviewAttributes);
 
         //Check whether a shadow is present
-        DString shadowTypeString;
-        const std::map<DString, DString>& windowAttributesMap = xmlPreviewAttributes.m_windowAttributes;
-        auto iter = windowAttributesMap.find(DUI_T("shadow_type"));
+        std::string shadowTypeString;
+        const std::map<std::string, std::string>& windowAttributesMap = xmlPreviewAttributes.m_windowAttributes;
+        auto iter = windowAttributesMap.find("shadow_type");
         if (iter != windowAttributesMap.end()) {
             shadowTypeString = iter->second;
         }
         bool bShadowAttached = true;
-        iter = windowAttributesMap.find(DUI_T("shadow_attached"));
+        iter = windowAttributesMap.find("shadow_attached");
         if (iter != windowAttributesMap.end()) {
-            bShadowAttached = (iter->second == DUI_T("true")) ? true : false;
+            bShadowAttached = (iter->second == "true") ? true : false;
         }
 
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowDrawDefault;
@@ -308,9 +308,9 @@ FilePath XmlBox::GetFirstDirectory(const FilePath& resPath) const
 {
     FilePath firstDir;
     if (!resPath.IsEmpty() && resPath.IsRelativePath()) {
-        DStringW resPathW = resPath.ToStringW();
-        DStringW::size_type pos = resPathW.find_first_of(L"/\\");
-        if (pos != DStringW::npos) {
+        std::wstring resPathW = resPath.ToStringW();
+        std::wstring::size_type pos = resPathW.find_first_of(L"/\\");
+        if (pos != std::wstring::npos) {
             firstDir = FilePath(resPathW.substr(0, pos));
         }
     }
@@ -322,14 +322,14 @@ FilePath XmlBox::GetResDirectory(FilePath xmlFilePath, const FilePath& windowRes
     FilePath resPath;
     if (!xmlFilePath.IsEmpty() && xmlFilePath.IsAbsolutePath()) {
         xmlFilePath.NormalizeFilePath();
-        const DString xmlFilePathString = xmlFilePath.ToString();
+        const std::string xmlFilePathString = xmlFilePath.ToString();
         if (!windowResPath.IsEmpty()) {
             FilePath globalResPath = GlobalManager::Instance().GetResourcePath();
             globalResPath.NormalizeDirectoryPath();
             FilePath windowResPathFull = globalResPath;
             windowResPathFull.JoinFilePath(windowResPath);
-            const  DString windowResPathFullString = windowResPathFull.ToString();
-            if (xmlFilePathString.find(windowResPathFullString) != DString::npos) {
+            const  std::string windowResPathFullString = windowResPathFull.ToString();
+            if (xmlFilePathString.find(windowResPathFullString) != std::string::npos) {
                 //In the resource directory of the current window
                 resPath = windowResPath;
             }
@@ -338,13 +338,13 @@ FilePath XmlBox::GetResDirectory(FilePath xmlFilePath, const FilePath& windowRes
         if (resPath.IsEmpty()) {
             FilePath globalResPath = GlobalManager::Instance().GetResourcePath();
             globalResPath.NormalizeDirectoryPath();
-            const DString globalResPathString = globalResPath.ToString();
-            DString::size_type pos = xmlFilePathString.find(globalResPathString);
-            if (pos != DString::npos) {
+            const std::string globalResPathString = globalResPath.ToString();
+            std::string::size_type pos = xmlFilePathString.find(globalResPathString);
+            if (pos != std::string::npos) {
                 //In the global resource directory
-                DString::size_type pos2 = pos + globalResPathString.size();
+                std::string::size_type pos2 = pos + globalResPathString.size();
                 if (pos2 < xmlFilePathString.size()) {
-                    DString resSubPath = xmlFilePathString.substr(pos2);
+                    std::string resSubPath = xmlFilePathString.substr(pos2);
                     resPath = GetFirstDirectory(FilePath(resSubPath));
                 }
             }
@@ -367,36 +367,36 @@ void XmlBox::ClearLoadedXmlData(const XmlPreviewAttributes& xmlPreviewAttributes
     //Remove the common attributes previously loaded on the window, to avoid mutual interference
     Window* pWindow = GetWindow();
     if (pWindow != nullptr) {
-        std::vector<DString> oldWindowClassList;
+        std::vector<std::string> oldWindowClassList;
         oldWindowClassList.swap(m_pXmlPreviewAttributes->m_windowClassList);
         RemoveValuesInNewList(oldWindowClassList, xmlPreviewAttributesNew.m_windowClassList);
-        for (const DString& className : oldWindowClassList) {
+        for (const std::string& className : oldWindowClassList) {
             pWindow->RemoveClass(className);
         }
 
-        std::vector<DString> oldWindowTextColorList;
+        std::vector<std::string> oldWindowTextColorList;
         oldWindowTextColorList.swap(m_pXmlPreviewAttributes->m_windowTextColorList);
         RemoveValuesInNewList(oldWindowTextColorList, xmlPreviewAttributesNew.m_windowTextColorList);
-        for (const DString& textColor : oldWindowTextColorList) {
+        for (const std::string& textColor : oldWindowTextColorList) {
             pWindow->RemoveTextColor(textColor);
         }
     }
 
-    std::vector<DString> oldGlobalFontIdList;
+    std::vector<std::string> oldGlobalFontIdList;
     oldGlobalFontIdList.swap(m_pXmlPreviewAttributes->m_globalFontIdList);
     RemoveValuesInNewList(oldGlobalFontIdList, xmlPreviewAttributesNew.m_globalFontIdList);
-    for (const DString& fontId : oldGlobalFontIdList) {
+    for (const std::string& fontId : oldGlobalFontIdList) {
         GlobalManager::Instance().Font().RemoveFontId(fontId);
     }
 }
 
-void XmlBox::RemoveValuesInNewList(std::vector<DString>& oldList, const std::vector<DString>& newList) const
+void XmlBox::RemoveValuesInNewList(std::vector<std::string>& oldList, const std::vector<std::string>& newList) const
 {
     if (oldList.empty() || newList.empty()) {
         return;
     }
-    std::set<DString> newValueSet;
-    for (const DString& name : newList) {
+    std::set<std::string> newValueSet;
+    for (const std::string& name : newList) {
         newValueSet.insert(name);
     }
     auto iter = oldList.begin();

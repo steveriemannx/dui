@@ -28,61 +28,61 @@ ScrollBox::~ScrollBox()
 {
 }
 
-DString ScrollBox::GetType() const { return DUI_CTR_SCROLLBOX; }//ScrollBox
+std::string ScrollBox::GetType() const { return DUI_CTR_SCROLLBOX; }//ScrollBox
 
-void ScrollBox::SetAttribute(const DString& pstrName, const DString& pstrValue)
+void ScrollBox::SetAttribute(const std::string& pstrName, const std::string& pstrValue)
 {
-    if (pstrName == DUI_T("vscrollbar")) {
-        EnableScrollBar(pstrValue == DUI_T("true"), GetHScrollBar() != nullptr);
+    if (pstrName == "vscrollbar") {
+        EnableScrollBar(pstrValue == "true", GetHScrollBar() != nullptr);
     }
-    else if ((pstrName == DUI_T("vscrollbar_style")) || (pstrName == DUI_T("vscrollbarstyle"))) {
+    else if ((pstrName == "vscrollbar_style") || (pstrName == "vscrollbarstyle")) {
         EnableScrollBar(true, GetHScrollBar() != nullptr);
         if (GetVScrollBar() != nullptr) {
             GetVScrollBar()->ApplyAttributeList(pstrValue);
         }
     }
-    else if (pstrName == DUI_T("vscrollbar_class")) {
+    else if (pstrName == "vscrollbar_class") {
         EnableScrollBar(true, GetHScrollBar() != nullptr);
         if (GetVScrollBar() != nullptr) {
             GetVScrollBar()->SetClass(pstrValue);
         }
     }
-    else if (pstrName == DUI_T("hscrollbar")) {
-        EnableScrollBar(GetVScrollBar() != nullptr, pstrValue == DUI_T("true"));
+    else if (pstrName == "hscrollbar") {
+        EnableScrollBar(GetVScrollBar() != nullptr, pstrValue == "true");
     }
-    else if ((pstrName == DUI_T("hscrollbar_style")) || (pstrName == DUI_T("hscrollbarstyle"))) {
+    else if ((pstrName == "hscrollbar_style") || (pstrName == "hscrollbarstyle")) {
         EnableScrollBar(GetVScrollBar() != nullptr, true);
         if (GetHScrollBar() != nullptr) {
             GetHScrollBar()->ApplyAttributeList(pstrValue);
         }
     }
-    else if (pstrName == DUI_T("hscrollbar_class")) {
+    else if (pstrName == "hscrollbar_class") {
         EnableScrollBar(GetVScrollBar() != nullptr, true);
         if (GetHScrollBar() != nullptr) {
             GetHScrollBar()->SetClass(pstrValue);
         }
     }
-    else if ((pstrName == DUI_T("scrollbar_padding")) || (pstrName == DUI_T("scrollbarpadding"))) {
+    else if ((pstrName == "scrollbar_padding") || (pstrName == "scrollbarpadding")) {
         UiPadding rcScrollbarPadding;
         AttributeUtil::ParsePaddingValue(pstrValue.c_str(), rcScrollbarPadding);
         SetScrollBarPadding(rcScrollbarPadding, true);
     }
-    else if ((pstrName == DUI_T("vscroll_unit")) || (pstrName == DUI_T("vscrollunit"))) {
+    else if ((pstrName == "vscroll_unit") || (pstrName == "vscrollunit")) {
         int32_t iValue = StringUtil::StringToInt32(pstrValue);
         SetVerScrollUnitPixels(iValue, true);
     }
-    else if ((pstrName == DUI_T("hscroll_unit")) || (pstrName == DUI_T("hscrollunit"))) {
+    else if ((pstrName == "hscroll_unit") || (pstrName == "hscrollunit")) {
         int32_t iValue = StringUtil::StringToInt32(pstrValue);
         SetHorScrollUnitPixels(iValue, true);
     }
-    else if ((pstrName == DUI_T("scrollbar_float")) || (pstrName == DUI_T("scrollbarfloat"))) {
-        SetScrollBarFloat(pstrValue == DUI_T("true"));
+    else if ((pstrName == "scrollbar_float") || (pstrName == "scrollbarfloat")) {
+        SetScrollBarFloat(pstrValue == "true");
     }
-    else if ((pstrName == DUI_T("vscrollbar_left")) || (pstrName == DUI_T("vscrollbarleft"))) {
-        SetVScrollBarAtLeft(pstrValue == DUI_T("true"));
+    else if ((pstrName == "vscrollbar_left") || (pstrName == "vscrollbarleft")) {
+        SetVScrollBarAtLeft(pstrValue == "true");
     }
-    else if ((pstrName == DUI_T("hold_end")) || (pstrName == DUI_T("holdend"))) {
-        SetHoldEnd(pstrValue == DUI_T("true"));
+    else if ((pstrName == "hold_end") || (pstrName == "holdend")) {
+        SetHoldEnd(pstrValue == "true");
     }
     else {
         Box::SetAttribute(pstrName, pstrValue);
@@ -985,7 +985,7 @@ void ScrollBox::EnableScrollBar(bool bEnableVertical, bool bEnableHorizontal)
         m_pVScrollBar->SetVisible(false);
         m_pVScrollBar->SetScrollRange(0);
         m_pVScrollBar->SetOwner(this);
-        m_pVScrollBar->SetClass(DUI_T("vscrollbar"));
+        m_pVScrollBar->SetClass("vscrollbar");
     }
     else if( !bEnableVertical && (m_pVScrollBar != nullptr) ) {
         m_pVScrollBar.reset();
@@ -997,7 +997,7 @@ void ScrollBox::EnableScrollBar(bool bEnableVertical, bool bEnableHorizontal)
         m_pHScrollBar->SetScrollRange(0);
         m_pHScrollBar->SetHorizontal(true);
         m_pHScrollBar->SetOwner(this);
-        m_pHScrollBar->SetClass(DUI_T("hscrollbar"));
+        m_pHScrollBar->SetClass("hscrollbar");
     }
     else if( !bEnableHorizontal && (m_pHScrollBar != nullptr)) {
         m_pHScrollBar.reset();

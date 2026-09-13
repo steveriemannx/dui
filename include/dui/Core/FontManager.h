@@ -15,7 +15,7 @@ class DpiManager;
 */
 struct FontSizeInfo
 {
-    DString fontSizeName;   //The display name of the font size, e.g. "No.5"
+    std::string fontSizeName;   //The display name of the font size, e.g. "No.5"
     float fFontSize = 0;    //Unit: pixels, without DPI adaptation
     float fDpiFontSize = 0; //Unit: pixels, with DPI adaptation
 };
@@ -36,37 +36,37 @@ public:
      * @param [in] fontInfo The font attribute info, the font size is the original size, not DPI scaled
      * @param [in] bDefault Whether to set it as the default font
      */
-    bool AddFont(const DString& fontId, const UiFont& fontInfo, bool bDefault);
+    bool AddFont(const std::string& fontId, const UiFont& fontInfo, bool bDefault);
 
     /** Get the font interface; if no font interface is found by fontId, the m_defaultFontId font interface is searched instead
     * @param [in] fontId The font ID
     * @param [in] dpi The DPI scaling manager, used to scale the font size
     * @return Returns the font interface on success, external callers do not need to release the resource; returns nullptr on failure
     */
-    IFont* GetIFont(const DString& fontId, const DpiManager& dpi);
+    IFont* GetIFont(const std::string& fontId, const DpiManager& dpi);
 
     /** Get the font interface; if no font interface is found by fontId, the m_defaultFontId font interface is searched instead
     * @param [in] fontId The font ID
     * @param [in] nZoomPercent The font size scale percentage, used to scale the font size, e.g. 100 means 100%, 200 means 200%
     * @return Returns the font interface on success, external callers do not need to release the resource; returns nullptr on failure
     */
-    IFont* GetIFont(const DString& fontId, uint32_t nZoomPercent);
+    IFont* GetIFont(const std::string& fontId, uint32_t nZoomPercent);
 
     /** Whether the font ID is present
     * @param [in] fontId The ID marker of the specified font
     */
-    bool HasFontId(const DString& fontId) const;
+    bool HasFontId(const std::string& fontId) const;
 
     /** Remove a font ID
     * @param [in] fontId The ID marker of the specified font
     */
-    bool RemoveFontId(const DString& fontId);
+    bool RemoveFontId(const std::string& fontId);
 
     /** Remove a font cache entry to release memory
     * @param [in] fontId The font ID
     * @param [in] nZoomPercent The font size scale percentage, used to scale the font size, e.g. 100 means 100%, 200 means 200%
     */
-    bool RemoveIFont(const DString& fontId, uint32_t nZoomPercent);
+    bool RemoveIFont(const std::string& fontId, uint32_t nZoomPercent);
 
     /** Remove all fonts, not including the already loaded font files
      */
@@ -74,12 +74,12 @@ public:
 
     /** Get the default font ID
     */
-    const DString& GetDefaultFontId() const;
+    const std::string& GetDefaultFontId() const;
 
     /** Set the default font family list
     * @param [in] defaultFontFamilyNames The font list, different fonts separated by commas, e.g. "Microsoft YaHei,SimSun"
     */
-    void SetDefaultFontFamilyNames(const DString& defaultFontFamilyNames);
+    void SetDefaultFontFamilyNames(const std::string& defaultFontFamilyNames);
 
 public:
     /** @brief Add a font file, after which it can be used as a normal font
@@ -87,7 +87,7 @@ public:
       * @param[in] strFontDesc The font description info
       * @return No return value
       */
-    bool AddFontFile(const DString& strFontFile, const DString& strFontDesc);
+    bool AddFontFile(const std::string& strFontFile, const std::string& strFontDesc);
 
     /** @brief Clear all added font files
       * @return No return value
@@ -98,7 +98,7 @@ public:
     /** Get the list of available font names
     * @param [out] fontNameList Returns the list of available font names
     */
-    void GetFontNameList(std::vector<DString>& fontNameList) const;
+    void GetFontNameList(std::vector<std::string>& fontNameList) const;
 
     /** Get the font size list
     * @param [in] dpi The DPI scaling manager, used to scale the font size
@@ -109,24 +109,24 @@ public:
 private:
     /** Get the actual font ID after DPI scaling
     */
-    DString GetDpiFontId(const DString& fontId, uint32_t nZoomPercent) const;
+    std::string GetDpiFontId(const std::string& fontId, uint32_t nZoomPercent) const;
 
 private:
     /** Custom font data: Key is FontID, Value is the font description info
     */
-    std::unordered_map<DString, UiFont> m_fontIdMap;
+    std::unordered_map<std::string, UiFont> m_fontIdMap;
 
     /** Custom font info: Key is FontId
     */
-    std::unordered_map<DString, IFont*> m_fontMap;
+    std::unordered_map<std::string, IFont*> m_fontMap;
 
     /** The default font ID
     */
-    DString m_defaultFontId;
+    std::string m_defaultFontId;
 
     /** The default font family list
     */
-    std::vector<DString> m_defaultFontFamilyNames;
+    std::vector<std::string> m_defaultFontFamilyNames;
 
     /** Whether the default font family list has been initialized
     */

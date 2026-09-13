@@ -17,8 +17,8 @@ public:
     virtual ~Progress() override;
 
     /// Override parent class methods to provide personalized functionality; please refer to the parent class declaration
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void PaintStateImages(IRender* pRender) override;
     virtual void ClearImageCache() override;
 
@@ -81,22 +81,22 @@ public:
     /** Get the progress bar background image
      * @return Returns the background image location
      */
-    DString GetProgressImage() const;
+    std::string GetProgressImage() const;
 
     /** Set the progress bar background image
      * @param [in] strImage The image address
      */
-    void SetProgressImage(const DString& strImage);
+    void SetProgressImage(const std::string& strImage);
 
     /** Get the progress bar background color
      * @return Returns the string value of the background color, corresponding to the specified color value in global.xml
      */
-    DString GetProgressColor() const;
+    std::string GetProgressColor() const;
 
     /** Set the progress bar background color
      * @param [in] The background color string to set; the string must exist in global.xml
      */
-    void SetProgressColor(const DString& strProgressColor);
+    void SetProgressColor(const std::string& strProgressColor);
 
     /** Get the progress bar position
     * @return Returns the progress bar area coordinates (relative coordinates with GetRect() as the whole area, with the top-left corner being <0,0>)

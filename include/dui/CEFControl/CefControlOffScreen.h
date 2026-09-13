@@ -221,7 +221,7 @@ private:
     /** The current IME marked text (used to replace the previous composition
      *  correctly when macOS sends an updated, shorter composition).
     */
-    DStringW m_imeMarkedText;
+    std::wstring m_imeMarkedText;
 };
 
 } //namespace ui

@@ -42,8 +42,8 @@ public:
      * @param [in] dpiManager DPI management interface
      * @return true if set successfully, false if the attribute does not exist
      */
-    virtual bool SetAttribute(const DString& strName, 
-                              const DString& strValue,
+    virtual bool SetAttribute(const std::string& strName, 
+                              const std::string& strValue,
                               const DpiManager& dpiManager) override;
 
     /** DPI changed; update control size and layout

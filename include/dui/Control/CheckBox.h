@@ -35,14 +35,14 @@ public:
     virtual ~CheckBoxTemplate() override;
 
     /// Override the parent class methods to provide personalized features; please refer to the parent class declarations
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
     virtual void Activate(const EventArgs* pMsg) override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void PaintStateColors(IRender* pRender) override;
     virtual void PaintStateImages(IRender* pRender) override;
     virtual void PaintText(IRender* pRender) override;
     virtual bool HasHotState() override;
-    virtual DString GetBorderColor(ControlStateType stateType) const override;
+    virtual std::string GetBorderColor(ControlStateType stateType) const override;
 
     /** DPI change: update the control size and layout
     * @param [in] nOldDpiScale The old DPI scale percentage
@@ -55,51 +55,51 @@ public:
      * @param [in] stateType The state for which to get the image; refer to the ControlStateType enum
      * @return Returns the image path and attributes
      */
-    DString GetSelectedStateImage(ControlStateType stateType) const;
+    std::string GetSelectedStateImage(ControlStateType stateType) const;
 
     /** Set the image used when selected
      * @param [in] stateType The state for which to set the image
      * @param [in] strImage The image path and attributes
      */
-    void SetSelectedStateImage(ControlStateType stateType, const DString& strImage);
+    void SetSelectedStateImage(ControlStateType stateType, const std::string& strImage);
 
     /** Get the foreground image used when selected
      * @param[in] stateType The state for which to get the foreground image
      */
-    DString GetSelectedForeStateImage(ControlStateType stateType) const;
+    std::string GetSelectedForeStateImage(ControlStateType stateType) const;
 
     /** Set the foreground image used when selected
      * @param[in] stateType The state for which to set the foreground image
      * @param[in] strImage The image location
      */
-    void SetSelectedForeStateImage(ControlStateType stateType, const DString& strImage);
+    void SetSelectedForeStateImage(ControlStateType stateType, const std::string& strImage);
 
     /** Get the text color used when selected
      */
-    DString GetSelectedTextColor() const;
+    std::string GetSelectedTextColor() const;
 
     /** Set the text color used when selected
      * @param[in] dwTextColor The color string to set; this color must exist in global.xml
      */
-    void SetSelectedTextColor(const DString& dwTextColor);
+    void SetSelectedTextColor(const std::string& dwTextColor);
 
     /** Get the text color of the specified state used when selected
      * @param[in] stateType The state for which to get the color
      * @return Returns the color string, defined in global.xml
      */
-    DString GetSelectedStateTextColor(ControlStateType stateType) const;
+    std::string GetSelectedStateTextColor(ControlStateType stateType) const;
 
     /** Set the text color of the specified state used when selected
      * @param[in] stateType The state for which to set the color
      * @param[in] stateColor The color to set
      */
-    void SetSelectedStateTextColor(ControlStateType stateType, const DString& dwTextColor);
+    void SetSelectedStateTextColor(ControlStateType stateType, const std::string& dwTextColor);
 
     /** Get the control color used when selected
      * @param [in] stateType The state for which to get the color
      * @return Returns the color string, defined in global.xml
      */
-    DString GetSelectStateColor(ControlStateType stateType) const;
+    std::string GetSelectStateColor(ControlStateType stateType) const;
 
     /** Get the color rectangle margin of the control color used when selected
      * @param [in] stateType The state for which to get the color value; refer to the ControlStateType enum
@@ -120,7 +120,7 @@ public:
      * @param [in] colorRound The color rectangle corner radius to set; if not set, the color rectangle follows the shape of the control rectangle
      * @param [in] bNeedDpiScale Whether DPI adaptation is needed
      */
-    void SetSelectedStateColor(ControlStateType stateType, const DString& stateColor);
+    void SetSelectedStateColor(ControlStateType stateType, const std::string& stateColor);
     void SetSelectedStateColorMargin(ControlStateType stateType, UiMargin colorMargin, bool bNeedDpiScale);
     void SetSelectedStateColorRound(ControlStateType stateType, UiSize colorRound, bool bNeedDpiScale);
 
@@ -129,24 +129,24 @@ public:
      * @param [in] stateType The state for which to get the image; refer to the ControlStateType enum
      * @return Returns the image path and attributes
      */
-    DString GetPartSelectedStateImage(ControlStateType stateType);
+    std::string GetPartSelectedStateImage(ControlStateType stateType);
 
     /** Set the image used when part selected
      * @param [in] stateType The state for which to set the image
      * @param [in] strImage The image path and attributes
      */
-    void SetPartSelectedStateImage(ControlStateType stateType, const DString& strImage);
+    void SetPartSelectedStateImage(ControlStateType stateType, const std::string& strImage);
 
     /** Get the foreground image used when part selected
      * @param[in] stateType The state for which to get the foreground image
      */
-    DString GetPartSelectedForeStateImage(ControlStateType stateType);
+    std::string GetPartSelectedForeStateImage(ControlStateType stateType);
 
     /** Set the foreground image used when part selected
      * @param[in] stateType The state for which to set the foreground image
      * @param[in] strImage The image location
      */
-    void SetPartSelectedForeStateImage(ControlStateType stateType, const DString& strImage);
+    void SetPartSelectedForeStateImage(ControlStateType stateType, const std::string& strImage);
 
 public:
     /** Judge whether the current state is the selection state
@@ -286,7 +286,7 @@ protected:
      * @param [out] stateType The state actually rendered
      * @return Returns the color string, defined in global.xml
      */
-    DString GetPaintSelectedStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType) const;
+    std::string GetPaintSelectedStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType) const;
 
     /** Internally set the selection state
     * @return Returns true if the internal state changed, otherwise false
@@ -389,151 +389,151 @@ CheckBoxTemplate<InheritType>::~CheckBoxTemplate()
 }
 
 template<typename InheritType>
-inline DString CheckBoxTemplate<InheritType>::GetType() const { return DUI_CTR_CHECKBOX; }
+inline std::string CheckBoxTemplate<InheritType>::GetType() const { return DUI_CTR_CHECKBOX; }
 
 template<>
-inline DString CheckBoxTemplate<Box>::GetType() const { return DUI_CTR_CHECKBOXBOX; }
+inline std::string CheckBoxTemplate<Box>::GetType() const { return DUI_CTR_CHECKBOXBOX; }
 
 template<>
-inline DString CheckBoxTemplate<HBox>::GetType() const { return DUI_CTR_CHECKBOXHBOX; }
+inline std::string CheckBoxTemplate<HBox>::GetType() const { return DUI_CTR_CHECKBOXHBOX; }
 
 template<>
-inline DString CheckBoxTemplate<VBox>::GetType() const { return DUI_CTR_CHECKBOXVBOX; }
+inline std::string CheckBoxTemplate<VBox>::GetType() const { return DUI_CTR_CHECKBOXVBOX; }
 
 template<typename InheritType>
-void CheckBoxTemplate<InheritType>::SetAttribute(const DString& strName, const DString& strValue)
+void CheckBoxTemplate<InheritType>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("selected")) {
-        Selected(strValue == DUI_T("true"), true);
+    if (strName == "selected") {
+        Selected(strValue == "true", true);
     }
-    else if ((strName == DUI_T("switch_select")) || (strName == DUI_T("switchselect"))) {
+    else if ((strName == "switch_select") || (strName == "switchselect")) {
         Selected(!IsSelected());
     }
-    else if (strName == DUI_T("support_check_Mode")) {
-        SetSupportCheckMode(strValue == DUI_T("true"));
+    else if (strName == "support_check_Mode") {
+        SetSupportCheckMode(strValue == "true");
     }
-    else if (strName == DUI_T("auto_check_select")) {
+    else if (strName == "auto_check_select") {
         //Set whether a change of the selection state is automatically synced to the check state, keeping the check state consistent with the selection state (Select->Check)
-        SetAutoCheckSelect(strValue == DUI_T("true"));
+        SetAutoCheckSelect(strValue == "true");
     }
-    else if (strName == DUI_T("auto_select_check")) {
+    else if (strName == "auto_select_check") {
         //Set whether a change of the check state is automatically synced to the selection state, keeping the selection state consistent with the check state (Check -> Select)
-        SetAutoSelectCheck(strValue == DUI_T("true"));
+        SetAutoSelectCheck(strValue == "true");
     }
-    else if ((strName == DUI_T("normal_first")) || (strName == DUI_T("normalfirst"))) {
-        SetPaintNormalFirst(strValue == DUI_T("true"));
+    else if ((strName == "normal_first") || (strName == "normalfirst")) {
+        SetPaintNormalFirst(strValue == "true");
     }
-    else if ((strName == DUI_T("selected_normal_image")) || (strName == DUI_T("selectednormalimage"))) {
+    else if ((strName == "selected_normal_image") || (strName == "selectednormalimage")) {
         SetSelectedStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("selected_hot_image")) || (strName == DUI_T("selectedhotimage"))) {
+    else if ((strName == "selected_hot_image") || (strName == "selectedhotimage")) {
         SetSelectedStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("selected_pushed_image")) || (strName == DUI_T("selectedpushedimage"))) {
+    else if ((strName == "selected_pushed_image") || (strName == "selectedpushedimage")) {
         SetSelectedStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("selected_disabled_image")) || (strName == DUI_T("selecteddisabledimage"))) {
+    else if ((strName == "selected_disabled_image") || (strName == "selecteddisabledimage")) {
         SetSelectedStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == DUI_T("selected_fore_normal_image")) || (strName == DUI_T("selectedforenormalimage"))) {
+    else if ((strName == "selected_fore_normal_image") || (strName == "selectedforenormalimage")) {
         SetSelectedForeStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("selected_fore_hot_image")) || (strName == DUI_T("selectedforehotimage"))) {
+    else if ((strName == "selected_fore_hot_image") || (strName == "selectedforehotimage")) {
         SetSelectedForeStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("selected_fore_pushed_image")) || (strName == DUI_T("selectedforepushedimage"))) {
+    else if ((strName == "selected_fore_pushed_image") || (strName == "selectedforepushedimage")) {
         SetSelectedForeStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("selected_fore_disabled_image")) || (strName == DUI_T("selectedforedisabledimage"))) {
+    else if ((strName == "selected_fore_disabled_image") || (strName == "selectedforedisabledimage")) {
         SetSelectedForeStateImage(kControlStateDisabled, strValue);
     }
-    else if (strName == DUI_T("part_selected_normal_image")) {
+    else if (strName == "part_selected_normal_image") {
         SetPartSelectedStateImage(kControlStateNormal, strValue);
     }
-    else if (strName == DUI_T("part_selected_hot_image")) {
+    else if (strName == "part_selected_hot_image") {
         SetPartSelectedStateImage(kControlStateHot, strValue);
     }
-    else if (strName == DUI_T("part_selected_pushed_image")) {
+    else if (strName == "part_selected_pushed_image") {
         SetPartSelectedStateImage(kControlStatePushed, strValue);
     }
-    else if (strName == DUI_T("part_selected_disabled_image")) {
+    else if (strName == "part_selected_disabled_image") {
         SetPartSelectedStateImage(kControlStateDisabled, strValue);
     }
-    else if (strName == DUI_T("part_selected_fore_normal_image")) {
+    else if (strName == "part_selected_fore_normal_image") {
         SetPartSelectedForeStateImage(kControlStateNormal, strValue);
     }
-    else if (strName == DUI_T("part_selected_fore_hot_image")) {
+    else if (strName == "part_selected_fore_hot_image") {
         SetPartSelectedForeStateImage(kControlStateHot, strValue);
     }
-    else if (strName == DUI_T("part_selected_fore_pushed_image")) {
+    else if (strName == "part_selected_fore_pushed_image") {
         SetPartSelectedForeStateImage(kControlStatePushed, strValue);
     }
-    else if (strName == DUI_T("part_selected_fore_disabled_image")) {
+    else if (strName == "part_selected_fore_disabled_image") {
         SetPartSelectedForeStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == DUI_T("selected_text_color")) || (strName == DUI_T("selectedtextcolor"))) {
+    else if ((strName == "selected_text_color") || (strName == "selectedtextcolor")) {
         SetSelectedTextColor(strValue);
     }
-    else if ((strName == DUI_T("selected_normal_text_color")) || (strName == DUI_T("selectednormaltextcolor"))) {
+    else if ((strName == "selected_normal_text_color") || (strName == "selectednormaltextcolor")) {
         SetSelectedStateTextColor(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("selected_hot_text_color")) || (strName == DUI_T("selectedhottextcolor"))) {
+    else if ((strName == "selected_hot_text_color") || (strName == "selectedhottextcolor")) {
         SetSelectedStateTextColor(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("selected_pushed_text_color")) || (strName == DUI_T("selectedpushedtextcolor"))) {
+    else if ((strName == "selected_pushed_text_color") || (strName == "selectedpushedtextcolor")) {
         SetSelectedStateTextColor(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("selected_disabled_text_color")) || (strName == DUI_T("selecteddisabledtextcolor"))) {
+    else if ((strName == "selected_disabled_text_color") || (strName == "selecteddisabledtextcolor")) {
         SetSelectedStateTextColor(kControlStateDisabled, strValue);
     }
-    else if ((strName == DUI_T("selected_normal_color")) || (strName == DUI_T("selectednormalcolor"))) {
+    else if ((strName == "selected_normal_color") || (strName == "selectednormalcolor")) {
         SetSelectedStateColor(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("selected_hot_color")) || (strName == DUI_T("selectedhotcolor"))) {
+    else if ((strName == "selected_hot_color") || (strName == "selectedhotcolor")) {
         SetSelectedStateColor(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("selected_pushed_color")) || (strName == DUI_T("selectedpushedcolor"))) {
+    else if ((strName == "selected_pushed_color") || (strName == "selectedpushedcolor")) {
         SetSelectedStateColor(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("selected_disabled_color")) || (strName == DUI_T("selecteddisabledcolor"))) {
+    else if ((strName == "selected_disabled_color") || (strName == "selecteddisabledcolor")) {
         SetSelectedStateColor(kControlStateDisabled, strValue);
     }
-    else if (strName == DUI_T("selected_normal_color_margin")) {
+    else if (strName == "selected_normal_color_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetSelectedStateColorMargin(kControlStateNormal, rcMargin, true);
     }
-    else if (strName == DUI_T("selected_hot_color_margin")) {
+    else if (strName == "selected_hot_color_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetSelectedStateColorMargin(kControlStateHot, rcMargin, true);
     }
-    else if (strName == DUI_T("selected_pushed_color_margin")) {
+    else if (strName == "selected_pushed_color_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetSelectedStateColorMargin(kControlStatePushed, rcMargin, true);
     }
-    else if (strName == DUI_T("selected_disabled_color_margin")) {
+    else if (strName == "selected_disabled_color_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetSelectedStateColorMargin(kControlStateDisabled, rcMargin, true);
     }
-    else if (strName == DUI_T("selected_normal_color_round")) {
+    else if (strName == "selected_normal_color_round") {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetSelectedStateColorRound(kControlStateNormal, szRound, true);
     }
-    else if (strName == DUI_T("selected_hot_color_round")) {
+    else if (strName == "selected_hot_color_round") {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetSelectedStateColorRound(kControlStateHot, szRound, true);
     }
-    else if (strName == DUI_T("selected_pushed_color_round")) {
+    else if (strName == "selected_pushed_color_round") {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetSelectedStateColorRound(kControlStatePushed, szRound, true);
     }
-    else if (strName == DUI_T("selected_disabled_color_round")) {
+    else if (strName == "selected_disabled_color_round") {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetSelectedStateColorRound(kControlStateDisabled, szRound, true);
@@ -799,10 +799,10 @@ bool CheckBoxTemplate<InheritType>::HasHotState()
 }
 
 template<typename InheritType>
-DString CheckBoxTemplate<InheritType>::GetBorderColor(ControlStateType stateType) const
+std::string CheckBoxTemplate<InheritType>::GetBorderColor(ControlStateType stateType) const
 {
     if (this->IsSelected()) {
-        DString borderColor = BaseClass::GetBorderColor(kControlStatePushed);
+        std::string borderColor = BaseClass::GetBorderColor(kControlStatePushed);
         if (!borderColor.empty()) {
             return borderColor;
         }
@@ -867,8 +867,8 @@ void CheckBoxTemplate<InheritType>::PaintStateImages(IRender* pRender)
 
     if (isSelectNone) {
         //Unselected state
-        this->PaintStateImage(pRender, kStateImageBk, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
-        this->PaintStateImage(pRender, kStateImageFore, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageBk, this->GetState(), "", m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageFore, this->GetState(), "", m_pCheckBoxImageRect);
         return;
     }
     bool bPartSelected = bCheckMode ? this->IsPartChecked() : this->IsPartSelected();
@@ -876,11 +876,11 @@ void CheckBoxTemplate<InheritType>::PaintStateImages(IRender* pRender)
         //Part selected state
         bool bPainted = false;
         if (this->HasStateImage(kStateImagePartSelectedBk)) {
-            this->PaintStateImage(pRender, kStateImagePartSelectedBk, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
+            this->PaintStateImage(pRender, kStateImagePartSelectedBk, this->GetState(), "", m_pCheckBoxImageRect);
             bPainted = true;
         }
         if (this->HasStateImage(kStateImagePartSelectedFore)) {
-            this->PaintStateImage(pRender, kStateImagePartSelectedFore, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
+            this->PaintStateImage(pRender, kStateImagePartSelectedFore, this->GetState(), "", m_pCheckBoxImageRect);
             bPainted = true;
         }
         if (bPainted) {
@@ -891,17 +891,17 @@ void CheckBoxTemplate<InheritType>::PaintStateImages(IRender* pRender)
 
     //All selected state
     if (IsPaintNormalFirst() && !this->HasStateImage(kStateImageSelectedBk)) {
-        this->PaintStateImage(pRender, kStateImageBk, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageBk, this->GetState(), "", m_pCheckBoxImageRect);
     }
     else {
-        this->PaintStateImage(pRender, kStateImageSelectedBk, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageSelectedBk, this->GetState(), "", m_pCheckBoxImageRect);
     }
 
     if (IsPaintNormalFirst() && !this->HasStateImage(kStateImageSelectedFore)) {
-        this->PaintStateImage(pRender, kStateImageFore, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageFore, this->GetState(), "", m_pCheckBoxImageRect);
     }
     else {
-        this->PaintStateImage(pRender, kStateImageSelectedFore, this->GetState(), DUI_T(""), m_pCheckBoxImageRect);
+        this->PaintStateImage(pRender, kStateImageSelectedFore, this->GetState(), "", m_pCheckBoxImageRect);
     }
 }
 
@@ -912,7 +912,7 @@ void CheckBoxTemplate<InheritType>::PaintText(IRender* pRender)
         BaseClass::PaintText(pRender);
         return;
     }
-    DString textValue = this->GetText();
+    std::string textValue = this->GetText();
     if (textValue.empty() || (pRender == nullptr)) {
         return;
     }
@@ -922,7 +922,7 @@ void CheckBoxTemplate<InheritType>::PaintText(IRender* pRender)
     rc.Deflate(this->GetTextPadding());
 
     auto stateType = this->GetState();
-    DString clrColor = GetPaintSelectedStateTextColor(this->GetState(), stateType);
+    std::string clrColor = GetPaintSelectedStateTextColor(this->GetState(), stateType);
     if (clrColor.empty()) {
         clrColor = m_dwSelectedTextColor.empty() ? this->GetPaintStateTextColor(this->GetState(), stateType) : m_dwSelectedTextColor.c_str();
     }
@@ -946,7 +946,7 @@ void CheckBoxTemplate<InheritType>::PaintText(IRender* pRender)
             //First draw the default text
             const uint8_t nHotAlpha = this->GetHotAlpha();
             bool bPainted = false;
-            DString clrStateColor = GetSelectedStateTextColor(kControlStateNormal);
+            std::string clrStateColor = GetSelectedStateTextColor(kControlStateNormal);
             if (!clrStateColor.empty()) {
                 drawParam.dwTextColor = this->GetUiColor(clrStateColor);
                 drawParam.uFade = 255 - nHotAlpha;
@@ -954,7 +954,7 @@ void CheckBoxTemplate<InheritType>::PaintText(IRender* pRender)
                 bPainted = true;
             }
             //Draw the Hot state text (semi-transparent)
-            DString textColor = GetSelectedStateTextColor(kControlStateHot);
+            std::string textColor = GetSelectedStateTextColor(kControlStateHot);
             if (!textColor.empty()) {
                 drawParam.dwTextColor = this->GetUiColor(textColor);
                 drawParam.uFade = nHotAlpha;
@@ -973,81 +973,81 @@ void CheckBoxTemplate<InheritType>::PaintText(IRender* pRender)
 }
 
 template<typename InheritType>
-DString CheckBoxTemplate<InheritType>::GetSelectedStateImage(ControlStateType stateType) const
+std::string CheckBoxTemplate<InheritType>::GetSelectedStateImage(ControlStateType stateType) const
 {
     return this->GetStateImage(kStateImageSelectedBk, stateType);
 }
 
 template<typename InheritType>
-void CheckBoxTemplate<InheritType>::SetSelectedStateImage(ControlStateType stateType, const DString& strImage)
+void CheckBoxTemplate<InheritType>::SetSelectedStateImage(ControlStateType stateType, const std::string& strImage)
 {
     this->SetStateImage(kStateImageSelectedBk, stateType, strImage);
     this->RelayoutOrRedraw();
 }
 
 template<typename InheritType>
-DString CheckBoxTemplate<InheritType>::GetSelectedForeStateImage(ControlStateType stateType) const
+std::string CheckBoxTemplate<InheritType>::GetSelectedForeStateImage(ControlStateType stateType) const
 {
     return this->GetStateImage(kStateImageSelectedFore, stateType);
 }
 
 template<typename InheritType>
-void CheckBoxTemplate<InheritType>::SetSelectedForeStateImage(ControlStateType stateType, const DString& strImage)
+void CheckBoxTemplate<InheritType>::SetSelectedForeStateImage(ControlStateType stateType, const std::string& strImage)
 {
     this->SetStateImage(kStateImageSelectedFore, stateType, strImage);
     this->RelayoutOrRedraw();
 }
 
 template<typename InheritType>
-DString CheckBoxTemplate<InheritType>::GetPartSelectedStateImage(ControlStateType stateType)
+std::string CheckBoxTemplate<InheritType>::GetPartSelectedStateImage(ControlStateType stateType)
 {
     return this->GetStateImage(kStateImagePartSelectedBk, stateType);
 }
 
 template<typename InheritType>
-void CheckBoxTemplate<InheritType>::SetPartSelectedStateImage(ControlStateType stateType, const DString& strImage)
+void CheckBoxTemplate<InheritType>::SetPartSelectedStateImage(ControlStateType stateType, const std::string& strImage)
 {
     this->SetStateImage(kStateImagePartSelectedBk, stateType, strImage);
     this->RelayoutOrRedraw();
 }
 
 template<typename InheritType>
-DString CheckBoxTemplate<InheritType>::GetPartSelectedForeStateImage(ControlStateType stateType)
+std::string CheckBoxTemplate<InheritType>::GetPartSelectedForeStateImage(ControlStateType stateType)
 {
     return this->GetStateImage(kStateImagePartSelectedFore, stateType);
 }
 
 template<typename InheritType>
-void CheckBoxTemplate<InheritType>::SetPartSelectedForeStateImage(ControlStateType stateType, const DString& strImage)
+void CheckBoxTemplate<InheritType>::SetPartSelectedForeStateImage(ControlStateType stateType, const std::string& strImage)
 {
     this->SetStateImage(kStateImagePartSelectedFore, stateType, strImage);
     this->RelayoutOrRedraw();
 }
 
 template<typename InheritType>
-DString CheckBoxTemplate<InheritType>::GetSelectedTextColor() const
+std::string CheckBoxTemplate<InheritType>::GetSelectedTextColor() const
 {
     return m_dwSelectedTextColor.c_str();
 }
 
 template<typename InheritType>
-void CheckBoxTemplate<InheritType>::SetSelectedTextColor(const DString& dwTextColor)
+void CheckBoxTemplate<InheritType>::SetSelectedTextColor(const std::string& dwTextColor)
 {
     m_dwSelectedTextColor = dwTextColor;
     this->Invalidate();
 }
 
 template<typename InheritType /*= Control*/>
-DString ui::CheckBoxTemplate<InheritType>::GetSelectedStateTextColor(ControlStateType stateType) const
+std::string ui::CheckBoxTemplate<InheritType>::GetSelectedStateTextColor(ControlStateType stateType) const
 {
     if (m_pSelectedTextColorMap != nullptr) {
         return m_pSelectedTextColorMap->GetStateColor(stateType);
     }
-    return DString();
+    return std::string();
 }
 
 template<typename InheritType /*= Control*/>
-void ui::CheckBoxTemplate<InheritType>::SetSelectedStateTextColor(ControlStateType stateType, const DString& dwTextColor)
+void ui::CheckBoxTemplate<InheritType>::SetSelectedStateTextColor(ControlStateType stateType, const std::string& dwTextColor)
 {
     if (m_pSelectedTextColorMap == nullptr) {
         m_pSelectedTextColorMap = new StateColorMap(this);
@@ -1057,7 +1057,7 @@ void ui::CheckBoxTemplate<InheritType>::SetSelectedStateTextColor(ControlStateTy
 }
 
 template<typename InheritType /*= Control*/>
-DString ui::CheckBoxTemplate<InheritType>::GetPaintSelectedStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType) const
+std::string ui::CheckBoxTemplate<InheritType>::GetPaintSelectedStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType) const
 {
     stateType = buttonStateType;
     if (stateType == kControlStatePushed && GetSelectedStateTextColor(kControlStatePushed).empty()) {
@@ -1073,12 +1073,12 @@ DString ui::CheckBoxTemplate<InheritType>::GetPaintSelectedStateTextColor(Contro
 }
 
 template<typename InheritType>
-DString CheckBoxTemplate<InheritType>::GetSelectStateColor(ControlStateType stateType) const
+std::string CheckBoxTemplate<InheritType>::GetSelectStateColor(ControlStateType stateType) const
 {
     if (m_pSelectedColorMap != nullptr) {
         return m_pSelectedColorMap->GetStateColor(stateType);
     }
-    return DString();
+    return std::string();
 }
 
 template<typename InheritType>
@@ -1100,7 +1100,7 @@ UiSize CheckBoxTemplate<InheritType>::GetSelectStateColorRound(ControlStateType 
 }
 
 template<typename InheritType>
-void CheckBoxTemplate<InheritType>::SetSelectedStateColor(ControlStateType stateType, const DString& stateColor)
+void CheckBoxTemplate<InheritType>::SetSelectedStateColor(ControlStateType stateType, const std::string& stateColor)
 {
     if (m_pSelectedColorMap == nullptr) {
         m_pSelectedColorMap = new StateColorMap2(this);

@@ -23,10 +23,10 @@ public:
     virtual ~Combo() override;
 
     /// Overrides base class methods to provide customized functionality; please refer to the base class declarations
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual bool CanPlaceCaptionBar() const override;
-    virtual DString GetBorderColor(ControlStateType stateType) const override;
+    virtual std::string GetBorderColor(ControlStateType stateType) const override;
 
     /** When the DPI changes, update the control size and layout
     * @param [in] nOldDpiScale The old DPI scale percentage
@@ -83,23 +83,23 @@ public:
 
     /** Set the Class attribute of the drop-down TreeView
     */
-    void SetComboTreeClass(const DString& classValue);
+    void SetComboTreeClass(const std::string& classValue);
 
     /** Set the node Class attribute of the drop-down TreeView
     */
-    void SetComboTreeNodeClass(const DString& classValue);
+    void SetComboTreeNodeClass(const std::string& classValue);
 
     /** Set the Class attribute of the icon control
     */
-    void SetIconControlClass(const DString& classValue);
+    void SetIconControlClass(const std::string& classValue);
 
     /** Set the Class attribute of the edit control
     */
-    void SetEditControlClass(const DString& classValue);
+    void SetEditControlClass(const std::string& classValue);
 
     /** Set the Class attribute of the button control
     */
-    void SetButtonControlClass(const DString& classValue);
+    void SetButtonControlClass(const std::string& classValue);
 
 public:
     /** Get the number of items in the Combo list
@@ -132,48 +132,48 @@ public:
     /** Get the text of the item
     * @param [in] iIndex The item index
     */
-    DString GetItemText(size_t iIndex) const;
+    std::string GetItemText(size_t iIndex) const;
 
     /** Get the text ID of the item (multilingual version supported)
     * @param [in] iIndex The item index
     */
-    DString GetItemTextId(size_t iIndex) const;
+    std::string GetItemTextId(size_t iIndex) const;
 
     /** Set the text of the item
     * @param [in] iIndex The item index
     * @param [in] itemText The text content of the item
     */
-    bool SetItemText(size_t iIndex, const DString& itemText);
+    bool SetItemText(size_t iIndex, const std::string& itemText);
 
     /** Set the text ID of the item (multilingual version supported)
     * @param [in] iIndex The item index
     * @param [in] itemTextId The text content ID of the item
     */
-    bool SetItemTextId(size_t iIndex, const DString& itemTextId);
+    bool SetItemTextId(size_t iIndex, const std::string& itemTextId);
 
     /** Add an item string
     * @param [in] itemText The text content of the item
     * @return Returns the index of the newly added item
     */
-    size_t AddTextItem(const DString& itemText);
+    size_t AddTextItem(const std::string& itemText);
 
     /** Add an item string ID
     * @param [in] itemTextId The text content of the item (multilingual version supported)
     * @return Returns the index of the newly added item
     */
-    size_t AddTextIdItem(const DString& itemTextId);
+    size_t AddTextIdItem(const std::string& itemTextId);
 
     /** Insert an item string at the specified index position, returns the index of the newly added item
     * @param [in] iIndex The item index
     * @param [in] itemText The text content of the item
     */
-    size_t InsertTextItem(size_t iIndex, const DString& itemText);
+    size_t InsertTextItem(size_t iIndex, const std::string& itemText);
 
     /** Insert an item string at the specified index position, returns the index of the newly added item
     * @param [in] iIndex The item index
     * @param [in] itemText The text content ID of the item (multilingual version supported)
     */
-    size_t InsertTextIdItem(size_t iIndex, const DString& itemTextId);
+    size_t InsertTextIdItem(size_t iIndex, const std::string& itemTextId);
 
     /** Delete an item
     * @param [in] iIndex The item index
@@ -189,16 +189,16 @@ public:
     * @param [in] bTriggerEvent Whether to trigger the selection event; if true, a kEventSelect event will be triggered
     * @return Returns the index of the selected item; if no item is selected, returns Box::InvalidIndex
     */
-    size_t SelectTextItem(const DString& itemText, bool bTriggerEvent = true);
+    size_t SelectTextItem(const std::string& itemText, bool bTriggerEvent = true);
 
 public:
     /** Get the text in the current edit box
      */
-    DString GetText() const;
+    std::string GetText() const;
 
     /** Set the text in the edit box
     */
-    void SetText(const DString& text);
+    void SetText(const std::string& text);
 
     /** Give focus to the control
      */
@@ -282,7 +282,7 @@ protected:
     */
     virtual void OnComboWndClosed(bool bCanceled, 
                                   bool needUpdateSelItem,
-                                  const DString& oldEditText);
+                                  const std::string& oldEditText);
 
     /** Mouse button pressed
      * @param[in] args The argument list
@@ -351,12 +351,12 @@ protected:
 private:
     /** Parse the attribute list
     */
-    void ParseAttributeList(const DString& strList,
-                            std::vector<std::pair<DString, DString>>& attributeList) const;
+    void ParseAttributeList(const std::string& strList,
+                            std::vector<std::pair<std::string, std::string>>& attributeList) const;
 
     /** Set the attribute list of the control
     */
-    void SetAttributeList(Control* pControl, const DString& classValue);
+    void SetAttributeList(Control* pControl, const std::string& classValue);
 
     /** Remove the control
     */
@@ -366,7 +366,7 @@ private:
     * @param [in] itemText The text content of the item
     * @param [in] bTextId Whether the text content of itemText is a text ID (multilingual version supported)
     */
-    TreeNode* CreateTreeNode(const DString& itemText, bool bTextId);
+    TreeNode* CreateTreeNode(const std::string& itemText, bool bTextId);
 
     /** Attach the mouse events of this control and set the focus
     */
@@ -377,7 +377,7 @@ private:
     * @param [in] itemText The text content of the item
     * @param [in] bTextId Whether the text content of itemText is a text ID (multilingual version supported)
     */
-    size_t PrivateInsertTextItem(size_t iIndex, const DString& itemText, bool bTextId);
+    size_t PrivateInsertTextItem(size_t iIndex, const std::string& itemText, bool bTextId);
 
 private:
     /** Combo type

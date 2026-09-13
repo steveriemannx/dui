@@ -8,12 +8,12 @@ DragForm::~DragForm()
 {
 }
 
-DString DragForm::GetSkinFolder()
+std::string DragForm::GetSkinFolder()
 {
-    return DUI_T("webview2_browser");
+    return "webview2_browser";
 }
 
-DString DragForm::GetSkinFile()
+std::string DragForm::GetSkinFile()
 {
-    return DUI_T("drag_form.xml");
+    return "drag_form.xml";
 }

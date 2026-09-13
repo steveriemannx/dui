@@ -4,7 +4,7 @@
 #include "dui/Utils/AppEntry.h"
 
 App::App() :
-    FrameworkThread(DUI_T("App"), ui::kThreadUI)
+    FrameworkThread("App", ui::kThreadUI)
 {
 }
 
@@ -61,15 +61,15 @@ void App::OnInit()
 {
     //Initialize the global resources, using a local folder as the resource
     ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-    resourcePath += DUI_T("resources\\");
+    resourcePath += "resources\\";
     ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
     //Initialize the basic configuration of WebView2
-    DString userDataFolder = ui::WebView2Manager::GetInstance().GetDefaultUserDataFolder(DUI_T("Webview2Browser"));
+    std::string userDataFolder = ui::WebView2Manager::GetInstance().GetDefaultUserDataFolder("Webview2Browser");
     ui::WebView2Manager::GetInstance().Initialize(userDataFolder);
 
     //Create the window and show the default page
-    BrowserManager::GetInstance()->CreateBorwserBox(nullptr, "", DUI_T(""));
+    BrowserManager::GetInstance()->CreateBorwserBox(nullptr, "", "");
 }
 
 void App::OnCleanup()

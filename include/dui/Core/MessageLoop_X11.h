@@ -30,7 +30,7 @@ public:
     static void PostNoneEvent();
     static void PostQuitEvent();
     static bool IsQuitEventReceived();
-    static DString GetCurrentVideoDriverName();
+    static std::string GetCurrentVideoDriverName();
     static float GetPrimaryDisplayContentScale();
     static Display* GetDisplay();
     static void RegisterPaintWindow(NativeWindow_X11*);

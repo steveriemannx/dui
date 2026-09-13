@@ -17,8 +17,8 @@ public:
     virtual void OnInit() override;
 
     /// Override the parent class methods to provide personalized functionality; please refer to the parent class declarations
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual bool AddItem(Control* pControl) override;
     virtual bool AddItemAt(Control* pControl, size_t iIndex) override;
     virtual bool RemoveItem(Control* pControl) override;
@@ -47,7 +47,7 @@ public:
      * @param [in] pControlName The name of the control to select
      * @return Returns true on success, otherwise returns false
      */
-    bool SelectItem(const DString& pControlName);
+    bool SelectItem(const std::string& pControlName);
    
     /** Listen for the tab page selection event
      * @param [in] callback The callback function for event handling, please refer to the EventCallback declaration
@@ -144,7 +144,7 @@ private:
 
     /** Set the type of the page switch animation
     */
-    void SetFadeSwitchTypeByString(const DString& fadeSwitchType);
+    void SetFadeSwitchTypeByString(const std::string& fadeSwitchType);
 
     /** Start playing the animation (dynamically switch the X coordinate, the content area slides horizontally)
      * @param [in] pNewItemControl The interface of the newly selected tab page

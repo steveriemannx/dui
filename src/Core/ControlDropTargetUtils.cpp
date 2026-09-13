@@ -6,20 +6,20 @@
 namespace ui 
 {
 
-bool ControlDropTargetUtils::IsFilteredFileTypes(const DString& fileTypes, const std::vector<DString>& fileList)
+bool ControlDropTargetUtils::IsFilteredFileTypes(const std::string& fileTypes, const std::vector<std::string>& fileList)
 {
     if (fileTypes.empty() || fileList.empty()) {
         return true;
     }
 
-    std::list<DString> fileTypeList = StringUtil::Split(fileTypes, DUI_T(";"));
-    for (DString& fileExt : fileTypeList) {
+    std::list<std::string> fileTypeList = StringUtil::Split(fileTypes, ";");
+    for (std::string& fileExt : fileTypeList) {
         StringUtil::Trim(fileExt);
     }
-    for (const DString& fileName : fileList) {
+    for (const std::string& fileName : fileList) {
         FilePath filePath(fileName);
-        DString dropFileExt = filePath.GetFileExtension();
-        for (const DString& fileExt : fileTypeList) {
+        std::string dropFileExt = filePath.GetFileExtension();
+        for (const std::string& fileExt : fileTypeList) {
             if (IsSameFileType(fileExt, dropFileExt)) {
                 return true;
             }
@@ -28,23 +28,23 @@ bool ControlDropTargetUtils::IsFilteredFileTypes(const DString& fileTypes, const
     return false;
 }
 
-void ControlDropTargetUtils::RemoveUnsupportedFiles(std::vector<DString>& fileList, const DString& fileTypes)
+void ControlDropTargetUtils::RemoveUnsupportedFiles(std::vector<std::string>& fileList, const std::string& fileTypes)
 {
     if (fileTypes.empty() || fileList.empty()) {
         return;
     }
 
-    std::list<DString> fileTypeList = StringUtil::Split(fileTypes, DUI_T(";"));
-    for (DString& fileExt : fileTypeList) {
+    std::list<std::string> fileTypeList = StringUtil::Split(fileTypes, ";");
+    for (std::string& fileExt : fileTypeList) {
         StringUtil::Trim(fileExt);
     }
     auto iter = fileList.begin();
     while (iter != fileList.end()) {
-        const DString& fileName = *iter;
+        const std::string& fileName = *iter;
         bool bMatch = false;
         FilePath filePath(fileName);
-        DString dropFileExt = filePath.GetFileExtension();
-        for (const DString& fileExt : fileTypeList) {
+        std::string dropFileExt = filePath.GetFileExtension();
+        for (const std::string& fileExt : fileTypeList) {
             if (IsSameFileType(fileExt, dropFileExt)) {
                 bMatch = true;
                 break;
@@ -60,7 +60,7 @@ void ControlDropTargetUtils::RemoveUnsupportedFiles(std::vector<DString>& fileLi
     }
 }
 
-bool ControlDropTargetUtils::IsSameFileType(const DString& ext1, const DString& ext2)
+bool ControlDropTargetUtils::IsSameFileType(const std::string& ext1, const std::string& ext2)
 {
 #if !defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_FREEBSD)
     // Windows/MacOS file names are case-insensitive; Linux/FreeBSD are case-sensitive

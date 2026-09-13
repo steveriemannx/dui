@@ -21,7 +21,7 @@ BrowserForm* BrowserManager::CreateBrowserForm()
     return new BrowserForm;
 }
 
-BrowserBox* BrowserManager::CreateBorwserBox(BrowserForm* pBrowserForm, std::string browserId, const DString& url)
+BrowserBox* BrowserManager::CreateBorwserBox(BrowserForm* pBrowserForm, std::string browserId, const std::string& url)
 {
     if (browserId.empty()) {
         browserId = CreateBrowserID();
@@ -30,7 +30,7 @@ BrowserBox* BrowserManager::CreateBorwserBox(BrowserForm* pBrowserForm, std::str
     //Multi-tab mode: multiple tabs are allowed in one window
     if (pBrowserForm == nullptr) {
         pBrowserForm = BrowserManager::GetInstance()->CreateBrowserForm();
-        if (!pBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("WebView2Browser"), true))) {
+        if (!pBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam("WebView2Browser", true))) {
             pBrowserForm = nullptr;
             return nullptr;
         }

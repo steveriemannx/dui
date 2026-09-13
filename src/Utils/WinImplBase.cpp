@@ -124,8 +124,8 @@ void WindowImplBase::BindCaptionButtons_Windows()
     BindCaptionButtons_Default();
     if (!IsUseSystemCaption()) {
         if (Label* pTitle = dynamic_cast<Label*>(FindControl(DUI_CTR_CAPTION_TITLE))) {
-            const DString strTitle = GetText();
-            pTitle->SetText(IsShowCaptionTitle() ? strTitle : DUI_T(""));
+            const std::string strTitle = GetText();
+            pTitle->SetText(IsShowCaptionTitle() ? strTitle : "");
             pTitle->SetVisible(IsShowCaptionTitle() && !strTitle.empty());
         }
     }
@@ -146,14 +146,14 @@ void WindowImplBase::BindCaptionButtons_MacOS()
     }
     //The self-drawn traffic lights replace the custom window buttons, so hide
     //the XML/code-declared caption buttons.
-    const DString captionButtonNames[] = {
+    const std::string captionButtonNames[] = {
         DUI_CTR_BUTTON_CLOSE,
         DUI_CTR_BUTTON_MIN,
         DUI_CTR_BUTTON_MAX,
         DUI_CTR_BUTTON_RESTORE,
         DUI_CTR_BUTTON_FULLSCREEN,
     };
-    for (const DString& strButtonName : captionButtonNames) {
+    for (const std::string& strButtonName : captionButtonNames) {
         Control* pButton = FindControl(strButtonName);
         if (pButton != nullptr) {
             pButton->SetVisible(false);
@@ -165,7 +165,7 @@ void WindowImplBase::BindCaptionButtons_MacOS()
     }
     //macOS title bar: white background, 3pt thinner than the XML height
     //(36pt) to match the compact macOS-style caption bar.
-    pCaptionBar->SetBkColor(DUI_T("#FFFFFFFF"));
+    pCaptionBar->SetBkColor("#FFFFFFFF");
     pCaptionBar->SetFixedHeight(UiFixedInt(33), true, true);
     //No extra macOS title-bar separator line: the examples use a clean
     //caption bar without a visible border line.
@@ -183,7 +183,7 @@ void WindowImplBase::BindCaptionButtons_MacOS()
     Box* pCaptionBox = dynamic_cast<Box*>(pCaptionBar);
     if (pCaptionBox != nullptr) {
         MacTrafficLights* pTrafficLights = new MacTrafficLights(this);
-        pTrafficLights->SetName(DUI_T("mac_traffic_lights"));
+        pTrafficLights->SetName("mac_traffic_lights");
         pTrafficLights->SetFixedWidth(UiFixedInt(76), true, true);
         pTrafficLights->SetFixedHeight(UiFixedInt(33), true, true);
         if (pCaptionBox->AddItemAt(pTrafficLights, 0)) {
@@ -202,15 +202,15 @@ void WindowImplBase::BindCaptionButtons_MacOS()
         //so we render the title ourselves from the window title. Windows
         //without a title keep a clean caption bar like native utility windows.
         if (m_pMacTitleLabel == nullptr) {
-            const DString strTitle = GetText();
+            const std::string strTitle = GetText();
             if (!strTitle.empty() && IsShowCaptionTitle()) {
                 Label* pTitle = new Label(this);
                 pTitle->SetName(DUI_CTR_CAPTION_TITLE);
                 pTitle->SetText(strTitle);
                 //Framework defaults; a theme class "caption_title" in
                 //global.xml overrides them (font/align/width/color).
-                pTitle->ApplyAttributeList(DUI_T("width='stretch' height='stretch' text_align='hcenter,vcenter' font='system_14' normal_text_color='#FF000000' mouse_enabled='false'"));
-                pTitle->SetClass(DUI_T("caption_title"));
+                pTitle->ApplyAttributeList("width='stretch' height='stretch' text_align='hcenter,vcenter' font='system_14' normal_text_color='#FF000000' mouse_enabled='false'");
+                pTitle->SetClass("caption_title");
                 //Per-window override: Window caption_title_style="..." on
                 //top of the theme class (framework defaults < class < window).
                 if (!GetCaptionTitleStyle().empty()) {
@@ -265,17 +265,17 @@ void WindowImplBase::BindCaptionButtons_FreeBSD()
 }
 #endif
 
-DString WindowImplBase::GetSkinFolder()
+std::string WindowImplBase::GetSkinFolder()
 {
     return BaseClass::GetSkinFolder();
 }
 
-DString WindowImplBase::GetSkinFile()
+std::string WindowImplBase::GetSkinFile()
 {
     return BaseClass::GetSkinFile();
 }
 
-Control* WindowImplBase::CreateControl(const DString& strClass)
+Control* WindowImplBase::CreateControl(const std::string& strClass)
 {
     return BaseClass::CreateControl(strClass);
 }
@@ -290,13 +290,13 @@ void WindowImplBase::OnInitWindow()
     BindCaptionButtons();
 }
 
-void WindowImplBase::OnWindowTextChanged(const DString& strText)
+void WindowImplBase::OnWindowTextChanged(const std::string& strText)
 {
     BaseClass::OnWindowTextChanged(strText);
 #if defined(DUI_BUILD_FOR_WIN)
     if (!IsUseSystemCaption()) {
         if (Label* pTitle = dynamic_cast<Label*>(FindControl(DUI_CTR_CAPTION_TITLE))) {
-            pTitle->SetText(IsShowCaptionTitle() ? strText : DUI_T(""));
+            pTitle->SetText(IsShowCaptionTitle() ? strText : "");
             pTitle->SetVisible(IsShowCaptionTitle() && !strText.empty());
         }
     }
@@ -345,7 +345,7 @@ bool WindowImplBase::OnButtonClick(const EventArgs& msg)
     if (pSender == nullptr) {
         return false;
     }
-    DString sCtrlName = pSender->GetName();
+    std::string sCtrlName = pSender->GetName();
     if (sCtrlName == DUI_CTR_BUTTON_CLOSE) {
         //Close button
         CloseWnd();
@@ -575,7 +575,7 @@ void WindowImplBase::SetMacTitleActive(bool bActive)
         //m_pMacTitleLabel is a ui::Label (set in BindCaptionButtons_MacOS).
         ui::Label* pTitle = static_cast<ui::Label*>(m_pMacTitleLabel);
         pTitle->SetStateTextColor(kControlStateNormal,
-            bActive ? DUI_T("caption_title_color") : DUI_T("caption_title_inactive_color"));
+            bActive ? "caption_title_color" : "caption_title_inactive_color");
         pTitle->Invalidate();
     }
 }

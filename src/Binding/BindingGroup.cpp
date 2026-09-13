@@ -44,8 +44,8 @@ public:
     {
         Control* pControl = nullptr;
         std::weak_ptr<WeakFlag> weakControl;
-        DString strAttribute;
-        DString strPath;
+        std::string strAttribute;
+        std::string strPath;
         EventCallbackID nEventCallbackID = 0;
         /** Re-entrancy guard for this binding, covering BOTH directions: while a
          pull is writing the control, the change event that write may raise must
@@ -131,7 +131,7 @@ public:
             return;
         }
 
-        DString strValue;
+        std::string strValue;
         if (!m_pContext->GetProperty(binding.strPath, strValue)) {
             // The source does not expose this path. Silence is right here: a
             // recycled item is briefly bound to no context at all, and reads
@@ -162,7 +162,7 @@ public:
             return;
         }
 
-        DString strValue;
+        std::string strValue;
         if (!pAccessor->get(binding.pControl, strValue)) {
             return;
         }
@@ -172,7 +172,7 @@ public:
         binding.bUpdating = false;
     }
 
-    void OnContextPropertyChanged(const DString& strPropertyName)
+    void OnContextPropertyChanged(const std::string& strPropertyName)
     {
         // An empty name means "everything changed" (RaiseAllPropertiesChanged).
         const bool bAll = strPropertyName.empty();
@@ -207,7 +207,7 @@ void BindingGroup::SetContext(const std::shared_ptr<ObservableObject>& pContext)
 
     if (m_impl->m_pContext) {
         m_impl->m_nContextCallbackID = m_impl->m_pContext->AttachPropertyChanged(
-            [this](const DString& strPropertyName) {
+            [this](const std::string& strPropertyName) {
                 m_impl->OnContextPropertyChanged(strPropertyName);
             });
     }
@@ -222,7 +222,7 @@ std::shared_ptr<ObservableObject> BindingGroup::GetContext() const
     return m_impl->m_pContext;
 }
 
-bool BindingGroup::Bind(Control* pControl, const DString& strAttribute, const DString& strPath)
+bool BindingGroup::Bind(Control* pControl, const std::string& strAttribute, const std::string& strPath)
 {
     if (pControl == nullptr) {
         return false;
@@ -247,7 +247,7 @@ bool BindingGroup::Bind(Control* pControl, const DString& strAttribute, const DS
     return true;
 }
 
-bool BindingGroup::BindTwoWay(Control* pControl, const DString& strAttribute, const DString& strPath)
+bool BindingGroup::BindTwoWay(Control* pControl, const std::string& strAttribute, const std::string& strPath)
 {
     if (pControl == nullptr) {
         return false;
@@ -286,26 +286,26 @@ bool BindingGroup::BindTwoWay(Control* pControl, const DString& strAttribute, co
     return true;
 }
 
-bool BindingGroup::Bind(Box* pRoot, const DString& strTargetName,
-                        const DString& strAttribute, const DString& strPath)
+bool BindingGroup::Bind(Box* pRoot, const std::string& strTargetName,
+                        const std::string& strAttribute, const std::string& strPath)
 {
     return Bind(FindTarget(pRoot, strTargetName), strAttribute, strPath);
 }
 
-bool BindingGroup::Bind(Window* pWindow, const DString& strTargetName,
-                        const DString& strAttribute, const DString& strPath)
+bool BindingGroup::Bind(Window* pWindow, const std::string& strTargetName,
+                        const std::string& strAttribute, const std::string& strPath)
 {
     return Bind(FindTarget(pWindow, strTargetName), strAttribute, strPath);
 }
 
-bool BindingGroup::BindTwoWay(Box* pRoot, const DString& strTargetName,
-                              const DString& strAttribute, const DString& strPath)
+bool BindingGroup::BindTwoWay(Box* pRoot, const std::string& strTargetName,
+                              const std::string& strAttribute, const std::string& strPath)
 {
     return BindTwoWay(FindTarget(pRoot, strTargetName), strAttribute, strPath);
 }
 
-bool BindingGroup::BindTwoWay(Window* pWindow, const DString& strTargetName,
-                              const DString& strAttribute, const DString& strPath)
+bool BindingGroup::BindTwoWay(Window* pWindow, const std::string& strTargetName,
+                              const std::string& strAttribute, const std::string& strPath)
 {
     return BindTwoWay(FindTarget(pWindow, strTargetName), strAttribute, strPath);
 }
@@ -339,7 +339,7 @@ bool BindingGroup::AttachCommand(Control* pControl, const std::function<void()>&
     return true;
 }
 
-Control* BindingGroup::FindTarget(Box* pRoot, const DString& strTargetName)
+Control* BindingGroup::FindTarget(Box* pRoot, const std::string& strTargetName)
 {
     if (pRoot == nullptr) {
         return nullptr;
@@ -347,7 +347,7 @@ Control* BindingGroup::FindTarget(Box* pRoot, const DString& strTargetName)
     return pRoot->FindSubControl(strTargetName);
 }
 
-Control* BindingGroup::FindTarget(Window* pWindow, const DString& strTargetName)
+Control* BindingGroup::FindTarget(Window* pWindow, const std::string& strTargetName)
 {
     if (pWindow == nullptr) {
         return nullptr;

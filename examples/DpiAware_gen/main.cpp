@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("DpiAware (Generated Code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("DpiAware (Generated Code)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

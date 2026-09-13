@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<ControlForm>(DUI_T("controls (Codegen)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<ControlForm>("controls (Codegen)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

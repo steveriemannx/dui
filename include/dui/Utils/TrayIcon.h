@@ -49,7 +49,7 @@ public:
     * @param [in] tooltip Tray tooltip text
     * @return Pointer to the tray icon instance, or nullptr if creation fails
     */
-    static std::unique_ptr<TrayIcon> Create(const Window* pWindow, const DString& iconFilePath, const DString& tooltip = DUI_T(""));
+    static std::unique_ptr<TrayIcon> Create(const Window* pWindow, const std::string& iconFilePath, const std::string& tooltip = "");
 
 public:
     /** Set the tray icon
@@ -57,13 +57,13 @@ public:
     * @param [in] iconFilePath Icon file path (*.ico format supported; other formats are also supported, but ICO is recommended)
     * @return Returns true on success, false on failure
     */
-    virtual bool SetIcon(const Window* pWindow, const DString& iconFilePath) = 0;
+    virtual bool SetIcon(const Window* pWindow, const std::string& iconFilePath) = 0;
 
     /** Set the tray tooltip text
     * @param [in] tooltip The tooltip text
     * @return Returns true on success, false on failure
     */
-    virtual bool SetTooltip(const DString& tooltip) = 0;
+    virtual bool SetTooltip(const std::string& tooltip) = 0;
 
     /** Show a balloon notification
     * @param [in] title The balloon title
@@ -71,7 +71,7 @@ public:
     * @param [in] timeoutMs Display timeout in milliseconds, 3000ms by default
     * @return Returns true on success, false on failure
     */
-    virtual bool ShowBalloon(const DString& title, const DString& content, uint32_t timeoutMs = 3000) = 0;
+    virtual bool ShowBalloon(const std::string& title, const std::string& content, uint32_t timeoutMs = 3000) = 0;
 
     /** Hide the tray icon
     * @return Returns true if hidden successfully, false on failure

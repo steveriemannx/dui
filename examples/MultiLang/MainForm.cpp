@@ -14,7 +14,7 @@ void MainForm::OnInitWindow()
                 ofs << "count=" << pFontMgr->GetFontCount() << "\n";
                 uint32_t nCount = pFontMgr->GetFontCount();
                 for (uint32_t i = 0; i < nCount && i < 4000; ++i) {
-                    DString name;
+                    std::string name;
                     pFontMgr->GetFontName(i, name);
                     std::string utf8 = ui::StringConvert::TToUTF8(name);
                     if (utf8.find("YaHei") != std::string::npos || utf8.find("Segoe") != std::string::npos ||
@@ -25,9 +25,9 @@ void MainForm::OnInitWindow()
                     }
                 }
                 {
-                    DString s1 = ui::StringConvert::UTF8ToT("Microsoft YaHei");
-                    DString s2 = ui::StringConvert::UTF8ToT("Segoe UI Variable");
-                    DString s3 = ui::StringConvert::UTF8ToT("Microsoft YaHei UI");
+                    std::string s1 = ui::StringConvert::UTF8ToT("Microsoft YaHei");
+                    std::string s2 = ui::StringConvert::UTF8ToT("Segoe UI Variable");
+                    std::string s3 = ui::StringConvert::UTF8ToT("Microsoft YaHei UI");
                     ofs << "HasFontName(Microsoft YaHei)=" << (int)pFontMgr->HasFontName(s1) << "\n";
                     ofs << "HasFontName(Segoe UI Variable)=" << (int)pFontMgr->HasFontName(s2) << "\n";
                     ofs << "HasFontName(Microsoft YaHei UI)=" << (int)pFontMgr->HasFontName(s3) << "\n";
@@ -45,7 +45,7 @@ void MainForm::BindEvents()
     // Window initialization is complete; this form can now be initialized
 
     /* Show select language menu */
-    ui::Button* select = ui::Find<ui::Button>(this, DUI_T("language"));
+    ui::Button* select = ui::Find<ui::Button>(this, "language");
     ASSERT(select != nullptr);
     if (select == nullptr) {
         return;
@@ -67,29 +67,29 @@ void MainForm::ShowPopupMenu(const ui::UiPoint& point)
     ui::Menu* menu = new ui::Menu(this);// The parent window must be set; otherwise, when the menu pops up, the program status bar becomes inactive
     // Set the directory where the menu XML is located
     menu->SetSkinFolder(GetResourcePath().ToString());
-    DString xml(DUI_T("lang_menu.xml"));
+    std::string xml("lang_menu.xml");
     menu->ShowMenu(xml, point);
 
     // Current language file
-    DString currentLangFileName = ui::GlobalManager::Instance().GetLanguageFileName();
+    std::string currentLangFileName = ui::GlobalManager::Instance().GetLanguageFileName();
 
     // The list of available language files and their display names
-    std::vector<std::pair<DString, DString>> languageList;
+    std::vector<std::pair<std::string, std::string>> languageList;
     ui::GlobalManager::Instance().GetLanguageList(languageList);
     if (languageList.empty()) {
-        languageList.push_back({ currentLangFileName , DUI_T("")});
+        languageList.push_back({ currentLangFileName , ""});
     }
 
     // Add menu items dynamically
     for (auto& lang : languageList) {
-        const DString fileName = lang.first;
-        DString& displayName = lang.second;
+        const std::string fileName = lang.first;
+        std::string& displayName = lang.second;
 
         ui::MenuItem* pMenuItem = new ui::MenuItem(menu);
-        pMenuItem->SetClass(DUI_T("menu_element"));
+        pMenuItem->SetClass("menu_element");
         ui::CheckBox* pCheckBox = new ui::CheckBox(menu);
-        pCheckBox->SetClass(DUI_T("menu_checkbox"));
-        pCheckBox->SetAttribute(DUI_T("margin"), DUI_T("0,5,0,10"));
+        pCheckBox->SetClass("menu_checkbox");
+        pCheckBox->SetAttribute("margin", "0,5,0,10");
         pCheckBox->SetText(!displayName.empty() ? displayName : fileName);
         pMenuItem->AddItem(pCheckBox);
         menu->AddMenuItem(pMenuItem);

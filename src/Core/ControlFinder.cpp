@@ -91,7 +91,7 @@ Control* ControlFinder::FindSubControlByPoint(Control* pParent, const UiPoint& p
     return nullptr;
 }
 
-Control* ControlFinder::FindSubControlByName(Control* pParent, const DString& strName) const
+Control* ControlFinder::FindSubControlByName(Control* pParent, const std::string& strName) const
 {
     if (strName.empty()) {
         return nullptr;
@@ -134,7 +134,7 @@ Control* ControlFinder::FindSubControlByName(Control* pParent, const DString& st
     return nullptr;
 }
 
-Control* ControlFinder::FindControlInCache(Control* pAncestor, const DString& strName) const
+Control* ControlFinder::FindControlInCache(Control* pAncestor, const std::string& strName) const
 {
     if (strName.empty()) {
         return nullptr;
@@ -173,7 +173,7 @@ void ControlFinder::RemoveControl(Control* pControl)
     if ((pControl == nullptr) || !pControl->HasName()) {
         return;
     }
-    const DString sName = pControl->GetName();
+    const std::string sName = pControl->GetName();
     if (!sName.empty()) {
         auto iter = m_controlNameMap.find(sName);
         if (iter != m_controlNameMap.end()) {
@@ -193,7 +193,7 @@ void ControlFinder::AddControl(Control* pControl)
     if (pControl == nullptr) {
         return;
     }
-    const DString sName = pControl->GetName();
+    const std::string sName = pControl->GetName();
     if (sName.empty()) {
         return;
     }
@@ -270,7 +270,7 @@ Control* ControlFinder::FindControlFromUpdate(Control* pThis, void* /*pData*/)
 
 Control* ControlFinder::FindControlFromName(Control* pThis, void* pData)
 {
-    const DString::value_type* pstrName = static_cast<const DString::value_type*>(pData);
+    const std::string::value_type* pstrName = static_cast<const std::string::value_type*>(pData);
     if ((pstrName == nullptr) || (pThis == nullptr)) {
         return nullptr;
     }

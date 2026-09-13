@@ -455,7 +455,7 @@ bool Image_PNG::LoadImageFile(std::vector<uint8_t>& fileData,
         return m_impl->InitImageData(fileData, pngImageInfo, bLoadAllFrames, bAsyncDecode, fImageSizeScale, rcMaxDestRectSize);
     }
     else {
-        DStringA pngFileName = imageFilePath.NativePathA();
+        std::string pngFileName = imageFilePath.NativePathA();
         ASSERT(!pngFileName.empty());
         ReadPngHeader::PngImageInfo pngImageInfo;
         bool bLoaded = ReadPngHeader::load_apng_image_info(pngFileName, pngImageInfo);

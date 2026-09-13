@@ -48,9 +48,9 @@ void MainForm::BindEvents()
 void MainForm::ShowCustomWindow(LayoutType layoutType)
 {
     MainForm* window = new MainForm(layoutType);
-    ui::WindowCreateParam createParam(DUI_T("chat (Generated Code)"), true);
+    ui::WindowCreateParam createParam("chat (Generated Code)", true);
     if (layoutType == kWechat) {
-        //Match wechat.xml: size=DUI_T("1024,768").
+        //Match wechat.xml: size="1024,768".
         createParam.m_nWidth = 1024;
         createParam.m_nHeight = 768;
     }

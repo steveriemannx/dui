@@ -26,7 +26,7 @@ public:
     explicit ListCtrlReportView(Window* pWindow);
     virtual ~ListCtrlReportView() override;
 
-    virtual DString GetType() const override { return DUI_T("ListCtrlReportView"); }
+    virtual std::string GetType() const override { return "ListCtrlReportView"; }
     virtual void HandleEvent(const EventArgs& msg) override;
 
     /** Set the ListCtrl control interface
@@ -169,8 +169,8 @@ public:
     /** Color of the horizontal grid line
     * @param [in] color The color of the horizontal grid line
     */
-    void SetRowGridLineColor(const DString& color);
-    DString GetRowGridLineColor() const;
+    void SetRowGridLineColor(const std::string& color);
+    std::string GetRowGridLineColor() const;
 
     /** Width of the vertical grid line
     * @param [in] nLineWidth The width of the grid line; if it is 0, the vertical grid line is not displayed
@@ -182,8 +182,8 @@ public:
     /** Color of the vertical grid line
     * @param [in] color The color of the vertical grid line
     */
-    void SetColumnGridLineColor(const DString& color);
-    DString GetColumnGridLineColor() const;
+    void SetColumnGridLineColor(const std::string& color);
+    std::string GetColumnGridLineColor() const;
 
     /** Adjust the column widths: the 1st value in the array is the column index, and the 2nd value is the column width
     */

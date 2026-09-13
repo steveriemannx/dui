@@ -35,7 +35,7 @@ public:
 public:
     /** Parse the content of pDataObj and separate the text and file path data
     */
-    static void ParseWindowsDataObject(void* pDataObj, std::vector<DString>& textList, std::vector<DString>& fileList);
+    static void ParseWindowsDataObject(void* pDataObj, std::vector<std::string>& textList, std::vector<std::string>& fileList);
 
 private:
     /** Clear the drag and drop state
@@ -53,11 +53,11 @@ private:
 
     /** The associated text data
     */
-    std::vector<DString> m_textList;
+    std::vector<std::string> m_textList;
 
     /** The associated file data
     */
-    std::vector<DString> m_fileList;
+    std::vector<std::string> m_fileList;
 };
 
 } // namespace ui

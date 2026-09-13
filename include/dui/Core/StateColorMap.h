@@ -17,11 +17,11 @@ public:
 
     /** Get the color value; returns empty if the color is not included
     */
-    DString GetStateColor(ControlStateType stateType) const;
+    std::string GetStateColor(ControlStateType stateType) const;
 
     /** Set the color value
     */
-    void SetStateColor(ControlStateType stateType, const DString& color);
+    void SetStateColor(ControlStateType stateType, const std::string& color);
 
 public:
     /** Whether it contains the color of the Hot state

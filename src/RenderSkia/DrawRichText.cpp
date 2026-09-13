@@ -65,7 +65,7 @@ public:
     std::vector<RichTextData> m_richTextData;
 
     SkTextEncoding m_textEncoding = SkTextEncoding::kUTF16;
-    size_t m_textCharSize = sizeof(DStringW::value_type);
+    size_t m_textCharSize = sizeof(std::wstring::value_type);
 
     /** The generated data to be drawn
     */
@@ -90,7 +90,7 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
                                         std::shared_ptr<DrawRichTextCache>* pDrawRichTextCache,
                                         std::vector<std::vector<UiRect>>* pRichTextRects)
 {
-    PerformanceStat statPerformance(DUI_T("DrawRichText::InternalDrawRichText"));
+    PerformanceStat statPerformance("DrawRichText::InternalDrawRichText");
     ASSERT((m_pRender != nullptr) && (m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pRender == nullptr) || (m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return;
@@ -121,8 +121,8 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
     }
 
     //Text encoding: fixed to UTF16 or UTF32
-    constexpr const SkTextEncoding textEncoding = (sizeof(DStringW::value_type) == sizeof(uint32_t)) ? SkTextEncoding::kUTF32 : SkTextEncoding::kUTF16;
-    constexpr const size_t textCharSize = sizeof(DStringW::value_type);
+    constexpr const SkTextEncoding textEncoding = (sizeof(std::wstring::value_type) == sizeof(uint32_t)) ? SkTextEncoding::kUTF32 : SkTextEncoding::kUTF16;
+    constexpr const size_t textCharSize = sizeof(std::wstring::value_type);
 
     //Whether to continue drawing when drawing exceeds the bounds of the destination rectangle
     const bool bBreakWhenOutOfRect = !bMeasureOnly && (pDrawRichTextCache == nullptr);
@@ -325,17 +325,17 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
                 if (bDrawTabChar) {
                     ASSERT(textCount == 1);
                     //Draw the TAB key, aligned to 4 characters
-                    const DStringW blank = L"    ";
+                    const std::wstring blank = L"    ";
                     size_t nBlankCount = nRowCharCount % blank.size();
                     nBlankCount = blank.size() - nBlankCount;
                     nDrawLength = SkTextBox::breakText(blank.c_str(),
-                                                       nBlankCount * sizeof(DStringW::value_type), textEncoding,
+                                                       nBlankCount * sizeof(std::wstring::value_type), textEncoding,
                                                        skFont, skPaint,
                                                        maxWidth, &textMeasuredWidth, &textMeasuredHeight,
                                                        glyphs, glyphChars, glyphWidths,
                                                        pGlyphCharList, pGlyphWidthList);
                     if (nDrawLength > 0) {
-                        nDrawLength = textCount * sizeof(DStringW::value_type);
+                        nDrawLength = textCount * sizeof(std::wstring::value_type);
                         if (glyphs.empty()) {
                             glyphs.resize(1);
                             glyphChars.resize(1);
@@ -606,7 +606,7 @@ void DrawRichText::SplitLines(const std::wstring_view& lineText, std::vector<uin
 }
 
 void DrawRichText::OnDrawUnicodeChar(RichTextLineInfoParam* pLineInfoParam,
-                                     DStringW::value_type ch, uint8_t glyphChars, size_t glyphCount,
+                                     std::wstring::value_type ch, uint8_t glyphChars, size_t glyphCount,
                                      size_t nLineTextIndex, uint32_t nLineTextRowIndex,
                                      float xPos, int32_t yPos, float glyphWidth, int32_t nRowHeight)
 {
@@ -758,7 +758,7 @@ bool DrawRichText::UpdateDrawRichTextCache(std::shared_ptr<DrawRichTextCache>& s
                                            size_t nDeletedRows,
                                            const std::vector<int32_t>& rowRectTopList)
 {
-    PerformanceStat statPerformance(DUI_T("DrawRichText::UpdateDrawRichTextCache"));
+    PerformanceStat statPerformance("DrawRichText::UpdateDrawRichTextCache");
     ASSERT((m_pRender != nullptr) && (m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pRender == nullptr) || (m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return false;
@@ -1036,7 +1036,7 @@ void DrawRichText::DrawRichTextCacheData(const std::shared_ptr<DrawRichTextCache
                                          uint8_t uFade,
                                          std::vector<std::vector<UiRect>>* pRichTextRects)
 {
-    PerformanceStat statPerformance(DUI_T("DrawRichText::DrawRichTextCacheData"));
+    PerformanceStat statPerformance("DrawRichText::DrawRichTextCacheData");
     ASSERT((m_pRender != nullptr) && (m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pRender == nullptr) || (m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return;
@@ -1125,7 +1125,7 @@ void DrawRichText::DrawRichTextCacheData(const std::shared_ptr<DrawRichTextCache
     }
 }
 
-void DrawRichText::DrawTextString(const UiRect& textRect, const DString& strText, uint32_t uFormat,
+void DrawRichText::DrawTextString(const UiRect& textRect, const std::string& strText, uint32_t uFormat,
                                  const SkPaint& skPaint, IFont* pFont) const
 {
     ASSERT(!strText.empty());
@@ -1133,7 +1133,7 @@ void DrawRichText::DrawTextString(const UiRect& textRect, const DString& strText
         return;
     }
     const char* text = (const char*)strText.c_str();
-    size_t len = strText.size() * sizeof(DString::value_type);
+    size_t len = strText.size() * sizeof(std::string::value_type);
     SkTextEncoding textEncoding = GetTextEncoding();
     DrawTextString(textRect, text, len, textEncoding, uFormat, skPaint, pFont);
 }
@@ -1223,7 +1223,7 @@ void DrawRichText::DrawTextString(const UiRect& textRect,
 
 SkTextEncoding DrawRichText::GetTextEncoding() const
 {
-    constexpr const size_t nValueLen = sizeof(DString::value_type);
+    constexpr const size_t nValueLen = sizeof(std::string::value_type);
     if constexpr (nValueLen == 1) {
         return SkTextEncoding::kUTF8;
     }
@@ -1234,11 +1234,7 @@ SkTextEncoding DrawRichText::GetTextEncoding() const
         return SkTextEncoding::kUTF32;
     }
     else {
-#ifdef DUI_UNICODE
-        return SkTextEncoding::kUTF16;
-#else
         return SkTextEncoding::kUTF8;
-#endif
     }
 }
 

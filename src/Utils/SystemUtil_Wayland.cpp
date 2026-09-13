@@ -9,7 +9,7 @@
 
 namespace ui
 {
-bool SystemUtil::OpenUrl(const DString& url)
+bool SystemUtil::OpenUrl(const std::string& url)
 {
     if (url.empty()) {
         return false;
@@ -18,7 +18,7 @@ bool SystemUtil::OpenUrl(const DString& url)
     return false;
 }
 
-bool SystemUtil::ShowMessageBox(const Window* pWindow, const DString& content, const DString& title)
+bool SystemUtil::ShowMessageBox(const Window* pWindow, const std::string& content, const std::string& title)
 {
     (void)pWindow; (void)content; (void)title;
     return false;

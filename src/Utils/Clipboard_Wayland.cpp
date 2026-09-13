@@ -5,26 +5,26 @@
 
 namespace ui
 {
-bool Clipboard::GetClipboardText(DStringW& text)
+bool Clipboard::GetClipboardText(std::wstring& text)
 {
-    DStringA textA;
+    std::string textA;
     bool bRet = GetClipboardText(textA);
     text = StringConvert::UTF8ToWString(textA);
     return bRet;
 }
 
-bool Clipboard::GetClipboardText(DStringA& text)
+bool Clipboard::GetClipboardText(std::string& text)
 {
     text.clear();
     return true;
 }
 
-bool Clipboard::SetClipboardText(const DStringW& text)
+bool Clipboard::SetClipboardText(const std::wstring& text)
 {
     return SetClipboardText(StringConvert::WStringToUTF8(text));
 }
 
-bool Clipboard::SetClipboardText(const DStringA& text)
+bool Clipboard::SetClipboardText(const std::string& text)
 {
     (void)text;
     return false;

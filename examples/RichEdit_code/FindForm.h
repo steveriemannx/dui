@@ -16,8 +16,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window you are drawing
      * The GetSkinFile interface sets the xml description file of the window you are drawing
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual std::string GetSkinFolder() override;
+    virtual std::string GetSkinFile() override;
 
     /** Called after the window is created, allowing subclasses to do some initialization work
     */

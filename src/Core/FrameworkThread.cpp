@@ -27,7 +27,7 @@
 
 namespace ui 
 {
-FrameworkThread::FrameworkThread(const DString& threadName, int32_t nThreadIdentifier):
+FrameworkThread::FrameworkThread(const std::string& threadName, int32_t nThreadIdentifier):
     m_bThreadUI(false),
     m_bRunning(false),
     m_bSupportIdle(false),
@@ -148,20 +148,13 @@ std::thread::id FrameworkThread::GetThreadId() const
     return m_nThisThreadId;
 }
 
-DString FrameworkThread::ThreadIdToString(const std::thread::id& threadId)
+std::string FrameworkThread::ThreadIdToString(const std::thread::id& threadId)
 {
     // Convert to a string
-#ifdef DUI_UNICODE    
-    std::wstringstream ss;
-    ss << threadId;
-    std::wstring thread_id_str = ss.str();
-    return thread_id_str;
-#else
     std::stringstream ss;
     ss << threadId;
     std::string thread_id_str = ss.str();
     return thread_id_str;
-#endif
 }
 
 int32_t FrameworkThread::GetThreadIdentifier() const
@@ -169,7 +162,7 @@ int32_t FrameworkThread::GetThreadIdentifier() const
     return m_nThreadIdentifier;
 }
 
-const DString& FrameworkThread::GetThreadName() const
+const std::string& FrameworkThread::GetThreadName() const
 {
     return m_threadName;
 }

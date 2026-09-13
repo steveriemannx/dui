@@ -38,8 +38,8 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** Calculate the size of the image area (width and height)
      *  @param [in] szAvailable The available size, excluding padding and margin

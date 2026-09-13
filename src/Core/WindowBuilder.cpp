@@ -74,10 +74,10 @@ WindowBuilder::~WindowBuilder()
 }
 
 
-Control* WindowBuilder::CreateControlByClass(const DString& strControlClass, Window* pWindow)
+Control* WindowBuilder::CreateControlByClass(const std::string& strControlClass, Window* pWindow)
 {
     typedef std::function<Control* (Window* pWindow)> CreateControlFunction;
-    static std::map<DString, CreateControlFunction> createControlMap =
+    static std::map<std::string, CreateControlFunction> createControlMap =
     {
         {DUI_CTR_BOX,  [](Window* pWindow) { return new Box(pWindow); }},
         {DUI_CTR_HBOX, [](Window* pWindow) { return new HBox(pWindow); }},
@@ -224,28 +224,24 @@ bool WindowBuilder::IsXmlFileExists(const FilePath& xmlFilePath) const
     return bExists;
 }
 
-bool WindowBuilder::ParseXmlData(const DString& xmlFileData, const FilePath& xmlFilePath)
+bool WindowBuilder::ParseXmlData(const std::string& xmlFileData, const FilePath& xmlFilePath)
 {
-    ASSERT(!xmlFileData.empty() && DUI_T("xml parameter is empty!"));
+    ASSERT(!xmlFileData.empty() && "xml parameter is empty!");
     if (xmlFileData.empty()) {
         return false;
     }
     bool isLoaded = false;
     //If the string starts with '<', it is treated as an XML string; otherwise it is treated as an XML file
     //If embedded resources are used, read directly from memory
-    if (xmlFileData.front() == DUI_T('<')) {
-#ifdef DUI_UNICODE
-        pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf16;
-#else
+    if (xmlFileData.front() == '<') {
         pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf8;
-#endif
         pugi::xml_parse_result result = m_xml->load_buffer(xmlFileData.c_str(),
-                                                           xmlFileData.size() * sizeof(DString::value_type),
+                                                           xmlFileData.size() * sizeof(std::string::value_type),
                                                            pugi::parse_default, encoding);
         isLoaded = result.status == pugi::status_ok;
     }
     if (!isLoaded) {
-        ASSERT(!DUI_T("WindowBuilder::ParseXmlData load xmlFileData failed!"));
+        ASSERT(!"WindowBuilder::ParseXmlData load xmlFileData failed!");
         return false;
     }
     m_xmlFilePath = xmlFilePath;
@@ -254,7 +250,7 @@ bool WindowBuilder::ParseXmlData(const DString& xmlFileData, const FilePath& xml
 
 bool WindowBuilder::ParseXmlData(const std::vector<unsigned char>& xmlFileData, const FilePath& xmlFilePath)
 {
-    ASSERT(!xmlFileData.empty() && DUI_T("xml parameter is empty!"));
+    ASSERT(!xmlFileData.empty() && "xml parameter is empty!");
     if (xmlFileData.empty()) {
         return false;
     }
@@ -264,7 +260,7 @@ bool WindowBuilder::ParseXmlData(const std::vector<unsigned char>& xmlFileData, 
                                                        pugi::parse_default, encoding);
     bool isLoaded = result.status == pugi::status_ok;
     if (!isLoaded) {
-        ASSERT(!DUI_T("WindowBuilder::ParseXmlData load xmlFileData failed!"));
+        ASSERT(!"WindowBuilder::ParseXmlData load xmlFileData failed!");
         return false;
     }
     m_xmlFilePath = xmlFilePath;
@@ -273,7 +269,7 @@ bool WindowBuilder::ParseXmlData(const std::vector<unsigned char>& xmlFileData, 
 
 bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& windowResPath)
 {
-    ASSERT(!xmlFilePath.IsEmpty() && DUI_T("xmlFilePath parameter is empty!"));
+    ASSERT(!xmlFilePath.IsEmpty() && "xmlFilePath parameter is empty!");
     if (xmlFilePath.IsEmpty()) {
         return false;
     }
@@ -297,7 +293,7 @@ bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& wi
             if (GlobalManager::Instance().MemoryResources().GetData(sFile, file_data)) {
                 pugi::xml_parse_result result = m_xml->load_buffer(file_data.data(), file_data.size());
                 if (result.status != pugi::status_ok) {
-                    ASSERT(!DUI_T("WindowBuilder::ParseXmlFile load xml from memory data failed!"));
+                    ASSERT(!"WindowBuilder::ParseXmlFile load xml from memory data failed!");
                     return false;
                 }
                 isLoaded = true;
@@ -325,13 +321,13 @@ bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& wi
         }
         pugi::xml_parse_result result = m_xml->load_file(xmlFileFullPath.NativePathA().c_str());
         if (result.status != pugi::status_ok) {
-            ASSERT(!DUI_T("WindowBuilder::ParseXmlFile load xml file failed!"));
+            ASSERT(!"WindowBuilder::ParseXmlFile load xml file failed!");
             return false;
         }
         isLoaded = true;
     }
     if (!isLoaded) {
-        ASSERT(!DUI_T("WindowBuilder::ParseXmlFile load xmlFilePath failed!"));
+        ASSERT(!"WindowBuilder::ParseXmlFile load xmlFilePath failed!");
         return false;
     }
     m_xmlFilePath = xmlFilePath;
@@ -360,11 +356,11 @@ Control* WindowBuilder::CreateControls(Window* pWindow, CreateControlCallback pC
     }
 
     if( pWindow != nullptr) {
-        DString strClass;
-        DString strName;
-        DString strValue;
+        std::string strClass;
+        std::string strName;
+        std::string strValue;
         strClass = root.name();
-        if( strClass == DUI_T("Window") ) {
+        if( strClass == "Window" ) {
             if (!pWindow->IsWindowAttributesApplied()) {
                 //The window attributes are set only once, to avoid the XML files included in the XML (Include tag) setting the window attributes again and causing confusion
                 ParseWindowAttributes(pWindow, root);
@@ -372,18 +368,18 @@ Control* WindowBuilder::CreateControls(Window* pWindow, CreateControlCallback pC
             }            
             ParseWindowShareAttributes(pWindow, root);
         }
-        else if( strClass == DUI_T("Global") ) {
+        else if( strClass == "Global" ) {
             ParseGlobalAttributes(root);
         }
     }
 
     for (pugi::xml_node node : root.children()) {
-        DString strClass = node.name();
-        if ( (strClass == DUI_T("Image"))          ||
-             (strClass == DUI_T("FontResource"))   ||
-             (strClass == DUI_T("Font"))           ||
-             (strClass == DUI_T("Class"))          ||
-             (strClass == DUI_T("TextColor")) ) {
+        std::string strClass = node.name();
+        if ( (strClass == "Image")          ||
+             (strClass == "FontResource")   ||
+             (strClass == "Font")           ||
+             (strClass == "Class")          ||
+             (strClass == "TextColor") ) {
             //Ignore these attributes
 
         }
@@ -395,7 +391,7 @@ Control* WindowBuilder::CreateControls(Window* pWindow, CreateControlCallback pC
                 ParseXmlNodeChildren(node, pUserDefinedBox, pWindow);
                 int i = 0;
                 for (pugi::xml_attribute attr : node.attributes()) {
-                    if (StringUtil::StringCompare(attr.name(), DUI_T("class")) == 0) {
+                    if (StringUtil::StringCompare(attr.name(), "class") == 0) {
                         //The class attribute must be the first attribute
                         ASSERT_UNUSED_VARIABLE(i == 0);
                     }
@@ -416,9 +412,9 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
     if (root.empty()) {
         return false;
     }
-    DString strClass = root.name();
-    ASSERT(strClass == DUI_T("Window"));
-    if (strClass != DUI_T("Window")) {
+    std::string strClass = root.name();
+    ASSERT(strClass == "Window");
+    if (strClass != "Window") {
         return false;
     }
 
@@ -439,43 +435,43 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
     UiPadding rcShadowCorner;
 
     RenderBackendType backendType = RenderBackendType::kRaster_BackendType;
-    DString strName;
-    DString strValue;
+    std::string strName;
+    std::string strValue;
     for (pugi::xml_attribute attr : root.attributes()) {
         strName = attr.name();
         strValue = attr.value();
-        if (strName == DUI_T("render_backend_type")) {            
-            if (StringUtil::IsEqualNoCase(strValue, DUI_T("GL")) || StringUtil::IsEqualNoCase(strValue, DUI_T("GPU"))) {
+        if (strName == "render_backend_type") {            
+            if (StringUtil::IsEqualNoCase(strValue, "GL") || StringUtil::IsEqualNoCase(strValue, "GPU")) {
                 backendType = RenderBackendType::kNativeGL_BackendType;
             }
-            else if (StringUtil::IsEqualNoCase(strValue, DUI_T("CPU"))) {
+            else if (StringUtil::IsEqualNoCase(strValue, "CPU")) {
                 backendType = RenderBackendType::kRaster_BackendType;
             }
-            else if (StringUtil::IsEqualNoCase(strValue, DUI_T("Metal"))) {
+            else if (StringUtil::IsEqualNoCase(strValue, "Metal")) {
                 backendType = RenderBackendType::kMetal_BackendType;
             }
         }
-        else if (strName == DUI_T("use_system_caption")) {
-            createAttributes.m_bUseSystemCaption = (strValue == DUI_T("true"));
+        else if (strName == "use_system_caption") {
+            createAttributes.m_bUseSystemCaption = (strValue == "true");
             createAttributes.m_bUseSystemCaptionDefined = true;
         }
-        else if ((strName == DUI_T("size_box")) || (strName == DUI_T("sizebox"))) {
+        else if ((strName == "size_box") || (strName == "sizebox")) {
             AttributeUtil::ParseRectValue(strValue.c_str(), createAttributes.m_rcSizeBox);
             createAttributes.m_bSizeBoxDefined = true;
         }
-        else if (strName == DUI_T("caption")) {
+        else if (strName == "caption") {
             AttributeUtil::ParseRectValue(strValue.c_str(), createAttributes.m_rcCaption);
             createAttributes.m_bCaptionDefined = true;
         }
-        else if ((strName == DUI_T("shadow_attached")) || (strName == DUI_T("shadowattached"))) {
-            createAttributes.m_bShadowAttached = (strValue == DUI_T("true"));
+        else if ((strName == "shadow_attached") || (strName == "shadowattached")) {
+            createAttributes.m_bShadowAttached = (strValue == "true");
             createAttributes.m_bShadowAttachedDefined = true;
         }
-        else if ((strName == DUI_T("layered_window")) || (strName == DUI_T("layeredwindow"))) {
-            createAttributes.m_bIsLayeredWindow = (strValue == DUI_T("true"));
+        else if ((strName == "layered_window") || (strName == "layeredwindow")) {
+            createAttributes.m_bIsLayeredWindow = (strValue == "true");
             createAttributes.m_bIsLayeredWindowDefined = true;
         }
-        else if (strName == DUI_T("alpha")) {
+        else if (strName == "alpha") {
             //Set the transparency of the window (0 - 255); only valid when a layered window is used, passed as a parameter in the UpdateLayeredWindow function
             int32_t nAlpha = StringUtil::StringToInt32(strValue);
             ASSERT(nAlpha >= 0 && nAlpha <= 255);
@@ -484,7 +480,7 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
                 createAttributes.m_bLayeredWindowAlphaDefined = true;
             }
         }
-        else if (strName == DUI_T("opacity")) {
+        else if (strName == "opacity") {
             //Set the opacity of the window (0 - 255); this value is used as a parameter (bAlpha) in the SetLayeredWindowAttributes function
             const int32_t nAlpha = StringUtil::StringToInt32(strValue);
             ASSERT(nAlpha >= 0 && nAlpha <= 255);
@@ -493,34 +489,34 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
                 createAttributes.m_bLayeredWindowOpacityDefined = true;
             }
         }
-        else if (strName == DUI_T("size")) {
+        else if (strName == "size") {
             AttributeUtil::ParseWindowSize(nullptr, strValue.c_str(), createAttributes.m_szInitSize, &bScaledCX, &bScaledCY, &bPercentCX, &bPercentCY);
             createAttributes.m_bInitSizeDefined = true;
         }
-        else if (strName == DUI_T("size_contain_shadow")) {
+        else if (strName == "size_contain_shadow") {
             //Whether the size configured for the window includes the shadow
-            bSizeContainShadow = (strValue == DUI_T("true"));
+            bSizeContainShadow = (strValue == "true");
         }
-        else if ((strName == DUI_T("min_size")) || (strName == DUI_T("mininfo"))) {
+        else if ((strName == "min_size") || (strName == "mininfo")) {
             AttributeUtil::ParseSizeValue(strValue.c_str(), szMinSize);
         }
-        else if ((strName == DUI_T("max_size")) || (strName == DUI_T("maxinfo"))) {
+        else if ((strName == "max_size") || (strName == "maxinfo")) {
             AttributeUtil::ParseSizeValue(strValue.c_str(), szMaxSize);
         }
-        else if (strName == DUI_T("native_render_name")) {
+        else if (strName == "native_render_name") {
             //The expected native backend Render name
             createAttributes.m_nativeRenderName = strValue;
         }
-        else if ((strName == DUI_T("shadow_attached")) || (strName == DUI_T("shadowattached"))) {
+        else if ((strName == "shadow_attached") || (strName == "shadowattached")) {
             //Set whether window shadow is supported (there are two shadow implementations: layered windows and normal windows)
-            bShadowAttached = (strValue == DUI_T("true"));
+            bShadowAttached = (strValue == "true");
             bHasShadowAttached = true;
         }
-        else if (strName == DUI_T("shadow_type")) {
+        else if (strName == "shadow_type") {
             //Set the shadow type
             Shadow::GetShadowType(strValue, nShadowType);
         }
-        else if ((strName == DUI_T("shadow_corner")) || (strName == DUI_T("shadowcorner"))) {
+        else if ((strName == "shadow_corner") || (strName == "shadowcorner")) {
             //Set the nine-grid properties of the window shadow            
             AttributeUtil::ParsePaddingValue(strValue.c_str(), rcShadowCorner);
         }
@@ -532,7 +528,7 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
     }
     else if (rcShadowCorner.IsEmpty()){
         UiSize szBorderRound;
-        DString shadowImage;
+        std::string shadowImage;
         Shadow::GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage);
     }
     createAttributes.m_rcShadowCorner = rcShadowCorner;
@@ -593,25 +589,25 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
         return;
     }
 
-    std::set<DString> knownNames;//Supported attribute names
-    DString strName;
-    DString strValue;
+    std::set<std::string> knownNames;//Supported attribute names
+    std::string strName;
+    std::string strValue;
 
     bool bInitRenderBackendType = false;
     //First set the "render_backend_type" attribute
     for (pugi::xml_attribute attr : root.attributes()) {
         strName = attr.name();
         strValue = attr.value();
-        if (strName == DUI_T("render_backend_type")) {
+        if (strName == "render_backend_type") {
             knownNames.insert(strName);
             RenderBackendType backendType = RenderBackendType::kRaster_BackendType;
-            if (StringUtil::IsEqualNoCase(strValue, DUI_T("GL")) || StringUtil::IsEqualNoCase(strValue, DUI_T("GPU"))) {
+            if (StringUtil::IsEqualNoCase(strValue, "GL") || StringUtil::IsEqualNoCase(strValue, "GPU")) {
                 backendType = RenderBackendType::kNativeGL_BackendType;
             }
-            else if (StringUtil::IsEqualNoCase(strValue, DUI_T("CPU"))) {
+            else if (StringUtil::IsEqualNoCase(strValue, "CPU")) {
                 backendType = RenderBackendType::kRaster_BackendType;
             }
-            else if (StringUtil::IsEqualNoCase(strValue, DUI_T("Metal"))) {
+            else if (StringUtil::IsEqualNoCase(strValue, "Metal")) {
                 backendType = RenderBackendType::kMetal_BackendType;
             }
             else {
@@ -636,29 +632,29 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
     for (pugi::xml_attribute attr : root.attributes()) {
         strName = attr.name();
         strValue = attr.value();
-        if ((strName == DUI_T("min_size")) || (strName == DUI_T("mininfo"))) {
+        if ((strName == "min_size") || (strName == "mininfo")) {
             knownNames.insert(strName);
             UiSize size;
             AttributeUtil::ParseSizeValue(strValue.c_str(), size);
             //Window sizes/min sizes are physical pixels: no DPI scaling
             pWindow->SetWindowMinimumSize(size, false);
         }
-        else if ((strName == DUI_T("max_size")) || (strName == DUI_T("maxinfo"))) {
+        else if ((strName == "max_size") || (strName == "maxinfo")) {
             knownNames.insert(strName);
             UiSize size;
             AttributeUtil::ParseSizeValue(strValue.c_str(), size);
             //Window sizes/max sizes are physical pixels: no DPI scaling
             pWindow->SetWindowMaximumSize(size, false);
         }
-        else if (strName == DUI_T("use_system_caption")) {
+        else if (strName == "use_system_caption") {
             knownNames.insert(strName);
-            pWindow->SetUseSystemCaption(strValue == DUI_T("true"));
+            pWindow->SetUseSystemCaption(strValue == "true");
         }
-        else if (strName == DUI_T("show_caption_title")) {
+        else if (strName == "show_caption_title") {
             knownNames.insert(strName);
-            pWindow->SetShowCaptionTitle(strValue == DUI_T("true"));
+            pWindow->SetShowCaptionTitle(strValue == "true");
         }
-        else if (strName == DUI_T("caption_title_style")) {
+        else if (strName == "caption_title_style") {
             knownNames.insert(strName);
             pWindow->SetCaptionTitleStyle(strValue);
         }
@@ -675,71 +671,71 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
     for (pugi::xml_attribute attr : root.attributes()) {
         strName = attr.name();
         strValue = attr.value();
-        if ((strName == DUI_T("size_box")) || (strName == DUI_T("sizebox"))) {
+        if ((strName == "size_box") || (strName == "sizebox")) {
             knownNames.insert(strName);
             UiRect rcSizeBox;
             AttributeUtil::ParseRectValue(strValue.c_str(), rcSizeBox, false);
             pWindow->SetSizeBox(rcSizeBox, true);
         }
-        else if (strName == DUI_T("caption")) {
+        else if (strName == "caption") {
             knownNames.insert(strName);
             UiRect rcCaption;
             AttributeUtil::ParseRectValue(strValue.c_str(), rcCaption);
             pWindow->SetCaptionRect(rcCaption, true);
         }
-        else if (strName == DUI_T("snap_layout_menu")) {
+        else if (strName == "snap_layout_menu") {
             knownNames.insert(strName);
-            pWindow->SetEnableSnapLayoutMenu(strValue == DUI_T("true"));
+            pWindow->SetEnableSnapLayoutMenu(strValue == "true");
         }
-        else if (strName == DUI_T("sys_menu")) {
+        else if (strName == "sys_menu") {
             knownNames.insert(strName);
-            pWindow->SetEnableSysMenu(strValue == DUI_T("true"));
+            pWindow->SetEnableSysMenu(strValue == "true");
         }
-        else if (strName == DUI_T("sys_menu_rect")) {
+        else if (strName == "sys_menu_rect") {
             knownNames.insert(strName);
             UiRect rcSysMenuRect;
             AttributeUtil::ParseRectValue(strValue.c_str(), rcSysMenuRect);
             pWindow->SetSysMenuRect(rcSysMenuRect, true);
         }
-        else if (strName == DUI_T("icon")) {
+        else if (strName == "icon") {
             knownNames.insert(strName);
             if (!strValue.empty()) {
                 //Set the window icon
                 pWindow->SetWindowIcon(strValue);
             }
         }
-        else if (strName == DUI_T("text")) {
+        else if (strName == "text") {
             knownNames.insert(strName);
             pWindow->SetText(strValue);
         }
-        else if ((strName == DUI_T("text_id")) || (strName == DUI_T("textid"))) {
+        else if ((strName == "text_id") || (strName == "textid")) {
             knownNames.insert(strName);
             pWindow->SetTextId(strValue);
         }
-        else if (strName == DUI_T("round_corner") || strName == DUI_T("roundcorner")) {
+        else if (strName == "round_corner" || strName == "roundcorner") {
             knownNames.insert(strName);
             UiSize size;
             AttributeUtil::ParseSizeValue(strValue.c_str(), size);
             pWindow->SetRoundCorner(size.cx, size.cy, true);
         }
-        else if (strName == DUI_T("alpha_fix_corner") || strName == DUI_T("alphafixcorner")) {
+        else if (strName == "alpha_fix_corner" || strName == "alphafixcorner") {
             knownNames.insert(strName);
             UiRect rc;
             AttributeUtil::ParseRectValue(strValue.c_str(), rc);
             pWindow->SetAlphaFixCorner(rc, true);
         }
-        else if (strName == DUI_T("size_contain_shadow")) {
+        else if (strName == "size_contain_shadow") {
             knownNames.insert(strName);
             //Whether the size configured for the window includes the shadow
-            bSizeContainShadow = (strValue == DUI_T("true"));
+            bSizeContainShadow = (strValue == "true");
         }
-        else if ((strName == DUI_T("shadow_attached")) || (strName == DUI_T("shadowattached"))) {
+        else if ((strName == "shadow_attached") || (strName == "shadowattached")) {
             knownNames.insert(strName);
             //Set whether window shadow is supported (there are two shadow implementations: layered windows and normal windows)
-            bShadowAttached = (strValue == DUI_T("true"));
+            bShadowAttached = (strValue == "true");
             bHasShadowAttached = true;            
         }
-        else if (strName == DUI_T("shadow_type")) {
+        else if (strName == "shadow_type") {
             knownNames.insert(strName);
             //Set the shadow type
             Shadow::GetShadowType(strValue, nShadowType);
@@ -748,48 +744,48 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
                 pWindow->SetShadowType((Shadow::ShadowType)nShadowType);
             }
         }
-        else if ((strName == DUI_T("shadow_image")) || (strName == DUI_T("shadowimage"))) {
+        else if ((strName == "shadow_image") || (strName == "shadowimage")) {
             knownNames.insert(strName);
             //Set the shadow image
             pWindow->SetShadowImage(strValue);
         }
-        else if ((strName == DUI_T("shadow_corner")) || (strName == DUI_T("shadowcorner"))) {
+        else if ((strName == "shadow_corner") || (strName == "shadowcorner")) {
             knownNames.insert(strName);
             //Set the nine-grid properties of the window shadow
             UiPadding padding;
             AttributeUtil::ParsePaddingValue(strValue.c_str(), padding);
             pWindow->SetShadowCorner(padding);
         }
-        else if (strName == DUI_T("shadow_border_round")) {
+        else if (strName == "shadow_border_round") {
             knownNames.insert(strName);
             //Set the corner radius of the window shadow
             UiSize szBorderRound;
             AttributeUtil::ParseSizeValue(strValue.c_str(), szBorderRound);
             pWindow->SetShadowBorderRound(szBorderRound);
         }
-        else if (strName == DUI_T("shadow_border_size")) {
+        else if (strName == "shadow_border_size") {
             knownNames.insert(strName);
             //Set the border size of the window shadow
             pWindow->SetShadowBorderSize(StringUtil::StringToInt32(strValue));
         }
-        else if (strName == DUI_T("shadow_border_color")) {
+        else if (strName == "shadow_border_color") {
             knownNames.insert(strName);
             //Set the border color of the window shadow
             pWindow->SetShadowBorderColor(strValue);
         }
-        else if (strName == DUI_T("shadow_snap")) {
+        else if (strName == "shadow_snap") {
             knownNames.insert(strName);
             //Set whether the shadow supports window snap operations
-            pWindow->SetEnableShadowSnap(strValue == DUI_T("true"));
+            pWindow->SetEnableShadowSnap(strValue == "true");
         }
-        else if ((strName == DUI_T("layered_window")) || (strName == DUI_T("layeredwindow"))) {
+        else if ((strName == "layered_window") || (strName == "layeredwindow")) {
             knownNames.insert(strName);
             //Set whether the layered window attribute is set (layered window or normal window)
             if (!pWindow->IsUseSystemCaption()) {
-                pWindow->SetLayeredWindow(strValue == DUI_T("true"), false);
+                pWindow->SetLayeredWindow(strValue == "true", false);
             }
         }
-        else if (strName == DUI_T("alpha")) {
+        else if (strName == "alpha") {
             knownNames.insert(strName);
             //Set the transparency of the window (0 - 255); only valid when a layered window is used, passed as a parameter in the UpdateLayeredWindow function
             int32_t nAlpha = StringUtil::StringToInt32(strValue);
@@ -798,11 +794,11 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
                 pWindow->SetLayeredWindowAlpha(nAlpha);
             }
         }
-        else if (strName == DUI_T("drag_drop")) {
+        else if (strName == "drag_drop") {
             knownNames.insert(strName);
-            pWindow->SetEnableDragDrop(strValue == DUI_T("true"));
+            pWindow->SetEnableDragDrop(strValue == "true");
         }
-        else if ((strName == DUI_T("position")) || (strName == DUI_T("pos"))) {
+        else if ((strName == "position") || (strName == "pos")) {
             knownNames.insert(strName);
             UiPoint position;
             AttributeUtil::ParsePointValue(strValue.c_str(), position);
@@ -841,7 +837,7 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
     for (pugi::xml_attribute attr : root.attributes()) {
         strName = attr.name();
         strValue = attr.value();
-        if (strName == DUI_T("size")) {
+        if (strName == "size") {
             knownNames.insert(strName);
             UiSize windowSize;
             AttributeUtil::ParseWindowSize(pWindow, strValue.c_str(), windowSize, &bScaledCX, &bScaledCY, &bPercentCX, &bPercentCY);
@@ -879,7 +875,7 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
             AttributeUtil::ValidateWindowSize(pWindow, cx, cy);
             pWindow->SetInitSize(cx, cy);
         }
-        else if (strName == DUI_T("opacity")) {
+        else if (strName == "opacity") {
             knownNames.insert(strName);
             //Set the opacity of the window (0 - 255); this value is used as a parameter (bAlpha) in the SetLayeredWindowAttributes function
             const int32_t nAlpha = StringUtil::StringToInt32(strValue);
@@ -908,7 +904,7 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
 
 #ifdef _DEBUG
     //Check for unsupported attributes and warn, to reduce configuration errors
-    std::vector<DString> unknownNames;
+    std::vector<std::string> unknownNames;
     for (pugi::xml_attribute attr : root.attributes()) {
         strName = attr.name();
         if (knownNames.find(strName) == knownNames.end()) {
@@ -926,24 +922,24 @@ void WindowBuilder::ParseWindowShareAttributes(Window* pWindow, const pugi::xml_
         return;
     }
 
-    DString strName;
-    DString strValue;
-    DString strClass;
+    std::string strName;
+    std::string strValue;
+    std::string strClass;
 
     //Parse the shared resources under this window
     for (pugi::xml_node node : root.children()) {
         strClass = node.name();
-        if (strClass == DUI_T("Class")) {
-            DString strClassName;
-            DString strAttribute;
+        if (strClass == "Class") {
+            std::string strClassName;
+            std::string strAttribute;
             for (pugi::xml_attribute attr : node.attributes()) {
                 strName = attr.name();
                 strValue = attr.value();
-                if (strName == DUI_T("name")) {
+                if (strName == "name") {
                     strClassName = strValue;
                 }
                 else {
-                    strAttribute.append(StringUtil::Printf(DUI_T(" %s=\"%s\""), strName.c_str(), strValue.c_str()));
+                    strAttribute.append(StringUtil::Printf(" %s=\"%s\"", strName.c_str(), strValue.c_str()));
                 }
             }
             if (!strClassName.empty()) {
@@ -954,16 +950,16 @@ void WindowBuilder::ParseWindowShareAttributes(Window* pWindow, const pugi::xml_
                 m_windowClassList.push_back(strClassName);
             }
         }
-        else if (strClass == DUI_T("TextColor")) {
-            DString strColorName;
-            DString strColor;
+        else if (strClass == "TextColor") {
+            std::string strColorName;
+            std::string strColor;
             for (pugi::xml_attribute attr : node.attributes()) {
                 strName = attr.name();
                 strValue = attr.value();
-                if (strName == DUI_T("name")) {
+                if (strName == "name") {
                     strColorName = strValue;
                 }
-                else if (strName == DUI_T("value")) {
+                else if (strName == "value") {
                     strColor = strValue;
                 }
             }
@@ -972,7 +968,7 @@ void WindowBuilder::ParseWindowShareAttributes(Window* pWindow, const pugi::xml_
                 m_windowTextColorList.push_back(strColorName);
             }
         }
-        else if (strClass == DUI_T("Font")) {
+        else if (strClass == "Font") {
             //Under the Window node, fonts are allowed to be defined
             ParseFontXmlNode(node);
         }
@@ -981,17 +977,17 @@ void WindowBuilder::ParseWindowShareAttributes(Window* pWindow, const pugi::xml_
 
 void WindowBuilder::ParseGlobalAttributes(const pugi::xml_node& root)
 {
-    DString strClass;
-    DString strName;
-    DString strValue;
+    std::string strClass;
+    std::string strName;
+    std::string strValue;
     for (pugi::xml_node node : root.children()) {
         strClass = node.name();
-        if (strClass == DUI_T("DefaultFontFamilyNames")) {
-            DString defaultFontFamilyNames;
+        if (strClass == "DefaultFontFamilyNames") {
+            std::string defaultFontFamilyNames;
             for (pugi::xml_attribute attr : node.attributes()) {
                 strName = attr.name();
                 strValue = attr.value();
-                if (strName == DUI_T("value")) {
+                if (strName == "value") {
                     defaultFontFamilyNames = strValue;
                     break;
                 }
@@ -1000,17 +996,17 @@ void WindowBuilder::ParseGlobalAttributes(const pugi::xml_node& root)
                 GlobalManager::Instance().Font().SetDefaultFontFamilyNames(defaultFontFamilyNames);
             }
         }
-        else if (strClass == DUI_T("FontFile")) {
+        else if (strClass == "FontFile") {
             //Font file
-            DString strFontFile;
-            DString strFontDesc;
+            std::string strFontFile;
+            std::string strFontDesc;
             for (pugi::xml_attribute attr : node.attributes()) {
                 strName = attr.name();
                 strValue = attr.value();
-                if (strName == DUI_T("file")) {
+                if (strName == "file") {
                     strFontFile = strValue;
                 }
-                else if (strName == DUI_T("desc")) {
+                else if (strName == "desc") {
                     strFontDesc = strValue;
                 }
             }
@@ -1018,20 +1014,20 @@ void WindowBuilder::ParseGlobalAttributes(const pugi::xml_node& root)
                 GlobalManager::Instance().Font().AddFontFile(strFontFile, strFontDesc);
             }
         }
-        else if (strClass == DUI_T("Font")) {
+        else if (strClass == "Font") {
             ParseFontXmlNode(node);
         }
-        else if (strClass == DUI_T("Class")) {
-            DString strClassName;
-            DString strAttribute;
+        else if (strClass == "Class") {
+            std::string strClassName;
+            std::string strAttribute;
             for (pugi::xml_attribute attr : node.attributes()) {
                 strName = attr.name();
                 strValue = attr.value();
-                if (strName == DUI_T("name")) {
+                if (strName == "name") {
                     strClassName = strValue;
                 }
                 else {
-                    strAttribute.append(StringUtil::Printf(DUI_T(" %s=\"%s\""),
+                    strAttribute.append(StringUtil::Printf(" %s=\"%s\"",
                         strName.c_str(), strValue.c_str()));
                 }
             }
@@ -1040,16 +1036,16 @@ void WindowBuilder::ParseGlobalAttributes(const pugi::xml_node& root)
                 GlobalManager::Instance().AddClass(strClassName, strAttribute);
             }
         }
-        else if (strClass == DUI_T("TextColor")) {
-            DString colorName = node.attribute(DUI_T("name")).as_string();
-            DString colorValue = node.attribute(DUI_T("value")).as_string();
+        else if (strClass == "TextColor") {
+            std::string colorName = node.attribute("name").as_string();
+            std::string colorValue = node.attribute("value").as_string();
             if (!colorName.empty() && !colorValue.empty()) {
                 ColorManager& colorManager = GlobalManager::Instance().Color();
                 colorManager.AddColor(colorName, colorValue);
-                if (colorName == DUI_T("default_font_color")) {
+                if (colorName == "default_font_color") {
                     colorManager.SetDefaultTextColor(colorName);
                 }
-                else if (colorName == DUI_T("disabled_font_color")) {
+                else if (colorName == "disabled_font_color") {
                     colorManager.SetDefaultDisabledTextColor(colorName);
                 }
             }
@@ -1059,11 +1055,11 @@ void WindowBuilder::ParseGlobalAttributes(const pugi::xml_node& root)
 
 void WindowBuilder::ParseFontXmlNode(const pugi::xml_node& xmlNode)
 {
-    DString strName;
-    DString strValue;
+    std::string strName;
+    std::string strValue;
 
-    DString strFontId;
-    DString strFontName;
+    std::string strFontId;
+    std::string strFontName;
     int size = 12;
     bool bold = false;
     bool underline = false;
@@ -1073,30 +1069,30 @@ void WindowBuilder::ParseFontXmlNode(const pugi::xml_node& xmlNode)
     for (pugi::xml_attribute attr : xmlNode.attributes()) {
         strName = attr.name();
         strValue = attr.value();
-        if (strName == DUI_T("id"))
+        if (strName == "id")
         {
             strFontId = strValue;
         }
-        else if (strName == DUI_T("name")) {
+        else if (strName == "name") {
             strFontName = strValue;
         }
-        else if (strName == DUI_T("size")) {
+        else if (strName == "size") {
             size = StringUtil::StringToInt32(strValue);
         }
-        else if (strName == DUI_T("bold")) {
-            bold = (strValue == DUI_T("true"));
+        else if (strName == "bold") {
+            bold = (strValue == "true");
         }
-        else if (strName == DUI_T("underline")) {
-            underline = (strValue == DUI_T("true"));
+        else if (strName == "underline") {
+            underline = (strValue == "true");
         }
-        else if (strName == DUI_T("strikeout")) {
-            strikeout = (strValue == DUI_T("true"));
+        else if (strName == "strikeout") {
+            strikeout = (strValue == "true");
         }
-        else if (strName == DUI_T("italic")) {
-            italic = (strValue == DUI_T("true"));
+        else if (strName == "italic") {
+            italic = (strValue == "true");
         }
-        else if (strName == DUI_T("default")) {
-            isDefault = (strValue == DUI_T("true"));
+        else if (strName == "default") {
+            isDefault = (strValue == "true");
         }
     }
     if (!strFontName.empty() && !strFontId.empty()) {
@@ -1120,41 +1116,41 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
     }
     Control* pReturn = nullptr;
     for (pugi::xml_node node : xmlNode.children()) {
-        DString strClass = node.name();
-        if( (strClass == DUI_T("DefaultFontFamilyNames")) ||
-            (strClass == DUI_T("Font")) ||
-            (strClass == DUI_T("FontFile"))  ||
-            (strClass == DUI_T("Class")) || 
-            (strClass == DUI_T("TextColor")) ) {
+        std::string strClass = node.name();
+        if( (strClass == "DefaultFontFamilyNames") ||
+            (strClass == "Font") ||
+            (strClass == "FontFile")  ||
+            (strClass == "Class") || 
+            (strClass == "TextColor") ) {
                 continue;
         }
 
         Control* pControl = nullptr;
-        if (strClass == DUI_T("Include")) {
+        if (strClass == "Include") {
             if (node.attributes().empty()) {
                 continue;
             }
-            pugi::xml_attribute countAttr = node.attribute(DUI_T("count"));
+            pugi::xml_attribute countAttr = node.attribute("count");
             int nCount = countAttr.as_int();
             if (nCount <= 0) {
                 //The default value is set to 1; the count attribute parameter is optional
                 nCount = 1;
             }
-            pugi::xml_attribute sourceAttr = node.attribute(DUI_T("src"));
-            DString sourceValue = sourceAttr.as_string();
+            pugi::xml_attribute sourceAttr = node.attribute("src");
+            std::string sourceValue = sourceAttr.as_string();
             if (sourceValue.empty()) {
-                sourceAttr = node.attribute(DUI_T("source"));
+                sourceAttr = node.attribute("source");
                 sourceValue = sourceAttr.as_string();                
             }
             FilePath sourceXmlFilePath(sourceValue);
             if (!sourceValue.empty()) {
-                StringUtil::ReplaceAll(DUI_T("/"), m_xmlFilePath.GetPathSeparatorStr(), sourceValue);
-                StringUtil::ReplaceAll(DUI_T("\\"), m_xmlFilePath.GetPathSeparatorStr(), sourceValue);
+                StringUtil::ReplaceAll("/", m_xmlFilePath.GetPathSeparatorStr(), sourceValue);
+                StringUtil::ReplaceAll("\\", m_xmlFilePath.GetPathSeparatorStr(), sourceValue);
                 if (!m_xmlFilePath.IsEmpty()) {
                     //First try to load it from the same directory as the original XML file
-                    DString xmlFilePath = m_xmlFilePath.NativePath();
-                    size_t pos = xmlFilePath.find_last_of(DUI_T("\\/"));
-                    if (pos != DString::npos) {
+                    std::string xmlFilePath = m_xmlFilePath.NativePath();
+                    size_t pos = xmlFilePath.find_last_of("\\/");
+                    if (pos != std::string::npos) {
                         FilePath srcFilePath(xmlFilePath.substr(0, pos));
                         srcFilePath.JoinFilePath(FilePath(sourceValue));
                         if (IsXmlFileExists(srcFilePath)) {
@@ -1182,9 +1178,9 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
         else {
             pControl = CreateControlByClass(strClass, pWindow);
             if (pControl == nullptr) {
-                if ((strClass == DUI_T("Event")) || 
-                    (strClass == DUI_T("BubbledEvent"))) {
-                    bool bBubbled = (strClass == DUI_T("BubbledEvent"));
+                if ((strClass == "Event") || 
+                    (strClass == "BubbledEvent")) {
+                    bool bBubbled = (strClass == "BubbledEvent");
                     AttachXmlEvent(bBubbled, node, pParent);
                     continue;
                 }
@@ -1207,7 +1203,7 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
         }
 
         if(pControl == nullptr) {
-            DString nodeName = strClass;
+            std::string nodeName = strClass;
             ASSERT(!"Found unknown node name, can't create control!");
             continue;
         }
@@ -1249,13 +1245,13 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
         // attribute is only valid after the class has been set to Button).
         if (!node.attributes().empty()) {
             // Pass 1: process the "class" attribute first regardless of its position
-            pugi::xml_attribute classAttr = node.attribute(DUI_T("class"));
+            pugi::xml_attribute classAttr = node.attribute("class");
             if (!classAttr.empty()) {
                 pControl->SetAttribute(classAttr.name(), classAttr.value());
             }
             // Pass 2: process all other attributes
             for (pugi::xml_attribute attr : node.attributes()) {
-                if (StringUtil::StringCompare(attr.name(), DUI_T("class")) != 0) {
+                if (StringUtil::StringCompare(attr.name(), "class") != 0) {
                     pControl->SetAttribute(attr.name(), attr.value());
                 }
             }
@@ -1296,25 +1292,21 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
     return pReturn;
 }
 
-bool WindowBuilder::ParseRichTextXmlText(const DString& xmlText, Control* pControl)
+bool WindowBuilder::ParseRichTextXmlText(const std::string& xmlText, Control* pControl)
 {
-#ifdef DUI_UNICODE
-    pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf16;
-#else
     pugi::xml_encoding encoding = pugi::xml_encoding::encoding_utf8;
-#endif
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_buffer(xmlText.c_str(),
-                                                    xmlText.size() * sizeof(DString::value_type),
+                                                    xmlText.size() * sizeof(std::string::value_type),
                                                     pugi::parse_default,
                                                     encoding);
     if (result.status != pugi::status_ok) {
-        ASSERT(!DUI_T("WindowBuilder::ParseRichTextXmlText load xml text failed!"));
+        ASSERT(!"WindowBuilder::ParseRichTextXmlText load xml text failed!");
         return false;
     }
     pugi::xml_node root = doc.root();
-    DString rootName = root.name();
-    DString rootValue = root.value();
+    std::string rootName = root.name();
+    std::string rootValue = root.value();
     if (rootName.empty() && rootValue.empty()) {
         root = doc.root().first_child();
     }
@@ -1367,7 +1359,7 @@ bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, RichText
         return false;
     }
 
-    DString nodeName;
+    std::string nodeName;
     for (pugi::xml_node node : xmlNode.children()) {
         RichTextSlice textSlice;
         textSlice.m_nodeName = node.name();
@@ -1376,51 +1368,43 @@ bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, RichText
         bool bParseChildren = true;
         if (nodeName.empty()) {            
             //No node name; only read the text content, no need to recursively traverse child nodes
-#ifdef DUI_UNICODE
-            textSlice.m_text = pRichTextImpl->TrimText(node.value());
-#else
             textSlice.m_text = StringConvert::UTF8ToWString(pRichTextImpl->TrimText(node.value()));
-#endif
             bParseChildren = false;
         }        
-        else if (nodeName == DUI_T("a")) {
-#ifdef DUI_UNICODE
-            textSlice.m_text = pRichTextImpl->TrimText(node.first_child().value());
-#else
+        else if (nodeName == "a") {
             textSlice.m_text = StringConvert::UTF8ToWString(pRichTextImpl->TrimText(node.first_child().value()));
-#endif
-            textSlice.m_linkUrl = StringUtil::Trim(node.attribute(DUI_T("href")).as_string());
+            textSlice.m_linkUrl = StringUtil::Trim(node.attribute("href").as_string());
             //Hyperlink node, no need to recursively traverse child nodes
             bParseChildren = false;
         }
-        else if (nodeName == DUI_T("b")) {
+        else if (nodeName == "b") {
             //Bold text
             textSlice.m_fontInfo.m_bBold = true;
         }
-        else if (nodeName == DUI_T("i")) {
+        else if (nodeName == "i") {
             //Italic text
             textSlice.m_fontInfo.m_bItalic = true;
         }
-        else if ((nodeName == DUI_T("del")) || (nodeName == DUI_T("s")) || (nodeName == DUI_T("strike"))) {
+        else if ((nodeName == "del") || (nodeName == "s") || (nodeName == "strike")) {
             //Strikethrough text
             textSlice.m_fontInfo.m_bStrikeOut = true;
         }
-        else if ( (nodeName == DUI_T("ins")) || (nodeName == DUI_T("u")) ){
+        else if ( (nodeName == "ins") || (nodeName == "u") ){
             //Underline
             textSlice.m_fontInfo.m_bUnderline = true;
         }
-        else if (nodeName == DUI_T("bgcolor")) {
+        else if (nodeName == "bgcolor") {
             //Background color
-            textSlice.m_bgColor = StringUtil::Trim(node.attribute(DUI_T("color")).as_string());
+            textSlice.m_bgColor = StringUtil::Trim(node.attribute("color").as_string());
         }
-        else if (nodeName == DUI_T("font")) {
+        else if (nodeName == "font") {
             //Font settings: text color
-            textSlice.m_textColor = node.attribute(DUI_T("color")).as_string();
-            textSlice.m_fontInfo.m_fontName = node.attribute(DUI_T("face")).as_string();
+            textSlice.m_textColor = node.attribute("color").as_string();
+            textSlice.m_fontInfo.m_fontName = node.attribute("face").as_string();
             //The font size does not need DPI scaling; it is scaled according to the current DPI when drawing
-            textSlice.m_fontInfo.m_fontSize = node.attribute(DUI_T("size")).as_int();            
+            textSlice.m_fontInfo.m_fontSize = node.attribute("size").as_int();            
         }
-        else if (nodeName == DUI_T("br")) {
+        else if (nodeName == "br") {
             textSlice.m_text = L"\n";
             //Line break node, no need to recursively traverse child nodes
             bParseChildren = false;
@@ -1451,35 +1435,35 @@ void WindowBuilder::AttachXmlEvent(bool bBubbled, const pugi::xml_node& node, Co
     if (pParent == nullptr) {
         return;
     }
-    DString strType;
-    DString strReceiver;
-    DString strApplyAttribute;
-    DString strName;
-    DString strValue;
+    std::string strType;
+    std::string strReceiver;
+    std::string strApplyAttribute;
+    std::string strName;
+    std::string strValue;
     int i = 0;
     for (pugi::xml_attribute attr : node.attributes()) {
         strName = attr.name();
         strValue = attr.value();
-        ASSERT_UNUSED_VARIABLE(i != 0 || strName == DUI_T("type"));
-        ASSERT_UNUSED_VARIABLE(i != 1 || strName == DUI_T("receiver"));
-        ASSERT_UNUSED_VARIABLE(i != 2 || ((strName == DUI_T("applyattribute")) || (strName == DUI_T("apply_attribute"))));
+        ASSERT_UNUSED_VARIABLE(i != 0 || strName == "type");
+        ASSERT_UNUSED_VARIABLE(i != 1 || strName == "receiver");
+        ASSERT_UNUSED_VARIABLE(i != 2 || ((strName == "applyattribute") || (strName == "apply_attribute")));
         ++i;
-        if (strName == DUI_T("type") ) {
+        if (strName == "type" ) {
             strType = strValue;
         }
-        else if (strName == DUI_T("receiver") ) {
+        else if (strName == "receiver" ) {
             strReceiver = strValue;
         }
-        else if ((strName == DUI_T("apply_attribute")) || (strName == DUI_T("applyattribute"))) {
+        else if ((strName == "apply_attribute") || (strName == "applyattribute")) {
             strApplyAttribute = strValue;
         }
     }
 
-    auto typeList = StringUtil::Split(strType, DUI_T(" "));
-    auto receiverList = StringUtil::Split(strReceiver, DUI_T(" "));
+    auto typeList = StringUtil::Split(strType, " ");
+    auto receiverList = StringUtil::Split(strReceiver, " ");
     for (auto itType = typeList.begin(); itType != typeList.end(); itType++) {
         if (receiverList.empty()) {
-            receiverList.push_back(DUI_T(""));
+            receiverList.push_back("");
         }
         for (auto itReceiver = receiverList.begin(); itReceiver != receiverList.end(); itReceiver++) {
             EventType eventType = EventUtils::StringToEventType(*itType);
@@ -1508,7 +1492,7 @@ Box* WindowBuilder::ToBox(Control* pControl) const
     return pBox;
 }
 
-bool WindowBuilder::ParseWindowAttributes(std::map<DString, DString>& windowAttributes) const
+bool WindowBuilder::ParseWindowAttributes(std::map<std::string, std::string>& windowAttributes) const
 {
     if (m_xml == nullptr) {
         return false;
@@ -1519,8 +1503,8 @@ bool WindowBuilder::ParseWindowAttributes(std::map<DString, DString>& windowAttr
         return false;
     }
 
-    DString strClass = root.name();
-    if (strClass == DUI_T("Window")) {
+    std::string strClass = root.name();
+    if (strClass == "Window") {
         for (pugi::xml_attribute attr : root.attributes()) {
             windowAttributes[attr.name()] = attr.value();            
         }
@@ -1529,17 +1513,17 @@ bool WindowBuilder::ParseWindowAttributes(std::map<DString, DString>& windowAttr
     return false;
 }
 
-const std::vector<DString>& WindowBuilder::GetWindowClassList() const
+const std::vector<std::string>& WindowBuilder::GetWindowClassList() const
 {
     return m_windowClassList;
 }
 
-const std::vector<DString>& WindowBuilder::GetWindowTextColorList() const
+const std::vector<std::string>& WindowBuilder::GetWindowTextColorList() const
 {
     return m_windowTextColorList;
 }
 
-const std::vector<DString>& WindowBuilder::GetGlobalFontIdList() const
+const std::vector<std::string>& WindowBuilder::GetGlobalFontIdList() const
 {
     return m_globalFontIdList;
 }

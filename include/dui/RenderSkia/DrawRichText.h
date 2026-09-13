@@ -105,7 +105,7 @@ private:
     * @param [in] glyphWidth The drawing width of the current character
     * @param [in] nRowHeight The current row height
     */
-    void OnDrawUnicodeChar(RichTextLineInfoParam* pLineInfoParam, DStringW::value_type ch, uint8_t glyphChars, size_t glyphCount,
+    void OnDrawUnicodeChar(RichTextLineInfoParam* pLineInfoParam, std::wstring::value_type ch, uint8_t glyphChars, size_t glyphCount,
                            size_t nLineTextIndex, uint32_t nLineTextRowIndex, float xPos, int32_t yPos, float glyphWidth, int32_t nRowHeight);
 
     /** Draw text according to the set attributes; the character encoding is specified externally
@@ -116,7 +116,7 @@ private:
 
     /** Draw text according to the set attributes
     */
-    void DrawTextString(const UiRect& textRect, const DString& strText, uint32_t uFormat,
+    void DrawTextString(const UiRect& textRect, const std::string& strText, uint32_t uFormat,
                         const SkPaint& skPaint, IFont* pFont) const;
 
     /** Get the text encoding

@@ -704,7 +704,7 @@ bool CefControlOffScreen::OnChar(const EventArgs& msg)
     if (m_bImeComposition && (msg.wParam != 0) && (msg.lParam > 0)) {
         CefRefPtr<CefBrowserHost> host = GetCefBrowserHost();
         if (host != nullptr) {
-            DStringW text = (DStringW::value_type*)msg.wParam;
+            std::wstring text = (std::wstring::value_type*)msg.wParam;
             CefString commitText(text);
             host->ImeCommitText(commitText, CefRange::InvalidRange(), 0);
             m_bImeComposition = false;
@@ -836,7 +836,7 @@ if (IsCefOsrImeMode() ){
     // CEF so the pinyin letters and the composition underline are rendered.
     if ((msg.wParam != 0) && (msg.lParam > 0)) {
         m_bImeComposition = true;
-        DStringW text = (DStringW::value_type*)msg.wParam;
+        std::wstring text = (std::wstring::value_type*)msg.wParam;
         CefRefPtr<CefBrowser> browser;
         if (m_pBrowserHandler != nullptr) {
             browser = m_pBrowserHandler->GetBrowser();
@@ -985,7 +985,7 @@ if ((type == KEYEVENT_KEYDOWN) || (type == KEYEVENT_KEYUP) ){
         ASSERT(msg.vkCode == kVK_None);
 if ((msg.eventData == Native_EVENT_TEXT_INPUT) && (msg.wParam != 0) && (msg.lParam > 0) ){
             // The currently entered character or string (for example, when entering Chinese, the candidate word is entered at once, unlike the Windows SDK which enters character by character)
-            DStringW text = (DStringW::value_type*)msg.wParam;
+            std::wstring text = (std::wstring::value_type*)msg.wParam;
             CefKeyEvent event;
             event.type = KEYEVENT_CHAR;
             event.modifiers = GetCefModifiers(Native_GetModState());
@@ -1026,8 +1026,8 @@ void CefControlOffScreen::SendKeyEvent(const EventArgs& msg, cef_key_event_type_
     event.modifiers = GetCefX11Modifiers(msg.modifierKey);
     if (type == KEYEVENT_CHAR) {
         if (msg.wParam == 0 || msg.lParam <= 0) return;
-        const DStringW::value_type* text =
-            reinterpret_cast<const DStringW::value_type*>(msg.wParam);
+        const std::wstring::value_type* text =
+            reinterpret_cast<const std::wstring::value_type*>(msg.wParam);
         event.character = static_cast<char16_t>(text[0]);
         event.unmodified_character = event.character;
     }
@@ -1182,7 +1182,7 @@ void CefControlOffScreen::SendKeyEvent(const EventArgs& msg, cef_key_event_type_
         // wParam points to the whole UTF-16 string and lParam is its length.
         // CEF needs each character delivered as a separate KEYEVENT_CHAR.
         if ((msg.wParam != 0) && (msg.lParam > 0)) {
-            DStringW text = (DStringW::value_type*)msg.wParam;
+            std::wstring text = (std::wstring::value_type*)msg.wParam;
             const size_t nCharCount = text.size();
             for (size_t nCharIndex = 0; nCharIndex < nCharCount; ++nCharIndex) {
                 CefKeyEvent event;

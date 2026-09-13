@@ -42,19 +42,19 @@ struct PropertyAccessor
 
     /** Read the current value as a string. Returns false when this control type
      does not have this attribute. */
-    bool (*get)(Control* pControl, DString& strValue) = nullptr;
+    bool (*get)(Control* pControl, std::string& strValue) = nullptr;
 };
 
 /** Look up an attribute by name. Returns nullptr when it is not bindable.
  Case-sensitive, matching Control::SetAttribute()'s comparison.
 */
-const PropertyAccessor* FindPropertyAccessor(const DString& strAttribute);
+const PropertyAccessor* FindPropertyAccessor(const std::string& strAttribute);
 
 /** Number of registered attributes; for diagnostics and tests. */
 size_t GetPropertyCount();
 
 /** Name of the i-th registered attribute; for diagnostics and tests. */
-const DString& GetPropertyName(size_t nIndex);
+const std::string& GetPropertyName(size_t nIndex);
 
 } // namespace binding
 } // namespace ui

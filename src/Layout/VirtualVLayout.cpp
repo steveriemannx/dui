@@ -12,17 +12,17 @@ VirtualVLayout::VirtualVLayout():
     SetChildHAlignType(HorAlignType::kAlignCenter);
 }
 
-bool VirtualVLayout::SetAttribute(const DString& strName, const DString& strValue, const DpiManager& dpiManager)
+bool VirtualVLayout::SetAttribute(const std::string& strName, const std::string& strValue, const DpiManager& dpiManager)
 {
     bool hasAttribute = true;
-    if ((strName == DUI_T("item_size")) || (strName == DUI_T("itemsize"))) {
+    if ((strName == "item_size") || (strName == "itemsize")) {
         UiSize szItem;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szItem);
         dpiManager.ScaleSize(szItem);
         SetItemSize(szItem);
     }
-    else if (strName == DUI_T("auto_calc_item_size")) {
-        SetAutoCalcItemWidth(strValue == DUI_T("true"));
+    else if (strName == "auto_calc_item_size") {
+        SetAutoCalcItemWidth(strValue == "true");
     }
     else {
         hasAttribute = BaseClass::SetAttribute(strName, strValue, dpiManager);

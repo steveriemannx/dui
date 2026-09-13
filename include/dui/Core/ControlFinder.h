@@ -80,7 +80,7 @@ public:
      * @param [in] strName The control name
      * @return Returns the control pointer
      */
-    Control* FindControlInCache(Control* pAncestor, const DString& strName) const;
+    Control* FindControlInCache(Control* pAncestor, const std::string& strName) const;
 
     /** Find a child control by coordinates
      * @param [in] pParent The control to search
@@ -94,7 +94,7 @@ public:
      * @param [in] strName The name to search for
      * @return Returns the control pointer
      */
-    Control* FindSubControlByName(Control* pParent, const DString& strName) const;
+    Control* FindSubControlByName(Control* pParent, const std::string& strName) const;
 
     /** Add a control and index it by the control name
     */
@@ -124,7 +124,7 @@ private:
 
     /** The mapping between the control name and the control, used for fast control lookup
     */
-    std::unordered_map<DString, std::vector<ControlPtr>> m_controlNameMap;
+    std::unordered_map<std::string, std::vector<ControlPtr>> m_controlNameMap;
 };
 
 } // namespace ui

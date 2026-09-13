@@ -13,7 +13,7 @@ ColorSlider::ColorSlider(Window* pWindow):
     SetColorInfo(UiColor(255, 0, 100, 200), ColorAdjustMode::kMode_ARGB_R);
 }
 
-DString ColorSlider::GetType() const { return DUI_CTR_COLOR_SLIDER; }
+std::string ColorSlider::GetType() const { return DUI_CTR_COLOR_SLIDER; }
 
 void ColorSlider::SetColorInfo(const UiColor& color, ColorAdjustMode adjustMode)
 {

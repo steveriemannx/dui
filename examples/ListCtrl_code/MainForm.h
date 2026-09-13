@@ -15,8 +15,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window you are drawing
      * The GetSkinFile interface sets the xml description file of the window you are drawing
      */
-    virtual DString GetSkinFolder() override { return DUI_T(""); }
-    virtual DString GetSkinFile() override { return DUI_T(""); }
+    virtual std::string GetSkinFolder() override { return ""; }
+    virtual std::string GetSkinFile() override { return ""; }
 
     /** Called after the window is created, allowing subclasses to do some initialization work
     */
@@ -62,15 +62,15 @@ private:
 
     /** Get the basic message information (for displaying logs)
     */
-    DString GetEventDisplayInfo(const ui::EventArgs& args);
+    std::string GetEventDisplayInfo(const ui::EventArgs& args);
 
     /** Get the basic message information (for displaying logs)
     */
-    DString GetItemFilledEventDisplayInfo(const ui::EventArgs& args);
+    std::string GetItemFilledEventDisplayInfo(const ui::EventArgs& args);
 
     /** Output test logs
     */
-    void OutputDebugLog(const DString& logMsg);
+    void OutputDebugLog(const std::string& logMsg);
 
 private:
     // Test feature: show the child control on mouse enter, hide it on mouse leave

@@ -542,7 +542,7 @@ static void keyboard_key_handler(void* data, wl_keyboard* keyboard, uint32_t ser
                 // converted and passed the way the Windows backend passes it,
                 // with vkCode = kVK_None, so multi-byte input (Chinese) works
                 // as well as ASCII.
-                DStringW textW = StringConvert::UTF8ToWString(std::string(buf, len));
+                std::wstring textW = StringConvert::UTF8ToWString(std::string(buf, len));
                 if (!textW.empty()) {
                     bHandled = false;
                     NativeMsg charMsg(0, (WPARAM)textW.c_str(), (LPARAM)textW.size());

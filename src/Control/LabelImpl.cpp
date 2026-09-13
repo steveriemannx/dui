@@ -46,16 +46,16 @@ LabelImpl::~LabelImpl()
     m_pTextDrawer.reset();
 }
 
-bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
+bool LabelImpl::OnSetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("text_align")) {
+    if (strName == "text_align") {
         bool bHCenter = false;        
-        size_t centerPos = strValue.find(DUI_T("center"));
-        if (centerPos != DString::npos) {
+        size_t centerPos = strValue.find("center");
+        if (centerPos != std::string::npos) {
             //The "center" attribute is ambiguous; it is kept for compatibility, the new attribute is "hcenter"
             bHCenter = true;
-            size_t vCenterPos = strValue.find(DUI_T("vcenter"));
-            if (vCenterPos != DString::npos) {
+            size_t vCenterPos = strValue.find("vcenter");
+            if (vCenterPos != std::string::npos) {
                 if ((vCenterPos + 1) == centerPos) {
                     bHCenter = false;
                 }
@@ -63,7 +63,7 @@ bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
         }
 
         //Horizontal alignment
-        if (strValue.find(DUI_T("hcenter")) != DString::npos) {            
+        if (strValue.find("hcenter") != std::string::npos) {            
             bHCenter = true;
         }
         if (bHCenter) {
@@ -71,100 +71,100 @@ bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
             m_uTextStyle &= ~TEXT_HALIGN_ALL;
             m_uTextStyle |= TEXT_HCENTER;
         }
-        else if (strValue.find(DUI_T("right")) != DString::npos) {
+        else if (strValue.find("right") != std::string::npos) {
             //Horizontal alignment: right
             m_uTextStyle &= ~TEXT_HALIGN_ALL;
             m_uTextStyle |= TEXT_RIGHT;
         }
-        else if (strValue.find(DUI_T("left")) != DString::npos) {
+        else if (strValue.find("left") != std::string::npos) {
             //Horizontal alignment: left
             m_uTextStyle &= ~TEXT_HALIGN_ALL;
             m_uTextStyle |= TEXT_LEFT;
         }
-        else if (strValue.find(DUI_T("hjustify")) != DString::npos) {
+        else if (strValue.find("hjustify") != std::string::npos) {
             //Horizontal alignment: justified
             m_uTextStyle &= ~TEXT_HALIGN_ALL;
             m_uTextStyle |= TEXT_HJUSTIFY;
         }
 
         //Vertical alignment
-        if (strValue.find(DUI_T("top")) != DString::npos) {
+        if (strValue.find("top") != std::string::npos) {
             //Vertical alignment: top
             m_uTextStyle &= ~TEXT_VALIGN_ALL;
             m_uTextStyle |= TEXT_TOP;
         }
-        else if (strValue.find(DUI_T("vcenter")) != DString::npos) {
+        else if (strValue.find("vcenter") != std::string::npos) {
             //Vertical alignment: center
             m_uTextStyle &= ~TEXT_VALIGN_ALL;
             m_uTextStyle |= TEXT_VCENTER;
         }
-        else if (strValue.find(DUI_T("bottom")) != DString::npos) {
+        else if (strValue.find("bottom") != std::string::npos) {
             //Vertical alignment: bottom
             m_uTextStyle &= ~TEXT_VALIGN_ALL;
             m_uTextStyle |= TEXT_BOTTOM;
         }
-        else if (strValue.find(DUI_T("vjustify")) != DString::npos) {
+        else if (strValue.find("vjustify") != std::string::npos) {
             //Vertical alignment: bottom
             m_uTextStyle &= ~TEXT_VALIGN_ALL;
             m_uTextStyle |= TEXT_VJUSTIFY;
         }
     }
-    else if ((strName == DUI_T("end_ellipsis")) || (strName == DUI_T("endellipsis"))) {
-        if (strValue == DUI_T("true")) {
+    else if ((strName == "end_ellipsis") || (strName == "endellipsis")) {
+        if (strValue == "true") {
             m_uTextStyle |= TEXT_END_ELLIPSIS;
         }
         else {
             m_uTextStyle &= ~TEXT_END_ELLIPSIS;
         }
     }
-    else if ((strName == DUI_T("path_ellipsis")) || (strName == DUI_T("pathellipsis"))) {
-        if (strValue == DUI_T("true")) {
+    else if ((strName == "path_ellipsis") || (strName == "pathellipsis")) {
+        if (strValue == "true") {
             m_uTextStyle |= TEXT_PATH_ELLIPSIS;
         }
         else {
             m_uTextStyle &= ~TEXT_PATH_ELLIPSIS;
         }
     }
-    else if ((strName == DUI_T("single_line")) || (strName == DUI_T("singleline"))) {
-        SetSingleLine(strValue == DUI_T("true"));
+    else if ((strName == "single_line") || (strName == "singleline")) {
+        SetSingleLine(strValue == "true");
     }
-    else if ((strName == DUI_T("multi_line")) || (strName == DUI_T("multiline"))) {
-        SetSingleLine(strValue != DUI_T("true"));
+    else if ((strName == "multi_line") || (strName == "multiline")) {
+        SetSingleLine(strValue != "true");
     }
-    else if (strName == DUI_T("text")) {
+    else if (strName == "text") {
         SetText(strValue);
     }
-    else if ((strName == DUI_T("text_id")) || (strName == DUI_T("textid"))){
+    else if ((strName == "text_id") || (strName == "textid")){
         SetTextId(strValue);
     }
-    else if ((strName == DUI_T("auto_tooltip")) || (strName == DUI_T("autotooltip"))) {
-        SetAutoShowToolTipEnabled(strValue == DUI_T("true"));
+    else if ((strName == "auto_tooltip") || (strName == "autotooltip")) {
+        SetAutoShowToolTipEnabled(strValue == "true");
     }
-    else if (strName == DUI_T("font")) {
+    else if (strName == "font") {
         SetFontId(strValue);
     }
-    else if ((strName == DUI_T("normal_text_color")) || (strName == DUI_T("normaltextcolor"))) {
+    else if ((strName == "normal_text_color") || (strName == "normaltextcolor")) {
         SetStateTextColor(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("hot_text_color")) || (strName == DUI_T("hottextcolor"))) {
+    else if ((strName == "hot_text_color") || (strName == "hottextcolor")) {
         SetStateTextColor(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("pushed_text_color")) || (strName == DUI_T("pushedtextcolor"))) {
+    else if ((strName == "pushed_text_color") || (strName == "pushedtextcolor")) {
         SetStateTextColor(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("disabled_text_color")) || (strName == DUI_T("disabledtextcolor"))) {
+    else if ((strName == "disabled_text_color") || (strName == "disabledtextcolor")) {
         SetStateTextColor(kControlStateDisabled, strValue);
     }
-    else if ((strName == DUI_T("text_padding")) || (strName == DUI_T("textpadding"))) {
+    else if ((strName == "text_padding") || (strName == "textpadding")) {
         UiPadding rcTextPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcTextPadding);
         SetTextPadding(rcTextPadding, true);
     }
-    else if (strName == DUI_T("replace_newline")) {
+    else if (strName == "replace_newline") {
         // Set whether to replace newline characters (replace the string "\\n" with the newline character "\n"
-        SetReplaceNewline(strValue == DUI_T("true"));
+        SetReplaceNewline(strValue == "true");
     }
-    else if (strName == DUI_T("spacing_mul")) {
+    else if (strName == "spacing_mul") {
         // Set the line spacing multiplier
         float mul = 1.0f;
         float add = 0;
@@ -172,7 +172,7 @@ bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
         mul = StringUtil::StringToFloat(strValue.c_str(), nullptr);
         SetLineSpacing(mul, add, false);
     }
-    else if (strName == DUI_T("spacing_add")) {
+    else if (strName == "spacing_add") {
         // Set the fixed additional pixel value of the line spacing
         float mul = 1.0f;
         float add = 0;
@@ -180,25 +180,25 @@ bool LabelImpl::OnSetAttribute(const DString& strName, const DString& strValue)
         add = StringUtil::StringToFloat(strValue.c_str(), nullptr);
         SetLineSpacing(mul, add, true);
     }
-    else if (strName == DUI_T("vertical_text")) {
+    else if (strName == "vertical_text") {
         // Set whether the text is vertical
-        SetVerticalText(strValue == DUI_T("true"));
+        SetVerticalText(strValue == "true");
     }
-    else if (strName == DUI_T("word_spacing")) {
+    else if (strName == "word_spacing") {
         // Set the spacing between two adjacent characters (pixels)
         SetWordSpacing(StringUtil::StringToFloat(strValue.c_str(), nullptr), true);
     }
-    else if (strName == DUI_T("use_font_height")) {
+    else if (strName == "use_font_height") {
         // Set whether, when drawing text vertically, the font's default height is used instead of each font's height (all fonts are displayed at equal height)
-        SetUseFontHeight(strValue == DUI_T("true"));
+        SetUseFontHeight(strValue == "true");
     }
-    else if (strName == DUI_T("ascii_rotate_90")) {
+    else if (strName == "ascii_rotate_90") {
         // Set whether, when drawing text vertically, characters such as letters and digits are displayed rotated 90 degrees clockwise
-        SetRotate90ForAscii(strValue == DUI_T("true"));
+        SetRotate90ForAscii(strValue == "true");
     }
-    else if (strName == DUI_T("rich_text")) {
+    else if (strName == "rich_text") {
         // Set whether the text content is RichText
-        SetRichText(strValue == DUI_T("true"));
+        SetRichText(strValue == "true");
     }
     else {
         return false;
@@ -293,21 +293,21 @@ uint32_t LabelImpl::GetValidTextStyle(uint32_t nTextFormat)
     return nValidTextFormat;
 }
 
-DString LabelImpl::GetText() const
+std::string LabelImpl::GetText() const
 {
-    DString strText = m_sText.c_str();
+    std::string strText = m_sText.c_str();
     if (strText.empty() && !m_sTextId.empty()) {
         strText = GlobalManager::Instance().Lang().GetStringViaID(m_sTextId.c_str());
     }
 
     if (IsReplaceNewline()) {
         //Replace the two characters backslash + n with a newline character
-        StringUtil::ReplaceAll(DUI_T("\\n"), DUI_T("\n"), strText);
+        StringUtil::ReplaceAll("\\n", "\n", strText);
     }
     return strText;
 }
 
-void LabelImpl::SetText(const DString& strText)
+void LabelImpl::SetText(const std::string& strText)
 {
     if (m_sText == strText) {
         return;
@@ -318,12 +318,12 @@ void LabelImpl::SetText(const DString& strText)
     CheckShowToolTip();
 }
 
-DString LabelImpl::GetTextId() const
+std::string LabelImpl::GetTextId() const
 {
     return m_sTextId.c_str();
 }
 
-void LabelImpl::SetTextId(const DString& strTextId)
+void LabelImpl::SetTextId(const std::string& strTextId)
 {
     if (m_sTextId == strTextId) {
         return;
@@ -336,13 +336,13 @@ void LabelImpl::SetTextId(const DString& strTextId)
 
 std::string LabelImpl::GetUTF8Text() const
 {
-    DString strIn = GetOwnerText();
+    std::string strIn = GetOwnerText();
     return StringConvert::TToUTF8(strIn);
 }
 
 void LabelImpl::SetUTF8Text(const std::string& strText)
 {
-    DString strOut = StringConvert::UTF8ToT(strText);
+    std::string strOut = StringConvert::UTF8ToT(strText);
     LabelOwner* pLabelOwner = dynamic_cast<LabelOwner*>(m_pOwner);
     if (pLabelOwner != nullptr) {
         pLabelOwner->SetText(strOut);
@@ -354,7 +354,7 @@ void LabelImpl::SetUTF8Text(const std::string& strText)
 
 void LabelImpl::SetUTF8TextId(const std::string& strTextId)
 {
-    DString strOut = StringConvert::UTF8ToT(strTextId);
+    std::string strOut = StringConvert::UTF8ToT(strTextId);
     LabelOwner* pLabelOwner = dynamic_cast<LabelOwner*>(m_pOwner);
     if (pLabelOwner != nullptr) {
         pLabelOwner->SetTextId(strOut);
@@ -366,7 +366,7 @@ void LabelImpl::SetUTF8TextId(const std::string& strTextId)
 
 std::string LabelImpl::GetUTF8TextId() const
 {
-    DString textId;
+    std::string textId;
     LabelOwner* pLabelOwner = dynamic_cast<LabelOwner*>(m_pOwner);
     if (pLabelOwner != nullptr) {
         textId = pLabelOwner->GetTextId();
@@ -390,7 +390,7 @@ bool LabelImpl::IsRichText() const
     return m_bRichText;
 }
 
-bool LabelImpl::IsTextEquals(const DString& text) const
+bool LabelImpl::IsTextEquals(const std::string& text) const
 {
     if (m_sText.empty() && !m_sTextId.empty()) {
         return StringUtil::StringCompare(GetText().c_str(), text.c_str()) == 0;
@@ -400,7 +400,7 @@ bool LabelImpl::IsTextEquals(const DString& text) const
     }
 }
 
-DString LabelImpl::GetOwnerText() const
+std::string LabelImpl::GetOwnerText() const
 {
     LabelOwner* pLabelOwner = dynamic_cast<LabelOwner*>(m_pOwner);
     if (pLabelOwner != nullptr) {
@@ -556,9 +556,9 @@ DrawStringParam LabelImpl::GetDrawParam() const
     return drawParam;
 }
 
-DString LabelImpl::GetAutoToolTipText() const
+std::string LabelImpl::GetAutoToolTipText() const
 {
-    DString toolTip;
+    std::string toolTip;
     if (m_bAutoShowToolTipEnabled && m_bAutoShowTooltip) {
         toolTip = GetOwnerText();
     }
@@ -575,7 +575,7 @@ void LabelImpl::CheckShowToolTip()
     if (pRender == nullptr) {
         return;
     }    
-    const DString sText = GetOwnerText();
+    const std::string sText = GetOwnerText();
     if (sText.empty()) {
         return;
     }
@@ -636,7 +636,7 @@ bool LabelImpl::HasHotColorState()
 UiSize LabelImpl::OnEstimateText(UiSize szAvailable)
 {
     UiSize fixedSize;
-    const DString textValue = GetOwnerText();
+    const std::string textValue = GetOwnerText();
     if (textValue.empty()) {
         //When the text is empty, the estimated width and height are both 0
         return fixedSize;
@@ -771,7 +771,7 @@ void LabelImpl::OnPaintText(IRender* pRender)
 
 void LabelImpl::DoPaintText(const UiRect& rc, IRender* pRender)
 {
-    DString textValue = GetOwnerText();
+    std::string textValue = GetOwnerText();
     if (textValue.empty() || (pRender == nullptr)) {
         return;
     }
@@ -788,7 +788,7 @@ void LabelImpl::DoPaintText(const UiRect& rc, IRender* pRender)
             //First draw the default text
             const uint8_t nHotAlpha = m_pOwner->GetHotAlpha();
             bool bPainted = false;
-            DString clrColor = GetStateTextColor(kControlStateNormal);
+            std::string clrColor = GetStateTextColor(kControlStateNormal);
             if (!clrColor.empty()) {                
                 drawParam.dwTextColor = m_pOwner->GetUiColor(clrColor);
                 drawParam.uFade = 255 - nHotAlpha;
@@ -796,7 +796,7 @@ void LabelImpl::DoPaintText(const UiRect& rc, IRender* pRender)
                 bPainted = true;
             }
             //Draw the Hot state text (semi-transparent)
-            DString textColor = GetStateTextColor(kControlStateHot);
+            std::string textColor = GetStateTextColor(kControlStateHot);
             if (!textColor.empty()) {
                 drawParam.dwTextColor = m_pOwner->GetUiColor(textColor);
                 drawParam.uFade = nHotAlpha;
@@ -853,9 +853,9 @@ uint32_t LabelImpl::GetTextStyle() const
     return m_uTextStyle;
 }
 
-DString LabelImpl::GetStateTextColor(ControlStateType stateType) const
+std::string LabelImpl::GetStateTextColor(ControlStateType stateType) const
 {
-    DString stateColor;
+    std::string stateColor;
     if (m_pTextColorMap != nullptr) {
         stateColor = m_pTextColorMap->GetStateColor(stateType);
     }
@@ -868,7 +868,7 @@ DString LabelImpl::GetStateTextColor(ControlStateType stateType) const
     return stateColor;
 }
 
-void LabelImpl::SetStateTextColor(ControlStateType stateType, const DString& dwTextColor)
+void LabelImpl::SetStateTextColor(ControlStateType stateType, const std::string& dwTextColor)
 {
     if (stateType == kControlStateHot) {
         m_pOwner->SetFadeHot(true);
@@ -880,7 +880,7 @@ void LabelImpl::SetStateTextColor(ControlStateType stateType, const DString& dwT
     m_pOwner->Invalidate();
 }
 
-DString LabelImpl::GetPaintStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType)
+std::string LabelImpl::GetPaintStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType)
 {
     stateType = buttonStateType;
     if (stateType == kControlStatePushed && GetStateTextColor(kControlStatePushed).empty()) {
@@ -895,12 +895,12 @@ DString LabelImpl::GetPaintStateTextColor(ControlStateType buttonStateType, Cont
     return GetStateTextColor(stateType);
 }
 
-DString LabelImpl::GetFontId() const
+std::string LabelImpl::GetFontId() const
 {
     return m_sFontId.c_str();
 }
 
-void LabelImpl::SetFontId(const DString& strFontId)
+void LabelImpl::SetFontId(const std::string& strFontId)
 {
     m_sFontId = strFontId;
     m_pOwner->Invalidate();

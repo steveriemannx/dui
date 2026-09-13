@@ -48,7 +48,7 @@ public:
 
     /** Get the corresponding shadow type from a string
     */
-    static bool GetShadowType(const DString& typeString, ShadowType& nShadowType);
+    static bool GetShadowType(const std::string& typeString, ShadowType& nShadowType);
 
     /** True when the type is one of the OS-provided shadow types
      * (kShadowSystemDefault / DoNotRound / Round / SmallRound).
@@ -80,7 +80,7 @@ public:
     static bool GetShadowParam(ShadowType nShadowType,
                                UiSize& szBorderRound,
                                UiPadding& rcShadowCorner,
-                               DString& shadowImage,
+                               std::string& shadowImage,
                                Shadow* pShadowObj = nullptr);
 
 public:
@@ -147,11 +147,11 @@ public:
 
     /** Set the shadow image properties
      */
-    void SetShadowImage(const DString& shadowImage);
+    void SetShadowImage(const std::string& shadowImage);
 
     /** Get the shadow image properties
      */
-    const DString& GetShadowImage() const;
+    const std::string& GetShadowImage() const;
 
     /** Set the border size of the shadow (not DPI-scaled)
     */
@@ -163,11 +163,11 @@ public:
 
     /** Set the border color of the shadow
     */
-    void SetShadowBorderColor(const DString& shadowBorderColor);
+    void SetShadowBorderColor(const std::string& shadowBorderColor);
 
     /** Get the border color of the shadow
     */
-    const DString& GetShadowBorderColor() const;
+    const std::string& GetShadowBorderColor() const;
 
 public:
     /** Attach the shadow to the top-level container of the window
@@ -272,7 +272,7 @@ private:
     bool m_bBottomSnap;
 
     //The shadow image properties
-    DString m_shadowImage;
+    std::string m_shadowImage;
 
     //The shadow nine-grid properties (not DPI-scaled)
     UiPadding m_rcShadowCorner;
@@ -286,7 +286,7 @@ private:
 
     /** The border color of the shadow
     */
-    DString m_shadowBorderColor;
+    std::string m_shadowBorderColor;
 
     //The shadow container interface
     Box* m_pShadowBox;

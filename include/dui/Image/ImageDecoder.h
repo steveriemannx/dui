@@ -346,12 +346,12 @@ public:
 
     /** Get the format name supported by this decoder
     */
-    virtual DString GetFormatName() const = 0;
+    virtual std::string GetFormatName() const = 0;
 
     /** Check whether this decoder supports the given file name
     * @param [in] imageFilePath Physical file name (e.g.: "File.jpg", can include a path), or virtual file name (e.g.: "icon:1")
     */
-    virtual bool CanDecode(const DString& imageFilePath) const = 0;
+    virtual bool CanDecode(const std::string& imageFilePath) const = 0;
 
     /** Check whether this decoder supports the given data stream
     * @param [in] data The start address of the data

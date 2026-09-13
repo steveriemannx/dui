@@ -15,8 +15,8 @@ class ShadowWndBase : public ui::WindowImplBase, public ui::IUIMessageFilter
 public:
     ShadowWndBase();
 
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual std::string GetSkinFolder() override;
+    virtual std::string GetSkinFile() override;
 
     virtual LRESULT FilterMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled) override;
     bool Create(Window* window);
@@ -33,14 +33,14 @@ ShadowWndBase::ShadowWndBase():
 {
 }
 
-DString ShadowWndBase::GetSkinFolder()
+std::string ShadowWndBase::GetSkinFolder()
 {
-    return DUI_T("");
+    return "";
 }
 
-DString ShadowWndBase::GetSkinFile()
+std::string ShadowWndBase::GetSkinFile()
 {
-    return DUI_T("public/shadow/shadow.xml");
+    return "public/shadow/shadow.xml";
 }
 
 bool ShadowWndBase::Create(Window* window)
@@ -48,7 +48,7 @@ bool ShadowWndBase::Create(Window* window)
     m_pWindow = window;
     WindowCreateParam createParam;
     createParam.m_dwExStyle = kWS_EX_TRANSPARENT | kWS_EX_LAYERED | kWS_EX_TOOLWINDOW | kWS_EX_NOACTIVATE;
-    createParam.m_className = DUI_T("ShadowWnd");
+    createParam.m_className = "ShadowWnd";
     return Window::CreateWnd(nullptr, createParam);
 }
 

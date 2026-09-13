@@ -24,7 +24,7 @@ bool Keyboard::IsCapsLockOn()
     return (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
 }
 
-DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool fExtended)
+std::string Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool fExtended)
 {
     UINT nScanCode = ::MapVirtualKeyEx(nVirtKey, 0, ::GetKeyboardLayout(0));
     switch (nVirtKey)
@@ -51,7 +51,7 @@ DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool fExtended)
 
     TCHAR szStr[MAX_PATH] = { 0 };
     ::GetKeyNameText(nScanCode << 16, szStr, MAX_PATH);
-    return DString(szStr);
+    return std::string(szStr);
 }
 
 } // namespace ui

@@ -21,8 +21,8 @@ public:
     virtual ~CircleProgress() override;
 
     /// Override the parent class methods to provide personalized features; please refer to the parent class declarations
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void PaintStateImages(IRender* pRender) override;
     virtual void ClearImageCache() override;
 
@@ -55,22 +55,22 @@ public:
     /** Set the background color of the progress bar
     * @param [in] strColor The background color string to set; this string must exist in global.xml
     */
-    void SetBackgroudColor(const DString& strColor);
+    void SetBackgroudColor(const std::string& strColor);
 
     /** Set the foreground color of the progress bar
     * @param [in] strColor The foreground color string to set; this string must exist in global.xml
     */
-    void SetForegroudColor(const DString& strColor);
+    void SetForegroudColor(const std::string& strColor);
 
     /** Set the foreground gradient color of the progress bar; used together with SetForegroudColor; it can be left unset, in which case there is no gradient effect
     * @param [in] strColor The foreground gradient color string to set; this string must exist in global.xml
     */
-    void SetCircleGradientColor(const DString& strColor);
+    void SetCircleGradientColor(const std::string& strColor);
 
     /** Set the progress indicator moving icon
     * @param [in] sIndicatorImage The image to set
     */
-    void SetIndicator(const DString& sIndicatorImage);
+    void SetIndicator(const std::string& sIndicatorImage);
 
 protected:
     bool m_bCircular;

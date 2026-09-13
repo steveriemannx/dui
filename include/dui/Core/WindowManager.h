@@ -43,13 +43,13 @@ public:
     /** Get all windows under the specified window class
     * @param [in] windowClassName The window class name passed in when creating the window
     */
-    std::vector<WindowPtr> GetAllWindowList(const DString& windowClassName) const;
+    std::vector<WindowPtr> GetAllWindowList(const std::string& windowClassName) const;
 
     /** Get the window corresponding to the specified window ID
     * @param [in] windowId Window ID; theoretically this ID is unique
     * @return Returns the window corresponding to this window ID; if there are multiple, the first matching window is returned
     */
-    WindowPtr GetWindowById(const DString& windowId) const;
+    WindowPtr GetWindowById(const std::string& windowId) const;
 
     /** Clear
     */

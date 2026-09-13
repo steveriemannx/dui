@@ -22,10 +22,10 @@ public:
     {
         // Registering a property makes it readable by name, which is what the
         // engine needs -- C++ has no reflection to fall back on. Properties that
-        // are not DString override GetProperty/SetProperty instead.
-        RegisterProperty(DUI_T("countText"), m_sCountText);
-        RegisterProperty(DUI_T("countValue"), m_sCountValue);
-        RegisterProperty(DUI_T("detailVisible"), m_sDetailVisible);
+        // are not std::string override GetProperty/SetProperty instead.
+        RegisterProperty("countText", m_sCountText);
+        RegisterProperty("countValue", m_sCountValue);
+        RegisterProperty("detailVisible", m_sDetailVisible);
     }
 
     void Increase()
@@ -43,33 +43,33 @@ public:
     void ToggleDetail()
     {
         m_bDetailVisible = !m_bDetailVisible;
-        m_sDetailVisible = m_bDetailVisible ? DUI_T("true") : DUI_T("false");
-        RaisePropertyChanged(DUI_T("detailVisible"));
+        m_sDetailVisible = m_bDetailVisible ? "true" : "false";
+        RaisePropertyChanged("detailVisible");
     }
 
     /** Used by the legacy, non-bound control to pull the current text. */
-    const DString& GetCountText() const { return m_sCountText; }
+    const std::string& GetCountText() const { return m_sCountText; }
 
 private:
     /** The single place that raises. Every bound control refreshes from here; the
      window holds no refresh code at all. */
     void Refresh()
     {
-        m_sCountText = ui::StringUtil::Printf(DUI_T("Count: %d"), m_nCount);
-        RaisePropertyChanged(DUI_T("countText"));
+        m_sCountText = ui::StringUtil::Printf("Count: %d", m_nCount);
+        RaisePropertyChanged("countText");
 
         // The progress bar wants a number, and there is no conversion in the
         // engine, so the view model exposes one. That is the whole cost of not
         // having a type system, and it is deliberate.
-        m_sCountValue = ui::StringUtil::Printf(DUI_T("%d"), m_nCount);
-        RaisePropertyChanged(DUI_T("countValue"));
+        m_sCountValue = ui::StringUtil::Printf("%d", m_nCount);
+        RaisePropertyChanged("countValue");
     }
 
     int     m_nCount = 0;
     bool    m_bDetailVisible = true;
-    DString m_sCountText;
-    DString m_sCountValue;
-    DString m_sDetailVisible;
+    std::string m_sCountText;
+    std::string m_sCountValue;
+    std::string m_sDetailVisible;
 };
 
 #endif // EXAMPLES_BINDING_COUNTER_VIEW_MODEL_H_

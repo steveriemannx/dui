@@ -22,7 +22,7 @@ ui::Control* DataProvider::CreateElement(ui::VirtualListBox* pVirtualListBox)
     }
     ASSERT(pVirtualListBox->GetWindow() != nullptr);
     Item* item = new Item(pVirtualListBox->GetWindow());
-    ui::GlobalManager::Instance().FillBoxWithCache(item, ui::FilePath(DUI_T("virtual_list_box/item.xml")));
+    ui::GlobalManager::Instance().FillBoxWithCache(item, ui::FilePath("virtual_list_box/item.xml"));
     return item;
 }
 
@@ -36,8 +36,8 @@ bool DataProvider::FillElement(ui::Control* pControl, size_t nElementIndex)
         return false;
     }
     const DownloadTask& task = m_vTasks[nElementIndex];
-    DString img = DUI_T("icon.png");
-    DString title = ui::StringUtil::Printf(DUI_T("%s [%02d]"), task.sName, task.nId);
+    std::string img = "icon.png";
+    std::string title = ui::StringUtil::Printf("%s [%02d]", task.sName, task.nId);
     pItem->InitSubControls(img, title, nElementIndex);
     return true;
 }
@@ -109,14 +109,14 @@ void DataProvider::SetTotal(int nTotal)
         delete [] task.sName;
     }
     m_vTasks.clear();
-    DString name = DUI_T("Task Name");
+    std::string name = "Task Name";
     m_vTasks.reserve(nTotal);
     for (auto i=0; i < nTotal; i++)
     {
         DownloadTask task;
         task.nId = i;
-        // DString is not used here, because it consumes too much memory when the data volume reaches tens of millions or more
-        task.sName = new DString::value_type[name.size() + 1];
+        // std::string is not used here, because it consumes too much memory when the data volume reaches tens of millions or more
+        task.sName = new std::string::value_type[name.size() + 1];
         ui::StringUtil::StringCopy(task.sName, name.size() + 1, name.c_str());
         m_vTasks.emplace_back(std::move(task));
     }
@@ -143,13 +143,13 @@ void DataProvider::RemoveTask(size_t nIndex)
     }    
 }
 
-void DataProvider::ChangeTaskName(size_t nIndex, const DString& sName)
+void DataProvider::ChangeTaskName(size_t nIndex, const std::string& sName)
 {
     m_lock.lock();
     bool bUpdated = false;
     if (nIndex < m_vTasks.size()) {
         delete m_vTasks[nIndex].sName;
-        m_vTasks[nIndex].sName = new DString::value_type[sName.size() + 1];
+        m_vTasks[nIndex].sName = new std::string::value_type[sName.size() + 1];
         ui::StringUtil::StringCopy(m_vTasks[nIndex].sName, sName.size() + 1, sName.c_str());
         bUpdated = true;
     }

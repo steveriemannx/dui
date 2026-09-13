@@ -55,7 +55,7 @@ public:
      * @param [in] dirPath Directory name
     * @param [out] fileList Returns the file list in this directory
     */
-    bool GetFileList(const FilePath& dirPath, std::vector<DString>& fileList) const;
+    bool GetFileList(const FilePath& dirPath, std::vector<std::string>& fileList) const;
 
      /** Close the embedded resources
     */
@@ -69,7 +69,7 @@ private:
 
      /** Normalize a path for the embedded resource index lookup (lowercase, '/' separators)
     */
-    DStringW NormalizeMemoryPath(const FilePath& path) const;
+    std::wstring NormalizeMemoryPath(const FilePath& path) const;
 
 private:
      /** Whether embedded resources are in use
@@ -94,7 +94,7 @@ private:
 
      /** Path index of the embedded resources (key: normalized lowercase path, '/' separators)
     */
-    std::map<DStringW, MemoryResData> m_memoryIndex;
+    std::map<std::wstring, MemoryResData> m_memoryIndex;
 };
 
 }

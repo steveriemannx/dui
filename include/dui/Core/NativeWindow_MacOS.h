@@ -67,11 +67,11 @@ public:
 
     /** Gets the driver name of the current window implementation
     */
-    DString GetVideoDriverName() const;
+    std::string GetVideoDriverName() const;
 
     /** Gets the name of the current Render drawing engine
     */
-    DString GetWindowRenderName() const;
+    std::string GetWindowRenderName() const;
 
     /** Whether a valid window handle exists
     */
@@ -321,16 +321,16 @@ public:
     *  @param [in] iconFileData The icon file data
     *  @param [in] iconFileName The file name with extension, used to identify the image type
     */
-    bool SetWindowIcon(const std::vector<uint8_t>& iconFileData, const DString& iconFileName);
+    bool SetWindowIcon(const std::vector<uint8_t>& iconFileData, const std::string& iconFileName);
 
     /** Sets the window title bar text
     * @param [in] strText The window title bar text
     */
-    void SetText(const DString& strText);
+    void SetText(const std::string& strText);
 
     /** Gets the window title bar text
     */
-    DString GetText() const;
+    std::string GetText() const;
 
     /** Sets the minimum window size (width and height; no internal DPI scaling; the caller handles DPI adaptation)
     * @param [in] szMaxWindow The maximum width and height of the window; 0 means no limit
@@ -630,12 +630,12 @@ public:
     /** Text committed by the input system (NSTextInputClient insertText:)
     * @param [in] text The UTF-16 text
     */
-    void OnNativeInsertText(const DStringW& text);
+    void OnNativeInsertText(const std::wstring& text);
 
     /** IME composition text (NSTextInputClient setMarkedText:)
     * @param [in] text The UTF-16 marked text; empty means the composition ended
     */
-    void OnNativeMarkedText(const DStringW& text);
+    void OnNativeMarkedText(const std::wstring& text);
     /** @} */
 
 public:
@@ -643,8 +643,8 @@ public:
     * @{ */
     void OnDropBegin();
     void OnDropPosition(const UiPoint& pt, bool& bHandled);
-    void OnDropTexts(const std::vector<DString>& textList, const UiPoint& pt, bool& bHandled);
-    void OnDropFiles(const DString& source, const std::vector<DString>& fileList, const UiPoint& pt, bool& bHandled);
+    void OnDropTexts(const std::vector<std::string>& textList, const UiPoint& pt, bool& bHandled);
+    void OnDropFiles(const std::string& source, const std::vector<std::string>& fileList, const UiPoint& pt, bool& bHandled);
     void OnDropLeave();
     /** @} */
 

@@ -94,7 +94,7 @@ public:
                 return hr;
             }
             //File drag-and-drop is supported, check whether the filter conditions are met
-            DString fileTypes = m_pRichEdit->GetDropFileTypes();
+            std::string fileTypes = m_pRichEdit->GetDropFileTypes();
             if (!ControlDropTargetUtils::IsFilteredFileTypes(fileTypes, m_dropFileList)) {
                 //The file type does not meet the filter conditions
                 return hr;
@@ -117,7 +117,7 @@ public:
                     return hr;
                 }
 
-                DString dropText = m_dropTextList.front();
+                std::string dropText = m_dropTextList.front();
                 if (!dropText.empty()) {
                     size_t count = dropText.size();
                     for (size_t index = 0; index < count; ++index) {
@@ -131,17 +131,17 @@ public:
                     }
                 }
             }
-            DString limitChars = m_pRichEdit->GetLimitChars();
+            std::string limitChars = m_pRichEdit->GetLimitChars();
             if (!limitChars.empty()) {
                 //Limit characters are set
-                for (const DString& dropText: m_dropTextList) {
+                for (const std::string& dropText: m_dropTextList) {
                     size_t count = dropText.size();
                     for (size_t index = 0; index < count; ++index) {
                         if (dropText[index] == L'\0') {
                             break;
                         }
                         bool bMatch = false;
-                        for (const DString::value_type ch : limitChars) {
+                        for (const std::string::value_type ch : limitChars) {
                             if (ch == dropText[index]) {
                                 bMatch = true;
                                 break;
@@ -225,8 +225,8 @@ public:
 
         HRESULT hr = S_FALSE;
 
-        std::vector<DString> dropTextList;
-        std::vector<DString> dropFileList;
+        std::vector<std::string> dropTextList;
+        std::vector<std::string> dropFileList;
         ControlDropTargetImpl_Windows::ParseWindowsDataObject(pDataObj, dropTextList, dropFileList);
         if (m_pRichEdit != nullptr) {
             if (!dropFileList.empty()) {
@@ -236,7 +236,7 @@ public:
                     return hr;
                 }
                 //File drag-and-drop is supported, check whether the filter conditions are met
-                DString fileTypes = m_pRichEdit->GetDropFileTypes();
+                std::string fileTypes = m_pRichEdit->GetDropFileTypes();
                 if (!ControlDropTargetUtils::IsFilteredFileTypes(fileTypes, dropFileList)) {
                     //The file type does not meet the filter conditions
                     return hr;
@@ -310,11 +310,11 @@ private:
 
     /** Text data
     */
-    std::vector<DString> m_dropTextList;
+    std::vector<std::string> m_dropTextList;
 
     /** File path data
     */
-    std::vector<DString> m_dropFileList;
+    std::vector<std::string> m_dropFileList;
 
     /** The original selection state
     */
@@ -395,11 +395,11 @@ RichEdit::~RichEdit()
     m_pLimitChars.reset();
 }
 
-void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
+void RichEdit::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("vscrollbar")) {
+    if (strName == "vscrollbar") {
         //Vertical scrollbar
-        if (strValue == DUI_T("true")) {
+        if (strValue == "true") {
             EnableScrollBar(true, GetHScrollBar() != nullptr);
             if (m_pRichHost != nullptr) {
                 m_pRichHost->SetVScrollBar(true);
@@ -412,9 +412,9 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
             }
         }
     }
-    else if (strName == DUI_T("hscrollbar")) {
+    else if (strName == "hscrollbar") {
         //Horizontal scrollbar
-        if (strValue == DUI_T("true")) {
+        if (strValue == "true") {
             EnableScrollBar(GetVScrollBar() != nullptr, true);
             if (m_pRichHost != nullptr) {
                 m_pRichHost->SetHScrollBar(true);
@@ -427,174 +427,174 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
             }
         }
     }
-    else if ((strName == DUI_T("single_line")) || (strName == DUI_T("singleline"))) {
-        SetMultiLine(strValue != DUI_T("true"));
+    else if ((strName == "single_line") || (strName == "singleline")) {
+        SetMultiLine(strValue != "true");
     }
-    else if ((strName == DUI_T("multi_line")) || (strName == DUI_T("multiline"))) {
-        SetMultiLine(strValue == DUI_T("true"));
+    else if ((strName == "multi_line") || (strName == "multiline")) {
+        SetMultiLine(strValue == "true");
     }
-    else if (strName == DUI_T("readonly")) {
-        SetReadOnly(strValue == DUI_T("true"));
+    else if (strName == "readonly") {
+        SetReadOnly(strValue == "true");
     }
-    else if (strName == DUI_T("password")) {
-        SetPasswordMode(strValue == DUI_T("true"));
+    else if (strName == "password") {
+        SetPasswordMode(strValue == "true");
     }
-    else if (strName == DUI_T("show_password")) {
-        SetShowPassword(strValue == DUI_T("true"));
+    else if (strName == "show_password") {
+        SetShowPassword(strValue == "true");
     }
-    else if (strName == DUI_T("password_char")) {
+    else if (strName == "password_char") {
         if (!strValue.empty()) {
             SetPasswordChar(strValue.front());
         }
     }
-    else if (strName == DUI_T("flash_password_char")) {
-        SetFlashPasswordChar(strValue == DUI_T("true"));
+    else if (strName == "flash_password_char") {
+        SetFlashPasswordChar(strValue == "true");
     }
-    else if ((strName == DUI_T("number_only")) || (strName == DUI_T("number"))) {
-        SetNumberOnly(strValue == DUI_T("true"));
+    else if ((strName == "number_only") || (strName == "number")) {
+        SetNumberOnly(strValue == "true");
     }
-    else if (strName == DUI_T("max_number")) {
+    else if (strName == "max_number") {
         SetMaxNumber(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("min_number")) {
+    else if (strName == "min_number") {
         SetMinNumber(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("number_format")) {
+    else if (strName == "number_format") {
         SetNumberFormat64(strValue);
     }
-    else if (strName == DUI_T("text_align")) {
+    else if (strName == "text_align") {
         //Horizontal alignment
-        if (strValue.find(DUI_T("left")) != DString::npos) {
+        if (strValue.find("left") != std::string::npos) {
             SetTextHAlignType(HorAlignType::kAlignLeft);
         }        
-        else if (strValue.find(DUI_T("hcenter")) != DString::npos) {
+        else if (strValue.find("hcenter") != std::string::npos) {
             SetTextHAlignType(HorAlignType::kAlignCenter);
         }
-        else if (strValue.find(DUI_T("right")) != DString::npos) {
+        else if (strValue.find("right") != std::string::npos) {
             SetTextHAlignType(HorAlignType::kAlignRight);
         }
 
         //Vertical alignment
-        if (strValue.find(DUI_T("top")) != DString::npos) {
+        if (strValue.find("top") != std::string::npos) {
             SetTextVAlignType(VerAlignType::kAlignTop);
         }        
-        else if (strValue.find(DUI_T("vcenter")) != DString::npos) {
+        else if (strValue.find("vcenter") != std::string::npos) {
             SetTextVAlignType(VerAlignType::kAlignCenter);
         }
-        else if (strValue.find(DUI_T("bottom")) != DString::npos) {
+        else if (strValue.find("bottom") != std::string::npos) {
             SetTextVAlignType(VerAlignType::kAlignBottom);
         }
     }
-    else if ((strName == DUI_T("text_padding")) || (strName == DUI_T("textpadding"))) {
+    else if ((strName == "text_padding") || (strName == "textpadding")) {
         UiPadding rcTextPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcTextPadding);
         SetTextPadding(rcTextPadding, true);
     }
-    else if ((strName == DUI_T("text_color")) || (strName == DUI_T("normal_text_color")) || (strName == DUI_T("normaltextcolor"))) {
+    else if ((strName == "text_color") || (strName == "normal_text_color") || (strName == "normaltextcolor")) {
         SetTextColor(strValue);
     }
-    else if ((strName == DUI_T("disabled_text_color")) || (strName == DUI_T("disabledtextcolor"))) {
+    else if ((strName == "disabled_text_color") || (strName == "disabledtextcolor")) {
         SetDisabledTextColor(strValue);
     }
-    else if ((strName == DUI_T("caret_color")) || (strName == DUI_T("caretcolor"))) {
+    else if ((strName == "caret_color") || (strName == "caretcolor")) {
         //Set the caret color
         SetCaretColor(strValue);
     }
-    else if ((strName == DUI_T("prompt_mode")) || (strName == DUI_T("promptmode"))) {
+    else if ((strName == "prompt_mode") || (strName == "promptmode")) {
         //Prompt mode
-        m_bAllowPrompt = (strValue == DUI_T("true")) ? true : false;
+        m_bAllowPrompt = (strValue == "true") ? true : false;
     }
-    else if ((strName == DUI_T("prompt_color")) || (strName == DUI_T("promptcolor"))) {
+    else if ((strName == "prompt_color") || (strName == "promptcolor")) {
         //Prompt text color
         m_sPromptColor = strValue;
     }
-    else if ((strName == DUI_T("prompt_text")) || (strName == DUI_T("prompttext"))) {
+    else if ((strName == "prompt_text") || (strName == "prompttext")) {
         //Prompt text
         SetPromptText(strValue);
     }
-    else if ((strName == DUI_T("prompt_text_id")) || (strName == DUI_T("prompt_textid")) || (strName == DUI_T("prompttextid"))) {
+    else if ((strName == "prompt_text_id") || (strName == "prompt_textid") || (strName == "prompttextid")) {
         //Prompt text ID
         SetPromptTextId(strValue);
     }
-    else if ((strName == DUI_T("focused_image")) || (strName == DUI_T("focusedimage"))) {
+    else if ((strName == "focused_image") || (strName == "focusedimage")) {
         SetFocusedImage(strValue);
     }
-    else if (strName == DUI_T("font")) {
+    else if (strName == "font") {
         SetFontId(strValue);
     }
-    else if (strName == DUI_T("text")) {
+    else if (strName == "text") {
         SetText(strValue);
     }
-    else if ((strName == DUI_T("text_id")) || (strName == DUI_T("textid"))) {
+    else if ((strName == "text_id") || (strName == "textid")) {
         SetTextId(strValue);
     }
-    else if ((strName == DUI_T("want_tab")) || (strName == DUI_T("wanttab"))) {
-        SetWantTab(strValue == DUI_T("true"));
+    else if ((strName == "want_tab") || (strName == "wanttab")) {
+        SetWantTab(strValue == "true");
     }
-    else if ((strName == DUI_T("want_return")) || (strName == DUI_T("want_return_msg")) || (strName == DUI_T("wantreturnmsg"))) {
-        SetWantReturn(strValue == DUI_T("true"));
+    else if ((strName == "want_return") || (strName == "want_return_msg") || (strName == "wantreturnmsg")) {
+        SetWantReturn(strValue == "true");
     }
-    else if ((strName == DUI_T("want_ctrl_return")) || (strName == DUI_T("return_msg_want_ctrl")) || (strName == DUI_T("returnmsgwantctrl"))) {
-        SetWantCtrlReturn(strValue == DUI_T("true"));
+    else if ((strName == "want_ctrl_return") || (strName == "return_msg_want_ctrl") || (strName == "returnmsgwantctrl")) {
+        SetWantCtrlReturn(strValue == "true");
     }
-    else if ((strName == DUI_T("limit_text")) || (strName == DUI_T("max_char")) || (strName == DUI_T("maxchar"))) {
+    else if ((strName == "limit_text") || (strName == "max_char") || (strName == "maxchar")) {
         //Limit the maximum number of characters
         SetLimitText(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("limit_chars")) {
+    else if (strName == "limit_chars") {
         //Restrict which characters can be entered
         SetLimitChars(strValue);
     }
-    else if (strName == DUI_T("word_wrap")) {
+    else if (strName == "word_wrap") {
         //Whether to wrap automatically
-        SetWordWrap(strValue == DUI_T("true"));
+        SetWordWrap(strValue == "true");
     }
-    else if (strName == DUI_T("no_caret_readonly")) {
+    else if (strName == "no_caret_readonly") {
         //Read-only mode, do not show the caret
         SetNoCaretReadonly();
     }
-    else if (strName == DUI_T("default_context_menu")) {
+    else if (strName == "default_context_menu") {
         //Whether to use the default right-click menu
-        SetEnableDefaultContextMenu(strValue == DUI_T("true"));
+        SetEnableDefaultContextMenu(strValue == "true");
     }
-    else if (strName == DUI_T("spin_class")) {
+    else if (strName == "spin_class") {
         SetSpinClass(strValue);
     }
-    else if (strName == DUI_T("clear_btn_class")) {
+    else if (strName == "clear_btn_class") {
         SetClearBtnClass(strValue);
     }
-    else if (strName == DUI_T("show_passowrd_btn_class")) {
+    else if (strName == "show_passowrd_btn_class") {
         SetShowPasswordBtnClass(strValue);
     }
-    else if (strName == DUI_T("wheel_zoom")) {
+    else if (strName == "wheel_zoom") {
         //Set whether Ctrl + mouse wheel is allowed to adjust the zoom ratio
-        SetEnableWheelZoom(strValue == DUI_T("true"));
+        SetEnableWheelZoom(strValue == "true");
     }
-    else if (strName == DUI_T("hide_selection")) {
+    else if (strName == "hide_selection") {
         //Whether to hide the selection
-        SetHideSelection(strValue == DUI_T("true"));
+        SetHideSelection(strValue == "true");
     }
-    else if (strName == DUI_T("focus_bottom_border_size")) {
+    else if (strName == "focus_bottom_border_size") {
         //Size of the bottom border when focused
         SetFocusBottomBorderSize(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("focus_bottom_border_color")) {
+    else if (strName == "focus_bottom_border_color") {
         //Color of the bottom border when focused
         SetFocusBottomBorderColor(strValue);
     }
-    else if (strName == DUI_T("select_all_on_focus")) {
+    else if (strName == "select_all_on_focus") {
         //Whether to select all when gaining focus
-        SetSelAllOnFocus(strValue == DUI_T("true"));
+        SetSelAllOnFocus(strValue == "true");
     }
-    else if (strName == DUI_T("row_spacing_mul")) {
+    else if (strName == "row_spacing_mul") {
         SetRowSpacingMul(StringUtil::StringToFloat(strValue.c_str(), nullptr));
     }
-    else if (strName == DUI_T("row_spacing_add")) {
+    else if (strName == "row_spacing_add") {
         //This property is not supported, ignore it
     }
 
 #ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
-    else if (strName == DUI_T("zoom")) {
+    else if (strName == "zoom") {
         //Zoom ratio:
         //Set the zoom ratio: wParam is the numerator of the zoom ratio, lParam is the denominator of the zoom ratio,
         // "wParam,lParam" means display scaled by the numerator/denominator of the zoom ratio, valid range: 1/64 < (wParam / lParam) < 64.
@@ -606,38 +606,38 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
             m_richCtrl.SetZoom(zoomValue.cx, zoomValue.cy);
         }
     }    
-    else if ((strName == DUI_T("auto_vscroll")) || (strName == DUI_T("autovscroll"))) {
+    else if ((strName == "auto_vscroll") || (strName == "autovscroll")) {
         //When the user presses ENTER on the last line, automatically scroll the text up by one page.
         if (m_pRichHost != nullptr) {
-            m_pRichHost->SetAutoVScroll(strValue == DUI_T("true"));
+            m_pRichHost->SetAutoVScroll(strValue == "true");
         }
     }
-    else if ((strName == DUI_T("auto_hscroll")) || (strName == DUI_T("autohscroll"))) {
+    else if ((strName == "auto_hscroll") || (strName == "autohscroll")) {
         //When the user types a character at the end of a line, automatically scroll the text to the right by 10 characters.
         //When the user presses Enter, the control scrolls all text back to the zero position.
         if (m_pRichHost != nullptr) {
-            m_pRichHost->SetAutoHScroll(strValue == DUI_T("true"));
+            m_pRichHost->SetAutoHScroll(strValue == "true");
         }
     }
-    else if ((strName == DUI_T("rich_text")) || (strName == DUI_T("rich"))) {
+    else if ((strName == "rich_text") || (strName == "rich")) {
         //Whether the rich text property is enabled
-        SetRichText(strValue == DUI_T("true"));
+        SetRichText(strValue == "true");
     }
-    else if (strName == DUI_T("auto_detect_url")) {
+    else if (strName == "auto_detect_url") {
         //Whether to auto-detect URLs; if it is a URL, display it as a hyperlink
-        SetAutoURLDetect(strValue == DUI_T("true"));
+        SetAutoURLDetect(strValue == "true");
     }
-    else if (strName == DUI_T("allow_beep")) {
+    else if (strName == "allow_beep") {
         //Whether to allow beep sounds
-        SetAllowBeep(strValue == DUI_T("true"));
+        SetAllowBeep(strValue == "true");
     }
-    else if (strName == DUI_T("save_selection")) {
+    else if (strName == "save_selection") {
         //If TRUE, the boundaries of the selection should be saved when the control is inactive.
         //If FALSE, when the control becomes active again, the selection boundaries can be reset to start = 0, length = 0.
-        SetSaveSelection(strValue == DUI_T("true"));
+        SetSaveSelection(strValue == "true");
     }    
 #else
-    else if (strName == DUI_T("zoom")) {
+    else if (strName == "zoom") {
         //Zoom ratio:
         //Set the zoom ratio: wParam is the numerator of the zoom ratio, lParam is the denominator of the zoom ratio,
         // "wParam,lParam" means display scaled by the numerator/denominator of the zoom ratio, valid range: 1/64 < (wParam / lParam) < 64.
@@ -649,46 +649,46 @@ void RichEdit::SetAttribute(const DString& strName, const DString& strValue)
         //    m_richCtrl.SetZoom(zoomValue.cx, zoomValue.cy);
         //}
     }    
-    else if ((strName == DUI_T("auto_vscroll")) || (strName == DUI_T("autovscroll"))) {
+    else if ((strName == "auto_vscroll") || (strName == "autovscroll")) {
         //When the user presses ENTER on the last line, automatically scroll the text up by one page.
         //if (m_pRichHost != nullptr) {
-        //    m_pRichHost->SetAutoVScroll(strValue == DUI_T("true"));
+        //    m_pRichHost->SetAutoVScroll(strValue == "true");
         //}
     }
-    else if ((strName == DUI_T("auto_hscroll")) || (strName == DUI_T("autohscroll"))) {
+    else if ((strName == "auto_hscroll") || (strName == "autohscroll")) {
         //When the user types a character at the end of a line, automatically scroll the text to the right by 10 characters.
         //When the user presses Enter, the control scrolls all text back to the zero position.
         //if (m_pRichHost != nullptr) {
-        //    m_pRichHost->SetAutoHScroll(strValue == DUI_T("true"));
+        //    m_pRichHost->SetAutoHScroll(strValue == "true");
         //}
     }
-    else if ((strName == DUI_T("rich_text")) || (strName == DUI_T("rich"))) {
+    else if ((strName == "rich_text") || (strName == "rich")) {
         //Whether the rich text property is enabled
-        //SetRichText(strValue == DUI_T("true"));
+        //SetRichText(strValue == "true");
     }
-    else if (strName == DUI_T("auto_detect_url")) {
+    else if (strName == "auto_detect_url") {
         //Whether to auto-detect URLs; if it is a URL, display it as a hyperlink
-        //SetAutoURLDetect(strValue == DUI_T("true"));
+        //SetAutoURLDetect(strValue == "true");
     }
-    else if (strName == DUI_T("allow_beep")) {
+    else if (strName == "allow_beep") {
         //Whether to allow beep sounds
-        //SetAllowBeep(strValue == DUI_T("true"));
+        //SetAllowBeep(strValue == "true");
     }
-    else if (strName == DUI_T("save_selection")) {
+    else if (strName == "save_selection") {
         //If TRUE, the boundaries of the selection should be saved when the control is inactive.
         //If FALSE, when the control becomes active again, the selection boundaries can be reset to start = 0, length = 0.
-        //SetSaveSelection(strValue == DUI_T("true"));
+        //SetSaveSelection(strValue == "true");
     }
 #endif
 
     //Some properties supported by native backend versions but not by this version; these need to be skipped
-    else if (strName == DUI_T("selection_bkcolor")) {
+    else if (strName == "selection_bkcolor") {
     }
-    else if (strName == DUI_T("inactive_selection_bkcolor")) {
+    else if (strName == "inactive_selection_bkcolor") {
     }
-    else if (strName == DUI_T("current_row_bkcolor")) {
+    else if (strName == "current_row_bkcolor") {
     }
-    else if (strName == DUI_T("inactive_current_row_bkcolor")) {
+    else if (strName == "inactive_current_row_bkcolor") {
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -796,7 +796,7 @@ bool RichEdit::IsShowPassword() const
     return false;
 }
 
-void RichEdit::SetPasswordChar(DStringW::value_type ch)
+void RichEdit::SetPasswordChar(std::wstring::value_type ch)
 {
     if (m_pRichHost != nullptr) {
         m_pRichHost->SetPasswordChar(ch);
@@ -853,12 +853,12 @@ int32_t RichEdit::GetMinNumber() const
     return m_minNumber;
 }
 
-void RichEdit::SetNumberFormat64(const DString& numberFormat)
+void RichEdit::SetNumberFormat64(const std::string& numberFormat)
 {
     m_numberFormat = numberFormat;
 }
 
-DString RichEdit::GetNumberFormat64() const
+std::string RichEdit::GetNumberFormat64() const
 {
     return m_numberFormat.c_str();
 }
@@ -893,12 +893,12 @@ void RichEdit::SetMultiLine(bool bMultiLine)
     }
 }
 
-DString RichEdit::GetFontId() const
+std::string RichEdit::GetFontId() const
 {
     return m_sFontId.c_str();
 }
 
-void RichEdit::SetFontId(const DString& strFontId)
+void RichEdit::SetFontId(const std::string& strFontId)
 {
     if (m_sFontId != strFontId) {
         m_sFontId = strFontId;
@@ -972,7 +972,7 @@ bool RichEdit::SetFontInfo(const UiFont& fontInfo)
     charFormat.dwMask = 0;
     if (!fontInfo.m_fontName.empty() && (oldFontInfo.m_fontName != fontInfo.m_fontName)) {
         charFormat.dwMask |= CFM_FACE;
-        DStringW fontName = StringConvert::TToWString(fontInfo.m_fontName.c_str());
+        std::wstring fontName = StringConvert::TToWString(fontInfo.m_fontName.c_str());
         ui::StringUtil::StringCopy(charFormat.szFaceName, fontName.c_str());
     }
     if ((fontInfo.m_fontSize > 0) && (oldFontInfo.m_fontSize != fontInfo.m_fontSize)) {
@@ -1025,12 +1025,12 @@ bool RichEdit::SetFontInfo(const UiFont& fontInfo)
     return true;
 }
 
-DString RichEdit::GetCurrentFontId() const
+std::string RichEdit::GetCurrentFontId() const
 {
     return GetFontId();
 }
 
-void RichEdit::SetTextColor(const DString& dwTextColor)
+void RichEdit::SetTextColor(const std::string& dwTextColor)
 {
     m_sTextColor = dwTextColor;
     if (IsEnabled()) {
@@ -1039,7 +1039,7 @@ void RichEdit::SetTextColor(const DString& dwTextColor)
     }
 }
 
-DString RichEdit::GetTextColor() const
+std::string RichEdit::GetTextColor() const
 {
     if (!m_sTextColor.empty()) {
         return m_sTextColor.c_str();
@@ -1049,7 +1049,7 @@ DString RichEdit::GetTextColor() const
     }
 }
 
-DString RichEdit::GetSelectionTextColor() const
+std::string RichEdit::GetSelectionTextColor() const
 {
     CHARFORMAT2W cf;
     ZeroMemory(&cf, sizeof(CHARFORMAT2W));
@@ -1060,7 +1060,7 @@ DString RichEdit::GetSelectionTextColor() const
     return GetColorString(dwTextColor);
 }
 
-void RichEdit::SetSelectionTextColor(const DString& textColor)
+void RichEdit::SetSelectionTextColor(const std::string& textColor)
 {
     if (!textColor.empty()) {
         UiColor dwTextColor = GetUiColor(textColor);
@@ -1076,7 +1076,7 @@ void RichEdit::SetSelectionTextColor(const DString& textColor)
     }
 }
 
-void RichEdit::SetDisabledTextColor(const DString& dwTextColor)
+void RichEdit::SetDisabledTextColor(const std::string& dwTextColor)
 {
     m_sDisabledTextColor = dwTextColor;
     if (!IsEnabled()) {
@@ -1085,7 +1085,7 @@ void RichEdit::SetDisabledTextColor(const DString& dwTextColor)
     }
 }
 
-DString RichEdit::GetDisabledTextColor() const
+std::string RichEdit::GetDisabledTextColor() const
 {
     if (!m_sDisabledTextColor.empty()) {
         return m_sDisabledTextColor.c_str();
@@ -1108,24 +1108,24 @@ void RichEdit::SetLimitText(int32_t iChars)
     m_richCtrl.SetLimitText(iChars);
 }
 
-DString RichEdit::GetLimitChars() const
+std::string RichEdit::GetLimitChars() const
 {
     if (m_pLimitChars != nullptr) {
         return StringConvert::WStringToT(m_pLimitChars.get());
     }
     else {
-        return DString();
+        return std::string();
     }
 }
 
-void RichEdit::SetLimitChars(const DString& limitChars)
+void RichEdit::SetLimitChars(const std::string& limitChars)
 {
     m_pLimitChars.reset();
-    DStringW limitCharsW = StringConvert::TToWString(limitChars);
+    std::wstring limitCharsW = StringConvert::TToWString(limitChars);
     if (!limitCharsW.empty()) {
         size_t nLen = limitCharsW.size() + 1;
-        m_pLimitChars.reset(new DStringW::value_type[nLen]);
-        memset(m_pLimitChars.get(), 0, nLen * sizeof(DStringW::value_type));
+        m_pLimitChars.reset(new std::wstring::value_type[nLen]);
+        memset(m_pLimitChars.get(), 0, nLen * sizeof(std::wstring::value_type));
         StringUtil::StringCopy(m_pLimitChars.get(), nLen, limitCharsW.c_str());
     }
 }
@@ -1135,7 +1135,7 @@ int32_t RichEdit::GetTextLength() const
     return m_richCtrl.GetTextLengthEx(GTL_DEFAULT, 1200);
 }
 
-DString RichEdit::GetText() const
+std::string RichEdit::GetText() const
 {
     if ((m_pRichHost != nullptr) && m_pRichHost->IsPassword()) {
         //Password mode: use the underlying interface to get the text directly
@@ -1145,48 +1145,35 @@ DString RichEdit::GetText() const
     UINT uCodePage = 1200;
     int32_t nTextLen = m_richCtrl.GetTextLengthEx(GTL_DEFAULT, uCodePage);
     if (nTextLen < 1) {
-        return DString();
+        return std::string();
     }
     nTextLen += 1;
-    DStringW::value_type* pText = new DStringW::value_type[nTextLen];
-    memset(pText, 0, sizeof(DStringW::value_type) * nTextLen);
+    std::wstring::value_type* pText = new std::wstring::value_type[nTextLen];
+    memset(pText, 0, sizeof(std::wstring::value_type) * nTextLen);
     m_richCtrl.GetTextEx(pText, nTextLen, GTL_DEFAULT, uCodePage);
     std::wstring sText(pText);
     delete[] pText;
     pText = nullptr;
-#ifdef DUI_UNICODE
-    return sText;
-#else
     return StringConvert::WStringToT(sText);
-#endif
 }
 
-void RichEdit::SetText(const DStringW& strText)
+void RichEdit::SetText(const std::wstring& strText)
 {
     m_bDisableTextChangeEvent = false;
     SetSel(0, -1);
 
-#ifdef DUI_UNICODE
-    ReplaceSel(strText, FALSE);
-#else
-    DString text = StringConvert::WStringToT(strText);
+    std::string text = StringConvert::WStringToT(strText);
     ReplaceSel(text, FALSE);
-#endif
 }
 
-void RichEdit::SetText(const DStringA& strText)
+void RichEdit::SetText(const std::string& strText)
 {
     m_bDisableTextChangeEvent = false;
     SetSel(0, -1);
-#ifdef DUI_UNICODE
-    DString text = StringConvert::UTF8ToT(strText);
-    ReplaceSel(text, FALSE);
-#else
     ReplaceSel(strText, FALSE);
-#endif
 }
 
-void RichEdit::SetTextNoEvent(const DString& strText)
+void RichEdit::SetTextNoEvent(const std::string& strText)
 {
     m_bDisableTextChangeEvent = true;
     SetSel(0, -1);
@@ -1194,9 +1181,9 @@ void RichEdit::SetTextNoEvent(const DString& strText)
     m_bDisableTextChangeEvent = false;
 }
 
-void RichEdit::SetTextId(const DString& strTextId)
+void RichEdit::SetTextId(const std::string& strTextId)
 {
-    DString strText = GlobalManager::Instance().Lang().GetStringViaID(strTextId);
+    std::string strText = GlobalManager::Instance().Lang().GetStringViaID(strTextId);
     SetText(strText);
 }
 
@@ -1224,26 +1211,18 @@ int32_t RichEdit::SetSel(int32_t nStartChar, int32_t nEndChar)
     return m_richCtrl.SetSel(nStartChar, nEndChar);
 }
 
-void RichEdit::ReplaceSel(const DString& lpszNewText, bool bCanUndo)
+void RichEdit::ReplaceSel(const std::string& lpszNewText, bool bCanUndo)
 {
-#ifdef DUI_UNICODE
-    m_richCtrl.ReplaceSel(lpszNewText.c_str(), bCanUndo);
-#else
     std::wstring newText = StringConvert::TToWString(lpszNewText);
     m_richCtrl.ReplaceSel(newText.c_str(), bCanUndo);
-#endif
 }
 
-DString RichEdit::GetSelText() const
+std::string RichEdit::GetSelText() const
 {
-    DString text;
-#ifdef DUI_UNICODE    
-    m_richCtrl.GetSelText(text);
-#else
-    DStringW textW;
+    std::string text;
+    std::wstring textW;
     m_richCtrl.GetSelText(textW);
     text = StringConvert::WStringToUTF8(textW);
-#endif
     return text;
 }
 
@@ -1257,7 +1236,7 @@ void RichEdit::SetSelNone()
     m_richCtrl.SetSelNone();
 }
 
-DString RichEdit::GetTextRange(int32_t nStartChar, int32_t nEndChar) const
+std::string RichEdit::GetTextRange(int32_t nStartChar, int32_t nEndChar) const
 {
     TEXTRANGEW tr = { {0, 0}, nullptr };
     tr.chrg.cpMin = nStartChar;
@@ -1265,22 +1244,18 @@ DString RichEdit::GetTextRange(int32_t nStartChar, int32_t nEndChar) const
     LPWSTR lpText = nullptr;
     const int32_t nLen = nEndChar - nStartChar + 1;
     if (nLen < 1) {
-        return DString();
+        return std::string();
     }
     lpText = new WCHAR[nLen];
     if (lpText == nullptr) {
-        return DString();
+        return std::string();
     }
     ::ZeroMemory(lpText, nLen * sizeof(WCHAR));
     tr.lpstrText = lpText;
     m_richCtrl.GetTextRange(&tr);
-    DStringW sText = (LPCWSTR)lpText;
+    std::wstring sText = (LPCWSTR)lpText;
     delete[] lpText;
-#ifdef DUI_UNICODE
-    return sText;
-#else
     return StringConvert::WStringToT(sText);
-#endif
 }
 
 void RichEdit::HideSelection(bool bHide, bool bChangeStyle)
@@ -1344,26 +1319,22 @@ int32_t RichEdit::GetLineCount() const
     return m_richCtrl.GetLineCount();
 }
 
-DString RichEdit::GetLine(int32_t nIndex, int32_t nMaxLength) const
+std::string RichEdit::GetLine(int32_t nIndex, int32_t nMaxLength) const
 {
     LPWSTR lpText = nullptr;
     if (nMaxLength < 1) {
-        return DString();
+        return std::string();
     }
     lpText = new WCHAR[nMaxLength + 1];
     if (lpText == nullptr) {
-        return DString();
+        return std::string();
     }
     ::ZeroMemory(lpText, (nMaxLength + 1) * sizeof(WCHAR));
     *(LPWORD)lpText = (WORD)nMaxLength;
     m_richCtrl.GetLine(nIndex, lpText);
-    DStringW sText = lpText;
+    std::wstring sText = lpText;
     delete[] lpText;
-#ifdef DUI_UNICODE
-    return sText;
-#else
     return StringConvert::WStringToUTF8(sText);
-#endif
 }
 
 int32_t RichEdit::LineIndex(int32_t nLine) const
@@ -1422,15 +1393,15 @@ void RichEdit::OnTxNotify(DWORD iNotify, void *pv)
                 CHARRANGE oldSel = {0, 0};
                 GetSel(oldSel);
                 SetSel(link->chrg);
-                DString url = GetSelText();
-                const DString prefix = DUI_T("HYPERLINK ");
+                std::string url = GetSelText();
+                const std::string prefix = "HYPERLINK ";
                 size_t pos = url.find(prefix);
                 if (pos == 0) {
                     url = url.substr(prefix.size());
-                    if (!url.empty() && url.front() == DUI_T('\"')) {
+                    if (!url.empty() && url.front() == '\"') {
                         url.erase(url.begin());
-                        pos = url.find(DUI_T('\"'));
-                        if (pos != DString::npos) {
+                        pos = url.find('\"');
+                        if (pos != std::string::npos) {
                             url.resize(pos);
                         }
                     }
@@ -1690,7 +1661,7 @@ void RichEdit::EndRight()
     m_richCtrl.TxSendMessage(WM_HSCROLL, SB_RIGHT, 0L);
 }
 
-DString RichEdit::GetType() const { return DUI_CTR_RICHEDIT; }
+std::string RichEdit::GetType() const { return DUI_CTR_RICHEDIT; }
 
 void RichEdit::OnInit()
 {
@@ -1700,7 +1671,7 @@ void RichEdit::OnInit()
     BaseClass::OnInit();
 
     //Set the font and font color
-    DString fontId = GetFontId();
+    std::string fontId = GetFontId();
     if (fontId.empty()) {
         fontId = GlobalManager::Instance().Font().GetDefaultFontId();
         SetFontIdInternal(fontId);
@@ -2055,7 +2026,7 @@ bool RichEdit::OnChar(const EventArgs& msg)
     //Number
     if (IsNumberOnly()) {
         if (msg.vkCode < '0' || msg.vkCode > '9') {
-            if (msg.vkCode == DUI_T('-')) {
+            if (msg.vkCode == '-') {
                 if (GetTextLength() > 0) {
                     //Not the first character, negative sign input is forbidden
                     return true;
@@ -2073,21 +2044,11 @@ bool RichEdit::OnChar(const EventArgs& msg)
 
     //Restrict the characters allowed for input
     if (m_pLimitChars != nullptr) {
-        if (!IsInLimitChars((DStringW::value_type)msg.vkCode)) {
+        if (!IsInLimitChars((std::wstring::value_type)msg.vkCode)) {
             //The character is not in the list, input is forbidden
             return true;
         }
     }
-#ifdef DUI_UNICODE
-    WPARAM wParam = msg.wParam;
-    WPARAM lParam = msg.lParam;
-    if (msg.modifierKey & ModifierKey::kIsSystemKey) {
-        m_richCtrl.TxSendMessage(WM_SYSCHAR, wParam, lParam);
-    }
-    else {
-        m_richCtrl.TxSendMessage(WM_CHAR, wParam, lParam);
-    }    
-#else
     //Only 1-byte and 2-byte character input is supported; 4-byte character input is not supported
     if ((::GetTickCount() - m_dwLastCharTime) > 5000) {
         m_pendingChars.clear();
@@ -2102,7 +2063,7 @@ bool RichEdit::OnChar(const EventArgs& msg)
     else {
         if (m_pendingChars.size() == 1) {
             BYTE chMBCS[8] = {m_pendingChars.front(), (BYTE)msg.wParam, 0, };
-            DStringW::value_type chWideChar[4] = {0, };
+            std::wstring::value_type chWideChar[4] = {0, };
             ::MultiByteToWideChar(CP_ACP, 0, (const char*)chMBCS, 2, chWideChar, 4);
             if (chWideChar[0] != 0) {
                 WPARAM wParam = chWideChar[0];
@@ -2120,17 +2081,16 @@ bool RichEdit::OnChar(const EventArgs& msg)
     if (!bHandled) {
         m_richCtrl.TxSendMessage(WM_CHAR, msg.wParam, msg.lParam);
     }    
-#endif    
     return true;
 }
 
-bool RichEdit::IsInLimitChars(DStringW::value_type charValue) const
+bool RichEdit::IsInLimitChars(std::wstring::value_type charValue) const
 {
     //When false is returned: input is forbidden
     if (m_pLimitChars == nullptr) {
         return true;
     }
-    const DStringW::value_type* ch = m_pLimitChars.get();
+    const std::wstring::value_type* ch = m_pLimitChars.get();
     if ((ch == nullptr) || (*ch == L'\0')) {
         return true;
     }
@@ -2149,7 +2109,7 @@ bool RichEdit::IsPasteLimited() const
 {
     if (m_pLimitChars != nullptr) {
         //Limit characters are set
-        DStringW strClipText;
+        std::wstring strClipText;
         GetClipboardText(strClipText);
         if (!strClipText.empty()) {
             size_t count = strClipText.size();
@@ -2166,7 +2126,7 @@ bool RichEdit::IsPasteLimited() const
     }
     else if (IsNumberOnly()) {
         //Number-only mode
-        DStringW strClipText;
+        std::wstring strClipText;
         GetClipboardText(strClipText);
         if (!strClipText.empty()) {
             size_t count = strClipText.size();
@@ -2270,7 +2230,7 @@ void RichEdit::OnMouseMessage(uint32_t uMsg, const EventArgs& msg)
 
 void RichEdit::Paint(IRender* pRender, const UiRect& rcPaint)
 {
-    PerformanceStat statPerformance(DUI_T("PaintWindow, RichEdit::Paint"));
+    PerformanceStat statPerformance("PaintWindow, RichEdit::Paint");
     if (pRender == nullptr) {
         return;
     }
@@ -2516,7 +2476,7 @@ private:
 
 void RichEdit::PaintRichEdit(IRender* pRender, const UiRect& rcPaint)
 {
-    PerformanceStat statPerformance(DUI_T("PaintWindow, RichEdit::PaintRichEdit"));
+    PerformanceStat statPerformance("PaintWindow, RichEdit::PaintRichEdit");
     if (pRender == nullptr) {
         return;
     }
@@ -2645,7 +2605,7 @@ void RichEdit::PaintRichEdit(IRender* pRender, const UiRect& rcPaint)
     }
     if (!bHasBkClolor && IsAlpha()) {
         //If the control has transparency set and no background is set, drawing text directly would not display properly; handle the background color problem automatically
-        DString bkColor = GetBkColor();
+        std::string bkColor = GetBkColor();
         if (bkColor.empty()) {
             Control* pParent = GetParent();
             while ((pParent != nullptr) && bkColor.empty()) {
@@ -2850,7 +2810,7 @@ void RichEdit::PaintBorder(IRender* pRender)
         return;
     }
     //Draw the bottom border line
-    DString borderColor = GetFocusBottomBorderColor();
+    std::string borderColor = GetFocusBottomBorderColor();
     int32_t borderSize = GetFocusBottomBorderSize();
     if ((borderSize > 0) && !borderColor.empty()) {
         UiColor dwBorderColor = GetUiColor(borderColor);
@@ -2902,12 +2862,12 @@ void RichEdit::ShowCaret(bool fShow)
     Invalidate();
 }
 
-void RichEdit::SetCaretColor(const DString& dwColor)
+void RichEdit::SetCaretColor(const std::string& dwColor)
 {
     m_sCaretColor = dwColor;
 }
 
-DString RichEdit::GetCaretColor() const
+std::string RichEdit::GetCaretColor() const
 {
     return m_sCaretColor.c_str();
 }
@@ -2965,9 +2925,9 @@ void RichEdit::SetPromptMode(bool bPrompt)
     Invalidate();
 }
 
-DString RichEdit::GetPromptText() const
+std::string RichEdit::GetPromptText() const
 {
-    DString strText = m_sPromptText.c_str();
+    std::string strText = m_sPromptText.c_str();
     if (strText.empty() && !m_sPromptTextId.empty()) {
         strText = GlobalManager::Instance().Lang().GetStringViaID(m_sPromptTextId.c_str());
     }
@@ -2981,7 +2941,7 @@ std::string RichEdit::GetUTF8PromptText() const
     return strOut;
 }
 
-void RichEdit::SetPromptText(const DString& strText)
+void RichEdit::SetPromptText(const std::string& strText)
 {
     if (m_sPromptText != strText) {
         m_sPromptText = strText;
@@ -2991,11 +2951,11 @@ void RichEdit::SetPromptText(const DString& strText)
 
 void RichEdit::SetUTF8PromptText(const std::string& strText)
 {
-    DString strOut = StringConvert::UTF8ToT(strText);
+    std::string strOut = StringConvert::UTF8ToT(strText);
     SetPromptText(strOut);
 }
 
-void RichEdit::SetPromptTextId(const DString& strTextId)
+void RichEdit::SetPromptTextId(const std::string& strTextId)
 {
     if (m_sPromptTextId != strTextId) {
         m_sPromptTextId = strTextId;
@@ -3005,7 +2965,7 @@ void RichEdit::SetPromptTextId(const DString& strTextId)
 
 void RichEdit::SetUTF8PromptTextId(const std::string& strTextId)
 {
-    DString strOut = StringConvert::UTF8ToT(strTextId);
+    std::string strOut = StringConvert::UTF8ToT(strTextId);
     SetPromptTextId(strOut);
 }
 
@@ -3023,7 +2983,7 @@ void RichEdit::PaintPromptText(IRender* pRender)
         return;
     }
 
-    DString strPrompt = GetPromptText();
+    std::string strPrompt = GetPromptText();
     if (strPrompt.empty() || m_sPromptColor.empty()) {
         return;
     }
@@ -3040,15 +3000,15 @@ void RichEdit::PaintPromptText(IRender* pRender)
     pRender->DrawString(strPrompt, drawParam);
 }
 
-DString RichEdit::GetFocusedImage()
+std::string RichEdit::GetFocusedImage()
 {
     if (m_pFocusedImage != nullptr) {
         return m_pFocusedImage->GetImageString();
     }
-    return DString();
+    return std::string();
 }
 
-void RichEdit::SetFocusedImage( const DString& strImage )
+void RichEdit::SetFocusedImage( const std::string& strImage )
 {
     if (m_pFocusedImage == nullptr) {
         m_pFocusedImage = new Image;
@@ -3154,7 +3114,7 @@ void RichEdit::SetUseControlCursor(bool bUseControlCursor)
     m_bUseControlCursor = bUseControlCursor;
 }
 
-void RichEdit::GetClipboardText(DStringW& out )
+void RichEdit::GetClipboardText(std::wstring& out )
 {
     out.clear();
     BOOL ret = ::OpenClipboard(nullptr);
@@ -3162,9 +3122,9 @@ void RichEdit::GetClipboardText(DStringW& out )
         if(::IsClipboardFormatAvailable(CF_UNICODETEXT)) {
             HANDLE h = ::GetClipboardData(CF_UNICODETEXT);
             if(h != INVALID_HANDLE_VALUE) {
-                DStringW::value_type* buf = (DStringW::value_type*)::GlobalLock(h);
+                std::wstring::value_type* buf = (std::wstring::value_type*)::GlobalLock(h);
                 if(buf != nullptr)    {
-                    DStringW str(buf, GlobalSize(h)/sizeof(DStringW::value_type));
+                    std::wstring str(buf, GlobalSize(h)/sizeof(std::wstring::value_type));
                     out = str;
                     ::GlobalUnlock(h);
                 }
@@ -3258,10 +3218,10 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
         }
     }
     
-    DString skinFolder = DUI_T("public/menu/");
+    std::string skinFolder = "public/menu/";
     Menu* menu = new Menu(GetWindow());//The parent window must be set, otherwise the program status bar becomes inactive when the menu pops up
     menu->SetSkinFolder(skinFolder);
-    DString xml(DUI_T("rich_edit_menu.xml"));
+    std::string xml("rich_edit_menu.xml");
 
     //While the menu is displayed, do not hide the currently selected text
     m_bContextMenuShown = true;
@@ -3289,7 +3249,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
     ui::MenuItem* menu_item = nullptr;
     //Update the command state and add menu command responses
     bool hasSelText = nEndChar > nStartChar ? true : false;
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_copy")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl("edit_menu_copy"));
     if (menu_item != nullptr) {
         if (!hasSelText) {
             menu_item->SetEnabled(false);
@@ -3299,7 +3259,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_cut")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl("edit_menu_cut"));
     if (menu_item != nullptr) {
         if (!hasSelText) {
             menu_item->SetEnabled(false);
@@ -3312,7 +3272,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_paste")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl("edit_menu_paste"));
     if (menu_item != nullptr) {
         if (!pRichEdit->CanPaste()) {
             menu_item->SetEnabled(false);
@@ -3325,7 +3285,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_del")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl("edit_menu_del"));
     if (menu_item != nullptr) {
         if (!hasSelText) {
             menu_item->SetEnabled(false);
@@ -3338,7 +3298,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_sel_all")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl("edit_menu_sel_all"));
     if (menu_item != nullptr) {
         if ((nStartChar == 0) && (nEndChar == pRichEdit->GetTextLength())) {
             menu_item->SetEnabled(false);
@@ -3348,7 +3308,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_undo")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl("edit_menu_undo"));
     if (menu_item != nullptr) {
         if (!pRichEdit->CanUndo()) {
             menu_item->SetEnabled(false);
@@ -3361,7 +3321,7 @@ void RichEdit::ShowPopupMenu(const ui::UiPoint& point)
             return true;
             });
     }
-    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl(DUI_T("edit_menu_redo")));
+    menu_item = dynamic_cast<ui::MenuItem*>(menu->FindControl("edit_menu_redo"));
     if (menu_item != nullptr) {
         if (!pRichEdit->CanRedo()) {
             menu_item->SetEnabled(false);
@@ -3380,13 +3340,13 @@ void RichEdit::OnTextChanged()
 {
     if (IsNumberOnly() && ((GetMinNumber() != INT_MIN) || (GetMaxNumber() != INT_MAX))) {
         //Number-only mode, check whether the number corresponding to the text is within range
-        DString text = GetText();
+        std::string text = GetText();
         if (!text.empty()) {
             int64_t n = StringUtil::StringToInt64(text);
             if (n < GetMinNumber()) {
                 //Exceeds the minimum number, correct it
                 int32_t newValue = GetMinNumber();
-                SetTextNoEvent(StringUtil::Printf(DUI_T("%d"), newValue));
+                SetTextNoEvent(StringUtil::Printf("%d", newValue));
                 if (!m_bDisableTextChangeEvent) {
                     SendEvent(kEventTextChanged);
                 }
@@ -3395,7 +3355,7 @@ void RichEdit::OnTextChanged()
             else if (n > GetMaxNumber()) {
                 //Exceeds the maximum number, correct it
                 int32_t newValue = GetMaxNumber();
-                SetTextNoEvent(StringUtil::Printf(DUI_T("%d"), newValue));
+                SetTextNoEvent(StringUtil::Printf("%d", newValue));
                 if (!m_bDisableTextChangeEvent) {
                     SendEvent(kEventTextChanged);
                 }
@@ -3408,12 +3368,12 @@ void RichEdit::OnTextChanged()
     }
 }
 
-bool RichEdit::SetSpinClass(const DString& spinClass)
+bool RichEdit::SetSpinClass(const std::string& spinClass)
 {
-    DString spinBoxClass;
-    DString spinBtnUpClass;
-    DString spinBtnDownClass;
-    std::list<DString> classNames = StringUtil::Split(spinClass, DUI_T(","));
+    std::string spinBoxClass;
+    std::string spinBtnUpClass;
+    std::string spinBtnDownClass;
+    std::list<std::string> classNames = StringUtil::Split(spinClass, ",");
     if (classNames.size() == 3) {
         auto iter = classNames.begin();
         spinBoxClass = *iter++;
@@ -3511,7 +3471,7 @@ bool RichEdit::SetSpinClass(const DString& spinClass)
     return false;
 }
 
-bool RichEdit::SetEnableSpin(bool bEnable, const DString& spinClass, int32_t nMin, int32_t nMax)
+bool RichEdit::SetEnableSpin(bool bEnable, const std::string& spinClass, int32_t nMin, int32_t nMax)
 {
     bool bRet = false;
     if (bEnable) {
@@ -3530,7 +3490,7 @@ bool RichEdit::SetEnableSpin(bool bEnable, const DString& spinClass, int32_t nMi
     }
     else {
         bool hasSpin = m_pSpinBox != nullptr;
-        SetSpinClass(DUI_T(""));
+        SetSpinClass("");
         bRet = true;
         if (hasSpin) {
             SetNumberOnly(false);
@@ -3543,7 +3503,7 @@ bool RichEdit::SetEnableSpin(bool bEnable, const DString& spinClass, int32_t nMi
 
 int64_t RichEdit::GetTextNumber() const
 {
-    DString text = GetText();
+    std::string text = GetText();
     if (text.empty()) {
         return 0;
     }
@@ -3614,7 +3574,7 @@ void RichEdit::StopAutoAdjustTextNumber()
     m_flagAdjustTextNumber.Cancel();
 }
 
-void RichEdit::SetClearBtnClass(const DString& btnClass)
+void RichEdit::SetClearBtnClass(const std::string& btnClass)
 {
     if (!btnClass.empty()) {
         ASSERT(m_pClearButton == nullptr);
@@ -3630,13 +3590,13 @@ void RichEdit::SetClearBtnClass(const DString& btnClass)
 
         //Handle the button click event
         pClearButton->AttachClick([this](const EventArgs& /*args*/) {
-            SetText(DUI_T(""));
+            SetText("");
             return true;
             });
     }
 }
 
-void RichEdit::SetShowPasswordBtnClass(const DString& btnClass)
+void RichEdit::SetShowPasswordBtnClass(const std::string& btnClass)
 {
     if (!btnClass.empty()) {
         ASSERT(m_pShowPasswordButton == nullptr);
@@ -3676,7 +3636,7 @@ void RichEdit::SetShowPasswordBtnClass(const DString& btnClass)
     }
 }
 
-void RichEdit::GetCharFormat(const DString& fontId, CHARFORMAT2W& cf) const
+void RichEdit::GetCharFormat(const std::string& fontId, CHARFORMAT2W& cf) const
 {
     ZeroMemory(&cf, sizeof(CHARFORMAT2W));
     cf.cbSize = sizeof(CHARFORMAT2W);
@@ -3731,7 +3691,7 @@ void RichEdit::GetCharFormat(const DString& fontId, CHARFORMAT2W& cf) const
     }
 }
 
-void RichEdit::SetFontIdInternal(const DString& fontId)
+void RichEdit::SetFontIdInternal(const std::string& fontId)
 {
     CHARFORMAT2W cf;
     GetCharFormat(fontId, cf);
@@ -3814,7 +3774,7 @@ bool RichEdit::FindRichText(const FindTextParam& findParam, TextCharRange& chrgT
     ZeroMemory(&ft, sizeof(ft));
     ft.chrg.cpMin = findParam.chrg.cpMin;
     ft.chrg.cpMax = findParam.chrg.cpMax;
-    DStringW findText = StringConvert::TToWString(findParam.findText);
+    std::wstring findText = StringConvert::TToWString(findParam.findText);
     ft.lpstrText = findText.c_str();
     LONG nIndex = FindRichText(dwFlags, ft);
     if (nIndex != -1) {
@@ -3857,12 +3817,12 @@ int32_t RichEdit::GetFocusBottomBorderSize() const
     return (int32_t)(uint32_t)m_nFocusBottomBorderSize;
 }
 
-void RichEdit::SetFocusBottomBorderColor(const DString& bottomBorderColor)
+void RichEdit::SetFocusBottomBorderColor(const std::string& bottomBorderColor)
 {
     m_sFocusBottomBorderColor = bottomBorderColor;
 }
 
-DString RichEdit::GetFocusBottomBorderColor() const
+std::string RichEdit::GetFocusBottomBorderColor() const
 {
     return m_sFocusBottomBorderColor.c_str();
 }
@@ -3914,7 +3874,7 @@ void RichEdit::SetSaveSelection(bool fSaveSelection)
     }
 }
 
-void RichEdit::AddColorText(const DString& str, const DString& color)
+void RichEdit::AddColorText(const std::string& str, const std::string& color)
 {
     if (!IsRichText() || str.empty() || color.empty()) {
         ASSERT(FALSE);
@@ -3939,7 +3899,7 @@ void RichEdit::AddColorText(const DString& str, const DString& color)
     SetSelectionCharFormat(cf);
 }
 
-void RichEdit::AddLinkColorTextEx(const DString& str, const DString& color, const DString& linkInfo, const DString& strFontId)
+void RichEdit::AddLinkColorTextEx(const std::string& str, const std::string& color, const std::string& linkInfo, const std::string& strFontId)
 {
     if (!IsRichText() || str.empty() || color.empty()) {
         ASSERT(FALSE);
@@ -3993,9 +3953,9 @@ void RichEdit::SetRichText(bool bRichText)
     }
 
     //When switching text modes, the RichEdit text content must be empty
-    DString text = GetText();
+    std::string text = GetText();
     if (!text.empty()) {
-        SetTextNoEvent(DUI_T(""));
+        SetTextNoEvent("");
         m_richCtrl.EmptyUndoBuffer();
     }
     m_richCtrl.SetTextMode((TEXTMODE)textMode);
@@ -4147,23 +4107,15 @@ void RichEdit::ScrollCaret()
     m_richCtrl.ScrollCaret();
 }
 
-int32_t RichEdit::InsertText(int32_t nInsertAfterChar, const DString& text, bool bCanUndo)
+int32_t RichEdit::InsertText(int32_t nInsertAfterChar, const std::string& text, bool bCanUndo)
 {
-#ifdef DUI_UNICODE
-    return m_richCtrl.InsertText(nInsertAfterChar, text.c_str(), bCanUndo);
-#else
     return m_richCtrl.InsertText(nInsertAfterChar, StringConvert::TToWString(text).c_str(), bCanUndo);
-#endif
 }
 
-int32_t RichEdit::AppendText(const DString& text, bool bCanUndo, bool bScrollBottom)
+int32_t RichEdit::AppendText(const std::string& text, bool bCanUndo, bool bScrollBottom)
 {
     int32_t nRet = -1;
-#ifdef DUI_UNICODE
-    nRet = m_richCtrl.AppendText(text.c_str(), bCanUndo);
-#else
     nRet = m_richCtrl.AppendText(StringConvert::TToWString(text).c_str(), bCanUndo);
-#endif
     if (bScrollBottom) {
         int64_t nScrollRangeY = GetScrollRange().cy;
         if (nScrollRangeY > 0) {
@@ -4185,7 +4137,7 @@ bool RichEdit::SetDefaultCharFormat(CHARFORMAT2W& cf)
             //Synchronize the text color
             UiColor textColor;
             textColor.SetFromCOLORREF(cf.crTextColor);
-            m_sTextColor = ui::StringUtil::Printf(DUI_T("#%02X%02X%02X%02X"), textColor.GetA(), textColor.GetR(), textColor.GetG(), textColor.GetB());
+            m_sTextColor = ui::StringUtil::Printf("#%02X%02X%02X%02X", textColor.GetA(), textColor.GetR(), textColor.GetG(), textColor.GetB());
         }
         return true;
     }

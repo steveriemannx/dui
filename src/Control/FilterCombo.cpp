@@ -13,11 +13,11 @@ FilterCombo::~FilterCombo()
 {
 }
 
-DString FilterCombo::GetType() const { return DUI_CTR_FILTER_COMBO; }
+std::string FilterCombo::GetType() const { return DUI_CTR_FILTER_COMBO; }
 
-void FilterCombo::SetAttribute(const DString& strName, const DString& strValue)
+void FilterCombo::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("combo_type")) {
+    if (strName == "combo_type") {
         //Ignore this attribute setting
     }
     else {
@@ -47,7 +47,7 @@ bool FilterCombo::OnEditButtonUp(const EventArgs& /*args*/)
 
 bool FilterCombo::OnEditTextChanged(const ui::EventArgs& /*args*/)
 {
-    DString editText = GetText();
+    std::string editText = GetText();
     //Convert to lowercase so that the comparison is case-insensitive
     editText = StringUtil::MakeLowerString(editText);
     ShowComboList();
@@ -55,7 +55,7 @@ bool FilterCombo::OnEditTextChanged(const ui::EventArgs& /*args*/)
     return true;
 }
 
-void FilterCombo::FilterComboList(const DString& filterText)
+void FilterCombo::FilterComboList(const std::string& filterText)
 {
     TreeView* pTreeView = GetTreeView();
     if (pTreeView == nullptr) {
@@ -81,13 +81,13 @@ void FilterCombo::FilterComboList(const DString& filterText)
     UpdateComboList();
 }
 
-bool FilterCombo::IsFilterText(const DString& filterText, const DString& itemText) const
+bool FilterCombo::IsFilterText(const std::string& filterText, const std::string& itemText) const
 {
-    DString lowerItemText = StringUtil::MakeLowerString(itemText);
+    std::string lowerItemText = StringUtil::MakeLowerString(itemText);
     if (filterText.empty()) {
         return true;
     }
-    return (lowerItemText.find(filterText) != DString::npos) ? true : false;
+    return (lowerItemText.find(filterText) != std::string::npos) ? true : false;
 }
 
 } // namespace ui

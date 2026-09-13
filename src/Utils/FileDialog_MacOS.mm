@@ -46,8 +46,8 @@ static void ApplyFileTypes(NSOpenPanel* panel, const std::vector<FileDialog::Fil
     for (const FileDialog::FileType& fileType : fileTypes) {
         if (!fileType.szExt.empty()) {
             //Strip a leading dot, if any (e.g. "*.txt" -> "txt")
-            DString ext = fileType.szExt;
-            if (!ext.empty() && (ext[0] == DUI_T('.'))) {
+            std::string ext = fileType.szExt;
+            if (!ext.empty() && (ext[0] == '.')) {
                 ext.erase(ext.begin());
             }
             std::string utf8Ext = StringConvert::TToUTF8(ext);
@@ -120,8 +120,8 @@ bool FileDialog::BrowseForFile(Window* pWindow,
     bool bOpenFileDialog,
     const std::vector<FileDialog::FileType>& fileTypes,
     int32_t nFileTypeIndex,
-    const DString& defaultExt,
-    const DString& fileName,
+    const std::string& defaultExt,
+    const std::string& fileName,
     const FilePath& defaultFilePath)
 {
     UNUSED_VARIABLE(pWindow);
@@ -182,7 +182,7 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
     std::vector<FilePath>& filePaths,
     const std::vector<FileDialog::FileType>& fileTypes,
     int32_t nFileTypeIndex,
-    const DString& defaultExt,
+    const std::string& defaultExt,
     const FilePath& defaultLocation)
 {
     UNUSED_VARIABLE(pWindow);

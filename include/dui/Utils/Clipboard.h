@@ -12,19 +12,19 @@ class DUI_API Clipboard
 public:
     /** Get the clipboard string (UTF16)
     */
-    static bool GetClipboardText(DStringW& text);
+    static bool GetClipboardText(std::wstring& text);
 
     /** Get the clipboard string (UTF8)
     */
-    static bool GetClipboardText(DStringA& text);
+    static bool GetClipboardText(std::string& text);
 
     /** Set the clipboard data (UTF16)
     */
-    static bool SetClipboardText(const DStringW& text);
+    static bool SetClipboardText(const std::wstring& text);
 
     /** Set the clipboard data (UTF8)
     */
-    static bool SetClipboardText(const DStringA& text);
+    static bool SetClipboardText(const std::string& text);
 };
 
 } //namespace ui

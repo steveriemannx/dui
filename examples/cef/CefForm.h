@@ -33,8 +33,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window to be drawn
      * The GetSkinFile interface sets the xml description file of the window to be drawn
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual std::string GetSkinFolder() override;
+    virtual std::string GetSkinFile() override;
 
 protected:
     /** Called after the window is created, so that subclasses can do some initialization work
@@ -68,7 +68,7 @@ private:
 
     /** Callback function for the main process singleton
     */
-    void OnAlreadyRunningAppRelaunch(const std::vector<DString>& argumentList);
+    void OnAlreadyRunningAppRelaunch(const std::vector<std::string>& argumentList);
 
 private:
     /** Browser object creation finished (callback thread: UI thread of the main process)
@@ -100,15 +100,15 @@ private:
 
     /** Title changed (callback thread: UI thread of the main process)
     */
-    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title) override;
+    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const std::string& title) override;
     
     /** URL changed (callback thread: UI thread of the main process)
     */
-    virtual void OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const DString& url) override;
+    virtual void OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const std::string& url) override;
     
     /** URL change of the main frame (callback thread: UI thread of the main process)
     */
-    virtual void OnMainUrlChange(const DString& oldUrl, const DString& newUrl) override;
+    virtual void OnMainUrlChange(const std::string& oldUrl, const std::string& newUrl) override;
     
     /** Favicon URL change (callback thread: UI thread of the main process)
     */
@@ -120,7 +120,7 @@ private:
     
     /** Status message change (callback thread: UI thread of the main process)
     */
-    virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const DString& value) override;
+    virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const std::string& value) override;
     
     /** Loading progress change (callback thread: UI thread of the main process)
     */
@@ -222,7 +222,7 @@ private:
     virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
                              cef_errorcode_t errorCode,
-                             const DString& errorText, const DString& failedUrl) override;
+                             const std::string& errorText, const std::string& failedUrl) override;
 
     /** The visibility of the developer tools changed (callback thread: UI thread of the main process)
     */
@@ -276,7 +276,7 @@ private:
 
     /** Business logic for the file drop operation
     */
-    void OnDropFiles(const DString& jsonDropFileList);
+    void OnDropFiles(const std::string& jsonDropFileList);
 
     /** Show or hide the developer tools
     */

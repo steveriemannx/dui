@@ -590,7 +590,7 @@ public:
         SetVirtualLayout(pVirtualLayout);
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VIRTUAL_HLISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VIRTUAL_HLISTBOX; }
 };
 
 /** A virtual ListBox with vertical layout
@@ -605,7 +605,7 @@ public:
         SetVirtualLayout(pVirtualLayout);
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VIRTUAL_VLISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VIRTUAL_VLISTBOX; }
 };
 
 /** A virtual ListBox with tile layout (horizontal layout)
@@ -620,7 +620,7 @@ public:
         SetVirtualLayout(pVirtualLayout);
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VIRTUAL_HTILE_LISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VIRTUAL_HTILE_LISTBOX; }
 };
 
 /** A virtual ListBox with tile layout (vertical layout)
@@ -635,7 +635,7 @@ public:
         SetVirtualLayout(pVirtualLayout);
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VIRTUAL_VTILE_LISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VIRTUAL_VTILE_LISTBOX; }
 };
 
 }

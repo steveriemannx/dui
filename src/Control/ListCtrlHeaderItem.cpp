@@ -35,21 +35,21 @@ ListCtrlHeaderItem::~ListCtrlHeaderItem()
     }
 }
  
-DString ListCtrlHeaderItem::GetType() const { return DUI_T("ListCtrlHeaderItem"); }
+std::string ListCtrlHeaderItem::GetType() const { return "ListCtrlHeaderItem"; }
 
-void ListCtrlHeaderItem::SetAttribute(const DString& strName, const DString& strValue)
+void ListCtrlHeaderItem::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("sorted_up_image")) {
+    if (strName == "sorted_up_image") {
         SetSortedUpImage(strValue);
     }
-    else if (strName == DUI_T("sorted_down_image")) {
+    else if (strName == "sorted_down_image") {
         SetSortedDownImage(strValue);
     }
-    else if (strName == DUI_T("icon_spacing")) {
+    else if (strName == "icon_spacing") {
         SetIconSpacing(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("show_icon_at_top")) {
-        SetShowIconAtTop(strValue == DUI_T("true"));
+    else if (strName == "show_icon_at_top") {
+        SetShowIconAtTop(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -156,7 +156,7 @@ void ListCtrlHeaderItem::PaintText(IRender* pRender)
         }
 
         //Draw the sort icon
-        PaintImage(pRender, pSortImage, DUI_T(""), -1, nullptr, &rc, nullptr);
+        PaintImage(pRender, pSortImage, "", -1, nullptr, &rc, nullptr);
         pSortImage = nullptr;
     }
 
@@ -226,7 +226,7 @@ void ListCtrlHeaderItem::PaintText(IRender* pRender)
             itemRect.Validate();
             itemRect.right = itemRect.left + itemImageSize.cx;
             VAlignRect(itemRect, GetTextStyle(), itemImageSize.cy);
-            PaintImage(pRender, pItemImage.get(), DUI_T(""), -1, nullptr, &itemRect, nullptr);
+            PaintImage(pRender, pItemImage.get(), "", -1, nullptr, &itemRect, nullptr);
         }
         if (pSortImage != nullptr) {
             UiRect sortRect = rc;
@@ -235,7 +235,7 @@ void ListCtrlHeaderItem::PaintText(IRender* pRender)
             sortRect.right = sortRect.left + sortImageSize.cx;
             sortRect.Validate();
             VAlignRect(sortRect, GetTextStyle(), sortImageSize.cy);
-            PaintImage(pRender, pSortImage, DUI_T(""), -1, nullptr, &sortRect, nullptr);
+            PaintImage(pRender, pSortImage, "", -1, nullptr, &sortRect, nullptr);
         }
 
         DoPaintText(textRect, pRender);
@@ -247,7 +247,7 @@ void ListCtrlHeaderItem::PaintText(IRender* pRender)
             sortRect.left = sortRect.right - sortImageSize.cx;
             sortRect.Validate();
             VAlignRect(sortRect, GetTextStyle(), sortImageSize.cy);
-            PaintImage(pRender, pSortImage, DUI_T(""), -1, nullptr, &sortRect, nullptr);
+            PaintImage(pRender, pSortImage, "", -1, nullptr, &sortRect, nullptr);
             rc.right = sortRect.left;
             rc.right -= nIconTextSpacing;
             rc.Validate();
@@ -273,7 +273,7 @@ void ListCtrlHeaderItem::PaintText(IRender* pRender)
             }
             UiRect itemRect = rc;
             VAlignRect(itemRect, GetTextStyle(), itemImageSize.cy);
-            PaintImage(pRender, pItemImage.get(), DUI_T(""), -1, nullptr, &itemRect, nullptr);
+            PaintImage(pRender, pItemImage.get(), "", -1, nullptr, &itemRect, nullptr);
         }
     }
     else {
@@ -282,7 +282,7 @@ void ListCtrlHeaderItem::PaintText(IRender* pRender)
             UiRect itemRect = rc;
             itemRect.right = itemRect.left + itemImageSize.cx;
             VAlignRect(itemRect, GetTextStyle(), itemImageSize.cy);
-            PaintImage(pRender, pItemImage.get(), DUI_T(""), -1, nullptr, &itemRect, nullptr);
+            PaintImage(pRender, pItemImage.get(), "", -1, nullptr, &itemRect, nullptr);
             rc.left += itemImageSize.cx;
             rc.left += nIconTextSpacing;
         }
@@ -302,7 +302,7 @@ void ListCtrlHeaderItem::PaintText(IRender* pRender)
         if (pSortImage != nullptr) {
             UiRect sortRect = rc;
             VAlignRect(sortRect, GetTextStyle(), sortImageSize.cy);
-            PaintImage(pRender, pSortImage, DUI_T(""), -1, nullptr, &sortRect, nullptr);
+            PaintImage(pRender, pSortImage, "", -1, nullptr, &sortRect, nullptr);
         }
     }
 }
@@ -387,7 +387,7 @@ ListCtrlHeaderItem::SortMode ListCtrlHeaderItem::GetSortMode() const
     return m_sortMode;
 }
 
-void ListCtrlHeaderItem::SetSortedDownImage(const DString& sImageString)
+void ListCtrlHeaderItem::SetSortedDownImage(const std::string& sImageString)
 {
     if (m_pSortedDownImage == nullptr) {
         m_pSortedDownImage = new Image;
@@ -396,7 +396,7 @@ void ListCtrlHeaderItem::SetSortedDownImage(const DString& sImageString)
     Invalidate();
 }
 
-void ListCtrlHeaderItem::SetSortedUpImage(const DString& sImageString)
+void ListCtrlHeaderItem::SetSortedUpImage(const std::string& sImageString)
 {
     if (m_pSortedUpImage == nullptr) {
         m_pSortedUpImage = new Image;
@@ -593,7 +593,7 @@ bool ListCtrlHeaderItem::SetShowCheckBox(bool bShow)
         }
         ListCtrl* pListCtrl = pHeader->GetListCtrl();
         if (pListCtrl != nullptr) {
-            DString checkBoxClass = pListCtrl->GetCheckBoxClass();
+            std::string checkBoxClass = pListCtrl->GetCheckBoxClass();
             if (!checkBoxClass.empty()) {
                 SetClass(checkBoxClass);
                 bRet = IsShowCheckBox();

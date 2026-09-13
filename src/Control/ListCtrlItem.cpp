@@ -18,11 +18,11 @@ ListCtrlItem::~ListCtrlItem()
 {
 }
 
-DString ListCtrlItem::GetType() const { return DUI_T("ListCtrlItem"); }
+std::string ListCtrlItem::GetType() const { return "ListCtrlItem"; }
 
-void ListCtrlItem::SetAttribute(const DString& strName, const DString& strValue)
+void ListCtrlItem::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("icon_spacing")) {
+    if (strName == "icon_spacing") {
         SetIconSpacing(StringUtil::StringToInt32(strValue), true);
     }
     else {
@@ -167,7 +167,7 @@ bool ListCtrlItem::SetShowCheckBox(bool bShow)
         }
         ListCtrl* pListCtrl = GetListCtrl();
         if (pListCtrl != nullptr) {
-            DString checkBoxClass = pListCtrl->GetCheckBoxClass();
+            std::string checkBoxClass = pListCtrl->GetCheckBoxClass();
             if (!checkBoxClass.empty()) {
                 SetClass(checkBoxClass);
                 bRet = IsShowCheckBox();
@@ -251,7 +251,7 @@ void ListCtrlItem::Paint(IRender* pRender, const UiRect& rcPaint)
         rc.Validate();
         rc.right = rc.left + imageSize.cx;
         VAlignRect(rc, TEXT_VCENTER, imageSize.cy);
-        PaintImage(pRender, pItemImage.get(), DUI_T(""), -1, nullptr, &rc, nullptr);
+        PaintImage(pRender, pItemImage.get(), "", -1, nullptr, &rc, nullptr);
     }
 }
 

@@ -28,10 +28,10 @@ public:
 
 public:
     /// Override the parent class interface to provide customized functionality. For details of the methods, see the Control control
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
     virtual void SetParent(Box* pParent) override;
     virtual void SetWindow(Window* pWindow) override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void PaintChild(IRender* pRender, const UiRect& rcPaint) override;
     virtual void PaintFocusRect(IRender* pRender) override;
     virtual Control* FindControl(FINDCONTROLPROC Proc, void* pProcData, uint32_t uFlags,
@@ -142,7 +142,7 @@ public:
      * @param[in] pstrSubControlName The child control name
      * @return Returns the child control pointer
      */
-    Control* FindSubControl(const DString& pstrSubControlName);
+    Control* FindSubControl(const std::string& pstrSubControlName);
 
     /**
      * @brief Whether to destroy automatically

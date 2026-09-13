@@ -17,16 +17,16 @@ ImageDecoder_ICO::~ImageDecoder_ICO()
 {
 }
 
-DString ImageDecoder_ICO::GetFormatName() const
+std::string ImageDecoder_ICO::GetFormatName() const
 {
-    return DUI_T("ICO/CUR");
+    return "ICO/CUR";
 }
 
-bool ImageDecoder_ICO::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_ICO::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if ((fileExt == DUI_T("ICO")) || (fileExt == DUI_T("CUR"))) {
+    if ((fileExt == "ICO") || (fileExt == "CUR")) {
         return true;
     }
     return false;

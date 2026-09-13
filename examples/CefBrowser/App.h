@@ -57,7 +57,7 @@ private:
 
     /** Callback function for the main process singleton
     */
-    void OnAlreadyRunningAppRelaunch(const std::vector<DString>& argumentList);
+    void OnAlreadyRunningAppRelaunch(const std::vector<std::string>& argumentList);
 
     /** Enable the DPI awareness feature setting parameter
     */

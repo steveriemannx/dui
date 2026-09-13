@@ -65,12 +65,12 @@ public:
             SetHotKey(0, wModifiers);
         }
         else {
-            DString keyName = Keyboard::GetKeyName(msg.vkCode, false);
+            std::string keyName = Keyboard::GetKeyName(msg.vkCode, false);
             if (!keyName.empty()) {
                 SetHotKey(static_cast<uint8_t>(msg.wParam), wModifiers);
             }
         }
-        DString keyName = GetHotKeyName();
+        std::string keyName = GetHotKeyName();
         if (!keyName.empty()) {
             SetTextNoEvent(keyName);
         }
@@ -114,12 +114,12 @@ public:
 
     /** Get the display name of the hotkey
     */
-    DString GetHotKeyName() const
+    std::string GetHotKeyName() const
     {
-        DString sKeyName;
+        std::string sKeyName;
         uint8_t wCode = 0;
         uint8_t wModifiers = 0;
-        const DString::value_type szPlus[] = DUI_T("+");
+        const std::string::value_type szPlus[] = "+";
         GetHotKey(wCode, wModifiers);
         if (wModifiers == 0) {
             // A hotkey is valid only with modifier keys
@@ -127,7 +127,7 @@ public:
         }
         if (wCode != 0 || wModifiers != 0) {
             if (wModifiers & HOTKEYF_CONTROL) {
-                DString sKey = Keyboard::GetKeyName(kVK_CONTROL, wModifiers & HOTKEYF_EXT);
+                std::string sKey = Keyboard::GetKeyName(kVK_CONTROL, wModifiers & HOTKEYF_EXT);
                 if (!sKey.empty()) {
                     if (!sKeyName.empty()) {
                         sKeyName += szPlus;
@@ -136,7 +136,7 @@ public:
                 }
             }
             if (wModifiers & HOTKEYF_SHIFT) {
-                DString sKey = Keyboard::GetKeyName(kVK_SHIFT, wModifiers & HOTKEYF_EXT);
+                std::string sKey = Keyboard::GetKeyName(kVK_SHIFT, wModifiers & HOTKEYF_EXT);
                 if (!sKey.empty()) {
                     if (!sKeyName.empty()) {
                         sKeyName += szPlus;
@@ -145,7 +145,7 @@ public:
                 }
             }
             if (wModifiers & HOTKEYF_ALT) {
-                DString sKey = Keyboard::GetKeyName(kVK_MENU, wModifiers & HOTKEYF_EXT);
+                std::string sKey = Keyboard::GetKeyName(kVK_MENU, wModifiers & HOTKEYF_EXT);
                 if (!sKey.empty()) {
                     if (!sKeyName.empty()) {
                         sKeyName += szPlus;
@@ -154,7 +154,7 @@ public:
                 }
             }
             if ((wCode != kVK_SHIFT) && (wCode != kVK_CONTROL) && (wCode != kVK_MENU)) {
-                DString sKey = Keyboard::GetKeyName((VirtualKeyCode)wCode, wModifiers & HOTKEYF_EXT);
+                std::string sKey = Keyboard::GetKeyName((VirtualKeyCode)wCode, wModifiers & HOTKEYF_EXT);
                 if (!sKey.empty()) {
                     if (!sKeyName.empty()) {
                         sKeyName += szPlus;
@@ -168,7 +168,7 @@ public:
 
     /** Set the default text
     */
-    void SetDefaultText(const DString& defaultText)
+    void SetDefaultText(const std::string& defaultText)
     {
         m_defaultText = defaultText;
     }
@@ -194,10 +194,10 @@ HotKey::HotKey(Window* pWindow):
 {
     ASSERT(pWindow != nullptr);
     m_pRichEdit = new HotKeyRichEdit(pWindow);
-    m_pRichEdit->SetAttribute(DUI_T("text_align"), DUI_T("vcenter,hcenter"));
-    m_pRichEdit->SetAttribute(DUI_T("want_tab"), DUI_T("false"));
-    m_pRichEdit->SetAttribute(DUI_T("width"), DUI_T("100%"));
-    m_pRichEdit->SetAttribute(DUI_T("height"), DUI_T("100%"));
+    m_pRichEdit->SetAttribute("text_align", "vcenter,hcenter");
+    m_pRichEdit->SetAttribute("want_tab", "false");
+    m_pRichEdit->SetAttribute("width", "100%");
+    m_pRichEdit->SetAttribute("height", "100%");
 }
 
 HotKey::~HotKey()
@@ -210,11 +210,11 @@ HotKey::~HotKey()
     }
 }
 
-DString HotKey::GetType() const { return DUI_CTR_HOTKEY; }
+std::string HotKey::GetType() const { return DUI_CTR_HOTKEY; }
 
-void HotKey::SetAttribute(const DString& strName, const DString& strValue)
+void HotKey::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("default_text")) {
+    if (strName == "default_text") {
         if (m_pRichEdit != nullptr) {
             m_pRichEdit->SetDefaultText(strValue);
             m_pRichEdit->SetText(strValue);
@@ -276,7 +276,7 @@ void HotKey::SetHotKey(uint8_t wVirtualKeyCode, uint8_t wModifiers)
     }
     m_pRichEdit->SetHotKey(wVirtualKeyCode, wNewModifiers);
 
-    DString hotKeyName = m_pRichEdit->GetHotKeyName();
+    std::string hotKeyName = m_pRichEdit->GetHotKeyName();
     if (!hotKeyName.empty()) {
         m_pRichEdit->SetText(hotKeyName);
     }
@@ -302,24 +302,24 @@ uint16_t HotKey::GetHotKey() const
     return (MAKEWORD(wVirtualKeyCode, wModifiers));
 }
 
-DString HotKey::GetHotKeyName() const
+std::string HotKey::GetHotKeyName() const
 {
     return m_pRichEdit->GetHotKeyName();
 }
 
-bool HotKey::SetHotKeyName(const DString& hotKeyName)
+bool HotKey::SetHotKeyName(const std::string& hotKeyName)
 {
-    std::list<DString> hotKeyList = StringUtil::Split(hotKeyName, DUI_T("+"));
-    for (DString& hotKey : hotKeyList) {
+    std::list<std::string> hotKeyList = StringUtil::Split(hotKeyName, "+");
+    for (std::string& hotKey : hotKeyList) {
         StringUtil::Trim(hotKey);
         hotKey = StringUtil::MakeLowerString(hotKey);
     }
     if (hotKeyList.empty()) {
         return false;
     }
-    DString keyCtrl = GetKeyName(kVK_CONTROL, false);
-    DString keyShift = GetKeyName(kVK_SHIFT, false);
-    DString keyAlt = GetKeyName(kVK_MENU, false);
+    std::string keyCtrl = GetKeyName(kVK_CONTROL, false);
+    std::string keyShift = GetKeyName(kVK_SHIFT, false);
+    std::string keyAlt = GetKeyName(kVK_MENU, false);
     keyCtrl = StringUtil::MakeLowerString(keyCtrl);
     keyShift = StringUtil::MakeLowerString(keyShift);
     keyAlt = StringUtil::MakeLowerString(keyAlt);
@@ -327,7 +327,7 @@ bool HotKey::SetHotKeyName(const DString& hotKeyName)
     uint8_t wModifiers = 0;
     auto iter = hotKeyList.begin();
     while (iter != hotKeyList.end()) {
-        const DString& hotKey = *iter;
+        const std::string& hotKey = *iter;
         if (hotKey == keyCtrl) {
             wModifiers |= kHotKey_Contrl;
             iter = hotKeyList.erase(iter);
@@ -349,15 +349,15 @@ bool HotKey::SetHotKeyName(const DString& hotKeyName)
     }
     uint8_t wVirtualKeyCode = 0;
     if (!hotKeyList.empty()) {
-        std::map<DString, uint8_t> vkCodeMap;
-        DString temp;
+        std::map<std::string, uint8_t> vkCodeMap;
+        std::string temp;
         for (uint32_t vkCode = 0; vkCode <= 256; ++vkCode) {
             temp = StringUtil::MakeLowerString(GetKeyName((uint8_t)vkCode, false));
             if (!temp.empty()) {
                 vkCodeMap[temp] = (uint8_t)vkCode;
             }
         }
-        for (const DString& hotKey : hotKeyList) {
+        for (const std::string& hotKey : hotKeyList) {
             auto pos = vkCodeMap.find(hotKey);
             if (pos != vkCodeMap.end()) {
                 // Only one key is supported; ignore the others
@@ -367,15 +367,15 @@ bool HotKey::SetHotKeyName(const DString& hotKeyName)
         }
     }
     if ((wVirtualKeyCode == 0) && !hotKeyList.empty()) {
-        std::map<DString, uint8_t> vkCodeExtMap;
-        DString temp;
+        std::map<std::string, uint8_t> vkCodeExtMap;
+        std::string temp;
         for (uint32_t vkCode = 0; vkCode <= 256; ++vkCode) {
             temp = StringUtil::MakeLowerString(GetKeyName((uint8_t)vkCode, true));
             if (!temp.empty()) {
                 vkCodeExtMap[temp] = (uint8_t)vkCode;
             }
         }
-        for (const DString& hotKey : hotKeyList) {
+        for (const std::string& hotKey : hotKeyList) {
             auto pos = vkCodeExtMap.find(hotKey);
             if (pos != vkCodeExtMap.end()) {
                 // Only one key is supported; ignore the others
@@ -394,7 +394,7 @@ bool HotKey::SetHotKeyName(const DString& hotKeyName)
     return bRet;
 }
 
-DString HotKey::GetKeyName(uint8_t wVirtualKeyCode, bool fExtended)
+std::string HotKey::GetKeyName(uint8_t wVirtualKeyCode, bool fExtended)
 {
     return Keyboard::GetKeyName((VirtualKeyCode)wVirtualKeyCode, fExtended);
 }

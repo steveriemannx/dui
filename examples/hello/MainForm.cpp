@@ -9,10 +9,10 @@ void MainForm::OnInitWindow()
 
 void MainForm::BindEvents()
 {
-    if (auto* pButton = ui::Find<ui::Button>(this, DUI_T("hello_btn"))) {
+    if (auto* pButton = ui::Find<ui::Button>(this, "hello_btn")) {
         pButton->AttachClick([this](const ui::EventArgs&) {
-            if (auto* pLabel = ui::Find<ui::Label>(this, DUI_T("hello_label"))) {
-                pLabel->SetText(DUI_T("Hello from XML mode!"));
+            if (auto* pLabel = ui::Find<ui::Label>(this, "hello_label")) {
+                pLabel->SetText("Hello from XML mode!");
             }
             return true;
         });

@@ -35,7 +35,7 @@ Progress::~Progress()
     }
 }
 
-DString Progress::GetType() const { return DUI_CTR_PROGRESS; }
+std::string Progress::GetType() const { return DUI_CTR_PROGRESS; }
 
 bool Progress::IsHorizontal() const
 {
@@ -110,15 +110,15 @@ void Progress::SetStretchForeImage(bool bStretchForeImage /*= true*/)
     Invalidate();
 }
 
-DString Progress::GetProgressImage() const
+std::string Progress::GetProgressImage() const
 {
     if (m_pProgressImage != nullptr) {
         return m_pProgressImage->GetImageString();
     }
-    return DString();
+    return std::string();
 }
 
-void Progress::SetProgressImage(const DString& strImage)
+void Progress::SetProgressImage(const std::string& strImage)
 {
     if (m_pProgressImage == nullptr) {
         m_pProgressImage = new Image;
@@ -127,12 +127,12 @@ void Progress::SetProgressImage(const DString& strImage)
     Invalidate();
 }
 
-DString Progress::GetProgressColor() const
+std::string Progress::GetProgressColor() const
 {
     return m_sProgressColor.c_str();
 }
 
-void Progress::SetProgressColor(const DString& strProgressColor)
+void Progress::SetProgressColor(const std::string& strProgressColor)
 {
     ASSERT(strProgressColor.empty() || HasUiColor(strProgressColor));
     if (m_sProgressColor == strProgressColor) {
@@ -142,40 +142,40 @@ void Progress::SetProgressColor(const DString& strProgressColor)
     Invalidate();
 }
 
-void Progress::SetAttribute(const DString& srName, const DString& strValue)
+void Progress::SetAttribute(const std::string& srName, const std::string& strValue)
 {
-    if ((srName == DUI_T("horizontal")) || (srName == DUI_T("hor"))){
-        SetHorizontal(strValue == DUI_T("true"));
+    if ((srName == "horizontal") || (srName == "hor")){
+        SetHorizontal(strValue == "true");
     }
-    else if (srName == DUI_T("min")) {
+    else if (srName == "min") {
         SetMinValue(StringUtil::StringToInt32(strValue));
     }
-    else if (srName == DUI_T("max")) {
+    else if (srName == "max") {
         SetMaxValue(StringUtil::StringToInt32(strValue));
     }
-    else if (srName == DUI_T("value")) {
+    else if (srName == "value") {
         SetValue(StringUtil::StringToInt32(strValue));
     }
-    else if ((srName == DUI_T("progress_image")) || (srName == DUI_T("progressimage"))){
+    else if ((srName == "progress_image") || (srName == "progressimage")){
         SetProgressImage(strValue);
     }
-    else if ((srName == DUI_T("stretch_fore_image")) || (srName == DUI_T("is_stretch_fore")) || (srName == DUI_T("isstretchfore"))){
-        SetStretchForeImage(strValue == DUI_T("true"));
+    else if ((srName == "stretch_fore_image") || (srName == "is_stretch_fore") || (srName == "isstretchfore")){
+        SetStretchForeImage(strValue == "true");
     }
-    else if ((srName == DUI_T("progress_color")) || (srName == DUI_T("progresscolor"))) {
+    else if ((srName == "progress_color") || (srName == "progresscolor")) {
         SetProgressColor(strValue);
     }
-    else if (srName == DUI_T("marquee")) {
-        SetMarquee(strValue == DUI_T("true"));
+    else if (srName == "marquee") {
+        SetMarquee(strValue == "true");
     }
-    else if ((srName == DUI_T("marquee_width")) || (srName == DUI_T("marqueewidth"))){
+    else if ((srName == "marquee_width") || (srName == "marqueewidth")){
         SetMarqueeWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if ((srName == DUI_T("marquee_step")) || (srName == DUI_T("marqueestep"))){
+    else if ((srName == "marquee_step") || (srName == "marqueestep")){
         SetMarqueeStep(StringUtil::StringToInt32(strValue), true);
     }
-    else if (srName == DUI_T("reverse")) {
-        SetReverse(strValue == DUI_T("true"));
+    else if (srName == "reverse") {
+        SetReverse(strValue == "true");
     }
     else {
         Label::SetAttribute(srName, strValue);
@@ -231,7 +231,7 @@ void Progress::PaintStateImages(IRender* pRender)
 
     m_sProgressImageModify.clear();
     if (m_bStretchForeImage) {
-        m_sProgressImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), rc.left, rc.top, rc.right, rc.bottom);
+        m_sProgressImageModify = StringUtil::Printf("destscale='false' dest='%d,%d,%d,%d'", rc.left, rc.top, rc.right, rc.bottom);
     }
     else {
         ui::UiRect m_rcSrc = rc;
@@ -244,7 +244,7 @@ void Progress::PaintStateImages(IRender* pRender)
                 m_rcSrc.bottom = pProgressImageCache->GetHeight();
             }
         }
-        m_sProgressImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d' source='%d,%d,%d,%d'")
+        m_sProgressImageModify = StringUtil::Printf("destscale='false' dest='%d,%d,%d,%d' source='%d,%d,%d,%d'"
             , rc.left, rc.top, rc.right, rc.bottom
             , m_rcSrc.left, m_rcSrc.top, m_rcSrc.right, m_rcSrc.bottom);
     }
@@ -253,8 +253,8 @@ void Progress::PaintStateImages(IRender* pRender)
     const UiRect corner = m_pProgressImage->GetImageAttribute().GetImageCorner();
     if (IsHorizontal()) {
         if (corner.left != 0 && corner.left >= rc.right) {
-            DString imageModify = m_sProgressImageModify.c_str();
-            imageModify += StringUtil::Printf(DUI_T(" corner='%d,%d,%d,%d'"),
+            std::string imageModify = m_sProgressImageModify.c_str();
+            imageModify += StringUtil::Printf(" corner='%d,%d,%d,%d'",
                 rc.right,
                 corner.top,
                 0,
@@ -264,8 +264,8 @@ void Progress::PaintStateImages(IRender* pRender)
     }
     else {
         if (corner.top != 0 && corner.top >= rc.bottom) {
-            DString imageModify = m_sProgressImageModify.c_str();
-            imageModify += StringUtil::Printf(DUI_T(" corner='%d,%d,%d,%d'"),
+            std::string imageModify = m_sProgressImageModify.c_str();
+            imageModify += StringUtil::Printf(" corner='%d,%d,%d,%d'",
                 corner.left,
                 corner.bottom,
                 corner.right,

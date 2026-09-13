@@ -35,7 +35,7 @@ bool Keyboard::IsKeyDown(VirtualKeyCode key) { Display* d = MessageLoop_X11::Get
 bool Keyboard::IsNumLockOn() { return false; }
 bool Keyboard::IsScrollLockOn() { return false; }
 bool Keyboard::IsCapsLockOn() { return false; }
-DString Keyboard::GetKeyName(VirtualKeyCode key, bool) { const char* name = XKeysymToString(static_cast<KeySym>(key)); return name ? StringConvert::UTF8ToT(name) : DUI_T(""); }
+std::string Keyboard::GetKeyName(VirtualKeyCode key, bool) { const char* name = XKeysymToString(static_cast<KeySym>(key)); return name ? StringConvert::UTF8ToT(name) : ""; }
 DpiAwareness::DpiAwareness() : m_dpiAwarenessMode(DpiAwarenessMode::kPerMonitorDpiAware_V2) {}
 DpiAwareness::~DpiAwareness() = default;
 bool DpiAwareness::InitDpiAwareness(DpiAwarenessMode mode) { m_dpiAwarenessMode = mode == DpiAwarenessMode::kDpiUnaware ? mode : DpiAwarenessMode::kPerMonitorDpiAware_V2; return true; }
@@ -47,20 +47,20 @@ class ToolTip::TImpl {};
 ToolTip::ToolTip() : m_impl(new TImpl) {}
 ToolTip::~ToolTip() { delete m_impl; }
 void ToolTip::SetMouseTracking(WindowBase*, bool) {}
-void ToolTip::ShowToolTip(WindowBase*, const UiRect&, uint32_t, const UiPoint&, const DString&) {}
+void ToolTip::ShowToolTip(WindowBase*, const UiRect&, uint32_t, const UiPoint&, const std::string&) {}
 void ToolTip::HideToolTip() {}
 void ToolTip::ClearMouseTracking() {}
 void ToolTip::DestroyToolTip() {}
-bool Clipboard::GetClipboardText(DStringW& text) { text.clear(); return false; }
-bool Clipboard::GetClipboardText(DStringA& text) { text.clear(); return false; }
-bool Clipboard::SetClipboardText(const DStringW&) { return false; }
-bool Clipboard::SetClipboardText(const DStringA&) { return false; }
+bool Clipboard::GetClipboardText(std::wstring& text) { text.clear(); return false; }
+bool Clipboard::GetClipboardText(std::string& text) { text.clear(); return false; }
+bool Clipboard::SetClipboardText(const std::wstring&) { return false; }
+bool Clipboard::SetClipboardText(const std::string&) { return false; }
 bool FileDialog::BrowseForFolder(Window*, FilePath&, const FilePath&) { return false; }
 bool FileDialog::BrowseForFolders(Window*, std::vector<FilePath>&, const FilePath&) { return false; }
-bool FileDialog::BrowseForFile(Window*, FilePath&, bool, const std::vector<FileType>&, int32_t, const DString&, const DString&, const FilePath&) { return false; }
-bool FileDialog::BrowseForFiles(Window*, std::vector<FilePath>&, const std::vector<FileType>&, int32_t, const DString&, const FilePath&) { return false; }
-bool SystemUtil::OpenUrl(const DString&) { return false; }
-bool SystemUtil::ShowMessageBox(const Window*, const DString&, const DString&) { return false; }
+bool FileDialog::BrowseForFile(Window*, FilePath&, bool, const std::vector<FileType>&, int32_t, const std::string&, const std::string&, const FilePath&) { return false; }
+bool FileDialog::BrowseForFiles(Window*, std::vector<FilePath>&, const std::vector<FileType>&, int32_t, const std::string&, const FilePath&) { return false; }
+bool SystemUtil::OpenUrl(const std::string&) { return false; }
+bool SystemUtil::ShowMessageBox(const Window*, const std::string&, const std::string&) { return false; }
 bool NativeWindow_X11::IsWindowForeground() const { return IsWindowFocused(); }
 void NativeWindow_X11::KeepParentActive() {}
 } // namespace ui

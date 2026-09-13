@@ -37,7 +37,7 @@ public:
                      const UiRect& rect, 
                      uint32_t maxWidth,
                      const UiPoint& trackPos,
-                     const DString& text);
+                     const std::string& text);
 
     /** Hide ToolTip information
     */

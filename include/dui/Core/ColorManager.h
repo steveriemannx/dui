@@ -16,24 +16,24 @@ public:
     * @param[in] strName The color name (e.g., white)
     * @param[in] strValue The specific color value (e.g., #FFFFFFFF)
     */
-    void AddColor(const DString& strName, const DString& strValue);
+    void AddColor(const std::string& strName, const std::string& strValue);
 
     /** Add a color value
     * @param[in] strName The color name (e.g., white)
     * @param[in] argb The specific color value, represented in ARGB format
     */
-    void AddColor(const DString& strName, UiColor argb);
+    void AddColor(const std::string& strName, UiColor argb);
 
     /** Get the specific value of a color by name
     * @param[in] strName The color name to get
     * @return Returns the color description value in ARGB format
     */
-    UiColor GetColor(const DString& strName) const;
+    UiColor GetColor(const std::string& strName) const;
 
     /** Remove the specified color attribute
     * @param [in] strName The color name to remove
     */
-    void RemoveColor(const DString& strName);
+    void RemoveColor(const std::string& strName);
 
     /** Remove all color attributes
     */
@@ -42,7 +42,7 @@ public:
 private:
     /** Mapping between color names and color values
     */
-    std::unordered_map<DString, UiColor> m_colorMap;
+    std::unordered_map<std::string, UiColor> m_colorMap;
 };
 
 /** Color value management class
@@ -57,32 +57,32 @@ public:
                   (1) The specific color value (e.g., #FFFFFFFF)
                   (2) The built-in standard color value, such as "blue", see the definition in the ui::UiColors::UiColorConsts function
      */
-    static UiColor ConvertToUiColor(const DString& strColor);
+    static UiColor ConvertToUiColor(const std::string& strColor);
 
 public:
     /** Add a global color value
      * @param[in] strName The color name (e.g., white)
      * @param[in] strValue The specific color value (e.g., #FFFFFFFF)
      */
-    void AddColor(const DString& strName, const DString& strValue);
+    void AddColor(const std::string& strName, const std::string& strValue);
 
     /** Add a global color value
      * @param[in] strName The color name (e.g., white)
      * @param[in] argb The specific color value, represented in ARGB format
      */
-    void AddColor(const DString& strName, UiColor argb);
+    void AddColor(const std::string& strName, UiColor argb);
 
     /** Get the specific value of a color by name
      * @param[in] strName The color name to get
      * @return Returns the color description value in ARGB format
      */
-    UiColor GetColor(const DString& strName) const;
+    UiColor GetColor(const std::string& strName) const;
 
     /** Get the specific value of a standard color by name
      * @param[in] strName The color name to get, such as "blue", see the detailed list in the definition of the ui::UiColors::UiColorConsts function
      * @return Returns the color description value in ARGB format
      */
-    UiColor GetStandardColor(const DString& strName) const;
+    UiColor GetStandardColor(const std::string& strName) const;
 
     /** Remove all color attributes
      */
@@ -96,19 +96,19 @@ public:
     /** Get the font color in the default disabled state
      * @return The string representation of the default disabled state color, corresponding to the color value specified in global.xml
      */
-    const DString& GetDefaultDisabledTextColor();
+    const std::string& GetDefaultDisabledTextColor();
 
     /** Set the font color in the default disabled state
      */
-    void SetDefaultDisabledTextColor(const DString& strColor);
+    void SetDefaultDisabledTextColor(const std::string& strColor);
 
     /** Get the default font color
      */
-    const DString& GetDefaultTextColor();
+    const std::string& GetDefaultTextColor();
 
     /** Set the default font color
      */
-    void SetDefaultTextColor(const DString& strColor);
+    void SetDefaultTextColor(const std::string& strColor);
 
 private:
     /** Mapping between color names and color values
@@ -121,11 +121,11 @@ private:
 
     /** The font color in the default disabled state
     */
-    DString m_defaultDisabledTextColor;
+    std::string m_defaultDisabledTextColor;
 
     /** The font color in the default normal state
     */
-    DString m_defaultTextColor;
+    std::string m_defaultTextColor;
 };
 
 } // namespace ui

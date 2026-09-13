@@ -19,8 +19,8 @@ public:
     virtual ~XmlBox() override;
 
     //Virtual functions of the base class
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
 public:
     /** Set the path of the XML file
@@ -87,7 +87,7 @@ private:
 
     /** Remove the elements in the old list that are contained in the new list
     */
-    void RemoveValuesInNewList(std::vector<DString>& oldList, const std::vector<DString>& newList) const;
+    void RemoveValuesInNewList(std::vector<std::string>& oldList, const std::vector<std::string>& newList) const;
 
     /** Get the XML data and the XML path
     * @param [in] xmlInputPath The input XML path

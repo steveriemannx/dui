@@ -12,15 +12,15 @@ class DUI_API ControlDropTargetUtils
 public:
     /** Determine whether the file extensions meet the configuration requirements
     */
-    static bool IsFilteredFileTypes(const DString& fileTypes, const std::vector<DString>& fileList);
+    static bool IsFilteredFileTypes(const std::string& fileTypes, const std::vector<std::string>& fileList);
 
     /** Filter out unsupported file types
     */
-    static void RemoveUnsupportedFiles(std::vector<DString>& fileList, const DString& fileTypes);
+    static void RemoveUnsupportedFiles(std::vector<std::string>& fileList, const std::string& fileTypes);
 
     /** Determine whether two extensions are the same
     */
-    static bool IsSameFileType(const DString& ext1, const DString& ext2);
+    static bool IsSameFileType(const std::string& ext1, const std::string& ext2);
 };
 
 } // namespace ui

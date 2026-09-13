@@ -35,7 +35,7 @@ T GetUserDataPtr(HWND hWnd) {
 WNDPROC SetWndProcPtr(HWND hWnd, WNDPROC wndProc);
 
 // Return the resource string with the specified id.
-DString GetResourceString(UINT id);
+std::string GetResourceString(UINT id);
 
 int GetCefMouseModifiers(WPARAM wparam);
 int GetCefKeyboardModifiers(WPARAM wparam, LPARAM lparam);

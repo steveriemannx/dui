@@ -529,7 +529,7 @@ SkUnicharExtent SkUTF_NextUnicharExtent(const char** ppText, const char* pEnd,
             else {
                 //A single code unit. A lone surrogate is passed through as-is:
                 //Skia will draw its replacement glyph. Note that this must not
-                //assert, because a Windows DString can legitimately hold one.
+                //assert, because a Windows std::string can legitimately hold one.
                 extent.unichar = (SkUnichar)pSrc[0];
                 extent.nBytes = 2;
             }

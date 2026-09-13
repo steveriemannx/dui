@@ -36,7 +36,7 @@ bool DateTimeWnd::Init(DateTime* pOwner)
     Clear();
 
     //The separator of the year, month and day
-    DString sep;
+    std::string sep;
     sep = pOwner->GetDateSeparator();
 
     m_editList.resize(EditType::COUNT, nullptr);
@@ -52,13 +52,13 @@ bool DateTimeWnd::Init(DateTime* pOwner)
         pOwner->AddItem(CreateLabel(sep));
         m_editList[EditType::MDAY] = CreateEditMDay();
         pOwner->AddItem(m_editList[EditType::MDAY]);
-        pOwner->AddItem(CreateLabel(DUI_T(" ")));
+        pOwner->AddItem(CreateLabel(" "));
         m_editList[EditType::HOUR] = CreateEditHour();
         pOwner->AddItem(m_editList[EditType::HOUR]);
-        pOwner->AddItem(CreateLabel(DUI_T(":")));
+        pOwner->AddItem(CreateLabel(":"));
         m_editList[EditType::MIN] = CreateEditMin();
         pOwner->AddItem(m_editList[EditType::MIN]);
-        pOwner->AddItem(CreateLabel(DUI_T(":")));
+        pOwner->AddItem(CreateLabel(":"));
         m_editList[EditType::SEC] = CreateEditSec();
         pOwner->AddItem(m_editList[EditType::SEC]);
         break;
@@ -74,7 +74,7 @@ bool DateTimeWnd::Init(DateTime* pOwner)
         pOwner->AddItem(m_editList[EditType::MDAY]);
         m_editList[EditType::HOUR] = CreateEditHour();
         pOwner->AddItem(m_editList[EditType::HOUR]);
-        pOwner->AddItem(CreateLabel(DUI_T(":")));
+        pOwner->AddItem(CreateLabel(":"));
         m_editList[EditType::MIN] = CreateEditMin();
         pOwner->AddItem(m_editList[EditType::MIN]);
         break;
@@ -82,10 +82,10 @@ bool DateTimeWnd::Init(DateTime* pOwner)
         //Hour:minute:second
         m_editList[EditType::HOUR] = CreateEditHour();
         pOwner->AddItem(m_editList[EditType::HOUR]);
-        pOwner->AddItem(CreateLabel(DUI_T(":")));
+        pOwner->AddItem(CreateLabel(":"));
         m_editList[EditType::MIN] = CreateEditMin();
         pOwner->AddItem(m_editList[EditType::MIN]);
-        pOwner->AddItem(CreateLabel(DUI_T(":")));
+        pOwner->AddItem(CreateLabel(":"));
         m_editList[EditType::SEC] = CreateEditSec();
         pOwner->AddItem(m_editList[EditType::SEC]);
         break;
@@ -93,7 +93,7 @@ bool DateTimeWnd::Init(DateTime* pOwner)
         //Hour:minute
         m_editList[EditType::HOUR] = CreateEditHour();
         pOwner->AddItem(m_editList[EditType::HOUR]);
-        pOwner->AddItem(CreateLabel(DUI_T(":")));
+        pOwner->AddItem(CreateLabel(":"));
         m_editList[EditType::MIN] = CreateEditMin();
         pOwner->AddItem(m_editList[EditType::MIN]);
         break;
@@ -113,24 +113,24 @@ bool DateTimeWnd::Init(DateTime* pOwner)
     //Set the common attributes
     for (RichEdit* pRichEdit : m_editList) {
         if (pRichEdit != nullptr) {
-            pRichEdit->SetAttribute(DUI_T("text_align"), DUI_T("vcenter,hcenter"));
-            pRichEdit->SetAttribute(DUI_T("number_only"), DUI_T("true"));
-            pRichEdit->SetAttribute(DUI_T("height"), DUI_T("100%"));
-            pRichEdit->SetAttribute(DUI_T("width"), DUI_T("auto"));
-            pRichEdit->SetAttribute(DUI_T("text_padding"), DUI_T("2,1,2,1"));
-            pRichEdit->SetAttribute(DUI_T("hide_selection"), DUI_T("true"));
-            pRichEdit->SetAttribute(DUI_T("want_tab"), DUI_T("false"));
-            pRichEdit->SetAttribute(DUI_T("want_return_msg"), DUI_T("false"));
-            pRichEdit->SetBkColor(DUI_T("white"));
+            pRichEdit->SetAttribute("text_align", "vcenter,hcenter");
+            pRichEdit->SetAttribute("number_only", "true");
+            pRichEdit->SetAttribute("height", "100%");
+            pRichEdit->SetAttribute("width", "auto");
+            pRichEdit->SetAttribute("text_padding", "2,1,2,1");
+            pRichEdit->SetAttribute("hide_selection", "true");
+            pRichEdit->SetAttribute("want_tab", "false");
+            pRichEdit->SetAttribute("want_return_msg", "false");
+            pRichEdit->SetBkColor("white");
             pRichEdit->SetTabStop(true);
         }
     }
 
     //Right-side fill
     Control* pEmpty = new Control(m_pOwner->GetWindow());
-    pEmpty->SetAttribute(DUI_T("width"), DUI_T("100%"));
-    pEmpty->SetAttribute(DUI_T("height"), DUI_T("100%"));
-    pEmpty->SetBkColor(DUI_T("white"));
+    pEmpty->SetAttribute("width", "100%");
+    pEmpty->SetAttribute("height", "100%");
+    pEmpty->SetBkColor("white");
     pEmpty->SetTabStop(false);
     pEmpty->SetNoFocus();
     pEmpty->SetMouseEnabled(false);
@@ -142,22 +142,22 @@ bool DateTimeWnd::Init(DateTime* pOwner)
     }
     const struct tm& timeValue = pOwner->GetDateTime();
     if (m_editList[EditType::YEAR] != nullptr) {
-        m_editList[EditType::YEAR]->SetText(StringUtil::Printf(DUI_T("%d"), timeValue.tm_year + 1900));
+        m_editList[EditType::YEAR]->SetText(StringUtil::Printf("%d", timeValue.tm_year + 1900));
     }
     if (m_editList[EditType::MON] != nullptr) {
-        m_editList[EditType::MON]->SetText(StringUtil::Printf(DUI_T("%02d"), timeValue.tm_mon + 1));
+        m_editList[EditType::MON]->SetText(StringUtil::Printf("%02d", timeValue.tm_mon + 1));
     }
     if (m_editList[EditType::MDAY] != nullptr) {
-        m_editList[EditType::MDAY]->SetText(StringUtil::Printf(DUI_T("%02d"), timeValue.tm_mday));
+        m_editList[EditType::MDAY]->SetText(StringUtil::Printf("%02d", timeValue.tm_mday));
     }
     if (m_editList[EditType::HOUR] != nullptr) {
-        m_editList[EditType::HOUR]->SetText(StringUtil::Printf(DUI_T("%02d"), timeValue.tm_hour));
+        m_editList[EditType::HOUR]->SetText(StringUtil::Printf("%02d", timeValue.tm_hour));
     }
     if (m_editList[EditType::MIN] != nullptr) {
-        m_editList[EditType::MIN]->SetText(StringUtil::Printf(DUI_T("%02d"), timeValue.tm_min));
+        m_editList[EditType::MIN]->SetText(StringUtil::Printf("%02d", timeValue.tm_min));
     }
     if (m_editList[EditType::SEC] != nullptr) {
-        m_editList[EditType::SEC]->SetText(StringUtil::Printf(DUI_T("%02d"), timeValue.tm_sec > 59 ? 59 : timeValue.tm_sec)); //May be 60 or 61, leap second, change to display 59
+        m_editList[EditType::SEC]->SetText(StringUtil::Printf("%02d", timeValue.tm_sec > 59 ? 59 : timeValue.tm_sec)); //May be 60 or 61, leap second, change to display 59
     }
     m_editFormat = (int8_t)editFormat;
     m_bInited = true;
@@ -183,7 +183,7 @@ bool DateTimeWnd::Init(DateTime* pOwner)
     }
 
     //Spin feature
-    DString spinClass = pOwner->GetSpinClass();
+    std::string spinClass = pOwner->GetSpinClass();
     if (!spinClass.empty()) {
         SetSpinClass(spinClass);
     }
@@ -335,8 +335,8 @@ void DateTimeWnd::EndEditDateTime()
 RichEdit* DateTimeWnd::CreateEditYear() const
 {
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());    
-    pRichEdit->SetAttribute(DUI_T("limit_text"), DUI_T("4"));
-    pRichEdit->SetAttribute(DUI_T("number_format"), DUI_T("%04I64d"));
+    pRichEdit->SetAttribute("limit_text", "4");
+    pRichEdit->SetAttribute("number_format", "%04I64d");
     pRichEdit->SetText(L"2024");
     pRichEdit->SetMinNumber(1900);
     return pRichEdit;
@@ -345,8 +345,8 @@ RichEdit* DateTimeWnd::CreateEditYear() const
 RichEdit* DateTimeWnd::CreateEditMon() const
 {
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
-    pRichEdit->SetAttribute(DUI_T("limit_text"), DUI_T("2"));
-    pRichEdit->SetAttribute(DUI_T("number_format"), DUI_T("%02I64d"));
+    pRichEdit->SetAttribute("limit_text", "2");
+    pRichEdit->SetAttribute("number_format", "%02I64d");
     pRichEdit->SetText(L"01");
     pRichEdit->SetMinNumber(1);
     pRichEdit->SetMaxNumber(12);
@@ -356,8 +356,8 @@ RichEdit* DateTimeWnd::CreateEditMon() const
 RichEdit* DateTimeWnd::CreateEditMDay() const
 {
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
-    pRichEdit->SetAttribute(DUI_T("limit_text"), DUI_T("2"));
-    pRichEdit->SetAttribute(DUI_T("number_format"), DUI_T("%02I64d"));
+    pRichEdit->SetAttribute("limit_text", "2");
+    pRichEdit->SetAttribute("number_format", "%02I64d");
     pRichEdit->SetText(L"01");
     pRichEdit->SetMinNumber(1);
     pRichEdit->SetMaxNumber(31);
@@ -367,8 +367,8 @@ RichEdit* DateTimeWnd::CreateEditMDay() const
 RichEdit* DateTimeWnd::CreateEditHour() const
 {
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
-    pRichEdit->SetAttribute(DUI_T("limit_text"), DUI_T("2"));
-    pRichEdit->SetAttribute(DUI_T("number_format"), DUI_T("%02I64d"));
+    pRichEdit->SetAttribute("limit_text", "2");
+    pRichEdit->SetAttribute("number_format", "%02I64d");
     pRichEdit->SetText(L"00");
     pRichEdit->SetMinNumber(0);
     pRichEdit->SetMaxNumber(23);
@@ -378,8 +378,8 @@ RichEdit* DateTimeWnd::CreateEditHour() const
 RichEdit* DateTimeWnd::CreateEditMin() const
 {
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
-    pRichEdit->SetAttribute(DUI_T("limit_text"), DUI_T("2"));
-    pRichEdit->SetAttribute(DUI_T("number_format"), DUI_T("%02I64d"));
+    pRichEdit->SetAttribute("limit_text", "2");
+    pRichEdit->SetAttribute("number_format", "%02I64d");
     pRichEdit->SetText(L"00");
     pRichEdit->SetMinNumber(0);
     pRichEdit->SetMaxNumber(59);
@@ -389,23 +389,23 @@ RichEdit* DateTimeWnd::CreateEditMin() const
 RichEdit* DateTimeWnd::CreateEditSec() const
 {
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
-    pRichEdit->SetAttribute(DUI_T("limit_text"), DUI_T("2"));
-    pRichEdit->SetAttribute(DUI_T("number_format"), DUI_T("%02I64d"));
+    pRichEdit->SetAttribute("limit_text", "2");
+    pRichEdit->SetAttribute("number_format", "%02I64d");
     pRichEdit->SetText(L"00");
     pRichEdit->SetMinNumber(0);
     pRichEdit->SetMaxNumber(59);
     return pRichEdit;
 }
 
-Control* DateTimeWnd::CreateLabel(const DString& text) const
+Control* DateTimeWnd::CreateLabel(const std::string& text) const
 {
     Label* pLabel = new Label(m_pOwner->GetWindow());
     pLabel->SetText(text);
-    pLabel->SetAttribute(DUI_T("text_align"), DUI_T("vcenter,hcenter"));
-    pLabel->SetAttribute(DUI_T("width"), DUI_T("auto"));
-    pLabel->SetAttribute(DUI_T("min_width"), DUI_T("4"));
-    pLabel->SetAttribute(DUI_T("height"), DUI_T("100%"));
-    pLabel->SetBkColor(DUI_T("white"));
+    pLabel->SetAttribute("text_align", "vcenter,hcenter");
+    pLabel->SetAttribute("width", "auto");
+    pLabel->SetAttribute("min_width", "4");
+    pLabel->SetAttribute("height", "100%");
+    pLabel->SetBkColor("white");
     pLabel->SetTabStop(false);
     pLabel->SetNoFocus();
     pLabel->SetMouseEnabled(false);
@@ -451,10 +451,10 @@ void DateTimeWnd::UpdateDayRange()
 
         int32_t nDay = StringUtil::StringToInt32(m_editList[EditType::MDAY]->GetText());
         if (nDay < m_editList[EditType::MDAY]->GetMinNumber()) {
-            m_editList[EditType::MDAY]->SetText(StringUtil::Printf(DUI_T("%02d"), m_editList[EditType::MDAY]->GetMinNumber()));
+            m_editList[EditType::MDAY]->SetText(StringUtil::Printf("%02d", m_editList[EditType::MDAY]->GetMinNumber()));
         }
         if (nDay > m_editList[EditType::MDAY]->GetMaxNumber()) {
-            m_editList[EditType::MDAY]->SetText(StringUtil::Printf(DUI_T("%02d"), m_editList[EditType::MDAY]->GetMaxNumber()));
+            m_editList[EditType::MDAY]->SetText(StringUtil::Printf("%02d", m_editList[EditType::MDAY]->GetMaxNumber()));
         }
     }
 }
@@ -481,16 +481,16 @@ void DateTimeWnd::Clear()
     m_editFormat = -1;
 }
 
-bool DateTimeWnd::SetSpinClass(const DString& spinClass)
+bool DateTimeWnd::SetSpinClass(const std::string& spinClass)
 {
     ASSERT(m_pOwner != nullptr);
     if (m_pOwner == nullptr) {
         return false;
     }
-    DString spinBoxClass;
-    DString spinBtnUpClass;
-    DString spinBtnDownClass;
-    std::list<DString> classNames = StringUtil::Split(spinClass, DUI_T(","));
+    std::string spinBoxClass;
+    std::string spinBtnUpClass;
+    std::string spinBtnDownClass;
+    std::list<std::string> classNames = StringUtil::Split(spinClass, ",");
     if (classNames.size() == 3) {
         auto iter = classNames.begin();
         spinBoxClass = *iter++;

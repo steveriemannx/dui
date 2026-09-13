@@ -15,18 +15,18 @@ public:
     * @param [in] log The log content
     * @param [in] bPrintTime true means the timestamp is printed, false means the timestamp is not printed
     */
-    static void Output(const DString& log, bool bPrintTime = true);
+    static void Output(const std::string& log, bool bPrintTime = true);
 
     /** Output a Debug log (appends a line break)
     * @param [in] log The log content
     * @param [in] bPrintTime true means the timestamp is printed, false means the timestamp is not printed
     */
-    static void OutputLine(const DString& log, bool bPrintTime = true);
+    static void OutputLine(const std::string& log, bool bPrintTime = true);
 
 private:
     /** Get the timestamp string
     */
-    static DString GetTimeStamp();
+    static std::string GetTimeStamp();
 };
 
 }

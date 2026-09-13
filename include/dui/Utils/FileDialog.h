@@ -38,12 +38,12 @@ public:
         /** The display name of the file type filter, e.g.: "Text files"
         *   Encoding rule: the Unicode version uses UTF16 encoding, the non-Unicode version uses UTF8 encoding
         */
-        DString szName;
+        std::string szName;
 
         /** The file type filter, e.g.: "*.txt"
         *   Encoding rule: the Unicode version uses UTF16 encoding, the non-Unicode version uses UTF8 encoding
         */
-        DString szExt;
+        std::string szExt;
     };
 
     /** Select a file (single selection)
@@ -61,8 +61,8 @@ public:
                        bool bOpenFileDialog, 
                        const std::vector<FileType>& fileTypes = std::vector<FileType>(),
                        int32_t nFileTypeIndex = -1,
-                       const DString& defaultExt = DUI_T(""),
-                       const DString& fileName = DUI_T(""),
+                       const std::string& defaultExt = "",
+                       const std::string& fileName = "",
                        const FilePath& defaultFilePath = FilePath());
 
     /** Select files (multiple selection)
@@ -77,7 +77,7 @@ public:
                         std::vector<FilePath>& filePaths,
                         const std::vector<FileType>& fileTypes = std::vector<FileType>(),
                         int32_t nFileTypeIndex = -1,
-                        const DString& defaultExt = DUI_T(""),
+                        const std::string& defaultExt = "",
                         const FilePath& defaultLocation = FilePath());
 
 };

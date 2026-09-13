@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("ColorPicker (Codegen)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("ColorPicker (Codegen)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

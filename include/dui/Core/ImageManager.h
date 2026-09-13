@@ -26,7 +26,7 @@ class Image;
  * @return Returns true to allow adding to the delayed release queue, returns false to prevent adding to the delayed release queue
  */
 using ReleaseImageCallback = std::function<bool (const std::shared_ptr<ui::IImage>& pImageData,
-                                                 const DString& imageFullPath)>;
+                                                 const std::string& imageFullPath)>;
 
 /** Image manager (for the release of image resources: delayed release; internally there is an original image queue. If an image needs to be released immediately, the ReleaseImageCallback callback can prevent it from being added to the delayed release queue)
  */
@@ -54,7 +54,7 @@ public:
     * @param [in] pImageData Image data interface of the original image
     * @param [in] imageFullPath The full path of the image
     */
-    void ReleaseImage(const std::shared_ptr<IImage>& pImageData, const DString& imageFullPath);
+    void ReleaseImage(const std::shared_ptr<IImage>& pImageData, const std::string& imageFullPath);
 
     /** Cancel the release of the original image
     */
@@ -91,7 +91,7 @@ public:
     * @param [in] pImage The image interface
     * @param [in] imageKey The KEY of the image resource
     */
-    void AddDelayPaintData(Control* pControl, Image* pImage, const DString& imageKey);
+    void AddDelayPaintData(Control* pControl, Image* pImage, const std::string& imageKey);
 
     /** Remove the image-related data from the delayed paint list
     * @param [in] pControl The control associated with the image
@@ -103,7 +103,7 @@ public:
     /** Perform the delayed paint (called when the image resource finishes loading in a child thread)
     * @param [in] imageKey The KEY of the image resource
     */
-    void DelayPaintImage(const DString& imageKey);
+    void DelayPaintImage(const std::string& imageKey);
 
 private:
     /** Callback function called when the image info is destroyed, used to release the image resource
@@ -132,7 +132,7 @@ private:
      * @param[in] pImage The image data interface
      * @param[in] fImageSizeScale The scale ratio of the image
      */
-    void OnImageDataCreate(const DString& imageKey, std::shared_ptr<IImage>& pImage, float fImageSizeScale);
+    void OnImageDataCreate(const std::string& imageKey, std::shared_ptr<IImage>& pImage, float fImageSizeScale);
 
     /** Callback function called when the image data is destroyed, used to release the data of the image resource
      * @param[in] pImage The image data interface
@@ -150,8 +150,8 @@ private:
     */
     bool GetDpiScaleImageFullPath(uint32_t dpiScale,
                                    bool bIsMemoryArchive,
-                                  const DString& imageFullPath,
-                                  DString& dpiImageFullPath,
+                                  const std::string& imageFullPath,
+                                  std::string& dpiImageFullPath,
                                   uint32_t& nImageFileDpiScale) const;
 
     /** Find the image for the specified DPI scale percentage; one image can be set per DPI to improve image quality at different DPIs
@@ -163,8 +163,8 @@ private:
     */
     bool FindDpiScaleImageFullPath(uint32_t dpiScale,
                                    bool bIsMemoryArchive,
-                                  const DString& imageFullPath,
-                                  DString& dpiImageFullPath) const;
+                                  const std::string& imageFullPath,
+                                  std::string& dpiImageFullPath) const;
 
     /** Get the image resource path for the specified DPI scale percentage
     *   For example, an image with a DPI scale of 120 (i.e., scaled up to 120%): "image.png" corresponds to "image@120.png"
@@ -172,7 +172,7 @@ private:
     * @param [in] imageFullPath The full path of the image resource
     * @return Returns the image resource path for the specified DPI, or an empty string on failure
     */
-    DString GetDpiScaledPath(uint32_t dpiScale, const DString& imageFullPath) const;
+    std::string GetDpiScaledPath(uint32_t dpiScale, const std::string& imageFullPath) const;
 
 private:
     /** Whether to smart match the image of the nearest scale percentage
@@ -186,7 +186,7 @@ private:
     /** Image resource mapping table (mapping between the image loading key and the image UI data)
     *   KEY: obtained from the ImageLoadParam::GetLoadKey function
     */
-    std::unordered_map<DString, std::weak_ptr<ImageInfo>> m_imageInfoMap;
+    std::unordered_map<std::string, std::weak_ptr<ImageInfo>> m_imageInfoMap;
 
     /** Original image data of the image
     */
@@ -213,7 +213,7 @@ private:
     /** Image resource mapping table (mapping between the original image data key and the image data)
     *   KEY: obtained from the ImageManager::GetDpiScaleImageFullPath function, parameter: dpiImageFullPath
     */
-    std::unordered_map<DString, TImageData> m_imageDataMap;
+    std::unordered_map<std::string, TImageData> m_imageDataMap;
 
     /** Original image data waiting to be released
     */
@@ -238,7 +238,7 @@ private:
     {
         ControlPtr m_pControl;          //The associated control interface
         ControlPtrT<Image> m_pImage;    //The associated image interface
-        DString m_imageKey;             //The KEY of the image resource
+        std::string m_imageKey;             //The KEY of the image resource
     };
     std::list<TImageDelayPaintData> m_delayPaintImageList;
 };

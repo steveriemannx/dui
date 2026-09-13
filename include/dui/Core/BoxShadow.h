@@ -22,7 +22,7 @@ public:
     /** Set the shadow properties
      * @param[in] strBoxShadow The properties to set, such as "color='black' offset='1,1' blur_radius='2' spread_radius='2'"
      */
-    void SetBoxShadowString(const DString& strBoxShadow);
+    void SetBoxShadowString(const std::string& strBoxShadow);
 
     /** Whether there is a box-shadow
      */
@@ -41,7 +41,7 @@ public:
 
     /** The color value of the shadow
     */
-    DString m_strColor;
+    std::string m_strColor;
 
     /** The shadow offset (offset-x and offset-y)
      *                 <offset-x> The horizontal offset; if negative, the shadow is on the left of the rectangle.

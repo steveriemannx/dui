@@ -573,9 +573,7 @@ HRESULT RichEditHost::TxGetPasswordChar(_Out_ TCHAR* pch)
     if (pch == nullptr) {
         return NOERROR;
     }
-#ifndef DUI_UNICODE
     ASSERT(m_chPasswordChar <= CHAR_MAX);
-#endif // !DUI_UNICODE
     *pch = (TCHAR)m_chPasswordChar;
     if (!IsPassword()) {
         //Password not enabled
@@ -756,8 +754,8 @@ bool RichEditHost::IsReadOnly() const
 
 void RichEditHost::SetPasswordChar(WCHAR chPasswordChar)
 {
-    ASSERT(chPasswordChar != DUI_T('\0'));
-    if (chPasswordChar == DUI_T('\0')) {
+    ASSERT(chPasswordChar != '\0');
+    if (chPasswordChar == '\0') {
         return;
     }
     //Enable password
@@ -811,9 +809,9 @@ bool RichEditHost::IsFlashPasswordChar() const
     return m_bFlashPasswordChar;
 }
 
-DString RichEditHost::GetPasswordText() const
+std::string RichEditHost::GetPasswordText() const
 {
-    DString pwdText;
+    std::string pwdText;
     if (IsPassword() && (m_pTextServices != nullptr)) {        
         ITextServices* pTextServices = m_pTextServices;
         BSTR bstrText = nullptr;

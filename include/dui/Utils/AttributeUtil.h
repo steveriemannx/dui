@@ -40,11 +40,11 @@ public:
     /** Parse an attribute list; the format is like: font="system_bold_14" normaltextcolor="white" bkcolor="red"
     *                  or: color='black' offset='1,1' blur_radius='2' spread_radius='2'
     *   The separator can be double quotes or single quotes, passed in via the parameter
-    * @param [in] seperateChar The string separator, which can be DUI_T('\"') or DUI_T('\')'
+    * @param [in] seperateChar The string separator, which can be '\"' or DUI_T('\')'
     */
-    static void ParseAttributeList(const DString& strList,
-                                   DString::value_type seperateChar,
-                                   std::vector<std::pair<DString, DString>>& attributeList);
+    static void ParseAttributeList(const std::string& strList,
+                                   std::string::value_type seperateChar,
+                                   std::vector<std::pair<std::string, std::string>>& attributeList);
 
     /** Parse a string (the format is: "500," or "50%,"; the comma is optional and can also be other characters), and obtain an integer value or a floating-point number
     * @param [in] strValue The address of the string to be parsed
@@ -63,7 +63,7 @@ public:
     * @param [out] pPercentCX Returns whether the window width size.cx value is configured as a screen percentage
     * @param [out] pPercentCY Returns whether the window height size.cy value is configured as a screen percentage
     */
-    static void ParseWindowSize(const Window* pWindow, const DString::value_type* strValue,
+    static void ParseWindowSize(const Window* pWindow, const std::string::value_type* strValue,
                                 UiSize& size,
                                 bool* pScaledCX, bool* pScaledCY,
                                 bool* pPercentCX, bool* pPercentCY);

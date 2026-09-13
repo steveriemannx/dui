@@ -5,7 +5,7 @@
 
 namespace ui
 {
-bool Clipboard::GetClipboardText(DStringW& text)
+bool Clipboard::GetClipboardText(std::wstring& text)
 {
     text.clear();
     BOOL ret = ::OpenClipboard(nullptr);
@@ -15,7 +15,7 @@ bool Clipboard::GetClipboardText(DStringW& text)
             if (h != INVALID_HANDLE_VALUE) {
                 wchar_t* buf = (wchar_t*)::GlobalLock(h);
                 if (buf != nullptr) {
-                    DStringW str(buf, GlobalSize(h) / sizeof(wchar_t));
+                    std::wstring str(buf, GlobalSize(h) / sizeof(wchar_t));
                     text = str;
                     ::GlobalUnlock(h);
                 }
@@ -37,15 +37,15 @@ bool Clipboard::GetClipboardText(DStringW& text)
     return ret != FALSE;
 }
 
-bool Clipboard::GetClipboardText(DStringA& text)
+bool Clipboard::GetClipboardText(std::string& text)
 {
-    DStringW textW;
+    std::wstring textW;
     bool bRet = GetClipboardText(textW);
     text = StringConvert::WStringToUTF8(textW);
     return bRet;
 }
 
-bool Clipboard::SetClipboardText(const DStringW& text)
+bool Clipboard::SetClipboardText(const std::wstring& text)
 {
     if (!::OpenClipboard(nullptr)) {
         return false;
@@ -72,7 +72,7 @@ bool Clipboard::SetClipboardText(const DStringW& text)
     return true;
 }
 
-bool Clipboard::SetClipboardText(const DStringA& text)
+bool Clipboard::SetClipboardText(const std::string& text)
 {
     return SetClipboardText(StringConvert::UTF8ToWString(text));
 }

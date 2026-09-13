@@ -56,7 +56,7 @@ public:
 
     /** The desired native backend Render name (optional parameter)
     */
-    DString m_nativeRenderName;
+    std::string m_nativeRenderName;
 };
 
 } // namespace ui

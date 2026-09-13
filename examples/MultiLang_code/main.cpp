@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("MultiLang (Pure Code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("MultiLang (Pure Code)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

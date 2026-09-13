@@ -106,7 +106,7 @@ private:
 
     /** Error image paths (including image load failures or image data decode failures)
     */
-    std::unordered_set<DString> m_errorImagePathSet;
+    std::unordered_set<std::string> m_errorImagePathSet;
 };
 
 #endif //EXAMPLES_SIMPLE_FILE_VIEW_H_

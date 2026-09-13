@@ -73,19 +73,19 @@ public:
     * @param [in] windowTitle Window title
     * @param [in] windowId Window ID; if empty, a window ID is generated internally
     */
-    explicit WindowCreateParam(const DString& windowTitle, const DString& windowId = DUI_T(""));
+    explicit WindowCreateParam(const std::string& windowTitle, const std::string& windowId = "");
 
     /** Constructor providing the window title and window centering
     * @param [in] windowTitle Window title
     * @param [in] bCenterWindow The initial position of the window is centered
     * @param [in] windowId Window ID; if empty, a window ID is generated internally
     */
-    WindowCreateParam(const DString& windowTitle, bool bCenterWindow, const DString& windowId = DUI_T(""));
+    WindowCreateParam(const std::string& windowTitle, bool bCenterWindow, const std::string& windowId = "");
 
 public:
     /** Window class name (optional parameter; if not provided, the default value is used)
     */
-    DString m_className;
+    std::string m_className;
 
     /** The style of the window class (optional parameter; if not provided, the default value is used). Refer to the definition above: enum WindowClassStyle
     */
@@ -102,11 +102,11 @@ public:
 
     /** The title of the window (optional parameter; empty by default)
     */
-    DString m_windowTitle;
+    std::string m_windowTitle;
 
     /** Window ID (can be empty; if empty, a unique ID is generated automatically internally)
     */
-    DString m_windowId;
+    std::string m_windowId;
 
 public:
     /** The X coordinate of the top-left corner of the window (if not set, the default value is used)

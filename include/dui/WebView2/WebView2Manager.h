@@ -29,11 +29,11 @@ public:
     * @param [in] additionalBrowserArguments Additional browser arguments
     * @param [in] browserExecutableFolder The directory where the WebView2 module is located
     */
-    bool Initialize(const DString& userDataFolder = DUI_T(""),
-                    const DString& language = DUI_T(""),
-                    const DString& userAgent = DUI_T(""),
-                    const DString& additionalBrowserArguments = DUI_T(""),
-                    const DString& browserExecutableFolder = DUI_T(""));
+    bool Initialize(const std::string& userDataFolder = "",
+                    const std::string& language = "",
+                    const std::string& userAgent = "",
+                    const std::string& additionalBrowserArguments = "",
+                    const std::string& browserExecutableFolder = "");
 
     /** Clean up
     */
@@ -42,33 +42,33 @@ public:
     /** Get the default web page cache directory
     * @param [in] appName The application name
     */
-    DString GetDefaultUserDataFolder(const DString& appName) const;
+    std::string GetDefaultUserDataFolder(const std::string& appName) const;
 
 public:
     /** The directory where the WebView2 module is located
     */
-    void SetBrowserExecutableFolder(const DString& browserExecutableFolder);
-    const DString& GetBrowserExecutableFolder() const;
+    void SetBrowserExecutableFolder(const std::string& browserExecutableFolder);
+    const std::string& GetBrowserExecutableFolder() const;
 
     /** The web page cache directory
     */
-    void SetUserDataFolder(const DString& userDataFolder);
-    const DString& GetUserDataFolder() const;
+    void SetUserDataFolder(const std::string& userDataFolder);
+    const std::string& GetUserDataFolder() const;
 
     /** The language
     */
-    void SetLanguage(const DString& language);
-    const DString& GetLanguage() const;
+    void SetLanguage(const std::string& language);
+    const std::string& GetLanguage() const;
 
     /** The UserAgent
     */
-    void SetUserAgent(const DString& userAgent);
-    const DString& GetUserAgent() const;
+    void SetUserAgent(const std::string& userAgent);
+    const std::string& GetUserAgent() const;
 
     /** Additional arguments
     */
-    void SetAdditionalBrowserArguments(const DString& additionalBrowserArguments);
-    const DString& GetAdditionalBrowserArguments() const;
+    void SetAdditionalBrowserArguments(const std::string& additionalBrowserArguments);
+    const std::string& GetAdditionalBrowserArguments() const;
 
     /** Whether JavaScript is enabled
     */
@@ -120,23 +120,23 @@ public:
 private:
     /** The directory where the WebView2 module is located
     */
-    DString m_browserExecutableFolder;
+    std::string m_browserExecutableFolder;
 
     /** The web page cache directory
     */
-    DString m_userDataFolder;
+    std::string m_userDataFolder;
 
     /** The language
     */
-    DString m_language;
+    std::string m_language;
 
     /** The UserAgent
     */
-    DString m_userAgent;
+    std::string m_userAgent;
 
     /** Additional arguments
     */
-    DString m_additionalBrowserArguments;
+    std::string m_additionalBrowserArguments;
 
     /** Whether JavaScript is enabled
     */

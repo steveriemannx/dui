@@ -17,21 +17,21 @@ public:
 
     /** Get the text content
     */
-    virtual DString GetText() const = 0;
+    virtual std::string GetText() const = 0;
 
     /** Set the text content
     * @param [in] strText The text content
     */
-    virtual void SetText(const DString& strText) = 0;
+    virtual void SetText(const std::string& strText) = 0;
 
     /** Get the text content ID (supports multiple languages)
     */
-    virtual DString GetTextId() const = 0;
+    virtual std::string GetTextId() const = 0;
 
     /** Set the text content ID (supports multiple languages)
     * @param [in] strTextId The ID of the text content
     */
-    virtual void SetTextId(const DString& strTextId) = 0;
+    virtual void SetTextId(const std::string& strTextId) = 0;
 };
 
 /** Internal implementation of the label control, used to display text
@@ -44,7 +44,7 @@ public:
 
     /// Override the parent class methods to provide customized functionality; refer to the parent class declarations
     bool HasHotColorState();
-    bool OnSetAttribute(const DString& strName, const DString& strValue);
+    bool OnSetAttribute(const std::string& strName, const std::string& strValue);
     void OnPaintText(IRender* pRender);
 
     /** The bound window has changed
@@ -70,21 +70,21 @@ public:
 public:
     /** Get the text content
     */
-    DString GetText() const;
+    std::string GetText() const;
 
     /** Set the text content
     * @param [in] strText The text content
     */
-    void SetText(const DString& strText);
+    void SetText(const std::string& strText);
 
     /** Get the text content ID (supports multiple languages)
     */
-    DString GetTextId() const;
+    std::string GetTextId() const;
 
     /** Set the text content ID (supports multiple languages)
     * @param [in] strTextId The ID of the text content
     */
-    void SetTextId(const DString& strTextId);
+    void SetTextId(const std::string& strTextId);
 
     /** Get the text content (UTF8 format)
     */
@@ -113,7 +113,7 @@ public:
 
     /** Check whether the text is equal
     */
-    bool IsTextEquals(const DString& text) const;
+    bool IsTextEquals(const std::string& text) const;
 
 public:
     /** Restore the default text style
@@ -136,31 +136,31 @@ public:
      * @param [in] stateType The state flag to get
      * @return The text color in the specified state
      */
-    DString GetStateTextColor(ControlStateType stateType) const;
+    std::string GetStateTextColor(ControlStateType stateType) const;
 
     /** Set the text color in the specified state
      * @param [in] stateType The state flag to set
      * @param [in] dwTextColor The state color string to set; the value must exist in global.xml
      * @return None
      */
-    void SetStateTextColor(ControlStateType stateType, const DString& dwTextColor);
+    void SetStateTextColor(ControlStateType stateType, const std::string& dwTextColor);
 
     /** Get the actually rendered text color in the specified state
      * @param [in] buttonStateType The state for which to get the color
      * @param [out] stateType The state actually rendered
      * @return The color string, defined in global.xml
      */
-    DString GetPaintStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType);
+    std::string GetPaintStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType);
 
     /** Get the current font ID
      * @return The font ID, identified in global.xml
      */
-    DString GetFontId() const;
+    std::string GetFontId() const;
 
     /** Set the current font ID
      * @param[in] strFontId The font ID to set; the font ID must exist in global.xml
      */
-    void SetFontId(const DString& strFontId);
+    void SetFontId(const std::string& strFontId);
 
     /** Get the text padding
      * @return The text padding information
@@ -194,7 +194,7 @@ public:
 
     /** Get the automatically displayed tooltip text information
     */
-    DString GetAutoToolTipText() const;
+    std::string GetAutoToolTipText() const;
 
     /** Set whether to replace newline characters (replace the string "\\n" with the newline character "\n", so the two characters in parentheses (\n) can be used in XML as newline characters, thereby supporting multi-line text)
     * @param [in] bReplaceNewline true means replace, false means no replacement
@@ -286,7 +286,7 @@ public:
 private:
     /** Get the text from the Owner (supports virtual functions)
     */
-    DString GetOwnerText() const;
+    std::string GetOwnerText() const;
 
 private:
     /** The associated control

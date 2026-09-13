@@ -41,7 +41,7 @@ public:
     * @param [in] threadName The thread name
     * @param [in] nThreadIdentifier The thread identifier ID, needed for cross-thread communication
     */
-    FrameworkThread(const DString& threadName, int32_t nThreadIdentifier);
+    FrameworkThread(const std::string& threadName, int32_t nThreadIdentifier);
     virtual ~FrameworkThread() override;
     FrameworkThread(const FrameworkThread&) = delete;
     FrameworkThread& operator = (const FrameworkThread&) = delete;
@@ -76,7 +76,7 @@ public:
 
     /** Convert the thread ID to a string
     */
-    static DString ThreadIdToString(const std::thread::id& threadId);
+    static std::string ThreadIdToString(const std::thread::id& threadId);
 
     /** Get the current thread identifier, the unique identifier of the thread, used for inter-thread communication (the value initialized when the thread is constructed)
     */
@@ -84,7 +84,7 @@ public:
 
     /** Return the thread name (the value initialized when the thread is constructed)
     */
-    const DString& GetThreadName() const;
+    const std::string& GetThreadName() const;
 
 public:
     /** Send a task to the thread, executed immediately
@@ -200,7 +200,7 @@ private:
 private:
     /** The thread name
     */
-    DString m_threadName;
+    std::string m_threadName;
 
     /** The thread identifier ID, needed for cross-thread communication
     */

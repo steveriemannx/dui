@@ -14,7 +14,7 @@ FullscreenBox::FullscreenBox(Window* pWindow) :
     SetEnableControlPadding(false);
 
     //The background color defaults to white (if no background color is set, the window may appear transparent in some cases, e.g. when the WebView2 control's web page is fullscreen)
-    SetBkColor(DUI_T("white"));
+    SetBkColor("white");
 
     //Save the original state of the window
     if (pWindow != nullptr) {
@@ -33,9 +33,9 @@ FullscreenBox::~FullscreenBox()
     }
 }
 
-DString FullscreenBox::GetType() const { return DUI_T("FullscreenBox"); }
+std::string FullscreenBox::GetType() const { return "FullscreenBox"; }
 
-bool FullscreenBox::EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenControl, const DString& exitButtonClass)
+bool FullscreenBox::EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenControl, const std::string& exitButtonClass)
 {
     ASSERT((pOldRoot != nullptr) && (pFullscreenControl != nullptr));
     if ((pOldRoot == nullptr) || (pFullscreenControl == nullptr)) {
@@ -71,7 +71,7 @@ bool FullscreenBox::EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenCo
     return true;
 }
 
-bool FullscreenBox::UpdateControlFullscreen(Control* pFullscreenControl, const DString& exitButtonClass)
+bool FullscreenBox::UpdateControlFullscreen(Control* pFullscreenControl, const std::string& exitButtonClass)
 {
     if (pFullscreenControl == nullptr) {
         return false;
@@ -142,7 +142,7 @@ void FullscreenBox::RestoreControlToBox()
     m_rcOldMargin.Clear();
 }
 
-void FullscreenBox::UpdateExitFullscreenBtn(const DString& exitButtonClass)
+void FullscreenBox::UpdateExitFullscreenBtn(const std::string& exitButtonClass)
 {
     if (m_exitButtonClass == exitButtonClass) {
         if (m_exitButtonClass.empty()) {

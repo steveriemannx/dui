@@ -13,11 +13,11 @@ ListCtrlSubItem::ListCtrlSubItem(Window* pWindow):
     SetIconSpacing(2, true);
 }
 
-DString ListCtrlSubItem::GetType() const { return DUI_T("ListCtrlSubItem"); }
+std::string ListCtrlSubItem::GetType() const { return "ListCtrlSubItem"; }
 
-void ListCtrlSubItem::SetAttribute(const DString& strName, const DString& strValue)
+void ListCtrlSubItem::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("icon_spacing")) {
+    if (strName == "icon_spacing") {
         SetIconSpacing(StringUtil::StringToInt32(strValue), true);
     }
     else {
@@ -94,7 +94,7 @@ bool ListCtrlSubItem::SetShowCheckBox(bool bShow)
         }
         ListCtrl* pListCtrl = pItem->GetListCtrl();
         if (pListCtrl != nullptr) {
-            DString checkBoxClass = pListCtrl->GetCheckBoxClass();
+            std::string checkBoxClass = pListCtrl->GetCheckBoxClass();
             if (!checkBoxClass.empty()) {
                 SetClass(checkBoxClass);
                 bRet = IsShowCheckBox();
@@ -242,7 +242,7 @@ void ListCtrlSubItem::PaintText(IRender* pRender)
 
     UiRect imageRect = rc;
     VAlignRect(imageRect, GetTextStyle(), imageSize.cy);
-    PaintImage(pRender, pItemImage.get(), DUI_T(""), -1, nullptr, &imageRect, nullptr);
+    PaintImage(pRender, pItemImage.get(), "", -1, nullptr, &imageRect, nullptr);
     rc.left += imageSize.cx;
     rc.left += nIconTextSpacing;
 

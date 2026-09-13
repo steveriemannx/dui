@@ -243,8 +243,8 @@ static void genAttrs(std::ostream& out, const std::string& var,
         if (name.empty() || value.empty()) continue;
         if (name == "on_click" || name == "on_select" || name == "on_change") continue;
         if (name == "class") trackClass(value);  // Track class usage for image embedding
-        out << "        " << var << "->SetAttribute(" << "DUI_T(\"" << escapeCStr(name) << "\")"
-            << ", " << "DUI_T(\"" << escapeCStr(value) << "\")" << ");\n";
+        out << "        " << var << "->SetAttribute(" << "\"" << escapeCStr(name) << "\""
+            << ", " << "\"" << escapeCStr(value) << "\"" << ");\n";
     }
 }
 
@@ -258,7 +258,7 @@ static std::string genAttrList(const pugi::xml_node& node) {
         if (name == "on_click" || name == "on_select" || name == "on_change") continue;
         if (name == "class") trackClass(value);  // Track class usage for image embedding
         if (!s.empty()) s += ", ";
-        s += std::string("{") + "DUI_T(\"" + escapeCStr(name) + "\")" + ", " + "DUI_T(\"" + escapeCStr(value) + "\")" + "}";
+        s += std::string("{") + "\"" + escapeCStr(name) + "\"" + ", " + "\"" + escapeCStr(value) + "\"" + "}";
     }
     return s;
 }
@@ -329,7 +329,7 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
             else {
                 out << "    { ui::UiSize size; bool scaledCX = false; bool scaledCY = false;\n"
                     << "      bool percentCX = false; bool percentCY = false;\n"
-                    << "      ui::AttributeUtil::ParseWindowSize(pWindow, " << "DUI_T(\"" << escapeCStr(value) << "\")"
+                    << "      ui::AttributeUtil::ParseWindowSize(pWindow, " << "\"" << escapeCStr(value) << "\""
                     << ", size, &scaledCX, &scaledCY, &percentCX, &percentCY);\n"
                      << "      w.SetWindowSize(size.cx, size.cy); }\n";
             }
@@ -349,7 +349,7 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
             out << "    w.SetShowCaptionTitle(" << (value == "true" ? "true" : "false") << ");\n";
         }
         else if (name == "caption_title_style") {
-            out << "    w.SetCaptionTitleStyle(DUI_T(\"" << escapeCStr(value) << "\"));\n";
+            out << "    w.SetCaptionTitleStyle(\"" << escapeCStr(value) << "\");\n";
         }
         else if (name == "size_box" || name == "sizebox" || name == "caption" || name == "sys_menu_rect") {
             std::vector<int> rect = parseIntList(value);
@@ -373,7 +373,7 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
         else if (name == "icon" || name == "text" || name == "text_id" || name == "textid") {
             const char* setter = name == "icon" ? "SetWindowIcon" :
                                  (name == "text" ? "SetText" : "SetTextId");
-            out << "    w." << setter << "(" << "DUI_T(\"" << escapeCStr(value) << "\")" << ");\n";
+            out << "    w." << setter << "(" << "\"" << escapeCStr(value) << "\"" << ");\n";
         }
         else if (name == "round_corner" || name == "roundcorner") {
             std::vector<int> size = parseIntList(value);
@@ -399,7 +399,7 @@ static void genWindowAttrs(std::ostream& out, const pugi::xml_node& root,
         }
         else if (name == "shadow_image" || name == "shadow_border_color") {
             out << "    w." << (name == "shadow_image" ? "SetShadowImage" : "SetShadowBorderColor")
-                << "(" << "DUI_T(\"" << escapeCStr(value) << "\")" << ");\n";
+                << "(" << "\"" << escapeCStr(value) << "\"" << ");\n";
         }
         else if (name == "shadow_corner") {
             std::vector<int> padding = parseIntList(value);
@@ -493,20 +493,20 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
             if (name == "name") continue;
             attrs += " " + name + "=\"" + a.value() + "\"";
         }
-        out << "    pWindow->AddClass(" << "DUI_T(\"" << escapeCStr(clsName) << "\")" << ", "
-            << "DUI_T(\"" << escapeCStr(attrs) << "\")" << ");\n";
+        out << "    pWindow->AddClass(" << "\"" << escapeCStr(clsName) << "\"" << ", "
+            << "\"" << escapeCStr(attrs) << "\"" << ");\n";
         return;
     }
     if (tag == "TextColor") {
         std::string colorName = attr(node, "name");
         std::string colorValue = attr(node, "value");
-        out << "    pWindow->AddTextColor(" << "DUI_T(\"" << escapeCStr(colorName) << "\")" << ", "
-            << "DUI_T(\"" << escapeCStr(colorValue) << "\")" << ");\n";
+        out << "    pWindow->AddTextColor(" << "\"" << escapeCStr(colorName) << "\"" << ", "
+            << "\"" << escapeCStr(colorValue) << "\"" << ");\n";
         return;
     }
     if (tag == "Font") {
         // <Font id="..." name="..." size="12" bold="true" italic="true" default="true"/>
-        out << "    { ui::UiFont f; f.m_fontName = " << "DUI_T(\"" << escapeCStr(attr(node, "name")) << "\")" << ";\n";
+        out << "    { ui::UiFont f; f.m_fontName = " << "\"" << escapeCStr(attr(node, "name")) << "\"" << ";\n";
         int fontSize = node.attribute("size").as_int(12);
         out << "      f.m_fontSize = " << fontSize << ";";
         if (attr(node, "bold") == "true")     out << " f.m_bBold = true;";
@@ -514,12 +514,12 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
         if (attr(node, "italic") == "true")   out << " f.m_bItalic = true;";
         bool isDefault = (attr(node, "default") == "true");
         out << "\n      ui::GlobalManager::Instance().Font().AddFont("
-            << "DUI_T(\"" << escapeCStr(attr(node, "id")) << "\")" << ", f, " << (isDefault ? "true" : "false") << "); }\n";
+            << "\"" << escapeCStr(attr(node, "id")) << "\"" << ", f, " << (isDefault ? "true" : "false") << "); }\n";
         return;
     }
     if (tag == "DefaultFontFamilyNames") {
         out << "    ui::GlobalManager::Instance().Font().SetDefaultFontFamilyNames("
-            << "DUI_T(\"" << escapeCStr(attr(node, "value")) << "\")" << ");\n";
+            << "\"" << escapeCStr(attr(node, "value")) << "\"" << ");\n";
         return;
     }
 
@@ -569,8 +569,8 @@ static void genNode(std::ostream& out, const pugi::xml_node& node,
         // static helper (b/i/font/s/u markup and text slices)
         std::string inner = serializeChildren(node);
         if (!inner.empty()) {
-            out << "    ui::WindowBuilder::ParseRichTextXmlText(DUI_T(\"<RichText>"
-                << escapeCStr(inner) << "</RichText>\"), " << var << ");\n";
+            out << "    ui::WindowBuilder::ParseRichTextXmlText(\"<RichText>"
+                << escapeCStr(inner) << "</RichText>\", " << var << ");\n";
         }
     }
     else {
@@ -830,7 +830,7 @@ int main(int argc, char** argv) {
             if (i % 16 == 15) out << "\n";
         }
         out << "};\n\n";
-        out << "inline DString ImgToMemFd(const char* b64, const char* tag) {\n";
+        out << "inline std::string ImgToMemFd(const char* b64, const char* tag) {\n";
         out << "#if defined(__linux__)\n";
         out << "    // Linux: anonymous memory file, readable via /proc/self/fd\n";
         out << "    int fd=memfd_create(tag,MFD_CLOEXEC); if(fd<0)return \"\";\n";
@@ -851,11 +851,11 @@ int main(int argc, char** argv) {
         out << "    if(write(fd,buf,di)!=(ssize_t)di){close(fd);return \"\";}\n";
         out << "#if defined(__linux__)\n";
         out << "    char tmp[32];snprintf(tmp,sizeof(tmp),\"%d\",fd);\n";
-        out << "    DString p=\"/proc/self/fd/\";\n";
-        out << "    for(char* x=tmp;*x;x++)p+=(DString::value_type)(unsigned char)*x;\n";
+        out << "    std::string p=\"/proc/self/fd/\";\n";
+        out << "    for(char* x=tmp;*x;x++)p+=(std::string::value_type)(unsigned char)*x;\n";
         out << "#else\n";
-        out << "    DString p;\n";
-        out << "    for(char* x=tmpl;*x;x++)p+=(DString::value_type)(unsigned char)*x;\n";
+        out << "    std::string p;\n";
+        out << "    for(char* x=tmpl;*x;x++)p+=(std::string::value_type)(unsigned char)*x;\n";
         out << "#endif\n";
         out << "    return p;\n}\n\n";
 
@@ -888,8 +888,8 @@ int main(int argc, char** argv) {
                 out << "    \"" << b64.substr(j, 72) << "\""
                     << (j + 72 >= b64.size() ? ";\n" : "\n");
             }
-            out << "inline DString GetPath_" << imageVarName(imgPath) << "() {\n";
-            out << "    static DString p;\n";
+            out << "inline std::string GetPath_" << imageVarName(imgPath) << "() {\n";
+            out << "    static std::string p;\n";
             out << "    if(p.empty()) p=ImgToMemFd(" << var << ",\"" << imageVarName(imgPath) << "\");\n";
             out << "    return p;\n}\n\n";
         }
@@ -898,13 +898,13 @@ int main(int argc, char** argv) {
         if (!embeddedImages.empty()) {
             out << "// Class registrations using embedded images\n";
             out << "inline void RegisterEmbeddedClasses(ui::Window* pWindow) {\n";
-            out << "    DString attrs;\n";
+            out << "    std::string attrs;\n";
             for (const auto& cls : s_usedClasses) {
                 auto it = classImages.find(cls);
                 auto ai = classAttrs.find(cls);
                 if (it == classImages.end() || ai == classAttrs.end()) continue;
                 std::string imgVar = imageVarName(it->second);
-                // Build the full attribute string using a local DString
+                // Build the full attribute string using a local std::string
                 // Replace file='...' with file='[embedded]'
                 std::string origAttr = ai->second;
                 auto fp = origAttr.find("file='");

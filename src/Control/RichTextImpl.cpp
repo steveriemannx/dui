@@ -30,103 +30,103 @@ RichTextImpl::~RichTextImpl()
     m_spDrawRichTextCache.reset();
 }
 
-bool RichTextImpl::SetAttribute(const DString& strName, const DString& strValue)
+bool RichTextImpl::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("text_align")) {
+    if (strName == "text_align") {
         //Horizontal alignment
-        if (strValue.find(DUI_T("left")) != DString::npos) {
+        if (strValue.find("left") != std::string::npos) {
             SetTextHAlignType(HorAlignType::kAlignLeft);
         }
-        else if (strValue.find(DUI_T("hcenter")) != DString::npos) {
+        else if (strValue.find("hcenter") != std::string::npos) {
             SetTextHAlignType(HorAlignType::kAlignCenter);
         }
-        else if (strValue.find(DUI_T("right")) != DString::npos) {
+        else if (strValue.find("right") != std::string::npos) {
             SetTextHAlignType(HorAlignType::kAlignRight);
         }
 
         //Vertical alignment
-        if (strValue.find(DUI_T("top")) != DString::npos) {
+        if (strValue.find("top") != std::string::npos) {
             SetTextVAlignType(VerAlignType::kAlignTop);
         }
-        else if (strValue.find(DUI_T("vcenter")) != DString::npos) {
+        else if (strValue.find("vcenter") != std::string::npos) {
             SetTextVAlignType(VerAlignType::kAlignCenter);
         }
-        else if (strValue.find(DUI_T("bottom")) != DString::npos) {
+        else if (strValue.find("bottom") != std::string::npos) {
             SetTextVAlignType(VerAlignType::kAlignBottom);
         }
         m_textData.clear();
         m_spDrawRichTextCache.reset();
     }    
-    else if (strName == DUI_T("font")) {
+    else if (strName == "font") {
         SetFontId(strValue);
     }
-    else if (strName == DUI_T("text_color")) {
+    else if (strName == "text_color") {
         SetTextColor(strValue);
     }    
-    else if ((strName == DUI_T("text_padding")) || (strName == DUI_T("textpadding"))) {
+    else if ((strName == "text_padding") || (strName == "textpadding")) {
         UiPadding rcTextPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcTextPadding);
         SetTextPadding(rcTextPadding);
     }
-    else if (strName == DUI_T("row_spacing_mul")) {
+    else if (strName == "row_spacing_mul") {
         SetRowSpacingMul(StringUtil::StringToFloat(strValue.c_str(), nullptr));
     }
-    else if (strName == DUI_T("row_spacing_add")) {
+    else if (strName == "row_spacing_add") {
         SetRowSpacingAdd(StringUtil::StringToFloat(strValue.c_str(), nullptr));
     }
-    else if (strName == DUI_T("default_link_font_color")) {
+    else if (strName == "default_link_font_color") {
         //Hyperlink: normal text color value
         m_linkNormalTextColor = strValue;
     }
-    else if (strName == DUI_T("hover_link_font_color")) {
+    else if (strName == "hover_link_font_color") {
         //Hyperlink: hover state text color value
         m_linkHoverTextColor = strValue;
     }
-    else if (strName == DUI_T("mouse_down_link_font_color")) {
+    else if (strName == "mouse_down_link_font_color") {
         //Hyperlink: mouse pressed state text color value
         m_linkMouseDownTextColor = strValue;
     }
-    else if (strName == DUI_T("link_font_underline")) {
+    else if (strName == "link_font_underline") {
         //Hyperlink: whether to use the underlined font
-        m_bLinkUnderlineFont = (strValue == DUI_T("true"));
+        m_bLinkUnderlineFont = (strValue == "true");
     }
-    else if (strName == DUI_T("replace_brace")) {
+    else if (strName == "replace_brace") {
         //Whether to allow replacing curly braces for the text attribute
-        m_bReplaceBrace = strValue == DUI_T("true");
+        m_bReplaceBrace = strValue == "true";
     }
-    else if (strName == DUI_T("text")) {
+    else if (strName == "text") {
         //Allow using '{' instead of '<', '}' instead of '>' (the m_bReplaceBrace variable is the switch)
         if (m_bReplaceBrace &&
-            ((strValue.find(DUI_T('<')) == DString::npos) && (strValue.find(DUI_T('>')) == DString::npos)) &&
-            ((strValue.find(DUI_T('{')) != DString::npos) && (strValue.find(DUI_T('}')) != DString::npos))) {
-            DString richText(strValue);
-            StringUtil::ReplaceAll(DUI_T("{"), DUI_T("<"), richText);
-            StringUtil::ReplaceAll(DUI_T("}"), DUI_T(">"), richText);
+            ((strValue.find('<') == std::string::npos) && (strValue.find('>') == std::string::npos)) &&
+            ((strValue.find('{') != std::string::npos) && (strValue.find('}') != std::string::npos))) {
+            std::string richText(strValue);
+            StringUtil::ReplaceAll("{", "<", richText);
+            StringUtil::ReplaceAll("}", ">", richText);
             SetText(richText);
         }
         else {
             SetText(strValue);
         }        
     }
-    else if ((strName == DUI_T("text_id")) || (strName == DUI_T("textid"))) {
+    else if ((strName == "text_id") || (strName == "textid")) {
         SetTextId(strValue);
     }
-    else if (strName == DUI_T("trim_policy")) {
-        if (strValue == DUI_T("all")) {
+    else if (strName == "trim_policy") {
+        if (strValue == "all") {
             m_trimPolicy = TrimPolicy::kAll;
         }
-        else if (strValue == DUI_T("none")) {
+        else if (strValue == "none") {
             m_trimPolicy = TrimPolicy::kNone;
         }
-        else if (strValue == DUI_T("keep_one")) {
+        else if (strValue == "keep_one") {
             m_trimPolicy = TrimPolicy::kKeepOne;
         }
         else {
             m_trimPolicy = TrimPolicy::kAll;
         }
     }
-    else if (strName == DUI_T("word_wrap")) {
-        SetWordWrap(strValue == DUI_T("true"));
+    else if (strName == "word_wrap") {
+        SetWordWrap(strValue == "true");
     }
     else {
         return false;
@@ -472,7 +472,7 @@ void RichTextImpl::CheckParseText()
 bool RichTextImpl::ParseText(std::vector<RichTextDataEx>& outTextData) const
 {
     //Default font
-    DString sFontId = GetFontId();
+    std::string sFontId = GetFontId();
     IFont* pFont = GlobalManager::Instance().Font().GetIFont(sFontId, m_pOwner->Dpi());
     ASSERT(pFont != nullptr);
     if (pFont == nullptr) {
@@ -519,10 +519,10 @@ bool RichTextImpl::ParseTextSlice(const RichTextSlice& textSlice,
     currentTextData.m_textView = std::wstring_view(textSlice.m_text.c_str(), textSlice.m_text.size());
 
     //Should not contain carriage return and line feed (handled by the external caller)
-    ASSERT(currentTextData.m_textView.find(L"\r") == DStringW::npos);    
-    ASSERT(currentTextData.m_textView.find(L"\t") == DStringW::npos);
+    ASSERT(currentTextData.m_textView.find(L"\r") == std::wstring::npos);    
+    ASSERT(currentTextData.m_textView.find(L"\t") == std::wstring::npos);
     if (currentTextData.m_textView.size() != 1) {
-        ASSERT(currentTextData.m_textView.find(L"\n") == DStringW::npos);
+        ASSERT(currentTextData.m_textView.find(L"\n") == std::wstring::npos);
     }
 
     currentTextData.m_linkUrl = textSlice.m_linkUrl;
@@ -604,15 +604,15 @@ void RichTextImpl::SetTextPadding(UiPadding padding, bool bNeedDpiScale)
     }
 }
 
-const DString& RichTextImpl::TrimText(DString& text)
+const std::string& RichTextImpl::TrimText(std::string& text)
 {
     //Carriage return / line feed / TAB key: replace with 1 space
-    DString tempText;
+    std::string tempText;
     tempText.swap(text);
     size_t nCount = tempText.size();
     for (size_t nIndex = 0; nIndex < nCount; ++nIndex) {
-        if ((tempText[nIndex] == DUI_T('\r')) || (tempText[nIndex] == DUI_T('\n')) || (tempText[nIndex] == DUI_T('\t'))) {
-            tempText[nIndex] = DUI_T(' ');
+        if ((tempText[nIndex] == '\r') || (tempText[nIndex] == '\n') || (tempText[nIndex] == '\t')) {
+            tempText[nIndex] = ' ';
         }
     }
 
@@ -622,18 +622,18 @@ const DString& RichTextImpl::TrimText(DString& text)
     else if (m_trimPolicy == TrimPolicy::kKeepOne) {
         //Keep only one space
         if (!tempText.empty()) {
-            bool bFirst = (tempText.front() == DUI_T(' '));
-            bool bLast = tempText[tempText.size() - 1] == DUI_T(' ');
+            bool bFirst = (tempText.front() == ' ');
+            bool bLast = tempText[tempText.size() - 1] == ' ';
             StringUtil::Trim(tempText);
             if (tempText.empty()) {
-                tempText = DString(DUI_T(" "));
+                tempText = std::string(" ");
             }
             else {
                 if (bFirst) {
-                    tempText = DString(DUI_T(" ")) + tempText;
+                    tempText = std::string(" ") + tempText;
                 }
                 else if (bLast) {
-                    tempText += DString(DUI_T(" "));
+                    tempText += std::string(" ");
                 }
             }
         }
@@ -646,9 +646,9 @@ const DString& RichTextImpl::TrimText(DString& text)
     return text;
 }
 
-DString RichTextImpl::TrimText(const DString::value_type* text)
+std::string RichTextImpl::TrimText(const std::string::value_type* text)
 {
-    DString retText;
+    std::string retText;
     if (text != nullptr) {
         retText = text;
     }
@@ -665,14 +665,14 @@ bool RichTextImpl::IsEnableRedraw() const
     return m_bEnableRedraw;
 }
 
-bool RichTextImpl::DoSetText(const DString& richText)
+bool RichTextImpl::DoSetText(const std::string& richText)
 {
     Clear();
     //The XML parsing is all encapsulated in the WindowBuilder class to avoid using XML parsers everywhere, thus reducing code maintenance complexity
     bool bResult = true;
     if (!richText.empty()) {
-        if (richText.find(DUI_T("<RichText")) == DString::npos) {
-            DString formatedText = DUI_T("<RichText>") + richText + DUI_T("</RichText>");
+        if (richText.find("<RichText") == std::string::npos) {
+            std::string formatedText = "<RichText>" + richText + "</RichText>";
             bResult = WindowBuilder::ParseRichTextXmlText(formatedText, m_pOwner);
         }
         else {
@@ -682,7 +682,7 @@ bool RichTextImpl::DoSetText(const DString& richText)
     return bResult;
 }
 
-bool RichTextImpl::SetText(const DString& richText, bool bRedraw)
+bool RichTextImpl::SetText(const std::string& richText, bool bRedraw)
 {
     bool bResult = DoSetText(richText);
     if (bResult && bRedraw) {
@@ -693,7 +693,7 @@ bool RichTextImpl::SetText(const DString& richText, bool bRedraw)
     return bResult;
 }
 
-bool RichTextImpl::SetTextId(const DString& richTextId, bool bRedraw)
+bool RichTextImpl::SetTextId(const std::string& richTextId, bool bRedraw)
 {
     bool bRet = SetText(GlobalManager::Instance().Lang().GetStringViaID(richTextId), bRedraw);
     m_richTextId = richTextId;
@@ -716,12 +716,12 @@ void RichTextImpl::Clear()
     }
 }
 
-DString RichTextImpl::GetFontId() const
+std::string RichTextImpl::GetFontId() const
 {
     return m_sFontId.c_str();
 }
 
-void RichTextImpl::SetFontId(const DString& strFontId)
+void RichTextImpl::SetFontId(const std::string& strFontId)
 {
     if (m_sFontId != strFontId) {
         m_sFontId = strFontId;
@@ -729,12 +729,12 @@ void RichTextImpl::SetFontId(const DString& strFontId)
     }
 }
 
-DString RichTextImpl::GetTextColor() const
+std::string RichTextImpl::GetTextColor() const
 {
     return m_sTextColor.c_str();
 }
 
-void RichTextImpl::SetTextColor(const DString& sTextColor)
+void RichTextImpl::SetTextColor(const std::string& sTextColor)
 {
     if (m_sTextColor != sTextColor) {
         m_sTextColor = sTextColor;
@@ -828,20 +828,20 @@ void RichTextImpl::AppendTextSlice(const RichTextSlice& textSlice)
     m_spDrawRichTextCache.reset();
 }
 
-DString RichTextImpl::ToString() const
+std::string RichTextImpl::ToString() const
 {
-    const DString indentValue = DUI_T("    ");
-    const DString lineBreak = DUI_T("\r\n");
-    DString richText = DUI_T("<RichText>");
+    const std::string indentValue = "    ";
+    const std::string lineBreak = "\r\n";
+    std::string richText = "<RichText>";
     richText += lineBreak;
     for (const RichTextSlice& textSlice : m_textSlice) {
         richText += ToString(textSlice, indentValue);
     }
-    richText += DUI_T("</RichText>");
+    richText += "</RichText>";
     return richText;
 }
 
-DString RichTextImpl::ToString(const RichTextSlice& textSlice, const DString& indent) const
+std::string RichTextImpl::ToString(const RichTextSlice& textSlice, const std::string& indent) const
 {
     // List of supported tags (HTML-compatible tags):
     // 
@@ -853,9 +853,9 @@ DString RichTextImpl::ToString(const RichTextSlice& textSlice, const DString& in
     // Set background color:  <bgcolor color="#000000"> </bgcolor>
     // Set font:    <font face="SimSun" size="12" color="#000000">
     // Line break tag:   <br/>
-    const DString indentValue = DUI_T("    ");
-    const DString lineBreak = DUI_T("\r\n");
-    DString richText;
+    const std::string indentValue = "    ";
+    const std::string lineBreak = "\r\n";
+    std::string richText;
     if (textSlice.m_nodeName.empty()) {
         if (!textSlice.m_text.empty()) {
             richText += indent;
@@ -867,44 +867,44 @@ DString RichTextImpl::ToString(const RichTextSlice& textSlice, const DString& in
     }
 
     //Generate the attribute list
-    DString attrList;    
+    std::string attrList;    
     if (!textSlice.m_linkUrl.empty()) {
-        attrList += DUI_T("href=\"");
-        DString url = textSlice.m_linkUrl.c_str();
+        attrList += "href=\"";
+        std::string url = textSlice.m_linkUrl.c_str();
         attrList += textSlice.m_linkUrl.c_str();
-        attrList += DUI_T("\"");
+        attrList += "\"";
     }
     if (!textSlice.m_bgColor.empty()) {
-        attrList += DUI_T("color=\"");
+        attrList += "color=\"";
         attrList += textSlice.m_bgColor.c_str();
-        attrList += DUI_T("\"");
+        attrList += "\"";
     }
     if (!textSlice.m_textColor.empty()) {
-        attrList += DUI_T("color=\"");
+        attrList += "color=\"";
         attrList += textSlice.m_textColor.c_str();
-        attrList += DUI_T("\"");
+        attrList += "\"";
     }
     if (!textSlice.m_fontInfo.m_fontName.empty()) {
-        attrList += DUI_T("face=\"");
+        attrList += "face=\"";
         attrList += textSlice.m_fontInfo.m_fontName.c_str();
-        attrList += DUI_T("\"");
+        attrList += "\"";
     }
     if (textSlice.m_fontInfo.m_fontSize != 0) {
-        attrList += DUI_T("size=\"");
-        attrList += StringUtil::Printf(DUI_T("%d"), textSlice.m_fontInfo.m_fontSize);
-        attrList += DUI_T("\"");
+        attrList += "size=\"";
+        attrList += StringUtil::Printf("%d", textSlice.m_fontInfo.m_fontSize);
+        attrList += "\"";
     }
 
     if(!textSlice.m_children.empty()) {
         //Has child nodes: node start
         richText += indent;
-        richText += DUI_T("<");
+        richText += "<";
         richText += textSlice.m_nodeName.c_str();
         if (!attrList.empty()) {
-            richText += DUI_T(" ");
+            richText += " ";
             richText += attrList;
         }
-        richText += DUI_T(">");
+        richText += ">";
         richText += lineBreak;
 
         //Add child nodes
@@ -914,41 +914,41 @@ DString RichTextImpl::ToString(const RichTextSlice& textSlice, const DString& in
 
         //Node end
         richText += indent;
-        richText += DUI_T("</");
+        richText += "</";
         richText += textSlice.m_nodeName.c_str();
-        richText += DUI_T(">");
+        richText += ">";
         richText += lineBreak;
     }
     else if (!textSlice.m_linkUrl.empty()) {
         //Hyperlink node: needs special handling
         richText += indent;
-        richText += DUI_T("<");
+        richText += "<";
         richText += textSlice.m_nodeName.c_str();
         if (!attrList.empty()) {
-            richText += DUI_T(" ");
+            richText += " ";
             richText += attrList;
         }
-        richText += DUI_T(">");
+        richText += ">";
 
         //Add the hyperlink text
         richText += StringConvert::WStringToT(textSlice.m_text);
 
         //Node end
-        richText += DUI_T("</");
+        richText += "</";
         richText += textSlice.m_nodeName.c_str();
-        richText += DUI_T(">");
+        richText += ">";
         richText += lineBreak;
     }
     else {
         //No child nodes: put it on one line
         richText += indent;
-        richText += DUI_T("<");
+        richText += "<";
         richText += textSlice.m_nodeName.c_str();
-        richText += DUI_T(" ");
+        richText += " ";
         if (!attrList.empty()) {            
             richText += attrList;
         }
-        richText += DUI_T("/>");
+        richText += "/>";
         richText += lineBreak;
     }
     return richText;
@@ -991,7 +991,7 @@ void RichTextImpl::ButtonUp(const EventArgs& msg)
                 if (textData.m_bMouseDown) {
                     textData.m_bMouseDown = false;
                     Invalidate();
-                    DString url = textData.m_linkUrl.c_str();
+                    std::string url = textData.m_linkUrl.c_str();
                     m_pOwner->SendEvent(kEventLinkClick, (WPARAM)url.c_str());
                     return;
                 }                
@@ -1033,7 +1033,7 @@ void RichTextImpl::MouseMove(const EventArgs& msg)
         }
     }
     if (!bOnLinkUrl) {
-        m_pOwner->SetToolTipText(DUI_T(""));
+        m_pOwner->SetToolTipText("");
     }
 }
 
@@ -1053,7 +1053,7 @@ void RichTextImpl::MouseHover(const EventArgs& msg)
         }        
     }
     if (!hasHover) {
-        m_pOwner->SetToolTipText(DUI_T(""));
+        m_pOwner->SetToolTipText("");
     }
 }
 

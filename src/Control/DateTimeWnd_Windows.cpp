@@ -65,7 +65,7 @@ bool DateTimeWnd::Init(DateTime* pOwner)
         }
         HWND hParentWnd = m_pOwner->GetWindow()->NativeWnd()->GetHWND();
         HMODULE hModule = m_pOwner->GetWindow()->NativeWnd()->GetResModuleHandle();
-        DString className = GetWindowClassName();
+        std::string className = GetWindowClassName();
         UiRect rc = { pt1.x, pt1.y, pt2.x, pt2.y };
         m_hDateTimeWnd = ::CreateWindowExW(0,
                                          StringConvert::TToWString(className).c_str(),
@@ -95,26 +95,26 @@ bool DateTimeWnd::Init(DateTime* pOwner)
     }
 
     ::SendMessage(m_hDateTimeWnd, DTM_SETSYSTEMTIME, 0, (LPARAM)&m_oldSysTime);
-    DString sEditFormat;
+    std::wstring sEditFormat;
     switch (editFormat) {
     case DateTime::EditFormat::kDateCalendar:
     case DateTime::EditFormat::kDateUpDown:
-        sEditFormat = DUI_T("yyy-MM-dd");
+        sEditFormat = L"yyy-MM-dd";
         break;
     case DateTime::EditFormat::kDateTimeUpDown:
-        sEditFormat = DUI_T("yyy-MM-dd HH:mm:ss");
+        sEditFormat = L"yyy-MM-dd HH:mm:ss";
         break;
     case DateTime::EditFormat::kDateMinuteUpDown:
-        sEditFormat = DUI_T("yyy-MM-dd HH:mm");
+        sEditFormat = L"yyy-MM-dd HH:mm";
         break;
     case DateTime::EditFormat::kTimeUpDown:
-        sEditFormat = DUI_T("HH:mm:ss");
+        sEditFormat = L"HH:mm:ss";
         break;
     case DateTime::EditFormat::kMinuteUpDown:
-        sEditFormat = DUI_T("HH:mm");
+        sEditFormat = L"HH:mm";
         break;
     default:
-        sEditFormat = DUI_T("yyy-MM-dd");
+        sEditFormat = L"yyy-MM-dd";
         break;
     }
     ::SendMessage(m_hDateTimeWnd, DTM_SETFORMAT, 0, (LPARAM)sEditFormat.c_str());
@@ -140,7 +140,7 @@ bool DateTimeWnd::RegisterSuperClass()
     // window so we can subclass it later on...
     WNDCLASSEXW wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEXW);
-    DStringW superClassName = DATETIMEPICK_CLASSW;
+    std::wstring superClassName = DATETIMEPICK_CLASSW;
     if (!::GetClassInfoExW(nullptr, superClassName.c_str(), &wc)) {
         if (!::GetClassInfoExW(hModule, superClassName.c_str(), &wc)) {
             ASSERT(!"Unable to locate window class");
@@ -150,7 +150,7 @@ bool DateTimeWnd::RegisterSuperClass()
     m_OldWndProc = wc.lpfnWndProc;
     wc.lpfnWndProc = DateTimeWnd::__ControlProc;
     wc.hInstance = hModule;
-    DStringW className = StringConvert::TToWString(GetWindowClassName());
+    std::wstring className = StringConvert::TToWString(GetWindowClassName());
     wc.lpszClassName = className.c_str();
     ATOM ret = ::RegisterClassExW(&wc);
     ASSERT(ret != 0 || ::GetLastError() == ERROR_CLASS_ALREADY_EXISTS);
@@ -163,12 +163,12 @@ bool DateTimeWnd::RegisterSuperClass()
     return ret != 0 || ::GetLastError() == ERROR_CLASS_ALREADY_EXISTS;
 }
 
-DString DateTimeWnd::GetWindowClassName() const
+std::string DateTimeWnd::GetWindowClassName() const
 {
-    return DUI_T("DateTimeWnd");
+    return "DateTimeWnd";
 }
 
-static const DStringW::value_type* sPropName = L"DuiDateTimeWndX"; // Property name
+static const std::wstring::value_type* sPropName = L"DuiDateTimeWndX"; // Property name
 
 LRESULT CALLBACK DateTimeWnd::__ControlProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -314,9 +314,9 @@ UiRect DateTimeWnd::CalPos()
 HFONT DateTimeWnd::CreateHFont() const
 {
     //First, get the default font
-    IFont* pFont = GlobalManager::Instance().Font().GetIFont(DUI_T(""), m_pOwner->Dpi());
+    IFont* pFont = GlobalManager::Instance().Font().GetIFont("", m_pOwner->Dpi());
     if (pFont == nullptr) {
-        pFont = GlobalManager::Instance().Font().GetIFont(DUI_T("system_12"), m_pOwner->Dpi());
+        pFont = GlobalManager::Instance().Font().GetIFont("system_12", m_pOwner->Dpi());
     }
     ASSERT(pFont != nullptr);
     if (pFont == nullptr) {

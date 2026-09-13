@@ -31,26 +31,26 @@ public:
     * @param [in] strText The text content to be evaluated
     * @param [in] measureParam The parameters required for evaluation
     */
-    UiRect MeasureString(const DString& strText, const MeasureStringParam& measureParam);
+    UiRect MeasureString(const std::string& strText, const MeasureStringParam& measureParam);
 
     /** Draw text horizontally: the drawing direction is left to right, top to bottom
     * @param [in] strText The text content to be drawn
     * @param [in] measureParam The parameters required for drawing
     */
-    void DrawString(const DString& strText, const DrawStringParam& drawParam);
+    void DrawString(const std::string& strText, const DrawStringParam& drawParam);
 
 private:
     /** Preprocess the text for horizontal drawing, keeping its native encoding
     */
-    DString GetDrawStringText(const DString& strText, bool bSingleLineMode) const;
+    std::string GetDrawStringText(const std::string& strText, bool bSingleLineMode) const;
 
     /** Calculate the rectangle range occupied by the drawing of each character
-    * @param [in] text The preprocessed string, in the platform-native DString encoding
+    * @param [in] text The preprocessed string, in the platform-native std::string encoding
     * @param [in] pSkFont The font
     * @param [in] skPaint The drawing attributes
     * @param [in] fFontHeight The font height
     */
-    bool CalculateTextCharBounds(const DString& text, const SkFont* pSkFont, const SkPaint* skPaint,
+    bool CalculateTextCharBounds(const std::string& text, const SkFont* pSkFont, const SkPaint* skPaint,
                                  float fFontHeight, std::vector<THorizontalChar>& charRects) const;
 
     /** Calculate the total rectangle of the drawing area for horizontal text (left to right, top to bottom)

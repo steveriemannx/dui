@@ -24,10 +24,10 @@ public:
     virtual ~ComboButton() override;
 
     /// Override the parent class methods to provide personalized features; please refer to the parent class declarations
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual bool CanPlaceCaptionBar() const override;
-    virtual DString GetBorderColor(ControlStateType stateType) const override;
+    virtual std::string GetBorderColor(ControlStateType stateType) const override;
 
     /** DPI change: update the control size and layout
     * @param [in] nOldDpiScale The old DPI scale percentage
@@ -59,23 +59,23 @@ public:
 
     /** Set the Class attribute of the left button control
     */
-    void SetLeftButtonClass(const DString& classValue);
+    void SetLeftButtonClass(const std::string& classValue);
 
     /** Set the Class attribute of the Label control above the left button
     */
-    void SetLeftButtonTopLabelClass(const DString& classValue);
+    void SetLeftButtonTopLabelClass(const std::string& classValue);
 
     /** Set the Class attribute of the Label control below the left button
     */
-    void SetLeftButtonBottomLabelClass(const DString& classValue);
+    void SetLeftButtonBottomLabelClass(const std::string& classValue);
 
     /** Set the Class attribute of the right button control
     */
-    void SetRightButtonClass(const DString& classValue);
+    void SetRightButtonClass(const std::string& classValue);
 
     /** Set the Class attribute of the drop-down list container
     */
-    void SetComboBoxClass(const DString& classValue);
+    void SetComboBoxClass(const std::string& classValue);
 
 public:
     /** Get the container interface of the drop-down list
@@ -185,12 +185,12 @@ protected:
 private:
     /** Parse the attribute list
     */
-    void ParseAttributeList(const DString& strList,
-                            std::vector<std::pair<DString, DString>>& attributeList) const;
+    void ParseAttributeList(const std::string& strList,
+                            std::vector<std::pair<std::string, std::string>>& attributeList) const;
 
     /** Set the attribute list of the control
     */
-    void SetAttributeList(Control* pControl, const DString& classValue);
+    void SetAttributeList(Control* pControl, const std::string& classValue);
 
     /** Remove the control
     */

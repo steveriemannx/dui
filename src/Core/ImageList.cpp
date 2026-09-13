@@ -41,7 +41,7 @@ void ImageList::ChangeDpiScale(const DpiManager& dpi, uint32_t nOldDpiScale)
     }
 }
 
-int32_t ImageList::AddImageString(const DString& imageString, const DpiManager& dpi)
+int32_t ImageList::AddImageString(const std::string& imageString, const DpiManager& dpi)
 {
     int32_t imageId = -1;
     if (!imageString.empty()) {
@@ -56,21 +56,21 @@ int32_t ImageList::AddImageString(const DString& imageString, const DpiManager& 
     return imageId;
 }
 
-int32_t ImageList::AddImageStringWithSize(const DString& imageString, const DpiManager& dpi)
+int32_t ImageList::AddImageStringWithSize(const std::string& imageString, const DpiManager& dpi)
 {
-    ASSERT(imageString.find(DUI_T("width=")) == DString::npos);
-    ASSERT(imageString.find(DUI_T("height=")) == DString::npos);
-    DString newImageString = imageString;
+    ASSERT(imageString.find("width=") == std::string::npos);
+    ASSERT(imageString.find("height=") == std::string::npos);
+    std::string newImageString = imageString;
     UiSize szImage = m_imageSizeNoDpi;
     if ((szImage.cx > 0) && (szImage.cy > 0)) {
-        newImageString = StringUtil::Printf(DUI_T("file='%s' width='%d' height='%d'"), imageString.c_str(), szImage.cx, szImage.cy);
+        newImageString = StringUtil::Printf("file='%s' width='%d' height='%d'", imageString.c_str(), szImage.cx, szImage.cy);
     }
     return AddImageString(newImageString, dpi);
 }
 
-DString ImageList::GetImageString(int32_t imageId) const
+std::string ImageList::GetImageString(int32_t imageId) const
 {
-    DString imageString;
+    std::string imageString;
     auto iter = m_imageMap.find(imageId);
     if (iter != m_imageMap.end()) {
         imageString = iter->second->GetImageString();
@@ -88,7 +88,7 @@ ImagePtr ImageList::GetImageData(int32_t imageId) const
     return spImage;
 }
 
-int32_t ImageList::GetImageStringId(const DString& imageString) const
+int32_t ImageList::GetImageStringId(const std::string& imageString) const
 {
     int32_t imageId = -1;
     if (!imageString.empty()) {

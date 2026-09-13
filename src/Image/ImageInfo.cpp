@@ -31,7 +31,7 @@ ImageInfo::~ImageInfo()
 void ImageInfo::ReleaseImage()
 {
     if (m_pImageData != nullptr) {
-        DString imageFullPath = m_loadParam.GetImageLoadPath().m_imageFullPath.ToString();
+        std::string imageFullPath = m_loadParam.GetImageLoadPath().m_imageFullPath.ToString();
         GlobalManager::Instance().Image().ReleaseImage(m_pImageData, imageFullPath);
         m_pImageData.reset();
     }
@@ -216,7 +216,7 @@ std::shared_ptr<IAnimationImage> ImageInfo::GetAnimationImage(uint32_t nFrameInd
 
 AnimationFramePtr ImageInfo::GetFrame(uint32_t nFrameIndex, const UiSize& szDestRectSize)
 {
-    PerformanceStat statPerformance(DUI_T("ImageInfo::GetFrame"));
+    PerformanceStat statPerformance("ImageInfo::GetFrame");
     GlobalManager::Instance().AssertUIThread();
     std::shared_ptr<IAnimationImage> pAnimationImage = GetAnimationImage(nFrameIndex);
     ASSERT(pAnimationImage != nullptr);
@@ -555,7 +555,7 @@ int32_t ImageInfo::GetLoopCount() const
     return m_nLoopCount;
 }
 
-DString ImageInfo::GetLoadKey() const
+std::string ImageInfo::GetLoadKey() const
 {
     return m_loadParam.GetLoadKey(m_loadParam.GetLoadDpiScale());
 }
@@ -570,12 +570,12 @@ uint32_t ImageInfo::GetImageFileDpiScale() const
     return m_nImageFileDpiScale;
 }
 
-void ImageInfo::SetImageKey(const DString& imageKey)
+void ImageInfo::SetImageKey(const std::string& imageKey)
 {
     m_imageKey = imageKey;
 }
 
-DString ImageInfo::GetImageKey() const
+std::string ImageInfo::GetImageKey() const
 {
     return m_imageKey.c_str();
 }

@@ -68,10 +68,10 @@ DirectoryTreeImpl::~DirectoryTreeImpl()
 
 /** Get the image attribute string
 */
-DString DirectoryTreeImplGetImageString(DirectoryTree* pTree, bool bLargeFile, const DString& imageFileName)
+std::string DirectoryTreeImplGetImageString(DirectoryTree* pTree, bool bLargeFile, const std::string& imageFileName)
 {
     if (imageFileName.empty()) {
-        return DString();
+        return std::string();
     }
     int32_t nSmallIconSize = 20;
     int32_t nLargeIconSize = 32;
@@ -86,11 +86,11 @@ DString DirectoryTreeImplGetImageString(DirectoryTree* pTree, bool bLargeFile, c
         nLargeIconSize = 32;
     }
     int32_t nIconSize = bLargeFile ? nLargeIconSize : nSmallIconSize;
-    DString imageString = StringUtil::Printf(DUI_T("file='public/filesystem/%s' width='%d' height='%d' valign='center'"), imageFileName.c_str(), nIconSize, nIconSize);
+    std::string imageString = StringUtil::Printf("file='public/filesystem/%s' width='%d' height='%d' valign='center'", imageFileName.c_str(), nIconSize, nIconSize);
     return imageString;
 }
 
-bool DirectoryTreeImpl::GetVirtualDirectoryInfo(VirtualDirectoryType type, FilePath& filePath, DString& displayName, uint32_t& nIconID)
+bool DirectoryTreeImpl::GetVirtualDirectoryInfo(VirtualDirectoryType type, FilePath& filePath, std::string& displayName, uint32_t& nIconID)
 {
     filePath.Clear();
     displayName.clear();
@@ -103,86 +103,86 @@ bool DirectoryTreeImpl::GetVirtualDirectoryInfo(VirtualDirectoryType type, FileP
         userHomeDir = FilePath(home);
     }
     else {
-        userHomeDir = DUI_T("/");
+        userHomeDir = "/";
     }
 
     userHomeDir.NormalizeDirectoryPath();
     switch (type) {
     case VirtualDirectoryType::kUserHome:
         filePath = userHomeDir;
-        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, DUI_T("folder-home.svg")));
+        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, "folder-home.svg"));
         break;
     case VirtualDirectoryType::kDesktop:
         filePath = userHomeDir;
-        filePath += DUI_T("Desktop");
+        filePath += "Desktop";
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
-            filePath += DUI_T("Desktop");
+            filePath += "Desktop";
         }
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
         }
-        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, DUI_T("folder-desktop.svg")));
+        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, "folder-desktop.svg"));
         break;
     case VirtualDirectoryType::kDocuments:
         filePath = userHomeDir;
-        filePath += DUI_T("Documents");
+        filePath += "Documents";
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
-            filePath += DUI_T("Document");
+            filePath += "Document";
         }
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
         }
-        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, DUI_T("folder-documents.svg")));
+        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, "folder-documents.svg"));
         break;
     case VirtualDirectoryType::kPictures:
         filePath = userHomeDir;
-        filePath += DUI_T("Pictures");
+        filePath += "Pictures";
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
-            filePath += DUI_T("Image");
+            filePath += "Image";
         }
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
         }
-        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, DUI_T("folder-pictures.svg")));
+        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, "folder-pictures.svg"));
         break;
     case VirtualDirectoryType::kMusic:
         filePath = userHomeDir;
-        filePath += DUI_T("Music");
+        filePath += "Music";
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
-            filePath += DUI_T("Music");
+            filePath += "Music";
         }
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
         }
-        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, DUI_T("folder-music.svg")));
+        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, "folder-music.svg"));
         break;
     case VirtualDirectoryType::kVideos:
         filePath = userHomeDir;
-        filePath += DUI_T("Videos");
+        filePath += "Videos";
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
-            filePath += DUI_T("Video");
+            filePath += "Video";
         }
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
         }
-        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, DUI_T("folder-videos.svg")));
+        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, "folder-videos.svg"));
         break;
     case VirtualDirectoryType::kDownloads:
         filePath = userHomeDir;
-        filePath += DUI_T("Downloads");
+        filePath += "Downloads";
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
-            filePath += DUI_T("Download");
+            filePath += "Download";
         }
         if (!filePath.IsExistsDirectory()) {
             filePath = userHomeDir;
         }
-        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, DUI_T("folder-download.svg")));
+        nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, "folder-download.svg"));
         break;
     default:
         break;
@@ -199,7 +199,7 @@ void DirectoryTreeImpl::GetRootPathInfoList(bool bLargeIcon, std::vector<Directo
     pathInfo.m_filePath = FilePath(rootPath.native());
     pathInfo.m_displayName = pathInfo.m_filePath.ToString();
     pathInfo.m_bIconShared = false;
-    pathInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, DUI_T("drive-harddisk.svg")));
+    pathInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, "drive-harddisk.svg"));
     //Root directory of the file system
     pathInfoList.push_back(pathInfo);
 
@@ -264,13 +264,13 @@ void DirectoryTreeImpl::GetFolderContents(const FilePath& path,
 
                 if (bLargeIcon) {
                     if (m_impl->m_nLargeFolderIconID == 0) {
-                        m_impl->m_nLargeFolderIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, DUI_T("folder.svg")));
+                        m_impl->m_nLargeFolderIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, "folder.svg"));
                     }
                     pathInfo.m_nIconID = m_impl->m_nLargeFolderIconID;
                 }
                 else {
                     if (m_impl->m_nSmallFolderIconID == 0) {
-                        m_impl->m_nSmallFolderIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, DUI_T("folder.svg"))); 
+                        m_impl->m_nSmallFolderIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, "folder.svg")); 
                     }
                     pathInfo.m_nIconID = m_impl->m_nSmallFolderIconID;
                 }                
@@ -294,13 +294,13 @@ void DirectoryTreeImpl::GetFolderContents(const FilePath& path,
 
                     if (bLargeIcon) {
                         if (m_impl->m_nLargeFileIconID == 0) {
-                            m_impl->m_nLargeFileIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, DUI_T("file.svg")));
+                            m_impl->m_nLargeFileIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, "file.svg"));
                         }
                         pathInfo.m_nIconID = m_impl->m_nLargeFileIconID;
                     }
                     else {
                         if (m_impl->m_nSmallFileIconID == 0) {
-                            m_impl->m_nSmallFileIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, DUI_T("file.svg")));
+                            m_impl->m_nSmallFileIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, "file.svg"));
                         }
                         pathInfo.m_nIconID = m_impl->m_nSmallFileIconID;
                     }
@@ -333,7 +333,7 @@ bool DirectoryTreeImpl::NeedShowDirPath(const FilePath& path) const
     }
 
     if (!m_pTree->IsShowHidenFiles()) {
-        DString s = path.NativePath();
+        std::string s = path.NativePath();
         if (!s.empty() && (s[0] == '.')) {
             //Do not show hidden files
             return false;
@@ -344,7 +344,7 @@ bool DirectoryTreeImpl::NeedShowDirPath(const FilePath& path) const
 
 uint32_t DirectoryTreeImpl::GetMyComputerIconID() const
 {
-    return GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, DUI_T("computer.svg")));
+    return GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, false, "computer.svg"));
 }
 
 // Extract the base device name from the device path (e.g., /dev/sda1 -> sda)
@@ -492,13 +492,13 @@ void DirectoryTreeImpl::GetDiskInfoList(const std::weak_ptr<WeakFlag>& /*weakFla
         diskInfo.m_bIconShared = false;
         diskInfo.m_nIconID = 0;
         if (diskInfo.m_deviceType == DirectoryTree::DeviceType::CDROM) {
-            diskInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, DUI_T("drive-cdrom.svg")));
+            diskInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, "drive-cdrom.svg"));
         }
         else if (diskInfo.m_deviceType == DirectoryTree::DeviceType::USB) {
-            diskInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, DUI_T("drive-harddisk-usb.svg")));
+            diskInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, "drive-harddisk-usb.svg"));
         }
         else {
-            diskInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, DUI_T("drive-harddisk.svg")));
+            diskInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(DirectoryTreeImplGetImageString(m_pTree, bLargeIcon, "drive-harddisk.svg"));
         }
 
         diskInfoList.emplace_back(std::move(diskInfo));

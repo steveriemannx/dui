@@ -35,21 +35,21 @@ Box::~Box()
     }
 }
 
-DString Box::GetType() const { return DUI_CTR_BOX; }
+std::string Box::GetType() const { return DUI_CTR_BOX; }
 
-void Box::SetAttribute(const DString& strName, const DString& strValue)
+void Box::SetAttribute(const std::string& strName, const std::string& strValue)
 {
     if (m_pLayout->SetAttribute(strName, strValue, Dpi())) {
         return;
     }
-    else if ((strName == DUI_T("mouse_child")) || (strName == DUI_T("mousechild"))) {
-        SetMouseChildEnabled(strValue == DUI_T("true"));
+    else if ((strName == "mouse_child") || (strName == "mousechild")) {
+        SetMouseChildEnabled(strValue == "true");
     }
-    else if (strName == DUI_T("drag_out_id")) {
+    else if (strName == "drag_out_id") {
         uint8_t nValue = ui::TruncateToUInt8(StringUtil::StringToInt32(strValue));
         SetDragOutId(nValue);
     }
-    else if (strName == DUI_T("drop_in_id")) {
+    else if (strName == "drop_in_id") {
         uint8_t nValue = ui::TruncateToUInt8(StringUtil::StringToInt32(strValue));
         SetDropInId(nValue);
     }
@@ -348,7 +348,7 @@ Control* Box::FindControlInItems(const std::vector<Control*>& items,
     return pResult;
 }
 
-Control* Box::FindSubControl(const DString& pstrSubControlName)
+Control* Box::FindSubControl(const std::string& pstrSubControlName)
 {
     Control* pSubControl = GetWindow()->FindSubControlByName(this, pstrSubControlName);
     return pSubControl;

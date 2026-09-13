@@ -41,43 +41,43 @@ TreeNode::~TreeNode()
     }
 }
 
-DString TreeNode::GetType() const { return DUI_CTR_TREENODE; }
+std::string TreeNode::GetType() const { return DUI_CTR_TREENODE; }
 
-void TreeNode::SetAttribute(const DString& strName, const DString& strValue)
+void TreeNode::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("expand_normal_image")) {
+    if (strName == "expand_normal_image") {
         SetExpandStateImage(kControlStateNormal, strValue);
     }
-    else if (strName == DUI_T("expand_hot_image")) {
+    else if (strName == "expand_hot_image") {
         SetExpandStateImage(kControlStateHot, strValue);
     }
-    else if (strName == DUI_T("expand_pushed_image")) {
+    else if (strName == "expand_pushed_image") {
         SetExpandStateImage(kControlStatePushed, strValue);
     }
-    else if (strName == DUI_T("expand_disabled_image")) {
+    else if (strName == "expand_disabled_image") {
         SetExpandStateImage(kControlStateDisabled, strValue);
     }
-    else if (strName == DUI_T("collapse_normal_image")) {
+    else if (strName == "collapse_normal_image") {
         SetCollapseStateImage(kControlStateNormal, strValue);
     }
-    else if (strName == DUI_T("collapse_hot_image")) {
+    else if (strName == "collapse_hot_image") {
         SetCollapseStateImage(kControlStateHot, strValue);
     }
-    else if (strName == DUI_T("collapse_pushed_image")) {
+    else if (strName == "collapse_pushed_image") {
         SetCollapseStateImage(kControlStatePushed, strValue);
     }
-    else if (strName == DUI_T("collapse_disabled_image")) {
+    else if (strName == "collapse_disabled_image") {
         SetCollapseStateImage(kControlStateDisabled, strValue);
     }
-    else if (strName == DUI_T("expand_image_right_space")) {
+    else if (strName == "expand_image_right_space") {
         int32_t iValue = StringUtil::StringToInt32(strValue);
         SetExpandIndent(iValue, true);
     }
-    else if (strName == DUI_T("check_box_image_right_space")) {
+    else if (strName == "check_box_image_right_space") {
         int32_t iValue = StringUtil::StringToInt32(strValue);
         SetCheckBoxIndent(iValue, true);
     }
-    else if (strName == DUI_T("icon_image_right_space")) {
+    else if (strName == "icon_image_right_space") {
         int32_t iValue = StringUtil::StringToInt32(strValue);
         SetIconIndent(iValue, true);
     }
@@ -173,7 +173,7 @@ uint16_t TreeNode::GetIconIndent() const
     return m_iconIndent;
 }
 
-DString TreeNode::GetExpandStateImage(ControlStateType stateType)
+std::string TreeNode::GetExpandStateImage(ControlStateType stateType)
 {
     Image* pImage = nullptr;
     if (m_expandImage != nullptr) {
@@ -182,10 +182,10 @@ DString TreeNode::GetExpandStateImage(ControlStateType stateType)
     if (pImage != nullptr) {
         return pImage->GetImageString();
     }
-    return DString();
+    return std::string();
 }
 
-void TreeNode::SetExpandStateImage(ControlStateType stateType, const DString& strImage)
+void TreeNode::SetExpandStateImage(ControlStateType stateType, const std::string& strImage)
 {
     if (m_expandImage == nullptr) {
         m_expandImage.reset(new StateImage);
@@ -194,7 +194,7 @@ void TreeNode::SetExpandStateImage(ControlStateType stateType, const DString& st
     m_expandImage->SetImageString(stateType, strImage, Dpi());
 }
 
-DString TreeNode::GetCollapseStateImage(ControlStateType stateType)
+std::string TreeNode::GetCollapseStateImage(ControlStateType stateType)
 {
     Image* pImage = nullptr;
     if (m_collapseImage != nullptr) {
@@ -203,10 +203,10 @@ DString TreeNode::GetCollapseStateImage(ControlStateType stateType)
     if (pImage != nullptr) {
         return pImage->GetImageString();
     }
-    return DString();
+    return std::string();
 }
 
-void TreeNode::SetCollapseStateImage(ControlStateType stateType, const DString& strImage)
+void TreeNode::SetCollapseStateImage(ControlStateType stateType, const std::string& strImage)
 {
     if (m_collapseImage == nullptr) {
         m_collapseImage.reset(new StateImage);
@@ -224,7 +224,7 @@ void TreeNode::PaintStateImages(IRender* pRender)
             if (m_pExpandImageRect == nullptr) {
                 m_pExpandImageRect = new UiRect;
             }
-            m_expandImage->PaintStateImage(pRender, GetState(), DUI_T(""), m_pExpandImageRect);
+            m_expandImage->PaintStateImage(pRender, GetState(), "", m_pExpandImageRect);
         }
     }
     else {
@@ -233,7 +233,7 @@ void TreeNode::PaintStateImages(IRender* pRender)
             if (m_pCollapseImageRect == nullptr) {
                 m_pCollapseImageRect = new UiRect;
             }
-            m_collapseImage->PaintStateImage(pRender, GetState(), DUI_T(""), m_pCollapseImageRect);
+            m_collapseImage->PaintStateImage(pRender, GetState(), "", m_pCollapseImageRect);
         }
     }
 }
@@ -433,11 +433,11 @@ bool TreeNode::AddChildNodeAt(TreeNode* pTreeNode, const size_t iIndex)
     pTreeNode->SetPadding(padding, false);
 
     //[Collapsed/expanded] image flag
-    DString expandImageClass = m_pTreeView->GetExpandImageClass();
+    std::string expandImageClass = m_pTreeView->GetExpandImageClass();
     pTreeNode->SetExpandImageClass(expandImageClass);
 
     //CheckBox option
-    DString checkBoxClass = m_pTreeView->GetCheckBoxClass();
+    std::string checkBoxClass = m_pTreeView->GetCheckBoxClass();
     pTreeNode->SetCheckBoxClass(checkBoxClass);
 
     //Whether to display the icon
@@ -491,17 +491,17 @@ void TreeNode::SetBkIcon(HICON hIcon, uint32_t nIconSize, bool bNeedDpiScale)
 void TreeNode::SetBkIconID(uint32_t nIconID, uint32_t nIconSize, bool bNeedDpiScale)
 {
     IconManager& iconManager = GlobalManager::Instance().Icon();
-    DString iconString = iconManager.GetIconString(nIconID);
+    std::string iconString = iconManager.GetIconString(nIconID);
     if (iconString.empty()) {
         ClearBkIcon();
         return;
     }
 
     Image iconImage;
-    DString iconImagePath;
+    std::string iconImagePath;
     if (iconManager.IsImageString(nIconID)) {
         //Image resource (using the image resource path and resource attributes)
-        DString iconImageString = iconManager.GetImageString(nIconID);        
+        std::string iconImageString = iconManager.GetImageString(nIconID);        
         iconImage.SetImageString(iconImageString, GetWindow() != nullptr ? GetWindow()->Dpi() : GlobalManager::Instance().Dpi());
         iconImagePath = iconImage.GetImagePath();
         if (!iconImagePath.empty()) {
@@ -511,8 +511,8 @@ void TreeNode::SetBkIconID(uint32_t nIconID, uint32_t nIconSize, bool bNeedDpiSc
     }
 
     if (nIconSize > 0) {        
-        DString dpiScale = bNeedDpiScale ? DUI_T("true") : DUI_T("false");
-        iconString = StringUtil::Printf(DUI_T("file='%s' width='%d' height='%d' halign='left' valign='center' dpi_scale='%s'"),
+        std::string dpiScale = bNeedDpiScale ? "true" : "false";
+        iconString = StringUtil::Printf("file='%s' width='%d' height='%d' halign='left' valign='center' dpi_scale='%s'",
                                         iconString.c_str(), nIconSize, nIconSize, dpiScale.c_str());
 
     }
@@ -523,11 +523,11 @@ void TreeNode::SetBkIconID(uint32_t nIconID, uint32_t nIconSize, bool bNeedDpiSc
         }
         else {
             //Image data: use the original image size
-            iconString = StringUtil::Printf(DUI_T("file='%s' halign='left' valign='center'"), iconString.c_str());
+            iconString = StringUtil::Printf("file='%s' halign='left' valign='center'", iconString.c_str());
         }
     }
 
-    DString oldIconString = GetBkImage();
+    std::string oldIconString = GetBkImage();
     if (iconString == oldIconString) {
         //No change, return directly
         return;
@@ -548,13 +548,13 @@ void TreeNode::SetBkIconID(uint32_t nIconID, uint32_t nIconSize, bool bNeedDpiSc
 
 void TreeNode::ClearBkIcon()
 {
-    SetBkImage(DUI_T(""));
+    SetBkImage("");
     m_expandIconPadding = 0;
     m_checkBoxIconPadding = 0;
     AdjustIconPadding();
 }
 
-void TreeNode::SetExpandImageClass(const DString& expandClass)
+void TreeNode::SetExpandImageClass(const std::string& expandClass)
 {
     if (!expandClass.empty()) {
         //Enable the expand flag feature
@@ -576,7 +576,7 @@ void TreeNode::SetExpandImageClass(const DString& expandClass)
     AdjustExpandImagePadding();
 }
 
-bool TreeNode::SetCheckBoxClass(const DString& checkBoxClass)
+bool TreeNode::SetCheckBoxClass(const std::string& checkBoxClass)
 {
     bool bSetOk = true;
     if (!checkBoxClass.empty()) {
@@ -708,7 +708,7 @@ void TreeNode::AdjustCheckBoxPadding()
 
 void TreeNode::AdjustIconPadding()
 {
-    DString iconString = GetBkImagePath();
+    std::string iconString = GetBkImagePath();
     if (!IsBkImagePaintEnabled()) {
         //Icon drawing is disabled
         iconString.clear();
@@ -1055,7 +1055,7 @@ void TreeNode::GetChildNodes(std::vector<TreeNode*>& childNodes) const
     }
 }
 
-TreeNode* TreeNode::FindChildNodeByName(const DString& name, bool bRecursive) const
+TreeNode* TreeNode::FindChildNodeByName(const std::string& name, bool bRecursive) const
 {
     for (TreeNode* pNode : m_aTreeNodes) {
         if (pNode != nullptr) {
@@ -1079,7 +1079,7 @@ TreeNode* TreeNode::FindChildNodeByName(const DString& name, bool bRecursive) co
     return nullptr;
 }
 
-TreeNode* TreeNode::FindChildNodeByText(const DString& text, bool bRecursive) const
+TreeNode* TreeNode::FindChildNodeByText(const std::string& text, bool bRecursive) const
 {
     for (TreeNode* pNode : m_aTreeNodes) {
         if (pNode != nullptr) {
@@ -1147,30 +1147,30 @@ TreeView::~TreeView()
     m_rootNode.reset();
 }
 
-DString TreeView::GetType() const { return DUI_CTR_TREEVIEW; }
+std::string TreeView::GetType() const { return DUI_CTR_TREEVIEW; }
 
-void TreeView::SetAttribute(const DString& strName, const DString& strValue)
+void TreeView::SetAttribute(const std::string& strName, const std::string& strValue)
 {
     //List of supported attributes: those implemented by the base class are forwarded directly
-    if (strName == DUI_T("indent")) {
+    if (strName == "indent") {
         //The indent of the tree node (each level of nodes is indented by one indent unit)
         SetIndent(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("multi_select")) {
+    else if (strName == "multi_select") {
         //Multi-select; the default is single-select, implemented in the base class
-        SetMultiSelect(strValue == DUI_T("true"));
+        SetMultiSelect(strValue == "true");
     }
-    else if (strName == DUI_T("check_box_class")) {
+    else if (strName == "check_box_class") {
         //Whether to display the CheckBox
         SetCheckBoxClass(strValue);
     }
-    else if (strName == DUI_T("expand_image_class")) {
+    else if (strName == "expand_image_class") {
         //Whether to display the [expand/collapse] icon
         SetExpandImageClass(strValue);
     }
-    else if (strName == DUI_T("show_icon")) {
+    else if (strName == "show_icon") {
         //Whether to display the icon
-        SetEnableIcon(strValue == DUI_T("true"));
+        SetEnableIcon(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -1403,12 +1403,12 @@ void TreeView::SetIndent(int32_t indent, bool bNeedDpiScale)
     }    
 }
 
-void TreeView::SetCheckBoxClass(const DString& className)
+void TreeView::SetCheckBoxClass(const std::string& className)
 {
     if (m_checkBoxClass == className) {
         return;
     }
-    DString oldCheckBoxClass = m_checkBoxClass.c_str();
+    std::string oldCheckBoxClass = m_checkBoxClass.c_str();
     m_checkBoxClass = className;
     bool bSetOk = true;
     bool hasSetOk = false;
@@ -1475,12 +1475,12 @@ void TreeView::SetCheckBoxClass(const DString& className)
     }
 }
 
-DString TreeView::GetCheckBoxClass() const
+std::string TreeView::GetCheckBoxClass() const
 {
     return m_checkBoxClass.c_str();
 }
 
-void TreeView::SetExpandImageClass(const DString& className)
+void TreeView::SetExpandImageClass(const std::string& className)
 {
     bool isChanged = m_expandImageClass != className;
     m_expandImageClass = className;
@@ -1494,7 +1494,7 @@ void TreeView::SetExpandImageClass(const DString& className)
     }
 }
 
-DString TreeView::GetExpandImageClass() const
+std::string TreeView::GetExpandImageClass() const
 {
     return m_expandImageClass.c_str();
 }

@@ -24,8 +24,8 @@ public:
     virtual ~BrowserForm() override;
     
     //Override virtual functions
-    virtual DString GetSkinFolder() override { return DUI_T("webview2_browser"); }
-    virtual DString GetSkinFile() override { return DUI_T("webview2_browser.xml"); }
+    virtual std::string GetSkinFolder() override { return "webview2_browser"; }
+    virtual std::string GetSkinFile() override { return "webview2_browser.xml"; }
 
     /** Key pressed (WM_KEYDOWN or WM_SYSKEYDOWN)
     * @param [in] vkCode virtual key code
@@ -64,7 +64,7 @@ public:
     * @param[in] url the initial URL
     * @return BrowserBox* the browser box
     */
-    BrowserBox* CreateBox(const std::string& browserId, DString url);
+    BrowserBox* CreateBox(const std::string& browserId, std::string url);
 
     /** Close a browser box in this window
      * @param[in] browserId the browser id
@@ -104,7 +104,7 @@ public:
     * @param[in] browserId the browser id
     * @return bool true yes, false no
     */
-    bool IsActiveBox(const DString& browserId);
+    bool IsActiveBox(const std::string& browserId);
 
     /** Get the total number of browser boxes in this window
     * @return the number of browser boxes
@@ -119,13 +119,13 @@ public:
     * @param[in] browserId the browser id
     * @param[in] name the title
     */
-    void SetTabItemName(const DString& browserId, const DString& name);
+    void SetTabItemName(const std::string& browserId, const std::string& name);
 
     /** Set the URL of the tab control corresponding to a browser
     * @param [in] browserId the browser id
     * @param [in] url the URL
     */
-    void SetURL(const std::string& browserId, const DString& url);
+    void SetURL(const std::string& browserId, const std::string& url);
 
     /** The loading state of the Browser changed, update the interface
     */
@@ -134,7 +134,7 @@ public:
 public:
     /** Open a link in a new tab/new window
     */
-    void OpenLinkUrl(const DString& url, bool bInNewWindow);
+    void OpenLinkUrl(const std::string& url, bool bInNewWindow);
 
 protected:
     /** Click event
@@ -162,19 +162,19 @@ protected:
     * @param [in] browserId the browser id
     * @return BrowserBox* the browser box
     */
-    BrowserBox* FindBox(const DString& browserId);
+    BrowserBox* FindBox(const std::string& browserId);
 
     /** Find the tab control in this window
     * @param [in] browserId the browser id
     * @return BrowserBox* the browser box
     */
-    ui::TabCtrlItem* FindTabItem(const DString& browserId);
+    ui::TabCtrlItem* FindTabItem(const std::string& browserId);
 
     /** Switch a browser box to the visible state
     * @param [in] browserId the browser id
     * @return bool true success, false failure
     */
-    bool ChangeToBox(const DString& browserId);
+    bool ChangeToBox(const std::string& browserId);
 
     /** A new tab was created
     * @param [in] pTabItem the interface of the tab page
@@ -191,7 +191,7 @@ protected:
     /** Before performing the drag operation, if the dragged browser box belongs to this window, notify this window
     * @param [in] browserId the browser id
     */
-    bool OnBeforeDragBoxCallback(const DString& browserId);
+    bool OnBeforeDragBoxCallback(const std::string& browserId);
 
     /** After performing the drag operation, if the dragged browser box belongs to this window, notify this window of the operation result
     * @param [in] bDropSucceed whether the browser box was dragged out
@@ -280,7 +280,7 @@ private:
 
     /** The Browser ID being dragged
     */
-    DString m_dragingBrowserId;
+    std::string m_dragingBrowserId;
 };
 
 #endif //EXAMPLES_BROWSER_FORM_H_

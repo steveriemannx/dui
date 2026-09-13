@@ -18,7 +18,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VBOX; }
 };
 
 /** Box with vertical flow layout (auto wrapping)
@@ -31,7 +31,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VFLOWBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VFLOWBOX; }
 };
 
 }

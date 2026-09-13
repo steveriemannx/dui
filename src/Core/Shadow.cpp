@@ -20,7 +20,7 @@ public:
         // Disable the control's own padding, otherwise the shadow cannot be drawn
         SetEnableControlPadding(false);
     }
-    virtual DString GetType() const override { return DUI_T("ShadowBox"); }
+    virtual std::string GetType() const override { return "ShadowBox"; }
 
     // Draw the child controls inside the container
     virtual void PaintChild(IRender* pRender, const UiRect& rcPaint) override
@@ -133,14 +133,14 @@ public:
                         destRect.bottom += rcRealCorner.bottom;
                     }
                 }
-                PaintImage(pRender, pBkImage, DUI_T(""), DUI_NOSET_VALUE, nullptr, &destRect);
+                PaintImage(pRender, pBkImage, "", DUI_NOSET_VALUE, nullptr, &destRect);
             }
 
             // Draw the border
             if (m_pShadow != nullptr) {
                 Box* pXmlRoot = m_pShadow->GetAttachedXmlRoot();
                 int32_t nShadowBorderSize = m_pShadow->GetShadowBorderSize();  // Border size (with the rectangle of the XmlRoot Box as the center line, one pixel on each side of the center line)
-                DString shadowBorderColor = m_pShadow->GetShadowBorderColor(); // Border color (close to the default window border color of Win11)
+                std::string shadowBorderColor = m_pShadow->GetShadowBorderColor(); // Border color (close to the default window border color of Win11)
                 UiColor dwBorderColor;
                 if (!shadowBorderColor.empty() && (nShadowBorderSize > 0)) {
                     dwBorderColor = GetUiColor(shadowBorderColor);
@@ -221,7 +221,7 @@ Shadow::Shadow(Window* pWindow):
     m_bRightSnap(false),
     m_bBottomSnap(false),
     m_nShadowBorderSize(2),
-    m_shadowBorderColor(DUI_T("#FFA3A3A3"))
+    m_shadowBorderColor("#FFA3A3A3")
 {
 #if defined(DUI_BUILD_FOR_MACOS)
     //macOS native: the OS provides the window shadow (rounded corners + system
@@ -330,7 +330,7 @@ void Shadow::DoAttachShadow(Box* pNewRoot, Box* pOrgRoot, bool bNewAttach, bool 
     else {
         pNewRoot->SetFixedHeight(pOrgRoot->GetFixedHeight(), true, false);
     }
-    pNewRoot->SetBkImage(bNewAttach ? m_shadowImage : DString());
+    pNewRoot->SetBkImage(bNewAttach ? m_shadowImage : std::string());
 }
 
 void Shadow::SetShadowAttached(bool bShadowAttached)
@@ -499,48 +499,48 @@ Shadow::ShadowType Shadow::GetShadowType() const
     return m_nShadowType;
 }
 
-bool Shadow::GetShadowType(const DString& typeString, ShadowType& nShadowType)
+bool Shadow::GetShadowType(const std::string& typeString, ShadowType& nShadowType)
 {
-    if (typeString == DUI_T("draw_big")) {
+    if (typeString == "draw_big") {
         nShadowType = Shadow::ShadowType::kShadowDrawBig;
     }
-    else if (typeString == DUI_T("draw_big_round")) {
+    else if (typeString == "draw_big_round") {
         nShadowType = Shadow::ShadowType::kShadowDrawBigRound;
     }
-    else if (typeString == DUI_T("draw_small")) {
+    else if (typeString == "draw_small") {
         nShadowType = Shadow::ShadowType::kShadowDrawSmall;
     }
-    else if (typeString == DUI_T("draw_small_round")) {
+    else if (typeString == "draw_small_round") {
         nShadowType = Shadow::ShadowType::kShadowDrawSmallRound;
     }
-    else if (typeString == DUI_T("draw_menu")) {
+    else if (typeString == "draw_menu") {
         nShadowType = Shadow::ShadowType::kShadowDrawMenu;
     }
-    else if (typeString == DUI_T("draw_menu_round")) {
+    else if (typeString == "draw_menu_round") {
         nShadowType = Shadow::ShadowType::kShadowDrawMenuRound;
     }
-    else if (typeString == DUI_T("draw_none")) {
+    else if (typeString == "draw_none") {
         nShadowType = Shadow::ShadowType::kShadowDrawNone;
     }
-    else if (typeString == DUI_T("draw_none_round")) {
+    else if (typeString == "draw_none_round") {
         nShadowType = Shadow::ShadowType::kShadowDrawNoneRound;
     }
-    else if (typeString == DUI_T("draw_custom")) {
+    else if (typeString == "draw_custom") {
         nShadowType = Shadow::ShadowType::kShadowDrawCustom;
     }
-    else if (typeString == DUI_T("draw_default")) {
+    else if (typeString == "draw_default") {
         nShadowType = Shadow::ShadowType::kShadowDrawDefault;
     }
-    else if (typeString == DUI_T("system_default")) {
+    else if (typeString == "system_default") {
         nShadowType = Shadow::ShadowType::kShadowSystemDefault;
     }
-    else if (typeString == DUI_T("system_not_round")) {
+    else if (typeString == "system_not_round") {
         nShadowType = Shadow::ShadowType::kShadowSystemDoNotRound;
     }
-    else if (typeString == DUI_T("system_round")) {
+    else if (typeString == "system_round") {
         nShadowType = Shadow::ShadowType::kShadowSystemRound;
     }
-    else if (typeString == DUI_T("system_small_round")) {
+    else if (typeString == "system_small_round") {
         nShadowType = Shadow::ShadowType::kShadowSystemSmallRound;
     }
     else {
@@ -553,7 +553,7 @@ bool Shadow::GetShadowType(const DString& typeString, ShadowType& nShadowType)
 bool Shadow::GetShadowParam(ShadowType nShadowType,
                             UiSize& szBorderRound,
                             UiPadding& rcShadowCorner,
-                            DString& shadowImage,
+                            std::string& shadowImage,
                             Shadow* pShadowObj)
 {
     bool bRet = false;
@@ -561,7 +561,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(30, 30, 34, 36);
-        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_big.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf("file='public/shadow/shadow_big.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                              rcShadowCorner.left + szBorderRound.cx,
                                              rcShadowCorner.top + szBorderRound.cx,
                                              rcShadowCorner.right + szBorderRound.cx,
@@ -571,7 +571,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(30, 30, 34, 36);
-        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_big_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf("file='public/shadow/shadow_big_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                          rcShadowCorner.left + szBorderRound.cx,
                                          rcShadowCorner.top + szBorderRound.cx,
                                          rcShadowCorner.right + szBorderRound.cx,
@@ -581,7 +581,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
-        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_small.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf("file='public/shadow/shadow_small.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                              rcShadowCorner.left + szBorderRound.cx,
                                              rcShadowCorner.top + szBorderRound.cx,
                                              rcShadowCorner.right + szBorderRound.cx,
@@ -591,7 +591,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
-        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_small_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf("file='public/shadow/shadow_small_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                          rcShadowCorner.left + szBorderRound.cx,
                                          rcShadowCorner.top + szBorderRound.cx,
                                          rcShadowCorner.right + szBorderRound.cx,
@@ -601,7 +601,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(0, 0);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
-        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_menu.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf("file='public/shadow/shadow_menu.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                              rcShadowCorner.left + szBorderRound.cx,
                                              rcShadowCorner.top + szBorderRound.cx,
                                              rcShadowCorner.right + szBorderRound.cx,
@@ -611,7 +611,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
         bRet = true;
         szBorderRound = UiSize(6, 6);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
-        shadowImage = StringUtil::Printf(DUI_T("file='public/shadow/shadow_menu_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'"),
+        shadowImage = StringUtil::Printf("file='public/shadow/shadow_menu_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                          rcShadowCorner.left + szBorderRound.cx,
                                          rcShadowCorner.top + szBorderRound.cx,
                                          rcShadowCorner.right + szBorderRound.cx,
@@ -665,7 +665,7 @@ void Shadow::OnShadowAttached(Shadow::ShadowType nShadowType)
 {
     UiSize szBorderRound;
     UiPadding rcShadowCorner;
-    DString shadowImage;
+    std::string shadowImage;
     if (GetShadowParam(nShadowType, szBorderRound, rcShadowCorner, shadowImage, this)) {
         // User-defined type: do not overwrite the original values; the user-set values take precedence
         if (nShadowType != Shadow::ShadowType::kShadowDrawCustom) {
@@ -681,7 +681,7 @@ void Shadow::OnShadowAttached(Shadow::ShadowType nShadowType)
         //empty margin around the window content.
         SetShadowCorner(UiPadding(0, 0, 0, 0));
         SetShadowBorderRound(UiSize(0, 0));
-        SetShadowImage(DString());
+        SetShadowImage(std::string());
     }
     //Self-drawn shadows need per-pixel transparency (layered window) so the
     //shadow margin shows the desktop behind it instead of an opaque window color.
@@ -738,7 +738,7 @@ void Shadow::UpdateShadow()
     }
 }
 
-void Shadow::SetShadowImage(const DString& shadowImage)
+void Shadow::SetShadowImage(const std::string& shadowImage)
 {
     if (shadowImage != m_shadowImage) {
         // The shadow image has changed
@@ -747,7 +747,7 @@ void Shadow::SetShadowImage(const DString& shadowImage)
     }
 }
 
-const DString& Shadow::GetShadowImage() const
+const std::string& Shadow::GetShadowImage() const
 {
     return m_shadowImage;
 }
@@ -765,12 +765,12 @@ int32_t Shadow::GetShadowBorderSize() const
     return m_nShadowBorderSize;
 }
 
-void Shadow::SetShadowBorderColor(const DString& shadowBorderColor)
+void Shadow::SetShadowBorderColor(const std::string& shadowBorderColor)
 {
     m_shadowBorderColor = shadowBorderColor;
 }
 
-const DString& Shadow::GetShadowBorderColor() const
+const std::string& Shadow::GetShadowBorderColor() const
 {
     return m_shadowBorderColor;
 }
@@ -855,9 +855,9 @@ void Shadow::ChangeDpiScale(const DpiManager& dpi, uint32_t /*nOldDpiScale*/, ui
         return;
     }
     // Update the shadow image (trigger image reloading, adapting to the image responsive to the DPI value according to the DPI)
-    DString shadowImage = GetShadowImage();
+    std::string shadowImage = GetShadowImage();
     if (!shadowImage.empty()) {
-        SetShadowImage(DUI_T(""));
+        SetShadowImage("");
         SetShadowImage(shadowImage);
     }
 }

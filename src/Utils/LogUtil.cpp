@@ -9,7 +9,7 @@ namespace ui
 */
 static std::chrono::steady_clock::time_point s_startTime = std::chrono::steady_clock::now();
 
-DString LogUtil::GetTimeStamp()
+std::string LogUtil::GetTimeStamp()
 {
     //The time interval since system startup, accurate to milliseconds
     std::chrono::steady_clock::time_point nowTime = std::chrono::steady_clock::now();
@@ -19,12 +19,12 @@ DString LogUtil::GetTimeStamp()
     uint32_t nMM = (uint32_t)((nTimeMs / 1000) / 60);
     uint32_t nSS = (uint32_t)(nTimeMs / 1000);
     uint32_t nMS = (uint32_t)(nTimeMs % 1000);
-    return StringUtil::Printf(DUI_T("%02u:%02u:%02u.%03u "), nHH, nMM, nSS, nMS);
+    return StringUtil::Printf("%02u:%02u:%02u.%03u ", nHH, nMM, nSS, nMS);
 }
 
-void LogUtil::Output(const DString& log, bool bPrintTime)
+void LogUtil::Output(const std::string& log, bool bPrintTime)
 {
-    DString logMsg;
+    std::string logMsg;
     if (bPrintTime) {
         logMsg = GetTimeStamp() + log;
     }
@@ -38,12 +38,12 @@ void LogUtil::Output(const DString& log, bool bPrintTime)
 #endif
 }
 
-void LogUtil::OutputLine(const DString& log, bool bPrintTime)
+void LogUtil::OutputLine(const std::string& log, bool bPrintTime)
 {
 #ifdef DUI_BUILD_FOR_WIN
-    Output(log + DUI_T("\r\n"), bPrintTime);
+    Output(log + "\r\n", bPrintTime);
 #else
-    Output(log + DUI_T("\n"), bPrintTime);
+    Output(log + "\n", bPrintTime);
 #endif
 }
 

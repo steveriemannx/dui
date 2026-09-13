@@ -10,8 +10,8 @@ public:
     MainForm() = default;
     virtual ~MainForm() override = default;
 
-    virtual DString GetSkinFolder() override { return DUI_T("MultiLang"); }
-    virtual DString GetSkinFile() override { return DUI_T(""); }
+    virtual std::string GetSkinFolder() override { return "MultiLang"; }
+    virtual std::string GetSkinFile() override { return ""; }
     virtual void OnInitWindow() override;
 
 private:

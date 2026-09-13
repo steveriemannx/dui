@@ -50,10 +50,10 @@ bool Keyboard::IsCapsLockOn()
     return xkb_state_mod_index_is_active(state, mod, XKB_STATE_MODS_LOCKED) != 0;
 }
 
-DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
+std::string Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
 {
     (void)nVirtKey;
-    return DUI_T("");
+    return "";
 }
 
 } // namespace ui

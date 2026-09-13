@@ -69,7 +69,7 @@ public:
 public:
     /** Set the path where the skin resources are located
      *   If resType == kLocalFiles, the local path (absolute path) where the resources are located needs to be set
-     *   If resType == kMemoryRes, the resource path is the embedded theme path (e.g. DUI_T("themes/macos26"))
+     *   If resType == kMemoryRes, the resource path is the embedded theme path (e.g. "themes/macos26")
      */
     void SetResourcePath(const FilePath& strPath);
 
@@ -121,7 +121,7 @@ public:
 
     /** Get the language file name, without the path
     */
-    const DString& GetLanguageFileName() const;
+    const std::string& GetLanguageFileName() const;
 
     /** Reload the language resources (dynamic multi-language switching can be implemented through this interface)
      * @param [in] languagePath The path where the language files are located
@@ -132,28 +132,28 @@ public:
      * @param [in] bInvalidate Whether to refresh the UI display: true means refresh the UI display after updating the language file, false means do not refresh the UI display
      */
     bool ReloadLanguage(const FilePath& languagePath = FilePath(),
-                        const DString& languageFileName = DUI_T("zh_CN.txt"),
+                        const std::string& languageFileName = "zh_CN.txt",
                         bool bInvalidate = false);
 
     /** Get the language file list and display names (to support multi-language switching)
     * @param [in] languageNameID The string ID used to read the display name; if empty, the display name is not read
     * @param [out] languageList Returns the list of language files and display names
     */
-    bool GetLanguageList(std::vector<std::pair<DString, DString>>& languageList,
-                         const DString& languageNameID = DUI_T("LANGUAGE_DISPLAY_NAME")) const;
+    bool GetLanguageList(std::vector<std::pair<std::string, std::string>>& languageList,
+                         const std::string& languageNameID = "LANGUAGE_DISPLAY_NAME") const;
 
 public:
     /** Add a global Class attribute
      * @param[in] strClassName The global Class name
      * @param[in] strControlAttrList The attribute list, XML escaping is required
      */
-    void AddClass(const DString& strClassName, const DString& strControlAttrList);
+    void AddClass(const std::string& strClassName, const std::string& strControlAttrList);
 
     /** Get the value of a global class attribute
      * @param[in] strClassName The global class name
      * @return Returns the class attribute value as a string
      */
-    DString GetClassAttributes(const DString& strClassName) const;
+    std::string GetClassAttributes(const std::string& strClassName) const;
 
     /** Remove all class attributes from the global attributes
      * @return Returns the draw area object
@@ -327,7 +327,7 @@ public:
      * @param [in] strControlName The name of the custom control
      * @return Returns the object pointer of a custom control
      */
-    Control* CreateControl(const DString& strControlName);
+    Control* CreateControl(const std::string& strControlName);
 
     /** Add a control creation function for creating user custom controls
     */
@@ -431,7 +431,7 @@ private:
 
     /** The global language file name (without the path)
     */
-    DString m_languageFileName;
+    std::string m_languageFileName;
 
     /** The window building management interface, KEY is the XML file path, VALUE is the window building management interface (the already parsed XML, avoiding repeated parsing)
     */
@@ -443,7 +443,7 @@ private:
 
     /** The name (KEY) and attribute list (VALUE) of each Class (e.g. the Classes defined in global.xml)
     */
-    std::map<DString, DString> m_globalClass;
+    std::map<std::string, std::string> m_globalClass;
 
     /** The main thread ID
     */

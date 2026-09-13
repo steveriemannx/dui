@@ -45,7 +45,7 @@ WNDPROC SetWndProcPtr(HWND hWnd, WNDPROC wndProc) {
   return old;
 }
 
-DString GetResourceString(UINT id) {
+std::string GetResourceString(UINT id) {
   #define MAX_LOADSTRING 100
   TCHAR buff[MAX_LOADSTRING] = {0};
   LoadString(::GetModuleHandle(nullptr), id, buff, MAX_LOADSTRING);

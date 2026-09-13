@@ -41,20 +41,20 @@ public:
     * @param [in] dpi DPI scaling management interface
     * @return Returns the ID of the image resource, -1 on failure, otherwise an ID greater than or equal to 0
     */
-    int32_t AddImageString(const DString& imageString, const DpiManager& dpi);
+    int32_t AddImageString(const std::string& imageString, const DpiManager& dpi);
 
     /** Add an image resource, and attach the image size information
     * @param [in] imageString Image resource string, same format as the Image::SetImageString function
     * @param [in] dpi DPI scaling management interface
     * @return Returns the ID of the image resource, -1 on failure, otherwise an ID greater than or equal to 0
     */
-    int32_t AddImageStringWithSize(const DString& imageString, const DpiManager& dpi);
+    int32_t AddImageStringWithSize(const std::string& imageString, const DpiManager& dpi);
 
     /** Get the image resource string
     * @param [in] imageId The ID of the image resource, the value returned by the AddImage function
     * @return Returns an empty string if there is no associated resource
     */
-    DString GetImageString(int32_t imageId) const;
+    std::string GetImageString(int32_t imageId) const;
 
     /** Get the image resource interface (shared resource)
     * @param [in] imageId The ID of the image resource, the value returned by the AddImage function
@@ -66,7 +66,7 @@ public:
     * @param [in] imageString Image resource string, same format as the Image::SetImageString function
     * @return Returns the ID of the associated image resource, or -1 if there is no associated resource
     */
-    int32_t GetImageStringId(const DString& imageString) const;
+    int32_t GetImageStringId(const std::string& imageString) const;
 
     /** Remove an image resource
     * @param [in] imageId The ID of the image resource, the value returned by the AddImage function

@@ -19,13 +19,13 @@ public:
     virtual ~LabelTemplate() override;
 
     /// Override the parent class methods to provide customized functionality; refer to the parent class declarations
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void SetPos(UiRect rc) override;
     virtual void SetWindow(Window* pWindow) override;
     virtual void PaintText(IRender* pRender) override;
     virtual bool HasHotState() override;
-    virtual DString GetToolTipText() const override;
+    virtual std::string GetToolTipText() const override;
     virtual void OnLanguageChanged() override;
     virtual void ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale) override;
 
@@ -38,21 +38,21 @@ public:
 public:
     /** Get the text content
     */
-    virtual DString GetText() const override;
+    virtual std::string GetText() const override;
 
     /** Set the text content
     * @param [in] strText The text content
     */
-    virtual void SetText(const DString& strText) override;
+    virtual void SetText(const std::string& strText) override;
 
     /** Get the text content ID (supports multiple languages)
     */
-    virtual DString GetTextId() const override;
+    virtual std::string GetTextId() const override;
 
     /** Set the text content ID (supports multiple languages)
     * @param [in] strTextId The ID of the text content
     */
-    virtual void SetTextId(const DString& strTextId) override;
+    virtual void SetTextId(const std::string& strTextId) override;
 
     /** Get the text content (UTF8 format)
     */
@@ -90,7 +90,7 @@ public:
 
     /** Check whether the text is equal
     */
-    bool IsTextEquals(const DString& text) const;
+    bool IsTextEquals(const std::string& text) const;
 
 public:
     /** Restore the default text style
@@ -113,31 +113,31 @@ public:
      * @param [in] stateType The state flag to get
      * @return The text color in the specified state
      */
-    DString GetStateTextColor(ControlStateType stateType) const;
+    std::string GetStateTextColor(ControlStateType stateType) const;
 
     /** Set the text color in the specified state
      * @param [in] stateType The state flag to set
      * @param [in] dwTextColor The state color string to set; the value must exist in global.xml
      * @return None
      */
-    void SetStateTextColor(ControlStateType stateType, const DString& dwTextColor);
+    void SetStateTextColor(ControlStateType stateType, const std::string& dwTextColor);
 
     /** Get the actually rendered text color in the specified state
      * @param [in] buttonStateType The state for which to get the color
      * @param [out] stateType The state actually rendered
      * @return The color string, defined in global.xml
      */
-    DString GetPaintStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType);
+    std::string GetPaintStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType);
 
     /** Get the current font ID
      * @return The font ID, identified in global.xml
      */
-    DString GetFontId() const;
+    std::string GetFontId() const;
 
     /** Set the current font ID
      * @param[in] strFontId The font ID to set; the font ID must exist in global.xml
      */
-    void SetFontId(const DString& strFontId);
+    void SetFontId(const std::string& strFontId);
 
     /** Get the text padding
      * @return The text padding information
@@ -272,19 +272,19 @@ LabelTemplate<T>::~LabelTemplate()
 }
 
 template<typename T>
-inline DString LabelTemplate<T>::GetType() const { return DUI_CTR_LABEL; }
+inline std::string LabelTemplate<T>::GetType() const { return DUI_CTR_LABEL; }
 
 template<>
-inline DString LabelTemplate<Box>::GetType() const { return DUI_CTR_LABELBOX; }
+inline std::string LabelTemplate<Box>::GetType() const { return DUI_CTR_LABELBOX; }
 
 template<>
-inline DString LabelTemplate<HBox>::GetType() const { return DUI_CTR_LABELHBOX; }
+inline std::string LabelTemplate<HBox>::GetType() const { return DUI_CTR_LABELHBOX; }
 
 template<>
-inline DString LabelTemplate<VBox>::GetType() const { return DUI_CTR_LABELVBOX; }
+inline std::string LabelTemplate<VBox>::GetType() const { return DUI_CTR_LABELVBOX; }
 
 template<typename T>
-void LabelTemplate<T>::SetAttribute(const DString& strName, const DString& strValue)
+void LabelTemplate<T>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
     if (!m_impl->OnSetAttribute(strName, strValue)) {
         BaseClass::SetAttribute(strName, strValue);
@@ -430,9 +430,9 @@ void ui::LabelTemplate<T>::SetPos(UiRect rc)
 }
 
 template<typename T>
-DString LabelTemplate<T>::GetToolTipText() const
+std::string LabelTemplate<T>::GetToolTipText() const
 {
-    DString toolTip = BaseClass::GetToolTipText();
+    std::string toolTip = BaseClass::GetToolTipText();
     if (toolTip.empty()) {
         toolTip = m_impl->GetAutoToolTipText();
     }
@@ -440,25 +440,25 @@ DString LabelTemplate<T>::GetToolTipText() const
 }
 
 template<typename T>
-DString LabelTemplate<T>::GetText() const
+std::string LabelTemplate<T>::GetText() const
 {
     return m_impl->GetText();
 }
 
 template<typename T>
-void LabelTemplate<T>::SetText(const DString& strText)
+void LabelTemplate<T>::SetText(const std::string& strText)
 {
     m_impl->SetText(strText);
 }
 
 template<typename T>
-DString LabelTemplate<T>::GetTextId() const
+std::string LabelTemplate<T>::GetTextId() const
 {
     return m_impl->GetTextId();
 }
 
 template<typename T>
-void LabelTemplate<T>::SetTextId(const DString& strTextId)
+void LabelTemplate<T>::SetTextId(const std::string& strTextId)
 {
     m_impl->SetTextId(strTextId);
 }
@@ -500,7 +500,7 @@ bool LabelTemplate<T>::IsRichText() const
 }
 
 template<typename T>
-bool LabelTemplate<T>::IsTextEquals(const DString& text) const
+bool LabelTemplate<T>::IsTextEquals(const std::string& text) const
 {
     return m_impl->IsTextEquals(text);
 }
@@ -545,31 +545,31 @@ uint32_t LabelTemplate<T>::GetTextStyle() const
 }
 
 template<typename T>
-DString LabelTemplate<T>::GetStateTextColor(ControlStateType stateType) const
+std::string LabelTemplate<T>::GetStateTextColor(ControlStateType stateType) const
 {
     return m_impl->GetStateTextColor(stateType);
 }
 
 template<typename T>
-void LabelTemplate<T>::SetStateTextColor(ControlStateType stateType, const DString& dwTextColor)
+void LabelTemplate<T>::SetStateTextColor(ControlStateType stateType, const std::string& dwTextColor)
 {
     m_impl->SetStateTextColor(stateType, dwTextColor);
 }
 
 template<typename T /*= Control*/>
-DString ui::LabelTemplate<T>::GetPaintStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType)
+std::string ui::LabelTemplate<T>::GetPaintStateTextColor(ControlStateType buttonStateType, ControlStateType& stateType)
 {
     return m_impl->GetPaintStateTextColor(buttonStateType, stateType);
 }
 
 template<typename T>
-DString LabelTemplate<T>::GetFontId() const
+std::string LabelTemplate<T>::GetFontId() const
 {
     return m_impl->GetFontId();
 }
 
 template<typename T>
-void LabelTemplate<T>::SetFontId(const DString& strFontId)
+void LabelTemplate<T>::SetFontId(const std::string& strFontId)
 {
     m_impl->SetFontId(strFontId);
 }

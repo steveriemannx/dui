@@ -15,16 +15,16 @@ ImageDecoder_LOTTIE::~ImageDecoder_LOTTIE()
 {
 }
 
-DString ImageDecoder_LOTTIE::GetFormatName() const
+std::string ImageDecoder_LOTTIE::GetFormatName() const
 {
-    return DUI_T("LOTTIE-JSON");
+    return "LOTTIE-JSON";
 }
 
-bool ImageDecoder_LOTTIE::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_LOTTIE::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == DUI_T("JSON")) {
+    if (fileExt == "JSON") {
         return true;
     }
     return false;

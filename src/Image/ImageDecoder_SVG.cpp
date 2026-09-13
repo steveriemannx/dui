@@ -189,16 +189,16 @@ ImageDecoder_SVG::~ImageDecoder_SVG()
 {
 }
 
-DString ImageDecoder_SVG::GetFormatName() const
+std::string ImageDecoder_SVG::GetFormatName() const
 {
-    return DUI_T("SVG");
+    return "SVG";
 }
 
-bool ImageDecoder_SVG::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_SVG::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == DUI_T("SVG")) {
+    if (fileExt == "SVG") {
         return true;
     }
     return false;

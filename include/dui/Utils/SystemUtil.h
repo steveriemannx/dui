@@ -15,14 +15,14 @@ public:
     /** Open a URL
     * @param [in] url The URL to open
     */
-    static bool OpenUrl(const DString& url);
+    static bool OpenUrl(const std::string& url);
 
     /** Show a simple MessageBox
     * @param [in] pWindow The parent window
     * @param [in] content The content to display
     * @param [in] title The title
     */
-    static bool ShowMessageBox(const Window* pWindow, const DString& content, const DString& title);
+    static bool ShowMessageBox(const Window* pWindow, const std::string& content, const std::string& title);
 };
 
 } //namespace ui

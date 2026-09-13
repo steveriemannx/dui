@@ -16,7 +16,7 @@ Slider::Slider(Window* pWindow) :
     SetTextStyle(TEXT_SINGLELINE | TEXT_HCENTER, false);
 }
 
-DString Slider::GetType() const { return DUI_CTR_SLIDER; }
+std::string Slider::GetType() const { return DUI_CTR_SLIDER; }
 
 UiRect Slider::GetProgressPos()
 {
@@ -160,29 +160,29 @@ void Slider::HandleEvent(const EventArgs& msg)
     Progress::HandleEvent(msg);
 }
 
-void Slider::SetAttribute(const DString& strName, const DString& strValue)
+void Slider::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("step")) {
+    if (strName == "step") {
         SetChangeStep(StringUtil::StringToInt32(strValue));
     }
-    else if ((strName == DUI_T("thumb_normal_image")) || (strName == DUI_T("thumbnormalimage"))) {
+    else if ((strName == "thumb_normal_image") || (strName == "thumbnormalimage")) {
         SetThumbStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("thumb_hot_image")) || (strName == DUI_T("thumbhotimage"))) {
+    else if ((strName == "thumb_hot_image") || (strName == "thumbhotimage")) {
         SetThumbStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("thumb_pushed_image")) || (strName == DUI_T("thumbpushedimage"))) {
+    else if ((strName == "thumb_pushed_image") || (strName == "thumbpushedimage")) {
         SetThumbStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("thumb_disabled_image")) || (strName == DUI_T("thumbdisabledimage"))) {
+    else if ((strName == "thumb_disabled_image") || (strName == "thumbdisabledimage")) {
         SetThumbStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == DUI_T("thumb_size")) || (strName == DUI_T("thumbsize"))) {
+    else if ((strName == "thumb_size") || (strName == "thumbsize")) {
         UiSize szXY;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szXY);
         SetThumbSize(szXY, true);
     }
-    else if ((strName == DUI_T("progress_bar_padding")) || (strName == DUI_T("progressbarpadding"))) {
+    else if ((strName == "progress_bar_padding") || (strName == "progressbarpadding")) {
         UiPadding rcPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcPadding);
         SetProgressBarPadding(rcPadding, true);
@@ -253,21 +253,21 @@ void Slider::PaintStateImages(IRender* pRender)
 
     if (IsMouseFocused()) {
         m_sImageModify.clear();
-        m_sImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
+        m_sImageModify = StringUtil::Printf("destscale='false' dest='%d,%d,%d,%d'", rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
         if (PaintImage(pRender, m_thumbStateImage.GetStateImage(kControlStatePushed), m_sImageModify.c_str())) {
             return;
         }
     }
     else if (GetState() == kControlStateHot) {
         m_sImageModify.clear();
-        m_sImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
+        m_sImageModify = StringUtil::Printf("destscale='false' dest='%d,%d,%d,%d'", rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
         if (PaintImage(pRender, m_thumbStateImage.GetStateImage(kControlStateHot), m_sImageModify.c_str())) {
             return;
         }
     }
 
     m_sImageModify.clear();
-    m_sImageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
+    m_sImageModify = StringUtil::Printf("destscale='false' dest='%d,%d,%d,%d'", rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
     PaintImage(pRender, m_thumbStateImage.GetStateImage(kControlStateNormal), m_sImageModify.c_str());
 }
 
@@ -334,12 +334,12 @@ UiRect Slider::GetThumbRect() const
     }
 }
 
-DString Slider::GetThumbStateImage(ControlStateType stateType) const
+std::string Slider::GetThumbStateImage(ControlStateType stateType) const
 {
     return m_thumbStateImage.GetImageString(stateType);
 }
 
-void Slider::SetThumbStateImage(ControlStateType stateType, const DString& pStrImage)
+void Slider::SetThumbStateImage(ControlStateType stateType, const std::string& pStrImage)
 {
     m_thumbStateImage.SetImageString(stateType, pStrImage, Dpi());
     Invalidate();

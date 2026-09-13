@@ -40,7 +40,7 @@ std::basic_string<DUTF16Char> StringConvert::UTF8ToUTF16(const DUTF8Char* utf8, 
     return utf16;
 }
 
-DStringW StringConvert::UTF8ToWString(const std::string& utf8)
+std::wstring StringConvert::UTF8ToWString(const std::string& utf8)
 {
 #if defined(WCHAR_T_IS_UTF16)
     return UTF8ToUTF16(utf8.c_str(), utf8.length());
@@ -189,7 +189,7 @@ std::basic_string<DUTF32Char> StringConvert::UTF16ToUTF32(const DUTF16Char* utf1
     return utf32;
 }
 
-std::basic_string<DUTF32Char> StringConvert::WStringToUTF32(const DStringW& wstr)
+std::basic_string<DUTF32Char> StringConvert::WStringToUTF32(const std::wstring& wstr)
 {
 #if defined(WCHAR_T_IS_UTF16)
     ASSERT(sizeof(DUTF16Char) == sizeof(std::wstring::value_type));
@@ -202,10 +202,10 @@ std::basic_string<DUTF32Char> StringConvert::WStringToUTF32(const DStringW& wstr
 #endif
 }
 
-DStringW StringConvert::UTF32ToWString(const DUTF32Char* utf32, size_t length)
+std::wstring StringConvert::UTF32ToWString(const DUTF32Char* utf32, size_t length)
 {
     if ((utf32 == nullptr) || (length == 0)) {
-        return DStringW();
+        return std::wstring();
     }
 #if defined(WCHAR_T_IS_UTF16)
     //A code point outside the BMP becomes a surrogate pair
@@ -238,7 +238,7 @@ DStringW StringConvert::UTF32ToWString(const DUTF32Char* utf32, size_t length)
 #endif
 }
 
-DStringW StringConvert::UTF32ToWString(const std::basic_string<DUTF32Char>& utf32)
+std::wstring StringConvert::UTF32ToWString(const std::basic_string<DUTF32Char>& utf32)
 {
     return UTF32ToWString(utf32.c_str(), utf32.length());
 }
@@ -253,45 +253,30 @@ const std::string& StringConvert::TToUTF8(const std::string& str)
     return str;
 }
 
-DString StringConvert::UTF8ToT(const DUTF8Char* utf8, size_t length)
+std::string StringConvert::UTF8ToT(const DUTF8Char* utf8, size_t length)
 {
-#ifdef DUI_UNICODE
-    return StringConvert::UTF8ToUTF16(utf8, length);
-#else
     return std::string(utf8, length);
-#endif
 }
 
-DString StringConvert::UTF8ToT(const std::string& utf8)
+std::string StringConvert::UTF8ToT(const std::string& utf8)
 {
-#ifdef DUI_UNICODE
-    return StringConvert::UTF8ToWString(utf8);
-#else
     return utf8;
-#endif
 }
 
-const DStringW& StringConvert::TToWString(const std::wstring& str)
+const std::wstring& StringConvert::TToWString(const std::wstring& str)
 {
     return str;
 }
 
-DStringW StringConvert::TToWString(const std::string& str)
+std::wstring StringConvert::TToWString(const std::string& str)
 {
     return StringConvert::UTF8ToWString(str);
 }
 
-#ifdef DUI_UNICODE
-const DString& StringConvert::WStringToT(const std::wstring& wstr)
-{
-    return wstr;
-}
-#else
-DString StringConvert::WStringToT(const std::wstring& wstr)
+std::string StringConvert::WStringToT(const std::wstring& wstr)
 {
     return StringConvert::WStringToUTF8(wstr);
 }
-#endif
 
 std::basic_string<DUTF32Char> StringConvert::UTF8ToUTF32(const std::string& utf8)
 {
@@ -328,15 +313,11 @@ std::wstring StringConvert::MBCSToUnicode2(const char* input, size_t inputSize, 
     return output;
 }
 
-DString StringConvert::MBCSToT(const std::string& input)
+std::string StringConvert::MBCSToT(const std::string& input)
 {
-    DString output;
-#ifdef DUI_UNICODE
-    output = MBCSToUnicode(input);
-#else
+    std::string output;
     std::wstring temp = MBCSToUnicode(input);
     output = WStringToUTF8(temp);
-#endif
     return output;
 }
 
@@ -356,43 +337,39 @@ std::string StringConvert::UnicodeToMBCS(const std::wstring& input, int32_t code
     return output;
 }
 
-std::string StringConvert::TToMBCS(const DString& input)
+std::string StringConvert::TToMBCS(const std::string& input)
 {
     std::string output;
-#ifdef DUI_UNICODE
-    output = UnicodeToMBCS(input);
-#else
     std::wstring temp = UTF8ToWString(input);
     output = UnicodeToMBCS(temp);
-#endif
     return output;
 }
 
 #endif //DUI_BUILD_FOR_WIN
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_UNICODE)
-DString StringConvert::TToLocal(const DString& input)
+#if defined (DUI_BUILD_FOR_WIN)
+std::string StringConvert::TToLocal(const std::string& input)
 {
-    DString output;
+    std::string output;
     std::wstring temp = UTF8ToWString(input);
     output = UnicodeToMBCS(temp);
     return output;
 }
 #else
-const DString& StringConvert::TToLocal(const DString& input)
+const std::string& StringConvert::TToLocal(const std::string& input)
 {
     return input;
 }
 #endif
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_UNICODE)
-DString StringConvert::LocalToT(const DString& input)
+#if defined (DUI_BUILD_FOR_WIN)
+std::string StringConvert::LocalToT(const std::string& input)
 {
-    DStringW output = MBCSToUnicode(input);
+    std::wstring output = MBCSToUnicode(input);
     return WStringToUTF8(output);
 }
 #else
-const DString& StringConvert::LocalToT(const DString& input)
+const std::string& StringConvert::LocalToT(const std::string& input)
 {
     return input;
 }

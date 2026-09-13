@@ -55,7 +55,7 @@ WebView2Control::Impl::~Impl()
     Cleanup();
 }
 
-HRESULT WebView2Control::Impl::InitializeAsync(const DString& userDataFolder, InitializeCompletedCallback callback)
+HRESULT WebView2Control::Impl::InitializeAsync(const std::string& userDataFolder, InitializeCompletedCallback callback)
 {
     if (m_bInitialized) {
         if (callback) {
@@ -104,7 +104,7 @@ HRESULT WebView2Control::Impl::CallCreateCoreWebView2EnvironmentWithOptions(PCWS
     if (m_hWebView2Loader == nullptr) {
         FilePath runPath = FilePathUtil::GetCurrentModuleDirectory();
         runPath.NormalizeDirectoryPath();
-        runPath += DUI_T("WebView2Loader.dll");
+        runPath += "WebView2Loader.dll";
         if (runPath.IsExistsFile()) {
             m_hWebView2Loader = ::LoadLibrary(runPath.NativePath().c_str());
         }        
@@ -138,15 +138,15 @@ HRESULT WebView2Control::Impl::CreateEnvironmentAsync()
     if (m_spWebView2Environment != nullptr) {
         return CreateControllerAsync();
     }
-    DString userDataFolder = m_userDataFolder;
+    std::string userDataFolder = m_userDataFolder;
     if (userDataFolder.empty()) {
         userDataFolder = WebView2Manager::GetInstance().GetUserDataFolder();
     }
-    DString browserExecutableFolder = WebView2Manager::GetInstance().GetBrowserExecutableFolder();
+    std::string browserExecutableFolder = WebView2Manager::GetInstance().GetBrowserExecutableFolder();
 
     ui::ComPtr<ICoreWebView2EnvironmentOptions> spEnvironmentOptions;
-    DString language = WebView2Manager::GetInstance().GetLanguage();
-    DString additionalBrowserArguments = WebView2Manager::GetInstance().GetAdditionalBrowserArguments();
+    std::string language = WebView2Manager::GetInstance().GetLanguage();
+    std::string additionalBrowserArguments = WebView2Manager::GetInstance().GetAdditionalBrowserArguments();
     if (!language.empty() || !additionalBrowserArguments.empty()) {
         spEnvironmentOptions = CreateCoreWebView2EnvironmentOptionsObj();
         if (spEnvironmentOptions != nullptr) {
@@ -397,7 +397,7 @@ void WebView2Control::Impl::InitializeSettings()
     }
     ASSERT(SUCCEEDED(hr));
 
-    DString userAgent = m_userAgent;
+    std::string userAgent = m_userAgent;
     if (userAgent.empty()) {
         userAgent = WebView2Manager::GetInstance().GetUserAgent();
     }
@@ -494,7 +494,7 @@ void WebView2Control::Impl::InitializeAcceleratorKeyPressed()
     ASSERT_UNUSED_VARIABLE(SUCCEEDED(hr));
 }
 
-HRESULT WebView2Control::Impl::Navigate(const DString& url)
+HRESULT WebView2Control::Impl::Navigate(const std::string& url)
 {
     if (m_spWebView2 != nullptr) {
         m_navigateUrl.clear();
@@ -538,8 +538,8 @@ HRESULT WebView2Control::Impl::Stop()
     return m_spWebView2->Stop();
 }
 
-HRESULT WebView2Control::Impl::ExecuteScript(const DString& script,
-                                             std::function<void(const DString& result, HRESULT hr)> callback)
+HRESULT WebView2Control::Impl::ExecuteScript(const std::string& script,
+                                             std::function<void(const std::string& result, HRESULT hr)> callback)
 {
     ASSERT(!script.empty());
     if (script.empty()) {
@@ -549,7 +549,7 @@ HRESULT WebView2Control::Impl::ExecuteScript(const DString& script,
         return E_FAIL;
     }
 
-    DStringW scriptW = StringConvert::TToWString(script);
+    std::wstring scriptW = StringConvert::TToWString(script);
     return m_spWebView2->ExecuteScript(
         scriptW.c_str(),
         ui::ComCallback<ICoreWebView2ExecuteScriptCompletedHandler,
@@ -557,14 +557,14 @@ HRESULT WebView2Control::Impl::ExecuteScript(const DString& script,
             [callback](HRESULT errorCode, PCWSTR resultObjectAsJson) -> HRESULT {
                 if (callback) {
                     std::wstring result = resultObjectAsJson ? resultObjectAsJson : L"";
-                    DString resultT = StringConvert::WStringToT(result);
+                    std::string resultT = StringConvert::WStringToT(result);
                     callback(resultT, errorCode);
                 }
                 return S_OK;
             }).Get());
 }
 
-HRESULT WebView2Control::Impl::PostWebMessageAsJson(const DString& json)
+HRESULT WebView2Control::Impl::PostWebMessageAsJson(const std::string& json)
 {
     ASSERT(!json.empty());
     if (json.empty()) {
@@ -573,11 +573,11 @@ HRESULT WebView2Control::Impl::PostWebMessageAsJson(const DString& json)
     if (m_spWebView2 == nullptr) {
         return E_FAIL;
     }
-    DStringW jsonW = StringConvert::TToWString(json);
+    std::wstring jsonW = StringConvert::TToWString(json);
     return m_spWebView2->PostWebMessageAsJson(jsonW.c_str());
 }
 
-HRESULT WebView2Control::Impl::PostWebMessageAsString(const DString& message)
+HRESULT WebView2Control::Impl::PostWebMessageAsString(const std::string& message)
 {
     ASSERT(!message.empty());
     if (message.empty()) {
@@ -586,11 +586,11 @@ HRESULT WebView2Control::Impl::PostWebMessageAsString(const DString& message)
     if (m_spWebView2 == nullptr) {
         return E_FAIL;
     }
-    DStringW messageW = StringConvert::TToWString(message);
+    std::wstring messageW = StringConvert::TToWString(message);
     return m_spWebView2->PostWebMessageAsString(messageW.c_str());
 }
 
-HRESULT WebView2Control::Impl::SetUserAgent(const DString& userAgent)
+HRESULT WebView2Control::Impl::SetUserAgent(const std::string& userAgent)
 {
     m_userAgent = userAgent;
     if ((m_spWebView2 != nullptr) && !userAgent.empty()) {
@@ -610,9 +610,9 @@ HRESULT WebView2Control::Impl::SetUserAgent(const DString& userAgent)
     return S_OK;
 }
 
-DString WebView2Control::Impl::GetUserAgent() const
+std::string WebView2Control::Impl::GetUserAgent() const
 {
-    DString userAgent = m_userAgent;
+    std::string userAgent = m_userAgent;
     if ((m_spWebView2 != nullptr) && !userAgent.empty()) {
         ui::ComPtr<ICoreWebView2Settings> settings;
         HRESULT hr = m_spWebView2->get_Settings(&settings);
@@ -820,7 +820,7 @@ HRESULT WebView2Control::Impl::SetWebMessageReceivedCallback(WebMessageReceivedC
 
                     LPWSTR uri = nullptr;
                     args->get_Source(&uri);
-                    DString url;
+                    std::string url;
                     if (uri != nullptr) {
                         url = StringConvert::WStringToT(std::wstring(uri));
                         ::CoTaskMemFree(uri);
@@ -829,7 +829,7 @@ HRESULT WebView2Control::Impl::SetWebMessageReceivedCallback(WebMessageReceivedC
 
                     LPWSTR messageString = nullptr;
                     args->TryGetWebMessageAsString(&messageString);
-                    DString webMessageAsString;
+                    std::string webMessageAsString;
                     if (messageString != nullptr) {
                         webMessageAsString = StringConvert::WStringToT(std::wstring(messageString));
                         ::CoTaskMemFree(messageString);
@@ -838,7 +838,7 @@ HRESULT WebView2Control::Impl::SetWebMessageReceivedCallback(WebMessageReceivedC
 
                     LPWSTR messageJson = nullptr;
                     args->get_WebMessageAsJson(&messageJson);
-                    DString webMessageAsJson;
+                    std::string webMessageAsJson;
                     if (messageJson != nullptr) {
                         webMessageAsJson = StringConvert::WStringToT(std::wstring(messageJson));
                         ::CoTaskMemFree(messageJson);
@@ -933,7 +933,7 @@ HRESULT WebView2Control::Impl::SetDocumentTitleChangedCallback(DocumentTitleChan
 
                     LPWSTR title = nullptr;
                     sender->get_DocumentTitle(&title);
-                    DString titleStr;
+                    std::string titleStr;
                     if (title != nullptr) {
                         titleStr = StringConvert::WStringToT(std::wstring(title));
                         ::CoTaskMemFree(title);
@@ -967,7 +967,7 @@ HRESULT WebView2Control::Impl::SetSourceChangedCallback(SourceChangedCallback ca
 
                     LPWSTR uri = nullptr;
                     sender->get_Source(&uri);
-                    DString url;
+                    std::string url;
                     if (uri != nullptr) {
                         url = StringConvert::WStringToT(std::wstring(uri));
                         ::CoTaskMemFree(uri);
@@ -1000,7 +1000,7 @@ void WebView2Control::Impl::AddNewWindowRequestedCallback()
 
                     LPWSTR uri = nullptr;
                     args->get_Uri(&uri);
-                    DString targetUrl;
+                    std::string targetUrl;
                     if (uri != nullptr) {
                         targetUrl = StringConvert::WStringToT(std::wstring(uri));
                         ::CoTaskMemFree(uri);
@@ -1018,7 +1018,7 @@ void WebView2Control::Impl::AddNewWindowRequestedCallback()
                     args->QueryInterface(IID_ICoreWebView2NewWindowRequestedEventArgs2, (void**)&args2);
                     args->QueryInterface(IID_ICoreWebView2NewWindowRequestedEventArgs3, (void**)&args3);
 
-                    DString sourceFrameName;
+                    std::string sourceFrameName;
                     if (args2 != nullptr) {                        
                         LPWSTR name = nullptr;
                         args2->get_Name(&name);
@@ -1029,8 +1029,8 @@ void WebView2Control::Impl::AddNewWindowRequestedCallback()
                         }
                     }
 
-                    DString sourceUrl;
-                    DString targetFrameName;
+                    std::string sourceUrl;
+                    std::string targetFrameName;
                     if (args3 != nullptr) {
                         ui::ComPtr<ICoreWebView2FrameInfo> frameInfo;
                         args3->get_OriginalSourceFrameInfo(&frameInfo);
@@ -1072,7 +1072,7 @@ void WebView2Control::Impl::AddNewWindowRequestedCallback()
                         // The page opened by the above method has no forward/backward history, which does not meet expectations
 
                         // Navigate directly; this preserves the forward/backward history, but cannot support normal interaction with web page scripts (such as window.opener)
-                        DStringW urlW = StringConvert::TToWString(targetUrl);
+                        std::wstring urlW = StringConvert::TToWString(targetUrl);
                         m_spWebView2->Navigate(urlW.c_str());
                         args->put_Handled(TRUE);
                     }
@@ -1148,8 +1148,8 @@ HRESULT WebView2Control::Impl::SetZoomFactorChangedCallback(ZoomFactorChangedCal
     return S_OK;
 }
 
-HRESULT WebView2Control::Impl::CapturePreview(const DString& filePath,
-                                              std::function<void(const DString& filePath, HRESULT hr)> callback)
+HRESULT WebView2Control::Impl::CapturePreview(const std::string& filePath,
+                                              std::function<void(const std::string& filePath, HRESULT hr)> callback)
 {
     if (m_spWebView2 == nullptr) {
         return E_FAIL;
@@ -1158,11 +1158,7 @@ HRESULT WebView2Control::Impl::CapturePreview(const DString& filePath,
     if (filePath.empty()) {
         return E_FAIL;
     }
-#ifdef DUI_UNICODE
-    DString filePathW = filePath;
-#else
-    DStringW filePathW = StringConvert::MBCSToUnicode(filePath);
-#endif
+    std::wstring filePathW = StringConvert::MBCSToUnicode(filePath);
     // Create the file stream
     ui::ComPtr<IStream> stream;
     HRESULT hr = ::SHCreateStreamOnFileEx(filePathW.c_str(),
@@ -1177,8 +1173,8 @@ HRESULT WebView2Control::Impl::CapturePreview(const DString& filePath,
     }
     // Determine the image format based on the extension of the saved file name
     COREWEBVIEW2_CAPTURE_PREVIEW_IMAGE_FORMAT imageFormat;
-    DString ext = FilePath(filePathW).GetFileExtension();
-    if (StringUtil::IsEqualNoCase(ext, DUI_T(".png"))) {
+    std::string ext = FilePath(filePathW).GetFileExtension();
+    if (StringUtil::IsEqualNoCase(ext, ".png")) {
         imageFormat = COREWEBVIEW2_CAPTURE_PREVIEW_IMAGE_FORMAT_PNG;
     }
     else {
@@ -1206,12 +1202,12 @@ bool WebView2Control::Impl::IsInitialized() const
     return m_bInitialized;
 }
 
-DString WebView2Control::Impl::GetUrl() const
+std::string WebView2Control::Impl::GetUrl() const
 {
     if (m_spWebView2 == nullptr) {
-        return DUI_T("");
+        return "";
     }
-    DString retUrl;
+    std::string retUrl;
     LPWSTR url = nullptr;
     m_spWebView2->get_Source(&url);
     if (url != nullptr) {
@@ -1222,12 +1218,12 @@ DString WebView2Control::Impl::GetUrl() const
     return retUrl;
 }
 
-DString WebView2Control::Impl::GetTitle() const
+std::string WebView2Control::Impl::GetTitle() const
 {
     if (m_spWebView2 == nullptr) {
-        return DUI_T("");
+        return "";
     }
-    DString retTitle;
+    std::string retTitle;
     LPWSTR title = nullptr;
     m_spWebView2->get_DocumentTitle(&title);
     if (title != nullptr) {
@@ -1477,7 +1473,7 @@ void WebView2Control::Impl::SetFavIconChangedCallback(FavIconChangedCallback cal
     }
 }
 
-static bool ConvertFavIconImageData(std::vector<uint8_t>& imageFileData, uint32_t nWindowScaleFactor, const DString& fileName,
+static bool ConvertFavIconImageData(std::vector<uint8_t>& imageFileData, uint32_t nWindowScaleFactor, const std::string& fileName,
                                     int32_t& nWidth, int32_t& nHeight, std::vector<uint8_t>& imageData)
 {
     ImageDecoderFactory& imageDecoders = GlobalManager::Instance().ImageDecoders();
@@ -1565,9 +1561,9 @@ bool WebView2Control::Impl::DownloadFavIconImage()
                 if (m_pControl != nullptr) {
                     nWindowScaleFactor = m_pControl->Dpi().GetDisplayScaleFactor();
                 }
-                DString fileName = StringConvert::WStringToT(strUrl);
-                size_t pos = fileName.rfind(DUI_T("/"));
-                if (pos != DString::npos) {
+                std::string fileName = StringConvert::WStringToT(strUrl);
+                size_t pos = fileName.rfind("/");
+                if (pos != std::string::npos) {
                     fileName = fileName.substr(pos + 1);
                 }
 

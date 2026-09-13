@@ -23,14 +23,14 @@ public:
     /**   Called when the window is created, implemented by the subclass to obtain the window skin folder
     * @return The subclass needs to implement and return the window skin folder
     */
-    virtual DString GetSkinFolder() override;
+    virtual std::string GetSkinFolder() override;
 
     /**   Called when the window is created, implemented by the subclass to obtain the window skin XML description file
     * @return The subclass needs to implement and return the window skin XML description file
     *         The returned content can be the XML file content (a string starting with the character '<'),
     *         or a file path (a string not starting with the character '<'); the file must be findable under the GetSkinFolder() path
     */
-    virtual DString GetSkinFile() override;
+    virtual std::string GetSkinFile() override;
 
     /** Called when the window receives the WM_NCDESTROY message
     * @param [in] hWnd The handle of the window to be destroyed

@@ -15,8 +15,8 @@ public:
      *  This is the code-generation (gen) mode: the UI is built from generated
      *  C++ code (InitHello, see BuildUI), so no XML skin is loaded.
      */
-    virtual DString GetSkinFolder() override { return DUI_T(""); }
-    virtual DString GetSkinFile() override { return DUI_T(""); }
+    virtual std::string GetSkinFolder() override { return ""; }
+    virtual std::string GetSkinFile() override { return ""; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */

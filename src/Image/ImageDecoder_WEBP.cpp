@@ -15,16 +15,16 @@ ImageDecoder_WEBP::~ImageDecoder_WEBP()
 {
 }
 
-DString ImageDecoder_WEBP::GetFormatName() const
+std::string ImageDecoder_WEBP::GetFormatName() const
 {
-    return DUI_T("WEBP");
+    return "WEBP";
 }
 
-bool ImageDecoder_WEBP::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_WEBP::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == DUI_T("WEBP")) {
+    if (fileExt == "WEBP") {
         return true;
     }
     return false;

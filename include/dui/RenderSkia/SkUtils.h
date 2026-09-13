@@ -120,9 +120,9 @@ int       SkUTF_CountUTFBytes(const void* utf, SkTextEncoding textEncoding);
     compile-time property of the character type, so this is constexpr.
 
     Note: the character type must be passed explicitly rather than inferred from
-    DString, because the library uses two character types with different widths
-    on the same platform (for example on macOS, DString::value_type is 1 byte
-    while DStringW::value_type is 4).
+    std::string, because the library uses two character types with different widths
+    on the same platform (for example on macOS, std::string::value_type is 1 byte
+    while std::wstring::value_type is 4).
 */
 template <typename TChar>
 constexpr SkTextEncoding GetTextEncodingForCharType()
@@ -137,27 +137,23 @@ constexpr SkTextEncoding GetTextEncodingForCharType()
         return SkTextEncoding::kUTF32;
     }
     else {
-#ifdef DUI_UNICODE
-        return SkTextEncoding::kUTF16;
-#else
         return SkTextEncoding::kUTF8;
-#endif
     }
 }
 
-/** The Skia text encoding matching the platform-native DString type.
-    This is the encoding to hand to Skia for any DString's bytes.
+/** The Skia text encoding matching the platform-native std::string type.
+    This is the encoding to hand to Skia for any std::string's bytes.
 */
 constexpr SkTextEncoding GetDStringTextEncoding()
 {
-    return GetTextEncodingForCharType<DString::value_type>();
+    return GetTextEncodingForCharType<std::string::value_type>();
 }
 
 /** One decoded code point, together with the extent it occupies in the source.
 
     This is the safe counterpart of SkUTF_CountUTFBytes for *user* text: it never
     asserts and never reads past pEnd, so malformed input (a truncated sequence, or
-    an unpaired surrogate, which a Windows DString can legitimately hold) ends the
+    an unpaired surrogate, which a Windows std::string can legitimately hold) ends the
     iteration instead of crashing or over-reading.
 */
 struct SkUnicharExtent

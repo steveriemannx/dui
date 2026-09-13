@@ -60,21 +60,21 @@ Each window usually requires three files:
 **Initialize global resources:**
 ```cpp
 ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-resourcePath += DUI_T("resources\\");
+resourcePath += "resources\\";
 ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 ```
 
 **Create a window:**
 ```cpp
 MainForm* window = new MainForm();
-window->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("WindowTitle"), true));
+window->CreateWnd(nullptr, ui::WindowCreateParam("WindowTitle", true));
 window->PostQuitMsgWhenClosed(true);
 window->ShowWindow(ui::kSW_SHOW_NORMAL);
 ```
 
 **Find a control:**
 ```cpp
-ui::Button* btn = dynamic_cast<ui::Button*>(FindControl(DUI_T("btn_name")));
+ui::Button* btn = dynamic_cast<ui::Button*>(FindControl("btn_name"));
 ```
 
 **Event binding:**
@@ -111,8 +111,9 @@ DUI_APP_ENTRY(TestApplication)        // AppClass must provide void Run();
 - Detailed LLM reference: `.claude/docs/dui-llm-reference.md`
 
 ## Coding Standards
-- Strings use the `DString` type; literals are wrapped with the `DUI_T("...")` macro
-- Control lookup uses `FindControl(DUI_T("name"))` and requires `dynamic_cast` to the concrete type
+- Strings are `std::string` holding UTF-8, on every platform; text literals are plain `"..."`
+- Control lookup uses `FindControl("name")` and requires `dynamic_cast` to the concrete type
+- Text handed to a native Windows API must be converted at that boundary (`ui::StringConvert`); see [`docs/StringEncoding.md`](docs/StringEncoding.md)
 - Event callbacks return `true` to indicate the event was handled
 - Embedded quotes in XML attribute values use single quotes `'` or curly braces `{}` instead of double quotes
 - Control classes support template variants: `Label` (Control-based), `LabelBox` (Box-based), `LabelHBox` (HBox-based), `LabelVBox` (VBox-based)

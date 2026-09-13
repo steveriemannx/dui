@@ -10,15 +10,8 @@
 #include <cstring>
 #include <cstdint>
 
-/** Cross-platform text literal macro definitions
-*/
-#if !defined(DUI_T)
-    #if defined (DUI_UNICODE)
-        #define DUI_T(x)   L##x
-    #else
-        #define DUI_T(x)   x
-    #endif
-#endif
+//Text literals are plain "..." now: the string type below is the same on every
+//platform, so there is nothing to switch on.
 
 //Detect the wchar_t definition: the wchar_t size on each platform
 #if defined(DUI_BUILD_FOR_WIN)
@@ -77,26 +70,14 @@ typedef UTF32String U32String;
 typedef std::basic_string_view<DUTF32Char> UTF32StringView;
 typedef UTF32StringView U32StringView;
 
-//String type definition (Unicode on Windows, Ansi on Linux)
+//String type definition.
+//
+//dui used to define a DString typedef that was std::wstring on Windows and
+//std::string elsewhere, plus a DUI_T macro to paper over the two literal types.
+//The library now uses std::string (UTF-8) on every platform, so both are gone.
+//Text handed to a native Windows API is converted at that boundary instead;
+//see ui::StringConvert.
 
-/** Unicode version of the string, UTF16 encoded
-*/
-typedef std::wstring DStringW;
-
-/** Ansi version of the String, UTF8 encoded
-*/
-typedef std::string  DStringA;
-
-/** String type macro definitions
-*/
-#ifdef DUI_UNICODE
-    //Unicode version: the data is of type wchar_t
-    //UTF16 encoding on Windows; UTF32 encoding on Linux/macOS
-    typedef std::wstring  DString;
-#else
-    //Multibyte encoding: the data is UTF8 encoded
-    typedef std::string   DString;
-#endif
 
 // macOS-specific string handling helper functions
 #if defined(DUI_BUILD_FOR_MACOS)
@@ -104,23 +85,23 @@ typedef std::string  DStringA;
 
 namespace dui {
     // Converts CFStringRef to a UTF8 string
-    inline DStringA CFStringToUTF8(CFStringRef cfStr) {
-        if (!cfStr) return DStringA();
+    inline std::string CFStringToUTF8(CFStringRef cfStr) {
+        if (!cfStr) return std::string();
         
         CFIndex length = CFStringGetLength(cfStr);
         CFIndex maxSize = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
-        DStringA result;
+        std::string result;
         result.resize(maxSize);
         
         if (CFStringGetCString(cfStr, &result[0], maxSize, kCFStringEncodingUTF8)) {
             result.resize(strlen(result.c_str()));
             return result;
         }
-        return DStringA();
+        return std::string();
     }
     
     // Converts a UTF8 string to CFStringRef
-    inline CFStringRef UTF8ToCFString(const DStringA& utf8Str) {
+    inline CFStringRef UTF8ToCFString(const std::string& utf8Str) {
         return CFStringCreateWithCString(kCFAllocatorDefault, 
                                        utf8Str.c_str(), 
                                        kCFStringEncodingUTF8);

@@ -29,11 +29,11 @@ void WindowManager::AddWindow(Window* pWindow)
 #ifdef _DEBUG    
     if (1) {
         // Verify that window IDs are not duplicated
-        std::set<DString> windowIdSet;
+        std::set<std::string> windowIdSet;
         for (auto iter = m_windowList.rbegin(); iter != m_windowList.rend(); ++iter) {
             if (iter->get() != nullptr) {
                 ASSERT(!iter->get()->GetWindowClassName().empty());
-                DString windowId = iter->get()->GetWindowId();
+                std::string windowId = iter->get()->GetWindowId();
                 ASSERT(!windowId.empty());
                 if (!windowIdSet.empty()) {
                     ASSERT(windowIdSet.find(windowId) == windowIdSet.end());
@@ -95,7 +95,7 @@ std::vector<WindowPtr> WindowManager::GetAllWindowList() const
     return windowList;
 }
 
-std::vector<WindowPtr> WindowManager::GetAllWindowList(const DString& windowClassName) const
+std::vector<WindowPtr> WindowManager::GetAllWindowList(const std::string& windowClassName) const
 {
     GlobalManager::Instance().AssertUIThread();
     std::vector<WindowPtr> windowList;
@@ -109,7 +109,7 @@ std::vector<WindowPtr> WindowManager::GetAllWindowList(const DString& windowClas
     return windowList;
 }
 
-WindowPtr WindowManager::GetWindowById(const DString& windowId) const
+WindowPtr WindowManager::GetWindowById(const std::string& windowId) const
 {
     GlobalManager::Instance().AssertUIThread();
     WindowPtr pWindow;

@@ -23,8 +23,8 @@ public:
     explicit ListCtrlIconView(Window* pWindow);
     virtual ~ListCtrlIconView() override;
 
-    virtual DString GetType() const override { return DUI_T("ListCtrlIconView"); }
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override { return "ListCtrlIconView"; }
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void HandleEvent(const EventArgs& msg) override;
 
 public:

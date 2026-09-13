@@ -9,83 +9,83 @@ AnimationForm::~AnimationForm()
 {
 }
 
-DString AnimationForm::GetSkinFolder()
+std::string AnimationForm::GetSkinFolder()
 {
-    return DUI_T("");
+    return "";
 }
 
-DString AnimationForm::GetSkinFile()
+std::string AnimationForm::GetSkinFile()
 {
     // Pure code mode: no layout XML is loaded
-    return DUI_T("");
+    return "";
 }
 
 void AnimationForm::BuildUI()
 {
     // Corresponds to the animation.xml layout
     ui::VBox* pRoot = new ui::VBox(this);
-    pRoot->SetBkColor(DUI_T("bk_wnd_darkcolor"));
+    pRoot->SetBkColor("bk_wnd_darkcolor");
 
     // Title bar area
-    auto* pCaption = ui::Create<ui::HBox>(this, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}});
+    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
     ui::Attach(pRoot, pCaption);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{DUI_T("mouse_enabled"), DUI_T("false")}});
+    auto* pSpacer = ui::Create<ui::Control>(this, {{"mouse_enabled", "false"}});
     ui::Attach(pCaption, pSpacer);
 
-    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_fullscreen_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("fullscreenbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
-    pFullscreenBtn->SetToolTipText(DUI_T("Fullscreen, press ESC to exit fullscreen"));
+    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_fullscreen_11"}, {"height", "32"}, {"width", "40"}, {"name", "fullscreenbtn"}, {"margin", "0,2,0,2"}});
+    pFullscreenBtn->SetToolTipText("Fullscreen, press ESC to exit fullscreen");
     ui::Attach(pCaption, pFullscreenBtn);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
-    pMinBtn->SetToolTipText(DUI_T("Minimize"));
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_min_11"}, {"height", "32"}, {"width", "40"}, {"name", "minbtn"}, {"margin", "0,2,0,2"}});
+    pMinBtn->SetToolTipText("Minimize");
     ui::Attach(pCaption, pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
     ui::Attach(pCaption, pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_max_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("name"), DUI_T("maxbtn")}});
-    pMaxBtn->SetToolTipText(DUI_T("Maximize"));
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_max_11"}, {"height", "32"}, {"width", "stretch"}, {"name", "maxbtn"}});
+    pMaxBtn->SetToolTipText("Maximize");
     ui::Attach(pMaxBox, pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_restore_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("name"), DUI_T("restorebtn")}});
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_restore_11"}, {"height", "32"}, {"width", "stretch"}, {"name", "restorebtn"}});
     pRestoreBtn->SetVisible(false);
-    pRestoreBtn->SetToolTipText(DUI_T("Restore"));
+    pRestoreBtn->SetToolTipText("Restore");
     ui::Attach(pMaxBox, pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_close_11")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("closebtn")}, {DUI_T("margin"), DUI_T("0,0,0,2")}});
-    pCloseBtn->SetToolTipText(DUI_T("Close"));
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_close_11"}, {"height", "stretch"}, {"width", "40"}, {"name", "closebtn"}, {"margin", "0,0,0,2"}});
+    pCloseBtn->SetToolTipText("Close");
     ui::Attach(pCaption, pCloseBtn);
 
     // Work area
-    auto* pContent = ui::Create<ui::VBox>(this, {{DUI_T("child_halign"), DUI_T("center")}, {DUI_T("child_valign"), DUI_T("center")}});
+    auto* pContent = ui::Create<ui::VBox>(this, {{"child_halign", "center"}, {"child_valign", "center"}});
     ui::Attach(pRoot, pContent);
 
-    auto* pControlRow = ui::Create<ui::HBox>(this, {{DUI_T("height"), DUI_T("40")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
+    auto* pControlRow = ui::Create<ui::HBox>(this, {{"height", "40"}, {"margin", "8,0,0,0"}});
     ui::Attach(pContent, pControlRow);
 
-    auto* pAnimBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("name"), DUI_T("animation_btn")}, {DUI_T("text"), DUI_T("Play/Pause")}, {DUI_T("width"), DUI_T("96")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("margin"), DUI_T("8,0,0,0")}, {DUI_T("valign"), DUI_T("center")}});
+    auto* pAnimBtn = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "animation_btn"}, {"text", "Play/Pause"}, {"width", "96"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "8,0,0,0"}, {"valign", "center"}});
     ui::Attach(pControlRow, pAnimBtn);
 
-    auto* pFrameText = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("Current Frame/Total:")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
+    auto* pFrameText = ui::Create<ui::Label>(this, {{"text", "Current Frame/Total:"}, {"valign", "center"}, {"margin", "8,0,0,0"}});
     ui::Attach(pControlRow, pFrameText);
 
-    auto* pFrameValue = ui::Create<ui::Label>(this, {{DUI_T("name"), DUI_T("animation_frame")}, {DUI_T("text"), DUI_T("[000/100]")}, {DUI_T("width"), DUI_T("120")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
+    auto* pFrameValue = ui::Create<ui::Label>(this, {{"name", "animation_frame"}, {"text", "[000/100]"}, {"width", "120"}, {"valign", "center"}, {"margin", "8,0,0,0"}});
     ui::Attach(pControlRow, pFrameValue);
 
-    auto* pGotoBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_global_color_gray")}, {DUI_T("name"), DUI_T("goto_frame_btn")}, {DUI_T("text"), DUI_T("Go to")}, {DUI_T("width"), DUI_T("56")}, {DUI_T("height"), DUI_T("30")}, {DUI_T("border_round"), DUI_T("3,3")}, {DUI_T("margin"), DUI_T("8,0,0,0")}, {DUI_T("valign"), DUI_T("center")}});
+    auto* pGotoBtn = ui::Create<ui::Button>(this, {{"class", "btn_global_color_gray"}, {"name", "goto_frame_btn"}, {"text", "Go to"}, {"width", "56"}, {"height", "30"}, {"border_round", "3,3"}, {"margin", "8,0,0,0"}, {"valign", "center"}});
     ui::Attach(pControlRow, pGotoBtn);
 
-    auto* pFrameNoText = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("No.")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
+    auto* pFrameNoText = ui::Create<ui::Label>(this, {{"text", "No."}, {"valign", "center"}, {"margin", "8,0,0,0"}});
     ui::Attach(pControlRow, pFrameNoText);
 
-    auto* pGotoNumber = ui::Create<ui::RichEdit>(this, {{DUI_T("class"), DUI_T("simple simple_border rich_edit_spin")}, {DUI_T("name"), DUI_T("goto_frame_number")}, {DUI_T("number"), DUI_T("true")}, {DUI_T("width"), DUI_T("80")}, {DUI_T("min_number"), DUI_T("0")}, {DUI_T("max_number"), DUI_T("10000")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
+    auto* pGotoNumber = ui::Create<ui::RichEdit>(this, {{"class", "simple simple_border rich_edit_spin"}, {"name", "goto_frame_number"}, {"number", "true"}, {"width", "80"}, {"min_number", "0"}, {"max_number", "10000"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "8,0,0,0"}});
     ui::Attach(pControlRow, pGotoNumber);
 
-    auto* pFrameEndText = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("Frame")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
+    auto* pFrameEndText = ui::Create<ui::Label>(this, {{"text", "Frame"}, {"valign", "center"}, {"margin", "8,0,0,0"}});
     ui::Attach(pControlRow, pFrameEndText);
 
-    auto* pAnimationTest = ui::Create<ui::Control>(this, {{DUI_T("name"), DUI_T("animation_test")}, {DUI_T("halign"), DUI_T("center")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("bkimage"), DUI_T("file='render/apng_test.png' name='bk_animation_test' auto_play='true' icon_as_animation='true' icon_frame_delay='2000' valign='center' halign='center'")}});
+    auto* pAnimationTest = ui::Create<ui::Control>(this, {{"name", "animation_test"}, {"halign", "center"}, {"valign", "center"}, {"bkimage", "file='render/apng_test.png' name='bk_animation_test' auto_play='true' icon_as_animation='true' icon_frame_delay='2000' valign='center' halign='center'"}});
     ui::Attach(pContent, pAnimationTest);
 
     AttachBox(pRoot);
@@ -96,7 +96,7 @@ void AnimationForm::OnInitWindow()
     BuildUI();
 
     //Bind animation playback related events
-    ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("animation_test"));
+    ui::Control* pControl = ui::Find<ui::Control>(this, "animation_test");
     if (pControl != nullptr) {
         pControl->AttachImageAnimationStart([this](const ui::EventArgs& arg) {
             if (arg.wParam != 0) {
@@ -122,10 +122,10 @@ void AnimationForm::OnInitWindow()
     }
 
     m_bImagePlaying = false;
-    ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
+    ui::Button* pButton = ui::Find<ui::Button>(this, "animation_btn");
     if (pButton != nullptr) {
         pButton->AttachClick([this](const ui::EventArgs& arg) {
-            ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("animation_test"));
+            ui::Control* pControl = ui::Find<ui::Control>(this, "animation_test");
             if (pControl != nullptr) {
                 if (m_bImagePlaying) {
                     //Pause
@@ -140,21 +140,21 @@ void AnimationForm::OnInitWindow()
             });
     }
 
-    pButton = ui::Find<ui::Button>(this, DUI_T("goto_frame_btn"));
+    pButton = ui::Find<ui::Button>(this, "goto_frame_btn");
     if (pButton != nullptr) {
         pButton->AttachClick([this](const ui::EventArgs& arg) {
-            ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("animation_test"));
+            ui::Control* pControl = ui::Find<ui::Control>(this, "animation_test");
             if (pControl != nullptr) {
                 if (m_bImagePlaying) {
                     //Pause
                     pControl->StopImageAnimation();
                 }
                 int32_t nFrameIndex = 0;
-                ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, DUI_T("goto_frame_number"));
+                ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, "goto_frame_number");
                 if (pRichEdit != nullptr) {
                     nFrameIndex = (int32_t)pRichEdit->GetTextNumber();
                 }
-                pControl->SetImageAnimationFrame(DUI_T("bk_animation_test"), nFrameIndex);
+                pControl->SetImageAnimationFrame("bk_animation_test", nFrameIndex);
             }
             return true;
             });
@@ -166,11 +166,11 @@ void AnimationForm::OnAnimationEvents(ui::EventType eventType, const ui::ImageAn
     if (eventType == ui::EventType::kEventImageAnimationStart) {
         //Playback started
         m_bImagePlaying = true;
-        ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
+        ui::Button* pButton = ui::Find<ui::Button>(this, "animation_btn");
         if (pButton != nullptr) {
-            pButton->SetText(DUI_T("Pause"));
+            pButton->SetText("Pause");
         }
-        ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, DUI_T("goto_frame_number"));
+        ui::RichEdit* pRichEdit = ui::Find<ui::RichEdit>(this, "goto_frame_number");
         if (pRichEdit != nullptr) {
             pRichEdit->SetMinNumber(0);
             pRichEdit->SetMaxNumber((int32_t)status.m_nFrameCount - 1);
@@ -179,22 +179,22 @@ void AnimationForm::OnAnimationEvents(ui::EventType eventType, const ui::ImageAn
     else if (eventType == ui::EventType::kEventImageAnimationStop) {
         //Playback stopped
         m_bImagePlaying = false;
-        ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
+        ui::Button* pButton = ui::Find<ui::Button>(this, "animation_btn");
         if (pButton != nullptr) {
-            pButton->SetText(DUI_T("Play"));
+            pButton->SetText("Play");
         }
     }
     else if (eventType == ui::EventType::kEventImageAnimationPlayFrame) {
         //Playing
         m_bImagePlaying = true;
-        ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("animation_btn"));
+        ui::Button* pButton = ui::Find<ui::Button>(this, "animation_btn");
         if (pButton != nullptr) {
-            pButton->SetText(DUI_T("Pause"));
+            pButton->SetText("Pause");
         }
 
-        ui::Label* pLabel = ui::Find<ui::Label>(this, DUI_T("animation_frame"));
+        ui::Label* pLabel = ui::Find<ui::Label>(this, "animation_frame");
         if (pLabel != nullptr) {
-            DString statusText = ui::StringUtil::Printf(DUI_T("[%d/%d]"), status.m_nFrameIndex, status.m_nFrameCount);
+            std::string statusText = ui::StringUtil::Printf("[%d/%d]", status.m_nFrameIndex, status.m_nFrameCount);
             pLabel->SetText(statusText);
         }
     }

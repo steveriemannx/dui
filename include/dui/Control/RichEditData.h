@@ -53,7 +53,7 @@ public:
 
     /** Process the displayed characters in password mode
     */
-    virtual void ReplacePasswordChar(DStringW& text) const = 0;
+    virtual void ReplacePasswordChar(std::wstring& text) const = 0;
 
     /** Get the text limit length
     */
@@ -115,7 +115,7 @@ public:
      * @param [in] text The text content
      * @return Returns true if the text has changed, returns false if the text has not changed
      */
-    bool SetText(const DStringW& text);
+    bool SetText(const std::wstring& text);
 
     /** Replace the text in the specified range (adding, modifying, and deleting text are all done through this function)
      *  (1) If nStartChar == nEndChar, it means inserting text at this position
@@ -128,11 +128,11 @@ public:
      * @param [in] bClearRedo Whether to clear the Redo list; only takes effect when bCanUndo is false
      * @return Returns true if the text has changed, returns false if the text has not changed
      */
-    bool ReplaceText(int32_t nStartChar, int32_t nEndChar, const DStringW& text, bool bCanUndo = true, bool bClearRedo = true);
+    bool ReplaceText(int32_t nStartChar, int32_t nEndChar, const std::wstring& text, bool bCanUndo = true, bool bClearRedo = true);
 
     /** Get the text
     */
-    DStringW GetText() const;
+    std::wstring GetText() const;
 
     /** Get the text view; the text view is organized by lines, one entry per line (lines split by '\n')
     */
@@ -151,7 +151,7 @@ public:
      * @param[in] nStartChar The starting index value
      * @param[in] nEndChar The ending index value
      */
-    DStringW GetTextRange(int32_t nStartChar, int32_t nEndChar) const;
+    std::wstring GetTextRange(int32_t nStartChar, int32_t nEndChar) const;
 
     /** Determine whether the specified range contains text content
      * @param[in] nStartChar The starting index value
@@ -206,7 +206,7 @@ public:
     */
     bool FindRichText(bool bMatchCase, bool bMatchWholeWord, bool bFindDown,
                       int32_t nFindStartChar, int32_t nFindEndChar,
-                      const DStringW& findText,
+                      const std::wstring& findText,
                       int32_t& nFoundStartChar, int32_t& nFoundEndChar) const;
 
 public:
@@ -219,7 +219,7 @@ public:
      * @param[in] nRowIndex The row number
      * @return Returns the fetched row of data
      */
-    DStringW GetRowText(int32_t nRowIndex);
+    std::wstring GetRowText(int32_t nRowIndex);
 
     /** Get the first character index of the specified row
      * @param[in] nRowIndex The row number
@@ -353,7 +353,7 @@ public:
 
     /** Truncate the text according to the character limit
     */
-    void TruncateLimitText(DStringW& text, int32_t nLimitLen) const;
+    void TruncateLimitText(std::wstring& text, int32_t nLimitLen) const;
 
 private:
     /** Convert internal coordinates to external coordinates
@@ -382,7 +382,7 @@ private:
 
     /** Record the operation to the undo list
     */
-    void AddToUndoList(int32_t nStartChar, const DStringW& newText, const DStringW& oldText);
+    void AddToUndoList(int32_t nStartChar, const std::wstring& newText, const std::wstring& oldText);
 
     /** Calculate the rectangle region occupied by the text from the cache
     */
@@ -425,7 +425,7 @@ private:
 
     /** Determine whether a character is a separator (space, punctuation mark, etc.)
     */
-    bool IsSeperatorChar(DStringW::value_type ch) const;
+    bool IsSeperatorChar(std::wstring::value_type ch) const;
 
     /** Get the physical row number and the logical row number within the row of the specified character
     * @param [in] nCharIndex The character index position
@@ -542,8 +542,8 @@ private:
     struct TUndoData
     {
         int32_t m_nStartChar = -1;
-        DStringW m_newText;
-        DStringW m_oldText;
+        std::wstring m_newText;
+        std::wstring m_oldText;
     };
 
     /** Undo data list

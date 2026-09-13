@@ -16,7 +16,7 @@ CefManager_Linux::~CefManager_Linux()
 }
 
 bool CefManager_Linux::Initialize(bool bEnableOffScreenRendering,
-                                  const DString& appName,
+                                  const std::string& appName,
                                   int argc,
                                   char** argv,
                                   OnCefSettingsEvent callback,

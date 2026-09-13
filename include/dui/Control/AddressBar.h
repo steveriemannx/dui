@@ -17,17 +17,17 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void SetPos(UiRect rc) override;
 
     /** Set the path
     */
-    void SetAddressPath(const DString& addressPath);
+    void SetAddressPath(const std::string& addressPath);
 
     /** Get the path
     */
-    DString GetAddressPath() const;
+    std::string GetAddressPath() const;
 
     /** Show or hide the address bar edit control
     * @param [in] bShow true means show the edit control, false means hide the edit control
@@ -36,11 +36,11 @@ public:
 
     /** The sub-path most recently clicked by the user on an address bar sub-path button
     */
-    DString GetClickedAddressPath() const;
+    std::string GetClickedAddressPath() const;
 
     /** Get the path displayed by the control last time
     */
-    DString GetPreviousAddressPath() const;
+    std::string GetPreviousAddressPath() const;
 
 public:
     /** Set whether to show the tooltip of the path
@@ -77,51 +77,51 @@ public:
 
     /** Set the Class of the edit control
     */
-    void SetRichEditClass(const DString& editClass);
+    void SetRichEditClass(const std::string& editClass);
 
     /** Get the Class of the edit control
     */
-    DString GetRichEditClass() const;
+    std::string GetRichEditClass() const;
 
     /** Set the clear button Class of the edit control
     */
-    void SetRichEditClearBtnClass(const DString& clearBtnClass);
+    void SetRichEditClearBtnClass(const std::string& clearBtnClass);
 
     /** Get the clear button Class of the edit control
     */
-    DString GetRichEditClearBtnClass() const;
+    std::string GetRichEditClearBtnClass() const;
 
     /** Set the Class of the address bar path container (HBox); each sub-path has one HBox container
     */
-    void SetSubPathHBoxClass(const DString& hboxClass);
+    void SetSubPathHBoxClass(const std::string& hboxClass);
 
     /** Get the Class of the address bar path container (HBox)
     */
-    DString GetSubPathHBoxClass() const;
+    std::string GetSubPathHBoxClass() const;
 
     /** Set the Class of the address bar sub-path buttons
     */
-    void SetSubPathBtnClass(const DString& subPathBtnClass);
+    void SetSubPathBtnClass(const std::string& subPathBtnClass);
 
     /** Get the Class of the address bar sub-path buttons
     */
-    DString GetSubPathBtnClass() const;
+    std::string GetSubPathBtnClass() const;
 
     /** Set the Class of the address bar root path (the "/" path)
     */
-    void SetSubPathRootClass(const DString& subPathRootClass);
+    void SetSubPathRootClass(const std::string& subPathRootClass);
 
     /** Get the Class of the address bar root path (the "/" path)
     */
-    DString GetSubPathRootClass() const;
+    std::string GetSubPathRootClass() const;
 
     /** Set the Class of the address bar path separator
     */
-    void SetPathSeparatorClass(const DString& pathSeparatorClass);
+    void SetPathSeparatorClass(const std::string& pathSeparatorClass);
 
     /** Get the Class of the address bar path separator
     */
-    DString GetPathSeparatorClass() const;
+    std::string GetPathSeparatorClass() const;
 
 public:
     /** Listen to the path change event of the address bar (the address bar edit control data is applied when Enter is pressed or focus is lost)
@@ -163,7 +163,7 @@ private:
     * @param [in] displayName The display name
     * @param [in] filePath The local path of the file
     */
-    bool AddSubPath(const DString& displayName, const DString& filePath);
+    bool AddSubPath(const std::string& displayName, const std::string& filePath);
 
     /** Enter is pressed in the address bar edit control
     */
@@ -183,11 +183,11 @@ private:
 
     /** The user clicked a sub-path
     */
-    void OnClickedSubPath(const DString& filePath);
+    void OnClickedSubPath(const std::string& filePath);
 
     /** Set up the address display controls
     */
-    bool UpdateAddressBarControls(const DString& addressPath);
+    bool UpdateAddressBarControls(const std::string& addressPath);
 
     /** Update the status of the address display controls
     */

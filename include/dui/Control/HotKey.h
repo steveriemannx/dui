@@ -18,11 +18,11 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
     /** Set attributes
     */
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** Let the control get the focus
      */
@@ -53,19 +53,19 @@ public:
 
     /** Get the display name of the hotkey, such as "Ctrl + C", etc.
     */
-    DString GetHotKeyName() const;
+    std::string GetHotKeyName() const;
 
     /** Set the hotkey according to the display name
     * @param [in] hotKeyName The hotkey name, such as "Ctrl + C", etc.
     */
-    bool SetHotKeyName(const DString& hotKeyName);
+    bool SetHotKeyName(const std::string& hotKeyName);
 
 public:
     /** Get the display name of the key
     * @param [in] wVirtualKeyCode Virtual key code, such as VK_DOWN, etc.
     * @param [in] fExtended If the virtual key code is an extended key, it is true; otherwise it is false.
     */
-    static DString GetKeyName(uint8_t wVirtualKeyCode, bool fExtended);
+    static std::string GetKeyName(uint8_t wVirtualKeyCode, bool fExtended);
 
 protected:
 

@@ -380,48 +380,48 @@ Combo::~Combo()
     }
 }
 
-DString Combo::GetType() const { return DUI_CTR_COMBO; }
+std::string Combo::GetType() const { return DUI_CTR_COMBO; }
 
-void Combo::SetAttribute(const DString& strName, const DString& strValue)
+void Combo::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("combo_type")) {
-        if (strValue == DUI_T("drop_list")) {
+    if (strName == "combo_type") {
+        if (strValue == "drop_list") {
             SetComboType(kCombo_DropList);
         }
-        else if (strValue == DUI_T("drop_down")) {
+        else if (strValue == "drop_down") {
             SetComboType(kCombo_DropDown);
         }
     }
-    else if (strName == DUI_T("shadow_type")) {
+    else if (strName == "shadow_type") {
         //Set the shadow type of the drop-down window
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
         if (Shadow::GetShadowType(strValue, nShadowType)) {
             SetComboWndShadowType(nShadowType);
         }
     }
-    else if ((strName == DUI_T("dropbox_size")) || (strName == DUI_T("dropboxsize")) ) {
+    else if ((strName == "dropbox_size") || (strName == "dropboxsize") ) {
         //Set the size of the drop-down list (width and height)
         UiSize szDropBoxSize;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szDropBoxSize);
         SetDropBoxSize(szDropBoxSize, true);
     }
-    else if ((strName == DUI_T("popup_top")) || (strName == DUI_T("popuptop"))) {
+    else if ((strName == "popup_top") || (strName == "popuptop")) {
         //Whether the drop-down list pops up upward
-        SetPopupTop(strValue == DUI_T("true"));
+        SetPopupTop(strValue == "true");
     }
-    else if (strName == DUI_T("combo_tree_view_class")) {
+    else if (strName == "combo_tree_view_class") {
         SetComboTreeClass(strValue);
     }
-    else if (strName == DUI_T("combo_tree_node_class")) {
+    else if (strName == "combo_tree_node_class") {
         SetComboTreeNodeClass(strValue);
     }
-    else if (strName == DUI_T("combo_icon_class")) {
+    else if (strName == "combo_icon_class") {
         SetIconControlClass(strValue);
     }
-    else if (strName == DUI_T("combo_edit_class")) {
+    else if (strName == "combo_edit_class") {
         SetEditControlClass(strValue);
     }
-    else if (strName == DUI_T("combo_button_class")) {
+    else if (strName == "combo_button_class") {
         SetButtonControlClass(strValue);
     }
     else {
@@ -461,7 +461,7 @@ void Combo::ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale)
     BaseClass::ChangeDpiScale(nOldDpiScale, nNewDpiScale);
 }
 
-void Combo::SetComboTreeClass(const DString& classValue)
+void Combo::SetComboTreeClass(const std::string& classValue)
 {
     if (m_treeView.GetWindow() == nullptr) {
         m_treeView.SetWindow(GetWindow());
@@ -469,12 +469,12 @@ void Combo::SetComboTreeClass(const DString& classValue)
     SetAttributeList(&m_treeView, classValue);
 }
 
-void Combo::SetComboTreeNodeClass(const DString& classValue)
+void Combo::SetComboTreeNodeClass(const std::string& classValue)
 {
     m_treeNodeClass = classValue;
 }
 
-void Combo::SetIconControlClass(const DString& classValue)
+void Combo::SetIconControlClass(const std::string& classValue)
 {
     if (classValue.empty()) {
         RemoveControl(m_pIconControl.get());
@@ -491,7 +491,7 @@ void Combo::SetIconControlClass(const DString& classValue)
     }
 }
 
-void Combo::SetEditControlClass(const DString& classValue)
+void Combo::SetEditControlClass(const std::string& classValue)
 {
     if (classValue.empty()) {
         RemoveControl(m_pEditControl.get());
@@ -508,7 +508,7 @@ void Combo::SetEditControlClass(const DString& classValue)
     }    
 }
 
-void Combo::SetButtonControlClass(const DString& classValue)
+void Combo::SetButtonControlClass(const std::string& classValue)
 {
     if (classValue.empty()) {
         RemoveControl(m_pButtonControl.get());
@@ -525,31 +525,31 @@ void Combo::SetButtonControlClass(const DString& classValue)
     }
 }
 
-void Combo::ParseAttributeList(const DString& strList,
-                               std::vector<std::pair<DString, DString>>& attributeList) const
+void Combo::ParseAttributeList(const std::string& strList,
+                               std::vector<std::pair<std::string, std::string>>& attributeList) const
 {
     if (strList.empty()) {
         return;
     }
-    DString strValue = strList;
+    std::string strValue = strList;
     //These are hand-written attributes; curly braces {} are used instead of double quotes, so no escape characters are needed when writing them;
-    StringUtil::ReplaceAll(DUI_T("{"), DUI_T("\""), strValue);
-    StringUtil::ReplaceAll(DUI_T("}"), DUI_T("\""), strValue);
-    if (strValue.find(DUI_T("\"")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, DUI_T('\"'), attributeList);
+    StringUtil::ReplaceAll("{", "\"", strValue);
+    StringUtil::ReplaceAll("}", "\"", strValue);
+    if (strValue.find("\"") != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strValue, '\"', attributeList);
     }
-    else if (strValue.find(DUI_T("\'")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, DUI_T('\''), attributeList);
+    else if (strValue.find("\'") != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strValue, '\'', attributeList);
     }
 }
 
-void Combo::SetAttributeList(Control* pControl, const DString& classValue)
+void Combo::SetAttributeList(Control* pControl, const std::string& classValue)
 {
     ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return;
     }
-    std::vector<std::pair<DString, DString>> attributeList;
+    std::vector<std::pair<std::string, std::string>> attributeList;
     ParseAttributeList(classValue, attributeList);
     if (!attributeList.empty()) {
         //Set according to the attribute list
@@ -578,9 +578,9 @@ bool Combo::CanPlaceCaptionBar() const
     return true;
 }
 
-DString Combo::GetBorderColor(ControlStateType stateType) const
+std::string Combo::GetBorderColor(ControlStateType stateType) const
 {
-    DString borderColor;
+    std::string borderColor;
     if (m_pIconControl != nullptr) {
         if (m_pIconControl->IsFocused() || m_pIconControl->IsMouseFocused()) {
             borderColor = BaseClass::GetBorderColor(kControlStateHot);
@@ -766,7 +766,7 @@ bool Combo::SetItemData(size_t iIndex, size_t itemData)
     return false;
 }
 
-DString Combo::GetItemText(size_t iIndex) const
+std::string Combo::GetItemText(size_t iIndex) const
 {
     Control* pControl = m_treeView.GetItemAt(iIndex);
     if (pControl != nullptr) {
@@ -776,10 +776,10 @@ DString Combo::GetItemText(size_t iIndex) const
             return pTreeNode->GetText();
         }        
     }
-    return DString();
+    return std::string();
 }
 
-DString Combo::GetItemTextId(size_t iIndex) const
+std::string Combo::GetItemTextId(size_t iIndex) const
 {
     Control* pControl = m_treeView.GetItemAt(iIndex);
     if (pControl != nullptr) {
@@ -789,10 +789,10 @@ DString Combo::GetItemTextId(size_t iIndex) const
             return pTreeNode->GetTextId();
         }
     }
-    return DString();
+    return std::string();
 }
 
-bool Combo::SetItemText(size_t iIndex, const DString& itemText)
+bool Combo::SetItemText(size_t iIndex, const std::string& itemText)
 {
     Control* pControl = m_treeView.GetItemAt(iIndex);
     if (pControl != nullptr) {
@@ -807,7 +807,7 @@ bool Combo::SetItemText(size_t iIndex, const DString& itemText)
     return false;
 }
 
-bool Combo::SetItemTextId(size_t iIndex, const DString& itemTextId)
+bool Combo::SetItemTextId(size_t iIndex, const std::string& itemTextId)
 {
     Control* pControl = m_treeView.GetItemAt(iIndex);
     if (pControl != nullptr) {
@@ -822,27 +822,27 @@ bool Combo::SetItemTextId(size_t iIndex, const DString& itemTextId)
     return false;
 }
 
-size_t Combo::AddTextItem(const DString& itemText)
+size_t Combo::AddTextItem(const std::string& itemText)
 {
     return InsertTextItem(GetCount(), itemText);
 }
 
-size_t Combo::AddTextIdItem(const DString& itemTextId)
+size_t Combo::AddTextIdItem(const std::string& itemTextId)
 {
     return PrivateInsertTextItem(GetCount(), itemTextId, true);
 }
 
-size_t Combo::InsertTextItem(size_t iIndex, const DString& itemText)
+size_t Combo::InsertTextItem(size_t iIndex, const std::string& itemText)
 {
     return PrivateInsertTextItem(iIndex, itemText, false);
 }
 
-size_t Combo::InsertTextIdItem(size_t iIndex, const DString& itemTextId)
+size_t Combo::InsertTextIdItem(size_t iIndex, const std::string& itemTextId)
 {
     return PrivateInsertTextItem(iIndex, itemTextId, true);
 }
 
-size_t Combo::PrivateInsertTextItem(size_t iIndex, const DString& itemText, bool bTextId)
+size_t Combo::PrivateInsertTextItem(size_t iIndex, const std::string& itemText, bool bTextId)
 {
     ASSERT(iIndex <= GetCount());
     if (iIndex > GetCount()) {
@@ -904,7 +904,7 @@ void Combo::DeleteAllItems()
     OnSelectedItemChanged();
 }
 
-size_t Combo::SelectTextItem(const DString& itemText, bool bTriggerEvent)
+size_t Combo::SelectTextItem(const std::string& itemText, bool bTriggerEvent)
 {
     size_t nSelIndex = Box::InvalidIndex;
     size_t itemCount = m_treeView.GetItemCount();
@@ -928,7 +928,7 @@ size_t Combo::SelectTextItem(const DString& itemText, bool bTriggerEvent)
     return nSelIndex;
 }
 
-TreeNode* Combo::CreateTreeNode(const DString& itemText, bool bTextId)
+TreeNode* Combo::CreateTreeNode(const std::string& itemText, bool bTextId)
 {
     TreeNode* pNewNode = new TreeNode(GetWindow());
     if (!m_treeNodeClass.empty()) {
@@ -943,15 +943,15 @@ TreeNode* Combo::CreateTreeNode(const DString& itemText, bool bTextId)
     return pNewNode;
 }
 
-DString Combo::GetText() const
+std::string Combo::GetText() const
 {
     if (m_pEditControl != nullptr) {
         return m_pEditControl->GetText();
     }
-    return DString();
+    return std::string();
 }
 
-void Combo::SetText(const DString& text)
+void Combo::SetText(const std::string& text)
 {
     if (m_pEditControl != nullptr) {
         m_pEditControl->SetText(text);
@@ -977,7 +977,7 @@ bool Combo::OnSelectItem(const EventArgs& /*args*/)
     return true;
 }
 
-void Combo::OnComboWndClosed(bool bCanceled, bool needUpdateSelItem, const DString& oldEditText)
+void Combo::OnComboWndClosed(bool bCanceled, bool needUpdateSelItem, const std::string& oldEditText)
 {
     if (bCanceled) {
         size_t iOldSel = m_iCurSel;
@@ -1167,7 +1167,7 @@ void Combo::OnSelectedItemChanged()
             m_pEditControl->SetTextNoEvent(GetItemText(nSelIndex));
         }
         else {
-            m_pEditControl->SetTextNoEvent(DString());
+            m_pEditControl->SetTextNoEvent(std::string());
         }
     }
 }
@@ -1194,7 +1194,7 @@ void Combo::OnLanguageChanged()
 bool Combo::OnEditTextChanged(const ui::EventArgs& /*args*/)
 {
     if ((m_pWindow != nullptr) && !m_pWindow->IsClosingWnd()) {
-        DString editText = GetText();
+        std::string editText = GetText();
         //Convert to lowercase so that the comparison is case-insensitive
         editText = StringUtil::MakeLowerString(editText);
         size_t itemCount = m_treeView.GetItemCount();
@@ -1205,8 +1205,8 @@ bool Combo::OnEditTextChanged(const ui::EventArgs& /*args*/)
                 ASSERT(pTreeNode != nullptr);
                 if (pTreeNode != nullptr) {
                     pTreeNode->SetExpand(true, false);
-                    DString nodeText = StringUtil::MakeLowerString(pTreeNode->GetText());
-                    if (nodeText.find(editText) != DString::npos) {
+                    std::string nodeText = StringUtil::MakeLowerString(pTreeNode->GetText());
+                    if (nodeText.find(editText) != std::string::npos) {
                         m_treeView.EnsureVisible(iIndex, ListBoxVerVisible::kVisibleAtCenter);
                         break;
                     }

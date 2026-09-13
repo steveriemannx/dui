@@ -41,12 +41,12 @@ public:
 
     /** Get the web page title
     */
-    const DString& GetTitle() const;
+    const std::string& GetTitle() const;
 
     /** Initialize the browser box
     * @param [in] url the initial URL
     */
-    virtual void InitBrowserBox(const DString& url);
+    virtual void InitBrowserBox(const std::string& url);
 
     /** Uninitialize the browser box
     */
@@ -57,7 +57,7 @@ public:
 public:
     /** Control type
     */
-    virtual DString GetType() const override { return DUI_T("BrowserBox"); }
+    virtual std::string GetType() const override { return "BrowserBox"; }
 
     /**
     * Override the base class virtual function to specify the form this control belongs to
@@ -74,8 +74,8 @@ private:
     ui::WebView2Control* m_pWebView2Control;
     BrowserForm* m_pBrowserForm;
     std::string m_browserId;
-    DString m_url;
-    DString m_title;
+    std::string m_url;
+    std::string m_title;
 };
 
 #endif //EXAMPLES_BROWSER_BOX_H_

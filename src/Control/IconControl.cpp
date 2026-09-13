@@ -15,7 +15,7 @@ IconControl::~IconControl()
     m_pBitmap.reset();
 }
 
-DString IconControl::GetType() const { return DUI_CTR_ICON_CONTROL; }
+std::string IconControl::GetType() const { return DUI_CTR_ICON_CONTROL; }
 
 bool IconControl::SetIconData(int32_t nWidth, int32_t nHeight, const uint8_t* pPixelBits, int32_t nPixelBitsSize)
 {

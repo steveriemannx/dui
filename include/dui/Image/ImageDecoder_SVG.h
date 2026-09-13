@@ -15,12 +15,12 @@ public:
 
     /** Get the format name supported by this decoder
     */
-    virtual DString GetFormatName() const override;
+    virtual std::string GetFormatName() const override;
 
     /** Check whether this decoder supports the given file name
     * @param [in] imageFilePath Physical file name (e.g.: "File.jpg", can include a path), or virtual file name (e.g.: "icon:1")
     */
-    virtual bool CanDecode(const DString& imageFilePath) const override;
+    virtual bool CanDecode(const std::string& imageFilePath) const override;
 
     /** Check whether this decoder supports the given data stream
     * @param [in] data The start address of the data

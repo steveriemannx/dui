@@ -8,7 +8,7 @@
 #include "dui/Utils/AppEntry.h"
 
 App::App() :
-    FrameworkThread(DUI_T("App"), ui::kThreadUI)
+    FrameworkThread("App", ui::kThreadUI)
 {
 }
 
@@ -40,7 +40,7 @@ int App::Run(int argc, char** argv)
     if (processType != ui::CefManager::BrowserProcess) {
         //Non-Browser process: should not include Browser process code
         int32_t nExitCode = 1;
-        if (!ui::CefManager::GetInstance()->Initialize(bEnableOSR, DUI_T("cef_browser"), argc, argv, nullptr, nExitCode)) {
+        if (!ui::CefManager::GetInstance()->Initialize(bEnableOSR, "cef_browser", argc, argv, nullptr, nExitCode)) {
             return nExitCode;
         }
         return 0;
@@ -54,7 +54,7 @@ int App::Run(int argc, char** argv)
 
     //Initialize CEF: must be done after GlobalManager is initialized, because GlobalManager is used during CEF initialization
     int32_t nExitCode = 1;
-    if (!ui::CefManager::GetInstance()->Initialize(bEnableOSR, DUI_T("cef_browser"), argc, argv, nullptr, nExitCode)) {
+    if (!ui::CefManager::GetInstance()->Initialize(bEnableOSR, "cef_browser", argc, argv, nullptr, nExitCode)) {
         return nExitCode;
     }
 
@@ -127,7 +127,7 @@ void App::OnInit()
 
     //Create the first window
     std::string id = BrowserManager::GetInstance()->CreateBrowserID();
-    BrowserManager::GetInstance()->CreateBorwserBox(nullptr, id, DUI_T(""));
+    BrowserManager::GetInstance()->CreateBorwserBox(nullptr, id, "");
 }
 
 void App::OnCleanup()
@@ -135,7 +135,7 @@ void App::OnCleanup()
     ui::GlobalManager::Instance().Shutdown();
 }
 
-void App::OnAlreadyRunningAppRelaunch(const std::vector<DString>& argumentList)
+void App::OnAlreadyRunningAppRelaunch(const std::vector<std::string>& argumentList)
 {
     if (ui::GlobalManager::Instance().IsInUIThread()) {
         //CEF 133 calls this interface
@@ -144,7 +144,7 @@ void App::OnAlreadyRunningAppRelaunch(const std::vector<DString>& argumentList)
             pBrowserForm->SetWindowForeground();
             if (!argumentList.empty()) {
                 //Only process the first argument
-                DString url = argumentList[0];
+                std::string url = argumentList[0];
                 pBrowserForm->OpenLinkUrl(url, false);
             }
         }

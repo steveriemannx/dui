@@ -18,9 +18,9 @@ public:
     virtual ~OptionTemplate() override;
         
     /// Override the parent class method to provide personalized functionality; please refer to the parent class declaration
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
     virtual void SetWindow(Window* pWindow) override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void Selected(bool bSelected, bool bTriggerEvent = false, uint64_t vkFlag = 0) override;
     virtual void Activate(const EventArgs* pMsg) override;
 
@@ -28,14 +28,14 @@ public:
      * @brief Get the name of the group it belongs to
      * @return Returns the group name
      */
-    virtual DString GetGroup() const;
+    virtual std::string GetGroup() const;
 
     /**
      * @brief Set the group it belongs to
      * @param[in] strGroupName The group name
      * @return None
      */
-    virtual void SetGroup(const DString& strGroupName);
+    virtual void SetGroup(const std::string& strGroupName);
 
 private:
 
@@ -59,16 +59,16 @@ OptionTemplate<InheritType>::~OptionTemplate()
 }
 
 template<typename InheritType>
-inline DString OptionTemplate<InheritType>::GetType() const { return DUI_CTR_OPTION; }
+inline std::string OptionTemplate<InheritType>::GetType() const { return DUI_CTR_OPTION; }
 
 template<>
-inline DString OptionTemplate<Box>::GetType() const { return DUI_CTR_OPTIONBOX; }
+inline std::string OptionTemplate<Box>::GetType() const { return DUI_CTR_OPTIONBOX; }
 
 template<>
-inline DString OptionTemplate<HBox>::GetType() const { return DUI_CTR_OPTIONHBOX; }
+inline std::string OptionTemplate<HBox>::GetType() const { return DUI_CTR_OPTIONHBOX; }
 
 template<>
-inline DString OptionTemplate<VBox>::GetType() const { return DUI_CTR_OPTIONVBOX; }
+inline std::string OptionTemplate<VBox>::GetType() const { return DUI_CTR_OPTIONVBOX; }
 
 template<typename InheritType>
 void OptionTemplate<InheritType>::SetWindow(Window* pWindow)
@@ -82,9 +82,9 @@ void OptionTemplate<InheritType>::SetWindow(Window* pWindow)
 }
 
 template<typename InheritType>
-void OptionTemplate<InheritType>::SetAttribute(const DString& strName, const DString& strValue)
+void OptionTemplate<InheritType>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("group")) {
+    if (strName == "group") {
         SetGroup(strValue);
     }
     else {
@@ -153,13 +153,13 @@ void OptionTemplate<InheritType>::Activate(const EventArgs* pMsg)
 }
 
 template<typename InheritType>
-DString OptionTemplate<InheritType>::GetGroup() const
+std::string OptionTemplate<InheritType>::GetGroup() const
 {
     return m_sGroupName.c_str();
 }
 
 template<typename InheritType>
-void OptionTemplate<InheritType>::SetGroup(const DString& strGroupName)
+void OptionTemplate<InheritType>::SetGroup(const std::string& strGroupName)
 {
     if (strGroupName.empty()) {
         if (m_sGroupName.empty()) {

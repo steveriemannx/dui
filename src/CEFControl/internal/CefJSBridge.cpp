@@ -301,7 +301,7 @@ bool CefJSBridge::ExecuteCppFunc(const CefString& function_name, const CefString
 
 CefString CefJSBridge::Int64ToCefString(int64_t nValue)
 {
-    DString str = StringUtil::Int64ToString(nValue);
+    std::string str = StringUtil::Int64ToString(nValue);
     return CefString(str);
 }
 

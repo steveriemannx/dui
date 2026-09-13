@@ -13,14 +13,14 @@ CefForm::~CefForm()
 {
 }
 
-DString CefForm::GetSkinFolder()
+std::string CefForm::GetSkinFolder()
 {
-    return DUI_T("cef");
+    return "cef";
 }
 
-DString CefForm::GetSkinFile()
+std::string CefForm::GetSkinFile()
 {
-    return DUI_T("cef.xml");
+    return "cef.xml";
 }
 
 void CefForm::OnInitWindow()
@@ -49,10 +49,10 @@ void CefForm::OnInitWindow()
     }
 
     // Find the specified control from the XML
-    m_pCefControl = ui::Find<ui::CefControl>(this, DUI_T("cef_control"));
-    m_pCefControlDev = ui::Find<ui::CefControl>(this, DUI_T("cef_control_dev"));
-    m_pDevToolBtn = ui::Find<ui::Button>(this, DUI_T("btn_dev_tool"));
-    m_pEditUrl = ui::Find<ui::RichEdit>(this, DUI_T("edit_url"));
+    m_pCefControl = ui::Find<ui::CefControl>(this, "cef_control");
+    m_pCefControlDev = ui::Find<ui::CefControl>(this, "cef_control_dev");
+    m_pDevToolBtn = ui::Find<ui::Button>(this, "btn_dev_tool");
+    m_pEditUrl = ui::Find<ui::RichEdit>(this, "edit_url");
     ASSERT(m_pDevToolBtn != nullptr);
 
     // Set the input box style
@@ -60,11 +60,11 @@ void CefForm::OnInitWindow()
         m_pEditUrl->SetSelAllOnFocus(true);
     }
 
-    if (ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("btn_back"))) {
+    if (ui::Control* pControl = ui::Find<ui::Control>(this, "btn_back")) {
         pControl->SetEnabled(false);
     }
 
-    if (ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("btn_forward"))) {
+    if (ui::Control* pControl = ui::Find<ui::Control>(this, "btn_forward")) {
         pControl->SetEnabled(false);
     }
 
@@ -85,9 +85,9 @@ void CefForm::OnInitWindow()
 
 #ifdef DUI_BUILD_FOR_WAYLAND
     //Show basic native backend information
-    DString driverName = GetVideoDriverName();
-    DString renderName = GetWindowRenderName();
-    DString logMsg = ui::StringUtil::Printf(DUI_T("[native backend: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
+    std::string driverName = GetVideoDriverName();
+    std::string renderName = GetWindowRenderName();
+    std::string logMsg = ui::StringUtil::Printf("[native backend: VideoDriver:\"%s\", RenderName:\"%s\"]", driverName.c_str(), renderName.c_str());
     std::cout << logMsg << std::endl;
 #endif
 
@@ -122,9 +122,9 @@ void CefForm::BindEvents()
     }
 
     //Fullscreen page
-    if (ui::Button* pFullscreenBtn = ui::Find<ui::Button>(this, DUI_T("cef_full_screen_btn"))) {
+    if (ui::Button* pFullscreenBtn = ui::Find<ui::Button>(this, "cef_full_screen_btn")) {
         pFullscreenBtn->AttachClick([this](const ui::EventArgs&) {
-            ui::Control* pCefControl = ui::Find<ui::Control>(this, DUI_T("cef_control"));
+            ui::Control* pCefControl = ui::Find<ui::Control>(this, "cef_control");
             if (pCefControl != nullptr) {
                 this->SetFullscreenControl(pCefControl);
             }
@@ -191,14 +191,14 @@ void CefForm::SwitchShowDevTools()
     }
 }
 
-void CefForm::OnAlreadyRunningAppRelaunch(const std::vector<DString>& argumentList)
+void CefForm::OnAlreadyRunningAppRelaunch(const std::vector<std::string>& argumentList)
 {
     if (ui::GlobalManager::Instance().IsInUIThread()) {
         //CEF 133 calls this interface
         SetWindowForeground();
         if (!argumentList.empty()) {
             //Only process the first argument
-            DString url = argumentList[0];
+            std::string url = argumentList[0];
             if (m_pCefControl != nullptr) {                
                 m_pCefControl->LoadURL(url);
                 m_pCefControl->SetFocus();
@@ -213,26 +213,26 @@ void CefForm::OnAlreadyRunningAppRelaunch(const std::vector<DString>& argumentLi
 
 bool CefForm::OnClicked(const ui::EventArgs& msg)
 {
-    DString name = msg.GetSender()->GetName();
+    std::string name = msg.GetSender()->GetName();
 
-    if (name == DUI_T("btn_dev_tool")) {
+    if (name == "btn_dev_tool") {
         SwitchShowDevTools();
     }
-    else if (name == DUI_T("btn_back")) {
+    else if (name == "btn_back") {
         if (m_pCefControl != nullptr) {
             m_pCefControl->GoBack();
         }
     }
-    else if (name == DUI_T("btn_forward")) {
+    else if (name == "btn_forward") {
         if (m_pCefControl != nullptr) {
             m_pCefControl->GoForward();
         }
     }
-    else if (name == DUI_T("btn_navigate")) {
+    else if (name == "btn_navigate") {
         ui::EventArgs emptyMsg;
         OnNavigate(emptyMsg);
     }
-    else if (name == DUI_T("btn_refresh")) {
+    else if (name == "btn_refresh") {
         if (m_pCefControl != nullptr) {
             m_pCefControl->Refresh();
         }
@@ -246,16 +246,16 @@ bool CefForm::OnNavigate(const ui::EventArgs& /*msg*/)
         return true;
     }
 
-    DString url = m_pEditUrl->GetText();
+    std::string url = m_pEditUrl->GetText();
     ui::StringUtil::Trim(url);
     if (url.empty()) {
         return true;
     }
 
     // Treat a plain host name as an HTTPS URL, like a normal browser address bar.
-    if (url.find(DUI_T("://")) == DString::npos &&
-        url.find(DUI_T(":")) == DString::npos) {
-        url.insert(0, DUI_T("https://"));
+    if (url.find("://") == std::string::npos &&
+        url.find(":") == std::string::npos) {
+        url.insert(0, "https://");
     }
 
     m_pEditUrl->SetText(url);
@@ -297,23 +297,23 @@ void CefForm::OnContextMenuDismissed(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
     ASSERT(CefCurrentlyOn(TID_UI));
 }
 
-void CefForm::OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title)
+void CefForm::OnTitleChange(CefRefPtr<CefBrowser> browser, const std::string& title)
 {
     ui::GlobalManager::Instance().AssertUIThread();
-    if (ui::Label* pLabelTitle = ui::Find<ui::Label>(this, DUI_T("page_title"))) {
+    if (ui::Label* pLabelTitle = ui::Find<ui::Label>(this, "page_title")) {
         pLabelTitle->SetText(title);
     }
 }
     
-void CefForm::OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const DString& url)
+void CefForm::OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const std::string& url)
 {
     ui::GlobalManager::Instance().AssertUIThread();
 }
     
-void CefForm::OnMainUrlChange(const DString& oldUrl, const DString& newUrl)
+void CefForm::OnMainUrlChange(const std::string& oldUrl, const std::string& newUrl)
 {
     ui::GlobalManager::Instance().AssertUIThread();
-    if (ui::RichEdit* pEditUrl = ui::Find<ui::RichEdit>(this, DUI_T("edit_url"))) {
+    if (ui::RichEdit* pEditUrl = ui::Find<ui::RichEdit>(this, "edit_url")) {
         pEditUrl->SetText(newUrl);
     }
 }
@@ -328,7 +328,7 @@ void CefForm::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool bFullsc
     ui::GlobalManager::Instance().AssertUIThread();
 }
     
-void CefForm::OnStatusMessage(CefRefPtr<CefBrowser> browser, const DString& value)
+void CefForm::OnStatusMessage(CefRefPtr<CefBrowser> browser, const std::string& value)
 {
     ui::GlobalManager::Instance().AssertUIThread();
 }
@@ -464,11 +464,11 @@ void CefForm::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading
 {
     ui::GlobalManager::Instance().AssertUIThread();
     if (m_pCefControl != nullptr) {
-        if (ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("btn_back"))) {
+        if (ui::Control* pControl = ui::Find<ui::Control>(this, "btn_back")) {
             pControl->SetEnabled(m_pCefControl->CanGoBack());
         }
 
-        if (ui::Control* pControl = ui::Find<ui::Control>(this, DUI_T("btn_forward"))) {
+        if (ui::Control* pControl = ui::Find<ui::Control>(this, "btn_forward")) {
             pControl->SetEnabled(m_pCefControl->CanGoForward());
         }
     }
@@ -484,24 +484,24 @@ void CefForm::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame
     // Register methods for the frontend to call
     if (m_pCefControl != nullptr) {
         //Show a MessageBox
-        m_pCefControl->RegisterCppFunc(DUI_T("ShowMessageBox"), ToWeakCallback([this](const std::string& params, ui::ReportResultFunction callback) {
-            DString value = ui::StringConvert::UTF8ToT(params);
-            ui::SystemUtil::ShowMessageBox(this, value.c_str(), DUI_T("C++ received a message from JavaScript"));
+        m_pCefControl->RegisterCppFunc("ShowMessageBox", ToWeakCallback([this](const std::string& params, ui::ReportResultFunction callback) {
+            std::string value = ui::StringConvert::UTF8ToT(params);
+            ui::SystemUtil::ShowMessageBox(this, value.c_str(), "C++ received a message from JavaScript");
             callback(false, R"({ "message": "Success." })");
             }));
 
         //Receive the file drop operation from the web page
-        m_pCefControl->RegisterCppFunc(DUI_T("OnDropFilesToBrowser"), ToWeakCallback([this](const std::string& params, ui::ReportResultFunction callback) {
-            DString jsonDropFileList = ui::StringConvert::UTF8ToT(params);            
+        m_pCefControl->RegisterCppFunc("OnDropFilesToBrowser", ToWeakCallback([this](const std::string& params, ui::ReportResultFunction callback) {
+            std::string jsonDropFileList = ui::StringConvert::UTF8ToT(params);            
             callback(false, R"({ "message": "Success." })");
             OnDropFiles(jsonDropFileList);
             }));
     }
 }
 
-void CefForm::OnDropFiles(const DString& jsonDropFileList)
+void CefForm::OnDropFiles(const std::string& jsonDropFileList)
 {
-    ui::SystemUtil::ShowMessageBox(this, jsonDropFileList.c_str(), DUI_T("CefForm::OnDropFiles: C++ received a message from JavaScript"));
+    ui::SystemUtil::ShowMessageBox(this, jsonDropFileList.c_str(), "CefForm::OnDropFiles: C++ received a message from JavaScript");
     //Business logic
     //1. Parse the json and extract the file names and file sizes from jsonDropFileList (the web page cannot get the local paths of files)
     //2. Compare whether the files in the two file lists (m_dropFileList, jsonDropFileList) are the same (file count, file names, file sizes)
@@ -511,8 +511,8 @@ void CefForm::OnDropFiles(const DString& jsonDropFileList)
 void CefForm::OnLoadError(CefRefPtr<CefBrowser> browser,
                           CefRefPtr<CefFrame> frame,
                           cef_errorcode_t errorCode,
-                          const DString& errorText,
-                          const DString& failedUrl)
+                          const std::string& errorText,
+                          const std::string& failedUrl)
 {
     ui::GlobalManager::Instance().AssertUIThread();
 }

@@ -31,8 +31,8 @@ public:
     virtual ~ControlDragableT() override;
 
     /// Override the parent class methods to provide customized functionality; please refer to the parent class declarations
-    virtual DString GetType() const override;    
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;    
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** Set whether dragging to change the control order is supported
     */
@@ -285,30 +285,30 @@ ControlDragableT<T>::~ControlDragableT()
 }
 
 template<typename T>
-inline DString ControlDragableT<T>::GetType() const { return DUI_CTR_CONTROL_DRAGABLE; }
+inline std::string ControlDragableT<T>::GetType() const { return DUI_CTR_CONTROL_DRAGABLE; }
 
 template<>
-inline DString ControlDragableT<Box>::GetType() const { return DUI_CTR_BOX_DRAGABLE; }
+inline std::string ControlDragableT<Box>::GetType() const { return DUI_CTR_BOX_DRAGABLE; }
 
 template<>
-inline DString ControlDragableT<HBox>::GetType() const { return DUI_CTR_HBOX_DRAGABLE; }
+inline std::string ControlDragableT<HBox>::GetType() const { return DUI_CTR_HBOX_DRAGABLE; }
 
 template<>
-inline DString ControlDragableT<VBox>::GetType() const { return DUI_CTR_VBOX_DRAGABLE; }
+inline std::string ControlDragableT<VBox>::GetType() const { return DUI_CTR_VBOX_DRAGABLE; }
 
 template<typename T>
-void ControlDragableT<T>::SetAttribute(const DString& strName, const DString& strValue)
+void ControlDragableT<T>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("drag_order")) {
+    if (strName == "drag_order") {
         // Whether dragging to adjust the order is supported (within the same container)
-        SetEnableDragOrder(strValue == DUI_T("true"));
+        SetEnableDragOrder(strValue == "true");
     }
-    else if (strName == DUI_T("drag_alpha")) {
+    else if (strName == "drag_alpha") {
         SetDragAlpha((uint8_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("drag_out")) {
+    else if (strName == "drag_out") {
         // Whether the drag-out operation is supported (between different containers in the same window)
-        SetEnableDragOut(strValue == DUI_T("true"));
+        SetEnableDragOut(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -896,9 +896,9 @@ template<typename T>
 Control* ControlDragableT<T>::CreateDestControl(Box* pTargetBox)
 {
     Control* pDestControl = new Control(this->GetWindow());
-    pDestControl->SetAttribute(DUI_T("bkcolor"), DUI_T("#FF5D6B99"));
-    pDestControl->SetAttribute(DUI_T("valign"), DUI_T("center"));
-    pDestControl->SetAttribute(DUI_T("halign"), DUI_T("center"));
+    pDestControl->SetAttribute("bkcolor", "#FF5D6B99");
+    pDestControl->SetAttribute("valign", "center");
+    pDestControl->SetAttribute("halign", "center");
 
     Layout* pLayout = nullptr;
     if (pTargetBox != nullptr) {
@@ -918,12 +918,12 @@ Control* ControlDragableT<T>::CreateDestControl(Box* pTargetBox)
     }
     if (!bInited) {        
         if ((pLayout != nullptr) && pLayout->IsVLayout()) {
-            pDestControl->SetAttribute(DUI_T("height"), DUI_T("4"));
-            pDestControl->SetAttribute(DUI_T("width"), DUI_T("80%"));
+            pDestControl->SetAttribute("height", "4");
+            pDestControl->SetAttribute("width", "80%");
         }
         else {
-            pDestControl->SetAttribute(DUI_T("width"), DUI_T("4"));
-            pDestControl->SetAttribute(DUI_T("height"), DUI_T("80%"));
+            pDestControl->SetAttribute("width", "4");
+            pDestControl->SetAttribute("height", "80%");
         }
     }
     return pDestControl;

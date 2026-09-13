@@ -51,8 +51,8 @@ public:
     * @param [in] fPagMaxFrameRate The maximum frame rate for PAG format playback by default (only for the PAG format)
     * @param [in] bAssertEnabled Whether assertions are allowed when image loading fails
     */
-    ImageLoadParam(DString srcWidth,
-                   DString srcHeight,
+    ImageLoadParam(std::string srcWidth,
+                   std::string srcHeight,
                    bool bImageDpiScaleEnabled,
                    uint32_t nLoadDpiScale /*= 100*/,
                    bool bAsyncDecode /*= false*/,
@@ -128,7 +128,7 @@ public:
     *   The complete format is: <full image path>@<UI scaling percentage>#<whether DPI adaptation is supported>$<width>:<height>
     * @param [in] nLoadDpiScale The DPI scaling percentage requested for the image
     */
-    DString GetLoadKey(uint32_t nLoadDpiScale) const;
+    std::string GetLoadKey(uint32_t nLoadDpiScale) const;
 
     /** Whether the image loading includes a fixed-size setting option
     */
@@ -162,11 +162,11 @@ public:
 private:
     /** Get the fixed size set for image loading
     */
-    bool GetScaledFixedSize(const DString& srcSize, uint32_t& nScaledSize) const;
+    bool GetScaledFixedSize(const std::string& srcSize, uint32_t& nScaledSize) const;
 
     /** Get the percentage size set for image loading
     */
-    bool GetScaledFixedPercent(const DString& srcSize, float& fScaledPercent) const;
+    bool GetScaledFixedPercent(const std::string& srcSize, float& fScaledPercent) const;
 
 private:
     //(Attribute name: "file") Local absolute path or relative path inside the embedded resources, excluding the attributes

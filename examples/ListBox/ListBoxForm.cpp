@@ -4,7 +4,7 @@
 
 void ListBoxForm::OnInitWindow()
 {
-    m_pListBox = ui::Find<ui::ListBox>(this, DUI_T("list"));
+    m_pListBox = ui::Find<ui::ListBox>(this, "list");
     ASSERT(m_pListBox != nullptr);
     if (m_pListBox == nullptr) {
         return;
@@ -17,19 +17,19 @@ void ListBoxForm::OnInitWindow()
     if (bVTileListBox) {
         //VTileListBox: set to fixed 2 columns, auto-calculate the Item width
         //m_pListBox->SetAttribute("item_size", "200，80");
-        m_pListBox->SetAttribute(DUI_T("columns"), DUI_T("2"));
-        m_pListBox->SetAttribute(DUI_T("auto_calc_item_size"), DUI_T("true"));
+        m_pListBox->SetAttribute("columns", "2");
+        m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
     else if (bHTileListBox) {
         //HTileListBox: set to fixed 2 rows, auto-calculate the Item height
         //m_pListBox->SetAttribute("item_size", "200，80");
-        m_pListBox->SetAttribute(DUI_T("rows"), DUI_T("2"));
-        m_pListBox->SetAttribute(DUI_T("auto_calc_item_size"), DUI_T("true"));
+        m_pListBox->SetAttribute("rows", "2");
+        m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
 
     for (auto i = 0; i < 300; i++) {
         Item* item = new Item(this);
-        ui::GlobalManager::Instance().FillBoxWithCache(item, ui::FilePath(DUI_T("list_box/item.xml")));
+        ui::GlobalManager::Instance().FillBoxWithCache(item, ui::FilePath("list_box/item.xml"));
 
         if (bVListBox) {
             //VListBox: set to the stretch type
@@ -49,8 +49,8 @@ void ListBoxForm::OnInitWindow()
             item->SetFixedHeight(ui::UiFixedInt::MakeAuto(), true, true);
         }
 
-        DString img = DUI_T("icon.png");
-        DString title = ui::StringUtil::Printf(DUI_T("Task [%02d]"), i);
+        std::string img = "icon.png";
+        std::string title = ui::StringUtil::Printf("Task [%02d]", i);
 
         item->InitSubControls(img, title);
         m_pListBox->AddItem(item);
@@ -75,7 +75,7 @@ void ListBoxForm::TestListBoxEvents(ui::ListBox* pListBox)
     //Attach events to test the event interfaces
     auto OnVirtualListBoxEvents = [this, pListBox](const ui::EventArgs& args) {
         ASSERT(pListBox == args.GetSender());
-        DString sInfo = GetEventDisplayInfo(args, pListBox);
+        std::string sInfo = GetEventDisplayInfo(args, pListBox);
         OutputDebugLog(sInfo);
         };
 
@@ -126,26 +126,26 @@ void ListBoxForm::TestListBoxEvents(ui::ListBox* pListBox)
         });
 }
 
-DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox* pListBox)
+std::string ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox* pListBox)
 {
-    DString sInfo = ui::EventUtils::EventTypeToString(args.eventType);
+    std::string sInfo = ui::EventUtils::EventTypeToString(args.eventType);
     while (sInfo.size() < 24) {
-        sInfo += DUI_T(" ");
+        sInfo += " ";
     }
     if (args.eventType == ui::kEventSelect) {
         size_t nNewItemIndex = (size_t)args.wParam;
         size_t nOldItemIndex = (size_t)args.lParam;
         if (nOldItemIndex != ui::Box::InvalidIndex) {
-            sInfo += ui::StringUtil::Printf(DUI_T("NewItemIndex=%zu, OldItemIndex=%zu"),
+            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu, OldItemIndex=%zu",
                                             nNewItemIndex, nOldItemIndex);
         }
         else {
-            sInfo += ui::StringUtil::Printf(DUI_T("NewItemIndex=%zu"), nNewItemIndex);
+            sInfo += ui::StringUtil::Printf("NewItemIndex=%zu", nNewItemIndex);
         }
     }
     else if (args.eventType == ui::kEventUnSelect) {
         size_t nItemIndex = (size_t)args.wParam;
-        sInfo += ui::StringUtil::Printf(DUI_T("ItemIndex=%zu"), nItemIndex);
+        sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
     }
     else if (args.eventType == ui::kEventSelChanged) {
         //No parameters
@@ -158,43 +158,43 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
              (args.eventType == ui::kEventReturn)) {
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += DUI_T("no params");
+            sInfo += "no params";
         }
         else {
-            sInfo += ui::StringUtil::Printf(DUI_T("ItemIndex=%zu"), nItemIndex);
+            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
         }
     }
     else if ((args.eventType == ui::kEventKeyDown) || (args.eventType == ui::kEventKeyUp)) {
         //Keyboard message
-        DString keyName = ui::Keyboard::GetKeyName(args.vkCode, false);
-        DString modifierKey;
+        std::string keyName = ui::Keyboard::GetKeyName(args.vkCode, false);
+        std::string modifierKey;
         if (args.vkCode != ui::VirtualKeyCode::kVK_CONTROL) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_CONTROL)) {
-                modifierKey += DUI_T("Ctrl+");
+                modifierKey += "Ctrl+";
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_SHIFT) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_SHIFT)) {
-                modifierKey += DUI_T("Shift+");
+                modifierKey += "Shift+";
             }
         }
         if (args.vkCode != ui::VirtualKeyCode::kVK_MENU) {
             if (ui::Keyboard::IsKeyDown(ui::VirtualKeyCode::kVK_MENU)) {
-                modifierKey += DUI_T("Alt+");
+                modifierKey += "Alt+";
             }
         }
-        sInfo += DUI_T("<");
+        sInfo += "<";
         sInfo += modifierKey;
         sInfo += keyName;
-        sInfo += DUI_T(">");
-        sInfo += DUI_T(" ");
+        sInfo += ">";
+        sInfo += " ";
 
         size_t nItemIndex = (size_t)args.wParam;
         if (nItemIndex == ui::Box::InvalidIndex) {
-            sInfo += DUI_T("no params");
+            sInfo += "no params";
         }
         else {
-            sInfo += ui::StringUtil::Printf(DUI_T("ItemIndex=%zu"), nItemIndex);
+            sInfo += ui::StringUtil::Printf("ItemIndex=%zu", nItemIndex);
         }
     }
     else {
@@ -203,7 +203,7 @@ DString ListBoxForm::GetEventDisplayInfo(const ui::EventArgs& args, ui::ListBox*
     return sInfo;
 }
 
-void ListBoxForm::OutputDebugLog(const DString& logMsg)
+void ListBoxForm::OutputDebugLog(const std::string& logMsg)
 {
 #if defined DUI_BUILD_FOR_WIN && defined _DEBUG
     //::OutputDebugString(logMsg.c_str());

@@ -18,8 +18,8 @@ public:
     virtual ~FilterCombo() override;
 
     /// Override the base class method to provide customized functionality; refer to the base class declaration
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
 protected:
     virtual void OnInit() override;
@@ -47,11 +47,11 @@ private:
 
     /** Filter the contents of the drop-down list
     */
-    void FilterComboList(const DString& filterText);
+    void FilterComboList(const std::string& filterText);
 
     /** Determine whether the text satisfies the filter condition
     */
-    bool IsFilterText(const DString& filterText, const DString& itemText) const;
+    bool IsFilterText(const std::string& filterText, const std::string& itemText) const;
 };
 
 } // namespace ui

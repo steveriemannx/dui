@@ -20,7 +20,7 @@ enum class ListCtrlType: int8_t
 */
 struct ListCtrlColumn
 {
-    DString text;                   //Text of the header
+    std::string text;                   //Text of the header
     int32_t nColumnWidth = 100;     //Column width; if bNeedDpiScale is true, DPI adaptive processing is performed
     int32_t nColumnWidthMin = 0;    //Minimum column width; 0 means using the default setting; if bNeedDpiScale is true, DPI adaptive processing is performed
     int32_t nColumnWidthMax = 0;    //Maximum column width; 0 means using the default setting; if bNeedDpiScale is true, DPI adaptive processing is performed
@@ -49,7 +49,7 @@ struct ListCtrlItemData
 */
 struct ListCtrlSubItemData
 {
-    DString text;                   //Text content
+    std::string text;                   //Text content
     int32_t nTextFormat = -1;       //Text alignment and other attributes; this attribute only applies to the Header, see DrawStringFormat in IRender.h for the value; if it is -1, the alignment of the default configuration is used
     int32_t nImageId = -1;          //Icon resource ID; if -1, no icon is displayed
     UiColor textColor;              //Text color
@@ -179,7 +179,7 @@ public:
     }
     /** Get the control type
     */
-    virtual DString GetType() const override { return DUI_T("ListCtrlIconViewItem"); }
+    virtual std::string GetType() const override { return "ListCtrlIconViewItem"; }
 
     /** Event handling function
     */
@@ -209,13 +209,13 @@ public:
 
     /** Get the text inside the text control
     */
-    DString GetLabelText() const
+    std::string GetLabelText() const
     {
         ListCtrlLabel* pLabel = GetListCtrlLabel();
         if (pLabel != nullptr) {
             return pLabel->GetText();
         }
-        return DString();
+        return std::string();
     }
 
     /** Get the child control at the mouse position
@@ -259,7 +259,7 @@ public:
     }
     /** Get the control type
     */
-    virtual DString GetType() const override { return DUI_T("ListCtrlListViewItem"); }
+    virtual std::string GetType() const override { return "ListCtrlListViewItem"; }
 
     /** Event handling function
     */
@@ -289,13 +289,13 @@ public:
 
     /** Get the text inside the text control
     */
-    DString GetLabelText() const
+    std::string GetLabelText() const
     {
         ListCtrlLabel* pLabel = GetListCtrlLabel();
         if (pLabel != nullptr) {
             return pLabel->GetText();
         }
-        return DString();
+        return std::string();
     }
 
     /** Get the child control at the mouse position

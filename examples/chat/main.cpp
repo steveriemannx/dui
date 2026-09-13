@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<MainForm>(DUI_T("chat"));
+    return ui::Run<MainForm>("chat");
 }

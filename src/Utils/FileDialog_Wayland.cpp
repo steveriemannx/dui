@@ -31,8 +31,8 @@ bool FileDialog::BrowseForFile(Window* pWindow,
     bool bOpenFileDialog,
     const std::vector<FileType>& fileTypes,
     int32_t nFileTypeIndex,
-    const DString& defaultExt,
-    const DString& fileName,
+    const std::string& defaultExt,
+    const std::string& fileName,
     const FilePath& defaultFilePath)
 {
     (void)pWindow; (void)filePath; (void)bOpenFileDialog; (void)fileTypes;
@@ -44,7 +44,7 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
     std::vector<FilePath>& filePaths,
     const std::vector<FileType>& fileTypes,
     int32_t nFileTypeIndex,
-    const DString& defaultExt,
+    const std::string& defaultExt,
     const FilePath& defaultLocation)
 {
     (void)pWindow; (void)filePaths; (void)fileTypes;

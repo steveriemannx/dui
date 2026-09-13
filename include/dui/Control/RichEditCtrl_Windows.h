@@ -43,9 +43,9 @@ public:
     static LPCTSTR GetLibraryName()
     {
 #if (_RICHEDIT_VER >= 0x0500)
-        return DUI_T("MSFTEDIT.DLL");
+        return "MSFTEDIT.DLL";
 #else
-        return DUI_T("RICHED20.DLL");
+        return "RICHED20.DLL";
 #endif
     }
 
@@ -236,11 +236,11 @@ public:
             return TRUE;
         }
         textLen += 1;
-        DStringW::value_type* pText = new DStringW::value_type[textLen];
+        std::wstring::value_type* pText = new std::wstring::value_type[textLen];
         if (pText == nullptr) {
             return FALSE;
         }
-        memset(pText, 0, sizeof(DStringW::value_type) * textLen);
+        memset(pText, 0, sizeof(std::wstring::value_type) * textLen);
         if (TxSendMessage(EM_GETSELTEXT, 0, (LPARAM)pText) == 0) {
             delete[] pText;
             return FALSE;

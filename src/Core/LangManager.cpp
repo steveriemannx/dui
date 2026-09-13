@@ -28,7 +28,7 @@ bool LangManager::LoadStringTable(const FilePath& strFilePath)
 
 bool LangManager::LoadStringTable(const std::vector<uint8_t>& fileData)
 {
-    std::vector<DString> string_list;
+    std::vector<std::string> string_list;
     if (fileData.empty()) {
         return false;
     }
@@ -45,7 +45,7 @@ bool LangManager::LoadStringTable(const std::vector<uint8_t>& fileData)
     StringUtil::ReplaceAll("\r", "\n", fragment);
     fragment.append("\n");
     std::string src;
-    DString string_resourse;
+    std::string string_resourse;
     for (const auto& it : fragment)    {
         if (it == '\0' || it == '\n') {
             if (!src.empty()) {
@@ -70,22 +70,22 @@ void LangManager::ClearStringTable()
     m_stringTable.clear();
 }
 
-bool LangManager::AnalyzeStringTable(const std::vector<DString>& list)
+bool LangManager::AnalyzeStringTable(const std::vector<std::string>& list)
 {
     int    nCount = (int)list.size();
     if (nCount <= 0) {
         return false;
     }
-    DString id;
-    DString strResource;
+    std::string id;
+    std::string strResource;
     for (int i = 0; i < nCount; ++i) {
-        const DString& strSrc = list[i];
-        if (strSrc.empty() || strSrc.at(0) == DUI_T(';')) {
+        const std::string& strSrc = list[i];
+        if (strSrc.empty() || strSrc.at(0) == ';') {
             //The comment starts with ";"
             continue;
         }
-        size_t pos = strSrc.find(DUI_T('='));
-        if (pos == DString::npos) {
+        size_t pos = strSrc.find('=');
+        if (pos == std::string::npos) {
             //No separator, ignore it
             continue;
         }
@@ -98,8 +98,8 @@ bool LangManager::AnalyzeStringTable(const std::vector<DString>& list)
             strResource = strSrc.substr(pos + 1);
             strResource = StringUtil::Trim(strResource);
             //Replace \n and \r with the real line feed and carriage return characters
-            StringUtil::ReplaceAll(DUI_T("\\r"), DUI_T("\r"), strResource);
-            StringUtil::ReplaceAll(DUI_T("\\n"), DUI_T("\n"), strResource);
+            StringUtil::ReplaceAll("\\r", "\r", strResource);
+            StringUtil::ReplaceAll("\\n", "\n", strResource);
         }
         else {
             strResource.clear();
@@ -111,9 +111,9 @@ bool LangManager::AnalyzeStringTable(const std::vector<DString>& list)
     return true;
 }
 
-DString LangManager::GetStringViaID(const DString& id)
+std::string LangManager::GetStringViaID(const std::string& id)
 {
-    DString text;
+    std::string text;
     if (id.empty()) {
         return text;
     }

@@ -30,13 +30,13 @@ public:
     /** DROP_COMPLETE + DROP_TEXT; there will be no more OnDropLeave afterwards
     *@param [in] textList The text content; each element in the list represents one line of text
     */
-    virtual void OnDropTexts(const std::vector<DString>& textList, const UiPoint& pt) override;
+    virtual void OnDropTexts(const std::vector<std::string>& textList, const UiPoint& pt) override;
 
     /** DROP_COMPLETE + DROP_FILE; there will be no more OnDropLeave afterwards
     *@param [in] source The drag and drop source
     *@param [in] fileList The file paths; each element in the list represents one file
     */
-    virtual void OnDropFiles(const DString& source, const std::vector<DString>& fileList, const UiPoint& pt) override;
+    virtual void OnDropFiles(const std::string& source, const std::vector<std::string>& fileList, const UiPoint& pt) override;
 
     /** DROP_COMPLETE or other messages causing the leave
     */

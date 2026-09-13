@@ -26,12 +26,12 @@ void ControlDropTargetImpl_MacOS::OnDropPosition(const UiPoint& /*pt*/)
     // TODO: macOS native drag and drop is not implemented yet
 }
 
-void ControlDropTargetImpl_MacOS::OnDropTexts(const std::vector<DString>& /*textList*/, const UiPoint& /*pt*/)
+void ControlDropTargetImpl_MacOS::OnDropTexts(const std::vector<std::string>& /*textList*/, const UiPoint& /*pt*/)
 {
     // TODO: macOS native drag and drop is not implemented yet
 }
 
-void ControlDropTargetImpl_MacOS::OnDropFiles(const DString& /*source*/, const std::vector<DString>& /*fileList*/, const UiPoint& /*pt*/)
+void ControlDropTargetImpl_MacOS::OnDropFiles(const std::string& /*source*/, const std::vector<std::string>& /*fileList*/, const UiPoint& /*pt*/)
 {
     // TODO: macOS native drag and drop is not implemented yet
 }

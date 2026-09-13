@@ -19,28 +19,28 @@ BoxShadow::BoxShadow(Control* pControl):
     }
 }
 
-void BoxShadow::SetBoxShadowString(const DString& strBoxShadow)
+void BoxShadow::SetBoxShadowString(const std::string& strBoxShadow)
 {
     // Format like: "color='black' offset='1,1' blur_radius='2' spread_radius='2'"
-    std::vector<std::pair<DString, DString>> attributeList;
-    AttributeUtil::ParseAttributeList(strBoxShadow, DUI_T('\''), attributeList);
+    std::vector<std::pair<std::string, std::string>> attributeList;
+    AttributeUtil::ParseAttributeList(strBoxShadow, '\'', attributeList);
     for (const auto& attribute : attributeList) {
-        const DString& name = attribute.first;
-        const DString& value = attribute.second;
+        const std::string& name = attribute.first;
+        const std::string& value = attribute.second;
         if (name.empty() || value.empty()) {
             continue;
         }
-        if (name == DUI_T("color")) {
+        if (name == "color") {
             m_strColor = value;
         }
-        else if (name == DUI_T("offset")) {
+        else if (name == "offset") {
             AttributeUtil::ParsePointValue(value.c_str(), m_cpOffset);
             ASSERT(m_pControl != nullptr);
             if (m_pControl != nullptr) {
                 m_pControl->Dpi().ScalePoint(m_cpOffset);
             }
         }
-        else if ((name == DUI_T("blur_radius")) || name == DUI_T("blurradius")) {
+        else if ((name == "blur_radius") || name == "blurradius") {
             m_nBlurRadius = StringUtil::StringToInt32(value);
             ASSERT(m_nBlurRadius >= 0);
             if (m_nBlurRadius < 0) {
@@ -51,7 +51,7 @@ void BoxShadow::SetBoxShadowString(const DString& strBoxShadow)
                 m_pControl->Dpi().ScaleInt(m_nBlurRadius);
             }
         }
-        else if ((name == DUI_T("spread_radius")) || (name == DUI_T("spreadradius"))) {
+        else if ((name == "spread_radius") || (name == "spreadradius")) {
             m_nSpreadRadius = StringUtil::StringToInt32(value);
             ASSERT(m_nSpreadRadius >= 0);
             if (m_nSpreadRadius < 0) {

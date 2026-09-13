@@ -25,7 +25,7 @@ bool FileDialog::BrowseForFolder(Window* pWindow, FilePath& folderPath, const Fi
 
         // Set the default folder
         if (!defaultLocation.IsEmpty()) {
-            DStringW defaultPath = defaultLocation.ToStringW();
+            std::wstring defaultPath = defaultLocation.ToStringW();
             IShellItem* psi = nullptr;
             hr = SHCreateItemFromParsingName(defaultPath.c_str(), nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
             if (SUCCEEDED(hr) && (psi != nullptr)) {
@@ -69,7 +69,7 @@ bool FileDialog::BrowseForFolders(Window* pWindow, std::vector<FilePath>& folder
 
         // Set the default folder
         if (!defaultLocation.IsEmpty()) {
-            DStringW defaultPath = defaultLocation.ToStringW();
+            std::wstring defaultPath = defaultLocation.ToStringW();
             IShellItem* psi = nullptr;
             hr = SHCreateItemFromParsingName(defaultPath.c_str(), nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
             if (SUCCEEDED(hr) && (psi != nullptr)) {
@@ -119,8 +119,8 @@ bool FileDialog::BrowseForFile(Window* pWindow,
                                bool bOpenFileDialog,
                                const std::vector<FileType>& fileTypes,
                                int32_t nFileTypeIndex,
-                               const DString& defaultExt,
-                               const DString& fileName,
+                               const std::string& defaultExt,
+                               const std::string& fileName,
                                const FilePath& defaultLocation)
 {
     filePath.Clear();
@@ -135,8 +135,8 @@ bool FileDialog::BrowseForFile(Window* pWindow,
     // The filter types are always Unicode strings
     struct FileTypeW
     {
-        DStringW szName;
-        DStringW szExt;
+        std::wstring szName;
+        std::wstring szExt;
     };
     std::vector<FileTypeW> fileTypesW;
     for (const FileType& fileType : fileTypes) {
@@ -164,12 +164,12 @@ bool FileDialog::BrowseForFile(Window* pWindow,
             ASSERT(SUCCEEDED(hr));
         }
 
-        DStringW fileNameW = StringConvert::TToWString(fileName);
+        std::wstring fileNameW = StringConvert::TToWString(fileName);
         pfd->SetFileName(fileNameW.c_str());
 
         // Set the default folder
         if (!defaultLocation.IsEmpty()) {
-            DStringW defaultPath = defaultLocation.ToStringW();
+            std::wstring defaultPath = defaultLocation.ToStringW();
             IShellItem* psi = nullptr;
             hr = SHCreateItemFromParsingName(defaultPath.c_str(), nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
             if (SUCCEEDED(hr) && (psi != nullptr)) {
@@ -202,7 +202,7 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
                                 std::vector<FilePath>& filePaths,                                
                                 const std::vector<FileType>& fileTypes,
                                 int32_t nFileTypeIndex,
-                                const DString& defaultExt,
+                                const std::string& defaultExt,
                                 const FilePath& defaultLocation)
 {
     filePaths.clear();
@@ -231,7 +231,7 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
 
         // Set the default folder
         if (!defaultLocation.IsEmpty()) {
-            DStringW defaultPath = defaultLocation.ToStringW();
+            std::wstring defaultPath = defaultLocation.ToStringW();
             IShellItem* psi = nullptr;
             hr = SHCreateItemFromParsingName(defaultPath.c_str(), nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
             if (SUCCEEDED(hr) && (psi != nullptr)) {
@@ -258,7 +258,7 @@ bool FileDialog::BrowseForFiles(Window* pWindow,
                         LPWSTR pName = nullptr;
                         hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pName);
                         if (SUCCEEDED(hr) && (pName != nullptr)) {
-                            DStringW folderPath = pName;
+                            std::wstring folderPath = pName;
                             ::CoTaskMemFree(pName);
                             pName = nullptr;
                             if (!folderPath.empty()) {

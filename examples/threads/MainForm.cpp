@@ -4,8 +4,8 @@
 
 void MainForm::OnInitWindow()
 {
-    m_pLogEdit = ui::Find<ui::RichEdit>(this, DUI_T("log_view"));
-    m_pRunningTimeLabel = ui::Find<ui::Label>(this, DUI_T("running_time"));
+    m_pLogEdit = ui::Find<ui::RichEdit>(this, "log_view");
+    m_pRunningTimeLabel = ui::Find<ui::Label>(this, "running_time");
     m_startTime = std::chrono::steady_clock::now();
 
     BindEvents();
@@ -21,8 +21,8 @@ void MainForm::OnCloseWindow()
 
 void MainForm::BindEvents()
 {
-    ui::Button* pButtonStart = ui::Find<ui::Button>(this, DUI_T("start_threads"));
-    ui::Button* pButtonStop = ui::Find<ui::Button>(this, DUI_T("stop_threads"));
+    ui::Button* pButtonStart = ui::Find<ui::Button>(this, "start_threads");
+    ui::Button* pButtonStop = ui::Find<ui::Button>(this, "stop_threads");
 
     if (pButtonStart != nullptr) {
         pButtonStart->SetEnabled(false);
@@ -51,12 +51,12 @@ void MainForm::BindEvents()
             });
     }
 
-    ui::Button* pRunTaskButton = ui::Find<ui::Button>(this, DUI_T("run_task_in_threads"));
+    ui::Button* pRunTaskButton = ui::Find<ui::Button>(this, "run_task_in_threads");
     if (pRunTaskButton != nullptr) {
         pRunTaskButton->AttachClick([this](const ui::EventArgs&) {
             // Execute the task in the worker thread
             int32_t nThreadIdentifier = 1;
-            ui::RichEdit* pThreadIdentifier = ui::Find<ui::RichEdit>(this, DUI_T("threads_identifier"));
+            ui::RichEdit* pThreadIdentifier = ui::Find<ui::RichEdit>(this, "threads_identifier");
             if (pThreadIdentifier != nullptr) {
                 // Get the worker thread identifier from the UI
                 nThreadIdentifier = (int32_t)pThreadIdentifier->GetTextNumber();
@@ -131,11 +131,11 @@ void MainForm::ExecuteTaskInThread()
 {
     ASSERT(!ui::GlobalManager::Instance().IsInUIThread());
 
-    DString systemThreadId = ui::FrameworkThread::ThreadIdToString(std::this_thread::get_id());
+    std::string systemThreadId = ui::FrameworkThread::ThreadIdToString(std::this_thread::get_id());
     int32_t nUIThreadIdentifier = ui::GlobalManager::Instance().Thread().GetCurrentThreadIdentifier();
 
     // Execute the actual computing task; here it only displays a log message (inter-thread communication is also used to let the main thread update the log data to the UI)
-    DString log = ui::StringUtil::Printf(DUI_T("[OS Thread ID: %s][UI library thread identifier: %d]: MainForm::ExecuteTaskInThread is running in a worker thread"),
+    std::string log = ui::StringUtil::Printf("[OS Thread ID: %s][UI library thread identifier: %d]: MainForm::ExecuteTaskInThread is running in a worker thread",
                                         systemThreadId.c_str(),
                                         nUIThreadIdentifier);
     PrintLog(log);
@@ -148,7 +148,7 @@ void MainForm::UpdateRunningTime()
         // Time shown in the UI: hours:minutes:seconds
         auto thisTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_startTime);
         int32_t seconds = (int32_t)thisTime.count();
-        DString msg = ui::StringUtil::Printf(DUI_T("%02d:%02d:%02d"), seconds / 60 / 60, seconds / 60, seconds % 60);
+        std::string msg = ui::StringUtil::Printf("%02d:%02d:%02d", seconds / 60 / 60, seconds / 60, seconds % 60);
         m_pRunningTimeLabel->SetText(msg);
     }
 }
@@ -161,13 +161,13 @@ void MainForm::UpdateUI()
     }
     else {
         // Set parameters such as the number of threads
-        ui::RichEdit* pThreadIdentifier = ui::Find<ui::RichEdit>(this, DUI_T("threads_identifier"));
-        ui::Button* pRunTaskButton = ui::Find<ui::Button>(this, DUI_T("run_task_in_threads"));
+        ui::RichEdit* pThreadIdentifier = ui::Find<ui::RichEdit>(this, "threads_identifier");
+        ui::Button* pRunTaskButton = ui::Find<ui::Button>(this, "run_task_in_threads");
         if (pThreadIdentifier != nullptr) {
             if (GetPoolThreadCount() > 0) {
                 pThreadIdentifier->SetMinNumber(ui::kThreadUser);
                 pThreadIdentifier->SetMaxNumber(ui::kThreadUser + GetPoolThreadCount() - 1);
-                pThreadIdentifier->SetText(DUI_T("1"));
+                pThreadIdentifier->SetText("1");
                 if (pRunTaskButton != nullptr) {
                     pRunTaskButton->SetEnabled(true);
                 }
@@ -175,7 +175,7 @@ void MainForm::UpdateUI()
             else {
                 pThreadIdentifier->SetMinNumber(0);
                 pThreadIdentifier->SetMaxNumber(0);
-                pThreadIdentifier->SetText(DUI_T("0"));
+                pThreadIdentifier->SetText("0");
                 if (pRunTaskButton != nullptr) {
                     pRunTaskButton->SetEnabled(false);
                 }
@@ -184,7 +184,7 @@ void MainForm::UpdateUI()
     }
 }
 
-void MainForm::PrintLog(const DString& log)
+void MainForm::PrintLog(const std::string& log)
 {
     if (!ui::GlobalManager::Instance().IsInUIThread()) {
         // Currently executed in the worker thread; send the function execution to the main thread (implemented via inter-thread communication; UiBind ensures no illegal access even when the this pointer becomes invalid)
@@ -193,9 +193,9 @@ void MainForm::PrintLog(const DString& log)
     else {
         // Currently executed in the main thread (UI thread): display the information on the UI
         if (m_pLogEdit != nullptr) {
-            DString line = ui::StringUtil::Printf(DUI_T("%04d: "), ++m_nLogLineNumber);
+            std::string line = ui::StringUtil::Printf("%04d: ", ++m_nLogLineNumber);
             line += log;
-            line += DUI_T("\n");
+            line += "\n";
             m_pLogEdit->AppendText(line);
         }
     }

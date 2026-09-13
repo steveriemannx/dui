@@ -21,10 +21,10 @@ ListCtrlIconView::~ListCtrlIconView()
 {
 }
 
-void ListCtrlIconView::SetAttribute(const DString& strName, const DString& strValue)
+void ListCtrlIconView::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("horizontal_layout")) {
-        SetHorizontalLayout(strValue == DUI_T("true"));
+    if (strName == "horizontal_layout") {
+        SetHorizontalLayout(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -241,7 +241,7 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
     //Attributes of the text
     pItemLabel->SetClass(m_pListCtrl->GetIconViewItemLabelClass());
 
-    DString imageString;
+    std::string imageString;
     UiSize imageSize;
     if (nImageId >= 0) {
         ImageListPtr pImageList = m_pListCtrl->GetImageList(ListCtrlType::Icon);
@@ -267,7 +267,7 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
         pItemLabel->SetText(pSubItemData->text.c_str());
     }
     else {
-        pItemLabel->SetText(DUI_T(""));
+        pItemLabel->SetText("");
     }
 
     //Set attributes such as not getting focus

@@ -199,9 +199,9 @@ bool MessageLoop_Wayland::CheckInitWayland()
     return true;
 }
 
-DString MessageLoop_Wayland::GetCurrentVideoDriverName()
+std::string MessageLoop_Wayland::GetCurrentVideoDriverName()
 {
-    return DUI_T("wayland");
+    return "wayland";
 }
 
 float MessageLoop_Wayland::GetPrimaryDisplayContentScale()

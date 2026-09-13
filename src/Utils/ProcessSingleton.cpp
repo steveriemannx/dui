@@ -60,8 +60,8 @@ void ProcessSingleton::LogError(const std::string& /*strMessage*/)
 void ProcessSingleton::OnAlreadyRunningAppRelaunch(const std::vector<std::string>& args)
 {
     if (m_fnCallback != nullptr) {
-        DString line;
-        std::vector<DString> argumentList;
+        std::string line;
+        std::vector<std::string> argumentList;
         for (const std::string& v : args) {
             line = StringConvert::UTF8ToT(v);
             if (!line.empty()) {
@@ -72,7 +72,7 @@ void ProcessSingleton::OnAlreadyRunningAppRelaunch(const std::vector<std::string
     }
 }
 
-std::unique_ptr<ProcessSingleton> ProcessSingleton::Create(const DString& strAppName)
+std::unique_ptr<ProcessSingleton> ProcessSingleton::Create(const std::string& strAppName)
 {
     ASSERT(!strAppName.empty());
     if (strAppName.empty()) {

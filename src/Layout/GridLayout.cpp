@@ -19,11 +19,11 @@ GridLayout::GridLayout():
     SetChildVAlignType(VerAlignType::kAlignTop);
 }
 
-bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, const DpiManager& dpiManager)
+bool GridLayout::SetAttribute(const std::string& strName, const std::string& strValue, const DpiManager& dpiManager)
 {
     bool hasAttribute = true;
-    if (strName == DUI_T("rows")) {
-        if (strValue == DUI_T("auto")) {
+    if (strName == "rows") {
+        if (strValue == "auto") {
             // Auto-calculate
             SetRows(0);
         }
@@ -31,8 +31,8 @@ bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, c
             SetRows(StringUtil::StringToInt32(strValue));
         }
     }
-    else if (strName == DUI_T("columns")) {
-        if (strValue == DUI_T("auto")) {
+    else if (strName == "columns") {
+        if (strValue == "auto") {
             // Auto-calculate
             SetColumns(0);
         }
@@ -40,8 +40,8 @@ bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, c
             SetColumns(StringUtil::StringToInt32(strValue));
         }
     }
-    else if (strName == DUI_T("grid_width")) {
-        if (strValue == DUI_T("auto")) {
+    else if (strName == "grid_width") {
+        if (strValue == "auto") {
             // Auto-calculate
             SetGridWidth(0, false);
         }
@@ -51,8 +51,8 @@ bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, c
             SetGridWidth(nGridWidth, false);
         }
     }
-    else if (strName == DUI_T("grid_height")) {
-        if (strValue == DUI_T("auto")) {
+    else if (strName == "grid_height") {
+        if (strValue == "auto") {
             // Auto-calculate
             SetGridHeight(0, false);
         }
@@ -62,8 +62,8 @@ bool GridLayout::SetAttribute(const DString& strName, const DString& strValue, c
             SetGridHeight(nGridHeight, false);
         }
     }
-    else if (strName == DUI_T("scale_down")) {
-        SetScaleDown(strValue == DUI_T("true"));
+    else if (strName == "scale_down") {
+        SetScaleDown(strValue == "true");
     }
     else {
         hasAttribute = BaseClass::SetAttribute(strName, strValue, dpiManager);

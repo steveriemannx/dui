@@ -68,10 +68,10 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     DrawStringParam drawParam;
     drawParam.textRect = textRect;
     drawParam.dwTextColor = UiColor(UiColors::Blue);
-    drawParam.pFont = GetIFontById(DUI_T("system_14"));
+    drawParam.pFont = GetIFontById("system_14");
     drawParam.uFormat = TEXT_HCENTER | TEXT_VCENTER;
 
-    pRender->DrawString(DUI_T("DrawLine"), drawParam);
+    pRender->DrawString("DrawLine", drawParam);
 
     //Draw lines with various line styles
     rect.Offset(UiPoint(rect.Width() + 10, 0));
@@ -134,7 +134,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("DrawRect"), drawParam);
+    pRender->DrawString("DrawRect", drawParam);
 
     //Draw rectangles with various line styles
     for (size_t style = 0; style < 5; ++style) {
@@ -170,7 +170,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("FillRect"), drawParam);
+    pRender->DrawString("FillRect", drawParam);
 
     rect.left = rect.right + marginLeft;
     rect.right = rect.left + nSize;
@@ -180,7 +180,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("FillRect Alpha"), drawParam);
+    pRender->DrawString("FillRect Alpha", drawParam);
 
     //New line
     currentBottom = textRect.bottom;//Record the current bottom value
@@ -206,8 +206,8 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    drawParam.pFont = GetIFontById(DUI_T("system_12"));
-    pRender->DrawString(DUI_T("DrawRoundRect"), drawParam);
+    drawParam.pFont = GetIFontById("system_12");
+    pRender->DrawString("DrawRoundRect", drawParam);
 
     //Draw rounded rectangles with various line styles
     for (size_t style = 0; style < 5; ++style) {
@@ -242,8 +242,8 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    drawParam.pFont = GetIFontById(DUI_T("system_14"));
-    pRender->DrawString(DUI_T("FillRoundRect"), drawParam);
+    drawParam.pFont = GetIFontById("system_14");
+    pRender->DrawString("FillRoundRect", drawParam);
 
     rect.left = rect.right + marginLeft;
     rect.right = rect.left + nSize;
@@ -253,7 +253,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("FillRoundRect Alpha"), drawParam);
+    pRender->DrawString("FillRoundRect Alpha", drawParam);
 
     //New line
     currentBottom = textRect.bottom;//Record the current bottom value
@@ -273,7 +273,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("DrawCircle"), drawParam);
+    pRender->DrawString("DrawCircle", drawParam);
 
     //Draw circles with various line styles
     for (size_t style = 0; style < 5; ++style) {
@@ -307,7 +307,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("FillCircle"), drawParam);
+    pRender->DrawString("FillCircle", drawParam);
 
     rect.left = rect.right + marginLeft;
     rect.right = rect.left + nSize;
@@ -317,7 +317,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("FillCircle Alpha"), drawParam);
+    pRender->DrawString("FillCircle Alpha", drawParam);
     
     //New line
     currentBottom = textRect.bottom;//Record the current bottom value
@@ -354,7 +354,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("DrawPath"), drawParam);
+    pRender->DrawString("DrawPath", drawParam);
 
     //Fill a rounded quadrilateral with FillPath
     rect.left = rect.right + marginLeft;
@@ -387,7 +387,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("FillPath"), drawParam);
+    pRender->DrawString("FillPath", drawParam);
 
     //DrawBoxShadow
     rect.left = rect.right + marginLeft * 2;
@@ -406,8 +406,8 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    drawParam.pFont = GetIFontById(DUI_T("system_12"));
-    pRender->DrawString(DUI_T("DrawBoxShadow"), drawParam);
+    drawParam.pFont = GetIFontById("system_12");
+    pRender->DrawString("DrawBoxShadow", drawParam);
 
     //DrawBoxShadow
     rect.left = rect.right + marginLeft * 2 + 40;
@@ -421,7 +421,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("DrawBoxShadow"), drawParam);
+    pRender->DrawString("DrawBoxShadow", drawParam);
 
     //DrawBoxShadow
     rect.left = rect.right + marginLeft * 2 + 40;
@@ -438,7 +438,7 @@ void RenderTest2::Paint(IRender* pRender, const UiRect& rcPaint)
     textRect.bottom = textRect.top + nTextLineHeight;
 
     drawParam.textRect = textRect;
-    pRender->DrawString(DUI_T("DrawBoxShadow"), drawParam);
+    pRender->DrawString("DrawBoxShadow", drawParam);
 }
 
 void RenderTest2::PaintChild(IRender* pRender, const UiRect& rcPaint)

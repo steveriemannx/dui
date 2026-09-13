@@ -25,12 +25,12 @@ public:
     /** Code starts executing; start timing
     * @param [in] name Name of the statistic item
     */
-    void BeginStat(const DString& name);
+    void BeginStat(const std::string& name);
 
     /** Code finishes executing; measure execution performance
     * @param [in] name Name of the statistic item
     */
-    void EndStat(const DString& name);
+    void EndStat(const std::string& name);
     
 private:
     /** Records the result of each statistic
@@ -57,13 +57,13 @@ private:
         std::chrono::microseconds maxTime = std::chrono::microseconds::zero();
     };
 
-    std::map<DString, TStat> m_stat;
+    std::map<std::string, TStat> m_stat;
 };
 
 class PerformanceStat
 {
 public:
-    explicit PerformanceStat(const DString& statName):
+    explicit PerformanceStat(const std::string& statName):
         m_statName(statName)
     {
         PerformanceUtil::Instance().BeginStat(m_statName);
@@ -73,7 +73,7 @@ public:
         PerformanceUtil::Instance().EndStat(m_statName);
     }
 private:
-    DString m_statName;
+    std::string m_statName;
 };
 
 }

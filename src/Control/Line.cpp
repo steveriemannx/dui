@@ -15,22 +15,22 @@ Line::Line(Window* pWindow):
     SetLineWidth(1.0f, true);
 }
 
-DString Line::GetType() const { return DUI_CTR_LINE; }
+std::string Line::GetType() const { return DUI_CTR_LINE; }
 
-void Line::SetAttribute(const DString& strName, const DString& strValue)
+void Line::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("vertical")) {
-        SetLineVertical(strValue == DUI_T("true"));
+    if (strName == "vertical") {
+        SetLineVertical(strValue == "true");
     }
-    else if (strName == DUI_T("line_color")) {
+    else if (strName == "line_color") {
         SetLineColor(strValue);
     }
-    else if (strName == DUI_T("line_width")) {
+    else if (strName == "line_width") {
         if (!strValue.empty()) {
             SetLineWidth((float)StringUtil::StringToInt32(strValue), true);
         }
     }
-    else if (strName == DUI_T("dash_style")) {
+    else if (strName == "dash_style") {
         SetLineDashStyle(strValue);
     }
     else {
@@ -82,7 +82,7 @@ bool Line::IsLineVertical() const
     return m_bLineVertical;
 }
 
-void Line::SetLineColor(const DString& lineColor)
+void Line::SetLineColor(const std::string& lineColor)
 {
     if (m_lineColor != lineColor) {
         m_lineColor = lineColor;
@@ -90,27 +90,27 @@ void Line::SetLineColor(const DString& lineColor)
     }    
 }
 
-DString Line::GetLineColor() const
+std::string Line::GetLineColor() const
 {
     return m_lineColor.c_str();
 }
 
-void Line::SetLineDashStyle(const DString& dashStyle)
+void Line::SetLineDashStyle(const std::string& dashStyle)
 {
     int32_t oldDashStyle = m_dashStyle;
-    if (dashStyle == DUI_T("solid")) {
+    if (dashStyle == "solid") {
         m_dashStyle = IPen::kDashStyleSolid;
     }
-    else if (dashStyle == DUI_T("dash")) {
+    else if (dashStyle == "dash") {
         m_dashStyle = IPen::kDashStyleDash;
     }
-    else if (dashStyle == DUI_T("dot")) {
+    else if (dashStyle == "dot") {
         m_dashStyle = IPen::kDashStyleDot;
     }
-    else if (dashStyle == DUI_T("dash_dot")) {
+    else if (dashStyle == "dash_dot") {
         m_dashStyle = IPen::kDashStyleDashDot;
     }
-    else if (dashStyle == DUI_T("dash_dot_dot")) {
+    else if (dashStyle == "dash_dot_dot") {
         m_dashStyle = IPen::kDashStyleDashDotDot;
     }
     else {
@@ -121,25 +121,25 @@ void Line::SetLineDashStyle(const DString& dashStyle)
     }
 }
 
-DString Line::GetLineDashStyle() const
+std::string Line::GetLineDashStyle() const
 {
     if (m_dashStyle == IPen::kDashStyleSolid) {
-        return DUI_T("solid");
+        return "solid";
     }
     else if (m_dashStyle == IPen::kDashStyleDash) {
-        return DUI_T("dash");
+        return "dash";
     }
     else if (m_dashStyle == IPen::kDashStyleDot) {
-        return DUI_T("dot");
+        return "dot";
     }
     else if (m_dashStyle == IPen::kDashStyleDashDot) {
-        return DUI_T("dash_dot");
+        return "dash_dot";
     }
     else if (m_dashStyle == IPen::kDashStyleDashDotDot) {
-        return DUI_T("dash_dot_dot");
+        return "dash_dot_dot";
     }
     else {
-        return DUI_T("dash_dot");
+        return "dash_dot";
     }
 }
 
@@ -155,7 +155,7 @@ void Line::Paint(IRender* pRender, const UiRect& rcPaint)
         return;
     }
 
-    DString sLineColor = m_lineColor.c_str();
+    std::string sLineColor = m_lineColor.c_str();
     if (sLineColor.empty()) {
         sLineColor = GlobalManager::Instance().Color().GetDefaultTextColor();
     }

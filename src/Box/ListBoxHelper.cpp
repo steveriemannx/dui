@@ -14,8 +14,8 @@ ListBoxHelper::ListBoxHelper(ListBox* pListBox) :
     m_bMouseDownInView(false),
     m_bEnableFrameSelection(false),
     m_frameSelectionBorderSize(1),
-    m_frameSelectionBorderColor(DUI_T("#FF0078D7")),
-    m_frameSelectionColor(DUI_T("#FFAACCEE")),
+    m_frameSelectionBorderColor("#FF0078D7"),
+    m_frameSelectionColor("#FFAACCEE"),
     m_frameSelectionAlpha(128),
     m_nNormalItemTop(-1)
 {
@@ -35,12 +35,12 @@ bool ListBoxHelper::IsEnableFrameSelection() const
     return m_bEnableFrameSelection;
 }
 
-void ListBoxHelper::SetFrameSelectionColor(const DString& frameSelectionColor)
+void ListBoxHelper::SetFrameSelectionColor(const std::string& frameSelectionColor)
 {
     m_frameSelectionColor = frameSelectionColor;
 }
 
-DString ListBoxHelper::GetFrameSelectionColor() const
+std::string ListBoxHelper::GetFrameSelectionColor() const
 {
     return m_frameSelectionColor.c_str();
 }
@@ -55,12 +55,12 @@ uint8_t ListBoxHelper::GetFrameSelectionAlpha() const
     return m_frameSelectionAlpha;
 }
 
-void ListBoxHelper::SetFrameSelectionBorderColor(const DString& frameSelectionBorderColor)
+void ListBoxHelper::SetFrameSelectionBorderColor(const std::string& frameSelectionBorderColor)
 {
     m_frameSelectionBorderColor = frameSelectionBorderColor;
 }
 
-DString ListBoxHelper::GetFrameSelectionBorderColor() const
+std::string ListBoxHelper::GetFrameSelectionBorderColor() const
 {
     return m_frameSelectionBorderColor.c_str();
 }

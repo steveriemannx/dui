@@ -33,7 +33,7 @@ void ObservableObject::DetachPropertyChanged(size_t nCallbackID)
     }
 }
 
-bool ObservableObject::GetProperty(const DString& strPropertyName, DString& strValue) const
+bool ObservableObject::GetProperty(const std::string& strPropertyName, std::string& strValue) const
 {
     for (const PropertyEntry& entry : m_propertyList) {
         if ((entry.pValue != nullptr) && (entry.strName == strPropertyName)) {
@@ -44,7 +44,7 @@ bool ObservableObject::GetProperty(const DString& strPropertyName, DString& strV
     return false;
 }
 
-bool ObservableObject::SetProperty(const DString& strPropertyName, const DString& strValue)
+bool ObservableObject::SetProperty(const std::string& strPropertyName, const std::string& strValue)
 {
     for (PropertyEntry& entry : m_propertyList) {
         if ((entry.pValue != nullptr) && (entry.strName == strPropertyName)) {
@@ -55,7 +55,7 @@ bool ObservableObject::SetProperty(const DString& strPropertyName, const DString
     return false;
 }
 
-void ObservableObject::RegisterProperty(const DString& strPropertyName, DString& refValue)
+void ObservableObject::RegisterProperty(const std::string& strPropertyName, std::string& refValue)
 {
     for (PropertyEntry& entry : m_propertyList) {
         if (entry.strName == strPropertyName) {
@@ -71,7 +71,7 @@ void ObservableObject::RegisterProperty(const DString& strPropertyName, DString&
     m_propertyList.push_back(entry);
 }
 
-void ObservableObject::RaisePropertyChanged(const DString& strPropertyName)
+void ObservableObject::RaisePropertyChanged(const std::string& strPropertyName)
 {
     // Copy first: a callback is allowed to detach itself (or another binding)
     // while we are iterating, which would otherwise invalidate the iterator.
@@ -87,7 +87,7 @@ void ObservableObject::RaiseAllPropertiesChanged()
 {
     // An empty name means "everything": bindings re-pull regardless of which
     // property they follow, so a whole-model reload refreshes every target.
-    RaisePropertyChanged(DString());
+    RaisePropertyChanged(std::string());
 }
 
 } // namespace binding

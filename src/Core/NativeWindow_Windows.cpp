@@ -217,7 +217,7 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
 
     //Register the window class
     HMODULE hModule = GetResModuleHandle();
-    DString className = StringConvert::TToLocal(createParam.m_className);
+    std::wstring className = StringConvert::TToWString(createParam.m_className);
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = createParam.m_dwClassStyle;
@@ -283,7 +283,7 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
     m_hParentWnd = pParentWindow != nullptr ? pParentWindow->GetHWND() : nullptr;
 
     //Window title
-    DString windowTitle = StringConvert::TToLocal(m_createParam.m_windowTitle);
+    std::wstring windowTitle = StringConvert::TToWString(m_createParam.m_windowTitle);
     HWND hWnd = ::CreateWindowEx(m_createParam.m_dwExStyle,
                                  className.c_str(),
                                  windowTitle.c_str(),
@@ -462,7 +462,7 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
     //Handle IsDialogMessage to support text input in RichEdit controls
     {
         FARPROC targetFunc = nullptr;
-        HMODULE hModule = ::GetModuleHandle(DUI_T("User32.dll"));
+        HMODULE hModule = ::GetModuleHandle("User32.dll");
         if (hModule != nullptr) {
 #if defined(UNICODE) || defined(_UNICODE)
             targetFunc = ::GetProcAddress(hModule, "IsDialogMessageW");
@@ -506,7 +506,7 @@ bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, i
 
     //Register the window class
     HMODULE hModule = GetResModuleHandle();
-    DString className = StringConvert::TToLocal(pParentWindow->m_createParam.m_className);
+    std::wstring className = StringConvert::TToWString(pParentWindow->m_createParam.m_className);
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = pParentWindow->m_createParam.m_dwClassStyle;
@@ -557,7 +557,7 @@ bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, i
     m_bChildWindow = true;
 
     //Window title
-    DString windowTitle = StringConvert::TToLocal(m_createParam.m_windowTitle);
+    std::wstring windowTitle = StringConvert::TToWString(m_createParam.m_windowTitle);
     HWND hWnd = ::CreateWindowEx(m_createParam.m_dwExStyle,
                                  className.c_str(),
                                  windowTitle.c_str(),
@@ -734,7 +734,7 @@ void NativeWindow_Windows::InitNativeWindow()
     RegisterTouchWindowWrapper(hWnd, 0);
 
     if (!m_createParam.m_windowTitle.empty()) {
-        DString windowTitle = StringConvert::TToLocal(m_createParam.m_windowTitle);
+        std::wstring windowTitle = StringConvert::TToWString(m_createParam.m_windowTitle);
         ::SetWindowText(hWnd, windowTitle.c_str());
     }
 
@@ -1461,7 +1461,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     int32_t cxIcon = GetSystemMetricsForDpiWrapper(SM_CXICON, uDpi);
     int32_t cyIcon = GetSystemMetricsForDpiWrapper(SM_CYICON, uDpi);
     HICON hIcon = (HICON)::LoadImage(nullptr, iconFilePath.NativePath().c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
-    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), DUI_T(".ico"))) {
+    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), ".ico")) {
         ASSERT(hIcon != nullptr);
     }    
     if (hIcon != nullptr) {
@@ -1475,7 +1475,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     cxIcon = GetSystemMetricsForDpiWrapper(SM_CXSMICON, uDpi);
     cyIcon = GetSystemMetricsForDpiWrapper(SM_CYSMICON, uDpi);
     hIcon = (HICON)::LoadImage(nullptr, iconFilePath.NativePath().c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
-    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), DUI_T(".ico"))) {
+    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), ".ico")) {
         ASSERT(hIcon != nullptr);
     }
     if (hIcon != nullptr) {
@@ -1487,7 +1487,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     return true;
 }
 
-bool NativeWindow_Windows::SetWindowIcon(const std::vector<uint8_t>& iconFileData, const DString& iconFileName)
+bool NativeWindow_Windows::SetWindowIcon(const std::vector<uint8_t>& iconFileData, const std::string& iconFileName)
 {
     uint32_t uDpiScaleFactor = m_pOwner->OnNativeGetDpi().GetDisplayScaleFactor();
     HICON hSmallIcon = nullptr;
@@ -1500,30 +1500,27 @@ bool NativeWindow_Windows::SetWindowIcon(const std::vector<uint8_t>& iconFileDat
     return false;
 }
 
-void NativeWindow_Windows::SetText(const DString& strText)
+void NativeWindow_Windows::SetText(const std::string& strText)
 {
     ASSERT(::IsWindow(m_hWnd));
-#ifdef DUI_UNICODE
-    ::SetWindowText(m_hWnd, strText.c_str());
-#else
     //strText is UTF-8 encoded
-    DString localText = StringConvert::TToLocal(strText);
-    ::SetWindowText(m_hWnd, localText.c_str());
-#endif
+    const std::wstring wideText = StringConvert::TToWString(strText);
+    ::SetWindowText(m_hWnd, wideText.c_str());
 }
 
-DString NativeWindow_Windows::GetText() const
+std::string NativeWindow_Windows::GetText() const
 {
     ASSERT(::IsWindow(m_hWnd));
-    DString text;
+    std::string text;
     int nLen = ::GetWindowTextLength(m_hWnd);
     if (nLen > 0) {
-        std::vector<TCHAR> szText;
+        //With UNICODE defined, the unsuffixed GetWindowText is the -W variant, so
+        //the buffer holds UTF-16 and must be converted to the library's UTF-8.
+        std::vector<wchar_t> szText;
         szText.resize((size_t)nLen + 2);
-        memset(szText.data(), 0, szText.size() * sizeof(TCHAR));
+        memset(szText.data(), 0, szText.size() * sizeof(wchar_t));
         ::GetWindowText(m_hWnd, szText.data(), (int)szText.size() - 1);
-        DString localText = szText.data();
-        text = StringConvert::LocalToT(localText);
+        text = StringConvert::WStringToUTF8(std::wstring(szText.data()));
     }
     return text;
 }
@@ -2028,8 +2025,8 @@ bool NativeWindow_Windows::UnregisterHotKey(int32_t id)
 
 /** The property name of the window handle
 */
-static const DStringW::value_type* sPropName  = L"DuiWindow";     // Property name (for pointer validation)
-static const DStringW::value_type* sPropName2 = L"DuiWindow2";    // Property name (process ID)
+static const std::wstring::value_type* sPropName  = L"DuiWindow";     // Property name (for pointer validation)
+static const std::wstring::value_type* sPropName2 = L"DuiWindow2";    // Property name (process ID)
 
 LRESULT CALLBACK NativeWindow_Windows::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

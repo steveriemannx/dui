@@ -18,11 +18,11 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
     /** Set attributes
     */
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** DPI has changed, update the control size and layout
     * @param [in] nOldDpiScale The old DPI scale percentage

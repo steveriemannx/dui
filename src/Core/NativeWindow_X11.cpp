@@ -265,8 +265,8 @@ void NativeWindow_X11::PostQuitMsg(int32_t) { MessageLoop_X11::PostQuitEvent(); 
 bool NativeWindow_X11::EnterFullscreen() { m_bFullscreen = true; return true; }
 bool NativeWindow_X11::ExitFullscreen() { m_bFullscreen = false; return true; }
 bool NativeWindow_X11::MoveWindow(int32_t x, int32_t y, int32_t w, int32_t h, bool) { if (!m_x11Display || !m_x11Window) return false; XMoveResizeWindow(m_x11Display, m_x11Window, x, y, w, h); if (w > 0 && h > 0) m_szInitWindow = UiSize(w, h); XFlush(m_x11Display); return true; }
-void NativeWindow_X11::SetText(const DString& text) { if (!m_x11Display || !m_x11Window) return; std::string s = StringConvert::TToUTF8(text); XStoreName(m_x11Display, m_x11Window, s.c_str()); }
-DString NativeWindow_X11::GetText() const { return m_createParam.m_windowTitle; }
+void NativeWindow_X11::SetText(const std::string& text) { if (!m_x11Display || !m_x11Window) return; std::string s = StringConvert::TToUTF8(text); XStoreName(m_x11Display, m_x11Window, s.c_str()); }
+std::string NativeWindow_X11::GetText() const { return m_createParam.m_windowTitle; }
 void NativeWindow_X11::SetWindowMaximumSize(const UiSize& s) { m_szMaxWindow = s; }
 const UiSize& NativeWindow_X11::GetWindowMaximumSize() const { return m_szMaxWindow; }
 void NativeWindow_X11::SetWindowMinimumSize(const UiSize& s) { m_szMinWindow = s; }
@@ -315,8 +315,8 @@ size_t NativeWindow_X11::GetX11DisplayPointer() const { return reinterpret_cast<
 size_t NativeWindow_X11::GetWaylandDisplayPointer() const { return 0; }
 bool NativeWindow_X11::IsVideoDriverX11() const { return true; }
 bool NativeWindow_X11::IsVideoDriverWayland() const { return false; }
-DString NativeWindow_X11::GetVideoDriverName() const { return DUI_T("x11"); }
-DString NativeWindow_X11::GetWindowRenderName() const { return DUI_T("software"); }
+std::string NativeWindow_X11::GetVideoDriverName() const { return "x11"; }
+std::string NativeWindow_X11::GetWindowRenderName() const { return "software"; }
 // Top-level windows are centered during CreateWnd. Popup windows provide
 // their own screen coordinates, so Window::AutoResizeWindow must not recenter
 // them after the popup content is attached.
@@ -387,9 +387,9 @@ void NativeWindow_X11::OnFinalMessage() {}
 bool NativeWindow_X11::CreateWindowAndRender(NativeWindow_X11*,const WindowCreateAttributes&) { return true; }
 void NativeWindow_X11::InitNativeWindow() {}
 void NativeWindow_X11::SyncCreateWindowAttributes(const WindowCreateAttributes&,bool) {}
-void NativeWindow_X11::GetRenderNameList(const DString&,std::vector<DString>& names) const { names.push_back(DUI_T("software")); }
-void NativeWindow_X11::QueryRenderProperties(const DString&,bool& gl,bool& es,bool& transparent) const { gl=false; es=false; transparent=true; }
-bool NativeWindow_X11::IsRenderSupportTransparent(const DString&) const { return true; }
+void NativeWindow_X11::GetRenderNameList(const std::string&,std::vector<std::string>& names) const { names.push_back("software"); }
+void NativeWindow_X11::QueryRenderProperties(const std::string&,bool& gl,bool& es,bool& transparent) const { gl=false; es=false; transparent=true; }
+bool NativeWindow_X11::IsRenderSupportTransparent(const std::string&) const { return true; }
 NativeWindow_X11* NativeWindow_X11::GetWindowFromID(X11_WindowID id) { auto i=s_windowIDMap.find(id); return i==s_windowIDMap.end()?nullptr:i->second; }
 X11_WindowID NativeWindow_X11::GetWindowIdFromEvent(const X11_Event& event) { return event.xany.window; }
 uint32_t NativeWindow_X11::GetHoverMsgId() { return kWM_USER+4; }
@@ -405,6 +405,6 @@ bool NativeWindow_X11::UnregisterHotKey(int32_t) { return false; }
 LRESULT NativeWindow_X11::CallDefaultWindowProc(UINT,WPARAM,LPARAM) { return 0; }
 int32_t NativeWindow_X11::X11_HitTest(X11_Window*,const X11_Point*,void*) { return 0; }
 bool NativeWindow_X11::SetWindowIcon(const FilePath&) { return false; }
-bool NativeWindow_X11::SetWindowIcon(const std::vector<uint8_t>&,const DString&) { return false; }
+bool NativeWindow_X11::SetWindowIcon(const std::vector<uint8_t>&,const std::string&) { return false; }
 }
 #endif

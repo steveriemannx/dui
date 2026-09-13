@@ -54,7 +54,7 @@ public:
     virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) = 0;
     virtual void OnFaviconURLChange(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls) = 0;
     virtual void OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool fullscreen) = 0;
-    virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const DString& value) = 0;
+    virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const std::string& value) = 0;
     virtual void OnLoadingProgressChange(CefRefPtr<CefBrowser> browser, double progress) = 0;
     virtual void OnMediaAccessChange(CefRefPtr<CefBrowser> browser, bool has_video_access, bool has_audio_access) = 0;
 

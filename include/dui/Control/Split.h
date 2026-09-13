@@ -19,8 +19,8 @@ class SplitTemplate : public InheritType
 public:
     explicit SplitTemplate(Window* pWindow);
 
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
  
     /** Whether it can be dragged
     */
@@ -110,16 +110,16 @@ SplitTemplate<InheritType>::SplitTemplate(Window* pWindow):
 }
 
 template<typename InheritType>
-inline DString SplitTemplate<InheritType>::GetType() const { return DUI_CTR_SPLIT; }
+inline std::string SplitTemplate<InheritType>::GetType() const { return DUI_CTR_SPLIT; }
 
 template<>
-inline DString SplitTemplate<Box>::GetType() const { return DUI_CTR_SPLITBOX; }
+inline std::string SplitTemplate<Box>::GetType() const { return DUI_CTR_SPLITBOX; }
 
 template<typename InheritType>
-void SplitTemplate<InheritType>::SetAttribute(const DString& strName, const DString& strValue)
+void SplitTemplate<InheritType>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("enable_split_single")) {
-        SetEnableSplitSingle(strValue == DUI_T("true"));
+    if (strName == "enable_split_single") {
+        SetEnableSplitSingle(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);

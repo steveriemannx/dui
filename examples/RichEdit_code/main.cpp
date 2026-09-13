@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("RichEdit (Pure Code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("RichEdit (Pure Code)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

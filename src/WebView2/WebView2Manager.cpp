@@ -10,10 +10,10 @@
 namespace ui {
 
 // The callback function for creating WebView controls
-static Control* DuiCreateWebView2Control(const DString& className)
+static Control* DuiCreateWebView2Control(const std::string& className)
 {
     Control* pControl = nullptr;
-    if (className == DUI_T("WebView2Control")) {
+    if (className == "WebView2Control") {
         pControl = new WebView2Control(nullptr);
     }
     return pControl;
@@ -41,11 +41,11 @@ WebView2Manager& WebView2Manager::GetInstance()
     return self;
 }
 
-bool WebView2Manager::Initialize(const DString& userDataFolder,
-                                 const DString& language,
-                                 const DString& userAgent,
-                                 const DString& additionalBrowserArguments,
-                                 const DString& browserExecutableFolder)
+bool WebView2Manager::Initialize(const std::string& userDataFolder,
+                                 const std::string& language,
+                                 const std::string& userAgent,
+                                 const std::string& additionalBrowserArguments,
+                                 const std::string& browserExecutableFolder)
 {
     m_userDataFolder = userDataFolder;
     m_language = language;
@@ -62,9 +62,9 @@ void WebView2Manager::UnInitialize()
 {
 }
 
-DString WebView2Manager::GetDefaultUserDataFolder(const DString& appName) const
+std::string WebView2Manager::GetDefaultUserDataFolder(const std::string& appName) const
 {
-    DString defaultCachePath = DUI_T("webview2_cache");
+    std::string defaultCachePath = "webview2_cache";
     defaultCachePath += ui::FilePath::GetPathSeparatorStr();
     defaultCachePath += appName;
     defaultCachePath += ui::FilePath::GetPathSeparatorStr();
@@ -75,52 +75,52 @@ DString WebView2Manager::GetDefaultUserDataFolder(const DString& appName) const
     return runPath.ToString();
 }
 
-void WebView2Manager::SetBrowserExecutableFolder(const DString& browserExecutableFolder)
+void WebView2Manager::SetBrowserExecutableFolder(const std::string& browserExecutableFolder)
 {
     m_browserExecutableFolder = browserExecutableFolder;
 }
 
-const DString& WebView2Manager::GetBrowserExecutableFolder() const
+const std::string& WebView2Manager::GetBrowserExecutableFolder() const
 {
     return m_browserExecutableFolder;
 }
 
-void WebView2Manager::SetUserDataFolder(const DString& userDataFolder)
+void WebView2Manager::SetUserDataFolder(const std::string& userDataFolder)
 {
     m_userDataFolder = userDataFolder;
 }
 
-const DString& WebView2Manager::GetUserDataFolder() const
+const std::string& WebView2Manager::GetUserDataFolder() const
 {
     return m_userDataFolder;
 }
 
-void WebView2Manager::SetLanguage(const DString& language)
+void WebView2Manager::SetLanguage(const std::string& language)
 {
     m_language = language;
 }
 
-const DString& WebView2Manager::GetLanguage() const
+const std::string& WebView2Manager::GetLanguage() const
 {
     return m_language;
 }
 
-void WebView2Manager::SetUserAgent(const DString& userAgent)
+void WebView2Manager::SetUserAgent(const std::string& userAgent)
 {
     m_userAgent = userAgent;
 }
 
-const DString& WebView2Manager::GetUserAgent() const
+const std::string& WebView2Manager::GetUserAgent() const
 {
     return m_userAgent;
 }
 
-void WebView2Manager::SetAdditionalBrowserArguments(const DString& additionalBrowserArguments)
+void WebView2Manager::SetAdditionalBrowserArguments(const std::string& additionalBrowserArguments)
 {
     m_additionalBrowserArguments = additionalBrowserArguments;
 }
 
-const DString& WebView2Manager::GetAdditionalBrowserArguments() const
+const std::string& WebView2Manager::GetAdditionalBrowserArguments() const
 {
     return m_additionalBrowserArguments;
 }

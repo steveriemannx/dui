@@ -36,7 +36,7 @@ void CefControlNative::Init()
         HWND hWnd = GetWindow()->NativeWnd()->GetHWND();
         LONG style = ::GetWindowLong(hWnd, GWL_STYLE);
         ::SetWindowLong(hWnd, GWL_STYLE, style | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-        ASSERT((::GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_LAYERED) == 0 && DUI_T("CefControlNative: cannot be used in a layered window"));
+        ASSERT((::GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_LAYERED) == 0 && "CefControlNative: cannot be used in a layered window");
 #endif
         m_pBrowserHandler = new CefBrowserHandler;
         m_pBrowserHandler->SetHostWindow(GetWindow());

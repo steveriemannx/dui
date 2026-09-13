@@ -40,9 +40,9 @@ public:
     /** Web message received callback type
      * @param message Received message content
      */
-    using WebMessageReceivedCallback = std::function<void(const DString& url,
-                                                          const DString& webMessageAsJson, 
-                                                          const DString& webMessageAsString)>;
+    using WebMessageReceivedCallback = std::function<void(const std::string& url,
+                                                          const std::string& webMessageAsJson, 
+                                                          const std::string& webMessageAsString)>;
 
     /** Navigation state changed callback type
      * @param state The new navigation state
@@ -53,12 +53,12 @@ public:
     /** Document title changed callback type
      * @param title The new document title
      */
-    using DocumentTitleChangedCallback = std::function<void(const DString& title)>;
+    using DocumentTitleChangedCallback = std::function<void(const std::string& title)>;
 
     /** Source URL changed callback type
      * @param uri The new source URL
      */
-    using SourceChangedCallback = std::function<void(const DString& uri)>;
+    using SourceChangedCallback = std::function<void(const std::string& uri)>;
 
     /** New window requested callback type
      * @param sourceUrl URL of the source
@@ -68,8 +68,8 @@ public:
      * @param bUserInitiated Whether the popup was triggered by the user
      * @return Returns true to allow creating a popup page, but the new page navigates within the current page and no new window is popped up; returns false to block the popup page, and the callback handles the display logic of the new page
      */
-    using NewWindowRequestedCallback = std::function<bool(const DString& sourceUrl, const DString& sourceFrame,
-                                                          const DString& targetUrl, const DString& targetFrame,
+    using NewWindowRequestedCallback = std::function<bool(const std::string& sourceUrl, const std::string& sourceFrame,
+                                                          const std::string& targetUrl, const std::string& targetFrame,
                                                           bool bUserInitiated)>;
 
     /** Navigation history changed event callback type
@@ -101,7 +101,7 @@ public:
      * @param userDataFolder User data folder path (optional)
      * @param callback Initialization completed callback (optional)
      */
-    bool InitializeAsync(const DString& userDataFolder = DUI_T(""),
+    bool InitializeAsync(const std::string& userDataFolder = "",
                          InitializeCompletedCallback callback = nullptr);
 
     /** Checks whether the WebView is initializing
@@ -117,7 +117,7 @@ public:
     /** Navigates to the specified URL (may complete asynchronously)
      * @param url The URL to navigate to
      */
-    bool Navigate(const DString& url);
+    bool Navigate(const std::string& url);
     
     /** Navigates to the previous page
      */
@@ -140,26 +140,26 @@ public:
      * @param script The JavaScript script to execute
      * @param callback Callback invoked after execution completes (optional)
      */
-    bool ExecuteScript(const DString& script, std::function<void(const DString& result, HRESULT hr)> callback = nullptr);
+    bool ExecuteScript(const std::string& script, std::function<void(const std::string& result, HRESULT hr)> callback = nullptr);
     
     /** Posts a web message in JSON format
      * @param json The JSON string to send
      */
-    bool PostWebMessageAsJson(const DString& json);
+    bool PostWebMessageAsJson(const std::string& json);
     
     /** Posts a web message as a string
      * @param message The message string to send
      */
-    bool PostWebMessageAsString(const DString& message);
+    bool PostWebMessageAsString(const std::string& message);
     
     /** Sets the User-Agent
      * @param userAgent The User-Agent string to set
      */
-    bool SetUserAgent(const DString& userAgent);
+    bool SetUserAgent(const std::string& userAgent);
 
     /** Gets the User-Agent
     */
-    DString GetUserAgent() const;
+    std::string GetUserAgent() const;
     
     /** Sets the zoom factor
      * @param zoomFactor The zoom factor
@@ -237,18 +237,18 @@ public:
      * @param filePath File path to save the preview image; the format is determined automatically by the extension of the saved image file name
      * @param callback Operation completed callback (optional)
      */
-    bool CapturePreview(const DString& filePath,
-                        std::function<void(const DString& filePath, HRESULT hr)> callback = nullptr);
+    bool CapturePreview(const std::string& filePath,
+                        std::function<void(const std::string& filePath, HRESULT hr)> callback = nullptr);
     
     /** Gets the current URL
      * @return The current URL
      */
-    DString GetUrl() const;
+    std::string GetUrl() const;
     
     /** Gets the current document title
      * @return The current document title
      */
-    DString GetTitle() const;
+    std::string GetTitle() const;
 
     /** Whether navigation is in progress
     */
@@ -296,8 +296,8 @@ public:
 
 public:
     // Properties related to the control type
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void OnInit() override;
     virtual void SetPos(UiRect rc) override;
     virtual bool OnSetFocus(const EventArgs& msg) override;
@@ -322,11 +322,11 @@ public:
 
     /** Sets the URL to load initially (only effective when called before the control is initialized)
     */
-    void SetInitURL(const DString& url);
+    void SetInitURL(const std::string& url);
 
     /** Gets the URL to load initially
     */
-    DString GetInitURL() const;
+    std::string GetInitURL() const;
 
     /** Sets whether the initially loaded URL is a local file
     */

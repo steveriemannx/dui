@@ -6,7 +6,7 @@
 #include "dui/Utils/AppEntry.h"
 
 App::App() :
-    FrameworkThread(DUI_T("App"), ui::kThreadUI)
+    FrameworkThread("App", ui::kThreadUI)
 {
 }
 
@@ -36,7 +36,7 @@ int App::Run(int argc, char** argv)
     if (processType != ui::CefManager::BrowserProcess) {
         //Non-Browser process: should not include Browser process code
         int32_t nExitCode = 1;
-        if (!ui::CefManager::GetInstance()->Initialize(kEnableOffScreenRendering, DUI_T("cef"), argc, argv, nullptr, nExitCode)) {
+        if (!ui::CefManager::GetInstance()->Initialize(kEnableOffScreenRendering, "cef", argc, argv, nullptr, nExitCode)) {
             return nExitCode;
         }
         return 0;
@@ -49,11 +49,11 @@ int App::Run(int argc, char** argv)
     ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath), GetDpiInitParam());
 
     //Initialize the additional startup parameters of the CEF module
-    //ui::CefManager::GetInstance()->AppendSwitchWithValue(DUI_T("proxy-server"), DUI_T("socks5://127.0.0.1:1080"));
+    //ui::CefManager::GetInstance()->AppendSwitchWithValue("proxy-server", "socks5://127.0.0.1:1080");
 
     //Initialize CEF: must be done after GlobalManager is initialized, because GlobalManager is used during CEF initialization
     int32_t nExitCode = 1;
-    if (!ui::CefManager::GetInstance()->Initialize(kEnableOffScreenRendering, DUI_T("cef"), argc, argv, nullptr, nExitCode)) {
+    if (!ui::CefManager::GetInstance()->Initialize(kEnableOffScreenRendering, "cef", argc, argv, nullptr, nExitCode)) {
         return nExitCode;
     }
 
@@ -98,7 +98,7 @@ void App::OnInit()
         dwExStyle |= ui::kWS_EX_LAYERED;
     }
     ui::WindowCreateParam createWndParam;
-    createWndParam.m_className = DUI_T("cef");
+    createWndParam.m_className = "cef";
     createWndParam.m_windowTitle = createWndParam.m_className;
     createWndParam.m_dwExStyle = dwExStyle;
     createWndParam.m_bCenterWindow = true;

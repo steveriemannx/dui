@@ -59,7 +59,7 @@ public:
     bool IsShowPassword() const;//Whether to show the password
     void SetFlashPasswordChar(bool bFlash);
     bool IsFlashPasswordChar() const;
-    DString GetPasswordText() const;
+    std::string GetPasswordText() const;
 
     //Whether only numeric characters are allowed
     bool IsNumberOnly() const;

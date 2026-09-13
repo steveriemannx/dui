@@ -37,11 +37,11 @@ class UiWorkerThread : public ui::FrameworkThread
 public:
     struct Param
     {
-        DString name;
+        std::string name;
         int32_t nIdentifier;
     };
 public:
-    UiWorkerThread(const DString& threadName, int32_t nThreadIdentifier):
+    UiWorkerThread(const std::string& threadName, int32_t nThreadIdentifier):
         FrameworkThread(threadName, nThreadIdentifier)
     { }
     virtual ~UiWorkerThread() override {}
@@ -92,7 +92,7 @@ FilePath GlobalManager::GetDefaultResourcePath(bool bMacOsAppBundle)
         resourcePath = ui::FilePathUtil::GetBundleResourcesPath();
         if (!resourcePath.IsEmpty()) {
             resourcePath.NormalizeDirectoryPath();
-            resourcePath += DUI_T("dui/");
+            resourcePath += "dui/";
             if (!resourcePath.IsExistsDirectory()) {
                 resourcePath.Clear();
             }
@@ -103,7 +103,7 @@ FilePath GlobalManager::GetDefaultResourcePath(bool bMacOsAppBundle)
 #endif
     if (resourcePath.IsEmpty()) {
         resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-        resourcePath += DUI_T("resources/");
+        resourcePath += "resources/";
     }
     resourcePath.NormalizeDirectoryPath();
     return resourcePath;
@@ -285,10 +285,10 @@ bool GlobalManager::StartInnerThread(int32_t nThreadIdentifier)
     }
     if (!bRet) {
         //Initialize the thread pool
-        std::vector<UiWorkerThread::Param> threadParams = { {DUI_T("Worker"), ThreadIdentifier::kThreadWorker},
-                                                            {DUI_T("Network"), ThreadIdentifier::kThreadNetwork},
-                                                            {DUI_T("Image1"), ThreadIdentifier::kThreadImage1},
-                                                            {DUI_T("Image2"), ThreadIdentifier::kThreadImage2} };
+        std::vector<UiWorkerThread::Param> threadParams = { {"Worker", ThreadIdentifier::kThreadWorker},
+                                                            {"Network", ThreadIdentifier::kThreadNetwork},
+                                                            {"Image1", ThreadIdentifier::kThreadImage1},
+                                                            {"Image2", ThreadIdentifier::kThreadImage2} };
         for (const UiWorkerThread::Param& param : threadParams) {
             if (param.nIdentifier != nThreadIdentifier) {
                 continue;
@@ -351,7 +351,7 @@ const FilePath& GlobalManager::GetLanguagePath() const
     return m_languagePath;
 }
 
-const DString& GlobalManager::GetLanguageFileName() const
+const std::string& GlobalManager::GetLanguageFileName() const
 {
     return m_languageFileName;
 }
@@ -399,9 +399,9 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
     m_themeDefaultPath.Clear();
 #if !defined(DUI_BUILD_FOR_WIN) && !defined(DUI_BUILD_FOR_MACOS)
     {
-        const DString defaultThemeName = DUI_T("themes/default");
-        DString activeThemeName = resParam.themePath.ToString();
-        StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), activeThemeName);
+        const std::string defaultThemeName = "themes/default";
+        std::string activeThemeName = resParam.themePath.ToString();
+        StringUtil::ReplaceAll("\\", "/", activeThemeName);
         if (activeThemeName != defaultThemeName) {
             m_themeDefaultPath = FilePathUtil::JoinFilePath(strResourcePath, FilePath(defaultThemeName));
             m_themeDefaultPath.NormalizeDirectoryPath();
@@ -447,7 +447,7 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
 }
 
 bool GlobalManager::ReloadLanguage(const FilePath& languagePath,
-                                   const DString& languageFileName,
+                                   const std::string& languageFileName,
                                    bool bInvalidate)
 {
     AssertUIThread();
@@ -512,8 +512,8 @@ bool GlobalManager::ReloadLanguage(const FilePath& languagePath,
     return bReadOk;
 }
 
-bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& languageList,
-                                    const DString& languageNameID) const
+bool GlobalManager::GetLanguageList(std::vector<std::pair<std::string, std::string>>& languageList,
+                                    const std::string& languageNameID) const
 {
     FilePath languagePath = GetLanguagePath();
     ASSERT(!languagePath.IsEmpty());
@@ -523,7 +523,7 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& la
 
     languageList.clear();
 #ifdef DUI_BUILD_FOR_WIN
-    //Windows: the path string uses DStringW::value_type, UTF16
+    //Windows: the path string uses std::wstring::value_type, UTF16
     const std::filesystem::path path{ languagePath.ToStringW()};
 #else
     //Windows: the path string uses char, UTF8
@@ -533,13 +533,13 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& la
         //An absolute path, the language files are on the local disk
         for (auto const& dir_entry : std::filesystem::directory_iterator{ path }) {
             if (dir_entry.is_regular_file()) {
-                languageList.push_back({ FilePath(dir_entry.path().filename()).ToString(), DUI_T("")});
+                languageList.push_back({ FilePath(dir_entry.path().filename()).ToString(), ""});
             }
         }
         if (!languageNameID.empty()) {
             for (auto& lang : languageList) {
-                const DString& fileName = lang.first;
-                DString& displayName = lang.second;
+                const std::string& fileName = lang.first;
+                std::string& displayName = lang.second;
 
                 FilePath filePath = FilePathUtil::JoinFilePath(languagePath, FilePath(fileName));
                 ui::LangManager langManager;
@@ -551,16 +551,16 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<DString, DString>>& la
     }
     else if(m_memoryResourceManager.IsOpen()){
         //A relative path, the language files should be inside the embedded resources
-        std::vector<DString> fileList;
+        std::vector<std::string> fileList;
         m_memoryResourceManager.GetFileList(languagePath, fileList);
         for (auto const& file : fileList) {
-            languageList.push_back({ file, DUI_T("") });
+            languageList.push_back({ file, "" });
         }
 
         if (!languageNameID.empty()) {
             for (auto& lang : languageList) {
-                const DString& fileName = lang.first;
-                DString& displayName = lang.second;
+                const std::string& fileName = lang.first;
+                std::string& displayName = lang.second;
 
                 FilePath filePath = FilePathUtil::JoinFilePath(languagePath, FilePath(fileName));
                 std::vector<unsigned char> fileData;
@@ -597,9 +597,9 @@ void GlobalManager::CheckImagePath(FilePath& imageFullPath, bool& bLocalPath)
 
 bool GlobalManager::IsResInPublicPath(const FilePath& resPath) const
 {
-    DString resPathString = resPath.ToString();
-    StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), resPathString);
-    if ((resPathString.find(DUI_T("public/")) == 0) || ((resPathString.find(DUI_T("/public/")) == 0))) {
+    std::string resPathString = resPath.ToString();
+    StringUtil::ReplaceAll("\\", "/", resPathString);
+    if ((resPathString.find("public/") == 0) || ((resPathString.find("/public/") == 0))) {
         return true;
     }
     return false;
@@ -774,7 +774,7 @@ IRenderFactory* GlobalManager::GetRenderFactory()
     return m_renderFactory.get();
 }
 
-void GlobalManager::AddClass(const DString& strClassName, const DString& strControlAttrList)
+void GlobalManager::AddClass(const std::string& strClassName, const std::string& strControlAttrList)
 {
     AssertUIThread();
     ASSERT(!strClassName.empty() && !strControlAttrList.empty());
@@ -783,14 +783,14 @@ void GlobalManager::AddClass(const DString& strClassName, const DString& strCont
     }    
 }
 
-DString GlobalManager::GetClassAttributes(const DString& strClassName) const
+std::string GlobalManager::GetClassAttributes(const std::string& strClassName) const
 {
     AssertUIThread();
     auto it = m_globalClass.find(strClassName);
     if (it != m_globalClass.end()) {
         return it->second;
     }
-    return DString();
+    return std::string();
 }
 
 void GlobalManager::RemoveAllClasss()
@@ -998,7 +998,7 @@ bool GlobalManager::FillBoxWithCache(Box* pUserDefinedBox, const FilePath& strXm
     return (pBox != nullptr);
 }
 
-Control* GlobalManager::CreateControl(const DString& strControlName)
+Control* GlobalManager::CreateControl(const std::string& strControlName)
 {
     Control* pControl = nullptr;
     for (CreateControlCallback pfnCreateControlCallback : m_pfnCreateControlCallbackList) {

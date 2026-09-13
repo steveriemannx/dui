@@ -40,8 +40,8 @@ class BindingGroupImpl;
      {
          m_vm = std::make_shared<MyViewModel>();
          m_bindings.SetContext(m_vm);
-         m_bindings.Bind(this, DUI_T("label_title"), DUI_T("text"), DUI_T("title"));
-         m_bindings.BindTwoWay(this, DUI_T("edit_name"), DUI_T("text"), DUI_T("title"));
+         m_bindings.Bind(this, "label_title", "text", "title");
+         m_bindings.BindTwoWay(this, "edit_name", "text", "title");
      }
 
  Target lookup: the name-based overloads resolve a control by name the same way
@@ -73,15 +73,15 @@ public:
      "enabled", "checked", "selected", "bkimage"). Returns false if the control
      is null or the attribute is not bindable.
     */
-    bool Bind(Control* pControl, const DString& strAttribute, const DString& strPath);
+    bool Bind(Control* pControl, const std::string& strAttribute, const std::string& strPath);
 
     /** Same, but the target control is found by name within pRoot's subtree. */
-    bool Bind(Box* pRoot, const DString& strTargetName,
-              const DString& strAttribute, const DString& strPath);
+    bool Bind(Box* pRoot, const std::string& strTargetName,
+              const std::string& strAttribute, const std::string& strPath);
 
     /** Same, but the target control is found by name in the window. */
-    bool Bind(Window* pWindow, const DString& strTargetName,
-              const DString& strAttribute, const DString& strPath);
+    bool Bind(Window* pWindow, const std::string& strTargetName,
+              const std::string& strAttribute, const std::string& strPath);
 
     /** Two-way: control -> context as well, driven by the control's own change
      event. Returns false when the control does not report changes for this
@@ -91,15 +91,15 @@ public:
      Writes are re-entrancy guarded per binding, so a control -> context ->
      control round trip settles in one pass instead of looping.
     */
-    bool BindTwoWay(Control* pControl, const DString& strAttribute, const DString& strPath);
+    bool BindTwoWay(Control* pControl, const std::string& strAttribute, const std::string& strPath);
 
     /** Same, but the target control is found by name within pRoot's subtree. */
-    bool BindTwoWay(Box* pRoot, const DString& strTargetName,
-                    const DString& strAttribute, const DString& strPath);
+    bool BindTwoWay(Box* pRoot, const std::string& strTargetName,
+                    const std::string& strAttribute, const std::string& strPath);
 
     /** Same, but the target control is found by name in the window. */
-    bool BindTwoWay(Window* pWindow, const DString& strTargetName,
-                    const DString& strAttribute, const DString& strPath);
+    bool BindTwoWay(Window* pWindow, const std::string& strTargetName,
+                    const std::string& strAttribute, const std::string& strPath);
 
     /** Command: the control's click calls pMethod on the context object.
      Takes a member pointer rather than a string, so the method is checked at
@@ -120,7 +120,7 @@ public:
 
     /** Same, but the target control is found by name within pRoot's subtree. */
     template <typename T>
-    bool BindCommand(Box* pRoot, const DString& strTargetName,
+    bool BindCommand(Box* pRoot, const std::string& strTargetName,
                      const std::shared_ptr<T>& pContext, void (T::*pMethod)())
     {
         return BindCommand(FindTarget(pRoot, strTargetName), pContext, pMethod);
@@ -128,7 +128,7 @@ public:
 
     /** Same, but the target control is found by name in the window. */
     template <typename T>
-    bool BindCommand(Window* pWindow, const DString& strTargetName,
+    bool BindCommand(Window* pWindow, const std::string& strTargetName,
                      const std::shared_ptr<T>& pContext, void (T::*pMethod)())
     {
         return BindCommand(FindTarget(pWindow, strTargetName), pContext, pMethod);
@@ -147,10 +147,10 @@ private:
     bool AttachCommand(Control* pControl, const std::function<void()>& command);
 
     /** Resolve a control by name within pRoot's subtree; null when not found. */
-    static Control* FindTarget(Box* pRoot, const DString& strTargetName);
+    static Control* FindTarget(Box* pRoot, const std::string& strTargetName);
 
     /** Resolve a control by name in the window; null when not found. */
-    static Control* FindTarget(Window* pWindow, const DString& strTargetName);
+    static Control* FindTarget(Window* pWindow, const std::string& strTargetName);
 
     std::unique_ptr<BindingGroupImpl> m_impl;
 };

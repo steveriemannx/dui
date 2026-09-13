@@ -308,14 +308,14 @@ public:
     * @param [in] columnId The column ID
     * @param [in] text The text content to set
     */
-    bool SetSubItemText(size_t itemIndex, size_t columnId, const DString& text);
+    bool SetSubItemText(size_t itemIndex, size_t columnId, const std::string& text);
 
     /** Get the text of the specified data item
     * @param [in] itemIndex The index of the data item
     * @param [in] columnId The column ID
     * @return The text content associated with the data item
     */
-    DString GetSubItemText(size_t itemIndex, size_t columnId) const;
+    std::string GetSubItemText(size_t itemIndex, size_t columnId) const;
 
     /** Set the sort group of the specified data item (integer)
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
@@ -350,14 +350,14 @@ public:
     * @param [in] columnId The column ID
     * @param [in] userDataS The string data associated with the data item to set
     */
-    bool SetSubItemUserDataS(size_t itemIndex, size_t columnId, const DString& userDataS);
+    bool SetSubItemUserDataS(size_t itemIndex, size_t columnId, const std::string& userDataS);
 
     /** Get the associated user data of the specified data item (string)
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
     * @param [in] columnId The column ID
     * @return The string data associated with the data item
     */
-    DString GetSubItemUserDataS(size_t itemIndex, size_t columnId) const;
+    std::string GetSubItemUserDataS(size_t itemIndex, size_t columnId) const;
 
 public:
     /** Set the text color of the specified data item and refresh the UI display

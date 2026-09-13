@@ -96,8 +96,8 @@ public:
     MainForm() = default;
     virtual ~MainForm() override = default;
 
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual std::string GetSkinFolder() override;
+    virtual std::string GetSkinFile() override;
     virtual void OnInitWindow() override;
 
 private:
@@ -136,8 +136,8 @@ It should not add an empty `SetupWindow()` merely to match the other modes.
 The XML version is the design and runtime layout version:
 
 ```cpp
-virtual DString GetSkinFolder() override { return "hello"; }
-virtual DString GetSkinFile() override { return "hello.xml"; }
+virtual std::string GetSkinFolder() override { return "hello"; }
+virtual std::string GetSkinFile() override { return "hello.xml"; }
 ```
 
 Its `OnInitWindow()` normally only binds application events and calls the base
@@ -168,8 +168,8 @@ The code version does not load a layout XML. Both skin methods return empty
 strings:
 
 ```cpp
-virtual DString GetSkinFolder() override { return ""; }
-virtual DString GetSkinFile() override { return ""; }
+virtual std::string GetSkinFolder() override { return ""; }
+virtual std::string GetSkinFile() override { return ""; }
 ```
 
 `SetupWindow()` contains window-level configuration:

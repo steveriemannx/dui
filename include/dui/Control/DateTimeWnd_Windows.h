@@ -34,7 +34,7 @@ private:
     bool RegisterSuperClass();
 
     //The window class name
-    DString GetWindowClassName() const;
+    std::string GetWindowClassName() const;
 
     //The window procedure function
     static LRESULT CALLBACK __ControlProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

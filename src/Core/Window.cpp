@@ -47,28 +47,28 @@ Window::~Window()
     ClearWindow();
 }
 
-void Window::SetAttribute(const DString& strName, const DString& strValue)
+void Window::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("shadow_type")) {
+    if (strName == "shadow_type") {
         //Sets the shadow type of the window
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
         if (Shadow::GetShadowType(strValue, nShadowType)) {
             SetShadowType(nShadowType);
         }
     }
-    else if (strName == DUI_T("shadow_attached")) {
+    else if (strName == "shadow_attached") {
         //Whether the shadow is enabled
-        SetShadowAttached(strValue == DUI_T("true"));
+        SetShadowAttached(strValue == "true");
     }
-    else if (strName == DUI_T("drag_drop")) {
+    else if (strName == "drag_drop") {
         //Whether drag-and-drop is allowed
-        SetEnableDragDrop(strValue == DUI_T("true"));
+        SetEnableDragDrop(strValue == "true");
     }
-    else if (strName == DUI_T("layered_window")) {
+    else if (strName == "layered_window") {
         //Whether it is a layered window
-        SetLayeredWindow(strValue == DUI_T("true"), true);
+        SetLayeredWindow(strValue == "true", true);
     }
-    else if (strName == DUI_T("layered_window_alpha")) {
+    else if (strName == "layered_window_alpha") {
         //The opacity of the layered window
         SetLayeredWindowAlpha(StringUtil::StringToInt32(strValue));
     }
@@ -84,14 +84,14 @@ bool Window::IsEnableDragDrop() const
     return NativeWnd()->IsEnableDragDrop();
 }
 
-void Window::SetClass(const DString& strClass)
+void Window::SetClass(const std::string& strClass)
 {
     if (strClass.empty()) {
         return;
     }
-    std::list<DString> splitList = StringUtil::Split(strClass, DUI_T(" "));
+    std::list<std::string> splitList = StringUtil::Split(strClass, " ");
     for (auto it = splitList.begin(); it != splitList.end(); it++) {
-        DString pDefaultAttributes = GlobalManager::Instance().GetClassAttributes((*it));
+        std::string pDefaultAttributes = GlobalManager::Instance().GetClassAttributes((*it));
         if (pDefaultAttributes.empty()) {
             pDefaultAttributes = GetClassAttributes(*it);
         }
@@ -103,18 +103,18 @@ void Window::SetClass(const DString& strClass)
     }
 }
 
-void Window::ApplyAttributeList(const DString& strList)
+void Window::ApplyAttributeList(const std::string& strList)
 {
     //The attribute list is parsed first, then applied
     if (strList.empty()) {
         return;
     }
-    std::vector<std::pair<DString, DString>> attributeList;
-    if (strList.find(DUI_T('\"')) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strList, DUI_T('\"'), attributeList);
+    std::vector<std::pair<std::string, std::string>> attributeList;
+    if (strList.find('\"') != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strList, '\"', attributeList);
     }
-    else if (strList.find(DUI_T('\'')) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strList, DUI_T('\''), attributeList);
+    else if (strList.find('\'') != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strList, '\'', attributeList);
     }
     for (const auto& attribute : attributeList) {
         SetAttribute(attribute.first, attribute.second);
@@ -172,7 +172,7 @@ RenderBackendType Window::GetRenderBackendType() const
     return backendType;
 }
 
-bool Window::SetWindowIcon(const DString& iconFilePath)
+bool Window::SetWindowIcon(const std::string& iconFilePath)
 {
     if (iconFilePath.empty()) {
         return false;
@@ -210,24 +210,24 @@ bool Window::SetWindowIcon(const char* iconFilePath)
     return SetWindowIcon(ui::StringConvert::UTF8ToT(iconFilePath ? iconFilePath : ""));
 }
 
-void Window::InitSkin(const DString& skinFolder, const DString& skinFile)
+void Window::InitSkin(const std::string& skinFolder, const std::string& skinFile)
 {
     m_skinFolder = skinFolder;
     m_skinFile = skinFile;
     m_windowBuilder.reset();
 }
 
-DString Window::GetSkinFolder()
+std::string Window::GetSkinFolder()
 {
     return m_skinFolder;
 }
 
-DString Window::GetSkinFile()
+std::string Window::GetSkinFile()
 {
     return m_skinFile;
 }
 
-Control* Window::CreateControl(const DString& /*strClass*/)
+Control* Window::CreateControl(const std::string& /*strClass*/)
 {
     return nullptr;
 }
@@ -248,7 +248,7 @@ void Window::GetCreateWindowAttributes(WindowCreateAttributes& createAttributes)
 void Window::ParseWindowXml()
 {
     FilePath skinFolder(GetSkinFolder());
-    DString xmlFile = GetSkinFile();
+    std::string xmlFile = GetSkinFile();
     if (skinFolder.IsEmpty() && xmlFile.empty()) {
         return;
     }
@@ -273,9 +273,9 @@ void Window::ParseWindowXml()
     }
 
     //The path of the XML file; it should be a relative path    
-    DString skinXmlFileData;
+    std::string skinXmlFileData;
     FilePath skinXmlFilePath;
-    if (!xmlFile.empty() && xmlFile.front() == DUI_T('<')) {
+    if (!xmlFile.empty() && xmlFile.front() == '<') {
         //The returned content is the XML file content, not a file path
         skinXmlFileData = std::move(xmlFile);
     }
@@ -287,9 +287,9 @@ void Window::ParseWindowXml()
         }
 
         //Saves the path of the XML file
-        size_t nPos = xmlFile.find_last_of(DUI_T("/\\"));
-        if (nPos != DString::npos) {
-            DString xmlPath = xmlFile.substr(0, nPos);
+        size_t nPos = xmlFile.find_last_of("/\\");
+        if (nPos != std::string::npos) {
+            std::string xmlPath = xmlFile.substr(0, nPos);
             if (!xmlPath.empty()) {
                 SetXmlPath(FilePath(xmlPath));
             }
@@ -598,7 +598,7 @@ const FilePath& Window::GetXmlPath() const
     return m_xmlPath;
 }
 
-void Window::AddClass(const DString& strClassName, const DString& strControlAttrList)
+void Window::AddClass(const std::string& strClassName, const std::string& strControlAttrList)
 {
     ASSERT(!strClassName.empty());
     ASSERT(!strControlAttrList.empty());
@@ -612,16 +612,16 @@ void Window::AddClass(const DString& strClassName, const DString& strControlAttr
     m_defaultAttrHash[strClassName] = strControlAttrList;
 }
 
-DString Window::GetClassAttributes(const DString& strClassName) const
+std::string Window::GetClassAttributes(const std::string& strClassName) const
 {
     auto it = m_defaultAttrHash.find(strClassName);
     if (it != m_defaultAttrHash.end()) {
         return it->second;
     }
-    return DUI_T("");
+    return "";
 }
 
-bool Window::RemoveClass(const DString& strClassName)
+bool Window::RemoveClass(const std::string& strClassName)
 {
     auto it = m_defaultAttrHash.find(strClassName);
     if (it != m_defaultAttrHash.end()) {
@@ -636,27 +636,27 @@ void Window::RemoveAllClass()
     m_defaultAttrHash.clear();
 }
 
-void Window::AddTextColor(const DString& strName, const DString& strValue)
+void Window::AddTextColor(const std::string& strName, const std::string& strValue)
 {
     m_colorMap.AddColor(strName, strValue);
 }
 
-void Window::AddTextColor(const DString& strName, UiColor argb)
+void Window::AddTextColor(const std::string& strName, UiColor argb)
 {
     m_colorMap.AddColor(strName, argb);
 }
 
-UiColor Window::GetTextColor(const DString& strName) const
+UiColor Window::GetTextColor(const std::string& strName) const
 {
     return m_colorMap.GetColor(strName);
 }
 
-void Window::RemoveTextColor(const DString& strName)
+void Window::RemoveTextColor(const std::string& strName)
 {
     m_colorMap.RemoveColor(strName);
 }
 
-bool Window::AddOptionGroup(const DString& strGroupName, Control* pControl)
+bool Window::AddOptionGroup(const std::string& strGroupName, Control* pControl)
 {
     ASSERT(!strGroupName.empty());
     ASSERT(pControl != nullptr);
@@ -677,7 +677,7 @@ bool Window::AddOptionGroup(const DString& strGroupName, Control* pControl)
     return true;
 }
 
-std::vector<Control*>* Window::GetOptionGroup(const DString& strGroupName)
+std::vector<Control*>* Window::GetOptionGroup(const std::string& strGroupName)
 {
     auto it = m_mOptionGroup.find(strGroupName);
     if (it != m_mOptionGroup.end()) {
@@ -686,7 +686,7 @@ std::vector<Control*>* Window::GetOptionGroup(const DString& strGroupName)
     return nullptr;
 }
 
-void Window::RemoveOptionGroup(const DString& strGroupName, Control* pControl)
+void Window::RemoveOptionGroup(const std::string& strGroupName, Control* pControl)
 {
     ASSERT(!strGroupName.empty());
     ASSERT(pControl != nullptr);
@@ -947,18 +947,18 @@ Shadow::ShadowType Window::GetShadowType() const
     return nShadowType;
 }
 
-DString Window::GetShadowImage() const
+std::string Window::GetShadowImage() const
 {
     Shadow* pShadow = GetShadow();
     if (pShadow != nullptr) {
         return pShadow->GetShadowImage();
     }
     else {
-        return DString();
+        return std::string();
     }
 }
 
-void Window::SetShadowImage(const DString& shadowImage)
+void Window::SetShadowImage(const std::string& shadowImage)
 {
     Shadow* pShadow = GetShadow();
     if (pShadow != nullptr) {
@@ -984,7 +984,7 @@ int32_t Window::GetShadowBorderSize() const
     return nShadowBorderSize;
 }
 
-void Window::SetShadowBorderColor(const DString& shadowBorderColor)
+void Window::SetShadowBorderColor(const std::string& shadowBorderColor)
 {
     Shadow* pShadow = GetShadow();
     if (pShadow != nullptr) {
@@ -992,10 +992,10 @@ void Window::SetShadowBorderColor(const DString& shadowBorderColor)
     }
 }
 
-DString Window::GetShadowBorderColor() const
+std::string Window::GetShadowBorderColor() const
 {
     Shadow* pShadow = GetShadow();
-    DString shadowBorderColor;
+    std::string shadowBorderColor;
     if (pShadow != nullptr) {
         shadowBorderColor = pShadow->GetShadowBorderColor();
     }
@@ -1271,7 +1271,7 @@ bool Window::OnPreparePaint()
 
 LRESULT Window::OnPaintMsg(const UiRect& rcPaint, const NativeMsg& /*nativeMsg*/, bool& bHandled)
 {
-    PerformanceStat statPerformance(DUI_T("PaintWindow, Window::OnPaintMsg"));
+    PerformanceStat statPerformance("PaintWindow, Window::OnPaintMsg");
     bHandled = false;
     if (!IsWindowFirstShown()) {
         //On the first draw, draw the full area (to avoid the incomplete display when the initial window is partially off-screen and then dragged to the center of the screen)
@@ -1297,7 +1297,7 @@ bool Window::Paint(const UiRect& rcPaint)
 
     //Before drawing, remove the alpha channel
     if (IsLayeredWindow()) {
-        PerformanceStat statPerformance(DUI_T("PaintWindow, Window::Paint ClearAlpha"));
+        PerformanceStat statPerformance("PaintWindow, Window::Paint ClearAlpha");
         pRender->ClearAlpha(rcPaint);
     }
 
@@ -1307,7 +1307,7 @@ bool Window::Paint(const UiRect& rcPaint)
         return false;
     }
     if (pRoot->IsVisible()) {
-        PerformanceStat statPerformance(DUI_T("PaintWindow, Window::Paint Paint/PaintChild"));
+        PerformanceStat statPerformance("PaintWindow, Window::Paint Paint/PaintChild");
         AutoClip rectClip(pRender, rcPaint, true);
         UiPoint ptOldWindOrg = pRender->OffsetWindowOrg(m_renderOffset);
         pRoot->AlphaPaint(pRender, rcPaint);
@@ -1324,7 +1324,7 @@ bool Window::Paint(const UiRect& rcPaint)
 #if defined (DUI_BUILD_FOR_WIN) && !defined(DUI_RICH_EDIT_DRAW_OPT)
     //Before drawing, repair the alpha channel
     if (IsLayeredWindow()) {
-        PerformanceStat statPerformance(DUI_T("PaintWindow, Window::Paint RestoreAlpha"));
+        PerformanceStat statPerformance("PaintWindow, Window::Paint RestoreAlpha");
         Shadow* pShadow = GetShadow();
         if ((pShadow != nullptr) && pShadow->IsShadowAttached() &&
             (m_renderOffset.x == 0) && (m_renderOffset.y == 0)) {
@@ -1855,7 +1855,7 @@ LRESULT Window::OnMouseHoverMsg(const UiPoint& pt, uint32_t modifierKey, const N
         //Check and show the ToolTip info on demand
         UiRect rect = pNewToolTip->GetPos();
         uint32_t maxWidth = pNewToolTip->GetToolTipWidth();
-        DString toolTipText = pNewToolTip->GetToolTipText();
+        std::string toolTipText = pNewToolTip->GetToolTipText();
         m_toolTip->ShowToolTip(this, rect, maxWidth, pt, toolTipText);
     }
     return lResult;
@@ -2603,7 +2603,7 @@ Box* Window::FindDroppableBox(const UiPoint& pt, uint8_t nDropInId) const
     return pControl;
 }
 
-Control* Window::FindControl(const DString& strName) const
+Control* Window::FindControl(const std::string& strName) const
 {
     return m_controlFinder.FindSubControlByName(GetRoot(), strName);
 }
@@ -2613,7 +2613,7 @@ Control* Window::FindSubControlByPoint(Control* pParent, const UiPoint& pt) cons
     return m_controlFinder.FindSubControlByPoint(pParent, pt);
 }
 
-Control* Window::FindSubControlByName(Control* pParent, const DString& strName) const
+Control* Window::FindSubControlByName(Control* pParent, const std::string& strName) const
 {
     return m_controlFinder.FindSubControlByName(pParent, strName);
 }
@@ -2817,7 +2817,7 @@ void Window::ProcessFullscreenButtonMouseMove(const UiPoint& pt)
     }
 }
 
-bool Window::SetFullscreenControl(Control* pFullscreenControl, const DString& exitButtonClass)
+bool Window::SetFullscreenControl(Control* pFullscreenControl, const std::string& exitButtonClass)
 {
     ASSERT(pFullscreenControl != nullptr);
     if (pFullscreenControl == nullptr) {

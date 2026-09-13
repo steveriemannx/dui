@@ -92,7 +92,7 @@ public:
     /** Sets the window icon (supports *.ico; other formats are also supported, but ICO is recommended)
     *  @param [in] iconFilePath The path of the icon file (relative path within the resource root)
     */
-    bool SetWindowIcon(const DString& iconFilePath);
+    bool SetWindowIcon(const std::string& iconFilePath);
 
     /** UTF-8 narrow-string convenience overload, e.g. SetWindowIcon("public/caption/logo.ico"). */
     bool SetWindowIcon(const char* iconFilePath);
@@ -134,12 +134,12 @@ public:
 
     /** Gets the shadow image
     */
-    DString GetShadowImage() const;
+    std::string GetShadowImage() const;
 
     /** Sets the window shadow image
     * @param [in] shadowImage The image location
     */
-    void SetShadowImage(const DString& shadowImage);
+    void SetShadowImage(const std::string& shadowImage);
 
     /** Sets the shadow border size (not DPI-scaled)
     */
@@ -151,11 +151,11 @@ public:
 
     /** Sets the shadow border color
     */
-    void SetShadowBorderColor(const DString& shadowBorderColor);
+    void SetShadowBorderColor(const std::string& shadowBorderColor);
 
     /** Gets the shadow border color
     */
-    DString GetShadowBorderColor() const;
+    std::string GetShadowBorderColor() const;
 
     /** Gets the current shadow nine-patch attribute (already DPI-scaled)
      *@return If the shadow is not attached or the window is maximized, returns UiPadding(0, 0, 0, 0); otherwise returns the set nine-patch attribute (already DPI-scaled)
@@ -273,7 +273,7 @@ public:
     /** Finds a control by its name
     * @param [in] strName The control name (note: case sensitive)
     */
-    Control* FindControl(const DString& strName) const;
+    Control* FindControl(const std::string& strName) const;
 
     /** Finds a child control at the given coordinates
     * @param [in] pParent The control to search
@@ -285,7 +285,7 @@ public:
     * @param [in] pParent The control to search
     * @param [in] strName The name to search for (note: case sensitive)
     */
-    Control* FindSubControlByName(Control* pParent, const DString& strName) const;
+    Control* FindSubControlByName(Control* pParent, const std::string& strName) const;
 
     /** @} */
 
@@ -331,18 +331,18 @@ public:
     * @param [in] strClassName The common style class name
     * @param [in] strControlAttrList The common style attribute list in XML-escaped format
     */
-    void AddClass(const DString& strClassName, const DString& strControlAttrList);
+    void AddClass(const std::string& strClassName, const std::string& strControlAttrList);
 
     /** Gets the content of the specified common style
     * @param [in] strClassName The common style class name
     * @return Returns the common style content of the specified name, in XML-escaped format
     */
-    DString GetClassAttributes(const DString& strClassName) const;
+    std::string GetClassAttributes(const std::string& strClassName) const;
 
     /** Removes a common style
     * @param [in] strClassName The common style class name to remove
     */
-    bool RemoveClass(const DString& strClassName);
+    bool RemoveClass(const std::string& strClassName);
 
     /** Removes all common styles
     */
@@ -352,42 +352,42 @@ public:
     * @param [in] strName The color name (e.g. white)
     * @param [in] strValue The concrete color value (e.g. #FFFFFFFF)
     */
-    void AddTextColor(const DString& strName, const DString& strValue);
+    void AddTextColor(const std::string& strName, const std::string& strValue);
 
     /** Adds a color value for use within the window
     * @param [in] strName The color name (e.g. white)
     * @param [in] argb The concrete color value, in ARGB format
     */
-    void AddTextColor(const DString& strName, UiColor argb);
+    void AddTextColor(const std::string& strName, UiColor argb);
 
     /** Gets the concrete value of a color by name
     * @param [in] strName The color name to get
     * @return Returns the color description value in DWORD format
     */
-    UiColor GetTextColor(const DString& strName) const;
+    UiColor GetTextColor(const std::string& strName) const;
 
     /** Removes the color attribute with the specified name
     * @param [in] strName The color name to remove
     */
-    void RemoveTextColor(const DString& strName);
+    void RemoveTextColor(const std::string& strName);
 
     /** Adds an option group
     * @param [in] strGroupName The group name
     * @param [in] pControl The control pointer
     */
-    bool AddOptionGroup(const DString& strGroupName, Control* pControl);
+    bool AddOptionGroup(const std::string& strGroupName, Control* pControl);
 
     /** Gets the control list in the specified option group
     * @param [in] strGroupName The group name
     * @return Returns the list of all controls under this group
     */
-    std::vector<Control*>* GetOptionGroup(const DString& strGroupName);
+    std::vector<Control*>* GetOptionGroup(const std::string& strGroupName);
 
     /** Removes an option group
     * @param [in] strGroupName The group name
     * @param [in] pControl The control name
     */
-    void RemoveOptionGroup(const DString& strGroupName, Control* pControl);
+    void RemoveOptionGroup(const std::string& strGroupName, Control* pControl);
 
     /** Removes all option groups
     */
@@ -425,26 +425,26 @@ public:
     * @param [in] skinFolder The window skin directory, a relative path
     * @param [in] skinFile The window skin XML description file
     */
-    void InitSkin(const DString& skinFolder, const DString& skinFile);
+    void InitSkin(const std::string& skinFolder, const std::string& skinFile);
 
 public:
     /**   Called when creating the window; implemented by subclasses to get the window skin directory
     * @return Subclasses must implement and return the window skin directory, a relative path
     */
-    virtual DString GetSkinFolder();
+    virtual std::string GetSkinFolder();
 
     /**   Called when creating the window; implemented by subclasses to get the window skin XML description file
     * @return Subclasses must implement and return the window skin XML description file
     *         The returned content can be XML file content (a string starting with the character '<'), 
     *         Or a file path (a string not starting with the character '<'); the file must be found under the GetSkinFolder() path
     */
-    virtual DString GetSkinFile();
+    virtual std::string GetSkinFile();
 
     /** Called when the control to create is not a standard control name
     * @param [in] strClass The control name
     * @return Returns a custom control pointer; normally the custom control is created from the strClass parameter
     */
-    virtual Control* CreateControl(const DString& strClass);
+    virtual Control* CreateControl(const std::string& strClass);
 
 public:
     // Window attribute setting
@@ -452,17 +452,17 @@ public:
      * @param[in] strName The attribute name to set (e.g. width)
      * @param[in] strValue The attribute value to set (e.g. 100)
      */
-    virtual void SetAttribute(const DString& strName, const DString& strValue);
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue);
 
     /** Sets the global class attribute of the control
      * @param[in] strClass The class name to set; it must exist in global.xml
      */
-    void SetClass(const DString& strClass);
+    void SetClass(const std::string& strClass);
 
     /** Applies an attribute list
      * @param[in] strList The string representation of the attribute list, e.g. `width="800" height="600"`
      */
-    void ApplyAttributeList(const DString& strList);
+    void ApplyAttributeList(const std::string& strList);
 
     /** Sets whether drag-and-drop is allowed (drop text and drop file operations)
     * @param [in] bEnable true to allow drag-and-drop, false to disallow it
@@ -480,7 +480,7 @@ public:
     *             The default exit-fullscreen Class name is "btn_exit_fullscreen", defined in globlal.xml
     */
     bool SetFullscreenControl(Control* pFullscreenControl,
-                              const DString& exitButtonClass = DUI_T("btn_exit_fullscreen"));
+                              const std::string& exitButtonClass = "btn_exit_fullscreen");
 
     /** Gets the fullscreen control
     * @return Returns the interface of the fullscreen control, or nullptr if there is none
@@ -1133,11 +1133,11 @@ private:
 
     /** The skin path
     */
-    DString m_skinFolder;
+    std::string m_skinFolder;
 
     /** The skin configuration file
     */
-    DString m_skinFile;
+    std::string m_skinFile;
 
     /** XML parsing and control creation
     */
@@ -1146,7 +1146,7 @@ private:
 private:
     /** The mapping between class names and attributes in the window configuration
     */
-    std::map<DString, DString> m_defaultAttrHash;
+    std::map<std::string, std::string> m_defaultAttrHash;
 
     /** The mapping between window color strings and color values (ARGB)
     */
@@ -1154,7 +1154,7 @@ private:
 
     /** The controls under each Option group of this window (i.e. radio controls are grouped)
     */
-    std::map<DString, std::vector<Control*>> m_mOptionGroup;
+    std::map<std::string, std::vector<Control*>> m_mOptionGroup;
 
     /** Tooltip
     */

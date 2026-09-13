@@ -23,23 +23,23 @@ public:
 
     /** Normalize separator/dot ("/\\.") characters in the path (for files, supports both absolute and relative paths)
     */
-    static DString NormalizeFilePath(const DString& filePath);
+    static std::string NormalizeFilePath(const std::string& filePath);
 
     /** Create a directory (does not include multiple levels of directories)
     * @param [in] filePath The directory to create
     */
-    static bool CreateOneDirectory(const DString& filePath);
+    static bool CreateOneDirectory(const std::string& filePath);
 
     /** Create a directory (including multiple levels of subdirectories)
     * @param [in] filePath The directory to create
     */
-    static bool CreateDirectories(const DString& filePath);
+    static bool CreateDirectories(const std::string& filePath);
 
     /** Get the extension part of the file name in the current path (UTF16/UTF8 encoded)
     * @param [in] filePath The file path
     * @return Returns the extension part of the file, without "."
     */
-    static DString GetFileExtension(const DString& filePath);
+    static std::string GetFileExtension(const std::string& filePath);
 
     /** Get the directory where the program of the current process is located
     * @return Returns the obtained directory

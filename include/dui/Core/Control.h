@@ -41,18 +41,18 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
     /// Graphics related
     /** Get the background color
      * @return Returns the background color string, defined in global.xml
      */
-    DString GetBkColor() const;
+    std::string GetBkColor() const;
 
     /** Set the background color
      * @param [in] strColor The background color value to set, must exist in global.xml
      */
-    void SetBkColor(const DString& strColor);
+    void SetBkColor(const std::string& strColor);
 
     /** Set the background color
      * @param [in] color The background color value to set
@@ -62,7 +62,7 @@ public:
     /** Set the second background color (to implement the gradient background color)
      * @param [in] strColor The background color value to set, must exist in global.xml
      */
-    void SetBkColor2(const DString& strColor);
+    void SetBkColor2(const std::string& strColor);
 
     /** Set the second background color (to implement the gradient background color)
      * @param [in] color The background color value to set
@@ -71,27 +71,27 @@ public:
 
     /** Get the second background color (to implement the gradient background color)
      */
-    DString GetBkColor2() const;
+    std::string GetBkColor2() const;
 
     /** Set the direction of the second background color
      * @param [in] direction The direction of the second background color: "1": left->right, "2": top->bottom, "3": top-left->bottom-right, "4": top-right->bottom-left
      */
-    void SetBkColor2Direction(const DString& direction);
+    void SetBkColor2Direction(const std::string& direction);
 
     /** Get the direction of the second background color
     * @return Returns the direction of the second background color: "1": left->right, "2": top->bottom, "3": top-left->bottom-right, "4": top-right->bottom-left
      */
-    DString GetBkColor2Direction() const;
+    std::string GetBkColor2Direction() const;
 
     /** Get the foreground color (the foreground color is generally set to a semi-transparent color)
      * @return Returns the foreground color string, defined in global.xml
      */
-    DString GetForeColor() const;
+    std::string GetForeColor() const;
 
     /** Set the foreground color (the foreground color is generally set to a semi-transparent color)
      * @param [in] strColor The foreground color value to set, must exist in global.xml
      */
-    void SetForeColor(const DString& strColor);
+    void SetForeColor(const std::string& strColor);
 
     /** Set the foreground color (the foreground color is generally set to a semi-transparent color)
      * @param [in] color The foreground color value to set
@@ -102,7 +102,7 @@ public:
      * @param [in] stateType The state to get the color for, refer to the ControlStateType enum
      * @return The color string set for the specified state, corresponding to the color value in global.xml
      */
-    DString GetStateColor(ControlStateType stateType) const;
+    std::string GetStateColor(ControlStateType stateType) const;
 
     /** Get the color rectangle outer margin of the control in a specified state
      * @param [in] stateType The state to get the color for, refer to the ControlStateType enum
@@ -123,7 +123,7 @@ public:
      * @param [in] colorRound The color rectangle corner radius to set; if not set, the color rectangle follows the shape of the control rectangle
      * @param [in] bNeedDpiScale Whether DPI adaptation is needed
      */
-    void SetStateColor(ControlStateType stateType, const DString& strColor);
+    void SetStateColor(ControlStateType stateType, const std::string& strColor);
     void SetStateColorMargin(ControlStateType stateType, UiMargin colorMargin, bool bNeedDpiScale);
     void SetStateColorRound(ControlStateType stateType, UiSize colorRound, bool bNeedDpiScale);
 
@@ -131,7 +131,7 @@ public:
      * @brief Get the background image path
      * @return The background image path
      */
-    DString GetBkImage() const;
+    std::string GetBkImage() const;
 
     /**
      * @brief Get the background image path in UTF8 format
@@ -144,7 +144,7 @@ public:
      * @param[in] strImage The image path to set
      * @return None
      */
-    void SetBkImage(const DString& strImage);
+    void SetBkImage(const std::string& strImage);
 
     /**
      * @brief Set the background image (UTF8 format string)
@@ -159,7 +159,7 @@ public:
      * @param[in] The state to get the image for, refer to the ControlStateType enum
      * @return The image path in the specified state
      */
-    DString GetStateImage(ControlStateType stateType) const;
+    std::string GetStateImage(ControlStateType stateType) const;
 
     /**
      * @brief Set the image in a specified state
@@ -167,14 +167,14 @@ public:
      * @param[in] strImage The image path to set
      * @return None
      */
-    void SetStateImage(ControlStateType stateType, const DString& strImage);
+    void SetStateImage(ControlStateType stateType, const std::string& strImage);
 
     /**
      * @brief Get the foreground image in a specified state
      * @param[in] The state to get the image for, refer to the `ControlStateType` enum
      * @return The foreground image path in the specified state
      */
-    DString GetForeStateImage(ControlStateType stateType) const;
+    std::string GetForeStateImage(ControlStateType stateType) const;
 
     /**
      * @brief Set the foreground image in a specified state
@@ -182,7 +182,7 @@ public:
      * @param[in] strImage The foreground image path to set
      * @return None
      */
-    void SetForeStateImage(ControlStateType stateType, const DString& strImage);
+    void SetForeStateImage(ControlStateType stateType, const std::string& strImage);
 
     /**@brief Get the control state
      * @return The state of the control, please refer to the `ControlStateType` enum
@@ -207,26 +207,26 @@ public:
      * @param [in] stateType The control state
      * @return The border color string, corresponding to the concrete color value in global.xml
      */
-    virtual DString GetBorderColor(ControlStateType stateType) const;
+    virtual std::string GetBorderColor(ControlStateType stateType) const;
 
     /** Set the border color, applied to all states
      * @param [in] strBorderColor The border color string value to set, must exist in global.xml
      */
-    void SetBorderColor(const DString& strBorderColor);
+    void SetBorderColor(const std::string& strBorderColor);
 
     /** Set the border color in a specified state
      * @param [in] stateType The control state
      * @param [in] strBorderColor The border color string value to set, must exist in global.xml
      */
-    void SetBorderColor(ControlStateType stateType, const DString& strBorderColor);
+    void SetBorderColor(ControlStateType stateType, const std::string& strBorderColor);
 
     /** Set the border color in the focus state
     */
-    void SetFocusBorderColor(const DString& strBorderColor);
+    void SetFocusBorderColor(const std::string& strBorderColor);
 
     /** Get the border color in the focus state
     */
-    DString GetFocusBorderColor() const;
+    std::string GetFocusBorderColor() const;
 
     /** Set the border size (left, top, right, bottom correspond to the left, top, right, and bottom border sizes respectively)
      * @param [in] rc A set of border sizes in a `UiRectF` structure
@@ -318,7 +318,7 @@ public:
     /** Set the border shadow
      * @param[in] The shadow attribute to set
      */
-    void SetBoxShadow(const DString& strShadow);
+    void SetBoxShadow(const std::string& strShadow);
 
     /// Mouse related
     /**
@@ -335,7 +335,7 @@ public:
      * @brief Get the tooltip text of the control in the mouse hover state
      * @return Returns the tooltip text in the current mouse hover state
      */
-    virtual DString GetToolTipText() const;
+    virtual std::string GetToolTipText() const;
 
     /**
      * @brief Get the tooltip text of the control in the mouse hover state (UTF8 format)
@@ -348,7 +348,7 @@ public:
      * @param[in] strText The text to set
      * @return None
      */
-    virtual void SetToolTipText(const DString& strText);
+    virtual void SetToolTipText(const std::string& strText);
 
     /**
      * @brief Set the tooltip text shown when the mouse hovers over the control (UTF8 format)
@@ -362,7 +362,7 @@ public:
      * @param[in] strTextId The tooltip text ID in the language file
      * @return None
      */
-    virtual void SetToolTipTextId(const DString& strTextId);
+    virtual void SetToolTipTextId(const std::string& strTextId);
 
     /**
      * @brief Set the text in the language file corresponding to the tooltip text shown when the mouse hovers over the control (UTF8 format)
@@ -402,7 +402,7 @@ public:
     /** Get the data string bound to the control by the user
      * @return Returns the concrete data string
      */
-    DString GetDataID() const;
+    std::string GetDataID() const;
 
     /** Get the data string bound to the control by the user (UTF8 format)
      * @return Returns the concrete data string
@@ -412,7 +412,7 @@ public:
     /** Bind a string data to the control
      * @param[in] strText The string data to bind
      */
-    void SetDataID(const DString& strText);
+    void SetDataID(const std::string& strText);
 
     /** Bind a string data to the control (UTF8 format)
      * @param[in] strText The string data to bind
@@ -468,11 +468,11 @@ public:
 
     /** Set the color of the focus state dashed rectangle (the color of the lines)
     */
-    void SetFocusRectColor(const DString& focusRectColor);
+    void SetFocusRectColor(const std::string& focusRectColor);
 
     /** Get the color of the focus state dashed rectangle (the color of the lines)
     */
-    DString GetFocusRectColor() const;
+    std::string GetFocusRectColor() const;
 
     /** Determine whether the current mouse focus is on the control
      * @return Returns whether the mouse focus is on the control; true means the mouse focus is on the control, false means it is not
@@ -512,7 +512,7 @@ public:
     /** Find the control by name; search scope: the current control/container; if it is itself a container, search within the container and its child controls
     * @param [in] name The name of the control (case-sensitive)
     */
-    Control* FindControl(const DString& name);
+    Control* FindControl(const std::string& name);
 
     /// Position related
     /** Get the control position (subclasses can change the behavior)
@@ -596,28 +596,28 @@ public:
      * @param[in] strValue The attribute value to set (e.g. 100)
      * @return None
      */
-    virtual void SetAttribute(const DString& strName, const DString& strValue);
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue);
 
     /**
      * @brief Set the class global attribute of the control
      * @param[in] strClass The class name to set, must exist in global.xml
      * @return None
      */
-    void SetClass(const DString& strClass);
+    void SetClass(const std::string& strClass);
 
     /**
      * @brief Apply an attribute list
      * @param[in] strList The string representation of the attribute list, e.g. `width="100" height="30"`
      * @return None
      */
-    void ApplyAttributeList(const DString& strList);
+    void ApplyAttributeList(const std::string& strList);
 
     /**
      * @brief To be completed
      * @param[in] To be completed
      * @return To be completed
      */
-    bool OnApplyAttributeList(const DString& strReceiver, const DString& strList, const EventArgs& eventArgs);
+    bool OnApplyAttributeList(const std::string& strReceiver, const std::string& strList, const EventArgs& eventArgs);
 
     /// Draw operations
     /** Draw an image
@@ -632,7 +632,7 @@ public:
      */
     bool PaintImage(IRender* pRender,
                     Image* pImage,
-                    const DString& strModify = DUI_T(""),
+                    const std::string& strModify = "",
                     int32_t nFade = DUI_NOSET_VALUE,
                     IMatrix* pMatrix = nullptr,
                     const UiRect* pDestRect = nullptr,
@@ -720,7 +720,7 @@ public:
     /** Set the loading attributes, create the display UI according to the XML file specified in the attributes, and set the UI attributes
     * @param [in] loadingAttribute The attribute string of loading
     */
-    bool SetLoadingAttribute(const DString& loadingAttribute);
+    bool SetLoadingAttribute(const std::string& loadingAttribute);
 
     /** Start the loading status
     * @param [in] nIntervalMs The callback interval (milliseconds), minimum 10 milliseconds
@@ -768,7 +768,7 @@ public:
                     0: no valid play count, use the default value of the image (or a preset value)
                    >0: a concrete play count, stop playing after reaching the count
      */
-    bool StartImageAnimation(const DString& imageName = DUI_T(""),
+    bool StartImageAnimation(const std::string& imageName = "",
                              AnimationImagePos nStartFrame = AnimationImagePos::kFrameCurrent,
                              int32_t nPlayCount = 0);
 
@@ -777,7 +777,7 @@ public:
      * @param [in] nStopFrame Which frame to stop at when the playback ends; the first frame, current frame, and last frame can be set. Refer to the AnimationImagePos enum
      * @param [in] bTriggerEvent Whether to notify subscribers of the stop event, refer to the AttachImageAnimationStop method
      */
-    bool StopImageAnimation(const DString& imageName = DUI_T(""),
+    bool StopImageAnimation(const std::string& imageName = "",
                             AnimationImagePos nStopFrame = AnimationImagePos::kFrameCurrent,
                             bool bTriggerEvent = true);
 
@@ -786,24 +786,24 @@ public:
      * @param [in] nFrameIndex The image frame index, starting from 0
      */
     bool SetImageAnimationFrame(int32_t nFrameIndex);//The background image
-    bool SetImageAnimationFrame(const DString& imageName, int32_t nFrameIndex);
+    bool SetImageAnimationFrame(const std::string& imageName, int32_t nFrameIndex);
 
     /** Get the index of the current frame of the animation
     * @param [in] imageName The image resource name, i.e. the name field configured for the image resource in XML; an empty string means the background image
     */
     uint32_t GetImageAnimationFrameIndex() const;//The background image
-    uint32_t GetImageAnimationFrameIndex(const DString& imageName) const;
+    uint32_t GetImageAnimationFrameIndex(const std::string& imageName) const;
 
     /** Get the total number of frames of the animation
     * @param [in] imageName The image resource name, i.e. the name field configured for the image resource in XML; an empty string means the background image
     */
     uint32_t GetImageAnimationFrameCount();//The background image
-    uint32_t GetImageAnimationFrameCount(const DString& imageName);
+    uint32_t GetImageAnimationFrameCount(const std::string& imageName);
 
     /** Whether the animation image has been loaded
     */
     bool IsImageAnimationLoaded() const;//The background image
-    bool IsImageAnimationLoaded(const DString& imageName) const;
+    bool IsImageAnimationLoaded(const std::string& imageName) const;
 
     /** Listen for the notification of animation playback start (all image animations)
      * @param [in] callback The callback function listening to the animation stop playback
@@ -879,7 +879,7 @@ public:
 
     /** Get the image resource interface with the specified name
     */
-    Image* FindImageByName(const DString& imageName) const;
+    Image* FindImageByName(const std::string& imageName) const;
 
     /** Clear the image cache; after clearing, the images will be reloaded when used
      */
@@ -1083,7 +1083,7 @@ public:
     *           (3) Priority 3: defined as a child node of the <Global> node in global.xml, e.g. <TextColor name="white" value="#FFFFFFFF"/>
     *           (4) Priority 4: see the definitions in the ui::UiColors::UiColorConsts function
     */
-    bool HasUiColor(const DString& colorName) const;
+    bool HasUiColor(const std::string& colorName) const;
 
     /** Get the value corresponding to a color
     * @param [in] colorName The name of the color; valid color names can be the following definitions (in order of lookup priority):
@@ -1093,13 +1093,13 @@ public:
     *           (4) Priority 4: directly specify a predefined color alias, see the definitions in the ui::UiColors::UiColorConsts function
     * @return The ARGB color value
     */
-    UiColor GetUiColor(const DString& colorName) const;
+    UiColor GetUiColor(const std::string& colorName) const;
 
     /** Get the string corresponding to a color value, returning the string for the color
     * @param [in] color The color value
     * @return Returns the string corresponding to the color value, e.g. "#FF123456"
     */
-    DString GetColorString(const UiColor& color) const;
+    std::string GetColorString(const UiColor& color) const;
 
     /** Determine whether the control type is selectable
      * @return Returns false by default
@@ -1169,11 +1169,11 @@ public:
     /** Set the file extension list for file drag and drop
     * @param [in] fileTypes The file extension list, e.g. ".txt;.csv", meaning only txt and csv files are supported; empty means all files are supported
     */
-    void SetDropFileTypes(const DString& fileTypes);
+    void SetDropFileTypes(const std::string& fileTypes);
 
     /** Get the filter of the file drag and drop
     */
-    DString GetDropFileTypes() const;
+    std::string GetDropFileTypes() const;
 
 public:
     /**@name Event listening related interfaces
@@ -1379,11 +1379,11 @@ protected:
 
     /** Get the image path in the specified state
      */
-    DString GetStateImage(StateImageType imageType, ControlStateType stateType) const;
+    std::string GetStateImage(StateImageType imageType, ControlStateType stateType) const;
 
     /** Set the image in the specified state
      */
-    void SetStateImage(StateImageType imageType, ControlStateType stateType, const DString& strImage);
+    void SetStateImage(StateImageType imageType, ControlStateType stateType, const std::string& strImage);
 
     /** Draw the image of the specified type and state
     * @param [in] pRender The draw interface
@@ -1396,7 +1396,7 @@ protected:
     bool PaintStateImage(IRender* pRender, 
                          StateImageType stateImageType, 
                          ControlStateType stateType, 
-                         const DString& sImageModify = DUI_T(""),
+                         const std::string& sImageModify = "",
                          UiRect* pDestRect = nullptr);
 
     /** Clear all state image attributes
@@ -1430,7 +1430,7 @@ protected:
 
     /** Get the background image path (without attributes)
     */
-    DString GetBkImagePath() const;
+    std::string GetBkImagePath() const;
 
     /** Get the background image size (loads the image on demand)
     */
@@ -1549,11 +1549,11 @@ public:
     * @param[in] strFontId The font ID to set, must exist in global.xml
     * @return Returns the font interface on success, external callers do not need to release the resource; returns nullptr on failure
     */
-    IFont* GetIFontById(const DString& strFontId) const;
+    IFont* GetIFontById(const std::string& strFontId) const;
 
     /** Get the color value corresponding to the color name
     */
-    UiColor GetUiColorByName(const DString& colorName) const;
+    UiColor GetUiColorByName(const std::string& colorName) const;
 
 protected:
     /** The visible state change event
@@ -1582,19 +1582,19 @@ private:
 
     /** Parse and process the animation playback attribute
     */
-    void ParseStartImageAnimation(const DString& value);
+    void ParseStartImageAnimation(const std::string& value);
 
     /** Parse and process the animation stop attribute
     */
-    void ParseStopImageAnimation(const DString& value);
+    void ParseStopImageAnimation(const std::string& value);
 
     /** Parse and process the animation set current frame attribute
     */
-    void ParseSetImageAnimationFrame(const DString& value);
+    void ParseSetImageAnimationFrame(const std::string& value);
 
     /** Fire the image load complete and decode complete events
     */
-    void FireImageEvent(Image* pImagePtr, const DString& imageFilePath, bool bLoadImage, bool bLoadError, bool bDecodeError) const;
+    void FireImageEvent(Image* pImagePtr, const std::string& imageFilePath, bool bLoadImage, bool bLoadError, bool bDecodeError) const;
 
     /** Create a temporary Render object
     */

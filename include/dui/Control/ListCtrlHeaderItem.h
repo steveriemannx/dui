@@ -23,11 +23,11 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
     /** Set attributes
     */
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** DPI changed, update the control size and layout
     * @param [in] nOldDpiScale The old DPI scale percentage
@@ -65,11 +65,11 @@ public:
 
     /** Set the sort icon: descending
     */
-    void SetSortedDownImage(const DString& sImageString);
+    void SetSortedDownImage(const std::string& sImageString);
 
     /** Set the sort icon: ascending
     */
-    void SetSortedUpImage(const DString& sImageString);
+    void SetSortedUpImage(const std::string& sImageString);
 
     /** Set whether to show the sort icon (among all HeaderItems, only the sorted column shows it, other columns do not)
     * @param [in] bShowSortImage Whether to show the sort icon

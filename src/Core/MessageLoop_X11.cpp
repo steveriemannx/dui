@@ -16,7 +16,7 @@ std::atomic<bool> MessageLoop_X11::s_initialized{false};
 std::atomic<bool> MessageLoop_X11::s_quit{false};
 bool MessageLoop_X11::CheckInitX11() { if (s_initialized) return true; s_display = XOpenDisplay(nullptr); if (!s_display) return false; s_quit = false; s_initialized = true; return true; }
 Display* MessageLoop_X11::GetDisplay() { return s_display; }
-DString MessageLoop_X11::GetCurrentVideoDriverName() { return DUI_T("x11"); }
+std::string MessageLoop_X11::GetCurrentVideoDriverName() { return "x11"; }
 float MessageLoop_X11::GetPrimaryDisplayContentScale() { return 1.0f; }
 int32_t MessageLoop_X11::Run(MessageLoopIdleCallback idle) { if (!CheckInitX11()) return -1; s_quit = false; while (!s_quit) { DispatchX11Events(); DispatchUserEvents(); PaintAllWindows(); if (idle) idle(); std::this_thread::sleep_for(std::chrono::milliseconds(8)); } return 0; }
 void MessageLoop_X11::RunDoModal(NativeWindow_X11& w, bool, bool) { while (!w.IsClosingWnd() && !s_quit) { bool terminate = s_quit; RunUserLoop(terminate); } }

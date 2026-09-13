@@ -62,23 +62,23 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
         // Disable the GPU sandbox; when this option is enabled, the GPU process cannot start properly on the Linux platform
         command_line->AppendSwitch("disable-gpu-sandbox");
 
-        DString currentVideoDriver = StringUtil::MakeLowerString(MessageLoop_Wayland::GetCurrentVideoDriverName());
+        std::string currentVideoDriver = StringUtil::MakeLowerString(MessageLoop_Wayland::GetCurrentVideoDriverName());
         // The backend rendering mode of CEF must stay consistent with native backend, otherwise the child window mode will not work properly
-        if (currentVideoDriver == DUI_T("wayland")) {
+        if (currentVideoDriver == "wayland") {
             // Force the Ozone platform to Wayland (disable X11)
             command_line->AppendSwitchWithValue("ozone-platform", "wayland");
         }
-        else if (currentVideoDriver == DUI_T("x11")) {
+        else if (currentVideoDriver == "x11") {
             // Force the Ozone platform to X11 (disable Wayland)
             command_line->AppendSwitchWithValue("ozone-platform", "x11");
         }
      
-        if (IsWaylandEnvironment() && (currentVideoDriver == DUI_T("x11"))) {
+        if (IsWaylandEnvironment() && (currentVideoDriver == "x11")) {
             // XWayland environment: fix the issue where the DPI adaptation feature of the CEF page fails
-            DString dpiFactor;
+            std::string dpiFactor;
             float scale = MessageLoop_Wayland::GetPrimaryDisplayContentScale();
             if (scale > 0.001f) {
-                dpiFactor = StringUtil::Printf(DUI_T("%.02f"), scale);
+                dpiFactor = StringUtil::Printf("%.02f", scale);
             }
             if (!dpiFactor.empty()) {
                 command_line->AppendSwitchWithValue("force-device-scale-factor", CefString(dpiFactor.c_str()));
@@ -94,16 +94,16 @@ void CefClientApp::OnBeforeCommandLineProcessing(const CefString& process_type, 
         }
 
         // Add extra parameters (application-layer configuration)
-        const std::vector<std::pair<DString, DString>>& cefSwitchWithValues = CefManager::GetInstance()->GetSwitchWithValues();
+        const std::vector<std::pair<std::string, std::string>>& cefSwitchWithValues = CefManager::GetInstance()->GetSwitchWithValues();
         if (!cefSwitchWithValues.empty()) {
-            for (const std::pair<DString, DString>& switchWithValue : cefSwitchWithValues) {
+            for (const std::pair<std::string, std::string>& switchWithValue : cefSwitchWithValues) {
                 if (switchWithValue.first.empty()) {
-                    DStringA value = StringConvert::TToUTF8(switchWithValue.second);
+                    std::string value = StringConvert::TToUTF8(switchWithValue.second);
                     command_line->AppendSwitch(value.c_str());
                 }
                 else {
-                    DStringA name = StringConvert::TToUTF8(switchWithValue.first);
-                    DStringA value = StringConvert::TToUTF8(switchWithValue.second);
+                    std::string name = StringConvert::TToUTF8(switchWithValue.first);
+                    std::string value = StringConvert::TToUTF8(switchWithValue.second);
                     command_line->AppendSwitchWithValue(name.c_str(), value.c_str());
                 }
             }

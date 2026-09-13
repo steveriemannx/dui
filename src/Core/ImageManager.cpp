@@ -31,7 +31,7 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
 {
     ASSERT(ui::GlobalManager::Instance().IsInUIThread());
     bImageDataFromCache = false;
-    const DString loadKey = loadParam.GetLoadKey(loadParam.GetLoadDpiScale());
+    const std::string loadKey = loadParam.GetLoadKey(loadParam.GetLoadDpiScale());
     auto iter = m_imageInfoMap.find(loadKey);
     if (iter != m_imageInfoMap.end()) {
         std::shared_ptr<ImageInfo> spImageInfo = iter->second.lock();
@@ -44,7 +44,7 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
 
     //Reload the resource
     const ImageLoadPath& imageLoadPath = loadParam.GetImageLoadPath();
-    DString imageFullPath = imageLoadPath.m_imageFullPath.ToString();   //Image path (local path or relative path in the embedded resources)
+    std::string imageFullPath = imageLoadPath.m_imageFullPath.ToString();   //Image path (local path or relative path in the embedded resources)
     uint32_t nImageFileDpiScale = 100;                                  //DPI scale of the original image is 100 when it is not DPI scaled
     const bool isMemoryArchive = GlobalManager::Instance().MemoryResources().IsOpen();
     const bool bImageDpiScaleEnabled = loadParam.IsImageDpiScaleEnabled();//Image attribute: load_scale="false", use only the original image, no scaling needed
@@ -52,7 +52,7 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
         ((imageLoadPath.m_pathType == ImageLoadPathType::kLocalResPath) ||
          (imageLoadPath.m_pathType == ImageLoadPathType::kMemoryResPath))) {
         //Only files in the resource directory get the DPI-adaptive image lookup
-        DString dpiImageFullPath;
+        std::string dpiImageFullPath;
         uint32_t dpiImageDpiScale = nImageFileDpiScale;
         if (GetDpiScaleImageFullPath(loadParam.GetLoadDpiScale(), isMemoryArchive, imageFullPath, dpiImageFullPath, dpiImageDpiScale)) {
             //Mark the DPI-adaptive image attribute; if the path differs, a file for the corresponding DPI has been selected
@@ -78,12 +78,12 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
 
     std::shared_ptr<IImage> spImageData;
     //Query the cache; if a cached entry exists, the image resource can be shared without reloading
-    const DString imageKey = imageFullPath;
+    const std::string imageKey = imageFullPath;
     auto iterImageData = m_imageDataMap.find(imageKey);
     if (iterImageData != m_imageDataMap.end()) {
         spImageData = iterImageData->second.m_pImage.lock();
 #ifdef OUTPUT_IMAGE_LOG
-        DString log = DUI_T("Lock ImageData(reuse): ") + imageKey + DUI_T("\n");
+        std::string log = "Lock ImageData(reuse): " + imageKey + "\n";
         ::OutputDebugString(log.c_str());
 #endif
         if (spImageData != nullptr) {
@@ -172,9 +172,9 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
         bool bEnableAssert = true;
 #ifndef DUI_IMAGE_SUPPORT_LIB_PAG        
         if (pImageData == nullptr) {
-            DString fileExt = FilePathUtil::GetFileExtension(decodeParam.m_imageFilePath.ToString());
+            std::string fileExt = FilePathUtil::GetFileExtension(decodeParam.m_imageFilePath.ToString());
             StringUtil::MakeUpperString(fileExt);
-            if (fileExt == DUI_T("PAG")) {
+            if (fileExt == "PAG") {
                 //When PAG is not supported, disable the assertion error
                 bEnableAssert = false;
             }
@@ -233,12 +233,12 @@ void ImageManager::OnImageInfoCreate(std::shared_ptr<ImageInfo>& pImageInfo)
 {
     ASSERT(pImageInfo != nullptr);
     if (pImageInfo != nullptr) {
-        DString loadKey = pImageInfo->GetLoadKey();
+        std::string loadKey = pImageInfo->GetLoadKey();
         ASSERT(!loadKey.empty());
         if (!loadKey.empty()) {
             m_imageInfoMap[loadKey] = pImageInfo;
 #ifdef OUTPUT_IMAGE_LOG
-            DString log = DUI_T("Created ImageInfo: ") + loadKey + DUI_T("\n");
+            std::string log = "Created ImageInfo: " + loadKey + "\n";
             ::OutputDebugString(log.c_str());
 #endif
         }
@@ -250,7 +250,7 @@ void ImageManager::OnImageInfoDestroy(ImageInfo* pImageInfo)
     ASSERT(ui::GlobalManager::Instance().IsInUIThread());
     ASSERT(pImageInfo != nullptr);
     if (pImageInfo != nullptr) {
-        DString loadKey = pImageInfo->GetLoadKey();
+        std::string loadKey = pImageInfo->GetLoadKey();
         ASSERT(!loadKey.empty());
         if (!loadKey.empty()) {            
             auto iter = m_imageInfoMap.find(loadKey);
@@ -260,19 +260,19 @@ void ImageManager::OnImageInfoDestroy(ImageInfo* pImageInfo)
         }
         delete pImageInfo;
 #ifdef OUTPUT_IMAGE_LOG
-        DString log = DUI_T("Removed ImageInfo: ") + loadKey + DUI_T("\n");
+        std::string log = "Removed ImageInfo: " + loadKey + "\n";
         ::OutputDebugString(log.c_str());
 #endif
     }
 }
 
-void ImageManager::OnImageDataCreate(const DString& imageKey, std::shared_ptr<IImage>& pImage, float fImageSizeScale)
+void ImageManager::OnImageDataCreate(const std::string& imageKey, std::shared_ptr<IImage>& pImage, float fImageSizeScale)
 {
     ASSERT(!imageKey.empty() && (pImage != nullptr));
     if (!imageKey.empty() && (pImage != nullptr)) {
         m_imageDataMap[imageKey] = TImageData(pImage, fImageSizeScale);
 #ifdef OUTPUT_IMAGE_LOG
-        DString log = DUI_T("Created ImageData: ") + imageKey + DUI_T("\n");
+        std::string log = "Created ImageData: " + imageKey + "\n";
         ::OutputDebugString(log.c_str());
 #endif
     }
@@ -287,7 +287,7 @@ void ImageManager::OnImageDataDestroy(IImage* pImage)
         while (iter != m_imageDataMap.end()) {
             if (iter->second.m_pImage.expired()) {
 #ifdef OUTPUT_IMAGE_LOG
-                DString log = DUI_T("Removed ImageData: ") + iter->first + DUI_T("\n");
+                std::string log = "Removed ImageData: " + iter->first + "\n";
                 ::OutputDebugString(log.c_str());
 #endif
                 iter = m_imageDataMap.erase(iter);
@@ -307,7 +307,7 @@ void ImageManager::RemoveAllImages()
     m_imageInfoMap.clear();
 }
 
-void ImageManager::ReleaseImage(const std::shared_ptr<IImage>& pImageData, const DString& imageFullPath)
+void ImageManager::ReleaseImage(const std::shared_ptr<IImage>& pImageData, const std::string& imageFullPath)
 {
     //First remove the element from the queue, so that only one element is in the queue
     CancelReleaseImage(pImageData);
@@ -391,8 +391,8 @@ bool ImageManager::IsImageAsyncLoad() const
 
 bool ImageManager::GetDpiScaleImageFullPath(uint32_t dpiScale,
                                              bool bIsMemoryArchive,
-                                            const DString& imageFullPath,
-                                            DString& dpiImageFullPath,
+                                            const std::string& imageFullPath,
+                                            std::string& dpiImageFullPath,
                                             uint32_t& nImageFileDpiScale) const
 {
     nImageFileDpiScale = 0;
@@ -406,9 +406,9 @@ bool ImageManager::GetDpiScaleImageFullPath(uint32_t dpiScale,
         return false;
     }
 
-    DString dpiFullPath;
+    std::string dpiFullPath;
     std::vector<uint32_t> allScales = {125, 150, 175, 200, 225, 250, 300};
-    std::vector<std::pair<uint32_t, DString>> allDpiImagePath;
+    std::vector<std::pair<uint32_t, std::string>> allDpiImagePath;
     for (auto scale : allScales) {
         if (FindDpiScaleImageFullPath(scale, bIsMemoryArchive, imageFullPath, dpiFullPath)) {
             allDpiImagePath.push_back({ scale, dpiFullPath });
@@ -419,7 +419,7 @@ bool ImageManager::GetDpiScaleImageFullPath(uint32_t dpiScale,
     size_t nCount = allDpiImagePath.size();
     for (size_t index = 0; index < nCount; ++index) {
         uint32_t nScale = allDpiImagePath[index].first;
-        const DString& sPath = allDpiImagePath[index].second;
+        const std::string& sPath = allDpiImagePath[index].second;
         if (nScale > dpiScale) {
             if (index == 0) {
                 //The first one
@@ -455,8 +455,8 @@ bool ImageManager::GetDpiScaleImageFullPath(uint32_t dpiScale,
 
 bool ImageManager::FindDpiScaleImageFullPath(uint32_t dpiScale,
                                               bool bIsMemoryArchive,
-                                             const DString& imageFullPath,
-                                             DString& dpiImageFullPath) const
+                                             const std::string& imageFullPath,
+                                             std::string& dpiImageFullPath) const
 {
     dpiImageFullPath.clear();
     if ((dpiScale == 100) || (dpiScale == 0)) {
@@ -481,35 +481,35 @@ bool ImageManager::FindDpiScaleImageFullPath(uint32_t dpiScale,
     return bExists;
 }
 
-DString ImageManager::GetDpiScaledPath(uint32_t dpiScale, const DString& imageFullPath) const
+std::string ImageManager::GetDpiScaledPath(uint32_t dpiScale, const std::string& imageFullPath) const
 {
-    DString strPathDir;
-    DString strPathFileName;
-    std::list<DString> strPathList = StringUtil::Split(imageFullPath, DUI_T("\\"));
+    std::string strPathDir;
+    std::string strPathFileName;
+    std::list<std::string> strPathList = StringUtil::Split(imageFullPath, "\\");
     for (auto it = strPathList.begin(); it != strPathList.end(); ++it) {
         auto itTemp = it;
         if (++itTemp == strPathList.end()) {
             strPathFileName = *it;
         }
         else {
-            strPathDir += *it + DUI_T("\\");
+            strPathDir += *it + "\\";
         }
     }
 
     size_t iPointPos = strPathFileName.rfind('.');
-    ASSERT(iPointPos != DString::npos);
-    if (iPointPos == DString::npos) {
-        return DString();
+    ASSERT(iPointPos != std::string::npos);
+    if (iPointPos == std::string::npos) {
+        return std::string();
     }
-    DString strFileExtension = strPathFileName.substr(iPointPos, strPathFileName.size() - iPointPos);
-    DString strFile = strPathFileName.substr(0, iPointPos);
+    std::string strFileExtension = strPathFileName.substr(iPointPos, strPathFileName.size() - iPointPos);
+    std::string strFile = strPathFileName.substr(0, iPointPos);
     //Return the image for the specified DPI; for example, an image with a DPI scale of 120 (i.e., scaled up to 120%): "image.png" corresponds to "image@120.png"
-    strPathFileName = StringUtil::Printf(DUI_T("%s%s%d%s"), strFile.c_str(), DUI_T("@"), dpiScale, strFileExtension.c_str());
-    DString strNewFilePath = strPathDir + strPathFileName;
+    strPathFileName = StringUtil::Printf("%s%s%d%s", strFile.c_str(), "@", dpiScale, strFileExtension.c_str());
+    std::string strNewFilePath = strPathDir + strPathFileName;
     return strNewFilePath;
 }
 
-void ImageManager::AddDelayPaintData(Control* pControl, Image* pImage, const DString& imageKey)
+void ImageManager::AddDelayPaintData(Control* pControl, Image* pImage, const std::string& imageKey)
 {
     GlobalManager::Instance().AssertUIThread();
     ASSERT((pControl != nullptr) && (pImage != nullptr) && !imageKey.empty());
@@ -563,7 +563,7 @@ void ImageManager::RemoveDelayPaintData(Image* pImage)
     }
 }
 
-void ImageManager::DelayPaintImage(const DString& imageKey)
+void ImageManager::DelayPaintImage(const std::string& imageKey)
 {
     GlobalManager::Instance().AssertUIThread();
     GlobalManager::Instance().AssertUIThread();

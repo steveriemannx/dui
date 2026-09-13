@@ -39,18 +39,18 @@ public:
      * @param[in] id The ID of the specified string
      * @return Returns the language string corresponding to the ID
      */
-    DString GetStringViaID(const DString& id);
+    std::string GetStringViaID(const std::string& id);
 
 private:
     /** Analyze the content of the language mapping table
      * @param[in] list The list of mapping table content read out
      */
-    bool AnalyzeStringTable(const std::vector<DString>& list);
+    bool AnalyzeStringTable(const std::vector<std::string>& list);
 
 private:
     /** Mapping table of the string ID and its value
     */
-    std::unordered_map<DString, DString> m_stringTable;
+    std::unordered_map<std::string, std::string> m_stringTable;
 };
 
 }

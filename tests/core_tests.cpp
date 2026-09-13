@@ -43,7 +43,7 @@
 #include "dui/Core/MessageLoop_MacOS.h"
 #endif
 
-#define DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value) DUI_T(value)
+#define DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value) (value)
 #define DUI_TEST_SOURCE_ROOT_TEXT(value) DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value)
 
 namespace {
@@ -113,8 +113,8 @@ void TestWeakCallback()
 
 class TestDecoder final : public ui::IImageDecoder {
 public:
-    DString GetFormatName() const override { return DUI_T("test"); }
-    bool CanDecode(const DString&) const override { return false; }
+    std::string GetFormatName() const override { return "test"; }
+    bool CanDecode(const std::string&) const override { return false; }
     bool CanDecode(const uint8_t*, size_t) const override { return false; }
     std::unique_ptr<ui::IImage> LoadImageData(
         const ui::ImageDecodeParam&) override { return nullptr; }
@@ -156,11 +156,11 @@ void TestRealImageDecoding()
     assert(factory.AddImageDecoder(std::make_shared<ui::ImageDecoder_JPEG>()));
 #endif
 
-    for (const DString& relativePath : {
-        DUI_T("resources/themes/default/render/autumn.png"),
-        DUI_T("resources/themes/default/render/webp_test2.webp")
+    for (const std::string& relativePath : {
+        "resources/themes/default/render/autumn.png",
+        "resources/themes/default/render/webp_test2.webp"
 #ifdef DUI_IMAGE_SUPPORT_JPEG_TURBO
-        , DUI_T("resources/themes/default/render/jpg_test.jpg")
+        , "resources/themes/default/render/jpg_test.jpg"
 #endif
     }) {
         const ui::FilePath path = ui::FilePathUtil::JoinFilePath(
@@ -206,10 +206,10 @@ void TestStringAndAttributes()
     ui::UiMargin margin;
     ui::AttributeUtil::ParseMarginValue("1,2,3,4", margin);
     assert(margin == ui::UiMargin(1, 2, 3, 4));
-    std::vector<std::pair<DString, DString>> attributes;
-    ui::AttributeUtil::ParseAttributeList(DUI_T("text='hello world' width='20'"), DUI_T('\''), attributes);
+    std::vector<std::pair<std::string, std::string>> attributes;
+    ui::AttributeUtil::ParseAttributeList("text='hello world' width='20'", '\'', attributes);
     assert(attributes.size() == 2);
-    assert(attributes[0].first == DUI_T("text") && attributes[0].second == DUI_T("hello world"));
+    assert(attributes[0].first == "text" && attributes[0].second == "hello world");
 }
 
 void TestGeometryAndDpi()
@@ -248,24 +248,24 @@ void TestFilePathAndXml()
     const ui::FilePath root(DUI_TEST_SOURCE_ROOT_TEXT(DUI_TEST_SOURCE_ROOT));
     assert(root.IsAbsolutePath() && root.IsExistsDirectory());
     ui::FilePath global = ui::FilePathUtil::JoinFilePath(
-        root, ui::FilePath(DUI_T("resources/themes/default/global.xml")));
+        root, ui::FilePath("resources/themes/default/global.xml"));
     // FilePath::GetFileExtension() keeps the dot -- std::filesystem semantics, and
     // NativeWindow_Windows.cpp compares its result against ".ico". The static
     // FilePathUtil::GetFileExtension() strips it, and the image decoders rely on
     // that. The two are correct as-is but are not interchangeable.
-    assert(global.IsExistsFile() && global.GetFileExtension() == DUI_T(".xml"));
-    assert(global.GetFileName() == DUI_T("global.xml"));
+    assert(global.IsExistsFile() && global.GetFileExtension() == ".xml");
+    assert(global.GetFileName() == "global.xml");
     assert(global.GetParentPath().IsExistsDirectory());
-    assert(ui::FilePathUtil::NormalizeFilePath(DUI_T("a/./b/../c")) == DUI_T("a/c"));
-    assert(ui::FilePathUtil::GetFileExtension(DUI_T("icon.PNG")) == DUI_T("PNG"));
+    assert(ui::FilePathUtil::NormalizeFilePath("a/./b/../c") == "a/c");
+    assert(ui::FilePathUtil::GetFileExtension("icon.PNG") == "PNG");
 
     ui::WindowBuilder builder;
-    assert(builder.ParseXmlData(DUI_T("<Window caption='Title' width='100' height='50'><Label text='Hello'/></Window>")));
-    std::map<DString, DString> windowAttributes;
+    assert(builder.ParseXmlData("<Window caption='Title' width='100' height='50'><Label text='Hello'/></Window>"));
+    std::map<std::string, std::string> windowAttributes;
     assert(builder.ParseWindowAttributes(windowAttributes));
-    assert(windowAttributes[DUI_T("caption")] == DUI_T("Title"));
-    assert(windowAttributes[DUI_T("width")] == DUI_T("100"));
-    assert(!builder.ParseXmlData(DUI_T("<Window>")));
+    assert(windowAttributes["caption"] == "Title");
+    assert(windowAttributes["width"] == "100");
+    assert(!builder.ParseXmlData("<Window>"));
 }
 
 void TestResourceFileDecode()
@@ -278,11 +278,11 @@ void TestResourceFileDecode()
     factory.AddImageDecoder(std::make_shared<ui::ImageDecoder_JPEG>());
 #endif
 
-    for (const DString& relativePath : {
-        DUI_T("resources/themes/default/render/autumn.png"),
-        DUI_T("resources/themes/default/render/webp_test2.webp")
+    for (const std::string& relativePath : {
+        "resources/themes/default/render/autumn.png",
+        "resources/themes/default/render/webp_test2.webp"
 #ifdef DUI_IMAGE_SUPPORT_JPEG_TURBO
-        , DUI_T("resources/themes/default/render/jpg_test.jpg")
+        , "resources/themes/default/render/jpg_test.jpg"
 #endif
     }) {
         const ui::FilePath imagePath = ui::FilePathUtil::JoinFilePath(root, ui::FilePath(relativePath));
@@ -297,7 +297,7 @@ void TestResourceFileDecode()
 
 class TestThread final : public ui::FrameworkThread {
 public:
-    TestThread() : FrameworkThread(DUI_T("core-test"), ui::kThreadNone) {}
+    TestThread() : FrameworkThread("core-test", ui::kThreadNone) {}
 };
 
 void TestFrameworkThread()
@@ -351,7 +351,7 @@ void TestGlobalManager(bool failure)
     if (!failure) {
         const ui::FilePath sourceRoot(DUI_TEST_SOURCE_ROOT_TEXT(DUI_TEST_SOURCE_ROOT));
         ui::LocalFilesResParam resources(ui::FilePathUtil::JoinFilePath(
-            sourceRoot, ui::FilePath(DUI_T("resources"))));
+            sourceRoot, ui::FilePath("resources")));
         assert(global.Startup(resources));
         assert(global.GetRenderFactory() != nullptr);
         assert(global.GetResourcePath().IsExistsDirectory());
@@ -359,7 +359,7 @@ void TestGlobalManager(bool failure)
         ui::Window window;
         window.SetResourcePath(global.GetResourcePath());
         const ui::FilePath layout = ui::FilePathUtil::JoinFilePath(
-            sourceRoot, ui::FilePath(DUI_T("resources/themes/default/move_control/app_item.xml")));
+            sourceRoot, ui::FilePath("resources/themes/default/move_control/app_item.xml"));
         ui::Box* box = global.CreateBox(&window, layout);
         assert(box != nullptr && box->GetItemCount() == 2);
         delete box;
@@ -407,17 +407,17 @@ class TestObservable : public ui::binding::ObservableObject
 public:
     TestObservable()
     {
-        RegisterProperty(DUI_T("name"), m_sName);
-        RegisterProperty(DUI_T("title"), m_sTitle);
+        RegisterProperty("name", m_sName);
+        RegisterProperty("title", m_sTitle);
     }
 
-    void SetName(const DString& strName)
+    void SetName(const std::string& strName)
     {
         if (m_sName == strName) {
             return; // an unchanged value must not raise, or every binding re-pulls
         }
         m_sName = strName;
-        RaisePropertyChanged(DUI_T("name"));
+        RaisePropertyChanged("name");
     }
 
     void RaiseEverything()
@@ -426,45 +426,45 @@ public:
     }
 
     /** Re-point "name" at other storage, to cover the re-register path. */
-    void RebindName(DString& refValue)
+    void RebindName(std::string& refValue)
     {
-        RegisterProperty(DUI_T("name"), refValue);
+        RegisterProperty("name", refValue);
     }
 
 private:
-    DString m_sName;
-    DString m_sTitle;
+    std::string m_sName;
+    std::string m_sTitle;
 };
 
 void TestBindingObservable()
 {
     TestObservable observable;
-    DString strValue;
+    std::string strValue;
 
     // Registered properties are readable and writable by name.
-    assert(observable.GetProperty(DUI_T("name"), strValue));
+    assert(observable.GetProperty("name", strValue));
     assert(strValue.empty());
-    assert(observable.SetProperty(DUI_T("name"), DUI_T("hello")));
-    assert(observable.GetProperty(DUI_T("name"), strValue));
-    assert(strValue == DUI_T("hello"));
+    assert(observable.SetProperty("name", "hello"));
+    assert(observable.GetProperty("name", strValue));
+    assert(strValue == "hello");
 
     // Unknown names are rejected outright. This is what lets Bind() turn a typo
     // into a false return instead of a silent no-op.
-    assert(!observable.GetProperty(DUI_T("nope"), strValue));
-    assert(!observable.SetProperty(DUI_T("nope"), DUI_T("x")));
+    assert(!observable.GetProperty("nope", strValue));
+    assert(!observable.SetProperty("nope", "x"));
 
     // Notifications carry the property name.
-    std::vector<DString> changedNames;
+    std::vector<std::string> changedNames;
     const size_t nCallbackID = observable.AttachPropertyChanged(
-        [&changedNames](const DString& strName) { changedNames.push_back(strName); });
+        [&changedNames](const std::string& strName) { changedNames.push_back(strName); });
     assert(nCallbackID != 0);
 
-    observable.SetName(DUI_T("first"));
+    observable.SetName("first");
     assert(changedNames.size() == 1);
-    assert(changedNames[0] == DUI_T("name"));
+    assert(changedNames[0] == "name");
 
     // An unchanged value raises nothing (the guard lives in the subclass).
-    observable.SetName(DUI_T("first"));
+    observable.SetName("first");
     assert(changedNames.size() == 1);
 
     // Bulk invalidation reports an empty name, meaning "everything changed".
@@ -474,27 +474,27 @@ void TestBindingObservable()
 
     // Detaching stops delivery.
     observable.DetachPropertyChanged(nCallbackID);
-    observable.SetName(DUI_T("second"));
+    observable.SetName("second");
     assert(changedNames.size() == 2);
 
     // A callback may detach itself while the notification is being delivered;
     // the engine iterates a copy for exactly this reason.
     size_t nSelfDetachID = 0;
     int nSelfDetachCalls = 0;
-    nSelfDetachID = observable.AttachPropertyChanged([&](const DString&) {
+    nSelfDetachID = observable.AttachPropertyChanged([&](const std::string&) {
         ++nSelfDetachCalls;
         observable.DetachPropertyChanged(nSelfDetachID);
     });
-    observable.SetName(DUI_T("third"));
+    observable.SetName("third");
     assert(nSelfDetachCalls == 1);
-    observable.SetName(DUI_T("fourth"));
+    observable.SetName("fourth");
     assert(nSelfDetachCalls == 1);
 
     // Re-registering a name re-points it at the new storage.
-    DString strRebound;
+    std::string strRebound;
     observable.RebindName(strRebound);
-    assert(observable.SetProperty(DUI_T("name"), DUI_T("moved")));
-    assert(strRebound == DUI_T("moved"));
+    assert(observable.SetProperty("name", "moved"));
+    assert(strRebound == "moved");
 }
 
 #endif // DUI_MVVM
@@ -502,9 +502,9 @@ void TestBindingObservable()
 } // namespace
 
 /** The render path walks text one code point at a time, in whatever encoding the
-*   platform's DString uses. These are the helpers it uses to do that.
+*   platform's std::string uses. These are the helpers it uses to do that.
 *
-*   The UTF-16 branch matters most here: on macOS DString is UTF-8, so nothing else
+*   The UTF-16 branch matters most here: on macOS std::string is UTF-8, so nothing else
 *   in the suite ever exercises it. It is driven with explicit UTF-16 input instead,
 *   which is also how a Windows build would reach it.
 */
@@ -514,7 +514,7 @@ void TestTextEncodingHelpers()
     static_assert(ui::GetTextEncodingForCharType<char>() == SkTextEncoding::kUTF8);
     static_assert(ui::GetTextEncodingForCharType<char16_t>() == SkTextEncoding::kUTF16);
     static_assert(ui::GetTextEncodingForCharType<char32_t>() == SkTextEncoding::kUTF32);
-    assert(ui::GetDStringTextEncoding() == ui::GetTextEncodingForCharType<DString::value_type>());
+    assert(ui::GetDStringTextEncoding() == ui::GetTextEncodingForCharType<std::string::value_type>());
 
     //A surrogate pair is ONE code point spanning 4 bytes, not two separate ones.
     //Getting this wrong is what used to split an emoji in half.
@@ -537,7 +537,7 @@ void TestTextEncodingHelpers()
     }
 
     //A lone high surrogate must not assert, must not read past the end, and must
-    //still advance. A Windows DString can legitimately hold one, and this is the
+    //still advance. A Windows std::string can legitimately hold one, and this is the
     //case that used to abort inside Skia's glyph lookup.
     {
         const char16_t text[] = { 0x0041, 0xD83D };//'A', then an unpaired high surrogate

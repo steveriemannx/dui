@@ -24,14 +24,14 @@ VerticalDrawText::VerticalDrawText(SkCanvas* pSkCanvas, SkPaint* pSkPaint, SkPoi
 }
 
 
-DString VerticalDrawText::GetDrawStringText(const DString& strText, bool bSingleLineMode) const
+std::string VerticalDrawText::GetDrawStringText(const std::string& strText, bool bSingleLineMode) const
 {
-    DString text = strText;
-    StringUtil::ReplaceAll(DUI_T("\r\n"), DUI_T("\n"), text);
-    StringUtil::ReplaceAll(DUI_T("\r"), DUI_T(""), text);
-    StringUtil::ReplaceAll(DUI_T("\t"), DUI_T(" "), text);
+    std::string text = strText;
+    StringUtil::ReplaceAll("\r\n", "\n", text);
+    StringUtil::ReplaceAll("\r", "", text);
+    StringUtil::ReplaceAll("\t", " ", text);
     if (bSingleLineMode) {
-        StringUtil::ReplaceAll(DUI_T("\n"), DUI_T(" "), text);
+        StringUtil::ReplaceAll("\n", " ", text);
     }
     //Note: the text keeps its native encoding. Skia is told which encoding it is
     //rather than being handed a converted copy, so nothing is transcoded here.
@@ -73,7 +73,7 @@ struct TVerticalChar
     //The character is identified by its extent in the preprocessed draw string rather
     //than by a copy of a code unit, so that characters outside the BMP (a surrogate
     //pair in UTF-16, four bytes in UTF-8) stay whole. Both fields are only meaningful
-    //against that one DString instance.
+    //against that one std::string instance.
     int32_t nTextOffset = 0;  //Byte offset of the character in the draw string
     int32_t nTextLen = 0;     //Length of the character in bytes
     bool bNewLine;  //Whether it is a newline character
@@ -82,7 +82,7 @@ struct TVerticalChar
     SkRect bounds;  //The bounding information after drawing the character
 };
 
-bool VerticalDrawText::CalculateTextCharBounds(const DString& text, const SkFont* pSkFont, const SkPaint* skPaint,
+bool VerticalDrawText::CalculateTextCharBounds(const std::string& text, const SkFont* pSkFont, const SkPaint* skPaint,
                                                bool bUseFontHeight, float fFontHeight, bool bRotate90ForAscii,
                                                std::vector<TVerticalChar>& charRects) const
 {
@@ -107,9 +107,9 @@ bool VerticalDrawText::CalculateTextCharBounds(const DString& text, const SkFont
 
     const SkTextEncoding textEncoding = GetDStringTextEncoding();
     const char* const pBase = text.data();
-    const char* const pEnd = pBase + text.size() * sizeof(DString::value_type);
+    const char* const pEnd = pBase + text.size() * sizeof(std::string::value_type);
 
-    //Iterate by code point, in whatever encoding this DString happens to use. Each code
+    //Iterate by code point, in whatever encoding this std::string happens to use. Each code
     //point is measured and drawn as a whole, so characters outside the BMP are neither
     //split nor measured twice.
     const char* pCur = pBase;
@@ -379,9 +379,9 @@ float VerticalDrawText::CalculateDefaultCharWidth(const SkFont* pSkFont, const S
     return fCharWidth;
 }
 
-UiRect VerticalDrawText::MeasureString(const DString& strText, const MeasureStringParam& measureParam)
+UiRect VerticalDrawText::MeasureString(const std::string& strText, const MeasureStringParam& measureParam)
 {
-    PerformanceStat statPerformance(DUI_T("VerticalDrawText::MeasureString"));
+    PerformanceStat statPerformance("VerticalDrawText::MeasureString");
     ASSERT((m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return UiRect();
@@ -421,7 +421,7 @@ UiRect VerticalDrawText::MeasureString(const DString& strText, const MeasureStri
     }
 
     //Text is always drawn using UTF16 encoding
-    const DString text = GetDrawStringText(strText, bSingleLineMode);
+    const std::string text = GetDrawStringText(strText, bSingleLineMode);
 
     std::vector<TVerticalChar> charRects;
     if (!CalculateTextCharBounds(text, pSkFont, &skPaint, measureParam.bUseFontHeight, (float)fFontHeight, measureParam.bRotate90ForAscii, charRects)) {
@@ -446,11 +446,11 @@ UiRect VerticalDrawText::MeasureString(const DString& strText, const MeasureStri
     return UiRect(0, 0, nTextWidth, nTextHeight);
 }
 
-void VerticalDrawText::DrawString(const DString& strText, const DrawStringParam& drawParam)
+void VerticalDrawText::DrawString(const std::string& strText, const DrawStringParam& drawParam)
 {
     // Note: vertical text drawing does not support the following features
     // 1. Text style: DrawStringFormat::TEXT_PATH_ELLIPSIS is not supported; it is treated as DrawStringFormat::TEXT_END_ELLIPSIS
-    PerformanceStat statPerformance(DUI_T("VerticalDrawText::DrawString"));
+    PerformanceStat statPerformance("VerticalDrawText::DrawString");
     ASSERT((m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return;
@@ -523,7 +523,7 @@ void VerticalDrawText::DrawString(const DString& strText, const DrawStringParam&
     }
 
     //Text is always drawn using UTF16 encoding
-    const DString text = GetDrawStringText(strText, bSingleLineMode);
+    const std::string text = GetDrawStringText(strText, bSingleLineMode);
     const SkTextEncoding textEncoding = GetDStringTextEncoding();
 
     std::vector<TVerticalChar> charRects;
@@ -832,7 +832,7 @@ void VerticalDrawText::DrawString(const DString& strText, const DrawStringParam&
         }
         charPos.bDrew = true;
         ASSERT((charPos.nTextOffset >= 0) && (charPos.nTextLen > 0) &&
-               ((size_t)(charPos.nTextOffset + charPos.nTextLen) <= text.size() * sizeof(DString::value_type)));
+               ((size_t)(charPos.nTextOffset + charPos.nTextLen) <= text.size() * sizeof(std::string::value_type)));
         const char* const pCharText = text.data() + charPos.nTextOffset;
         if (charPos.bRotate90) {
             //The character needs to be rotated 90 degrees when drawn

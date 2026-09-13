@@ -1159,7 +1159,7 @@ bool ListCtrlData::GetSubItemData(size_t itemIndex, size_t columnId, ListCtrlSub
     return bRet;
 }
 
-bool ListCtrlData::SetSubItemText(size_t itemIndex, size_t columnId, const DString& text)
+bool ListCtrlData::SetSubItemText(size_t itemIndex, size_t columnId, const std::string& text)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
     ASSERT(pStorage != nullptr);
@@ -1174,13 +1174,13 @@ bool ListCtrlData::SetSubItemText(size_t itemIndex, size_t columnId, const DStri
     return true;
 }
 
-DString ListCtrlData::GetSubItemText(size_t itemIndex, size_t columnId) const
+std::string ListCtrlData::GetSubItemText(size_t itemIndex, size_t columnId) const
 {
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
     ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
-        return DString();
+        return std::string();
     }
     return pStorage->text.c_str();
 }
@@ -1237,7 +1237,7 @@ uint64_t ListCtrlData::GetSubItemUserDataN(size_t itemIndex, size_t columnId) co
     return pStorage->userDataN;
 }
 
-bool ListCtrlData::SetSubItemUserDataS(size_t itemIndex, size_t columnId, const DString& userDataS)
+bool ListCtrlData::SetSubItemUserDataS(size_t itemIndex, size_t columnId, const std::string& userDataS)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
     ASSERT(pStorage != nullptr);
@@ -1252,13 +1252,13 @@ bool ListCtrlData::SetSubItemUserDataS(size_t itemIndex, size_t columnId, const 
     return true;
 }
 
-DString ListCtrlData::GetSubItemUserDataS(size_t itemIndex, size_t columnId) const
+std::string ListCtrlData::GetSubItemUserDataS(size_t itemIndex, size_t columnId) const
 {
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
     ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
-        return DString();
+        return std::string();
     }
     return pStorage->userDataS.c_str();
 }

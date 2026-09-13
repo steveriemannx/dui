@@ -3,7 +3,7 @@
 namespace ui {
 
 WindowCreateParam::WindowCreateParam():
-    m_className(DUI_T("dui_window")),
+    m_className("dui_window"),
     m_dwClassStyle(kCS_VREDRAW | kCS_HREDRAW | kCS_DBLCLKS),
     m_dwStyle(0),
     m_dwExStyle(0),
@@ -15,14 +15,14 @@ WindowCreateParam::WindowCreateParam():
 {
 }
 
-WindowCreateParam::WindowCreateParam(const DString& windowTitle, const DString& windowId):
+WindowCreateParam::WindowCreateParam(const std::string& windowTitle, const std::string& windowId):
     WindowCreateParam()
 {
     m_windowTitle = windowTitle;
     m_windowId = windowId;
 }
 
-WindowCreateParam::WindowCreateParam(const DString& windowTitle, bool bCenterWindow, const DString& windowId) :
+WindowCreateParam::WindowCreateParam(const std::string& windowTitle, bool bCenterWindow, const std::string& windowId) :
     WindowCreateParam()
 {
     m_windowTitle = windowTitle;

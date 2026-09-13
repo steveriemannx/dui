@@ -17,16 +17,16 @@ ImageDecoder_PAG::~ImageDecoder_PAG()
 {
 }
 
-DString ImageDecoder_PAG::GetFormatName() const
+std::string ImageDecoder_PAG::GetFormatName() const
 {
-    return DUI_T("PAG");
+    return "PAG";
 }
 
-bool ImageDecoder_PAG::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_PAG::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == DUI_T("PAG")) {
+    if (fileExt == "PAG") {
         return true;
     }
     return false;

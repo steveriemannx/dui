@@ -44,7 +44,7 @@ public:
 
     /** Convert the file time to a string (local time: year-month-day hour:minute:second)
     */
-    DString ToString() const;
+    std::string ToString() const;
 
 private:
     /** The specific value of the file time, with different meanings on different systems:

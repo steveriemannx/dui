@@ -46,7 +46,7 @@ PlaceHolder::TPlaceHolderData::TPlaceHolderData():
 {
 }
 
-DString PlaceHolder::GetType() const { return DUI_T("PlaceHolder"); }
+std::string PlaceHolder::GetType() const { return "PlaceHolder"; }
 
 void PlaceHolder::CheckPlaceHolderData()
 {
@@ -55,7 +55,7 @@ void PlaceHolder::CheckPlaceHolderData()
     }
 }
 
-ui::Box* PlaceHolder::GetAncestor(const DString& strName)
+ui::Box* PlaceHolder::GetAncestor(const std::string& strName)
 {
     Box* pAncestor = GetParent();
     while ((pAncestor != nullptr) && !pAncestor->IsNameEquals(strName)) {
@@ -70,12 +70,12 @@ std::string PlaceHolder::GetUTF8Name() const
     return strOut;
 }
 
-DString PlaceHolder::GetName() const
+std::string PlaceHolder::GetName() const
 { 
     return m_sName.c_str();
 }
 
-bool PlaceHolder::IsNameEquals(const DString& name) const
+bool PlaceHolder::IsNameEquals(const std::string& name) const
 {
     return StringUtil::StringCompare(m_sName.c_str(), name.c_str()) == 0;
 }
@@ -85,14 +85,14 @@ bool PlaceHolder::HasName() const
     return !m_sName.empty();
 }
 
-void PlaceHolder::SetName(const DString& strName)
+void PlaceHolder::SetName(const std::string& strName)
 {
     m_sName = strName;
 }
 
 void PlaceHolder::SetUTF8Name(const std::string& strName)
 {
-    DString strOut = StringConvert::UTF8ToT(strName);
+    std::string strOut = StringConvert::UTF8ToT(strName);
     SetName(strOut);
 }
 

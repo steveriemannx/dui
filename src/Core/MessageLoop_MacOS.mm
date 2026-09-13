@@ -231,9 +231,9 @@ bool MessageLoop_MacOS::CheckInitMacOS()
     return true;
 }
 
-DString MessageLoop_MacOS::GetCurrentVideoDriverName()
+std::string MessageLoop_MacOS::GetCurrentVideoDriverName()
 {
-    return DUI_T("cocoa");
+    return "cocoa";
 }
 
 float MessageLoop_MacOS::GetPrimaryDisplayContentScale()

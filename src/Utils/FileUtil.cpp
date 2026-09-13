@@ -10,14 +10,10 @@ bool FileUtil::ReadFileData(const FilePath& filePath, std::vector<uint8_t>& file
     FILE* f = nullptr;
 #ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-    #ifdef DUI_UNICODE
-        ::_wfopen_s(&f, filePath.NativePath().c_str(), DUI_T("rb"));
-    #else
-        ::fopen_s(&f, filePath.NativePath().c_str(), DUI_T("rb"));
-    #endif
+        ::fopen_s(&f, filePath.NativePath().c_str(), "rb");
 #else
     //Linux platform
-    f = fopen(filePath.NativePath().c_str(), DUI_T("rb"));
+    f = fopen(filePath.NativePath().c_str(), "rb");
 #endif
 
     if (f != nullptr) {
@@ -49,14 +45,10 @@ bool FileUtil::ReadFileHeaderData(const FilePath& filePath, uint32_t nReadSize, 
     FILE* f = nullptr;
 #ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-#ifdef DUI_UNICODE
-    ::_wfopen_s(&f, filePath.NativePath().c_str(), DUI_T("rb"));
-#else
-    ::fopen_s(&f, filePath.NativePath().c_str(), DUI_T("rb"));
-#endif
+    ::fopen_s(&f, filePath.NativePath().c_str(), "rb");
 #else
     //Linux platform
-    f = fopen(filePath.NativePath().c_str(), DUI_T("rb"));
+    f = fopen(filePath.NativePath().c_str(), "rb");
 #endif
 
     if (f != nullptr) {
@@ -87,14 +79,10 @@ bool FileUtil::WriteFileData(const FilePath& filePath, const std::vector<uint8_t
     FILE* f = nullptr;
 #ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-    #ifdef DUI_UNICODE
-        ::_wfopen_s(&f, filePath.NativePath().c_str(), DUI_T("w+b"));
-    #else
-        ::fopen_s(&f, filePath.NativePath().c_str(), DUI_T("w+b"));
-    #endif
+        ::fopen_s(&f, filePath.NativePath().c_str(), "w+b");
 #else
     //Linux platform
-    f = fopen(filePath.NativePath().c_str(), DUI_T("w+b"));
+    f = fopen(filePath.NativePath().c_str(), "w+b");
 #endif
 
     if (f != nullptr) {
@@ -110,20 +98,16 @@ bool FileUtil::WriteFileData(const FilePath& filePath, const std::vector<uint8_t
     return isWriteOk;
 }
 
-bool FileUtil::WriteFileData(const FilePath& filePath, const DStringW& fileData)
+bool FileUtil::WriteFileData(const FilePath& filePath, const std::wstring& fileData)
 {
     bool isWriteOk = false;
     FILE* f = nullptr;
 #ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-#ifdef DUI_UNICODE
-    ::_wfopen_s(&f, filePath.NativePath().c_str(), DUI_T("w+b"));
-#else
-    ::fopen_s(&f, filePath.NativePath().c_str(), DUI_T("w+b"));
-#endif
+    ::fopen_s(&f, filePath.NativePath().c_str(), "w+b");
 #else
     //Linux platform
-    f = fopen(filePath.NativePath().c_str(), DUI_T("w+b"));
+    f = fopen(filePath.NativePath().c_str(), "w+b");
 #endif
 
     if (f != nullptr) {
@@ -139,20 +123,16 @@ bool FileUtil::WriteFileData(const FilePath& filePath, const DStringW& fileData)
     return isWriteOk;
 }
 
-bool FileUtil::WriteFileData(const FilePath& filePath, const DStringA& fileData)
+bool FileUtil::WriteFileData(const FilePath& filePath, const std::string& fileData)
 {
     bool isWriteOk = false;
     FILE* f = nullptr;
 #ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-#ifdef DUI_UNICODE
-    ::_wfopen_s(&f, filePath.NativePath().c_str(), DUI_T("w+b"));
-#else
-    ::fopen_s(&f, filePath.NativePath().c_str(), DUI_T("w+b"));
-#endif
+    ::fopen_s(&f, filePath.NativePath().c_str(), "w+b");
 #else
     //Linux platform
-    f = fopen(filePath.NativePath().c_str(), DUI_T("w+b"));
+    f = fopen(filePath.NativePath().c_str(), "w+b");
 #endif
 
     if (f != nullptr) {

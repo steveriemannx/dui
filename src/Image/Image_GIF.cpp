@@ -391,7 +391,7 @@ bool Image_GIF::LoadImageFile(std::vector<uint8_t>& fileData,
         return m_impl->InitImageData(dec, fileData, bLoadAllFrames, bAsyncDecode, fImageSizeScale, rcMaxDestRectSize);
     }
     else {
-        DStringA gifFileName = imageFilePath.NativePathA();
+        std::string gifFileName = imageFilePath.NativePathA();
         ASSERT(!gifFileName.empty());
         int nErrorCode = 0;
         GifFileType* dec = DGifOpenFileName(gifFileName.c_str(), &nErrorCode);

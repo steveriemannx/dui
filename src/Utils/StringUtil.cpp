@@ -836,27 +836,6 @@ std::string StringUtil::Int32ToStringA(int32_t value)
     return StringUtil::Printf("%d", value);
 }
 
-#ifdef DUI_UNICODE
-std::wstring StringUtil::UInt64ToString(uint64_t value)
-{
-    return UInt64ToStringW(value);
-}
-
-std::wstring StringUtil::UInt32ToString(uint32_t value)
-{
-    return UInt32ToStringW(value);
-}
-
-std::wstring StringUtil::Int64ToString(int64_t value)
-{
-    return Int64ToStringW(value);
-}
-
-std::wstring StringUtil::Int32ToString(int32_t value)
-{
-    return Int32ToStringW(value);
-}
-#else
 
 std::string StringUtil::UInt64ToString(uint64_t value)
 {
@@ -877,7 +856,6 @@ std::string StringUtil::Int32ToString(int32_t value)
 {
     return Int32ToStringA(value);
 }
-#endif
 
 int32_t StringUtil::StringToInt32(const std::wstring& str)
 {

@@ -308,56 +308,56 @@ ComboButton::~ComboButton()
     }
 }
 
-DString ComboButton::GetType() const { return DUI_CTR_COMBO_BUTTON; }
+std::string ComboButton::GetType() const { return DUI_CTR_COMBO_BUTTON; }
 
-void ComboButton::SetAttribute(const DString& strName, const DString& strValue)
+void ComboButton::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if ((strName == DUI_T("dropbox_size")) || (strName == DUI_T("dropboxsize")) ) {
+    if ((strName == "dropbox_size") || (strName == "dropboxsize") ) {
         //Set the size of the drop-down list (width and height)
         UiSize szDropBoxSize;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szDropBoxSize);
         SetDropBoxSize(szDropBoxSize, true);
     }
-    else if ((strName == DUI_T("popup_top")) || (strName == DUI_T("popuptop"))) {
+    else if ((strName == "popup_top") || (strName == "popuptop")) {
         //Whether the drop-down list pops up upward
-        SetPopupTop(strValue == DUI_T("true"));
+        SetPopupTop(strValue == "true");
     }
-    else if (strName == DUI_T("combo_box_class")) {
+    else if (strName == "combo_box_class") {
         SetComboBoxClass(strValue);
     }
-    else if (strName == DUI_T("left_button_class")) {
+    else if (strName == "left_button_class") {
         SetLeftButtonClass(strValue);
     }
-    else if (strName == DUI_T("left_button_top_label_class")) {
+    else if (strName == "left_button_top_label_class") {
         SetLeftButtonTopLabelClass(strValue);
     }
-    else if (strName == DUI_T("left_button_bottom_label_class")) {
+    else if (strName == "left_button_bottom_label_class") {
         SetLeftButtonBottomLabelClass(strValue);
     }
-    else if (strName == DUI_T("left_button_top_label_text")) {
+    else if (strName == "left_button_top_label_text") {
         if (m_pLabelTop != nullptr) {
             m_pLabelTop->SetText(strValue);
         }
     }
-    else if (strName == DUI_T("left_button_bottom_label_text")) {
+    else if (strName == "left_button_bottom_label_text") {
         if (m_pLabelBottom != nullptr) {
             m_pLabelBottom->SetText(strValue);
         }
     }
-    else if (strName == DUI_T("left_button_top_label_bkcolor")) {
+    else if (strName == "left_button_top_label_bkcolor") {
         if (m_pLabelTop != nullptr) {
             m_pLabelTop->SetBkColor(strValue);
         }
     }
-    else if (strName == DUI_T("left_button_bottom_label_bkcolor")) {
+    else if (strName == "left_button_bottom_label_bkcolor") {
         if (m_pLabelBottom != nullptr) {
             m_pLabelBottom->SetBkColor(strValue);
         }
     }
-    else if (strName == DUI_T("right_button_class")) {
+    else if (strName == "right_button_class") {
         SetRightButtonClass(strValue);
     }
-    else if (strName == DUI_T("shadow_type")) {
+    else if (strName == "shadow_type") {
         //Set the shadow type of the drop-down window
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
         if (Shadow::GetShadowType(strValue, nShadowType)) {
@@ -395,7 +395,7 @@ void ComboButton::ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale)
     BaseClass::ChangeDpiScale(nOldDpiScale, nNewDpiScale);
 }
 
-void ComboButton::SetLeftButtonClass(const DString& classValue)
+void ComboButton::SetLeftButtonClass(const std::string& classValue)
 {
     if (classValue.empty()) {        
         if (m_pLeftButton != nullptr) {
@@ -422,7 +422,7 @@ void ComboButton::SetLeftButtonClass(const DString& classValue)
     }
 }
 
-void ComboButton::SetLeftButtonTopLabelClass(const DString& classValue)
+void ComboButton::SetLeftButtonTopLabelClass(const std::string& classValue)
 {
     if (classValue.empty()) {
         if ((m_pLeftButton != nullptr) && (m_pLabelTop != nullptr)) {
@@ -441,7 +441,7 @@ void ComboButton::SetLeftButtonTopLabelClass(const DString& classValue)
     }
 }
 
-void ComboButton::SetLeftButtonBottomLabelClass(const DString& classValue)
+void ComboButton::SetLeftButtonBottomLabelClass(const std::string& classValue)
 {
     if (classValue.empty()) {
         if ((m_pLeftButton != nullptr) && (m_pLabelBottom != nullptr)) {
@@ -460,7 +460,7 @@ void ComboButton::SetLeftButtonBottomLabelClass(const DString& classValue)
     }
 }
 
-void ComboButton::SetRightButtonClass(const DString& classValue)
+void ComboButton::SetRightButtonClass(const std::string& classValue)
 {
     if (classValue.empty()) {
         RemoveControl(m_pRightButton);
@@ -477,7 +477,7 @@ void ComboButton::SetRightButtonClass(const DString& classValue)
     }
 }
 
-void ComboButton::SetComboBoxClass(const DString& classValue)
+void ComboButton::SetComboBoxClass(const std::string& classValue)
 {
     ASSERT(m_pComboBox != nullptr);
     ASSERT(!classValue.empty());
@@ -486,31 +486,31 @@ void ComboButton::SetComboBoxClass(const DString& classValue)
     }
 }
 
-void ComboButton::ParseAttributeList(const DString& strList,
-                               std::vector<std::pair<DString, DString>>& attributeList) const
+void ComboButton::ParseAttributeList(const std::string& strList,
+                               std::vector<std::pair<std::string, std::string>>& attributeList) const
 {
     if (strList.empty()) {
         return;
     }
-    DString strValue = strList;
+    std::string strValue = strList;
     //These are hand-written attributes; curly braces {} are used instead of double quotes, so no escape characters are needed when writing them;
-    StringUtil::ReplaceAll(DUI_T("{"), DUI_T("\""), strValue);
-    StringUtil::ReplaceAll(DUI_T("}"), DUI_T("\""), strValue);
-    if (strValue.find(DUI_T("\"")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, DUI_T('\"'), attributeList);
+    StringUtil::ReplaceAll("{", "\"", strValue);
+    StringUtil::ReplaceAll("}", "\"", strValue);
+    if (strValue.find("\"") != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strValue, '\"', attributeList);
     }
-    else if (strValue.find(DUI_T("\'")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, DUI_T('\''), attributeList);
+    else if (strValue.find("\'") != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strValue, '\'', attributeList);
     }
 }
 
-void ComboButton::SetAttributeList(Control* pControl, const DString& classValue)
+void ComboButton::SetAttributeList(Control* pControl, const std::string& classValue)
 {
     ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return;
     }
-    std::vector<std::pair<DString, DString>> attributeList;
+    std::vector<std::pair<std::string, std::string>> attributeList;
     ParseAttributeList(classValue, attributeList);
     if (!attributeList.empty()) {
         //Set according to the attribute list
@@ -539,9 +539,9 @@ bool ComboButton::CanPlaceCaptionBar() const
     return true;
 }
 
-DString ComboButton::GetBorderColor(ControlStateType stateType) const
+std::string ComboButton::GetBorderColor(ControlStateType stateType) const
 {
-    DString borderColor;
+    std::string borderColor;
     if (borderColor.empty() && (m_pLeftButton != nullptr)) {
         if (m_pLeftButton->IsFocused() || m_pLeftButton->IsMouseFocused() || m_pLeftButton->IsHotState()) {
             borderColor = BaseClass::GetBorderColor(kControlStateHot);

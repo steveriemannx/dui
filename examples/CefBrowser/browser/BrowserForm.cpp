@@ -44,14 +44,14 @@ BrowserForm::~BrowserForm()
     m_pActiveBrowserBox = nullptr;
 }
 
-DString BrowserForm::GetSkinFolder()
+std::string BrowserForm::GetSkinFolder()
 {
-    return DUI_T("cef_browser");
+    return "cef_browser";
 }
 
-DString BrowserForm::GetSkinFile()
+std::string BrowserForm::GetSkinFile()
 {
-    return DUI_T("cef_browser.xml");
+    return "cef_browser.xml";
 }
 
 /** Layout management of the title bar area
@@ -181,14 +181,14 @@ void BrowserForm::OnInitWindow()
         return;
     }
 
-    m_pEditUrl = ui::Find<ui::RichEdit>(this, DUI_T("edit_url"));
+    m_pEditUrl = ui::Find<ui::RichEdit>(this, "edit_url");
     if (m_pEditUrl != nullptr) {
         //When the mouse clicks into the address bar, select all the text
         m_pEditUrl->SetSelAllOnFocus(true);
     }
 
     //Replace the layout of the title bar
-    ui::HBox* pTitleBar = ui::Find<ui::HBox>(this, DUI_T("title_bar"));
+    ui::HBox* pTitleBar = ui::Find<ui::HBox>(this, "title_bar");
     if (pTitleBar != nullptr) {
         TitleBarHLayout* pNewLayout = new TitleBarHLayout;
         Layout* pOldLayout = pTitleBar->ResetLayout(pNewLayout);
@@ -200,28 +200,28 @@ void BrowserForm::OnInitWindow()
         }
     }
 
-    m_pTabCtrl = ui::Find<ui::TabCtrl>(this, DUI_T("tab_ctrl"));
-    m_pBorwserBoxTab = ui::Find<ui::TabBox>(this, DUI_T("browser_box_tab"));
+    m_pTabCtrl = ui::Find<ui::TabCtrl>(this, "tab_ctrl");
+    m_pBorwserBoxTab = ui::Find<ui::TabBox>(this, "browser_box_tab");
 
     //Set the state of the buttons
-    if (ui::Control* pButton = ui::Find<ui::Control>(this, DUI_T("btn_back"))) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, "btn_back")) {
         pButton->SetEnabled(false);
     }
-    if (ui::Control* pButton = ui::Find<ui::Control>(this, DUI_T("btn_forward"))) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, "btn_forward")) {
         pButton->SetEnabled(false);
     }
-    if (ui::Control* pButton = ui::Find<ui::Control>(this, DUI_T("btn_refresh"))) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, "btn_refresh")) {
         pButton->SetVisible(true);
     }
-    if (ui::Control* pButton = ui::Find<ui::Control>(this, DUI_T("btn_stop"))) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, "btn_stop")) {
         pButton->SetVisible(false);
     }
 
 #ifdef DUI_BUILD_FOR_WAYLAND
     //Show basic native backend information
-    DString driverName = GetVideoDriverName();
-    DString renderName = GetWindowRenderName();
-    DString logMsg = ui::StringUtil::Printf(DUI_T("[native backend: VideoDriver:\"%s\", RenderName:\"%s\"]"), driverName.c_str(), renderName.c_str());
+    std::string driverName = GetVideoDriverName();
+    std::string renderName = GetWindowRenderName();
+    std::string logMsg = ui::StringUtil::Printf("[native backend: VideoDriver:\"%s\", RenderName:\"%s\"]", driverName.c_str(), renderName.c_str());
     std::cout << logMsg << std::endl;
 #endif
 
@@ -282,16 +282,16 @@ void BrowserForm::OnLoadingStateChange(BrowserBox* pBrowserBox)
     bool isLoading = pCefCcontrol->GetCefBrowser()->IsLoading();
     bool canGoBack = pCefCcontrol->GetCefBrowser()->CanGoBack();
     bool canGoForward = pCefCcontrol->GetCefBrowser()->CanGoForward();
-    if (ui::Control* pButton = ui::Find<ui::Control>(this, DUI_T("btn_back"))) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, "btn_back")) {
         pButton->SetEnabled(canGoBack);
     }
-    if (ui::Control* pButton = ui::Find<ui::Control>(this, DUI_T("btn_forward"))) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, "btn_forward")) {
         pButton->SetEnabled(canGoForward);
     }
-    if (ui::Control* pButton = ui::Find<ui::Control>(this, DUI_T("btn_refresh"))) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, "btn_refresh")) {
         pButton->SetVisible(!isLoading);
     }
-    if (ui::Control* pButton = ui::Find<ui::Control>(this, DUI_T("btn_stop"))) {
+    if (ui::Control* pButton = ui::Find<ui::Control>(this, "btn_stop")) {
         pButton->SetVisible(isLoading);
     }
 }
@@ -390,14 +390,14 @@ LRESULT BrowserForm::OnWindowCloseMsg(uint32_t wParam, const ui::NativeMsg& nati
 
 bool BrowserForm::OnClicked(const ui::EventArgs& arg )
 {
-    DString name = arg.GetSender()->GetName();
-    if (name == DUI_T("btn_close")) {
+    std::string name = arg.GetSender()->GetName();
+    if (name == "btn_close") {
         if (m_pActiveBrowserBox != nullptr) {
             CloseBox(m_pActiveBrowserBox->GetBrowserId());
         }
     }
-    else if (name == DUI_T("btn_add")) {
-        BrowserManager::GetInstance()->CreateBorwserBox(this, "", DUI_T(""));
+    else if (name == "btn_add") {
+        BrowserManager::GetInstance()->CreateBorwserBox(this, "", "");
     }
     else if (m_pActiveBrowserBox) {
         auto cef_control = m_pActiveBrowserBox->GetCefControl();
@@ -405,16 +405,16 @@ bool BrowserForm::OnClicked(const ui::EventArgs& arg )
             return true;
         }
 
-        if (name == DUI_T("btn_back")) {
+        if (name == "btn_back") {
             cef_control->GoBack();
         }
-        else if (name == DUI_T("btn_forward")) {
+        else if (name == "btn_forward") {
             cef_control->GoForward();
         }
-        else if (name == DUI_T("btn_refresh")) {
+        else if (name == "btn_refresh") {
             cef_control->Refresh();
         }
-        else if (name == DUI_T("btn_stop")) {
+        else if (name == "btn_stop") {
             cef_control->StopLoad();
         }
     }
@@ -426,7 +426,7 @@ bool BrowserForm::OnReturn(const ui::EventArgs& arg)
 {
     if (m_pEditUrl != nullptr) {
         if (m_pEditUrl != nullptr) {
-            DString url = m_pEditUrl->GetText();
+            std::string url = m_pEditUrl->GetText();
             if (!url.empty()) {
                 if ((m_pActiveBrowserBox != nullptr) && (m_pActiveBrowserBox->GetCefControl())) {
                     m_pActiveBrowserBox->GetCefControl()->LoadURL(url);
@@ -437,7 +437,7 @@ bool BrowserForm::OnReturn(const ui::EventArgs& arg)
     return true;
 }
 
-void BrowserForm::OpenLinkUrl(const DString& url, bool bInNewWindow)
+void BrowserForm::OpenLinkUrl(const std::string& url, bool bInNewWindow)
 {
     if (ui::GlobalManager::Instance().IsInUIThread()) {
         std::string id = BrowserManager::GetInstance()->CreateBrowserID();
@@ -459,10 +459,10 @@ BrowserBox* BrowserForm::CreateBrowserBox(ui::Window* pWindow, std::string brows
     return new BrowserBox(pWindow, browserId);
 }
 
-BrowserBox* BrowserForm::CreateBox(const std::string& browserId, DString url)
+BrowserBox* BrowserForm::CreateBox(const std::string& browserId, std::string url)
 {
     ASSERT(ui::GlobalManager::Instance().IsInUIThread());
-    DString id = ui::StringConvert::UTF8ToT(browserId);
+    std::string id = ui::StringConvert::UTF8ToT(browserId);
     if (nullptr != FindTabItem(id)) {
         ASSERT(0);
         return nullptr;
@@ -473,7 +473,7 @@ BrowserBox* BrowserForm::CreateBox(const std::string& browserId, DString url)
     }
 
     TabCtrlItem* pTabItem = new TabCtrlItem(m_pTabCtrl->GetWindow());
-    GlobalManager::Instance().FillBoxWithCache(pTabItem, ui::FilePath(DUI_T("cef_browser/tab_item.xml")));
+    GlobalManager::Instance().FillBoxWithCache(pTabItem, ui::FilePath("cef_browser/tab_item.xml"));
     m_pTabCtrl->AddItemAt(pTabItem, GetBoxCount());
     pTabItem->SetUTF8Name(browserId);
     ui::Button* btn_item_close = pTabItem->GetCloseButton();
@@ -484,7 +484,7 @@ BrowserBox* BrowserForm::CreateBox(const std::string& browserId, DString url)
 
     BrowserBox* pBrowserBox = CreateBrowserBox(m_pBorwserBoxTab->GetWindow(), browserId);
     m_pBorwserBoxTab->AddItem(pBrowserBox);
-    GlobalManager::Instance().FillBoxWithCache(pBrowserBox, ui::FilePath(DUI_T("cef_browser/browser_box.xml")), nullptr);
+    GlobalManager::Instance().FillBoxWithCache(pBrowserBox, ui::FilePath("cef_browser/browser_box.xml"), nullptr);
     pBrowserBox->SetName(id);
     pBrowserBox->InitBrowserBox(url);
 
@@ -507,7 +507,7 @@ bool BrowserForm::CloseBox(const std::string& browserId)
         return false;
     }
 
-    DString id = ui::StringConvert::UTF8ToT(browserId);
+    std::string id = ui::StringConvert::UTF8ToT(browserId);
 
     bool bRet = false;
     // Remove the corresponding item from the left session list
@@ -562,7 +562,7 @@ bool BrowserForm::AttachBox(BrowserBox* pBrowserBox)
         return false;
     }
 
-    DString id = ui::StringConvert::UTF8ToT(pBrowserBox->GetBrowserId());
+    std::string id = ui::StringConvert::UTF8ToT(pBrowserBox->GetBrowserId());
     if (nullptr != FindTabItem(id)) {
         ASSERT(0);
         return false;
@@ -573,7 +573,7 @@ bool BrowserForm::AttachBox(BrowserBox* pBrowserBox)
     }
 
     TabCtrlItem* pTabItem = new TabCtrlItem(m_pTabCtrl->GetWindow());
-    GlobalManager::Instance().FillBoxWithCache(pTabItem, ui::FilePath(DUI_T("cef_browser/tab_item.xml")));
+    GlobalManager::Instance().FillBoxWithCache(pTabItem, ui::FilePath("cef_browser/tab_item.xml"));
     m_pTabCtrl->AddItemAt(pTabItem, GetBoxCount());
     pTabItem->SetUTF8Name(pBrowserBox->GetBrowserId());
     pTabItem->SetTitle(pBrowserBox->GetTitle());
@@ -612,7 +612,7 @@ bool BrowserForm::DetachBox(BrowserBox* pBrowserBox)
         return false;
     }
 
-    DString id = ui::StringConvert::UTF8ToT(pBrowserBox->GetBrowserId());
+    std::string id = ui::StringConvert::UTF8ToT(pBrowserBox->GetBrowserId());
 
     // Remove the corresponding item from the top tab bar
     TabCtrlItem* pTabItem = FindTabItem(id);
@@ -663,7 +663,7 @@ void BrowserForm::SetActiveBox(const std::string& browserId)
     }
 
     // Find the browser box item to activate in the session list on the left of the window
-    DString id = ui::StringConvert::UTF8ToT(browserId);
+    std::string id = ui::StringConvert::UTF8ToT(browserId);
     TabCtrlItem* pTabItem = FindTabItem(id);
     if (nullptr == pTabItem) {
         return;
@@ -680,7 +680,7 @@ bool BrowserForm::IsActiveBox(const BrowserBox* pBrowserBox)
     return (pBrowserBox == m_pActiveBrowserBox && IsWindowForeground() && !IsWindowMinimized() && IsWindowVisible());
 }
 
-bool BrowserForm::IsActiveBox(const DString& browserId)
+bool BrowserForm::IsActiveBox(const std::string& browserId)
 {
     ASSERT(!browserId.empty());
     return (IsWindowForeground() && !IsWindowMinimized() && IsWindowVisible() && FindBox(browserId) == m_pActiveBrowserBox);
@@ -704,7 +704,7 @@ bool BrowserForm::OnTabItemSelected(const ui::EventArgs& param)
             Control* pSelectedItem = m_pTabCtrl->GetItemAt(m_pTabCtrl->GetCurSel());
             ASSERT(pSelectedItem != nullptr);
             if (pSelectedItem != nullptr) {
-                DString session_id = pSelectedItem->GetName();
+                std::string session_id = pSelectedItem->GetName();
                 ChangeToBox(session_id);
             }
         }
@@ -718,7 +718,7 @@ bool BrowserForm::OnTabItemClose(const ui::EventArgs& param, const std::string& 
     return true;
 }
 
-BrowserBox* BrowserForm::FindBox(const DString& browserId)
+BrowserBox* BrowserForm::FindBox(const std::string& browserId)
 {
     for (int i = 0; i < (int)m_pBorwserBoxTab->GetItemCount(); i++) {
         Control *pBoxItem = m_pBorwserBoxTab->GetItemAt(i);
@@ -734,7 +734,7 @@ BrowserBox* BrowserForm::FindBox(const DString& browserId)
     return nullptr;
 }
 
-TabCtrlItem* BrowserForm::FindTabItem(const DString& browserId)
+TabCtrlItem* BrowserForm::FindTabItem(const std::string& browserId)
 {
     for (int i = 0; i < GetBoxCount(); i++) {
         Control *pTabItem = m_pTabCtrl->GetItemAt(i);
@@ -750,7 +750,7 @@ TabCtrlItem* BrowserForm::FindTabItem(const DString& browserId)
     return nullptr;
 }
 
-void BrowserForm::SetTabItemName(const DString& browserId, const DString& name)
+void BrowserForm::SetTabItemName(const std::string& browserId, const std::string& name)
 {
     TabCtrlItem* pTabItem = FindTabItem(browserId);
     if (nullptr != pTabItem) {
@@ -758,14 +758,14 @@ void BrowserForm::SetTabItemName(const DString& browserId, const DString& name)
     }
 }
 
-void BrowserForm::SetURL(const std::string& browserId, const DString& url)
+void BrowserForm::SetURL(const std::string& browserId, const std::string& url)
 {
     if ((m_pEditUrl != nullptr) && (m_pActiveBrowserBox != nullptr) && (m_pActiveBrowserBox->GetBrowserId() == browserId)) {
         m_pEditUrl->SetText(url);
     }
 }
 
-bool BrowserForm::ChangeToBox(const DString& browserId)
+bool BrowserForm::ChangeToBox(const std::string& browserId)
 {
     if (browserId.empty()) {
         return false;
@@ -781,7 +781,7 @@ bool BrowserForm::ChangeToBox(const DString& browserId)
     m_pActiveBrowserBox = pBoxItem;
 
     // Update the taskbar icon and title according to the currently active browser box
-    DStringW urlW = m_pActiveBrowserBox->GetCefControl()->GetURL();
+    std::wstring urlW = m_pActiveBrowserBox->GetCefControl()->GetURL();
     m_pEditUrl->SetText(urlW);
     OnLoadingStateChange(m_pActiveBrowserBox);
     return true;
@@ -793,7 +793,7 @@ void BrowserForm::NotifyFavicon(const BrowserBox* pBrowserBox, CefRefPtr<CefImag
         return;
     }
 
-    DString id = ui::StringConvert::UTF8ToT(pBrowserBox->GetBrowserId());
+    std::string id = ui::StringConvert::UTF8ToT(pBrowserBox->GetBrowserId());
     TabCtrlItem* pTabItem = FindTabItem(id);
     if (pTabItem == nullptr) {
         return;
@@ -849,7 +849,7 @@ void BrowserForm::OnCloseTabPage(BrowserBox* pBrowserBox)
 {
 }
 
-bool BrowserForm::OnBeforeDragBoxCallback(const DString& browserId)
+bool BrowserForm::OnBeforeDragBoxCallback(const std::string& browserId)
 {
     BrowserBox* pBrowserBox = FindBox(browserId);
     if (pBrowserBox != nullptr) {
@@ -889,7 +889,7 @@ bool BrowserForm::OnBeforeDragBoxCallback(const DString& browserId)
 
 void BrowserForm::OnAfterDragBoxCallback(bool bDropSucceed)
 {
-    DString dragingBrowserId;
+    std::string dragingBrowserId;
     dragingBrowserId.swap(m_dragingBrowserId);
     m_bDragState = false;
     m_bButtonDown = false;
@@ -949,7 +949,7 @@ bool BrowserForm::OnProcessTabItemDrag(const ui::EventArgs& param)
             break;
         }
 
-        DString id = ui::StringConvert::UTF8ToT(m_pActiveBrowserBox->GetBrowserId());
+        std::string id = ui::StringConvert::UTF8ToT(m_pActiveBrowserBox->GetBrowserId());
         TabCtrlItem* pTabItem = FindTabItem(id);
         if (pTabItem == nullptr) {
             break;

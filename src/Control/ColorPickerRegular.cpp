@@ -12,7 +12,7 @@ public:
     /** Set the color data
     * @param [in] uiColors The color data provided externally; the first is the color name, the second is the color value
     */
-    void SetColors(const std::vector<std::pair<DString, int32_t>>& uiColors);
+    void SetColors(const std::vector<std::pair<std::string, int32_t>>& uiColors);
 
     /** Create a data item
     * @param [in] pVirtualListBox The interface of the associated virtual list
@@ -68,11 +68,11 @@ public:
 public:
     /** Common color values and their corresponding string constants
     */
-    void GetDefaultColors(std::vector<std::pair<DString, int32_t>>& uiColors);
+    void GetDefaultColors(std::vector<std::pair<std::string, int32_t>>& uiColors);
 
     /** Basic color values and their corresponding string constants
     */
-    void GetBasicColors(std::vector<std::pair<DString, int32_t>>& uiColors);
+    void GetBasicColors(std::vector<std::pair<std::string, int32_t>>& uiColors);
 
 private:
     /** Color structure
@@ -109,7 +109,7 @@ ColorPickerRegular::ColorPickerRegular(Window* pWindow):
     AttachSelect([this](const ui::EventArgs& args) {
         Control* pControl = GetItemAt(args.wParam);
         if (pControl != nullptr) {
-            DString colorString = pControl->GetBkColor();
+            std::string colorString = pControl->GetBkColor();
             if (!colorString.empty()) {
                 UiColor newColor = pControl->GetUiColor(colorString);
                 SendEvent(kEventSelectColor, newColor.GetARGB());
@@ -123,7 +123,7 @@ ColorPickerRegular::~ColorPickerRegular()
 {
 }
 
-DString ColorPickerRegular::GetType() const { return DUI_CTR_COLOR_PICKER_REGULAR; }
+std::string ColorPickerRegular::GetType() const { return DUI_CTR_COLOR_PICKER_REGULAR; }
 
 void ColorPickerRegular::SelectColor(const UiColor& color)
 {
@@ -203,18 +203,18 @@ void ColorPickerRegular::SetColumns(int32_t nColumns)
     }
 }
 
-void ColorPickerRegular::SetAttribute(const DString& strName, const DString& strValue)
+void ColorPickerRegular::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("color_type")) {
-        if (strValue == DUI_T("basic")) {
+    if (strName == "color_type") {
+        if (strValue == "basic") {
             //Use the basic colors
-            std::vector<std::pair<DString, int32_t>> uiColors;
+            std::vector<std::pair<std::string, int32_t>> uiColors;
             m_regularColors->GetBasicColors(uiColors);
             m_regularColors->SetColors(uiColors);
         }
         else {
             //Use the default colors
-            std::vector<std::pair<DString, int32_t>> uiColors;
+            std::vector<std::pair<std::string, int32_t>> uiColors;
             m_regularColors->GetDefaultColors(uiColors);
             m_regularColors->SetColors(uiColors);
         }
@@ -228,26 +228,26 @@ void ColorPickerRegular::SetAttribute(const DString& strName, const DString& str
 //
 ColorPickerRegularProvider::ColorPickerRegularProvider()
 {
-    std::vector<std::pair<DString, int32_t>> uiColors;
+    std::vector<std::pair<std::string, int32_t>> uiColors;
     GetDefaultColors(uiColors);
     SetColors(uiColors);
 }
 
-void ColorPickerRegularProvider::SetColors(const std::vector<std::pair<DString, int32_t>>& uiColors)
+void ColorPickerRegularProvider::SetColors(const std::vector<std::pair<std::string, int32_t>>& uiColors)
 {
     m_colors.clear();
     RegularColor regularColor;
     regularColor.m_bSelected = false;
     for (const auto& color : uiColors) {
         regularColor.colorValue = UiColor(color.second);
-        DString colorString = ui::StringUtil::Printf(DUI_T("#%02X%02X%02X%02X"),
+        std::string colorString = ui::StringUtil::Printf("#%02X%02X%02X%02X",
             regularColor.colorValue.GetA(),
             regularColor.colorValue.GetR(),
             regularColor.colorValue.GetG(),
             regularColor.colorValue.GetB());
-        DString colorName = color.first;
-        StringUtil::ReplaceAll(DUI_T(","), DUI_T(", "), colorName);
-        colorName = colorString + DUI_T(", ") + colorName;
+        std::string colorName = color.first;
+        StringUtil::ReplaceAll(",", ", ", colorName);
+        colorName = colorString + ", " + colorName;
         regularColor.colorName = colorName;
         if (regularColor.colorValue.GetARGB() != UiColors::Transparent) {
             m_colors.push_back(regularColor);
@@ -270,7 +270,7 @@ Control* ColorPickerRegularProvider::CreateElement(VirtualListBox* pVirtualListB
     float fBorderSize = 2.0f;
     UiRectF borderSize(fBorderSize, fBorderSize, fBorderSize, fBorderSize);
     pControl->SetBorderSize(borderSize, true);
-    pControl->SetBorderColor(kControlStatePushed, DUI_T("blue"));
+    pControl->SetBorderColor(kControlStatePushed, "blue");
     return pControl;
 }
 
@@ -355,207 +355,207 @@ UiColor ColorPickerRegularProvider::GetSelectedColor() const
     return UiColor();
 }
 
-void ColorPickerRegularProvider::GetDefaultColors(std::vector<std::pair<DString, int32_t>>& uiColors)
+void ColorPickerRegularProvider::GetDefaultColors(std::vector<std::pair<std::string, int32_t>>& uiColors)
 {
     uiColors = {
-                {DUI_T("AliceBlue"),UiColors::AliceBlue},
-                {DUI_T("AntiqueWhite"),UiColors::AntiqueWhite},
-                {DUI_T("Aqua"),UiColors::Aqua},
-                {DUI_T("Aquamarine"),UiColors::Aquamarine},
-                {DUI_T("Azure"),UiColors::Azure},
-                {DUI_T("Beige"),UiColors::Beige},
-                {DUI_T("Bisque"),UiColors::Bisque},
-                {DUI_T("Black"),UiColors::Black},
-                {DUI_T("BlanchedAlmond"),UiColors::BlanchedAlmond},
-                {DUI_T("Blue"),UiColors::Blue},
-                {DUI_T("BlueViolet"),UiColors::BlueViolet},
-                {DUI_T("Brown"),UiColors::Brown},
-                {DUI_T("BurlyWood"),UiColors::BurlyWood},
-                {DUI_T("CadetBlue"),UiColors::CadetBlue},
-                {DUI_T("Chartreuse"),UiColors::Chartreuse},
-                {DUI_T("Chocolate"),UiColors::Chocolate},
-                {DUI_T("Coral"),UiColors::Coral},
-                {DUI_T("CornflowerBlue"),UiColors::CornflowerBlue},
-                {DUI_T("Cornsilk"),UiColors::Cornsilk},
-                {DUI_T("Crimson"),UiColors::Crimson},
-                {DUI_T("Cyan"),UiColors::Cyan},
-                {DUI_T("DarkBlue"),UiColors::DarkBlue},
-                {DUI_T("DarkCyan"),UiColors::DarkCyan},
-                {DUI_T("DarkGoldenrod"),UiColors::DarkGoldenrod},
-                {DUI_T("DarkGray"),UiColors::DarkGray},
-                {DUI_T("DarkGreen"),UiColors::DarkGreen},
-                {DUI_T("DarkKhaki"),UiColors::DarkKhaki},
-                {DUI_T("DarkMagenta"),UiColors::DarkMagenta},
-                {DUI_T("DarkOliveGreen"),UiColors::DarkOliveGreen},
-                {DUI_T("DarkOrange"),UiColors::DarkOrange},
-                {DUI_T("DarkOrchid"),UiColors::DarkOrchid},
-                {DUI_T("DarkRed"),UiColors::DarkRed},
-                {DUI_T("DarkSalmon"),UiColors::DarkSalmon},
-                {DUI_T("DarkSeaGreen"),UiColors::DarkSeaGreen},
-                {DUI_T("DarkSlateBlue"),UiColors::DarkSlateBlue},
-                {DUI_T("DarkSlateGray"),UiColors::DarkSlateGray},
-                {DUI_T("DarkTurquoise"),UiColors::DarkTurquoise},
-                {DUI_T("DarkViolet"),UiColors::DarkViolet},
-                {DUI_T("DeepPink"),UiColors::DeepPink},
-                {DUI_T("DeepSkyBlue"),UiColors::DeepSkyBlue},
-                {DUI_T("DimGray"),UiColors::DimGray},
-                {DUI_T("DodgerBlue"),UiColors::DodgerBlue},
-                {DUI_T("Firebrick"),UiColors::Firebrick},
-                {DUI_T("FloralWhite"),UiColors::FloralWhite},
-                {DUI_T("ForestGreen"),UiColors::ForestGreen},
-                {DUI_T("Fuchsia"),UiColors::Fuchsia},
-                {DUI_T("Gainsboro"),UiColors::Gainsboro},
-                {DUI_T("GhostWhite"),UiColors::GhostWhite},
-                {DUI_T("Gold"),UiColors::Gold},
-                {DUI_T("Goldenrod"),UiColors::Goldenrod},
-                {DUI_T("Gray"),UiColors::Gray},
-                {DUI_T("Green"),UiColors::Green},
-                {DUI_T("GreenYellow"),UiColors::GreenYellow},
-                {DUI_T("Honeydew"),UiColors::Honeydew},
-                {DUI_T("HotPink"),UiColors::HotPink},
-                {DUI_T("IndianRed"),UiColors::IndianRed},
-                {DUI_T("Indigo"),UiColors::Indigo},
-                {DUI_T("Ivory"),UiColors::Ivory},
-                {DUI_T("Khaki"),UiColors::Khaki},
-                {DUI_T("Lavender"),UiColors::Lavender},
-                {DUI_T("LavenderBlush"),UiColors::LavenderBlush},
-                {DUI_T("LawnGreen"),UiColors::LawnGreen},
-                {DUI_T("LemonChiffon"),UiColors::LemonChiffon},
-                {DUI_T("LightBlue"),UiColors::LightBlue},
-                {DUI_T("LightCoral"),UiColors::LightCoral},
-                {DUI_T("LightCyan"),UiColors::LightCyan},
-                {DUI_T("LightGoldenrodYellow"),UiColors::LightGoldenrodYellow},
-                {DUI_T("LightGray"),UiColors::LightGray},
-                {DUI_T("LightGreen"),UiColors::LightGreen},
-                {DUI_T("LightPink"),UiColors::LightPink},
-                {DUI_T("LightSalmon"),UiColors::LightSalmon},
-                {DUI_T("LightSeaGreen"),UiColors::LightSeaGreen},
-                {DUI_T("LightSkyBlue"),UiColors::LightSkyBlue},
-                {DUI_T("LightSlateGray"),UiColors::LightSlateGray},
-                {DUI_T("LightSteelBlue"),UiColors::LightSteelBlue},
-                {DUI_T("LightYellow"),UiColors::LightYellow},
-                {DUI_T("Lime"),UiColors::Lime},
-                {DUI_T("LimeGreen"),UiColors::LimeGreen},
-                {DUI_T("Linen"),UiColors::Linen},
-                {DUI_T("Magenta"),UiColors::Magenta},
-                {DUI_T("Maroon"),UiColors::Maroon},
-                {DUI_T("MediumAquamarine"),UiColors::MediumAquamarine},
-                {DUI_T("MediumBlue"),UiColors::MediumBlue},
-                {DUI_T("MediumOrchid"),UiColors::MediumOrchid},
-                {DUI_T("MediumPurple"),UiColors::MediumPurple},
-                {DUI_T("MediumSeaGreen"),UiColors::MediumSeaGreen},
-                {DUI_T("MediumSlateBlue"),UiColors::MediumSlateBlue},
-                {DUI_T("MediumSpringGreen"),UiColors::MediumSpringGreen},
-                {DUI_T("MediumTurquoise"),UiColors::MediumTurquoise},
-                {DUI_T("MediumVioletRed"),UiColors::MediumVioletRed},
-                {DUI_T("MidnightBlue"),UiColors::MidnightBlue},
-                {DUI_T("MintCream"),UiColors::MintCream},
-                {DUI_T("MistyRose"),UiColors::MistyRose},
-                {DUI_T("Moccasin"),UiColors::Moccasin},
-                {DUI_T("NavajoWhite"),UiColors::NavajoWhite},
-                {DUI_T("Navy"),UiColors::Navy},
-                {DUI_T("OldLace"),UiColors::OldLace},
-                {DUI_T("Olive"),UiColors::Olive},
-                {DUI_T("OliveDrab"),UiColors::OliveDrab},
-                {DUI_T("Orange"),UiColors::Orange},
-                {DUI_T("OrangeRed"),UiColors::OrangeRed},
-                {DUI_T("Orchid"),UiColors::Orchid},
-                {DUI_T("PaleGoldenrod"),UiColors::PaleGoldenrod},
-                {DUI_T("PaleGreen"),UiColors::PaleGreen},
-                {DUI_T("PaleTurquoise"),UiColors::PaleTurquoise},
-                {DUI_T("PaleVioletRed"),UiColors::PaleVioletRed},
-                {DUI_T("PapayaWhip"),UiColors::PapayaWhip},
-                {DUI_T("PeachPuff"),UiColors::PeachPuff},
-                {DUI_T("Peru"),UiColors::Peru},
-                {DUI_T("Pink"),UiColors::Pink},
-                {DUI_T("Plum"),UiColors::Plum},
-                {DUI_T("PowderBlue"),UiColors::PowderBlue},
-                {DUI_T("Purple"),UiColors::Purple},
-                {DUI_T("Red"),UiColors::Red},
-                {DUI_T("RosyBrown"),UiColors::RosyBrown},
-                {DUI_T("RoyalBlue"),UiColors::RoyalBlue},
-                {DUI_T("SaddleBrown"),UiColors::SaddleBrown},
-                {DUI_T("Salmon"),UiColors::Salmon},
-                {DUI_T("SandyBrown"),UiColors::SandyBrown},
-                {DUI_T("SeaGreen"),UiColors::SeaGreen},
-                {DUI_T("SeaShell"),UiColors::SeaShell},
-                {DUI_T("Sienna"),UiColors::Sienna},
-                {DUI_T("Silver"),UiColors::Silver},
-                {DUI_T("SkyBlue"),UiColors::SkyBlue},
-                {DUI_T("SlateBlue"),UiColors::SlateBlue},
-                {DUI_T("SlateGray"),UiColors::SlateGray},
-                {DUI_T("Snow"),UiColors::Snow},
-                {DUI_T("SpringGreen"),UiColors::SpringGreen},
-                {DUI_T("SteelBlue"),UiColors::SteelBlue},
-                {DUI_T("Tan"),UiColors::Tan},
-                {DUI_T("Teal"),UiColors::Teal},
-                {DUI_T("Thistle"),UiColors::Thistle},
-                {DUI_T("Tomato"),UiColors::Tomato},
-                {DUI_T("Transparent"),UiColors::Transparent},
-                {DUI_T("Turquoise"),UiColors::Turquoise},
-                {DUI_T("Violet"),UiColors::Violet},
-                {DUI_T("Wheat"),UiColors::Wheat},
-                {DUI_T("White"),UiColors::White},
-                {DUI_T("WhiteSmoke"),UiColors::WhiteSmoke},
-                {DUI_T("Yellow"),UiColors::Yellow},
-                {DUI_T("YellowGreen"),UiColors::YellowGreen}
+                {"AliceBlue",UiColors::AliceBlue},
+                {"AntiqueWhite",UiColors::AntiqueWhite},
+                {"Aqua",UiColors::Aqua},
+                {"Aquamarine",UiColors::Aquamarine},
+                {"Azure",UiColors::Azure},
+                {"Beige",UiColors::Beige},
+                {"Bisque",UiColors::Bisque},
+                {"Black",UiColors::Black},
+                {"BlanchedAlmond",UiColors::BlanchedAlmond},
+                {"Blue",UiColors::Blue},
+                {"BlueViolet",UiColors::BlueViolet},
+                {"Brown",UiColors::Brown},
+                {"BurlyWood",UiColors::BurlyWood},
+                {"CadetBlue",UiColors::CadetBlue},
+                {"Chartreuse",UiColors::Chartreuse},
+                {"Chocolate",UiColors::Chocolate},
+                {"Coral",UiColors::Coral},
+                {"CornflowerBlue",UiColors::CornflowerBlue},
+                {"Cornsilk",UiColors::Cornsilk},
+                {"Crimson",UiColors::Crimson},
+                {"Cyan",UiColors::Cyan},
+                {"DarkBlue",UiColors::DarkBlue},
+                {"DarkCyan",UiColors::DarkCyan},
+                {"DarkGoldenrod",UiColors::DarkGoldenrod},
+                {"DarkGray",UiColors::DarkGray},
+                {"DarkGreen",UiColors::DarkGreen},
+                {"DarkKhaki",UiColors::DarkKhaki},
+                {"DarkMagenta",UiColors::DarkMagenta},
+                {"DarkOliveGreen",UiColors::DarkOliveGreen},
+                {"DarkOrange",UiColors::DarkOrange},
+                {"DarkOrchid",UiColors::DarkOrchid},
+                {"DarkRed",UiColors::DarkRed},
+                {"DarkSalmon",UiColors::DarkSalmon},
+                {"DarkSeaGreen",UiColors::DarkSeaGreen},
+                {"DarkSlateBlue",UiColors::DarkSlateBlue},
+                {"DarkSlateGray",UiColors::DarkSlateGray},
+                {"DarkTurquoise",UiColors::DarkTurquoise},
+                {"DarkViolet",UiColors::DarkViolet},
+                {"DeepPink",UiColors::DeepPink},
+                {"DeepSkyBlue",UiColors::DeepSkyBlue},
+                {"DimGray",UiColors::DimGray},
+                {"DodgerBlue",UiColors::DodgerBlue},
+                {"Firebrick",UiColors::Firebrick},
+                {"FloralWhite",UiColors::FloralWhite},
+                {"ForestGreen",UiColors::ForestGreen},
+                {"Fuchsia",UiColors::Fuchsia},
+                {"Gainsboro",UiColors::Gainsboro},
+                {"GhostWhite",UiColors::GhostWhite},
+                {"Gold",UiColors::Gold},
+                {"Goldenrod",UiColors::Goldenrod},
+                {"Gray",UiColors::Gray},
+                {"Green",UiColors::Green},
+                {"GreenYellow",UiColors::GreenYellow},
+                {"Honeydew",UiColors::Honeydew},
+                {"HotPink",UiColors::HotPink},
+                {"IndianRed",UiColors::IndianRed},
+                {"Indigo",UiColors::Indigo},
+                {"Ivory",UiColors::Ivory},
+                {"Khaki",UiColors::Khaki},
+                {"Lavender",UiColors::Lavender},
+                {"LavenderBlush",UiColors::LavenderBlush},
+                {"LawnGreen",UiColors::LawnGreen},
+                {"LemonChiffon",UiColors::LemonChiffon},
+                {"LightBlue",UiColors::LightBlue},
+                {"LightCoral",UiColors::LightCoral},
+                {"LightCyan",UiColors::LightCyan},
+                {"LightGoldenrodYellow",UiColors::LightGoldenrodYellow},
+                {"LightGray",UiColors::LightGray},
+                {"LightGreen",UiColors::LightGreen},
+                {"LightPink",UiColors::LightPink},
+                {"LightSalmon",UiColors::LightSalmon},
+                {"LightSeaGreen",UiColors::LightSeaGreen},
+                {"LightSkyBlue",UiColors::LightSkyBlue},
+                {"LightSlateGray",UiColors::LightSlateGray},
+                {"LightSteelBlue",UiColors::LightSteelBlue},
+                {"LightYellow",UiColors::LightYellow},
+                {"Lime",UiColors::Lime},
+                {"LimeGreen",UiColors::LimeGreen},
+                {"Linen",UiColors::Linen},
+                {"Magenta",UiColors::Magenta},
+                {"Maroon",UiColors::Maroon},
+                {"MediumAquamarine",UiColors::MediumAquamarine},
+                {"MediumBlue",UiColors::MediumBlue},
+                {"MediumOrchid",UiColors::MediumOrchid},
+                {"MediumPurple",UiColors::MediumPurple},
+                {"MediumSeaGreen",UiColors::MediumSeaGreen},
+                {"MediumSlateBlue",UiColors::MediumSlateBlue},
+                {"MediumSpringGreen",UiColors::MediumSpringGreen},
+                {"MediumTurquoise",UiColors::MediumTurquoise},
+                {"MediumVioletRed",UiColors::MediumVioletRed},
+                {"MidnightBlue",UiColors::MidnightBlue},
+                {"MintCream",UiColors::MintCream},
+                {"MistyRose",UiColors::MistyRose},
+                {"Moccasin",UiColors::Moccasin},
+                {"NavajoWhite",UiColors::NavajoWhite},
+                {"Navy",UiColors::Navy},
+                {"OldLace",UiColors::OldLace},
+                {"Olive",UiColors::Olive},
+                {"OliveDrab",UiColors::OliveDrab},
+                {"Orange",UiColors::Orange},
+                {"OrangeRed",UiColors::OrangeRed},
+                {"Orchid",UiColors::Orchid},
+                {"PaleGoldenrod",UiColors::PaleGoldenrod},
+                {"PaleGreen",UiColors::PaleGreen},
+                {"PaleTurquoise",UiColors::PaleTurquoise},
+                {"PaleVioletRed",UiColors::PaleVioletRed},
+                {"PapayaWhip",UiColors::PapayaWhip},
+                {"PeachPuff",UiColors::PeachPuff},
+                {"Peru",UiColors::Peru},
+                {"Pink",UiColors::Pink},
+                {"Plum",UiColors::Plum},
+                {"PowderBlue",UiColors::PowderBlue},
+                {"Purple",UiColors::Purple},
+                {"Red",UiColors::Red},
+                {"RosyBrown",UiColors::RosyBrown},
+                {"RoyalBlue",UiColors::RoyalBlue},
+                {"SaddleBrown",UiColors::SaddleBrown},
+                {"Salmon",UiColors::Salmon},
+                {"SandyBrown",UiColors::SandyBrown},
+                {"SeaGreen",UiColors::SeaGreen},
+                {"SeaShell",UiColors::SeaShell},
+                {"Sienna",UiColors::Sienna},
+                {"Silver",UiColors::Silver},
+                {"SkyBlue",UiColors::SkyBlue},
+                {"SlateBlue",UiColors::SlateBlue},
+                {"SlateGray",UiColors::SlateGray},
+                {"Snow",UiColors::Snow},
+                {"SpringGreen",UiColors::SpringGreen},
+                {"SteelBlue",UiColors::SteelBlue},
+                {"Tan",UiColors::Tan},
+                {"Teal",UiColors::Teal},
+                {"Thistle",UiColors::Thistle},
+                {"Tomato",UiColors::Tomato},
+                {"Transparent",UiColors::Transparent},
+                {"Turquoise",UiColors::Turquoise},
+                {"Violet",UiColors::Violet},
+                {"Wheat",UiColors::Wheat},
+                {"White",UiColors::White},
+                {"WhiteSmoke",UiColors::WhiteSmoke},
+                {"Yellow",UiColors::Yellow},
+                {"YellowGreen",UiColors::YellowGreen}
     };
 }
 
-void ColorPickerRegularProvider::GetBasicColors(std::vector<std::pair<DString, int32_t>>& uiColors)
+void ColorPickerRegularProvider::GetBasicColors(std::vector<std::pair<std::string, int32_t>>& uiColors)
 {
     uiColors = {
-        {DUI_T("Rose"),0xFFF08784},
-        {DUI_T("Rose"),0xFFEB3324},
-        {DUI_T("Brown"),0xFF774342},
-        {DUI_T("Red"),0xFF8E403A},
-        {DUI_T("Dark Red"),0xFF3A0603},
-        {DUI_T("Sky Blue"),0xFF9FFCFD},
-        {DUI_T("Sky Blue"),0xFF73FBFD},
-        {DUI_T("Blue"),0xFF3282F6},
-        {DUI_T("Blue"),0xFF0023F5},
-        {DUI_T("Dark Blue"),0xFF00129A},
-        {DUI_T("Dark Blue"),0xFF16417C},
-        {DUI_T("Dark Blue"),0xFF000C7B},
+        {"Rose",0xFFF08784},
+        {"Rose",0xFFEB3324},
+        {"Brown",0xFF774342},
+        {"Red",0xFF8E403A},
+        {"Dark Red",0xFF3A0603},
+        {"Sky Blue",0xFF9FFCFD},
+        {"Sky Blue",0xFF73FBFD},
+        {"Blue",0xFF3282F6},
+        {"Blue",0xFF0023F5},
+        {"Dark Blue",0xFF00129A},
+        {"Dark Blue",0xFF16417C},
+        {"Dark Blue",0xFF000C7B},
 
-        {DUI_T("Light Yellow"),0xFFFFFE91},
-        {DUI_T("Yellow"),0xFFFFFD55},
-        {DUI_T("Orange"),0xFFF09B59},
-        {DUI_T("Orange"),0xFFF08650},
-        {DUI_T("Brown"),0xFF784315},
-        {DUI_T("Dark Yellow"),0xFF817F26},
-        {DUI_T("Light Blue"),0xFF7E84F7},
-        {DUI_T("Purple"),0xFF732BF5},
-        {DUI_T("Blue"),0xFF3580BB},
-        {DUI_T("Dark Blue"),0xFF00023D},
-        {DUI_T("Dark Purple"),0xFF58135E},
-        {DUI_T("Dark Purple"),0xFF3A083E},
+        {"Light Yellow",0xFFFFFE91},
+        {"Yellow",0xFFFFFD55},
+        {"Orange",0xFFF09B59},
+        {"Orange",0xFFF08650},
+        {"Brown",0xFF784315},
+        {"Dark Yellow",0xFF817F26},
+        {"Light Blue",0xFF7E84F7},
+        {"Purple",0xFF732BF5},
+        {"Blue",0xFF3580BB},
+        {"Dark Blue",0xFF00023D},
+        {"Dark Purple",0xFF58135E},
+        {"Dark Purple",0xFF3A083E},
 
-        {DUI_T("Light Green"),0xFFA1FB8E},
-        {DUI_T("Green"),0xFFA1FA4F},
-        {DUI_T("Green"),0xFF75F94D},
-        {DUI_T("Light Green"),0xFF75FA61},
-        {DUI_T("Light Green"),0xFF75FA8D},
-        {DUI_T("Brown"),0xFF818049},
-        {DUI_T("Pink"),0xFFEF88BE},
-        {DUI_T("Light Purple"),0xFFEE8AF8},
-        {DUI_T("Pale Purple"),0xFFEA3FF7},
-        {DUI_T("Pink"),0xFFEA3680},
-        {DUI_T("Pale Purple"),0xFF7F82BB},
-        {DUI_T("Magenta"),0xFF75163F},
+        {"Light Green",0xFFA1FB8E},
+        {"Green",0xFFA1FA4F},
+        {"Green",0xFF75F94D},
+        {"Light Green",0xFF75FA61},
+        {"Light Green",0xFF75FA8D},
+        {"Brown",0xFF818049},
+        {"Pink",0xFFEF88BE},
+        {"Light Purple",0xFFEE8AF8},
+        {"Pale Purple",0xFFEA3FF7},
+        {"Pink",0xFFEA3680},
+        {"Pale Purple",0xFF7F82BB},
+        {"Magenta",0xFF75163F},
 
-        {DUI_T("Light Green"),0xFF377D22},
-        {DUI_T("Dark Green"),0xFF377E47},
-        {DUI_T("Dark Cyan"),0xFF367E7F},
-        {DUI_T("Cyan"),0xFF507F80},
-        {DUI_T("Dark Green"),0xFF183E0C},
-        {DUI_T("Dark Cyan"),0xFF173F3F},
-        {DUI_T("Dark Purple"),0xFF741B7C},
-        {DUI_T("Dark Purple"),0xFF39107B},
-        {DUI_T("Black"),0xFF000000},
-        {DUI_T("Gray"),0xFF808080},
-        {DUI_T("Light Gray"),0xFFC0C0C0},
-        {DUI_T("White"),0xFFFFFFFF}
+        {"Light Green",0xFF377D22},
+        {"Dark Green",0xFF377E47},
+        {"Dark Cyan",0xFF367E7F},
+        {"Cyan",0xFF507F80},
+        {"Dark Green",0xFF183E0C},
+        {"Dark Cyan",0xFF173F3F},
+        {"Dark Purple",0xFF741B7C},
+        {"Dark Purple",0xFF39107B},
+        {"Black",0xFF000000},
+        {"Gray",0xFF808080},
+        {"Light Gray",0xFFC0C0C0},
+        {"White",0xFFFFFFFF}
     };
 }
 

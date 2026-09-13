@@ -15,16 +15,16 @@ ImageDecoder_PNG::~ImageDecoder_PNG()
 {
 }
 
-DString ImageDecoder_PNG::GetFormatName() const
+std::string ImageDecoder_PNG::GetFormatName() const
 {
-    return DUI_T("PNG/APNG");
+    return "PNG/APNG";
 }
 
-bool ImageDecoder_PNG::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_PNG::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == DUI_T("PNG")) {
+    if (fileExt == "PNG") {
         return true;
     }
     return false;

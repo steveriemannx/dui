@@ -222,7 +222,7 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
 {
     [m_markedText setString:@""];
     if (m_pNativeWindow != nullptr) {
-        m_pNativeWindow->OnNativeMarkedText(DStringW());
+        m_pNativeWindow->OnNativeMarkedText(std::wstring());
     }
 }
 
@@ -355,7 +355,7 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
     //Files first, then plain text
     NSArray<NSURL*>* fileURLs = [sender.draggingPasteboard readObjectsForClasses:@[[NSURL class]] options:nil];
     if (fileURLs.count > 0) {
-        std::vector<DString> fileList;
+        std::vector<std::string> fileList;
         for (NSURL* url in fileURLs) {
             if (url.path != nil) {
                 fileList.push_back(ui::StringConvert::UTF8ToT(std::string(url.path.UTF8String)));
@@ -363,14 +363,14 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
         }
         if (!fileList.empty()) {
             bool bHandled = false;
-            m_pNativeWindow->OnDropFiles(DString(), fileList, pt, bHandled);
+            m_pNativeWindow->OnDropFiles(std::string(), fileList, pt, bHandled);
             return YES;
         }
     }
 
     NSString* text = [sender.draggingPasteboard stringForType:NSPasteboardTypeString];
     if (text != nil) {
-        std::vector<DString> textList;
+        std::vector<std::string> textList;
         //One element per line, matching the dui/native backend behavior
         NSArray<NSString*>* lines = [text componentsSeparatedByString:@"\n"];
         for (NSString* line in lines) {
@@ -768,14 +768,14 @@ bool NativeWindow_MacOS::SetParentWindow(NativeWindow_MacOS* pParentWindow)
     return true;
 }
 
-DString NativeWindow_MacOS::GetVideoDriverName() const
+std::string NativeWindow_MacOS::GetVideoDriverName() const
 {
-    return DUI_T("cocoa");
+    return "cocoa";
 }
 
-DString NativeWindow_MacOS::GetWindowRenderName() const
+std::string NativeWindow_MacOS::GetWindowRenderName() const
 {
-    return DUI_T("skia");
+    return "skia";
 }
 
 // ---------------------------------------------------------------------------
@@ -1568,7 +1568,7 @@ void NativeWindow_MacOS::PaintWindow(bool bPaintAll)
     m_bPainting = true;
     m_bPendingPaint = false;
 
-    PerformanceStat statPerformance(DUI_T("PaintWindow, NativeWindow_MacOS::PaintWindow(Total)"));
+    PerformanceStat statPerformance("PaintWindow, NativeWindow_MacOS::PaintWindow(Total)");
     if (bPaintAll) {
         m_rcUpdateRect.Clear();
     }
@@ -2018,7 +2018,7 @@ void NativeWindow_MacOS::ClearWindowRgnForSystemShadow()
 // ---------------------------------------------------------------------------
 // Title / icon
 // ---------------------------------------------------------------------------
-void NativeWindow_MacOS::SetText(const DString& strText)
+void NativeWindow_MacOS::SetText(const std::string& strText)
 {
     if (m_nsWindow == nullptr) {
         return;
@@ -2028,14 +2028,14 @@ void NativeWindow_MacOS::SetText(const DString& strText)
     [(__bridge NSWindow*)m_nsWindow setTitle:nsTitle];
 }
 
-DString NativeWindow_MacOS::GetText() const
+std::string NativeWindow_MacOS::GetText() const
 {
     if (m_nsWindow == nullptr) {
-        return DString();
+        return std::string();
     }
     NSString* nsTitle = [(__bridge NSWindow*)m_nsWindow title];
     if (nsTitle == nil) {
-        return DString();
+        return std::string();
     }
     return StringConvert::UTF8ToT(std::string([nsTitle UTF8String]));
 }
@@ -2045,7 +2045,7 @@ bool NativeWindow_MacOS::SetWindowIcon(const FilePath& /*iconFilePath*/)
     return false;
 }
 
-bool NativeWindow_MacOS::SetWindowIcon(const std::vector<uint8_t>& /*iconFileData*/, const DString& /*iconFileName*/)
+bool NativeWindow_MacOS::SetWindowIcon(const std::vector<uint8_t>& /*iconFileData*/, const std::string& /*iconFileName*/)
 {
     return false;
 }
@@ -2404,7 +2404,7 @@ bool NativeWindow_MacOS::IsEnableSysMenu() const
 // ---------------------------------------------------------------------------
 // Text input (NSTextInputClient bridge)
 // ---------------------------------------------------------------------------
-void NativeWindow_MacOS::OnNativeInsertText(const DStringW& text)
+void NativeWindow_MacOS::OnNativeInsertText(const std::wstring& text)
 {
     INativeWindow* pOwner = m_pOwner;
     if ((pOwner == nullptr) || text.empty()) {
@@ -2417,7 +2417,7 @@ void NativeWindow_MacOS::OnNativeInsertText(const DStringW& text)
     pOwner->OnNativeCharMsg(VirtualKeyCode::kVK_None, 0, nativeMsg, bHandled);
 }
 
-void NativeWindow_MacOS::OnNativeMarkedText(const DStringW& text)
+void NativeWindow_MacOS::OnNativeMarkedText(const std::wstring& text)
 {
     INativeWindow* pOwner = m_pOwner;
     if (pOwner == nullptr) {
@@ -2472,7 +2472,7 @@ void NativeWindow_MacOS::OnDropPosition(const UiPoint& pt, bool& bHandled)
     bHandled = data.m_bHandled;
 }
 
-void NativeWindow_MacOS::OnDropTexts(const std::vector<DString>& textList, const UiPoint& pt, bool& bHandled)
+void NativeWindow_MacOS::OnDropTexts(const std::vector<std::string>& textList, const UiPoint& pt, bool& bHandled)
 {
     INativeWindow* pOwner = m_pOwner;
     if (pOwner == nullptr) {
@@ -2491,7 +2491,7 @@ void NativeWindow_MacOS::OnDropTexts(const std::vector<DString>& textList, const
     bHandled = data.m_bHandled;
 }
 
-void NativeWindow_MacOS::OnDropFiles(const DString& source, const std::vector<DString>& fileList, const UiPoint& pt, bool& bHandled)
+void NativeWindow_MacOS::OnDropFiles(const std::string& source, const std::vector<std::string>& fileList, const UiPoint& pt, bool& bHandled)
 {
     INativeWindow* pOwner = m_pOwner;
     if (pOwner == nullptr) {

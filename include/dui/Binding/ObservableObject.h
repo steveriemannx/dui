@@ -27,7 +27,7 @@ class DUI_API ObservableObject : public SupportWeakCallback
 {
 public:
     /** Invoked with the property name -- the same path string passed to Bind(). */
-    typedef std::function<void(const DString& strPropertyName)> PropertyChangedCallback;
+    typedef std::function<void(const std::string& strPropertyName)> PropertyChangedCallback;
 
     ObservableObject() = default;
     virtual ~ObservableObject();
@@ -46,7 +46,7 @@ public:
      @param [out] strValue The current value, when the property is known.
      @return true when the property exists and was read.
     */
-    virtual bool GetProperty(const DString& strPropertyName, DString& strValue) const;
+    virtual bool GetProperty(const std::string& strPropertyName, std::string& strValue) const;
 
     /** Write a property from a string; this is what two-way binding uses.
      The default implementation consults the table filled by RegisterProperty();
@@ -54,7 +54,7 @@ public:
 
      @return true when the property exists and was written.
     */
-    virtual bool SetProperty(const DString& strPropertyName, const DString& strValue);
+    virtual bool SetProperty(const std::string& strPropertyName, const std::string& strValue);
 
 protected:
     /** Make a string member bindable, and readable/writable by name.
@@ -65,21 +65,21 @@ protected:
 
          MyViewModel::MyViewModel()
          {
-             RegisterProperty(DUI_T("name"), m_sName);
+             RegisterProperty("name", m_sName);
          }
 
-     Properties that are not DString (an int, a bool, a computed value) should
+     Properties that are not std::string (an int, a bool, a computed value) should
      override GetProperty/SetProperty instead -- this module deliberately has no
      type system, so values cross the binding boundary as strings, the same way
      Control::SetAttribute() takes them.
     */
-    void RegisterProperty(const DString& strPropertyName, DString& refValue);
+    void RegisterProperty(const std::string& strPropertyName, std::string& refValue);
 
     /** Subclasses call this after a property actually changed.
      Compare old and new first: every raise re-pulls all bound targets, so
      raising for an unchanged value is pure wasted work.
     */
-    void RaisePropertyChanged(const DString& strPropertyName);
+    void RaisePropertyChanged(const std::string& strPropertyName);
 
     /** Invalidate everything, for when the whole model was replaced.
      Bound targets are re-pulled without a specific property name, so any
@@ -98,8 +98,8 @@ private:
      member, which is what makes reads and writes by name possible. */
     struct PropertyEntry
     {
-        DString strName;
-        DString* pValue = nullptr;
+        std::string strName;
+        std::string* pValue = nullptr;
     };
 
     std::vector<CallbackEntry> m_callbackList;

@@ -15,7 +15,7 @@ public:
     explicit ButtonTemplate(Window* pWindow);
 
     /// Override the parent class methods to provide personalized features; please refer to the parent class declarations
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
     virtual void Activate(const EventArgs* pMsg) override;
     virtual void HandleEvent(const EventArgs& msg) override;
     virtual uint32_t GetControlFlags() const override;
@@ -34,16 +34,16 @@ ButtonTemplate<InheritType>::ButtonTemplate(Window* pWindow):
 }
 
 template<typename InheritType>
-inline DString ButtonTemplate<InheritType>::GetType() const { return DUI_CTR_BUTTON; }
+inline std::string ButtonTemplate<InheritType>::GetType() const { return DUI_CTR_BUTTON; }
 
 template<>
-inline DString ButtonTemplate<Box>::GetType() const { return DUI_CTR_BUTTONBOX; }
+inline std::string ButtonTemplate<Box>::GetType() const { return DUI_CTR_BUTTONBOX; }
 
 template<>
-inline DString ButtonTemplate<HBox>::GetType() const { return DUI_CTR_BUTTONHBOX; }
+inline std::string ButtonTemplate<HBox>::GetType() const { return DUI_CTR_BUTTONHBOX; }
 
 template<>
-inline DString ButtonTemplate<VBox>::GetType() const { return DUI_CTR_BUTTONVBOX; }
+inline std::string ButtonTemplate<VBox>::GetType() const { return DUI_CTR_BUTTONVBOX; }
 
 template<typename InheritType>
 uint32_t ui::ButtonTemplate<InheritType>::GetControlFlags() const

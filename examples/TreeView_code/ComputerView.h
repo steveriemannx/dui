@@ -7,7 +7,7 @@
 
 class MainForm;
 
-/** The DUI_T("Computer") view, showing the disk list
+/** The "Computer" view, showing the disk list
 */
 class ComputerView: public ui::SupportWeakCallback
 {
@@ -23,7 +23,7 @@ public:
     virtual ~ComputerView() override;
 
 public:
-    /** Show the content of the DUI_T("Computer") node
+    /** Show the content of the "Computer" node
     * @param [in] diskInfoList the information list of all disks
     */
     void ShowMyComputerContents(const std::vector<ui::DirectoryTree::DiskInfo>& diskInfoList);
@@ -33,11 +33,11 @@ private:
     */
     void Initialize();
 
-    /** Initialize the header of the DUI_T("Computer") view
+    /** Initialize the header of the "Computer" view
     */
     void InitComputerViewHeader();
 
-    /** Double-click in the DUI_T("Computer") view
+    /** Double-click in the "Computer" view
     */
     bool OnComuterViewDoubleClick(const ui::EventArgs& msg);    
 
@@ -48,18 +48,18 @@ private:
 
     /** Convert the disk space size to a display string
     */
-    DString FormatDiskSpace(uint64_t nSpace) const;
+    std::string FormatDiskSpace(uint64_t nSpace) const;
 
     /** Get the used percentage display string
     */
-    DString FormatUsedPercent(uint64_t nTotalSpace, uint64_t nFreeSpace) const;
+    std::string FormatUsedPercent(uint64_t nTotalSpace, uint64_t nFreeSpace) const;
 
 #if defined (DUI_BUILD_FOR_WIN)
     /** Initialize the header
     */
     void InitComputerViewHeader_Win();
 
-    /** Show the content of the DUI_T("Computer") node
+    /** Show the content of the "Computer" node
     * @param [in] diskInfoList the information list of all disks
     */
     void ShowMyComputerContents_Win(ui::ImageListPtr pImageList, const std::vector<ui::DirectoryTree::DiskInfo>& diskInfoList);
@@ -69,19 +69,19 @@ private:
     */
     void InitComputerViewHeader_Linux();
 
-    /** Show the content of the DUI_T("Computer") node
+    /** Show the content of the "Computer" node
     * @param [in] diskInfoList the information list of all disks
     */
     void ShowMyComputerContents_Linux(ui::ImageListPtr pImageList, const std::vector<ui::DirectoryTree::DiskInfo>& diskInfoList);
 
     /** Convert the device type to a string
     */
-    DString GetDeviceTypeString(ui::DirectoryTree::DeviceType deviceType) const;
+    std::string GetDeviceTypeString(ui::DirectoryTree::DeviceType deviceType) const;
 
 #endif
 
 private:
-    /** The header of the DUI_T("Computer") view
+    /** The header of the "Computer" view
     */
     enum class ComputerViewColumn
     {
@@ -104,11 +104,11 @@ private:
     MainForm* m_pMainForm;
 
 private:
-    /** Data of the DUI_T("Computer") view
+    /** Data of the "Computer" view
     */
     std::vector<ui::DirectoryTree::DiskInfo> m_diskInfoList;
 
-    /** List interface of the DUI_T("Computer") view
+    /** List interface of the "Computer" view
     */
     ui::ControlPtrT<ui::ListCtrl> m_pComputerListCtrl;
 

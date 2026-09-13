@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("Hello (Codegen)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("Hello (Codegen)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
 }

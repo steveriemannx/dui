@@ -27,7 +27,7 @@ ControlDropTargetImpl_Windows::~ControlDropTargetImpl_Windows()
     }
 }
 
-void ControlDropTargetImpl_Windows::ParseWindowsDataObject(void* pDataObj, std::vector<DString>& textList, std::vector<DString>& fileList)
+void ControlDropTargetImpl_Windows::ParseWindowsDataObject(void* pDataObj, std::vector<std::string>& textList, std::vector<std::string>& fileList)
 {
     if (pDataObj == nullptr) {
         return;
@@ -41,8 +41,8 @@ void ControlDropTargetImpl_Windows::ParseWindowsDataObject(void* pDataObj, std::
     enumFormats->Reset();
     const int kCelt = 12;
 
-    std::vector<DString> unicodeTextList;
-    std::vector<DString> ansiTextList;
+    std::vector<std::string> unicodeTextList;
+    std::vector<std::string> ansiTextList;
 
     ULONG celtFetched;
     do {
@@ -68,7 +68,7 @@ void ControlDropTargetImpl_Windows::ParseWindowsDataObject(void* pDataObj, std::
                 }
                 if (format == CF_UNICODETEXT) {
                     unicodeTextList.clear();
-                    DStringW text = (std::wstring::value_type*)hGlobal;
+                    std::wstring text = (std::wstring::value_type*)hGlobal;
                     if (!text.empty()) {
                         if (!text.empty()) {
                             std::list<std::wstring> lines = StringUtil::Split(text, L"\r\n");
@@ -83,9 +83,9 @@ void ControlDropTargetImpl_Windows::ParseWindowsDataObject(void* pDataObj, std::
                 else if (format == CF_TEXT) {
                     // Encoding type: may be Ansi or UTF8, etc. (text dragged out of an Edge web page is UTF8, text dragged out of NotePad is Ansi)
                     ansiTextList.clear();                    
-                    DStringA rawText = (std::string::value_type*)hGlobal;
+                    std::string rawText = (std::string::value_type*)hGlobal;
                     CharsetType charset = StringCharset::GetDataCharset(rawText.data(), (uint32_t)rawText.size());
-                    DString text;
+                    std::string text;
                     if (charset == CharsetType::ANSI) {
                         text = StringConvert::MBCSToT(rawText);
                     }
@@ -93,8 +93,8 @@ void ControlDropTargetImpl_Windows::ParseWindowsDataObject(void* pDataObj, std::
                         text = StringConvert::UTF8ToT(rawText);
                     }
                     if (!text.empty()) {
-                        std::list<DString> lines = StringUtil::Split(text, DUI_T("\r\n"));
-                        for (const DString& line : lines) {
+                        std::list<std::string> lines = StringUtil::Split(text, "\r\n");
+                        for (const std::string& line : lines) {
                             if (!line.empty()) {
                                 ansiTextList.push_back(line);
                             }
@@ -111,7 +111,7 @@ void ControlDropTargetImpl_Windows::ParseWindowsDataObject(void* pDataObj, std::
                         if (!::DragQueryFileW(hdrop, x, fileName, kMaxFilenameLen)) {
                             continue;
                         }
-                        DStringW fileNameW = fileName;
+                        std::wstring fileNameW = fileName;
                         if (!fileNameW.empty()) {
                             // If a short file path is returned, convert it to a long file path
                             DWORD ret = ::GetLongPathNameW(fileNameW.c_str(), fileName, kMaxFilenameLen);
@@ -214,7 +214,7 @@ int32_t ControlDropTargetImpl_Windows::DragOver(uint32_t grfKeyState, const UiPo
                 return S_FALSE;
             }
             // File drag and drop is supported; check whether the filter conditions are met
-            DString fileTypes = m_pControl->GetDropFileTypes();
+            std::string fileTypes = m_pControl->GetDropFileTypes();
             if (!ControlDropTargetUtils::IsFilteredFileTypes(fileTypes, m_fileList)) {
                 // The file types do not meet the filter conditions
                 return S_FALSE;
@@ -280,7 +280,7 @@ int32_t ControlDropTargetImpl_Windows::Drop(void* pDataObj, uint32_t grfKeyState
                 return S_FALSE;
             }
             // File drag and drop is supported; check whether the filter conditions are met
-            DString fileTypes = m_pControl->GetDropFileTypes();
+            std::string fileTypes = m_pControl->GetDropFileTypes();
             if (!ControlDropTargetUtils::IsFilteredFileTypes(fileTypes, m_fileList)) {
                 // The file types do not meet the filter conditions
                 ClearDragStatus();

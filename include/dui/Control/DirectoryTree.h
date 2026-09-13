@@ -35,8 +35,8 @@ public:
     struct PathInfo
     {
         FilePath m_filePath;        //File path        
-        DString m_displayName;      //Display name
-        DString m_typeName;         //File type
+        std::string m_displayName;      //Display name
+        std::string m_typeName;         //File type
         uint64_t m_fileSize = 0;    //File size
         FileTime m_lastWriteTime;   //Last modified time
         uint32_t m_nIconID = 0;     //Associated icon ID (the return value of GlobalManager::Instance().Icon().AddIcon; the icon needs to be added to the manager by the implementing class)
@@ -55,14 +55,14 @@ public:
     */
     struct DiskInfo
     {
-        DString m_displayName;  //Display name
+        std::string m_displayName;  //Display name
         uint32_t m_nIconID = 0; //Associated icon ID (the return value of GlobalManager::Instance().Icon().AddIcon; the icon needs to be added to the manager by the implementing class)
         bool m_bIconShared = false; //Whether the icon associated with this icon ID is a shared icon (shared icons are not allowed to be released)
         FilePath m_filePath;        //Corresponding path
 
-        DString m_volumeName;   //Volume label of the partition
-        DString m_volumeType;   //Partition type, e.g., "Local Disk"
-        DString m_fileSystem;   //File system type, e.g., "NTFS"
+        std::string m_volumeName;   //Volume label of the partition
+        std::string m_volumeType;   //Partition type, e.g., "Local Disk"
+        std::string m_fileSystem;   //File system type, e.g., "NTFS"
 
         uint64_t m_totalBytes = 0; //Total space size (bytes)
         uint64_t m_freeBytes = 0;  //Available space size (bytes)
@@ -91,15 +91,15 @@ public:
     */
     struct DiskInfo
     {
-        DString m_displayName;      //Display name
+        std::string m_displayName;      //Display name
         uint32_t m_nIconID = 0;     //Associated icon ID (the return value of GlobalManager::Instance().Icon().AddIcon; the icon needs to be added to the manager by the implementing class)
         bool m_bIconShared = false; //Whether the icon associated with this icon ID is a shared icon (shared icons are not allowed to be released)
         FilePath m_filePath;        //Corresponding path
 
-        DString m_volumeName;   //File system, e.g., "/dev/sda2"
+        std::string m_volumeName;   //File system, e.g., "/dev/sda2"
         DeviceType m_deviceType = DeviceType::UNKNOWN;   //Device type, see the enum values
-        DString m_fileSystem;   //File system type, e.g., "ext3"
-        DString m_mountOn;      //Mount point, e.g., "/"
+        std::string m_fileSystem;   //File system type, e.g., "ext3"
+        std::string m_mountOn;      //Mount point, e.g., "/"
 
         uint64_t m_totalBytes = 0; //Total space size (bytes)
         uint64_t m_freeBytes = 0;  //Available space size (bytes)
@@ -118,8 +118,8 @@ public:
     virtual ~DirectoryTree() override;
 
     /// Override the base class method to provide customized functionality; refer to the base class declaration
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** Clear the path list and release icon resources as needed
     * @param [in,out] pathList Input file list; it is cleared on output
@@ -142,19 +142,19 @@ public:
     * @param [in] displayName Display name of the virtual directory
     * @param [in] bDisplayNameIsID Whether the display name of the virtual directory is a language ID to support multiple languages
     */
-    TreeNode* ShowVirtualDirectoryNode(VirtualDirectoryType type, const DString& displayName, bool bDisplayNameIsID = false);
+    TreeNode* ShowVirtualDirectoryNode(VirtualDirectoryType type, const std::string& displayName, bool bDisplayNameIsID = false);
 
     /** Show all disk nodes and return the first new node interface (completed synchronously)
     * @param [in] computerName Display name of the computer node
     * @param [in] fileSystemName Display name of the file system
     */
-    TreeNode* ShowAllDiskNodes(const DString& computerName, const DString& fileSystemName);
+    TreeNode* ShowAllDiskNodes(const std::string& computerName, const std::string& fileSystemName);
 
     /** Insert a horizontal separator line before the specified node (completed synchronously)
     * @param [in] pNode Node interface
     * @param [in] lineClassName Class name of the horizontal separator line (optional)
     */
-    bool InsertLineBeforeNode(TreeNode* pNode, const DString& lineClassName = DUI_T(""));
+    bool InsertLineBeforeNode(TreeNode* pNode, const std::string& lineClassName = "");
 
     /** Add a node to the tree and return the interface of the newly added node (completed synchronously)
     * @param [in] pParentTreeNode Interface of the parent node; if nullptr, the new node is added under the root node
@@ -167,7 +167,7 @@ public:
     * @param [in] bVirtualNode true means this node is a virtual node; otherwise it is a normal path node
     */
     TreeNode* InsertTreeNode(TreeNode* pParentTreeNode,
-                             const DString& displayName,
+                             const std::string& displayName,
                              bool bDisplayNameIsID,
                              const ui::FilePath& path,
                              bool isFolder,

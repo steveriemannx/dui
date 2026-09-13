@@ -15,16 +15,16 @@ ImageDecoder_GIF::~ImageDecoder_GIF()
 {
 }
 
-DString ImageDecoder_GIF::GetFormatName() const
+std::string ImageDecoder_GIF::GetFormatName() const
 {
-    return DUI_T("GIF");
+    return "GIF";
 }
 
-bool ImageDecoder_GIF::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_GIF::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == DUI_T("GIF")) {
+    if (fileExt == "GIF") {
         return true;
     }
     return false;

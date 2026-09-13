@@ -19,8 +19,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window you are drawing
      * The GetSkinFile interface sets the xml description file of the window you are drawing
      */
-    virtual DString GetSkinFolder() override { return DUI_T("rich_edit"); }
-    virtual DString GetSkinFile() override { return DUI_T(""); }
+    virtual std::string GetSkinFolder() override { return "rich_edit"; }
+    virtual std::string GetSkinFile() override { return ""; }
 
     /** Called after the window is created, allowing subclasses to do some initialization work
      */
@@ -49,9 +49,9 @@ public:
     virtual LRESULT OnKeyUpMsg(ui::VirtualKeyCode vkCode, uint32_t modifierKey, const ui::NativeMsg& nativeMsg, bool& bHandled) override;
 
     // Find/Replace interface
-    void FindRichText(const DString& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
-    void ReplaceRichText(const DString& findText, const DString& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
-    void ReplaceAllRichText(const DString& findText, const DString& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
+    void FindRichText(const std::string& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
+    void ReplaceRichText(const std::string& findText, const std::string& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
+    void ReplaceAllRichText(const std::string& findText, const std::string& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
 
     // Get the RichEdit interface
     ui::RichEdit* GetRichEdit() const;
@@ -88,10 +88,10 @@ private:// Font-related settings
     void UpdateFontSizeStatus();
 
     // Set the font name
-    void SetFontName(const DString& fontName);
+    void SetFontName(const std::string& fontName);
 
     // Set the font size
-    void SetFontSize(const DString& fontSize);
+    void SetFontSize(const std::string& fontSize);
 
     // Adjust font size: bIncreaseFontSize is true to increase the font size, false to decrease it
     void AdjustFontSize(bool bIncreaseFontSize);
@@ -110,7 +110,7 @@ private:// Font-related settings
 
     /** Set the text color
     */
-    void SetTextColor(const DString& newColor);
+    void SetTextColor(const std::string& newColor);
 
 private:
     // Update the zoom ratio
@@ -131,7 +131,7 @@ private:
 #if defined (DUI_BUILD_FOR_WIN)
 
     // Determine whether a file extension is an RTF file
-    bool IsRtfFile(const DString& filePath) const;
+    bool IsRtfFile(const std::string& filePath) const;
 
     static DWORD CALLBACK StreamReadCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG FAR* pcb);
     static DWORD CALLBACK StreamWriteCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG FAR* pcb);
@@ -167,7 +167,7 @@ private:
     ui::FilePath m_filePath;
 
     // The text of the Save button
-    DString m_saveBtnText;
+    std::string m_saveBtnText;
 
     // Find
     FindForm* m_pFindForm;
@@ -180,7 +180,7 @@ private:
 
 private:
     // Font name list
-    std::vector<DString> m_fontList;
+    std::vector<std::string> m_fontList;
 
     // Font size list
     std::vector<ui::FontSizeInfo> m_fontSizeList;

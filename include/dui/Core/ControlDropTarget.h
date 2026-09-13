@@ -51,13 +51,13 @@ public:
     /** Native_EVENT_DROP_COMPLETE + Native_EVENT_DROP_TEXT, OnDropLeave will not be called afterwards
     *@param [in] textList The text content, each element in the container represents one line of text
     */
-    virtual void OnDropTexts(const std::vector<DString>& textList, const UiPoint& pt) = 0;
+    virtual void OnDropTexts(const std::vector<std::string>& textList, const UiPoint& pt) = 0;
 
     /** Native_EVENT_DROP_COMPLETE + Native_EVENT_DROP_FILE, OnDropLeave will not be called afterwards
     *@param [in] source The drag and drop source
     *@param [in] fileList The file paths, each element in the container represents one file
     */
-    virtual void OnDropFiles(const DString& source, const std::vector<DString>& fileList, const UiPoint& pt) = 0;
+    virtual void OnDropFiles(const std::string& source, const std::vector<std::string>& fileList, const UiPoint& pt) = 0;
 
     /** Native_EVENT_DROP_COMPLETE or other messages that cause a leave
     */

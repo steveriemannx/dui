@@ -9,16 +9,16 @@
 
 #include <cassert>
 
-#define DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value) DUI_T(value)
+#define DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value) (value)
 #define DUI_TEST_SOURCE_ROOT_TEXT(value) DUI_TEST_SOURCE_ROOT_TEXT_IMPL(value)
 
 namespace {
 
 class TestWindow final : public ui::Window {
 protected:
-    DString GetSkinFile() override
+    std::string GetSkinFile() override
     {
-        return DUI_T("<Window size='160,80'><VBox><Label text='GUI test'/></VBox></Window>");
+        return "<Window size='160,80'><VBox><Label text='GUI test'/></VBox></Window>";
     }
 
     void OnInitWindow() override
@@ -35,11 +35,11 @@ int main()
 {
     const ui::FilePath root(DUI_TEST_SOURCE_ROOT_TEXT(DUI_TEST_SOURCE_ROOT));
     ui::LocalFilesResParam resources(ui::FilePathUtil::JoinFilePath(
-        root, ui::FilePath(DUI_T("resources"))));
+        root, ui::FilePath("resources")));
     assert(ui::GlobalManager::Instance().Startup(resources));
 
     auto* window = new TestWindow();
-    assert(window->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("dui GUI test"), true)));
+    assert(window->CreateWnd(nullptr, ui::WindowCreateParam("dui GUI test", true)));
     ui::MessageLoop_MacOS loop;
     loop.Run(nullptr);
     ui::GlobalManager::Instance().Shutdown();

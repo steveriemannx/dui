@@ -43,15 +43,15 @@ public:
 
     /** Get the date time string; the date format can be set via the SetStringFormat() function
     */
-    DString GetDateTimeString() const;
+    std::string GetDateTimeString() const;
 
     /** Set the date time string and update the date time value according to the format specified by GetStringFormat()
     */
-    bool SetDateTimeString(const DString& dateTime);
+    bool SetDateTimeString(const std::string& dateTime);
 
     /** Get the string format of the date
     */
-    DString GetStringFormat() const;
+    std::string GetStringFormat() const;
     
     /** Set the date format; the default value depends on the EditFormat value
     * @param [in] sFormat The date format; for details, refer to the description of the std::put_time function:
@@ -92,7 +92,7 @@ public:
         %z, %Z Time zone name; if the time zone name cannot be obtained, an empty character is returned.
         %% Percent sign
     */
-    void SetStringFormat(const DString& sFormat);
+    void SetStringFormat(const std::string& sFormat);
 
     /** The edit format of the date time
     */
@@ -116,7 +116,7 @@ public:
 
     /** Get the separator of the year, month and day
     */
-    DString::value_type GetDateSeparator() const;
+    std::string::value_type GetDateSeparator() const;
 
     /** Update the position of the edit window
     */
@@ -124,11 +124,11 @@ public:
 
     /** Set the Class name of the Spin feature
     */
-    void SetSpinClass(const DString& spinClass);
+    void SetSpinClass(const std::string& spinClass);
 
     /** Get the Class name of the Spin feature
     */
-    DString GetSpinClass() const;
+    std::string GetSpinClass() const;
 
     /** Add a listener for the date time value change event
     * @param [in] callback The callback function to bind
@@ -138,8 +138,8 @@ public:
 
 public:
     //Virtual functions of the base class
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void HandleEvent(const EventArgs& msg) override;
 
     //Used to initialize xml attributes
@@ -174,7 +174,7 @@ private:
 
     /** The separator of the year, month and day
     */
-    DString::value_type m_dateSeparator;
+    std::string::value_type m_dateSeparator;
 
     /** The window interface of the date control
     */

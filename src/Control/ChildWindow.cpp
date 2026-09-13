@@ -22,11 +22,11 @@ ChildWindow::~ChildWindow()
     m_pChildWnd.reset();
 }
 
-DString ChildWindow::GetType() const { return DUI_CTR_CHILD_WINDOW; }
+std::string ChildWindow::GetType() const { return DUI_CTR_CHILD_WINDOW; }
 
-void ChildWindow::SetAttribute(const DString& strName, const DString& strValue)
+void ChildWindow::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("child_window_margin")) {
+    if (strName == "child_window_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetChildWindowMargin(rcMargin, true);

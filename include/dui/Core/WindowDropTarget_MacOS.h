@@ -30,13 +30,13 @@ public:
     /** DROP_TEXT
     *@param [in] utf8Text Text content; each call provides one line of text
     */
-    void OnDropText(const DStringA& utf8Text);
+    void OnDropText(const std::string& utf8Text);
 
     /** DROP_FILE
     *@param [in] utf8Source Drag and drop source
     *@param [in] utf8File File path; each call provides one file
     */
-    void OnDropFile(const DStringA& utf8Source, const DStringA& utf8File);
+    void OnDropFile(const std::string& utf8Source, const std::string& utf8File);
     
     // DROP_COMPLETE
     void OnDropComplete();
@@ -66,15 +66,15 @@ private:
 
     /** Text data
     */
-    std::vector<DString> m_textList;
+    std::vector<std::string> m_textList;
 
     /** File data
     */
-    std::vector<DString> m_fileList;
+    std::vector<std::string> m_fileList;
 
     /** The source of the files
     */
-    DString m_fileSource;
+    std::string m_fileSource;
 };
 
 } // namespace ui

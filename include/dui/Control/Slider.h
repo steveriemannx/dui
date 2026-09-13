@@ -16,10 +16,10 @@ public:
     explicit Slider(Window* pWindow);
 
     /// Override the parent class method to provide personalized functionality; please refer to the parent class declaration
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
     virtual UiRect GetProgressPos() override;
     virtual void HandleEvent(const EventArgs& msg) override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void PaintStateImages(IRender* pRender) override;
     virtual void PaintBkColor(IRender* pRender) override;
     virtual void ClearImageCache() override;
@@ -59,13 +59,13 @@ public:
      * @param[in] stateType The state identifier to get; refer to the ControlStateType enumeration
      * @return Returns the image path
      */
-    DString GetThumbStateImage(ControlStateType stateType) const;
+    std::string GetThumbStateImage(ControlStateType stateType) const;
 
     /** Set the image of the thumb in the specified state
      * @param[in] stateType The state identifier to set; refer to the ControlStateType enumeration
      * @param[in] pStrImage The image location to set
      */
-    void SetThumbStateImage(ControlStateType stateType, const DString& pStrImage);
+    void SetThumbStateImage(ControlStateType stateType, const std::string& pStrImage);
 
     /** Get the progress bar padding
      */
