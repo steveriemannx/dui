@@ -62,7 +62,6 @@ bool Image_ICO::LoadImageFromMemory(const std::vector<UiImageData>& imageData,
                                     uint32_t nIconSize,
                                     int32_t nFrameDelayMs)
 {
-    ASSERT(!imageData.empty());
     if (imageData.empty()) {
         return false;
     }
@@ -77,7 +76,6 @@ bool Image_ICO::LoadImageFromMemory(const std::vector<UiImageData>& imageData,
     const uint32_t nImageSize = m_impl->m_nWidth;
 
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return false;
     }
@@ -94,11 +92,9 @@ bool Image_ICO::LoadImageFromMemory(const std::vector<UiImageData>& imageData,
         pFrameData->m_nOffsetY = 0;
         pFrameData->m_bDataPending = false;
         pFrameData->m_pBitmap.reset(pRenderFactory->CreateBitmap());
-        ASSERT(pFrameData->m_pBitmap != nullptr);
         if (pFrameData->m_pBitmap == nullptr) {
             return false;
         }
-        ASSERT((icoData.m_imageWidth != 0) && (icoData.m_imageHeight != 0));
         if ((icoData.m_imageWidth == 0) || (icoData.m_imageHeight == 0)) {
             return false;
         }
@@ -176,7 +172,6 @@ int32_t Image_ICO::GetFrameDelayMs(uint32_t nFrameIndex)
 
 bool Image_ICO::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSize*/, AnimationFrame* pAnimationFrame)
 {
-    ASSERT(pAnimationFrame != nullptr);
     if (pAnimationFrame == nullptr) {
         return false;
     }

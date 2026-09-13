@@ -50,7 +50,6 @@ void SkGLWindowContext_MacOS::teardownContext()
 sk_sp<const GrGLInterface> SkGLWindowContext_MacOS::onInitializeContext()
 {
     NSView* view = (__bridge NSView*)m_nsView;
-    ASSERT(view != nil);
     if (view == nil) {
         return nullptr;
     }
@@ -170,12 +169,10 @@ bool SkGLWindowContext_MacOS::PaintAndSwapBuffers(IRender* pRender, IRenderPaint
     [glContext makeCurrentContext];
 
     SkSurface* pBackSurface = this->getBackbufferSurface().get();
-    ASSERT(pBackSurface != nullptr);
     if (pBackSurface == nullptr) {
         return false;
     }
     SkCanvas* pCanvas = pBackSurface->getCanvas();
-    ASSERT(pCanvas != nullptr);
     if (pCanvas == nullptr) {
         return false;
     }

@@ -19,7 +19,6 @@ bool LangManager::LoadStringTable(const FilePath& strFilePath)
     m_stringTable.clear();
     std::vector<uint8_t> fileData;
     FileUtil::ReadFileData(strFilePath, fileData);
-    ASSERT(!fileData.empty());
     if (fileData.empty()) {
         return false;
     }

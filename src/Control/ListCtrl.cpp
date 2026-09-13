@@ -327,7 +327,6 @@ void ListCtrl::OnInit()
 
 void ListCtrl::InitReportView()
 {
-    ASSERT(m_pReportView != nullptr);
     if (m_pReportView == nullptr) {
         return;
     }
@@ -405,7 +404,6 @@ void ListCtrl::InitReportView()
 
 void ListCtrl::InitIconView()
 {
-    ASSERT(m_pIconView != nullptr);
     if (m_pIconView == nullptr) {
         return;
     }
@@ -477,7 +475,6 @@ void ListCtrl::InitIconView()
 
 void ListCtrl::InitListView()
 {
-    ASSERT(m_pListView != nullptr);
     if (m_pListView == nullptr) {
         return;
     }
@@ -989,7 +986,6 @@ bool ListCtrl::IsEnableColumnWidthAuto() const
 
 ListCtrlHeaderItem* ListCtrl::InsertColumn(int32_t columnIndex, const ListCtrlColumn& columnInfo)
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return nullptr;
     }
@@ -1000,7 +996,6 @@ ListCtrlHeaderItem* ListCtrl::InsertColumn(int32_t columnIndex, const ListCtrlCo
 
 size_t ListCtrl::GetColumnCount() const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return 0;
     }
@@ -1011,7 +1006,6 @@ size_t ListCtrl::GetColumnCount() const
 
 int32_t ListCtrl::GetColumnWidth(size_t columnIndex) const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return 0;
     }
@@ -1167,7 +1161,6 @@ bool ListCtrl::SetColumnWidth(const std::vector<UiFixedInt>& columnWidthList, bo
 
 ListCtrlHeaderItem* ListCtrl::GetColumn(size_t columnIndex) const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return nullptr;
     }
@@ -1178,7 +1171,6 @@ ListCtrlHeaderItem* ListCtrl::GetColumn(size_t columnIndex) const
 
 ListCtrlHeaderItem* ListCtrl::GetColumnById(size_t columnId) const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return nullptr;
     }
@@ -1189,7 +1181,6 @@ ListCtrlHeaderItem* ListCtrl::GetColumnById(size_t columnId) const
 
 size_t ListCtrl::GetColumnIndex(size_t columnId) const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return Box::InvalidIndex;
     }
@@ -1215,7 +1206,6 @@ bool ListCtrl::IsValidColumnId(size_t columnId) const
 
 bool ListCtrl::DeleteColumn(size_t columnIndex)
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return false;
     }
@@ -1226,7 +1216,6 @@ bool ListCtrl::DeleteColumn(size_t columnIndex)
 
 bool ListCtrl::DeleteColumnById(size_t columnId)
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return false;
     }
@@ -1515,7 +1504,6 @@ bool ListCtrl::SortDataItems(size_t columnIndex, bool bSortedUp, uint8_t nSortFl
                              void* pUserData)
 {
     size_t nColumnId = GetColumnId(columnIndex);
-    ASSERT(nColumnId != Box::InvalidIndex);
     if (nColumnId == Box::InvalidIndex) {
         return false;
     }
@@ -1526,7 +1514,6 @@ bool ListCtrl::SortDataItemsById(size_t columnId, bool bSortedUp, uint8_t nSortF
                                  ListCtrlDataCompareFunc pfnCompareFunc, void* pUserData)
 {
     size_t columnIndex = GetColumnIndex(columnId);
-    ASSERT(columnIndex != Box::InvalidIndex);
     if (columnIndex == Box::InvalidIndex) {
         return false;
     }
@@ -1611,7 +1598,6 @@ void ListCtrl::OnHeaderColumnSplitDoubleClick(ListCtrlHeaderItem* pHeaderItem)
 
 void ListCtrl::UpdateHeaderColumnCheckBox(size_t nColumnId)
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return;
     }
@@ -1652,7 +1638,6 @@ void ListCtrl::UpdateHeaderCheckBox()
         return;
     }
 
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return;
     }
@@ -1693,7 +1678,6 @@ bool ListCtrl::SetDataItemCount(size_t itemCount)
 size_t ListCtrl::AddDataItem(const ListCtrlSubItemData& dataItem)
 {
     size_t columnId = GetColumnId(0);
-    ASSERT(columnId != Box::InvalidIndex);
     if (columnId == Box::InvalidIndex) {
         return Box::InvalidIndex;
     }
@@ -1708,7 +1692,6 @@ size_t ListCtrl::AddDataItem(const ListCtrlSubItemData& dataItem)
 bool ListCtrl::InsertDataItem(size_t itemIndex, const ListCtrlSubItemData& dataItem)
 {
     size_t columnId = GetColumnId(0);
-    ASSERT(columnId != Box::InvalidIndex);
     if (columnId == Box::InvalidIndex) {
         return Box::InvalidIndex;
     }
@@ -2422,7 +2405,6 @@ void ListCtrl::OnItemEnterEditMode(size_t itemIndex, size_t nColumnId,
     }
 
     std::string editClass = GetRichEditClass();
-    ASSERT(!editClass.empty());
     if (editClass.empty()) {
         return;
     }
@@ -2446,11 +2428,9 @@ bool ListCtrl::IsValidItemEditState(const ListCtrlEditParam& editParam) const
     if (editParam.listCtrlType == ListCtrlType::Icon) {
         //Icon view
         ListCtrlIconViewItem* pItem = dynamic_cast<ListCtrlIconViewItem*>(editParam.pItem);
-        ASSERT((pItem != nullptr) && pItem->IsVisible() && pItem->IsSelected() && pItem->IsFocused());
         if ((pItem == nullptr) || !pItem->IsVisible() || !pItem->IsSelected() || !pItem->IsFocused()) {
             return false;
         }
-        ASSERT(m_pIconView != nullptr);
         if (m_pIconView == nullptr) {
             return false;
         }
@@ -2458,11 +2438,9 @@ bool ListCtrl::IsValidItemEditState(const ListCtrlEditParam& editParam) const
     else if (editParam.listCtrlType == ListCtrlType::List) {
         //List view
         ListCtrlListViewItem* pItem = dynamic_cast<ListCtrlListViewItem*>(editParam.pItem);
-        ASSERT((pItem != nullptr) && pItem->IsVisible() && pItem->IsSelected() && pItem->IsFocused());
         if ((pItem == nullptr) || !pItem->IsVisible() || !pItem->IsSelected() || !pItem->IsFocused()) {
             return false;
         }
-        ASSERT(m_pListView != nullptr);
         if (m_pListView == nullptr) {
             return false;
         }
@@ -2470,11 +2448,9 @@ bool ListCtrl::IsValidItemEditState(const ListCtrlEditParam& editParam) const
     else {
         //Report view
         ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(editParam.pItem);
-        ASSERT((pItem != nullptr) && pItem->IsVisible() && pItem->IsSelected() && pItem->IsFocused());
         if ((pItem == nullptr) || !pItem->IsVisible() || !pItem->IsSelected() || !pItem->IsFocused()) {
             return false;
         }
-        ASSERT(m_pReportView != nullptr);
         if (m_pReportView == nullptr) {
             return false;
         }
@@ -2490,7 +2466,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
     if (editParam.listCtrlType == ListCtrlType::Icon) {
         //Icon view
         ListCtrlIconViewItem* pItem = dynamic_cast<ListCtrlIconViewItem*>(editParam.pItem);
-        ASSERT(pItem != nullptr);
         if (pItem == nullptr) {
             return false;
         }
@@ -2504,7 +2479,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
             }
             pNextItem = GetNextDisplayIconItem(pNextItem);
         }
-        ASSERT(pDestItem == pItem);
         if (pDestItem != pItem) {
             //Already changed
             return false;
@@ -2517,7 +2491,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
         }
 
         size_t nColumnIndex = editParam.nColumnIndex;
-        ASSERT(GetColumnId(nColumnIndex) == editParam.nColumnId);
         if (GetColumnId(nColumnIndex) != editParam.nColumnId) {
             return false;
         }
@@ -2525,7 +2498,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
     else if (editParam.listCtrlType == ListCtrlType::List) {
         //List view
         ListCtrlListViewItem* pItem = dynamic_cast<ListCtrlListViewItem*>(editParam.pItem);
-        ASSERT(pItem != nullptr);
         if (pItem == nullptr) {
             return false;
         }
@@ -2539,7 +2511,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
             }
             pNextItem = GetNextDisplayListItem(pNextItem);
         }
-        ASSERT(pDestItem == pItem);
         if (pDestItem != pItem) {
             //Already changed
             return false;
@@ -2552,7 +2523,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
         }
 
         size_t nColumnIndex = editParam.nColumnIndex;
-        ASSERT(GetColumnId(nColumnIndex) == editParam.nColumnId);
         if (GetColumnId(nColumnIndex) != editParam.nColumnId) {
             return false;
         }
@@ -2561,7 +2531,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
         //Report view
         ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(editParam.pItem);
         ListCtrlSubItem* pSubItem = dynamic_cast<ListCtrlSubItem*>(editParam.pSubItem);
-        ASSERT((pItem != nullptr) && (pSubItem != nullptr));
         if ((pItem == nullptr) || (pSubItem == nullptr)) {
             return false;
         }
@@ -2576,7 +2545,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
             }
             pNextItem = GetNextDisplayItem(pNextItem);
         }
-        ASSERT(pDestItem == pItem);
         if (pDestItem != pItem) {
             //Already changed
             return false;
@@ -2584,7 +2552,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
         if (pItem->GetSubItemIndex(pSubItem) != nColumnIndex) {
             return false;
         }
-        ASSERT(GetColumnId(nColumnIndex) == editParam.nColumnId);
         if (GetColumnId(nColumnIndex) != editParam.nColumnId) {
             return false;
         }
@@ -2595,7 +2562,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
 void ListCtrl::OnItemEditMode(ListCtrlEditParam editParam)
 {
     std::string editClass = GetRichEditClass();
-    ASSERT(!editClass.empty());
     if (editClass.empty()) {
         return;
     }

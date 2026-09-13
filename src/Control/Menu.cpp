@@ -612,7 +612,6 @@ LRESULT Menu::OnMouseRButtonDbClickMsg(const UiPoint& /*pt*/, uint32_t /*modifie
 bool Menu::ResizeMenu()
 {
     ui::Control* pRoot = GetRoot();
-    ASSERT(pRoot != nullptr);
     if (pRoot == nullptr) {
         return false;
     }
@@ -687,7 +686,6 @@ bool Menu::ResizeMenu()
 
 bool Menu::ResizeSubMenu()
 {
-    ASSERT(m_pOwner != nullptr);
     if (m_pOwner == nullptr) {
         return false;
     }
@@ -853,7 +851,6 @@ void Menu::PostInitWindow()
             //Pure-code mode: when the submenu XML template does not exist, the root node is the ListBox
             m_pListBox = dynamic_cast<ui::ListBox*>(GetRoot());
         }
-        ASSERT(m_pListBox != nullptr);
         if (m_pListBox == nullptr) {
             return;
         }
@@ -994,7 +991,6 @@ bool Menu::AddMenuItem(MenuItem* pMenuItem)
 bool Menu::AddMenuControl(Control* pControl)
 {
     //Pure-code mode: add normal controls (such as separator lines, custom rows) to the menu
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return false;
     }
@@ -1017,7 +1013,6 @@ bool Menu::AddMenuItemAt(MenuItem* pMenuItem, size_t iIndex)
     //Currently, only the first-level menu can access this interface
     ASSERT(m_pOwner == nullptr);
     ListBox* pLayoutListBox = Menu::GetLayoutListBox();
-    ASSERT(pLayoutListBox != nullptr);
     if (pLayoutListBox == nullptr) {
         return false;
     }
@@ -1093,7 +1088,6 @@ MenuItem* Menu::GetMenuItemAt(size_t iIndex) const
     //Currently, only the first-level menu can access this interface
     ASSERT(m_pOwner == nullptr);
     ListBox* pLayoutListBox = Menu::GetLayoutListBox();
-    ASSERT(pLayoutListBox != nullptr);
     if (pLayoutListBox == nullptr) {
         return nullptr;
     }
@@ -1146,7 +1140,6 @@ void MenuItem::GetAllSubMenuItem(const MenuItem* pParentElementUI,
                                        std::vector<MenuItem*>& submenuItems)
 {
     submenuItems.clear();
-    ASSERT(pParentElementUI != nullptr);
     if (pParentElementUI == nullptr) {
         return;
     }
@@ -1178,7 +1171,6 @@ void MenuItem::GetAllSubMenuControls(const MenuItem* pParentElementUI,
                                            std::vector<Control*>& submenuControls)
 {
     submenuControls.clear();
-    ASSERT(pParentElementUI != nullptr);
     if (pParentElementUI == nullptr) {
         return;
     }
@@ -1360,7 +1352,6 @@ MenuItem* MenuItem::GetSubMenuItemByName(const std::string& name) const
 bool MenuItem::ButtonUp(const ui::EventArgs& msg)
 {
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return false;
     }
@@ -1381,7 +1372,6 @@ bool MenuItem::ButtonUp(const ui::EventArgs& msg)
 bool MenuItem::MouseEnter(const ui::EventArgs& msg)
 {
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return BaseClass::MouseEnter(msg);
     }
@@ -1460,7 +1450,6 @@ bool MenuItem::CheckSubMenuItem()
 
 void MenuItem::CreateMenuWnd()
 {
-    ASSERT(m_pSubWindow == nullptr);
     if (m_pSubWindow != nullptr) {
         return;
     }

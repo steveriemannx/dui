@@ -322,7 +322,6 @@ int32_t SplitTemplate<InheritType>::CalculateControlPos(bool bHLayout, const int
                                                         Control* pFirst, const UiFixedInt& nFirstFixedInt,
                                                         const Control* pSecond) const
 {
-    ASSERT((pFirst != nullptr) && (pSecond != nullptr));
     if ((pFirst == nullptr) || (pSecond == nullptr)) {
         return 0;
     }

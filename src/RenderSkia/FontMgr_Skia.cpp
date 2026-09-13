@@ -49,7 +49,6 @@ public:
     */
     bool AddFontTypeface(const sk_sp<SkTypeface>& spTypeface)
     {
-        ASSERT(spTypeface != nullptr);
         if (spTypeface == nullptr) {
             return false;
         }
@@ -57,13 +56,11 @@ public:
         //After a successful load, add it to the manager for centralized management
         SkString fontName;
         spTypeface->getFamilyName(&fontName);
-        ASSERT(!fontName.isEmpty());
         if (fontName.isEmpty()) {
             return false;
         }
 
         std::string fontFamilyName = StringConvert::UTF8ToT(fontName.c_str());
-        ASSERT(!fontFamilyName.empty());
         if (fontFamilyName.empty()) {
             return false;
         }
@@ -228,7 +225,6 @@ uint32_t FontMgr_Skia::GetFontCount() const
 bool FontMgr_Skia::GetFontName(uint32_t nIndex, std::string& fontName) const
 {
     fontName.clear();
-    ASSERT(m_impl->m_pSkFontMgr != nullptr);
     if (m_impl->m_pSkFontMgr == nullptr) {
         return false;
     }
@@ -257,7 +253,6 @@ bool FontMgr_Skia::HasFontName(const std::string& fontName) const
         return false;
     }
 
-    ASSERT(m_impl->m_pSkFontMgr != nullptr);
     if (m_impl->m_pSkFontMgr == nullptr) {
         return false;
     }
@@ -291,18 +286,15 @@ void FontMgr_Skia::SetDefaultFontName(const std::string& fontName)
 
 bool FontMgr_Skia::LoadFontFile(const std::string& fontFilePath)
 {
-    ASSERT(!fontFilePath.empty());
     if (fontFilePath.empty()) {
         return false;
     }
 
-    ASSERT(m_impl->m_pSkFontMgr != nullptr);
     if (m_impl->m_pSkFontMgr == nullptr) {
         return false;
     }
 
     std::string fontFile = StringConvert::TToUTF8(fontFilePath); //Convert to a UTF8-format path
-    ASSERT(!fontFile.empty());
     if (fontFile.empty()) {
         return false;
     }
@@ -318,7 +310,6 @@ bool FontMgr_Skia::LoadFontFileData(const void* data, size_t length)
         return false;
     }
     sk_sp<SkData> skData = SkData::MakeWithCopy(data, length);
-    ASSERT(skData != nullptr);
     if (skData == nullptr) {
         return false;
     }
@@ -339,12 +330,10 @@ void FontMgr_Skia::ClearFontCache()
 SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
 {
     PerformanceStat statPerformance("FontMgr_Skia::CreateSkFont");
-    ASSERT(!fontInfo.m_fontName.empty());
     if (fontInfo.m_fontName.empty()) {
         return nullptr;
     }
 
-    ASSERT(fontInfo.m_fontSize != 0);
     if (fontInfo.m_fontSize == 0) {
         return nullptr;
     }
@@ -360,7 +349,6 @@ SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
         fontStyle = SkFontStyle::Italic();
     }
     sk_sp<SkFontMgr> pSkFontMgr = m_impl->m_pSkFontMgr;
-    ASSERT(pSkFontMgr != nullptr);
     if (pSkFontMgr == nullptr) {
         return nullptr;
     }
@@ -384,7 +372,6 @@ SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
 
         //Create the font using the FontMgr interface
         std::string fontName = StringConvert::TToUTF8(inFontName);
-        ASSERT(!fontName.empty());
         if (fontName.empty()) {
             continue;
         }
@@ -411,7 +398,6 @@ SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
         //Use the system default font (but correctness is not guaranteed; for example, on Windows, the font created by this interface cannot display Chinese)
         spTypeface = pSkFontMgr->legacyMakeTypeface(nullptr, fontStyle);
     }
-    ASSERT(spTypeface != nullptr);
     if (spTypeface == nullptr) {
         return nullptr;
     }

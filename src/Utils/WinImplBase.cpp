@@ -339,9 +339,6 @@ bool WindowImplBase::OnButtonClick(const EventArgs& msg)
         return true;
     }
     Control* pSender = msg.GetSender();
-    fprintf(stderr, "[WinImplBase::OnButtonClick] sender=%s\n", pSender ? pSender->GetName().c_str() : "null");
-    fflush(stderr);
-    ASSERT(pSender != nullptr);
     if (pSender == nullptr) {
         return false;
     }

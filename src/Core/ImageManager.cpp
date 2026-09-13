@@ -105,7 +105,6 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
             FilePath imageFilePath(imageFullPath);
             if (isMemoryArchive && !imageFilePath.IsAbsolutePath()) {
                 GlobalManager::Instance().MemoryResources().GetData(imageFilePath, fileData);
-                ASSERT(!fileData.empty());
                 if (fileData.empty()) {
                     //Load failed
                     return nullptr;
@@ -497,7 +496,6 @@ std::string ImageManager::GetDpiScaledPath(uint32_t dpiScale, const std::string&
     }
 
     size_t iPointPos = strPathFileName.rfind('.');
-    ASSERT(iPointPos != std::string::npos);
     if (iPointPos == std::string::npos) {
         return std::string();
     }
@@ -512,7 +510,6 @@ std::string ImageManager::GetDpiScaledPath(uint32_t dpiScale, const std::string&
 void ImageManager::AddDelayPaintData(Control* pControl, Image* pImage, const std::string& imageKey)
 {
     GlobalManager::Instance().AssertUIThread();
-    ASSERT((pControl != nullptr) && (pImage != nullptr) && !imageKey.empty());
     if ((pControl == nullptr) || (pImage == nullptr) || imageKey.empty()) {
         return;
     }
@@ -529,7 +526,6 @@ void ImageManager::RemoveDelayPaintData(Control* pControl)
 {
     GlobalManager::Instance().AssertUIThread();
     GlobalManager::Instance().AssertUIThread();
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return;
     }
@@ -567,7 +563,6 @@ void ImageManager::DelayPaintImage(const std::string& imageKey)
 {
     GlobalManager::Instance().AssertUIThread();
     GlobalManager::Instance().AssertUIThread();
-    ASSERT(!imageKey.empty());
     if (imageKey.empty()) {
         return;
     }

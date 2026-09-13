@@ -127,12 +127,10 @@ void CefControlOffScreen::ReCreateBrowser()
 {
     GlobalManager::Instance().AssertUIThread();
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return;
     }
     ASSERT(pWindow->IsWindow());
-    ASSERT(m_pBrowserHandler != nullptr);
     if (m_pBrowserHandler == nullptr) {
         return;
     }
@@ -1586,7 +1584,6 @@ void CefControlOffScreen::OnIMEStartComposition()
         ASSERT(GetWindow()->IsWindow());
         hWnd = (HWND)GetWindow()->GetWindowHandle();
     }
-    ASSERT(hWnd != nullptr);
     if (hWnd == nullptr) {
         return;
     }

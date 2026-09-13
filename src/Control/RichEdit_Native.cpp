@@ -676,7 +676,6 @@ void RichEdit::SetFontIdInternal(const std::string& fontId)
 {
     //Create the caret
     IFont* pFont = GetIFontInternal(fontId);
-    ASSERT(pFont != nullptr);
     if (pFont == nullptr) {
         return;
     }
@@ -685,7 +684,6 @@ void RichEdit::SetFontIdInternal(const std::string& fontId)
     if (pWindow != nullptr) {
         pRender = pWindow->GetRender();
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -739,7 +737,6 @@ bool RichEdit::SetFontInfo(const UiFont& fontInfo)
     if (fontInfo.m_fontSize <= 0) {
         return false;
     }
-    ASSERT(!fontInfo.m_fontName.empty());
     if (fontInfo.m_fontName.empty()) {
         return false;
     }
@@ -2121,7 +2118,6 @@ void RichEdit::ChangeCaretVisiable()
 
 void RichEdit::PaintCaret(IRender* pRender, const UiRect& /*rcPaint*/)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -2325,7 +2321,6 @@ std::string RichEdit::GetPromptTextColor() const
 
 void RichEdit::PaintPromptText(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -2450,7 +2445,6 @@ void RichEdit::AttachSelChanged(const EventCallback& callback, EventCallbackID c
 
 void RichEdit::SetZoomPercent(uint32_t nZoomPercent)
 {
-    ASSERT(nZoomPercent != 0);
     if (nZoomPercent == 0) {
         return;
     }
@@ -2688,7 +2682,6 @@ bool RichEdit::SetSpinClass(const std::string& spinClass)
             pDownButton = dynamic_cast<Button*>(m_pSpinBox->GetItemAt(1));            
         }
 
-        ASSERT((pUpButton != nullptr) && (pDownButton != nullptr));
         if ((pUpButton == nullptr) || (pDownButton == nullptr)) {
             RemoveItem(m_pSpinBox);
             m_pSpinBox = nullptr;
@@ -2762,7 +2755,6 @@ bool RichEdit::SetEnableSpin(bool bEnable, const std::string& spinClass, int32_t
 {
     bool bRet = false;
     if (bEnable) {
-        ASSERT(!spinClass.empty());
         if (spinClass.empty()) {
             return false;
         }
@@ -2872,7 +2864,6 @@ void RichEdit::StopAutoAdjustTextNumber()
 void RichEdit::SetClearBtnClass(const std::string& btnClass)
 {
     if (!btnClass.empty()) {
-        ASSERT(m_pClearButton == nullptr);
         if (m_pClearButton != nullptr) {
             return;
         }
@@ -2894,7 +2885,6 @@ void RichEdit::SetClearBtnClass(const std::string& btnClass)
 void RichEdit::SetShowPasswordBtnClass(const std::string& btnClass)
 {
     if (!btnClass.empty()) {
-        ASSERT(m_pShowPasswordButton == nullptr);
         if (m_pShowPasswordButton != nullptr) {
             return;
         }
@@ -3022,7 +3012,6 @@ bool RichEdit::GetRichTextForDraw(const std::vector<std::wstring_view>& textView
 {
     if (nStartLine != (size_t)-1) {
         if (!modifiedLines.empty()) {
-            ASSERT(modifiedLines[0] == nStartLine);
             if (modifiedLines[0] != nStartLine) {
                 return false;
             }
@@ -3035,7 +3024,6 @@ bool RichEdit::GetRichTextForDraw(const std::vector<std::wstring_view>& textView
     std::string sFontId = GetCurrentFontId();
     ASSERT(!sFontId.empty());
     IFont* pFont = GetIFontInternal(sFontId);
-    ASSERT(pFont != nullptr);
     if (pFont == nullptr) {
         return false;
     }

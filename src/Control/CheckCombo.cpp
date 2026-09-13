@@ -47,7 +47,6 @@ private:
 
 void CCheckComboWnd::InitComboWnd(CheckCombo* pOwner)
 {
-    ASSERT(pOwner != nullptr);
     if (pOwner == nullptr) {
         return;
     }
@@ -604,7 +603,6 @@ void CheckCombo::ParseAttributeList(const std::string& strList,
 
 void CheckCombo::SetAttributeList(Control* pControl, const std::string& classValue)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return;
     }

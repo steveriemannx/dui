@@ -142,7 +142,6 @@ void ScrollBox::SetPosInternally(const UiRect& rc, bool bScrollProcess)
 {
     Control::SetPos(rc);
     Layout* pLayout = GetLayout();
-    ASSERT(pLayout != nullptr);
     if (pLayout == nullptr) {
         return;
     }
@@ -562,7 +561,6 @@ bool ScrollBox::MouseLeave(const EventArgs& msg)
 
 void ScrollBox::PaintChild(IRender* pRender, const UiRect& rcPaint)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }

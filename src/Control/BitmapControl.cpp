@@ -468,7 +468,6 @@ bool BitmapControl::SetBitmapData(int32_t nWidth, int32_t nHeight, const uint8_t
     if ((pPixelBits == nullptr) || (nPixelBitsSize <= 0) || (nWidth <= 0) || (nHeight <= 0)) {
         return false;
     }
-    ASSERT(nPixelBitsSize == nHeight * nWidth * (int32_t)sizeof(uint32_t));
     if (nPixelBitsSize != nHeight * nWidth * (int32_t)sizeof(uint32_t)) {
         return false;
     }
@@ -486,7 +485,6 @@ bool BitmapControl::SetBitmapData(int32_t nWidth, int32_t nHeight, const uint8_t
             m_pBitmap.reset(pRenderFactory->CreateBitmap());
         }
     }
-    ASSERT(m_pBitmap != nullptr);
     if (m_pBitmap == nullptr) {
         return false;
     }

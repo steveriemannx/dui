@@ -96,7 +96,6 @@ void DragWindow::OnFinalMessage()
 void DragWindow::SetDragImage(const std::shared_ptr<IBitmap>& pBitmap)
 {
     Box* pBox = GetXmlRoot();
-    ASSERT(pBox != nullptr);
     if (pBox == nullptr) {
         return;
     }

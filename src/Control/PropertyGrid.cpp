@@ -282,7 +282,6 @@ void PropertyGrid::OnHeaderColumnResized()
     if ((pLeftHeaderItem == nullptr) && (pRightHeaderItem == nullptr)) {
         return;
     }
-    ASSERT(m_pTreeView != nullptr);
     if (m_pTreeView == nullptr) {
         return;
     }
@@ -513,7 +512,6 @@ PropertyGridGroup* PropertyGrid::AddGroup(const std::string& groupName,
                                           const std::string& description,
                                           size_t nGroupData)
 {
-    ASSERT(m_pTreeView != nullptr);
     if (m_pTreeView == nullptr) {
         return nullptr;
     }
@@ -557,12 +555,10 @@ void PropertyGrid::RemoveAllGroups()
 
 bool PropertyGrid::AddProperty(PropertyGridGroup* pGroup, PropertyGridProperty* pProperty)
 {
-    ASSERT((pGroup != nullptr) && (pProperty != nullptr));
     if ((pGroup == nullptr) || (pProperty == nullptr)){
         return false;
     }
     size_t nIndex = pGroup->GetChildNodeIndex(pProperty);
-    ASSERT(nIndex == Box::InvalidIndex);
     if (nIndex != Box::InvalidIndex) {
         return false;
     }

@@ -2508,7 +2508,6 @@ void RichEdit::PaintRichEdit(IRender* pRender, const UiRect& rcPaint)
 
     //Get the intersection with this control's drawing region
     const UiRect& rcDirty = GetPaintRect();
-    ASSERT(!rcDirty.IsEmpty());
     if (rcDirty.IsEmpty()) {
         return;
     }
@@ -2545,21 +2544,18 @@ void RichEdit::PaintRichEdit(IRender* pRender, const UiRect& rcPaint)
 
     //Create the DC and bitmap needed for drawing
     bool bRet = m_txDrawData.CheckCreateBitmap(GetDrawDC(), rc.Width(), rc.Height());
-    ASSERT(bRet);
     if (!bRet) {
         return;
     }
 
     HDC hDrawDC = m_txDrawData.m_hDrawDC;
     LPVOID pBitmapBits = m_txDrawData.m_pBitmapBits;
-    ASSERT((pBitmapBits != nullptr) && (hDrawDC != nullptr));
     if ((pBitmapBits == nullptr) || (hDrawDC == nullptr)) {
         return;
     }
 
     //Copy the render engine source bitmap data
     bRet = pRender->ReadPixels(rc, pBitmapBits, rc.Width() * rc.Height() * sizeof(uint32_t));
-    ASSERT(bRet);
     if (!bRet) {
         return;
     }
@@ -2899,7 +2895,6 @@ void RichEdit::ChangeCaretVisiable()
 
 void RichEdit::PaintCaret(IRender* pRender, const UiRect& /*rcPaint*/)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -2971,7 +2966,6 @@ void RichEdit::SetUTF8PromptTextId(const std::string& strTextId)
 
 void RichEdit::PaintPromptText(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3401,7 +3395,6 @@ bool RichEdit::SetSpinClass(const std::string& spinClass)
             pDownButton = dynamic_cast<Button*>(m_pSpinBox->GetItemAt(1));            
         }
 
-        ASSERT((pUpButton != nullptr) && (pDownButton != nullptr));
         if ((pUpButton == nullptr) || (pDownButton == nullptr)) {
             RemoveItem(m_pSpinBox);
             m_pSpinBox = nullptr;
@@ -3475,7 +3468,6 @@ bool RichEdit::SetEnableSpin(bool bEnable, const std::string& spinClass, int32_t
 {
     bool bRet = false;
     if (bEnable) {
-        ASSERT(!spinClass.empty());
         if (spinClass.empty()) {
             return false;
         }
@@ -3577,7 +3569,6 @@ void RichEdit::StopAutoAdjustTextNumber()
 void RichEdit::SetClearBtnClass(const std::string& btnClass)
 {
     if (!btnClass.empty()) {
-        ASSERT(m_pClearButton == nullptr);
         if (m_pClearButton != nullptr) {
             return;
         }
@@ -3599,7 +3590,6 @@ void RichEdit::SetClearBtnClass(const std::string& btnClass)
 void RichEdit::SetShowPasswordBtnClass(const std::string& btnClass)
 {
     if (!btnClass.empty()) {
-        ASSERT(m_pShowPasswordButton == nullptr);
         if (m_pShowPasswordButton != nullptr) {
             return;
         }
@@ -3830,7 +3820,6 @@ std::string RichEdit::GetFocusBottomBorderColor() const
 void RichEdit::SetEnableDragDrop(bool bEnable)
 {
     BaseClass::SetEnableDragDrop(bEnable);
-    ASSERT(m_pRichHost != nullptr);
     if (m_pRichHost == nullptr) {
         return;
     }

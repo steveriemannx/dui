@@ -9,7 +9,6 @@ namespace ui
 bool RenderRegisteredFunctions::AddJsFunction(const CefString& function_name, const CefString& frame_id,
                                               const CefRefPtr<CefV8Value>& function, bool enable_replace)
 {
-    ASSERT(!function_name.empty() && !frame_id.empty() && (function != nullptr));
     if (function_name.empty() || frame_id.empty() || (function == nullptr)) {
         return false;
     }
@@ -89,7 +88,6 @@ void RenderRegisteredFunctions::RemoveJsFunctionByFrameId(const CefString& frame
 
 void RenderRegisteredFunctions::RemoveJsFunctionByFrame(CefRefPtr<CefFrame> frame)
 {
-    ASSERT(frame != nullptr);
     if (frame == nullptr) {
         return;
     }
@@ -97,7 +95,6 @@ void RenderRegisteredFunctions::RemoveJsFunctionByFrame(CefRefPtr<CefFrame> fram
     // Each render and browser process has its own exclusive instance of this class, rather than a singleton
     // So the browser obtained here is globally unique, and all frames and contexts can be obtained through this browser
     auto browser = frame->GetBrowser();
-    ASSERT(browser != nullptr);
     if (browser == nullptr) {
         return;
     }
@@ -141,7 +138,6 @@ void RenderRegisteredFunctions::ClearAllJsFunctions()
 bool BrowserRegisteredFunctions::AddCppFunction(const CefString& function_name, int64_t browser_id,
                                                 CppFunction function, bool enable_replace)
 {
-    ASSERT(!function_name.empty() && (function != nullptr));
     if (function_name.empty() || (function == nullptr)) {
         return false;
     }

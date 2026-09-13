@@ -281,12 +281,10 @@ void AddressBar::ShowAddressEdit(bool bShow)
 
 bool AddressBar::AddSubPath(const std::string& displayName, const std::string& filePath)
 {
-    ASSERT(!filePath.empty());
     if (filePath.empty()) {
         return false;
     }
 
-    ASSERT(m_pBarBox != nullptr);
     if (m_pBarBox == nullptr) {
         return false;
     }

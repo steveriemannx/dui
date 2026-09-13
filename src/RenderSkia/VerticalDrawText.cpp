@@ -93,11 +93,9 @@ bool VerticalDrawText::CalculateTextCharBounds(const std::string& text, const Sk
     if (fFontHeight <= 0) {
         return false;
     }
-    ASSERT(pSkFont != nullptr);
     if (pSkFont == nullptr) {
         return false;
     }
-    ASSERT(skPaint != nullptr);
     if (skPaint == nullptr) {
         return false;
     }
@@ -382,27 +380,22 @@ float VerticalDrawText::CalculateDefaultCharWidth(const SkFont* pSkFont, const S
 UiRect VerticalDrawText::MeasureString(const std::string& strText, const MeasureStringParam& measureParam)
 {
     PerformanceStat statPerformance("VerticalDrawText::MeasureString");
-    ASSERT((m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return UiRect();
     }
-    ASSERT(!strText.empty());
     if (strText.empty()) {
         return UiRect();
     }
-    ASSERT(measureParam.pFont != nullptr);
     if (measureParam.pFont == nullptr) {
         return UiRect();
     }
 
     //Get the font interface
     Font_Skia* pSkiaFont = dynamic_cast<Font_Skia*>(measureParam.pFont);
-    ASSERT(pSkiaFont != nullptr);
     if (pSkiaFont == nullptr) {
         return UiRect();
     }
     const SkFont* pSkFont = pSkiaFont->GetFontHandle();
-    ASSERT(pSkFont != nullptr);
     if (pSkFont == nullptr) {
         return UiRect();
     }
@@ -451,21 +444,17 @@ void VerticalDrawText::DrawString(const std::string& strText, const DrawStringPa
     // Note: vertical text drawing does not support the following features
     // 1. Text style: DrawStringFormat::TEXT_PATH_ELLIPSIS is not supported; it is treated as DrawStringFormat::TEXT_END_ELLIPSIS
     PerformanceStat statPerformance("VerticalDrawText::DrawString");
-    ASSERT((m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return;
     }
 
-    ASSERT(!strText.empty());
     if (strText.empty()) {
         return;
     }
-    ASSERT(!drawParam.textRect.IsEmpty());
     if (drawParam.textRect.IsEmpty()) {
         return;
     }
 
-    ASSERT(drawParam.pFont != nullptr);
     if (drawParam.pFont == nullptr) {
         return;
     }
@@ -474,12 +463,10 @@ void VerticalDrawText::DrawString(const std::string& strText, const DrawStringPa
 
     //Get the font interface    
     Font_Skia* pSkiaFont = dynamic_cast<Font_Skia*>(drawParam.pFont);
-    ASSERT(pSkiaFont != nullptr);
     if (pSkiaFont == nullptr) {
         return;
     }
     const SkFont* pSkFont = pSkiaFont->GetFontHandle();
-    ASSERT(pSkFont != nullptr);
     if (pSkFont == nullptr) {
         return;
     }
@@ -542,7 +529,6 @@ void VerticalDrawText::DrawString(const std::string& strText, const DrawStringPa
                                                       fDefaultCharWidth, fFontHeight,
                                                       &columnRows, &columnWidths, &columnHeights);
 
-    ASSERT(columnRows.size() == columnWidths.size());
     if (columnRows.size() != columnWidths.size()) {
         return;
     }

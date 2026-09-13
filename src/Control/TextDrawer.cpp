@@ -19,7 +19,6 @@ void TextDrawer::SetTextChanged()
 
 void TextDrawer::UpdateTextDrawProps(uint32_t uFormat, float fSpacingMul, float fSpacingAdd, const std::string& fontId)
 {
-    ASSERT(m_pRichText != nullptr);
     if (m_pRichText == nullptr) {
         return;
     }

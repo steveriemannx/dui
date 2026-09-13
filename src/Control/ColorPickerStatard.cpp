@@ -23,12 +23,10 @@ void ColorPickerStatard::SelectColor(const UiColor& color)
 void ColorPickerStatard::Paint(IRender* pRender, const UiRect& rcPaint)
 {
     BaseClass::Paint(pRender, rcPaint);
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return;
     }
@@ -103,12 +101,10 @@ void ColorPickerStatard::DrawColorMap(IRender* pRender, const UiRect& rect)
 bool ColorPickerStatard::DrawRegularHexagon(IRender* pRender, const UiPointF& centerPt, int32_t radius,
                                             const UiColor& penColor, float penWidth, const UiColor& brushColor)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return false;
     }
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return false;
     }

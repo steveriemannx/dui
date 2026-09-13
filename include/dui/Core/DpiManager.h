@@ -30,6 +30,13 @@ public:
      */
     void InitDpiAwareness(const DpiInitParam& dpiInitParam);
 
+    /** Return the manager to the state it is in just after construction.
+     *  GlobalManager::Shutdown calls this so that a later Startup starts from a clean
+     *  slate; previously the initialised flag survived Shutdown, so DpiInitParam passed
+     *  to the second Startup was silently ignored.
+     */
+    void Reset();
+
     /** Get the DPI awareness mode of the process
      * This property is a per-process property, set once after program startup and cannot be changed afterwards
      * @return Returns the DPI awareness mode of the current process

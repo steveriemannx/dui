@@ -150,7 +150,6 @@ void Line::Paint(IRender* pRender, const UiRect& rcPaint)
         return;
     }
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return;
     }
@@ -165,12 +164,10 @@ void Line::Paint(IRender* pRender, const UiRect& rcPaint)
         fLineWidth = this->Dpi().GetScaleFloat(1);
     }
     IPen* pLinePen = pRenderFactory->CreatePen(lineColor, fLineWidth);
-    ASSERT(pLinePen != nullptr);
     if (pLinePen == nullptr) {
         return;
     }
     std::unique_ptr<IPen> spLinePen(pLinePen);
-    ASSERT(spLinePen != nullptr);
     if (spLinePen == nullptr) {
         return;
     }

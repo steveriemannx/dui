@@ -478,7 +478,6 @@ void DateTimeWnd::Clear()
 
 bool DateTimeWnd::SetSpinClass(const std::string& spinClass)
 {
-    ASSERT(m_pOwner != nullptr);
     if (m_pOwner == nullptr) {
         return false;
     }
@@ -513,7 +512,6 @@ bool DateTimeWnd::SetSpinClass(const std::string& spinClass)
             pDownButton = dynamic_cast<Button*>(m_pSpinBox->GetItemAt(1));
         }
 
-        ASSERT((pUpButton != nullptr) && (pDownButton != nullptr));
         if ((pUpButton == nullptr) || (pDownButton == nullptr)) {
             m_pOwner->RemoveItem(m_pSpinBox);
             m_pSpinBox = nullptr;

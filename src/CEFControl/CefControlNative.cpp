@@ -56,12 +56,10 @@ void CefControlNative::ReCreateBrowser()
 {
     GlobalManager::Instance().AssertUIThread();
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return;
     }
     ASSERT(pWindow->IsWindow());
-    ASSERT(m_pBrowserHandler != nullptr);
     if (m_pBrowserHandler == nullptr) {
         return;
     }

@@ -15,7 +15,6 @@ static AnimationFramePtr DecodeImage_WEBP(WebPAnimDecoder* pWebPAnimDecoder,
                                           size_t nFrameIndex,
                                           int32_t& nPrevTimestamp)
 {
-    ASSERT(pWebPAnimDecoder != nullptr);
     if (pWebPAnimDecoder == nullptr) {
         return nullptr;
     }
@@ -25,7 +24,6 @@ static AnimationFramePtr DecodeImage_WEBP(WebPAnimDecoder* pWebPAnimDecoder,
     }
 
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return nullptr;
     }
@@ -50,7 +48,6 @@ static AnimationFramePtr DecodeImage_WEBP(WebPAnimDecoder* pWebPAnimDecoder,
             pFrameData->m_nOffsetY = 0;
             pFrameData->m_bDataPending = false;
             pFrameData->m_pBitmap.reset(pRenderFactory->CreateBitmap());
-            ASSERT(pFrameData->m_pBitmap != nullptr);
             if (pFrameData->m_pBitmap == nullptr) {
                 pFrameData.reset();
             }
@@ -166,7 +163,6 @@ bool Image_WEBP::LoadImageFile(std::vector<uint8_t>& fileData,
                                const UiSize& rcMaxDestRectSize,
                                bool bAssertEnabled)
 {
-    ASSERT(!fileData.empty() || !imageFilePath.IsEmpty());
     if (fileData.empty() && imageFilePath.IsEmpty()) {
         return false;
     }
@@ -431,7 +427,6 @@ int32_t Image_WEBP::GetFrameDelayMs(uint32_t nFrameIndex)
 bool Image_WEBP::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSize*/, AnimationFrame* pAnimationFrame)
 {
     GlobalManager::Instance().AssertUIThread();
-    ASSERT(pAnimationFrame != nullptr);
     if (pAnimationFrame == nullptr) {
         return false;
     }

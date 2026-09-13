@@ -39,7 +39,6 @@ private:
 
 void ComboButtonWnd::InitComboWnd(ComboButton* pOwner, bool bActivated)
 {
-    ASSERT(pOwner != nullptr);
     if (pOwner == nullptr) {
         return;
     }
@@ -506,7 +505,6 @@ void ComboButton::ParseAttributeList(const std::string& strList,
 
 void ComboButton::SetAttributeList(Control* pControl, const std::string& classValue)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return;
     }

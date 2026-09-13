@@ -56,7 +56,6 @@ std::string StateColorMap::GetStateColor(ControlStateType stateType) const
 
 void StateColorMap::PaintStateColor(IRender* pRender, const UiRect& rcPaint, ControlStateType stateType) const
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }

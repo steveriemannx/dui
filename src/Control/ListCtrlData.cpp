@@ -23,7 +23,6 @@ ListCtrlData::ListCtrlData() :
 
 Control* ListCtrlData::CreateElement(ui::VirtualListBox* pVirtualListBox)
 {
-    ASSERT(pVirtualListBox != nullptr);
     if (pVirtualListBox == nullptr) {
         return nullptr;
     }
@@ -269,7 +268,6 @@ bool ListCtrlData::IsValidDataColumnId(size_t nColumnId) const
 
 bool ListCtrlData::AddColumn(size_t columnId)
 {
-    ASSERT((columnId != Box::InvalidIndex) && (columnId != 0));
     if ((columnId == Box::InvalidIndex) || (columnId == 0)) {
         return false;
     }
@@ -406,7 +404,6 @@ size_t ListCtrlData::GetDataItemCount() const
 
 bool ListCtrlData::SetDataItemCount(size_t itemCount)
 {
-    ASSERT(itemCount != Box::InvalidIndex);
     if (itemCount == Box::InvalidIndex) {
         return false;
     }
@@ -452,7 +449,6 @@ void ListCtrlData::UpdateNormalMode()
 
 size_t ListCtrlData::AddDataItem(size_t columnId, const ListCtrlSubItemData& dataItem)
 {
-    ASSERT(IsValidDataColumnId(columnId));
     if (!IsValidDataColumnId(columnId)) {
         return Box::InvalidIndex;
     }
@@ -484,7 +480,6 @@ size_t ListCtrlData::AddDataItem(size_t columnId, const ListCtrlSubItemData& dat
 
 bool ListCtrlData::InsertDataItem(size_t itemIndex, size_t columnId, const ListCtrlSubItemData& dataItem)
 {
-    ASSERT(IsValidDataColumnId(columnId));
     if (!IsValidDataColumnId(columnId)) {
         return false;
     }
@@ -926,7 +921,6 @@ void ListCtrlData::GetColumnCheckStatus(size_t columnId, bool& bChecked, bool& b
     if (nCount == 0) {
         return;
     }
-    ASSERT(nCount == m_rowDataList.size());
     if (nCount != m_rowDataList.size()) {
         return;
     }
@@ -1162,7 +1156,6 @@ bool ListCtrlData::GetSubItemData(size_t itemIndex, size_t columnId, ListCtrlSub
 bool ListCtrlData::SetSubItemText(size_t itemIndex, size_t columnId, const std::string& text)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1177,7 +1170,6 @@ bool ListCtrlData::SetSubItemText(size_t itemIndex, size_t columnId, const std::
 std::string ListCtrlData::GetSubItemText(size_t itemIndex, size_t columnId) const
 {
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return std::string();
@@ -1188,7 +1180,6 @@ std::string ListCtrlData::GetSubItemText(size_t itemIndex, size_t columnId) cons
 bool ListCtrlData::SetSubItemSortGroup(size_t itemIndex, size_t columnId, int32_t nSortGroup)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1203,7 +1194,6 @@ bool ListCtrlData::SetSubItemSortGroup(size_t itemIndex, size_t columnId, int32_
 int32_t ListCtrlData::GetSubItemSortGroup(size_t itemIndex, size_t columnId) const
 {
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return 0;
@@ -1214,7 +1204,6 @@ int32_t ListCtrlData::GetSubItemSortGroup(size_t itemIndex, size_t columnId) con
 bool ListCtrlData::SetSubItemUserDataN(size_t itemIndex, size_t columnId, uint64_t userDataN)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1229,7 +1218,6 @@ bool ListCtrlData::SetSubItemUserDataN(size_t itemIndex, size_t columnId, uint64
 uint64_t ListCtrlData::GetSubItemUserDataN(size_t itemIndex, size_t columnId) const
 {
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return 0;
@@ -1240,7 +1228,6 @@ uint64_t ListCtrlData::GetSubItemUserDataN(size_t itemIndex, size_t columnId) co
 bool ListCtrlData::SetSubItemUserDataS(size_t itemIndex, size_t columnId, const std::string& userDataS)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1255,7 +1242,6 @@ bool ListCtrlData::SetSubItemUserDataS(size_t itemIndex, size_t columnId, const 
 std::string ListCtrlData::GetSubItemUserDataS(size_t itemIndex, size_t columnId) const
 {
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return std::string();
@@ -1266,7 +1252,6 @@ std::string ListCtrlData::GetSubItemUserDataS(size_t itemIndex, size_t columnId)
 bool ListCtrlData::SetSubItemTextColor(size_t itemIndex, size_t columnId, const UiColor& textColor)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1282,7 +1267,6 @@ bool ListCtrlData::GetSubItemTextColor(size_t itemIndex, size_t columnId, UiColo
 {
     textColor = UiColor();
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1294,7 +1278,6 @@ bool ListCtrlData::GetSubItemTextColor(size_t itemIndex, size_t columnId, UiColo
 bool ListCtrlData::SetSubItemTextFormat(size_t itemIndex, size_t columnId, int32_t nTextFormat)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1324,7 +1307,6 @@ int32_t ListCtrlData::GetSubItemTextFormat(size_t itemIndex, size_t columnId) co
 bool ListCtrlData::SetSubItemBkColor(size_t itemIndex, size_t columnId, const UiColor& bkColor)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1340,7 +1322,6 @@ bool ListCtrlData::GetSubItemBkColor(size_t itemIndex, size_t columnId, UiColor&
 {
     bkColor = UiColor();
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1352,7 +1333,6 @@ bool ListCtrlData::GetSubItemBkColor(size_t itemIndex, size_t columnId, UiColor&
 bool ListCtrlData::IsSubItemShowCheckBox(size_t itemIndex, size_t columnId) const
 {
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1363,7 +1343,6 @@ bool ListCtrlData::IsSubItemShowCheckBox(size_t itemIndex, size_t columnId) cons
 bool ListCtrlData::SetSubItemShowCheckBox(size_t itemIndex, size_t columnId, bool bShowCheckBox)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1378,7 +1357,6 @@ bool ListCtrlData::SetSubItemShowCheckBox(size_t itemIndex, size_t columnId, boo
 bool ListCtrlData::SetSubItemCheck(size_t itemIndex, size_t columnId, bool bChecked, bool bRefresh)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1400,7 +1378,6 @@ bool ListCtrlData::GetSubItemCheck(size_t itemIndex, size_t columnId, bool& bChe
 {
     bChecked = false;
     StoragePtr pStorage = GetSubItemStorage(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1416,7 +1393,6 @@ bool ListCtrlData::GetSubItemCheck(size_t itemIndex, size_t columnId, bool& bChe
 bool ListCtrlData::SetSubItemImageId(size_t itemIndex, size_t columnId, int32_t imageId)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1445,7 +1421,6 @@ int32_t ListCtrlData::GetSubItemImageId(size_t itemIndex, size_t columnId) const
 bool ListCtrlData::SetSubItemEditable(size_t itemIndex, size_t columnId, bool bEditable)
 {
     StoragePtr pStorage = GetSubItemStorageForWrite(itemIndex, columnId);
-    ASSERT(pStorage != nullptr);
     if (pStorage == nullptr) {
         //Invalid index
         return false;
@@ -1473,7 +1448,6 @@ bool ListCtrlData::SortDataItems(size_t nColumnId, size_t nColumnIndex,
                                  ListCtrlDataCompareFunc pfnCompareFunc, void* pUserData)
 {
     StorageMap::iterator iter = m_dataMap.find(nColumnId);
-    ASSERT(iter != m_dataMap.end());
     if (iter == m_dataMap.end()) {
         return false;
     }
@@ -1494,7 +1468,6 @@ bool ListCtrlData::SortDataItems(size_t nColumnId, size_t nColumnIndex,
     for (iter = m_dataMap.begin(); iter != m_dataMap.end(); ++iter) {
         orgStorageList = iter->second; 
         StoragePtrList& storageList = iter->second;   //Modification target
-        ASSERT(storageList.size() == sortedDataList.size());
         if (storageList.size() != sortedDataList.size()) {
             return false;
         }
@@ -1624,7 +1597,6 @@ void ListCtrlData::SetSelectedElements(const std::vector<size_t>& selectedIndexs
                                        std::vector<size_t>& refreshIndexs)
 {
     refreshIndexs.clear();
-    ASSERT(IsMultiSelect());
     if (!IsMultiSelect()) {
         return;
     }
@@ -1661,7 +1633,6 @@ void ListCtrlData::SetSelectedElements(const std::vector<size_t>& selectedIndexs
 
 bool ListCtrlData::SelectAll(std::vector<size_t>& refreshIndexs)
 {
-    ASSERT(IsMultiSelect());
     if (!IsMultiSelect()) {
         return false;
     }

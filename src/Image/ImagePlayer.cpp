@@ -106,7 +106,6 @@ bool ImagePlayer::StartImageAnimation(AnimationImagePos nStartFrame, int32_t nPl
         //Play in an infinite loop
         m_nMaxPlayCount = -1;
     }
-    ASSERT((m_pImage != nullptr) && (m_pControl != nullptr) && (m_pImage->GetImageInfo() != nullptr));
     if ((m_pImage == nullptr) || (m_pControl == nullptr) || (m_pImage->GetImageInfo() == nullptr)) {
         m_bAnimationPlaying = false;
         return false;

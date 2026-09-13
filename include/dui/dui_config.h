@@ -97,7 +97,7 @@
 #endif
 
 #ifndef ASSERT_UNUSED_VARIABLE
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)
         #define ASSERT_UNUSED_VARIABLE(expr)  ASSERT(expr)
     #else
         #define ASSERT_UNUSED_VARIABLE(expr)  UNUSED_VARIABLE(expr)
@@ -115,7 +115,7 @@
     #include "dui_config_linux.h"
     #include <cassert>
 
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)
         #define ASSERT(expr)  assert(expr)
     #else
         #define ASSERT(expr)  ((void)(0))
@@ -125,7 +125,7 @@
     #include "dui_config_macos.h"
     #include <cassert>
 
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)
         #define ASSERT(expr)  assert(expr)
     #else
         #define ASSERT(expr)  ((void)(0))
@@ -135,7 +135,7 @@
     #include "dui_config_freebsd.h"
     #include <cassert>
 
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)
         #define ASSERT(expr)  assert(expr)
     #else
         #define ASSERT(expr)  ((void)(0))

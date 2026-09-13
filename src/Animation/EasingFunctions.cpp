@@ -534,7 +534,6 @@ EasingFunctions::EasingFunctions(int32_t nStartValue, int32_t nEndValue, int32_t
     m_nFrameCount(nFrameCount)
 {
     m_easingFunction = GetEasingFunction(easingFunctionType);
-    ASSERT(m_easingFunction != nullptr);
     if (m_easingFunction == nullptr) {
         m_easingFunction = easeLinear;
     }

@@ -13,7 +13,6 @@ Image_Svg::~Image_Svg()
 
 std::unique_ptr<IImage> Image_Svg::MakeImage(const std::shared_ptr<ISvgImage>& pSvgImage)
 {
-    ASSERT(pSvgImage != nullptr);
     if (pSvgImage == nullptr) {
         return nullptr;
     }

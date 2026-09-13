@@ -39,7 +39,6 @@ DateTimeWnd::~DateTimeWnd()
 bool DateTimeWnd::Init(DateTime* pOwner)
 {
     m_pOwner = pOwner;
-    ASSERT(pOwner != nullptr);
     if (pOwner == nullptr) {
         return false;
     }
@@ -318,7 +317,6 @@ HFONT DateTimeWnd::CreateHFont() const
     if (pFont == nullptr) {
         pFont = GlobalManager::Instance().Font().GetIFont("system_12", m_pOwner->Dpi());
     }
-    ASSERT(pFont != nullptr);
     if (pFont == nullptr) {
         return nullptr;
     }

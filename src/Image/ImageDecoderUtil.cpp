@@ -162,7 +162,6 @@ namespace CxImageLoader
                                     uint32_t iconSize,
                                     std::vector<UiImageData>& imageData)
     {
-        ASSERT(!fileData.empty());
         if (fileData.empty()) {
             return false;
         }

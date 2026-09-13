@@ -450,7 +450,6 @@ template<typename T>
 bool ControlDragableT<T>::GetItemsValidRect(UiRect& itemsValidRect) const
 {
     const Box* pParent = this->GetParent();
-    ASSERT(pParent != nullptr);
     if (pParent == nullptr) {
         return false;
     }
@@ -947,7 +946,6 @@ std::shared_ptr<IBitmap> ControlDragableT<T>::CreateDragoutImage()
         }
         render.reset(pRenderFactory->CreateRender(spRenderDpi));
     }
-    ASSERT(render != nullptr);
     if(render == nullptr) {
         return nullptr;
     }

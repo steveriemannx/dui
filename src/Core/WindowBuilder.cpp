@@ -241,7 +241,8 @@ bool WindowBuilder::ParseXmlData(const std::string& xmlFileData, const FilePath&
         isLoaded = result.status == pugi::status_ok;
     }
     if (!isLoaded) {
-        ASSERT(!"WindowBuilder::ParseXmlData load xmlFileData failed!");
+        //No assert: malformed XML is input, not a programming error, and this is the
+        //path that reports it.
         return false;
     }
     m_xmlFilePath = xmlFilePath;
@@ -260,7 +261,8 @@ bool WindowBuilder::ParseXmlData(const std::vector<unsigned char>& xmlFileData, 
                                                        pugi::parse_default, encoding);
     bool isLoaded = result.status == pugi::status_ok;
     if (!isLoaded) {
-        ASSERT(!"WindowBuilder::ParseXmlData load xmlFileData failed!");
+        //No assert: malformed XML is input, not a programming error, and this is the
+        //path that reports it.
         return false;
     }
     m_xmlFilePath = xmlFilePath;
@@ -337,7 +339,6 @@ bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& wi
 Control* WindowBuilder::CreateControls(Window* pWindow, CreateControlCallback pCallback, Box* pParent, Box* pUserDefinedBox)
 {
     //Validate the window: it must exist, otherwise features such as DPI adaptation will fail, resulting in incorrect layout
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return nullptr;
     }
@@ -350,7 +351,6 @@ Control* WindowBuilder::CreateControls(Window* pWindow, CreateControlCallback pC
 
     m_createControlCallback = pCallback;
     pugi::xml_node root = m_xml->root().first_child();
-    ASSERT(!root.empty());
     if (root.empty()) {
         return nullptr;
     }
@@ -408,12 +408,10 @@ Control* WindowBuilder::CreateControls(Window* pWindow, CreateControlCallback pC
 bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAttributes)
 {
     pugi::xml_node root = m_xml->root().first_child();
-    ASSERT(!root.empty());
     if (root.empty()) {
         return false;
     }
     std::string strClass = root.name();
-    ASSERT(strClass == "Window");
     if (strClass != "Window") {
         return false;
     }
@@ -584,7 +582,10 @@ bool WindowBuilder::ParseWindowCreateAttributes(WindowCreateAttributes& createAt
 
 void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node& root) const
 {
-    ASSERT((pWindow != nullptr) && pWindow->IsWindow());
+    //Only a null window is a programming error. A Window that exists but has no
+    //native window yet is allowed: CreateBox can be called on one, and the early
+    //return below is how that case is meant to behave.
+    ASSERT(pWindow != nullptr);
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return;
     }
@@ -917,7 +918,10 @@ void WindowBuilder::ParseWindowAttributes(Window* pWindow, const pugi::xml_node&
 
 void WindowBuilder::ParseWindowShareAttributes(Window* pWindow, const pugi::xml_node& root)
 {
-    ASSERT((pWindow != nullptr) && pWindow->IsWindow());
+    //Only a null window is a programming error. A Window that exists but has no
+    //native window yet is allowed: CreateBox can be called on one, and the early
+    //return below is how that case is meant to behave.
+    ASSERT(pWindow != nullptr);
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return;
     }
@@ -1159,7 +1163,6 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
                     }
                 }
             }
-            ASSERT(!sourceXmlFilePath.IsEmpty());
             if (sourceXmlFilePath.IsEmpty()) {
                 continue;
             }
@@ -1273,7 +1276,6 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
         // Because some attributes are related to the parent window, such as selected, it must be added to the parent window first
         if (pParent != nullptr && strClass != DUI_CTR_TREENODE) {
             Box* pContainer = dynamic_cast<Box*>(pParent);
-            ASSERT(pContainer != nullptr);
             if (pContainer == nullptr) {
                 return nullptr;
             }
@@ -1311,7 +1313,6 @@ bool WindowBuilder::ParseRichTextXmlText(const std::string& xmlText, Control* pC
         root = doc.root().first_child();
     }
     rootName = root.name();
-    ASSERT(rootName == DUI_CTR_RICHTEXT);
     if (rootName != DUI_CTR_RICHTEXT) {
         return false;
     }
@@ -1320,7 +1321,6 @@ bool WindowBuilder::ParseRichTextXmlText(const std::string& xmlText, Control* pC
 
 bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, Control* pControl, RichTextSlice* pTextSlice)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return false;
     }
@@ -1354,7 +1354,6 @@ bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, Control*
 
 bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, RichTextImpl* pRichTextImpl, RichTextSlice* pTextSlice)
 {
-    ASSERT(pRichTextImpl != nullptr);
     if (pRichTextImpl == nullptr) {
         return false;
     }
@@ -1431,7 +1430,6 @@ bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, RichText
 
 void WindowBuilder::AttachXmlEvent(bool bBubbled, const pugi::xml_node& node, Control* pParent)
 {
-    ASSERT(pParent != nullptr);
     if (pParent == nullptr) {
         return;
     }
@@ -1498,7 +1496,6 @@ bool WindowBuilder::ParseWindowAttributes(std::map<std::string, std::string>& wi
         return false;
     }
     pugi::xml_node root = m_xml->root().first_child();
-    ASSERT(!root.empty());
     if (root.empty()) {
         return false;
     }

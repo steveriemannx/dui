@@ -190,7 +190,6 @@ int32_t MenuBar::InsertTopMenu(int32_t nMenuIndex,
                                const std::string& menuTextButtonClass,
                                const std::string& menuTextButtonAttributes)
 {
-    ASSERT(!(menuText.empty() && menuTextId.empty()) && !menuXmlPath.empty());
     if ((menuText.empty() && menuTextId.empty()) || menuXmlPath.empty()) {
         return -1;
     }
@@ -373,12 +372,10 @@ void MenuBar::OnMenuMouseButtonUp(MenuBarButton* /*pButton*/, const EventArgs& /
 
 void MenuBar::ShowPopupMenu(MenuBarButton* pButton)
 {
-    ASSERT(pButton != nullptr);
     if (pButton == nullptr) {
         return;
     }
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return;
     }
@@ -391,7 +388,6 @@ void MenuBar::ShowPopupMenu(MenuBarButton* pButton)
             topMenuData = menuData;
         }
     }
-    ASSERT(bFoundMenu);
     if (!bFoundMenu) {
         return;
     }

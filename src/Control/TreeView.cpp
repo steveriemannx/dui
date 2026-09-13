@@ -387,11 +387,9 @@ bool TreeNode::AddChildNode(TreeNode* pTreeNode)
 
 bool TreeNode::AddChildNodeAt(TreeNode* pTreeNode, const size_t iIndex)
 {
-    ASSERT(pTreeNode != nullptr);
     if (pTreeNode == nullptr) {
         return false;
     }
-    ASSERT(m_pTreeView != nullptr);
     if (m_pTreeView == nullptr) {
         return false;
     }
@@ -399,7 +397,6 @@ bool TreeNode::AddChildNodeAt(TreeNode* pTreeNode, const size_t iIndex)
     if (iIndex > m_aTreeNodes.size()) {
         return false;
     }
-    ASSERT(std::find(m_aTreeNodes.begin(), m_aTreeNodes.end(), pTreeNode) == m_aTreeNodes.end());
     if (std::find(m_aTreeNodes.begin(), m_aTreeNodes.end(), pTreeNode) != m_aTreeNodes.end()) {
         return false;
     }

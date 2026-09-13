@@ -261,7 +261,6 @@ void AnimationManager::InitAppearAnimationList(std::vector<AnimationType>& anima
 void AnimationManager::Appear()
 {
     //Trigger the control animation only when the visibility property changes
-    ASSERT(m_pControl != nullptr);
     if (m_pControl == nullptr) {
         return;
     }
@@ -307,7 +306,6 @@ void AnimationManager::Appear()
 void AnimationManager::Disappear()
 {
     bool handled = false;
-    ASSERT(m_pControl != nullptr);
     if (m_pControl == nullptr) {
         return;
     }

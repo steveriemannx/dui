@@ -181,7 +181,6 @@ void ListCtrlIconView::Refresh(bool bSync)
 
 Control* ListCtrlIconView::CreateDataItem()
 {
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return nullptr;
     }
@@ -203,7 +202,6 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
                                     const ListCtrlItemData& itemData,
                                     const std::vector<ListCtrlSubItemData2Pair>& subItemList)
 {
-    ASSERT((pControl != nullptr) && (m_pListCtrl != nullptr));
     if ((pControl == nullptr) || (m_pListCtrl == nullptr)) {
         return false;
     }
@@ -224,14 +222,12 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
         nImageId = itemData.nImageId;
     }
     ListCtrlIconViewItem* pViewItem = dynamic_cast<ListCtrlIconViewItem*>(pControl);
-    ASSERT(pViewItem != nullptr);
     if (pViewItem == nullptr) {
         return false;
     }
 
     ListCtrlIcon* pItemImage = dynamic_cast<ListCtrlIcon*>(pViewItem->GetItemAt(0));
     ListCtrlLabel* pItemLabel = dynamic_cast<ListCtrlLabel*>(pViewItem->GetItemAt(1));
-    ASSERT((pItemImage != nullptr) && (pItemLabel != nullptr));
     if ((pItemImage == nullptr) || (pItemLabel == nullptr)) {
         return false;
     }

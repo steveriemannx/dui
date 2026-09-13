@@ -1,9 +1,11 @@
 # dui Modernization Assessment
 
-**Status:** assessment complete, no remediation started
-**Baseline:** branch `production`, commit `a353844b`
-**Date:** 2026-09-13
+**Status:** assessment complete; the string-model work (§1.3) has since been started
+**Baseline:** assessed at `a353844b`; status updated at `574e59a7` / `eaa70572`
+**Date:** 2026-09-13 (revised)
 **Scope:** C++ language modernization, pointer/ownership model, CMake modernization
+**Companion documents:** [`production.md`](production.md) — production readiness;
+[`string.md`](string.md) — the string-encoding question in full
 
 ## Verdict
 
@@ -18,6 +20,18 @@ Three separate questions were asked. They have three different answers.
 The single most important finding: **these three goals are mostly independent, and the highest-value work is not the work that looks most like "modernization."** Converting 200,000 lines to smart pointers would be the largest and riskiest change on this list, and it would not fix a single known defect. Several much smaller changes would.
 
 Scale, for calibrating every estimate below: the library is **~209,000 lines** (68k headers, 141k implementation) across 318 headers and 275 source files; examples add another ~60,000 lines.
+
+### Revision note
+
+Two things in the original version needed correcting, and both are recorded here
+rather than quietly edited out:
+
+- **§1.3 recommended unifying on `char8_t`/`std::u8string` as one of two options.**
+  That is wrong — `u8string` is a dead end, and §1.3 now says so. See §1.6.
+- **The estimated cost of the string migration was too pessimistic.** It was written
+  as "3,485 `DUI_T` sites, 182 files, plus the public API surface", implying a
+  large, delicate refactor. The actual mechanical change turned out to be **two
+  lines of definition**; §1.6 gives the measured result.
 
 ---
 
@@ -69,7 +83,25 @@ That single design decision cascades:
 4. It is a significant share of the **~1,200 C-style casts**, because the Win32 parameter model (`WPARAM`/`LPARAM`/`MAKEWORD`/`GET_X_LPARAM`) was rebuilt in `include/dui/dui_config_macos.h:14-41` to make the dual-type scheme work.
 5. That in turn forces `dui_config_macos.h:35-36` to pull `<Carbon/Carbon.h>` into a cross-platform public header.
 
-**Implication:** the correct "first cut" for C++ modernization is the string model — unify on UTF-8 internally (`char8_t`/`std::u8string`) or UTF-16, and convert only at the Win32 boundary. That one change makes `DUI_T`, the `WCHAR_T_IS_*` detection block, the six unused `*StringView` typedefs, and a large fraction of the C-style casts all disappear together.
+**Implication:** the correct "first cut" for C++ modernization is the string model —
+unify the internal encoding, and convert only at the platform boundary. That one change
+makes `DUI_T`, the `WCHAR_T_IS_*` detection block, the six unused `*StringView`
+typedefs, and a large fraction of the C-style casts all disappear together.
+
+**Correction to the original text:** this paragraph used to offer
+`char8_t`/`std::u8string` as one of the two unification targets. That was wrong, and
+the mistake is worth spelling out because it is the obvious-looking choice:
+
+| Claim | Reality |
+|---|---|
+| It gives you type-safe UTF-8 | **It does not.** `char` and `char8_t` "maintain exactly the same set of invariants — the empty set"; even `u8"text"` is not guaranteed UTF-8 and can vary translation unit by translation unit. |
+| The ecosystem will adopt it | **It has not.** A GitHub code search cited in P2728 found ~15.3 M `std::string` references against ~6.7 k `std::u8string` — roughly 2300:1, six years after C++20. |
+| It interoperates | **It does not.** No system API takes `char8_t` "and likely never will be", and `std::print`/streams do not support it. P1747R0 is literally titled *"Don't use `char8_t` and `std::u8string` yet"*. |
+
+So the target is `std::string` holding UTF-8. That is a **convention, not a type
+guarantee** — nothing enforces it — which is exactly why the boundary discipline in
+`string.md` matters more than the type choice does. §1.6 has the measured result of
+doing it.
 
 ### 1.4 A concrete correctness risk, not just a style question
 
@@ -99,6 +131,72 @@ The flag looks inherited from Chromium/Skia build conventions, where such trade-
 | Range-for where a classic loop adds nothing | ~530 classic loops remain | Readability, not correctness |
 
 None of these change behaviour, and each is reviewable in isolation.
+
+### 1.6 The string migration, measured
+
+Executed on branch `utf8string`, commit `eaa70572`. Replaces the estimate this
+document originally gave.
+
+**The scale is misleading in one direction and honest in another.**
+
+| | |
+|---|---|
+| Files changed | **685** |
+| `DString` / `DStringA` / `DStringW` occurrences rewritten | ~4,033 |
+| `DUI_T(...)` unwrapped | ~29,164 |
+| **Lines of definition actually written** | **a few** |
+
+That last row is the point. The whole migration is a handful of lines in two headers.
+(`DUI_T` and `DString` were separate blocks; shown together here for clarity.)
+
+```cpp
+// dui_string.h -- before, the string type
+#ifdef DUI_UNICODE
+    typedef std::wstring DString;
+#else
+    typedef std::string  DString;
+#endif
+// dui_string.h -- before, the literal macro
+#if !defined(DUI_T)
+    #if defined (DUI_UNICODE)
+        #define DUI_T(x)  L##x
+    #else
+        #define DUI_T(x)  x
+    #endif
+#endif
+
+// after: one typedef, no macro
+typedef std::string DString;
+```
+
+Everything else is consequences. The 34,000 site rewrites are mechanical; the real
+work is the fallout, and the fallout is **platform-specific**.
+
+**What the fallout actually was:**
+
+| Platform | Effect of the change |
+|---|---|
+| macOS / Linux / FreeBSD | **None.** `DString` was already `std::string` there — provably a no-op. |
+| Windows | Every place that relied on `DString` being `std::wstring` breaks. |
+
+The macOS result is verified, not assumed: full build clean, `ctest` 4/4, and a
+screenshot of the render example identical to the pre-change build **pixel for pixel**.
+
+**Windows: partially done, unverified.** No Windows host was reachable. Roughly ten
+boundary sites were found by reading (`TToLocal` sites that had silently become
+real ANSI conversions, two `TCHAR`-to-`std::string` assignments, one `DTM_SETFORMAT`
+passed a narrow format string) and fixed. Not one was compiled. More remain, and the
+only way to enumerate them is a Windows build.
+
+**The transferable lesson:** the mechanical size of a refactor is a poor guide to its
+risk. This one touched 685 files and was safe; it also introduced a Windows regression
+in a file that never appears in the diff as "interesting", on a platform that cannot be
+built. The risk sits at the *platform boundary*, and its magnitude is invisible from
+the development machine.
+
+See [`string.md`](string.md) for the encoding decision itself, the alternative
+(`u16string`) that was considered and rejected, and the boundary discipline that has
+to accompany either choice.
 
 ---
 
@@ -236,6 +334,12 @@ The third is architectural: **55 examples each call `project()` and re-include t
 
 Ordered by value per unit of risk. Note that the top items are small.
 
+**As of this revision, none of Tiers 1–2 has been started.** The work that has been
+done — the render path, and the string model in Tier 3 — was done because it was a
+prerequisite for a decision, not because it was next in line. **The small items at the
+top of this list are still the ones with the best ratio of value to effort, and they
+have been available since the assessment was written.**
+
 **Tier 1 — small, safe, real payoff**
 
 | # | Change | Scale |
@@ -257,17 +361,23 @@ Ordered by value per unit of risk. Note that the top items are small.
 
 **Tier 3 — large, needs a decision and a budget**
 
-12. **The string model unification.** This is the highest-leverage C++ change (§1.3) and also the largest single one — 3,485 `DUI_T` sites, 182 files, plus the public API surface. It should be a deliberate, versioned breaking change, not a drive-by refactor.
-13. Concepts/`requires` for the template layer (390 `template<`, currently constrained by 6 `enable_if`s).
-14. Ranges and `<format>` adoption — genuinely optional; do it incrementally as files are touched.
+12. **The string model unification.** ~~The largest single item.~~ **Executed** — see
+    §1.6. What remains is the Windows half, which is unverified and needs a Windows
+    build to finish. **Do not merge branch `utf8string` until that passes.**
+13. ☐ Concepts/`requires` for the template layer (390 `template<`, currently
+    constrained by 6 `enable_if`s). Note that `std::string_view` and `constexpr`
+    literals — the two things §1.3 said the string model was blocking — are now
+    unblocked as a side effect of item 12.
+14. ☐ Ranges and `<format>` adoption — genuinely optional; do it incrementally as
+    files are touched.
 
 **Not recommended:** a whole-tree `unique_ptr` conversion. See §2.6 for why the cost lands where the benefit is not, and §2.4 for why it would not fix the bug motivating it.
 
 ---
 
-## Appendix: method
+## Appendix: methodology and corrections
 
-Three parallel surveys — C++ language census, pointer/ownership analysis, CMake census — over the tree at `a353844b`, followed by direct verification of each load-bearing claim. Verified by reading source in this session:
+Three parallel surveys — C++ language census, pointer/ownership analysis, CMake census — over the tree at `a353844b`, followed by direct verification of each load-bearing claim. Verified by reading source:
 
 - `Layout.h:110,117` `std::vector<Control*>` public virtual signatures (106 sites repo-wide)
 - `Box.h:249` / `Box.cpp:24,507,526` `m_bAutoDestroyChild` runtime semantics
@@ -277,4 +387,27 @@ Three parallel surveys — C++ language census, pointer/ownership analysis, CMak
 
 All counts are `grep`-based token or line counts and are order-of-magnitude accurate, not exact; where a number is load-bearing it is cited with its file and line. Comment text was manually excluded from counts in ambiguous categories (`concept`, `requires`, `final`).
 
-Known limitation: **no Windows host was available.** All Windows-specific claims are from reading code, not from building or running.
+### Corrections made in this revision
+
+Recorded so they are not re-derived:
+
+1. **`u8string` was offered as a unification target (§1.3).** Wrong — it is not
+   type-safe, not interoperable, and not adopted. Corrected in place, with evidence.
+2. **The string migration was estimated as a large, delicate refactor.** It is two
+   lines of definition plus platform fallout. Corrected in §1.6 with measurements.
+3. **The Windows limitation was described as a survey limitation.** It is a standing
+   condition of the project, with demonstrated consequences — see the Windows note in
+   [`production.md`](production.md).
+
+### On the counts in this document
+
+Several figures here come from surveys rather than from the compiler, and one was
+caught being wrong in the other direction: an early count of platform conditionals
+inside `_Windows`-suffixed files returned zero because of a shell-globbing error, not
+because none existed. **Treat every count here as an order of magnitude, and re-measure
+before acting on one.** The figures that were checked against the compiler — the
+`-fno-threadsafe-statics` flag, the `-std=` level, the absence of `_DEBUG` — are the
+ones to trust.
+
+Known limitation, unchanged: **no Windows host was available.** All Windows-specific
+claims are from reading code, not from building or running.

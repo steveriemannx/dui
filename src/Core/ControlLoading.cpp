@@ -60,7 +60,6 @@ ControlLoading::~ControlLoading()
 
 bool ControlLoading::SetLoadingAttribute(const std::string& loadingAttribute)
 {
-    ASSERT(!m_bIsLoading);
     if (m_bIsLoading) {
         return false;
     }
@@ -137,7 +136,6 @@ bool ControlLoading::InitAttribute(LoadingAttribute& loadingAttribute, const std
 
 void ControlLoading::PaintLoading(IRender* pRender, const UiRect& rcPaint)
 {
-    ASSERT((pRender != nullptr) && (m_pControl != nullptr));
     if ((pRender == nullptr) || (m_pControl == nullptr)){
         return;
     }
@@ -293,7 +291,6 @@ bool ControlLoading::StartLoading(int32_t nIntervalMs, int32_t nMaxCount)
     if (m_bIsLoading) {
         StopLoading();
     }
-    ASSERT(m_pControl != nullptr);
     if (m_pControl == nullptr) {
         return false;
     }
@@ -301,12 +298,10 @@ bool ControlLoading::StartLoading(int32_t nIntervalMs, int32_t nMaxCount)
     m_pAnimationControl = nullptr;
     m_nCallbackCount = 0;
     if (m_pLoadingBox == nullptr) {        
-        ASSERT(!m_pLoadingAttribute->m_sXmlPath.empty());
         if (m_pLoadingAttribute->m_sXmlPath.empty()) {
             return false;
         }
         Box* pLoadingBox = GlobalManager::Instance().CreateBox(m_pControl->GetWindow(), FilePath(m_pLoadingAttribute->m_sXmlPath.c_str()));
-        ASSERT(pLoadingBox != nullptr);
         if (pLoadingBox == nullptr) {
             return false;
         }

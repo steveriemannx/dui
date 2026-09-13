@@ -107,12 +107,16 @@ ${_gn_extra}
             file(MAKE_DIRECTORY "${DUI_SKIA_LIB_PATH_RELEASE}")
             file(WRITE "${DUI_SKIA_LIB_PATH_RELEASE}/args.gn" "${GN_ARGS_COMMON}is_debug = false\n")
         else()
-            set(_is_debug false)
-            if(DUI_BUILD_TYPE STREQUAL "debug")
-                set(_is_debug true)
-            endif()
+            # is_debug is always false, matching the multi-config branch above and for
+            # the same reason. It is not merely a preference: skia's own BUILDCONFIG.gn
+            # contains `assert(!(is_debug && is_official_build))`, and GN_ARGS_COMMON
+            # sets is_official_build = true, so writing is_debug = true here made
+            # `gn gen` abort -- a Debug build of dui on macOS/Linux did not work at all.
+            # The dui targets still build with -g and no optimisation; only Skia is
+            # release-grade, which is the usual arrangement when debugging against a
+            # prebuilt dependency.
             file(MAKE_DIRECTORY "${DUI_SKIA_LIB_PATH}")
-            file(WRITE "${DUI_SKIA_LIB_PATH}/args.gn" "${GN_ARGS_COMMON}is_debug = ${_is_debug}\n")
+            file(WRITE "${DUI_SKIA_LIB_PATH}/args.gn" "${GN_ARGS_COMMON}is_debug = false\n")
         endif()
     endif()
 endfunction()

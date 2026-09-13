@@ -79,7 +79,6 @@ ToolTip::TImpl::~TImpl()
 
 void ToolTip::TImpl::SetMouseTracking(const WindowBase* pParentWnd, bool bTracking)
 {
-    ASSERT(pParentWnd != nullptr);
     if (pParentWnd == nullptr) {
         return;
     }
@@ -101,7 +100,6 @@ void ToolTip::TImpl::ShowToolTip(const WindowBase* pParentWnd,
                                  const UiPoint& trackPos,
                                  const std::string& text)
 {
-    ASSERT(pParentWnd != nullptr);
     if (pParentWnd == nullptr) {
         return;
     }

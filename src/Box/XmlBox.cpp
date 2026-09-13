@@ -138,7 +138,6 @@ bool XmlBox::LoadXmlData(const FilePath& xmlPath)
     }
     bool bRet = false;
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return bRet;
     }

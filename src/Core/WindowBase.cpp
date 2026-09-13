@@ -239,7 +239,6 @@ WindowBase* WindowBase::GetParentWindow() const
 
 bool WindowBase::SetParentWindow(WindowBase* pParentWindow)
 {
-    ASSERT((pParentWindow != nullptr) && pParentWindow->IsWindow());
     if ((pParentWindow == nullptr) || !pParentWindow->IsWindow()) {
         return false;
     }
@@ -259,7 +258,6 @@ bool WindowBase::IsChildWindow() const
 
 void WindowBase::InitWindowBase()
 {
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return;
     }
@@ -603,7 +601,6 @@ const DpiManager& WindowBase::Dpi() const
 
 bool WindowBase::ChangeDisplayScale(uint32_t nNewDisplayScaleFactor, bool bDisableDpiAware)
 {
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return false;
     }

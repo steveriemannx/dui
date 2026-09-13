@@ -158,15 +158,12 @@ void RichEditData::UnionRectF(UiRectF& rect, const UiRectF& r) const
 UiRect RichEditData::EstimateTextDisplayBounds(const UiRect& rcAvailable)
 {
     UiRect rect;
-    ASSERT(m_pRender != nullptr);
     if (m_pRender == nullptr) {
         return rect;
     }
-    ASSERT(m_pRenderFactory != nullptr);
     if (m_pRenderFactory == nullptr) {
         return rect;
     }
-    ASSERT(m_pRichText != nullptr);
     if (m_pRichText == nullptr) {
         return rect;
     }
@@ -357,15 +354,12 @@ void RichEditData::CalcTextRects()
     }
     m_rcTextRect.Clear();
 
-    ASSERT(m_pRender != nullptr);
     if (m_pRender == nullptr) {
         return;
     }
-    ASSERT(m_pRenderFactory != nullptr);
     if (m_pRenderFactory == nullptr) {
         return;
     }
-    ASSERT(m_pRichText != nullptr);
     if (m_pRichText == nullptr) {
         return;
     }
@@ -448,13 +442,11 @@ void RichEditData::CalcTextRects(size_t nStartLine,
     if (nStartLine != (size_t)-1) {
         ASSERT(!modifiedLines.empty() || !deletedLines.empty());
         if (!modifiedLines.empty()) {
-            ASSERT(modifiedLines[0] == nStartLine);
             if (modifiedLines[0] != nStartLine) {
                 nStartLine = (size_t)-1;
             }
         }
         else if (!deletedLines.empty()) {
-            ASSERT(deletedLines[0] == nStartLine);
             if (deletedLines[0] != nStartLine) {
                 nStartLine = (size_t)-1;
             }
@@ -490,15 +482,12 @@ void RichEditData::CalcTextRects(size_t nStartLine,
         }
     }
 
-    ASSERT(m_pRender != nullptr);
     if (m_pRender == nullptr) {
         return;
     }
-    ASSERT(m_pRenderFactory != nullptr);
     if (m_pRenderFactory == nullptr) {
         return;
     }
-    ASSERT(m_pRichText != nullptr);
     if (m_pRichText == nullptr) {
         return;
     }
@@ -1354,14 +1343,12 @@ void RichEditData::UpdateRowInfo(size_t nDrawStartLineIndex)
     float fLastRowHeight = 0.0f;   //The row height of this row
     float fLastBottomValue = 0.0f; //The bottom value of the previous row
     for (; nLineIndex < nLineCount; ++nLineIndex) {
-        ASSERT(lineTextInfoList[nLineIndex] != nullptr);
         if (lineTextInfoList[nLineIndex] == nullptr) {
             continue;
         }
         const size_t nLineRowCount = lineTextInfoList[nLineIndex]->m_rowInfo.size();
         ASSERT(nLineRowCount > 0);
         for (size_t nLineRowIndex = 0; nLineRowIndex < nLineRowCount; ++nLineRowIndex) {
-            ASSERT(lineTextInfoList[nLineIndex]->m_rowInfo[nLineRowIndex] != nullptr);
             if (lineTextInfoList[nLineIndex]->m_rowInfo[nLineRowIndex] == nullptr) {
                 continue;
             }
@@ -2862,7 +2849,6 @@ bool RichEditData::FindRichText(bool bMatchCase, bool bMatchWholeWord, bool bFin
             }
             size_t nLastPos = nPos;
             nPos = bFindDown ? text.find(findTextW, nPos + 1) : text.rfind(findTextW, nPos - 1);
-            ASSERT(nLastPos != nPos);
             if (nLastPos == nPos) {
                 //Avoid an infinite loop
                 break;

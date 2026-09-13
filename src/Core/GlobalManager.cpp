@@ -113,7 +113,8 @@ bool GlobalManager::Startup(const ResourceParam& resParam,
                             DpiInitParam dpiInitParam,
                             const CreateControlCallback& callback)
 {
-    ASSERT(m_renderFactory == nullptr);
+    //No assert that startup has not run yet: calling Startup twice is an error the
+    //caller is expected to be able to detect, and the check below reports it.
     if (m_renderFactory != nullptr) {
         return false;
     }
@@ -164,7 +165,6 @@ bool GlobalManager::Startup(const ResourceParam& resParam,
     //The Skia render engine implementation
     m_renderFactory = std::make_unique<RenderFactory_Skia>();    
 
-    ASSERT(m_renderFactory != nullptr);
     if (m_renderFactory == nullptr) {
         return false;
     }
@@ -213,8 +213,9 @@ void GlobalManager::Shutdown()
     
     m_renderFactory.reset();
     m_renderFactory = nullptr;
+    m_dpiManager.Reset();
     m_pfnCreateControlCallbackList.clear();
-    m_globalClass.clear();    
+    m_globalClass.clear();
     m_dwUiThreadId = std::thread::id();
     m_resourcePath.Clear();
     m_languagePath.Clear();
@@ -239,10 +240,6 @@ void GlobalManager::Shutdown()
 bool GlobalManager::StopInnerThread(int32_t nThreadIdentifier)
 {
     AssertUIThread();
-    ASSERT((nThreadIdentifier == ui::kThreadWorker)  ||
-           (nThreadIdentifier == ui::kThreadNetwork) ||
-           (nThreadIdentifier == ui::kThreadImage1)  ||
-           (nThreadIdentifier == ui::kThreadImage2));
     if ((nThreadIdentifier != ui::kThreadWorker)  &&
         (nThreadIdentifier != ui::kThreadNetwork) &&
         (nThreadIdentifier != ui::kThreadImage1)  &&
@@ -265,10 +262,6 @@ bool GlobalManager::StopInnerThread(int32_t nThreadIdentifier)
 bool GlobalManager::StartInnerThread(int32_t nThreadIdentifier)
 {
     AssertUIThread();
-    ASSERT((nThreadIdentifier == ui::kThreadWorker)  ||
-           (nThreadIdentifier == ui::kThreadNetwork) ||
-           (nThreadIdentifier == ui::kThreadImage1)  ||
-           (nThreadIdentifier == ui::kThreadImage2));
     if ((nThreadIdentifier != ui::kThreadWorker)  &&
         (nThreadIdentifier != ui::kThreadNetwork) &&
         (nThreadIdentifier != ui::kThreadImage1)  &&
@@ -363,7 +356,6 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
     FilePath strResourcePath = resParam.resourcePath;
     if (resParam.GetResType() == ResourceType::kLocalFiles) {
         //In the form of local files, all resources exist as local files
-        ASSERT(!strResourcePath.IsEmpty());
         if (strResourcePath.IsEmpty()) {
             return false;
         }
@@ -373,7 +365,8 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
         const MemoryResParam& param = static_cast<const MemoryResParam&>(resParam);
         bool bResOpenOk = MemoryResources().Open(param.pData, param.nSize);
         if (!bResOpenOk) {
-            ASSERT(!"Open embedded resources failed!");
+            //No assert: the check above is the contract, and a bad resource blob
+            //is exactly what it exists to report.
             return false;
         }
     }
@@ -451,7 +444,6 @@ bool GlobalManager::ReloadLanguage(const FilePath& languagePath,
                                    bool bInvalidate)
 {
     AssertUIThread();
-    ASSERT(!languageFileName.empty());
     if (languageFileName.empty()) {
         return false;
     }
@@ -516,7 +508,6 @@ bool GlobalManager::GetLanguageList(std::vector<std::pair<std::string, std::stri
                                     const std::string& languageNameID) const
 {
     FilePath languagePath = GetLanguagePath();
-    ASSERT(!languagePath.IsEmpty());
     if (languagePath.IsEmpty()) {
         return false;
     }
@@ -649,7 +640,6 @@ FilePath GlobalManager::FindExistsResFullPath(const FilePath& windowResPath,
 {
     bLocalPath = true;
     bResPath = true;
-    ASSERT(!resPath.IsEmpty());
     if (resPath.IsEmpty()) {
         return resPath;
     }
@@ -861,7 +851,6 @@ WindowManager& GlobalManager::Windows()
 
 Box* GlobalManager::CreateBox(Window* pWindow, const FilePath& strXmlPath, CreateControlCallback callback)
 {
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return nullptr;
     }
@@ -872,7 +861,6 @@ Box* GlobalManager::CreateBox(Window* pWindow, const FilePath& strXmlPath, Creat
         ASSERT(pControl != nullptr);
         if (pControl != nullptr) {
             pBox = builder.ToBox(pControl);
-            ASSERT(pBox != nullptr);
             if (pBox == nullptr) {
                 delete pControl;
                 pControl = nullptr;
@@ -884,7 +872,6 @@ Box* GlobalManager::CreateBox(Window* pWindow, const FilePath& strXmlPath, Creat
 
 Box* GlobalManager::CreateBoxWithCache(Window* pWindow, const FilePath& strXmlPath, CreateControlCallback callback)
 {
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return nullptr;
     }
@@ -897,7 +884,6 @@ Box* GlobalManager::CreateBoxWithCache(Window* pWindow, const FilePath& strXmlPa
             ASSERT(pControl != nullptr);
             if (pControl != nullptr) {
                 pBox = builder->ToBox(pControl);
-                ASSERT(pBox != nullptr);
                 if (pBox == nullptr) {
                     delete pControl;
                     pControl = nullptr;
@@ -917,7 +903,6 @@ Box* GlobalManager::CreateBoxWithCache(Window* pWindow, const FilePath& strXmlPa
         ASSERT(pControl != nullptr);
         if (pControl != nullptr) {
             pBox = it->second->ToBox(pControl);
-            ASSERT(pBox != nullptr);
             if (pBox == nullptr) {
                 delete pControl;
                 pControl = nullptr;
@@ -934,7 +919,6 @@ bool GlobalManager::FillBox(Box* pUserDefinedBox, const FilePath& strXmlPath, Cr
     ASSERT(pUserDefinedBox != nullptr);
     if (pUserDefinedBox != nullptr) {
         Window* pWindow = pUserDefinedBox->GetWindow();
-        ASSERT(pWindow != nullptr);
         if (pWindow == nullptr) {
             return false;
         }
@@ -950,7 +934,6 @@ bool GlobalManager::FillBox(Box* pUserDefinedBox, const FilePath& strXmlPath, Cr
 
 bool GlobalManager::FillBoxWithCache(Box* pUserDefinedBox, const FilePath& strXmlPath, CreateControlCallback callback)
 {
-    ASSERT(pUserDefinedBox != nullptr);
     if (pUserDefinedBox == nullptr) {
         return false;
     }
@@ -987,7 +970,6 @@ bool GlobalManager::FillBoxWithCache(Box* pUserDefinedBox, const FilePath& strXm
         ASSERT(pControl != nullptr);
         if (pControl != nullptr) {
             pBox = it->second->ToBox(pControl);
-            ASSERT(pBox != nullptr);
             if (pBox == nullptr) {
                 delete pControl;
                 pControl = nullptr;
@@ -1030,7 +1012,6 @@ Box* GlobalManager::CreateBoxForXmlPreview(Window* pWindow,
                                            XmlPreviewAttributes& xmlPreviewAttributes,
                                            const FilePath& xmlFilePath)
 {
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return nullptr;
     }
@@ -1052,7 +1033,6 @@ Box* GlobalManager::CreateBoxForXmlPreview(Window* pWindow,
         ASSERT(pControl != nullptr);
         if (pControl != nullptr) {
             pBox = builder.ToBox(pControl);
-            ASSERT(pBox != nullptr);
             if (pBox == nullptr) {
                 delete pControl;
                 pControl = nullptr;

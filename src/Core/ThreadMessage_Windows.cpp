@@ -62,7 +62,6 @@ ThreadMessage::~ThreadMessage()
 
 void ThreadMessage::Initialize(void* platformData)
 {
-    ASSERT(m_impl->m_hMessageWnd == nullptr);
     if (m_impl->m_hMessageWnd != nullptr) {
         return;
     }

@@ -206,11 +206,9 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
                                      const WindowCreateParam& createParam,
                                      const WindowCreateAttributes& createAttributes)
 {
-    ASSERT(m_hWnd == nullptr);
     if (m_hWnd != nullptr) {
         return false;
     }
-    ASSERT(!createParam.m_className.empty());
     if (createParam.m_className.empty()) {
         return false;
     }
@@ -291,11 +289,9 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
                                  m_createParam.m_nX, m_createParam.m_nY, m_createParam.m_nWidth, m_createParam.m_nHeight,
                                  m_hParentWnd, nullptr, GetResModuleHandle(), this);
     ASSERT(::IsWindow(hWnd));
-    ASSERT(hWnd == m_hWnd);
     if (hWnd != m_hWnd) {
         m_hWnd = hWnd;
     }
-    ASSERT(m_hWnd != nullptr);
     if (m_hWnd == nullptr) {
         m_hParentWnd = nullptr;
         return false;
@@ -380,7 +376,6 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
                                       const WindowCreateAttributes& createAttributes,
                                       bool bCloseByEsc, bool bCloseByEnter)
 {
-    ASSERT(m_hWnd == nullptr);
     if (m_hWnd != nullptr) {
         return -1;
     }
@@ -495,11 +490,9 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
 
 bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, int32_t nX, int32_t nY, int32_t nWidth, int32_t nHeight)
 {
-    ASSERT(m_hWnd == nullptr);
     if (m_hWnd != nullptr) {
         return false;
     }
-    ASSERT(pParentWindow != nullptr);
     if (pParentWindow == nullptr) {
         return false;
     }
@@ -523,7 +516,6 @@ bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, i
 
     ATOM ret = ::RegisterClassEx(&wc);
     bool bRet = (ret != 0 || ::GetLastError() == ERROR_CLASS_ALREADY_EXISTS);
-    ASSERT(bRet);
     if (!bRet) {
         return false;
     }
@@ -565,11 +557,9 @@ bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, i
                                  m_createParam.m_nX, m_createParam.m_nY, m_createParam.m_nWidth, m_createParam.m_nHeight,
                                  m_hParentWnd, nullptr, GetResModuleHandle(), this);
     ASSERT(::IsWindow(hWnd));
-    ASSERT(hWnd == m_hWnd);
     if (hWnd != m_hWnd) {
         m_hWnd = hWnd;
     }
-    ASSERT(m_hWnd != nullptr);
     if (m_hWnd == nullptr) {
         m_hParentWnd = nullptr;
         return false;
@@ -590,7 +580,6 @@ bool NativeWindow_Windows::IsChildWindow() const
 
 bool NativeWindow_Windows::SetParentWindow(NativeWindow_Windows* pParentWindow)
 {
-    ASSERT((pParentWindow != nullptr) && pParentWindow->IsWindow());
     if ((pParentWindow == nullptr) || !pParentWindow->IsWindow()) {
         return false;
     }
@@ -812,7 +801,6 @@ void NativeWindow_Windows::CloseWnd(int32_t nRet)
 {
     StopSysMenuTimer();
     m_bCloseing = true;
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return;
     }
@@ -823,7 +811,6 @@ void NativeWindow_Windows::Close()
 {
     StopSysMenuTimer();
     m_bCloseing = true;
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return;
     }
@@ -964,7 +951,6 @@ uint8_t NativeWindow_Windows::GetLayeredWindowOpacity() const
 
 void NativeWindow_Windows::SetUseSystemCaption(bool bUseSystemCaption)
 {
-    ASSERT(!IsChildWindow());
     if (IsChildWindow()) {
         return;
     }
@@ -1011,7 +997,6 @@ bool NativeWindow_Windows::IsUseSystemCaption() const
 
 bool NativeWindow_Windows::ShowWindow(ShowWindowCommands nCmdShow)
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return false;
     }
@@ -1089,7 +1074,6 @@ bool NativeWindow_Windows::ShowWindow(ShowWindowCommands nCmdShow)
 void NativeWindow_Windows::ShowModalFake(NativeWindow_Windows* pParentWindow)
 {
     ASSERT(::IsWindow(m_hWnd));
-    ASSERT(!IsChildWindow());
     if (IsChildWindow()) {
         return;
     }
@@ -1132,7 +1116,6 @@ bool NativeWindow_Windows::IsDoModal() const
 
 void NativeWindow_Windows::CenterWindow()
 {
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return;
     }
@@ -1216,7 +1199,6 @@ bool NativeWindow_Windows::CalculateCenterWindowPos(HWND hCenterWindow, int32_t&
 
 void NativeWindow_Windows::SetWindowAlwaysOnTop(bool bOnTop)
 {
-    ASSERT(IsWindow() && !IsChildWindow());
     if (!IsWindow() || IsChildWindow()) {
         return;
     }
@@ -1230,7 +1212,6 @@ void NativeWindow_Windows::SetWindowAlwaysOnTop(bool bOnTop)
 
 bool NativeWindow_Windows::IsWindowAlwaysOnTop() const
 {
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return false;
     }
@@ -1305,7 +1286,6 @@ void NativeWindow_Windows::PostQuitMsg(int32_t nExitCode)
 
 bool NativeWindow_Windows::EnterFullscreen()
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return false;
     }
@@ -1340,7 +1320,6 @@ bool NativeWindow_Windows::EnterFullscreen()
 
 bool NativeWindow_Windows::ExitFullscreen()
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return false;
     }
@@ -1449,7 +1428,6 @@ bool NativeWindow_Windows::SetWindowIcon(const FilePath& iconFilePath)
 
 bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return false;
     }
@@ -1798,7 +1776,6 @@ bool NativeWindow_Windows::GetMonitorRect(HWND hWnd, UiRect& rcMonitor, UiRect& 
     else {
         hMonitor = ::MonitorFromWindow(hWnd, MONITOR_DEFAULTTOPRIMARY);
     }
-    ASSERT(hMonitor != nullptr);
     if (hMonitor == nullptr) {
         return false;
     }
@@ -1827,7 +1804,6 @@ bool NativeWindow_Windows::GetPrimaryMonitorWorkRect(UiRect& rcWork)
 {
     rcWork.Clear();
     HMONITOR hMonitor = ::MonitorFromPoint({ INT32_MIN, INT32_MIN }, MONITOR_DEFAULTTOPRIMARY);
-    ASSERT(hMonitor != nullptr);
     if (hMonitor == nullptr) {
         return false;
     }
@@ -1848,7 +1824,6 @@ bool NativeWindow_Windows::GetMonitorWorkRect(const UiPoint& pt, UiRect& rcWork)
 {
     rcWork.Clear();
     HMONITOR hMonitor = ::MonitorFromPoint({ pt.x, pt.y }, MONITOR_DEFAULTTONEAREST);
-    ASSERT(hMonitor != nullptr);
     if (hMonitor == nullptr) {
         return false;
     }
@@ -3329,7 +3304,6 @@ void NativeWindow_Windows::SetImeOpenStatus(bool bOpen)
 
 void NativeWindow_Windows::EnableIME(HWND hwnd, bool bEnable)
 {
-    ASSERT(::IsWindow(hwnd));
     if (!::IsWindow(hwnd)) {
         return;
     }

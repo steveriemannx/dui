@@ -2704,7 +2704,6 @@ void Control::HandleEvent(const EventArgs& msg)
 
 bool Control::CheckEventType(const EventArgs& msg, EventType eventType) const
 {
-    ASSERT(msg.eventType == eventType);
     if (msg.eventType != eventType) {
         return false;
     }
@@ -2821,8 +2820,6 @@ bool Control::ButtonUp(const EventArgs& msg)
     if (!CheckEventType(msg, kEventMouseButtonUp)) {
         return true;
     }
-    fprintf(stderr, "[Control::ButtonUp] focused=%d pt=%d,%d\n", (int)IsMouseFocused(), msg.ptMouse.x, msg.ptMouse.y);
-    fflush(stderr);
     if( IsMouseFocused() ) {
         SetMouseFocused(false);
         // Stop the Hot state animation
@@ -2832,8 +2829,6 @@ bool Control::ButtonUp(const EventArgs& msg)
         }
         Invalidate();
         if( IsPointInWithScrollOffset(msg.ptMouse) ) {
-            fprintf(stderr, "[Control::ButtonUp] Activate\n");
-            fflush(stderr);
             PrivateSetState(kControlStateHot);
             m_nHotAlpha = 255;
             Activate(&msg);
@@ -3134,7 +3129,6 @@ bool Control::PaintImage(IRender* pRender,
         // This may be empty; no assertion is needed, just return directly if empty
         return false;
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return false;
     }
@@ -3291,7 +3285,6 @@ bool Control::PaintImage(IRender* pRender,
     if (duiImage.IsMultiFrameImage()) {
         // Multi-frame image
         AnimationFramePtr pAnimationFrame = duiImage.GetCurrentFrame(rcImageDect, rcSource, rcSourceCorners);
-        ASSERT(pAnimationFrame != nullptr);
         if (pAnimationFrame == nullptr) {
             return false;
         }
@@ -3451,7 +3444,6 @@ std::unique_ptr<IRender> Control::CreateTempRender() const
 
 void Control::AlphaPaint(IRender* pRender, const UiRect& rcPaint)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3492,7 +3484,6 @@ void Control::AlphaPaint(IRender* pRender, const UiRect& rcPaint)
             m_pTempRender = CreateTempRender();
         }
         IRender* pTempRender = m_pTempRender.get();
-        ASSERT(pTempRender != nullptr);
         if (pTempRender == nullptr) {
             return;
         }
@@ -3652,7 +3643,6 @@ void Control::PaintBkColor(IRender* pRender)
     if ((m_pColorData == nullptr) || m_pColorData->m_strBkColor.empty()) {
         return;
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3708,7 +3698,6 @@ void Control::PaintForeColor(IRender* pRender)
     if ((m_pColorData == nullptr) || m_pColorData->m_strForeColor.empty()) {
         return;
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3747,7 +3736,6 @@ void Control::PaintForeColor(IRender* pRender)
 
 void Control::PaintBorder(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3833,7 +3821,6 @@ void Control::PaintBorder(IRender* pRender)
 void Control::DrawBorderLine(IRender* pRender, const UiPointF& pt1, const UiPointF& pt2,
                              float fBorderSize, UiColor dwBorderColor, int8_t borderDashStyle)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3951,7 +3938,6 @@ void Control::PaintFocusRect(IRender* pRender)
 
 void Control::DoPaintFocusRect(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -4044,7 +4030,6 @@ void Control::DrawRoundRect(IRender* pRender, const UiRectF& rc, float rx, float
                             UiColor dwBorderColor, float fBorderSize,
                             int8_t borderDashStyle) const
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -4068,7 +4053,6 @@ void Control::DrawRoundRect(IRender* pRender, const UiRectF& rc, float rx, float
 
 void Control::FillRoundRect(IRender* pRender, const UiRect& rc, float rx, float ry, UiColor dwColor) const
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -4537,7 +4521,6 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
         }        
     }
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return false;
     }
@@ -4570,7 +4553,6 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
             duiImage.SetImageString(iconImageString, pWindow->Dpi());
             duiImage.UpdateImageAttribute(oldImageString, pWindow->Dpi());
             sImagePath = duiImage.GetImagePath();// Update the image path to the path specified by the resource
-            ASSERT(!sImagePath.empty());
             if (sImagePath.empty()) {
                 // The image resource path is empty; mark the load as failed
                 duiImage.SetImageError(true);

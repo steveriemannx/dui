@@ -64,20 +64,16 @@ HRESULT WebView2Control::Impl::InitializeAsync(const std::string& userDataFolder
         return S_OK;
     }
 
-    ASSERT(m_pControl != nullptr);
     if (m_pControl == nullptr) {
         return E_FAIL;
     }
-    ASSERT(m_pControl->GetWindow() != nullptr);
     if (m_pControl->GetWindow() == nullptr) {
         return E_FAIL;
     }
-    ASSERT(m_pControl->GetWindow()->NativeWnd()->GetHWND() != nullptr);
     if (m_pControl->GetWindow()->NativeWnd()->GetHWND() == nullptr) {
         return E_FAIL;
     }
 
-    ASSERT(!m_bInitializing);
     if (m_bInitializing) {
         return E_FAIL;
     }
@@ -109,7 +105,6 @@ HRESULT WebView2Control::Impl::CallCreateCoreWebView2EnvironmentWithOptions(PCWS
             m_hWebView2Loader = ::LoadLibrary(runPath.NativePath().c_str());
         }        
     }
-    ASSERT(m_hWebView2Loader != nullptr);
     if (m_hWebView2Loader == nullptr) {
         return E_FAIL;
     }
@@ -336,7 +331,6 @@ void WebView2Control::Impl::OnInitializationCompleted(HRESULT result)
 
 void WebView2Control::Impl::InitializeSettings()
 {
-    ASSERT(m_spWebView2 != nullptr);
     if (m_spWebView2 == nullptr) {
         return;
     }
@@ -541,7 +535,6 @@ HRESULT WebView2Control::Impl::Stop()
 HRESULT WebView2Control::Impl::ExecuteScript(const std::string& script,
                                              std::function<void(const std::string& result, HRESULT hr)> callback)
 {
-    ASSERT(!script.empty());
     if (script.empty()) {
         return E_INVALIDARG;
     }
@@ -566,7 +559,6 @@ HRESULT WebView2Control::Impl::ExecuteScript(const std::string& script,
 
 HRESULT WebView2Control::Impl::PostWebMessageAsJson(const std::string& json)
 {
-    ASSERT(!json.empty());
     if (json.empty()) {
         return E_INVALIDARG;
     }
@@ -579,7 +571,6 @@ HRESULT WebView2Control::Impl::PostWebMessageAsJson(const std::string& json)
 
 HRESULT WebView2Control::Impl::PostWebMessageAsString(const std::string& message)
 {
-    ASSERT(!message.empty());
     if (message.empty()) {
         return E_INVALIDARG;
     }
@@ -1154,7 +1145,6 @@ HRESULT WebView2Control::Impl::CapturePreview(const std::string& filePath,
     if (m_spWebView2 == nullptr) {
         return E_FAIL;
     }
-    ASSERT(!filePath.empty());
     if (filePath.empty()) {
         return E_FAIL;
     }
@@ -1366,11 +1356,9 @@ HRESULT WebView2Control::Impl::GetLastErrorCode() const
 void WebView2Control::Impl::SetWindow(Window* pWindow)
 {
     if (m_spWebView2Controller != nullptr) {
-        ASSERT(pWindow != nullptr);
         if (pWindow == nullptr) {
             return;
         }
-        ASSERT(pWindow->NativeWnd()->GetHWND() != nullptr);
         if (pWindow->NativeWnd()->GetHWND() == nullptr) {
             return;
         }

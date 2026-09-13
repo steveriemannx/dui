@@ -786,7 +786,6 @@ bool NativeWindow_MacOS::CreateWnd(NativeWindow_MacOS* pParentWindow,
                                    const WindowCreateAttributes& createAttributes)
 {
     UNUSED_VARIABLE(pParentWindow);
-    ASSERT(m_nsWindow == nullptr);
     if (m_nsWindow != nullptr) {
         return false;
     }
@@ -1573,7 +1572,6 @@ void NativeWindow_MacOS::PaintWindow(bool bPaintAll)
         m_rcUpdateRect.Clear();
     }
     INativeWindow* pOwner = m_pOwner;
-    ASSERT(pOwner != nullptr);
     if (pOwner == nullptr) {
         return;
     }
@@ -2073,7 +2071,6 @@ int32_t NativeWindow_MacOS::DoModal(NativeWindow_MacOS* pParentWindow,
                                     bool bCloseByEsc,
                                     bool bCloseByEnter)
 {
-    ASSERT(m_nsWindow == nullptr);
     if (m_nsWindow != nullptr) {
         return -1;
     }
@@ -2165,11 +2162,9 @@ bool NativeWindow_MacOS::UnregisterHotKey(int32_t /*id*/)
 // ---------------------------------------------------------------------------
 bool NativeWindow_MacOS::CreateChildWnd(NativeWindow_MacOS* pParentWindow, int32_t nX, int32_t nY, int32_t nWidth, int32_t nHeight)
 {
-    ASSERT(m_nsWindow == nullptr);
     if (m_nsWindow != nullptr) {
         return false;
     }
-    ASSERT(pParentWindow != nullptr);
     if (pParentWindow == nullptr) {
         return false;
     }

@@ -50,7 +50,6 @@ bool DiskUtils::GetLogicalDriveList(std::vector<std::string>& driveList)
 bool DiskUtils::GetLogicalDriveInfo(const std::string& driveString, DiskInfo& diskInfo)
 {
     HMODULE hShell32Dll = ::LoadLibrary("Shell32.dll");
-    ASSERT(hShell32Dll != nullptr);
     if (hShell32Dll == nullptr) {
         return false;
     }
@@ -59,7 +58,6 @@ bool DiskUtils::GetLogicalDriveInfo(const std::string& driveString, DiskInfo& di
                                            UINT cbFileInfo, UINT uFlags);
 
     PFNSHGetFileInfo pfnSHGetFileInfo = (PFNSHGetFileInfo)::GetProcAddress(hShell32Dll, "SHGetFileInfoW");
-    ASSERT(pfnSHGetFileInfo != nullptr);
     if (pfnSHGetFileInfo == nullptr) {
         ::FreeLibrary(hShell32Dll);
         return false;

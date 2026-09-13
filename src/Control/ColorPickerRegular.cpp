@@ -258,11 +258,9 @@ void ColorPickerRegularProvider::SetColors(const std::vector<std::pair<std::stri
 
 Control* ColorPickerRegularProvider::CreateElement(VirtualListBox* pVirtualListBox)
 {
-    ASSERT(pVirtualListBox != nullptr);
     if (pVirtualListBox == nullptr) {
         return nullptr;
     }
-    ASSERT(pVirtualListBox->GetWindow() != nullptr);
     if (pVirtualListBox->GetWindow() == nullptr) {
         return nullptr;
     }

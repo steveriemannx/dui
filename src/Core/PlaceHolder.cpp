@@ -215,7 +215,6 @@ const UiFixedInt& PlaceHolder::GetFixedWidth() const
 
 void PlaceHolder::SetFixedWidth(UiFixedInt cx, bool bArrange, bool bNeedDpiScale)
 {
-    ASSERT(cx.IsValid());
     if (!cx.IsValid()) {
         return;
     }
@@ -237,7 +236,6 @@ void PlaceHolder::SetFixedWidth(UiFixedInt cx, bool bArrange, bool bNeedDpiScale
 
 void PlaceHolder::SetFixedHeight(UiFixedInt cy, bool bArrange, bool bNeedDpiScale)
 {
-    ASSERT(cy.IsValid());
     if (!cy.IsValid()) {
         return;
     }

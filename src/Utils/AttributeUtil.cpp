@@ -196,13 +196,11 @@ void AttributeUtil::ParseAttributeList(const std::string& strList,
             sName += *pstrList++;
         }
         // The current character should be an equals sign
-        ASSERT(*pstrList == '=');
         if (*pstrList != '=') {
             return;
         }
         // Skip to the character after the equals sign; this character should be a separator character
         pstrList++;
-        ASSERT(*pstrList == seperateChar);
         if (*pstrList != seperateChar) {
             return;
         }
@@ -212,7 +210,6 @@ void AttributeUtil::ParseAttributeList(const std::string& strList,
         while (*pstrList != '\0' && *pstrList != seperateChar) {
             sValue += *pstrList++;
         }
-        ASSERT(*pstrList == seperateChar);
         if (*pstrList != seperateChar) {
             return;
         }

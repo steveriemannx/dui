@@ -19,7 +19,6 @@ static bool DecodeImage_LOTTIE(sk_sp<skottie::Animation>& pSkAnimation,
                                int32_t nFrame,
                                AnimationFramePtr& frame)
 {
-    ASSERT(pSkAnimation != nullptr);
     if (pSkAnimation == nullptr) {
         return false;
     }
@@ -29,7 +28,6 @@ static bool DecodeImage_LOTTIE(sk_sp<skottie::Animation>& pSkAnimation,
     }
 
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return false;
     }
@@ -38,7 +36,6 @@ static bool DecodeImage_LOTTIE(sk_sp<skottie::Animation>& pSkAnimation,
     frame.reset();
     pSkAnimation->seekFrame(static_cast<double>(nFrame));
     std::shared_ptr<IBitmap> pBitmap(pRenderFactory->CreateBitmap());
-    ASSERT(pBitmap != nullptr);
     if (pBitmap == nullptr) {
         frame.reset();
         return false;
@@ -113,28 +110,23 @@ bool Image_LOTTIE::LoadImageFile(std::vector<uint8_t>& fileData,
                                  const UiSize& rcMaxDestRectSize,
                                  bool bAssertEnabled)
 {
-    ASSERT(!fileData.empty() || !imageFilePath.IsEmpty());
     if (fileData.empty() && imageFilePath.IsEmpty()) {
         return false;
     }
 
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return false;
     }
     IFontMgr* pFontMgr = pRenderFactory->GetFontMgr();
-    ASSERT(pFontMgr != nullptr);
     if (pFontMgr == nullptr) {
         return false;
     }
     FontMgr_Skia* pFontMgrSKia = dynamic_cast<FontMgr_Skia*>(pFontMgr);
-    ASSERT(pFontMgrSKia != nullptr);
     if (pFontMgrSKia == nullptr) {
         return false;
     }
     sk_sp<SkFontMgr>* pSkFontMgr = (sk_sp<SkFontMgr>*)pFontMgrSKia->GetSkiaFontMgrPtr();
-    ASSERT(pSkFontMgr != nullptr);
     if (pSkFontMgr == nullptr) {
         return false;
     }
@@ -260,7 +252,6 @@ int32_t Image_LOTTIE::GetFrameDelayMs(uint32_t /*nFrameIndex*/)
 
 bool Image_LOTTIE::ReadFrameData(int32_t nFrameIndex, const UiSize& szDestRectSize, AnimationFrame* pAnimationFrame)
 {
-    ASSERT(pAnimationFrame != nullptr);
     if (pAnimationFrame == nullptr) {
         return false;
     }

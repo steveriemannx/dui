@@ -28,7 +28,6 @@ Render_Skia_X11::Render_Skia_X11(Display* display, Window window, Visual* visual
     m_backendType(backendType)
 {
     if (backendType == RenderBackendType::kNativeGL_BackendType) {
-        ASSERT(m_display != nullptr);
         if (m_display == nullptr) {
             m_backendType = RenderBackendType::kRaster_BackendType;
         }

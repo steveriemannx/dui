@@ -108,7 +108,6 @@ UiSize StateColorMap2::GetStateColorRound(ControlStateType stateType) const
 
 void StateColorMap2::PaintStateColor(IRender* pRender, const UiRect& rcPaint, ControlStateType stateType) const
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }

@@ -749,7 +749,6 @@ static bool CreateIconsFromImageData(const std::vector<uint8_t>& iconFileData,
         }
 
         void* pPixelBits = pBitmap->LockPixelBits();
-        ASSERT(pPixelBits != nullptr);
         if (pPixelBits == nullptr) {
             continue;
         }

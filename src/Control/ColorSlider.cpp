@@ -230,7 +230,6 @@ void ColorSlider::GetARGB(uint32_t* buffer, int32_t samples,
                           const UiColor& start, 
                           const UiColor& end) const
 {
-    ASSERT(buffer != nullptr);
     if (buffer == nullptr) {
         return;
     }

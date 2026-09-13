@@ -75,7 +75,6 @@ bool ImageUtil::FlipPixelBits(uint8_t* pPixelBits, size_t nPixelBitsLen, uint32_
         return false;
     }
     const size_t expectedLen = static_cast<size_t>(nHeight) * nWidth * 4;
-    ASSERT(nPixelBitsLen == expectedLen);
     if (nPixelBitsLen != expectedLen) {
         return false;
     }
@@ -109,7 +108,6 @@ bool ImageUtil::ResizeImageData(const uint8_t* pPixelBits, size_t nPixelBitsLen,
         return false;
     }
     const size_t expectedLen = static_cast<size_t>(nHeight) * nWidth * 4;
-    ASSERT(nPixelBitsLen == expectedLen);
     if (nPixelBitsLen != expectedLen) {
         return false;
     }
@@ -135,7 +133,6 @@ bool ImageUtil::ResizeImageData(const uint8_t* pPixelBits, size_t nPixelBitsLen,
         return false;
     }
     const size_t expectedLen = static_cast<size_t>(nHeight) * nWidth * 4;
-    ASSERT(nPixelBitsLen == expectedLen);
     if (nPixelBitsLen != expectedLen) {
         return false;
     }
@@ -149,7 +146,6 @@ bool ImageUtil::ResizeImageData(const uint8_t* pPixelBits, size_t nPixelBitsLen,
         return false;
     }
     const size_t outExpectedLen = static_cast<size_t>(nNewHeight) * nNewWidth * 4;
-    ASSERT(nOutPixelBitsLen == outExpectedLen);
     if (nOutPixelBitsLen != outExpectedLen) {
         return false;
     }
@@ -193,7 +189,6 @@ std::unique_ptr<IBitmap> ImageUtil::ResizeImageBitmap(IBitmap* pBitmap, int32_t 
     if (pRenderFactory != nullptr) {
         pNewBitmap.reset(pRenderFactory->CreateBitmap());
     }
-    ASSERT(pNewBitmap != nullptr);
     if (pNewBitmap == nullptr) {
         return nullptr;
     }

@@ -97,7 +97,6 @@ void ToolTip::TImpl::StopHoverTimer()
 
 void ToolTip::TImpl::SetMouseTracking(WindowBase* pParentWnd, bool bTracking)
 {
-    ASSERT(pParentWnd != nullptr);
     if (pParentWnd == nullptr) {
         return;
     }

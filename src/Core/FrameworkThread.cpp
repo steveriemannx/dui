@@ -63,7 +63,6 @@ FrameworkThread::~FrameworkThread()
 bool FrameworkThread::RunMessageLoop(bool bSupportIdle)
 {
     ASSERT(m_nThreadIdentifier == kThreadUI);
-    ASSERT(!m_bRunning);
     if (m_bRunning) {
         return false;
     }
@@ -93,7 +92,6 @@ void FrameworkThread::OnMainThreadExit()
 
 bool FrameworkThread::Start()
 {
-    ASSERT(!m_bRunning);
     if (m_bRunning) {
         return false;
     }
@@ -175,7 +173,6 @@ size_t FrameworkThread::GetNextTaskId() const
 
 size_t FrameworkThread::PostTask(const StdClosure& task, const StdClosure& unlockClosure)
 {
-    ASSERT(task != nullptr);
     if (task == nullptr) {
         return 0;
     }
@@ -200,7 +197,6 @@ size_t FrameworkThread::PostTask(const StdClosure& task, const StdClosure& unloc
 
 size_t FrameworkThread::PostDelayedTask(const StdClosure& task, int32_t nDelayMs)
 {
-    ASSERT(task != nullptr);
     if (task == nullptr) {
         return 0;
     }

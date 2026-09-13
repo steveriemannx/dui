@@ -148,7 +148,6 @@ static HCURSOR LoadCursorFromData(const Window* pWindow, std::vector<uint8_t>& f
             }
         }
     }
-    ASSERT(bValidIcoFile);
     if (!bValidIcoFile) {
         return nullptr;
     }
@@ -177,7 +176,6 @@ bool CursorManager::SetImageCursor(const Window* pWindow, const FilePath& curIma
 
     //Set the window icon
     FilePath cursorFullPath = GlobalManager::Instance().GetExistsResFullPath(pWindow->GetResourcePath(), pWindow->GetXmlPath(), curImagePath);
-    ASSERT(!cursorFullPath.IsEmpty());
     if (cursorFullPath.IsEmpty()) {
         return false;
     }

@@ -160,7 +160,6 @@ namespace ReadPngHeader
         }
         if (pngImageInfo.frame_count > 1) {
             //Multi-frame image
-            ASSERT(pngImageInfo.frame_count == pngImageInfo.frames.size());
             if (pngImageInfo.frame_count != pngImageInfo.frames.size()) {
                 return false;
             }
@@ -269,7 +268,6 @@ namespace ReadPngHeader
         }
         if (pngImageInfo.frame_count > 1) {
             //Multi-frame image
-            ASSERT(pngImageInfo.frame_count == pngImageInfo.frames.size());
             if (pngImageInfo.frame_count != pngImageInfo.frames.size()) {
                 return false;
             }
@@ -433,7 +431,6 @@ bool Image_PNG::LoadImageFile(std::vector<uint8_t>& fileData,
                               const UiSize& rcMaxDestRectSize,
                               bool bAssertEnabled)
 {
-    ASSERT(!fileData.empty() || !imageFilePath.IsEmpty());
     if (fileData.empty() && imageFilePath.IsEmpty()) {
         return false;
     }
@@ -472,7 +469,6 @@ bool Image_PNG::LoadImageFile(std::vector<uint8_t>& fileData,
 AnimationFramePtr Image_PNG::DecodeImageFrame()
 {
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         m_impl->m_bDecodeError = true;
         return nullptr;
@@ -717,7 +713,6 @@ int32_t Image_PNG::GetFrameDelayMs(uint32_t nFrameIndex)
 bool Image_PNG::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSize*/, AnimationFrame* pAnimationFrame)
 {
     GlobalManager::Instance().AssertUIThread();
-    ASSERT(pAnimationFrame != nullptr);
     if (pAnimationFrame == nullptr) {
         return false;
     }

@@ -150,12 +150,10 @@ void ChildWindow::AdjustChildWindowPos()
 
 bool ChildWindow::CreateChildWindow(ChildWindowEvents* pChildWindowEvents)
 {
-    ASSERT(m_pChildWnd == nullptr);
     if (m_pChildWnd != nullptr) {
         return false;
     }
     Window* pWindow = GetWindow();
-    ASSERT((pWindow != nullptr) && pWindow->IsWindow());
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return false;
     }
@@ -178,7 +176,6 @@ bool ChildWindow::CreateChildWindow(ChildWindowEvents* pChildWindowEvents)
 
 void ChildWindow::RegisterWindowCallbacks(Window* pWindow)
 {
-    ASSERT((pWindow != nullptr) && pWindow->IsWindow());
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return;
     }
@@ -200,7 +197,6 @@ void ChildWindow::RegisterWindowCallbacks(Window* pWindow)
 
 void ChildWindow::UnregisterWindowCallbacks(Window* pWindow)
 {
-    ASSERT((pWindow != nullptr) && pWindow->IsWindow());
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return;
     }
@@ -216,7 +212,6 @@ void ChildWindow::CloseChildWindow()
 
 void ChildWindow::SetChildWindowEvents(ChildWindowEvents* pChildWindowEvents)
 {
-    ASSERT(m_pChildWnd != nullptr);
     if (m_pChildWnd == nullptr) {
         return;
     }

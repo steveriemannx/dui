@@ -182,7 +182,6 @@ HICON TrayIconImpl::LoadIconFromFile(const Window* pWindow, const std::string& i
         windowXmlPath = pWindow->GetXmlPath();
     }
     FilePath iconFullPath = GlobalManager::Instance().GetExistsResFullPath(windowResPath, windowXmlPath, FilePath(iconFilePath));
-    ASSERT(!iconFullPath.IsEmpty());
     if (iconFullPath.IsEmpty()) {
         return nullptr;
     }
@@ -196,7 +195,6 @@ HICON TrayIconImpl::LoadIconFromFile(const Window* pWindow, const std::string& i
     }
     else {
         //Use the local file
-        ASSERT(iconFullPath.IsExistsFile());
         if (!iconFullPath.IsExistsFile()) {
             return nullptr;
         }

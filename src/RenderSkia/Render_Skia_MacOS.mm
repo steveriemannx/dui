@@ -62,7 +62,6 @@ Render_Skia_MacOS::Render_Skia_MacOS(void* nsView, RenderBackendType backendType
     //GPU drawing must be bound to a view
     if ((backendType == RenderBackendType::kNativeGL_BackendType) ||
         (backendType == RenderBackendType::kMetal_BackendType)) {
-        ASSERT(m_nsView != nullptr);
         if (m_nsView == nullptr) {
             backendType = RenderBackendType::kRaster_BackendType;
         }
@@ -117,7 +116,6 @@ bool Render_Skia_MacOS::Resize(int32_t width, int32_t height)
         return true;
     }
 
-    ASSERT(m_pWindowContext != nullptr);
     if (m_pWindowContext == nullptr) {
         return false;
     }
@@ -189,7 +187,6 @@ bool Render_Skia_MacOS::PaintAndSwapBuffers(IRenderPaint* pRenderPaint)
 
 SkSurface* Render_Skia_MacOS::GetSkSurface() const
 {
-    ASSERT(m_pWindowContext != nullptr);
     if (m_pWindowContext == nullptr) {
         return nullptr;
     }
@@ -201,12 +198,10 @@ SkSurface* Render_Skia_MacOS::GetSkSurface() const
 
 SkCanvas* Render_Skia_MacOS::GetSkCanvas() const
 {
-    ASSERT(m_pWindowContext != nullptr);
     if (m_pWindowContext == nullptr) {
         return nullptr;
     }
     sk_sp<SkSurface> backbuffer = m_pWindowContext->getBackbufferSurface();
-    ASSERT(backbuffer != nullptr);
     if (backbuffer == nullptr) {
         return nullptr;
     }

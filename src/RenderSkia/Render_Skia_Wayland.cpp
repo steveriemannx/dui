@@ -23,7 +23,6 @@ Render_Skia_Wayland::Render_Skia_Wayland(wl_surface* wlSurface, wl_shm* shm, Ren
     m_backendType(backendType)
 {
     if (backendType == RenderBackendType::kNativeGL_BackendType) {
-        ASSERT(m_wlSurface != nullptr);
         if (m_wlSurface == nullptr) {
             m_backendType = RenderBackendType::kRaster_BackendType;
         }

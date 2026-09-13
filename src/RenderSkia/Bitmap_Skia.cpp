@@ -48,7 +48,6 @@ bool Bitmap_Skia::Init(uint32_t nWidth, uint32_t nHeight, const void* pPixelBits
             if (m_pSkBitmap->peekPixels(&pixmap)) {
                 pOutPixelBits = pixmap.writable_addr();
             }
-            ASSERT(pOutPixelBits != nullptr);
             if (pOutPixelBits == nullptr) {
                 m_pSkBitmap->reset();
                 return false;
@@ -87,7 +86,6 @@ bool Bitmap_Skia::InitImage(uint32_t nWidth, uint32_t nHeight, const void* pPixe
     if (m_pSkBitmap->peekPixels(&pixmap)) {
         pBits = pixmap.writable_addr();
     }
-    ASSERT(pBits != nullptr);
     if (pBits == nullptr) {
         m_pSkBitmap->reset();
         return false;

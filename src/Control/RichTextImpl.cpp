@@ -474,7 +474,6 @@ bool RichTextImpl::ParseText(std::vector<RichTextDataEx>& outTextData) const
     //Default font
     std::string sFontId = GetFontId();
     IFont* pFont = GlobalManager::Instance().Font().GetIFont(sFontId, m_pOwner->Dpi());
-    ASSERT(pFont != nullptr);
     if (pFont == nullptr) {
         return false;
     }

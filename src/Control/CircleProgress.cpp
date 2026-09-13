@@ -68,7 +68,6 @@ void CircleProgress::ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale
 
 void CircleProgress::PaintStateImages(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -96,19 +95,16 @@ void CircleProgress::PaintStateImages(IRender* pRender)
     }
 
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return;
     }
     IPen* bgPen = pRenderFactory->CreatePen(m_dwBackgroundColor, m_fCircleWidth);
     std::unique_ptr<IPen> spBgPen(bgPen);
-    ASSERT(bgPen != nullptr);
     if (bgPen == nullptr) {
         return;
     }
     IPen* fgPen = pRenderFactory->CreatePen(m_dwForegroundColor, m_fCircleWidth);
     std::unique_ptr<IPen> spFgPen(fgPen);
-    ASSERT(fgPen != nullptr);
     if (fgPen == nullptr) {
         return;
     }

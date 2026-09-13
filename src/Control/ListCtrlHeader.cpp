@@ -72,7 +72,6 @@ bool ListCtrlHeader::IsSelectableType() const
 ListCtrlHeaderItem* ListCtrlHeader::InsertColumn(int32_t columnIndex, const ListCtrlColumn& columnInfo)
 {
     int32_t nColumnWidth = columnInfo.nColumnWidth;
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return nullptr;
     }
@@ -187,7 +186,6 @@ size_t ListCtrlHeader::GetColumnCount() const
     if (nItemCount == 0) {
         return 0;
     }
-    ASSERT((nItemCount % 2) == 0);
     if ((nItemCount % 2) != 0) {
         return 0;
     }
@@ -402,7 +400,6 @@ void ListCtrlHeader::OnHeaderColumnSorted(ListCtrlHeaderItem* pHeaderItem)
     }
     size_t nColumnId = pHeaderItem->GetColumnId();
     ListCtrlHeaderItem::SortMode sortMode = pHeaderItem->GetSortMode();
-    ASSERT(sortMode != ListCtrlHeaderItem::SortMode::kNone);
     if (sortMode == ListCtrlHeaderItem::SortMode::kNone) {
         return;
     }
@@ -580,7 +577,6 @@ void ListCtrlHeader::GetHeaderSplitControlRect(std::vector<UiRect>& rcSplitContr
     if (nItemCount == 0) {
         return;
     }
-    ASSERT((nItemCount % 2) == 0);
     if ((nItemCount % 2) != 0) {
         return;
     }

@@ -103,7 +103,6 @@ bool TabBox::AddItem(Control* pControl)
 
 bool TabBox::AddItemAt(Control* pControl, size_t iIndex)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return false;
     }
@@ -267,7 +266,6 @@ void TabBox::OnHideTabItem(size_t index)
         return;
     }
     Control* pContol = m_items.at(index);
-    ASSERT(pContol != nullptr);
     if (pContol == nullptr) {
         return;
     }
@@ -285,7 +283,6 @@ void TabBox::OnShowTabItem(size_t index)
         return;
     }
     Control* pContol = m_items.at(index);
-    ASSERT(pContol != nullptr);
     if (pContol == nullptr) {
         return;
     }

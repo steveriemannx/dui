@@ -288,7 +288,6 @@ std::shared_ptr<IBitmap> Image::GetCurrentBitmap(bool bImageStretch,
     if (!m_imageInfo || m_imageInfo->IsMultiFrameImage()) {
         return nullptr;
     }
-    ASSERT(!rcDest.IsEmpty() && !rcSource.IsEmpty());
     if (rcDest.IsEmpty() || rcSource.IsEmpty()) {
         return nullptr;
     }

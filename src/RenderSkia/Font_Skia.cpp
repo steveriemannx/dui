@@ -31,7 +31,6 @@ void Font_Skia::ClearSkFont()
 
 bool Font_Skia::InitFont(const UiFont& fontInfo)
 {
-    ASSERT(!fontInfo.m_fontName.empty());
     if (fontInfo.m_fontName.empty()) {
         return false;
     }

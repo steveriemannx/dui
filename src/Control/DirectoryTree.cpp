@@ -484,7 +484,6 @@ bool DirectoryTree::OnShowSubFoldersEx(TreeNode* pTreeNode, const std::vector<Fi
     if (!Box::IsValidItemIndex(itemIndex)) {
         return false;
     }
-    ASSERT(filePathList.size() == folderListArray.size());
     if (filePathList.size() != folderListArray.size()) {
         return false;
     }
@@ -514,7 +513,6 @@ bool DirectoryTree::OnShowSubFoldersEx(TreeNode* pTreeNode, const std::vector<Fi
             }
         }
         if (!bLastNode) {
-            ASSERT(pNextParentTreeNode != nullptr);
             if (pNextParentTreeNode == nullptr) {
                 break;
             }
@@ -665,7 +663,6 @@ bool DirectoryTree::SelectSubPath(TreeNode* pTreeNode, FilePath subPath, StdClos
     }
     //Check whether it is in the directory
     FolderStatus* pFolderStatus = GetFolderData(pTreeNode);
-    ASSERT(pFolderStatus != nullptr);
     if (pFolderStatus == nullptr) {
         return false;
     }
@@ -793,13 +790,11 @@ bool DirectoryTree::SelectPath(FilePath filePath, StdClosure finishCallback)
 
 bool DirectoryTree::OnSelectSubPath(TreeNode* pTreeNode, std::vector<FilePath> filePathList, StdClosure finishCallback)
 {
-    ASSERT(pTreeNode != nullptr);
     if (pTreeNode == nullptr) {
         return false;
     }
     //Remove redundant directories (filter out paths that are not subdirectories of the tree node)
     FolderStatus* pFolder = GetFolderData(pTreeNode);
-    ASSERT(pFolder != nullptr);
     if (pFolder == nullptr) {
         return false;
     }
@@ -827,7 +822,6 @@ bool DirectoryTree::OnSelectSubPath(TreeNode* pTreeNode, std::vector<FilePath> f
             }
         }
     }
-    ASSERT(!filePathList.empty());
     if (filePathList.empty()) {
         return false;
     }

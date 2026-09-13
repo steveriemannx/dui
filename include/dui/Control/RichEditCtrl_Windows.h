@@ -110,7 +110,6 @@ public:
     int GetLine(int nIndex, LPWSTR lpszBuffer, int nMaxLength) const
     {
         ASSERT(m_pTextServices != nullptr);
-        ASSERT(lpszBuffer != nullptr);
         if (lpszBuffer == nullptr) {
             return 0;
         }

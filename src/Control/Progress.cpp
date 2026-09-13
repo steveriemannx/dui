@@ -200,7 +200,6 @@ void Progress::ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale)
 
 void Progress::PaintStateImages(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -342,7 +341,6 @@ void Progress::Play()
 
 void Progress::PaintMarquee(IRender* pRender) 
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }

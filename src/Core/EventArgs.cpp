@@ -250,9 +250,27 @@ bool EventSource::operator() (const ui::EventArgs& args) const
         }
         //Need to copy a copy, to avoid operating on this container inside the callback function, which would invalidate the container contents and cause a crash
         EventCallback callback = m_callbackList.at(nIndex).m_callback;
-        if ((callback == nullptr) || !callback(args)) {
+        if (callback == nullptr) {
             return false;
         }
+        const bool bContinue = callback(args);
+
+        //The callback may have destroyed the control that owns this EventSource -- a
+        //delete button whose handler calls RemoveItem(this), or any handler that
+        //closes the window -- which frees the container being iterated. Nothing below
+        //may touch `this` until the sender is known to be alive again.
+        //IsSenderExpired() is the safe question to ask here: it reads `args`, not
+        //`this`. By the time the callback returns, the destructor has run to
+        //completion, so the flag is already expired.
+        if (args.IsSenderExpired()) {
+            return false;
+        }
+        if (!bContinue) {
+            return false;
+        }
+        //The sender is alive, therefore this object is too -- FireNormalEvents only
+        //reaches here when the sender is the control that owns this EventSource, so
+        //the container is valid and can be inspected again.
         if (nIndex >= m_callbackList.size()) {
             //Avoid removing the callback function from the container inside the callback, which would cause an out-of-bounds index access
             break;

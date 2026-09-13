@@ -72,7 +72,6 @@ static HRGN CreateHRGNFromSkiaRoundRect(const SkRect& skRect, SkScalar rx, SkSca
 
 bool WindowRgn::SetWindowRoundRectRgn(HWND hWnd, const UiRect& rcWnd, float rx, float ry, bool bRedraw)
 {
-    ASSERT(::IsWindow(hWnd));
     if (!::IsWindow(hWnd)) {
         return false;
     }
@@ -89,7 +88,6 @@ bool WindowRgn::SetWindowRoundRectRgn(HWND hWnd, const UiRect& rcWnd, float rx, 
 
 bool WindowRgn::SetWindowRectRgn(HWND hWnd, const UiRect& rcWnd, bool bRedraw)
 {
-    ASSERT(::IsWindow(hWnd));
     if (!::IsWindow(hWnd)) {
         return false;
     }
@@ -100,7 +98,6 @@ bool WindowRgn::SetWindowRectRgn(HWND hWnd, const UiRect& rcWnd, bool bRedraw)
 
 void WindowRgn::ClearWindowRgn(HWND hWnd, bool bRedraw)
 {
-    ASSERT(::IsWindow(hWnd));
     if (!::IsWindow(hWnd)) {
         return;
     }

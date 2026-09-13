@@ -645,7 +645,6 @@ UiSize LabelImpl::OnEstimateText(UiSize szAvailable)
     if (m_pOwner->GetWindow() != nullptr) {
         pRender = m_pOwner->GetWindow()->GetRender();
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         //Unable to estimate
         return fixedSize;

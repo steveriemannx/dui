@@ -232,7 +232,6 @@ void HotKey::OnInit()
     }
     BaseClass::OnInit();
     HotKeyRichEdit* pRichEdit = m_pRichEdit;
-    ASSERT(pRichEdit != nullptr);
     if (pRichEdit == nullptr) {
         return;
     }

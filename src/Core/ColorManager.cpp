@@ -6,7 +6,6 @@ namespace ui
 {
 void ColorMap::AddColor(const std::string& strName, const std::string& strValue)
 {
-    ASSERT(!strName.empty() && !strValue.empty());
     if (strName.empty() || strValue.empty()) {
         return;
     }
@@ -16,7 +15,6 @@ void ColorMap::AddColor(const std::string& strName, const std::string& strValue)
 
 void ColorMap::AddColor(const std::string& strName, UiColor argb)
 {
-    ASSERT(!strName.empty() && (argb.GetARGB() != 0));
     if (strName.empty() || (argb.GetARGB() == 0)) {
         return;
     }
@@ -78,11 +76,9 @@ UiColor ColorManager::ConvertToUiColor(const std::string& strColor)
     }
 
     // The specific color value, format like: #FFFFFFFF or #FFFFFF
-    ASSERT((strColor.size() == 9) || (strColor.size() == 7));
     if ((strColor.size() != 9) && (strColor.size() != 7)) {
         return color;
     }
-    ASSERT(strColor.at(0) == '#');
     if (strColor.at(0) != '#') {
         return color;
     }
@@ -91,7 +87,6 @@ UiColor ColorManager::ConvertToUiColor(const std::string& strColor)
         bool isValid = (((ch >= '0') && (ch <= '9')) ||
             ((ch >= 'a') && (ch <= 'f')) ||
             ((ch >= 'A') && (ch <= 'F')));
-        ASSERT(isValid);
         if (!isValid) {
             return color;
         }

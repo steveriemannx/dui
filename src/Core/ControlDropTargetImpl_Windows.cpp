@@ -266,7 +266,6 @@ int32_t ControlDropTargetImpl_Windows::DragLeave(void)
 
 int32_t ControlDropTargetImpl_Windows::Drop(void* pDataObj, uint32_t grfKeyState, const UiPoint& pt, uint32_t* pdwEffect)
 {
-    ASSERT(m_pDataObj == pDataObj);
     if (m_pDataObj != pDataObj) {
         return S_FALSE;
     }

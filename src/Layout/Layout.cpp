@@ -176,7 +176,6 @@ UiSize64 Layout::SetFloatPosInternal(Control* pControl, const UiRect& rcContaine
 UiRect Layout::GetFloatPos(const Control* pControl, UiRect rcContainer, UiSize childSize)
 {
     rcContainer.Validate();
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return UiRect();
     }

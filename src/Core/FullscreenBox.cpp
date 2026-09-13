@@ -37,20 +37,16 @@ std::string FullscreenBox::GetType() const { return "FullscreenBox"; }
 
 bool FullscreenBox::EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenControl, const std::string& exitButtonClass)
 {
-    ASSERT((pOldRoot != nullptr) && (pFullscreenControl != nullptr));
     if ((pOldRoot == nullptr) || (pFullscreenControl == nullptr)) {
         return false;
     }
 
-    ASSERT(m_pFullscreenControl == nullptr);
     if (m_pFullscreenControl != nullptr) {
         return false;
     }
-    ASSERT(m_pOldParent == nullptr);
     if (m_pOldParent != nullptr) {
         return false;
     }
-    ASSERT(m_pOldRoot == nullptr);
     if (m_pOldRoot != nullptr) {
         return false;
     }

@@ -21,7 +21,6 @@ FontManager::~FontManager()
 
 bool FontManager::AddFont(const std::string& fontId, const UiFont& fontInfo, bool bDefault)
 {
-    ASSERT(!fontId.empty());
     if (fontId.empty()) {
         return false;
     }
@@ -32,7 +31,6 @@ bool FontManager::AddFont(const std::string& fontId, const UiFont& fontInfo, boo
     }
 
     auto iter = m_fontIdMap.find(fontId);
-    ASSERT(iter == m_fontIdMap.end());
     if (iter != m_fontIdMap.end()) {
         //Avoid adding the same font ID repeatedly
         return false;
@@ -83,7 +81,6 @@ IFont* FontManager::GetIFont(const std::string& fontId, const DpiManager& dpi)
 
 IFont* FontManager::GetIFont(const std::string& fontId, uint32_t nZoomPercent)
 {
-    ASSERT(nZoomPercent != 0);
     if (nZoomPercent == 0) {
         nZoomPercent = 100;
     }
@@ -129,13 +126,11 @@ IFont* FontManager::GetIFont(const std::string& fontId, uint32_t nZoomPercent)
     else {
         fontInfo = iter->second;
     }
-    ASSERT(!realFontId.empty());
     if (realFontId.empty()) {
         //No such font ID
         return nullptr;
     }
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return nullptr;
     }
@@ -181,12 +176,10 @@ IFont* FontManager::GetIFont(const std::string& fontId, uint32_t nZoomPercent)
     }
 
     pFont = pRenderFactory->CreateIFont();
-    ASSERT(pFont != nullptr);
     if (pFont == nullptr) {
         return nullptr;
     }
     bool isInitOk = pFont->InitFont(fontInfo);
-    ASSERT(isInitOk);
     if (!isInitOk) {
         delete pFont;
         pFont = nullptr;
@@ -205,7 +198,6 @@ bool FontManager::HasFontId(const std::string& fontId) const
 
 bool FontManager::RemoveFontId(const std::string& fontId)
 {
-    ASSERT(fontId != m_defaultFontId);
     if (fontId == m_defaultFontId) {
         return false;
     }
@@ -281,7 +273,6 @@ bool FontManager::AddFontFile(const std::string& strFontFile, const std::string&
     if (pRenderFactory != nullptr) {
         pFontMgr = pRenderFactory->GetFontMgr();
     }
-    ASSERT(pFontMgr != nullptr);
     if (pFontMgr == nullptr) {
         return false;
     }
@@ -322,7 +313,6 @@ void FontManager::GetFontNameList(std::vector<std::string>& fontNameList) const
     if (pRenderFactory != nullptr) {
         pFontMgr = pRenderFactory->GetFontMgr();
     }
-    ASSERT(pFontMgr != nullptr);
     if (pFontMgr == nullptr) {
         return;
     }

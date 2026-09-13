@@ -253,7 +253,6 @@ Box* Shadow::AttachShadow(Box* pXmlRoot)
     if (IsSystemShadowEnabled()) {
         return pXmlRoot;
     }
-    ASSERT(m_pShadowBox == nullptr);
     if (m_pShadowBox != nullptr) {
         return pXmlRoot;
     }
@@ -297,7 +296,6 @@ bool Shadow::HasShadowBox() const
 void Shadow::DoAttachShadow(Box* pNewRoot, Box* pOrgRoot, bool bNewAttach, bool isMaximized) const
 {
     // Implementation logic: update as needed
-    ASSERT((pNewRoot != nullptr) && (pOrgRoot != nullptr));
     if ((pNewRoot == nullptr) || (pOrgRoot == nullptr)) {
         return;
     }

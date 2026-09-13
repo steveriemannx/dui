@@ -752,7 +752,6 @@ void TabCtrlItem::PaintTabItemSelected(IRender* pRender)
 
 void TabCtrlItem::AddTabItemPath(IPath* path, const UiRect& rect, UiSize roundSize) const
 {
-    ASSERT(path != nullptr);
     if (path == nullptr) {
         return;
     }

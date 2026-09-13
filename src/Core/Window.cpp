@@ -141,7 +141,6 @@ bool Window::SetRenderBackendType(RenderBackendType backendType)
     backendType = RenderBackendType::kRaster_BackendType;
     m_renderBackendType = backendType;
 #endif
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return false;
     }
@@ -179,7 +178,6 @@ bool Window::SetWindowIcon(const std::string& iconFilePath)
     }
     bool bRet = false;
     FilePath iconFullPath = GlobalManager::Instance().GetExistsResFullPath(GetResourcePath(), GetXmlPath(), FilePath(iconFilePath));
-    ASSERT(!iconFullPath.IsEmpty());
     if (iconFullPath.IsEmpty()) {
         return false;
     }
@@ -254,7 +252,6 @@ void Window::ParseWindowXml()
     }
 
     //Absolute paths are not supported for resource paths
-    ASSERT(!skinFolder.IsAbsolutePath());
     if (skinFolder.IsAbsolutePath()) {
         return;
     }
@@ -281,7 +278,6 @@ void Window::ParseWindowXml()
     }
     else {
         const FilePath xmlFilePath(xmlFile);
-        ASSERT(!xmlFilePath.IsAbsolutePath());
         if (xmlFilePath.IsAbsolutePath()) {
             return;
         }
@@ -319,7 +315,6 @@ void Window::PreInitWindow()
         return;
     }
     //Reinitialize the shadow attachment value based on whether the window is a layered window (true for a layered window, otherwise false)
-    ASSERT(m_shadow == nullptr);
     if (m_shadow != nullptr) {
         return;
     }
@@ -537,7 +532,6 @@ Box* Window::GetXmlRoot() const
 
 bool Window::InitControls(Control* pControl)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return false;
     }
@@ -1290,7 +1284,6 @@ bool Window::Paint(const UiRect& rcPaint)
 {
     GlobalManager::Instance().AssertUIThread();
     IRender* pRender = GetRender();
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return false;
     }
@@ -1797,7 +1790,6 @@ bool Window::HandleMouseEnterLeave(const UiPoint& pt, uint32_t modifierKey, bool
             return false;
         }
     }
-    ASSERT(pNewHover == m_pEventHover);
     if (pNewHover != m_pEventHover) {
         return false;
     }
@@ -2080,8 +2072,6 @@ void Window::OnButtonDown(EventType eventType, const UiPoint& pt, const NativeMs
     Shadow* pShadow = GetShadow();
     SetLastMousePos(pt);
     Control* pControl = FindControl(pt);
-    fprintf(stderr, "[WBtnDown] pt=%d,%d control=%p name=%s\n", pt.x, pt.y, (void*)pControl, pControl ? pControl->GetName().c_str() : "");
-    fflush(stderr);
     if (pControl != nullptr) {
         std::weak_ptr<WeakFlag> controlFlag = pControl->GetWeakFlag();
         std::weak_ptr<WeakFlag> clickFlag;
@@ -2141,8 +2131,6 @@ void Window::OnButtonUp(EventType eventType, const UiPoint& pt, const NativeMsg&
         return;
     }
     SetLastMousePos(pt);
-    fprintf(stderr, "[WBtnUp] pt=%d,%d eventClick=%p\n", pt.x, pt.y, (void*)m_pEventClick.get());
-    fflush(stderr);
     if (m_pEventClick != nullptr) {
         EventArgs msgData;
         msgData.modifierKey = modifierKey;
@@ -2819,15 +2807,12 @@ void Window::ProcessFullscreenButtonMouseMove(const UiPoint& pt)
 
 bool Window::SetFullscreenControl(Control* pFullscreenControl, const std::string& exitButtonClass)
 {
-    ASSERT(pFullscreenControl != nullptr);
     if (pFullscreenControl == nullptr) {
         return false;
     }
-    ASSERT(m_pRoot != nullptr);
     if (m_pRoot == nullptr) {
         return false;
     }
-    ASSERT(m_pRoot.get() != pFullscreenControl);
     if (m_pRoot.get() == pFullscreenControl) {
         return false;
     }

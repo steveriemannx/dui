@@ -1,8 +1,10 @@
 # dui Production Readiness
 
-**Status:** assessment complete, remediation not started
-**Baseline:** branch `production`, commit `a353844b` (identical to `main` at time of writing)
-**Date:** 2026-09-13
+**Status:** assessment complete; Wave 1 partially done (see below)
+**Baseline:** assessed at `a353844b`; status updated at `574e59a7`
+**Date:** 2026-09-13 (revised)
+**Companion documents:** [`modern.md`](modern.md) — language and build modernization;
+[`string.md`](string.md) — the string-encoding question
 
 ## Verdict
 
@@ -24,6 +26,35 @@ from the library's own example code (P0-2).
 
 The encouraging part: every P0 item is a small, local change. None of them require
 re-architecting anything.
+
+**And that is not a hypothetical.** Working on the string encoding (see `string.md`)
+turned up a defect that this assessment had *not* predicted, and it was a hard crash
+rather than a cosmetic bug — see [P0-5](#p0-5-fixed-non-bmp-text-aborted-the-process-in-skia).
+It was found only because someone read the code; no test, no CI run and no amount of
+"it works on my machine" would have surfaced it.
+
+---
+
+## Status: what has been done
+
+Wave 1 was partially executed after this assessment was written. The rest is untouched.
+
+| Item | State | Commit |
+|---|---|---|
+| Render path made encoding-agnostic (`HorizontalDrawText` / `VerticalDrawText`) | **done** | `574e59a7` |
+| Non-BMP text crash in Skia glyph lookup (P0-5) | **done** | `574e59a7` |
+| `StringConvert` fixed 8192-element buffer (8–32 KB alloc+zero per call) | **done** | `574e59a7` |
+| Unit test covering the UTF-16 decode branch | **done** | `574e59a7` |
+| `DString`/`DUI_T`/`DUI_UNICODE` removed — strings are UTF-8 `std::string` everywhere | **done on a branch, Windows-unverified** | `eaa70572` (`utf8string`) |
+| P0-1 `ASSERT` guard | **open** | — |
+| P0-2 dispatch use-after-free | **open** | — |
+| P0-3 stray `fprintf` | **open** | — |
+| P0-4 Wayland `ScreenCapture` missing return | **open** | — |
+| CI | **open** | — |
+| Sanitizers | **open** | — |
+
+**None of the four original P0 items have been fixed.** They are all still ~1–3 line
+changes, and they remain the cheapest correctness work available in this repository.
 
 ---
 
@@ -138,6 +169,41 @@ function body is an empty comment, and the non-void function falls off the end.
 Undefined behaviour; returns a garbage `std::shared_ptr`, which likely crashes on
 destruction.
 
+### P0-5. (fixed) Non-BMP text aborted the process in Skia
+
+Not in the original assessment. Found while working on the string model; fixed in
+`574e59a7`.
+
+`HorizontalDrawText` and `VerticalDrawText` converted their input to UTF-16 and then
+walked it **one UTF-16 code unit at a time**, measuring and drawing each unit
+separately (`HorizontalDrawText.cpp:74`, `:731`). A character outside the BMP occupies
+two units, so it was split into two isolated surrogates. The second half of the bug is
+what made it fatal: each lone surrogate was handed to `SkFont::measureText` as if it
+were a whole character.
+
+On macOS that aborts inside Skia:
+
+```
+abort  <-  sk_malloc_flags
+SkTypeface_Mac::onCharsToGlyphs  <-  SkFont::measureText
+ui::HorizontalDrawText::CalculateTextCharBounds
+ui::HorizontalDrawText::DrawString
+```
+
+Reproduced directly: the pre-fix build dies with `SIGABRT` when the render example's
+text page contains an emoji; the post-fix build runs indefinitely. Two crash reports
+on the development machine confirm it, and it is not a fringe case — any user typing
+an emoji into a `RichEdit` reaches this path.
+
+The fix iterates by code point, in the `DString`'s own encoding, and hands Skia the
+byte range of one whole character. See `string.md` for why this was possible without
+touching the public API.
+
+**Why this is in the P0 list even though it is fixed:** it is the strongest available
+demonstration of the thesis at the top of this document. The defect was reachable from
+library example code, was a hard crash, and was invisible to every mechanical check the
+project currently has. The only reason it is fixed is that a human read the code.
+
 ---
 
 ## P1 — Engineering infrastructure (entirely absent)
@@ -152,6 +218,39 @@ destruction.
 | **Crash handling** | No `set_terminate`, no minidump, no reporting | No post-mortem data from production crashes |
 | **Layout/render tests** | Tests cover utilities and strings only | Layout engine, rendering, hit-testing, event dispatch: **zero coverage** |
 | **Benchmarks** | `PerformanceUtil` exists but has **zero call sites** in the library | No way to measure render or layout performance |
+| **Cross-platform build** | **No CI, and no Windows machine reachable** | Windows is a first-class target that is never compiled. Demonstrated below. |
+
+### The Windows gap is not theoretical
+
+On 2026-09-13 the Windows build host (`steve@192.168.0.107`, see
+`Progress.md:156-166`) was unreachable. That mattered immediately: the string
+unification on branch `utf8string` (`eaa70572`) required Windows-only boundary
+conversions, roughly ten of which were written and **not one of them could be compiled**.
+
+Worse, that branch is **pixel-identical to the previous build on macOS** — full build
+clean, `ctest` 4/4, screenshots matching to the last pixel. Every local signal says it
+is correct. It is nonetheless expected to fail on Windows, because on macOS the change
+is provably a no-op while on Windows it changes the string type.
+
+This is the shape of the problem: **the platform that breaks is the platform that is
+never built.** A CI job that compiles the library and runs `ctest` on Windows is worth
+more than any amount of care on the development machine.
+
+### A cheap way to keep Windows honest
+
+For the string work specifically, the migration can be staged so that it is
+continuously compiled rather than discovered in a cliff:
+
+```cmake
+option(DUI_STRING_UTF8 "Use UTF-8 internally on all platforms" OFF)
+```
+
+With the default `OFF` the existing behaviour is preserved exactly, and CI can build
+`Windows + DUI_STRING_UTF8=ON` **without shipping it**. Breakages surface one at a
+time. When that job is green, flip the default; then delete the option.
+
+The general lesson applies beyond strings: **add the CI matrix entry before making the
+change, not after.**
 
 ---
 
@@ -217,30 +316,35 @@ in the current CMake. The actual work lives in `.tmp_NativeWindow_X11.*` and
 
 ## Recommended sequence
 
-Ordered so each stage makes the next one cheaper.
+Ordered so each stage makes the next one cheaper. Items marked ✅ are done.
 
 **Wave 1 — half a day, low risk, immediate payoff**
 
-1. Change the `ASSERT` guard to `#if !defined(NDEBUG)` (P0-1). One line; revives ~2,700
-   checks in Debug.
-2. Delete the five `fprintf` calls (P0-3).
-3. Fix `EventSource::operator()` to snapshot before dispatch (P0-2).
-4. Add the missing `return` in the Wayland `ScreenCapture` path (P0-4).
-5. Stand up a minimal CI: configure, build, `ctest`. The regression net comes first.
+1. ☐ Change the `ASSERT` guard to `#if !defined(NDEBUG)` (P0-1). **One line**; revives
+   ~2,700 checks in Debug. Still the highest ratio of value to effort in this document.
+2. ☐ Delete the five `fprintf` calls (P0-3).
+3. ☐ Fix `EventSource::operator()` to snapshot before dispatch (P0-2).
+4. ☐ Add the missing `return` in the Wayland `ScreenCapture` path (P0-4).
+5. ☐ Stand up a minimal CI: configure, build, `ctest`, **on Windows as well as macOS**.
+   The regression net comes first — and the Windows job is the one that has been
+   missing for the project's whole life.
 
 **Wave 2 — once CI exists**
 
-6. Add ASan/UBSan CMake options and run them in CI. This will likely surface more
-   memory errors beyond P0-2.
-7. Give `LogUtil` severity levels and a macOS/X11 sink, so resource-load failures
+6. ☐ Add ASan/UBSan CMake options and run them in CI. Expect more findings beyond
+   P0-2; the crash in P0-5 was in territory these would have covered.
+7. ☐ Give `LogUtil` severity levels and a macOS/X11 sink, so resource-load failures
    stop being silent.
+8. ✅ (done ahead of schedule) The render path no longer transcodes; see `string.md`
+   for why this was a prerequisite for both remaining encoding choices.
 
 **Wave 3 — needs design decisions**
 
-8. Shared library, version number, SOVERSION — requires solving `DUI_API` symbol
-   export first.
-9. An error-code scheme to replace "return false + dead assert".
-10. Linux/FreeBSD IME and font fallback. High effort, requires real-hardware
+9. ☐ Shared library, version number, SOVERSION — requires solving `DUI_API` symbol
+   export first. **Decide the string encoding before this**, because it is an ABI
+   break and becomes a Qt5→Qt6-scale event once a SONAME exists (`string.md`).
+10. ☐ An error-code scheme to replace "return false + dead assert".
+11. ☐ Linux/FreeBSD IME and font fallback. High effort, requires real-hardware
     verification.
 
 ---
@@ -248,10 +352,26 @@ Ordered so each stage makes the next one cheaper.
 ## Appendix: method
 
 Four parallel surveys (build/packaging, tests and quality, runtime robustness,
-platform integration) over the tree at `a353844b`. Findings cited with file and line
-were read directly; the P0 items in particular were each confirmed by opening the
-source rather than taken from the surveys' summaries.
+platform integration) over the tree at `a353844b`, followed by direct verification of
+each load-bearing claim. Findings cited with file and line were read directly; the P0
+items in particular were each confirmed by opening the source rather than taken from
+the surveys' summaries.
 
-Known limitation: **no Windows host was available.** All Windows-platform claims
-here are from reading code, not from building or running. `Progress.md:145-160`
+Subsequently revised against work done at `574e59a7` and `eaa70572`: the status
+section, P0-5, and the Windows-verification note are new; the sequence now carries
+completion markers.
+
+Two things this assessment got wrong, recorded so they are not re-derived:
+
+- It did **not** predict the P0-5 crash. The render path was surveyed for encoding
+  cost, and the surrogate-splitting defect underneath it was missed. Cost analysis
+  and correctness analysis are not the same activity, and this document only did the
+  former for that code.
+- The original wording implied the Windows gap was a survey limitation. It is worse
+  than that: it is a **standing condition of the project**. The `utf8string` work made
+  that concrete — a change that is pixel-identical on macOS and expected to fail on
+  Windows, with no way to check.
+
+Known limitation, unchanged: **no Windows host was available.** All Windows-platform
+claims here are from reading code, not from building or running. `Progress.md:145-160`
 records the same gap independently.

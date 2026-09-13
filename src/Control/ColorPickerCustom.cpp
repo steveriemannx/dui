@@ -592,7 +592,6 @@ void ColorPickerCustom::OnHSVChanged(ChangeReason reason)
     }
 
     int nRet = ColorConvert::HSV2RGB(hsvH / 1.0, hsvS / 100.0, hsvV / 100.0, rgbR, rgbG, rgbB);
-    ASSERT(nRet == 0);
     if (nRet != 0) {
         return;
     }
@@ -624,7 +623,6 @@ void ColorPickerCustom::OnHSLChanged(ChangeReason reason)
     }
 
     int nRet = ColorConvert::HSL2RGB(hslH / 1.0, hslS / 100.0, hslL / 100.0, rgbR, rgbG, rgbB);
-    ASSERT(nRet == 0);
     if (nRet != 0) {
         return;
     }

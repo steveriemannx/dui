@@ -569,7 +569,6 @@ HRESULT RichEditHost::TxGetScrollBars(DWORD* pdwScrollBar)
 
 HRESULT RichEditHost::TxGetPasswordChar(_Out_ TCHAR* pch)
 {
-    ASSERT(pch != nullptr);
     if (pch == nullptr) {
         return NOERROR;
     }
@@ -616,7 +615,6 @@ HRESULT RichEditHost::OnTxParaFormatChange(const PARAFORMAT*/*ppf*/)
 
 HRESULT RichEditHost::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits)
 {
-    ASSERT(pdwBits != nullptr);
     if (pdwBits == nullptr) {
         return S_OK;
     }
@@ -754,7 +752,6 @@ bool RichEditHost::IsReadOnly() const
 
 void RichEditHost::SetPasswordChar(WCHAR chPasswordChar)
 {
-    ASSERT(chPasswordChar != '\0');
     if (chPasswordChar == '\0') {
         return;
     }
@@ -970,7 +967,6 @@ void RichEditHost::SetClientRect(const UiRect& rc)
         return;
     }
     m_rcClient = rc;
-    ASSERT(m_pRichEdit != nullptr);
     if (m_pRichEdit == nullptr) {
         return;
     }

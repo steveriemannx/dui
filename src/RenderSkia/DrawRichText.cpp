@@ -91,7 +91,6 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
                                         std::vector<std::vector<UiRect>>* pRichTextRects)
 {
     PerformanceStat statPerformance("DrawRichText::InternalDrawRichText");
-    ASSERT((m_pRender != nullptr) && (m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pRender == nullptr) || (m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return;
     }
@@ -100,7 +99,6 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
     if (rcTextRect.IsEmpty()) {
         return;
     }
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return;
     }
@@ -110,7 +108,6 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
     rcDrawRect.Offset(-szScrollOffset.cx, -szScrollOffset.cy);
 
     if ((pLineInfoParam != nullptr) || (pDrawRichTextCache != nullptr)) {
-        ASSERT(bMeasureOnly);
         if (!bMeasureOnly) {
             return;
         }
@@ -148,7 +145,6 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
     if (pLineInfoParam != nullptr) {
         //Set the starting line number
         nLineNumber = (uint32_t)pLineInfoParam->m_nStartLineIndex;
-        ASSERT(pLineInfoParam->m_pLineInfoList != nullptr);
         if (pLineInfoParam->m_pLineInfoList == nullptr) {
             return;
         }
@@ -209,11 +205,9 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
         }
         else {
             spSkiaFont.reset(pRenderFactory->CreateIFont());
-            ASSERT(spSkiaFont != nullptr);
             if (spSkiaFont == nullptr) {
                 continue;
             }
-            ASSERT(textData.m_pFontInfo != nullptr);
             if (textData.m_pFontInfo == nullptr) {
                 continue;
             }
@@ -224,12 +218,10 @@ void DrawRichText::InternalDrawRichText(const UiRect& rcTextRect,
         }
 
         Font_Skia* pSkiaFont = dynamic_cast<Font_Skia*>(spSkiaFont.get());
-        ASSERT(pSkiaFont != nullptr);
         if (pSkiaFont == nullptr) {
             continue;
         }
         const SkFont* pSkFont = pSkiaFont->GetFontHandle();
-        ASSERT(pSkFont != nullptr);
         if (pSkFont == nullptr) {
             continue;
         }
@@ -691,7 +683,6 @@ bool DrawRichText::IsValidDrawRichTextCache(const UiRect& textRect,
                                             const std::vector<RichTextData>& richTextData,
                                             const std::shared_ptr<DrawRichTextCache>& spDrawRichTextCache)
 {
-    ASSERT((m_pRender != nullptr) && (m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pRender == nullptr) || (m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return false;
     }
@@ -759,11 +750,9 @@ bool DrawRichText::UpdateDrawRichTextCache(std::shared_ptr<DrawRichTextCache>& s
                                            const std::vector<int32_t>& rowRectTopList)
 {
     PerformanceStat statPerformance("DrawRichText::UpdateDrawRichTextCache");
-    ASSERT((m_pRender != nullptr) && (m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pRender == nullptr) || (m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return false;
     }
-    ASSERT(spOldDrawRichTextCache != nullptr);
     if (spOldDrawRichTextCache == nullptr) {
         return false;
     }
@@ -808,15 +797,12 @@ bool DrawRichText::UpdateDrawRichTextCache(std::shared_ptr<DrawRichTextCache>& s
     if (spUpdateDrawRichTextCache != nullptr) {
         DrawRichTextCache& updateData = *spUpdateDrawRichTextCache;
         if (!updateData.m_pendingTextData.empty()) {//The container may be empty (empty when this line is an empty line)
-            ASSERT(updateData.m_textRect == oldData.m_textRect);
             if (updateData.m_textRect != oldData.m_textRect) {
                 return false;
             }
-            ASSERT(updateData.m_textEncoding == oldData.m_textEncoding);
             if (updateData.m_textEncoding != oldData.m_textEncoding) {
                 return false;
             }
-            ASSERT(updateData.m_textCharSize == oldData.m_textCharSize);
             if (updateData.m_textCharSize != oldData.m_textCharSize) {
                 return false;
             }
@@ -894,27 +880,22 @@ bool DrawRichText::UpdateDrawRichTextCache(std::shared_ptr<DrawRichTextCache>& s
 
 bool DrawRichText::IsDrawRichTextCacheEqual(const DrawRichTextCache& first, const DrawRichTextCache& second) const
 {
-    ASSERT((m_pRender != nullptr) && (m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pRender == nullptr) || (m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return false;
     }
 
-    ASSERT(first.m_textRect == second.m_textRect);
     if (first.m_textRect != second.m_textRect) {
         return false;
     }
 
-    ASSERT(first.m_textEncoding == second.m_textEncoding);
     if (first.m_textEncoding != second.m_textEncoding) {
         return false;
     }
 
-    ASSERT(first.m_textCharSize == second.m_textCharSize);
     if (first.m_textCharSize != second.m_textCharSize) {
         return false;
     }
 
-    ASSERT(first.m_richTextData.size() == second.m_richTextData.size());
     if (first.m_richTextData.size() != second.m_richTextData.size()) {
         return false;
     }
@@ -922,41 +903,32 @@ bool DrawRichText::IsDrawRichTextCacheEqual(const DrawRichTextCache& first, cons
     for (size_t nIndex = 0; nIndex < nDataCount; ++nIndex) {
         const RichTextData& v1 = first.m_richTextData[nIndex];
         const RichTextData& v2 = second.m_richTextData[nIndex];
-        ASSERT(v1.m_textView == v2.m_textView);
         if (v1.m_textView != v2.m_textView) {
             return false;
         }
-        ASSERT(v1.m_textColor == v2.m_textColor);
         if (v1.m_textColor != v2.m_textColor) {
             return false;
         }
-        ASSERT(v1.m_bgColor == v2.m_bgColor);
         if (v1.m_bgColor != v2.m_bgColor) {
             return false;
         }
-        ASSERT((v1.m_pFontInfo != nullptr) && (v2.m_pFontInfo != nullptr));
         if ((v1.m_pFontInfo == nullptr) || (v2.m_pFontInfo == nullptr)) {
             return false;
         }
-        ASSERT(*v1.m_pFontInfo == *v2.m_pFontInfo);
         if (*v1.m_pFontInfo != *v2.m_pFontInfo) {
             return false;
         }
-        ASSERT(v1.m_fRowSpacingMul == v2.m_fRowSpacingMul);
         if (v1.m_fRowSpacingMul != v2.m_fRowSpacingMul) {
             return false;
         }
-        ASSERT(v1.m_fRowSpacingAdd == v2.m_fRowSpacingAdd);
         if (v1.m_fRowSpacingAdd != v2.m_fRowSpacingAdd) {
             return false;
         }
-        ASSERT(v1.m_textStyle == v2.m_textStyle);
         if (v1.m_textStyle != v2.m_textStyle) {
             return false;
         }
     }
 
-    ASSERT(first.m_pendingTextData.size() == second.m_pendingTextData.size());
     if (first.m_pendingTextData.size() != second.m_pendingTextData.size()) {
         return false;
     }
@@ -967,61 +939,47 @@ bool DrawRichText::IsDrawRichTextCacheEqual(const DrawRichTextCache& first, cons
         const TPendingDrawRichText& v2 = *second.m_pendingTextData[nIndex];
 
         //m_nDataIndex: this value does not need to be compared
-        ASSERT(v1.m_nLineNumber == v2.m_nLineNumber);
         if (v1.m_nLineNumber != v2.m_nLineNumber) {
             return false;
         }
-        ASSERT(v1.m_nRowIndex == v2.m_nRowIndex);
         if (v1.m_nRowIndex != v2.m_nRowIndex) {
             return false;
         }
-        ASSERT(v1.m_textView == v2.m_textView);
         if (v1.m_textView != v2.m_textView) {
             return false;
         }
-        ASSERT(v1.m_destRect == v2.m_destRect);
         if (v1.m_destRect != v2.m_destRect) {
             return false;
         }
 
-        ASSERT((v1.m_spFont != nullptr) && (v2.m_spFont != nullptr));
         if ((v1.m_spFont == nullptr) || (v2.m_spFont == nullptr)) {
             return false;
         }
-        ASSERT(v1.m_spFont->FontName() == v2.m_spFont->FontName());
         if (v1.m_spFont->FontName() != v2.m_spFont->FontName()) {
             return false;
         }
-        ASSERT(v1.m_spFont->FontSize() == v2.m_spFont->FontSize());
         if (v1.m_spFont->FontSize() != v2.m_spFont->FontSize()) {
             return false;
         }
-        ASSERT(v1.m_spFont->IsBold() == v2.m_spFont->IsBold());
         if (v1.m_spFont->IsBold() != v2.m_spFont->IsBold()) {
             return false;
         }
-        ASSERT(v1.m_spFont->IsUnderline() == v2.m_spFont->IsUnderline());
         if (v1.m_spFont->IsUnderline() != v2.m_spFont->IsUnderline()) {
             return false;
         }
-        ASSERT(v1.m_spFont->IsItalic() == v2.m_spFont->IsItalic());
         if (v1.m_spFont->IsItalic() != v2.m_spFont->IsItalic()) {
             return false;
         }
-        ASSERT(v1.m_spFont->IsStrikeOut() == v2.m_spFont->IsStrikeOut());
         if (v1.m_spFont->IsStrikeOut() != v2.m_spFont->IsStrikeOut()) {
             return false;
         }
         
-        ASSERT(v1.m_textColor == v2.m_textColor);
         if (v1.m_textColor != v2.m_textColor) {
             return false;
         }
-        ASSERT(v1.m_bgColor == v2.m_bgColor);
         if (v1.m_bgColor != v2.m_bgColor) {
             return false;
         }
-        ASSERT(v1.m_textStyle == v2.m_textStyle);
         if (v1.m_textStyle != v2.m_textStyle) {
             return false;
         }
@@ -1037,12 +995,10 @@ void DrawRichText::DrawRichTextCacheData(const std::shared_ptr<DrawRichTextCache
                                          std::vector<std::vector<UiRect>>* pRichTextRects)
 {
     PerformanceStat statPerformance("DrawRichText::DrawRichTextCacheData");
-    ASSERT((m_pRender != nullptr) && (m_pSkCanvas != nullptr) && (m_pSkPaint != nullptr) && (m_pSkPointOrg != nullptr));
     if ((m_pRender == nullptr) || (m_pSkCanvas == nullptr) || (m_pSkPaint == nullptr) || (m_pSkPointOrg == nullptr)) {
         return;
     }
 
-    ASSERT(spDrawRichTextCache != nullptr);
     if (spDrawRichTextCache == nullptr) {
         return;
     }
@@ -1128,7 +1084,6 @@ void DrawRichText::DrawRichTextCacheData(const std::shared_ptr<DrawRichTextCache
 void DrawRichText::DrawTextString(const UiRect& textRect, const std::string& strText, uint32_t uFormat,
                                  const SkPaint& skPaint, IFont* pFont) const
 {
-    ASSERT(!strText.empty());
     if (strText.empty()) {
         return;
     }
@@ -1143,17 +1098,14 @@ void DrawRichText::DrawTextString(const UiRect& textRect,
                                   uint32_t uFormat, const SkPaint& skPaint, IFont* pFont) const
 {
     SkCanvas* skCanvas = m_pSkCanvas;
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return;
     }
     Font_Skia* pSkiaFont = dynamic_cast<Font_Skia*>(pFont);
-    ASSERT(pSkiaFont != nullptr);
     if (pSkiaFont == nullptr) {
         return;
     }
     const SkFont* pSkFont = pSkiaFont->GetFontHandle();
-    ASSERT(pSkFont != nullptr);
     if (pSkFont == nullptr) {
         return;
     }

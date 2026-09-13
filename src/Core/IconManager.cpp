@@ -79,7 +79,6 @@ uint32_t IconManager::AddIcon(const uint8_t* pBitmapData, int32_t nBitmapDataSiz
     if ((pBitmapData == nullptr) || (nBitmapDataSize < 1) || (nBitmapWidth < 1) || (nBitmapHeight < 1)) {
         return 0;
     }
-    ASSERT(nBitmapDataSize == nBitmapHeight * nBitmapWidth * 4);
     if (nBitmapDataSize != nBitmapHeight * nBitmapWidth * 4) {
         return 0;
     }
@@ -104,7 +103,6 @@ uint32_t IconManager::AddIconBitmapData(IconBitmapData& bitmapData)
 
 uint32_t IconManager::AddIcon(const std::string& imageString)
 {
-    ASSERT(!imageString.empty());
     if (imageString.empty()) {
         return 0;
     }
@@ -257,7 +255,6 @@ static bool IconToBitmap(HICON hIcon, IconBitmapData& bitmapData)
                                      reinterpret_cast<void**>(&bits),
                                      nullptr,
                                      0);
-    ASSERT(dib != nullptr);
     if (dib == nullptr)    {
         ::ReleaseDC(hWnd, hdc);
         return false;
