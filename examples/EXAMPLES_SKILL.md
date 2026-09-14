@@ -334,9 +334,20 @@ attributes identical across XML / generated / pure-code variants.
 Use the common and binary resource CMake modules:
 
 ```cmake
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
+
+add_executable(<name>
+    MainForm.cpp
+    main.cpp
+)
+target_link_libraries(<name> PRIVATE dui::app)
+dui_finalize_app(<name>)
 ```
+
+`dui_app.cmake` includes `dui_common.cmake` itself. The application owns its target and
+lists its sources — do not glob them. `dui_finalize_app` sets the output directory, the
+Windows entry point, the macOS `.app` bundle and its code signature, and the build-order
+dependencies. `examples/hello/CMakeLists.txt` is the smallest complete example.
 
 The runtime resource directory is copied beside the executable.
 
@@ -361,7 +372,10 @@ set(EMBED_RES_PATHS
     "fonts"
     "lang")
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")
+
+add_executable(<name> ...)
+target_link_libraries(<name> PRIVATE dui::app)
+dui_finalize_app(<name>)
 ```
 
 Every image referenced by an embedded layout must be present in the active
@@ -378,7 +392,7 @@ The generated archive must be rebuilt after changing `EMBED_RES_PATHS` or
 adding resource files. A successful compile alone does not prove that an image
 can be loaded; verify the generated archive contains the referenced assets.
 
-For gen mode, also configure generation before `dui_bin.cmake`:
+For gen mode, also configure generation before `dui_finalize_app()`:
 
 ```cmake
 set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${EXAMPLE_THEME}/<name>/<name>.xml")

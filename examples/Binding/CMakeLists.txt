@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 4.0)
 
 # MSVC runtime library flags are selected by an abstraction.
 set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
@@ -6,19 +6,25 @@ set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
 # Define project name and language
 project(Binding CXX)
 
-# dui source root
+# dui source root, and the build entry point (it includes dui_common.cmake itself).
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
-# Project source directory
-get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE)
+# The application owns its target: sources are listed, not globbed.
+add_executable(Binding
+    MainForm.cpp
+    main.cpp
+)
 
-# Include the common implementation
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")
+target_link_libraries(Binding PRIVATE dui::app)
+
+# Output directory, Windows entry point, the macOS .app bundle and its code signature,
+# and build ordering for the Skia archive and any generated code.
+dui_finalize_app(Binding)
 
 # The window UI is loaded from the shared theme resources
 # (resources/themes/<platform-default>/binding/binding.xml, copied next to the
-# executable by the global dui resource copy in dui_bin.cmake).
+# executable by the resource sync in dui_common.cmake).
 
 if(NOT DUI_MVVM_AVAILABLE)
     message(FATAL_ERROR

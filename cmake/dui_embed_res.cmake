@@ -113,5 +113,6 @@ add_custom_command(
 add_custom_target("${PROJECT_NAME}_embed_res" DEPENDS "${GENERATED_INC}")
 list(APPEND DUI_GENERATED_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 
-# Stash for dui_bin_*.cmake to add the dependency
+# Kept for callers that still read it; dui_finalize_app() wires the dependency onto the
+# application target by name, so nothing has to consume this any more.
 set(DUI_EMBED_RES_SRC "${GENERATED_INC}" CACHE INTERNAL "")
