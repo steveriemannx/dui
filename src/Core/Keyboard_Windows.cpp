@@ -1,4 +1,5 @@
 #include "dui/Core/Keyboard.h"
+#include "dui/Utils/StringConvert.h"
 
 #if defined (DUI_BUILD_FOR_WIN)
 
@@ -49,9 +50,11 @@ std::string Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool fExtended)
         nScanCode |= 0x01000000L;
     }
 
-    TCHAR szStr[MAX_PATH] = { 0 };
-    ::GetKeyNameText(nScanCode << 16, szStr, MAX_PATH);
-    return std::string(szStr);
+    // wchar_t rather than TCHAR: the string model is UTF-8 everywhere now, and the key
+    // name comes back from the W API, so it is converted once on the way out.
+    wchar_t szStr[MAX_PATH] = { 0 };
+    ::GetKeyNameTextW(nScanCode << 16, szStr, MAX_PATH);
+    return StringConvert::WStringToUTF8(szStr);
 }
 
 } // namespace ui

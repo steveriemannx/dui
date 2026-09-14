@@ -487,8 +487,18 @@ set(SKIA_HDRS
 set(SKIA_SRCS
     ${SKIA_SRC_ROOT_DIR}/tools/window/WindowContext.cpp
     ${SKIA_SRC_ROOT_DIR}/tools/window/GLWindowContext.cpp
-    ${SKIA_SRC_ROOT_DIR}/tools/window/unix/RasterWindowContext_unix.cpp
 )
+
+# Skia's unix raster window context is not compilable off unix -- it includes
+# XlibWindowInfo.h, which includes <X11/X.h>. dui compiles these Skia sources into the
+# library, and this one used to be listed unconditionally, so a Windows build tried to
+# compile X11 code. dui's own RenderSkia/SkRasterWindowContext_Windows.cpp is what the
+# Windows build uses; Skia's Windows variant is not referenced at all.
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    list(APPEND SKIA_SRCS
+        ${SKIA_SRC_ROOT_DIR}/tools/window/unix/RasterWindowContext_unix.cpp
+    )
+endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # macOS: the Metal window-context base (requires the Metal-enabled libskia.a)

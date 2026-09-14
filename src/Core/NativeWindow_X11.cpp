@@ -1,11 +1,15 @@
 #include "dui/Core/NativeWindow_X11.h"
 #include "dui/Core/MessageLoop_X11.h"
 #include "dui/Utils/StringConvert.h"
+
+// Inside the guard: this file is compiled on Windows and macOS too, where its whole body
+// is switched off and it only has to be an empty translation unit. Outside the guard, an
+// empty file still needed X11 installed to compile.
+#ifdef DUI_BUILD_FOR_X11
+
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
-
-#ifdef DUI_BUILD_FOR_X11
 struct MotifWmHints_X11 { unsigned long flags; unsigned long functions; unsigned long decorations; long inputMode; unsigned long status; };
 static void SetUndecorated_X11(Display* display, Window window) { Atom property = XInternAtom(display, "_MOTIF_WM_HINTS", False); MotifWmHints_X11 hints{}; hints.flags = 1UL << 1; hints.decorations = 0; XChangeProperty(display, window, property, property, 32, PropModeReplace, reinterpret_cast<unsigned char*>(&hints), 5); }
 static ui::UiRect GetWorkArea_X11(Display* display)
