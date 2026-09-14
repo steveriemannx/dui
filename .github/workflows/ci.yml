@@ -99,12 +99,12 @@
 
 name: CI
 
+# Manual runs only (Actions tab -> CI -> Run workflow): pushes and PRs no longer
+# trigger anything. Switch `on:` back to push/pull_request to restore that.
 on:
-  push:
-  pull_request:
   workflow_dispatch:
 
-# A new push to the same branch cancels the previous run: a cold Skia build (the most
+# A new run on the same ref cancels the previous one: a cold Skia build (the most
 # expensive thing here) is not worth running twice over.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
