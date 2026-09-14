@@ -1209,7 +1209,7 @@ private:
 
     /** The image shown when gaining focus
     */
-    Image* m_pFocusedImage;
+    std::unique_ptr<Image> m_pFocusedImage;
 
     /** The clear button (only valid in non-read-only mode)
     */
@@ -1234,7 +1234,7 @@ private:
 private:
     /** Text content management interface
     */
-    RichEditData* m_pTextData;
+    std::unique_ptr<RichEditData> m_pTextData;
 
 private:
     /** The start character of the selection

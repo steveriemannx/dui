@@ -7,6 +7,9 @@
 #if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Control/RichEditCtrl_Windows.h"
+//m_pControlDropTarget is a std::unique_ptr, so the complete type is required
+//wherever a RichEdit is destroyed (the forward declaration below is not enough)
+#include "dui/Core/ControlDropTarget.h"
 
 /** Define a macro switch that determines whether the RichText feature is supported (enabled by default)
 */
@@ -1204,7 +1207,7 @@ private:
 
     /** The image shown when gaining focus
     */
-    Image* m_pFocusedImage;
+    std::unique_ptr<Image> m_pFocusedImage;
 
     /** The clear button (only valid in non-read-only mode)
     */
@@ -1273,7 +1276,7 @@ private:
 
     /** The implementation interface of the drag and drop feature; if not null, the feature is enabled
     */
-    ControlDropTarget_Windows* m_pControlDropTarget;
+    std::unique_ptr<ControlDropTarget_Windows> m_pControlDropTarget;
 };
 
 } // namespace ui

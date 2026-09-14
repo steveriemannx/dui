@@ -349,13 +349,9 @@ RichEdit::RichEdit(Window* pWindow) :
     m_sPromptColor(),
     m_sPromptText(),
     m_drawCaretFlag(),
-    m_pFocusedImage(nullptr),
     m_bUseControlCursor(false),
     m_bEnableWheelZoom(false),
     m_bEnableDefaultContextMenu(false),
-#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
-    m_pControlDropTarget(nullptr),
-#endif
     m_bDisableTextChangeEvent(false),
     m_maxNumber(INT_MAX),
     m_minNumber(INT_MIN),
@@ -376,21 +372,11 @@ RichEdit::RichEdit(Window* pWindow) :
 
 RichEdit::~RichEdit()
 {
-#ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
-    if (m_pControlDropTarget != nullptr) {
-        delete m_pControlDropTarget;
-        m_pControlDropTarget = nullptr;
-    }
-#endif
     if( m_pRichHost != nullptr) {
         m_richCtrl.SetTextServices(nullptr);
         m_pRichHost->ShutdownTextServices();
         m_pRichHost->Release();
         m_pRichHost = nullptr;
-    }
-    if (m_pFocusedImage != nullptr) {
-        delete m_pFocusedImage;
-        m_pFocusedImage = nullptr;
     }
     m_pLimitChars.reset();
 }
@@ -3005,7 +2991,7 @@ std::string RichEdit::GetFocusedImage()
 void RichEdit::SetFocusedImage( const std::string& strImage )
 {
     if (m_pFocusedImage == nullptr) {
-        m_pFocusedImage = new Image;
+        m_pFocusedImage = std::make_unique<Image>();
     }
     m_pFocusedImage->SetImageString(strImage, Dpi());
     Invalidate();
@@ -3019,8 +3005,8 @@ void RichEdit::PaintStateImages(IRender* pRender)
 
     if (IsFocused()) {
         if (m_pFocusedImage != nullptr) {
-            PaintImage(pRender, m_pFocusedImage);
-        }        
+            PaintImage(pRender, m_pFocusedImage.get());
+        }
         PaintPromptText(pRender);
     }
     else {
@@ -3824,13 +3810,10 @@ void RichEdit::SetEnableDragDrop(bool bEnable)
         return;
     }
     if (bEnable) {
-        m_pControlDropTarget = new RichEditDropTarget(this, m_pRichHost->GetTextServices());
+        m_pControlDropTarget = std::make_unique<RichEditDropTarget>(this, m_pRichHost->GetTextServices());
     }
     else {
-        if (m_pControlDropTarget != nullptr) {
-            delete m_pControlDropTarget;
-            m_pControlDropTarget = nullptr;
-        }
+        m_pControlDropTarget.reset();
     }
 }
 
@@ -3845,7 +3828,7 @@ ControlDropTarget_Windows* RichEdit::GetControlDropTarget()
         //Read-only mode, password mode, and disabled mode: disable the drag-and-drop feature
         return nullptr;
     }
-    return m_pControlDropTarget;
+    return m_pControlDropTarget.get();
 }
 
 ControlDropTarget_Wayland* RichEdit::GetControlDropTarget_Wayland()

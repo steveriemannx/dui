@@ -48,7 +48,6 @@ RichEdit::RichEdit(Window* pWindow) :
     m_sPromptColor(),
     m_sPromptText(),
     m_drawCaretFlag(),
-    m_pFocusedImage(nullptr),
     m_bUseControlCursor(false),
     m_nZoomPercent(100),
     m_bEnableWheelZoom(false),
@@ -83,7 +82,6 @@ RichEdit::RichEdit(Window* pWindow) :
     m_bRMouseDown(false),
     m_bInMouseMove(false),
     m_pMouseSender(nullptr),
-    m_pTextData(nullptr),
     m_sSelectionBkColor("CornflowerBlue"),
     m_sInactiveSelectionBkColor("DarkGray"),
     m_sCurrentRowBkColor(""),
@@ -92,20 +90,14 @@ RichEdit::RichEdit(Window* pWindow) :
     m_fRowSpacingMul(1.0f),
     m_fRowSpacingAdd(0.0f)
 {
-    m_pTextData = new RichEditData(this);
+    //RichEditData takes the owner as its protected base interface, so the
+    //conversion has to happen here rather than inside std::make_unique
+    m_pTextData = std::unique_ptr<RichEditData>(new RichEditData(this));
 }
 
 RichEdit::~RichEdit()
 {
-    if (m_pFocusedImage != nullptr) {
-        delete m_pFocusedImage;
-        m_pFocusedImage = nullptr;
-    }
     m_pLimitChars.reset();
-    if (m_pTextData != nullptr) {
-        delete m_pTextData;
-        m_pTextData = nullptr;
-    }
     std::string internalFontId = GetInternalFontId();
     if (GlobalManager::Instance().Font().HasFontId(internalFontId)) {
         GlobalManager::Instance().Font().RemoveFontId(internalFontId);
@@ -2362,7 +2354,7 @@ std::string RichEdit::GetFocusedImage()
 void RichEdit::SetFocusedImage( const std::string& strImage )
 {
     if (m_pFocusedImage == nullptr) {
-        m_pFocusedImage = new Image;
+        m_pFocusedImage = std::make_unique<Image>();
     }
     m_pFocusedImage->SetImageString(strImage, Dpi());
     Invalidate();
@@ -2376,8 +2368,8 @@ void RichEdit::PaintStateImages(IRender* pRender)
 
     if (IsFocused()) {
         if (m_pFocusedImage != nullptr) {
-            PaintImage(pRender, m_pFocusedImage);
-        }        
+            PaintImage(pRender, m_pFocusedImage.get());
+        }
         PaintPromptText(pRender);
     }
     else {
