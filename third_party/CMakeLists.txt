@@ -19,6 +19,12 @@ endif()
 add_subdirectory(cximage)   # target: dui-cximage
 add_subdirectory(libpng)    # target: png_static（OUTPUT_NAME dui-png）
 add_library(dui-png ALIAS png_static)
+# libpng keeps its own target name and only its output file is renamed, so without this
+# the installed package would export it as dui::png_static -- the one name in the dui::
+# namespace that does not look like the others, and a name that means nothing to a
+# consumer. The target keeps libpng's name in-tree (tests and the install list refer to
+# it), and the alias above is what dui's own code links.
+set_target_properties(png_static PROPERTIES EXPORT_NAME dui-png)
 add_subdirectory(libwebp)   # target: dui-webp
 
 # libcef 内建：统一从下载的 cef_binary 发行包构建 wrapper（Windows/Mac/Linux 一致；

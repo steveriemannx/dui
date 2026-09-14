@@ -1,0 +1,137 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 0,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "description": "Common settings. Builds into build-presets/<preset>, which keeps the preset trees out of the hand-configured build/ and build-u8string/ directories.",
+      "binaryDir": "${sourceDir}/build-presets/${presetName}",
+      "cacheVariables": {
+        "DUI_BUILD_TESTS": "ON",
+        "DUI_EXAMPLES_MODE": "ALL",
+        "DUI_ENABLE_MVVM": "OFF"
+      }
+    },
+    {
+      "name": "release",
+      "inherits": "base",
+      "displayName": "Release",
+      "description": "Release build, examples in all three development modes.",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "debug",
+      "inherits": "base",
+      "displayName": "Debug",
+      "description": "Debug build. ASSERT() is live here since 2812c547 (the guard is now NDEBUG-based) and in Release it compiles out, so this is the configuration that checks the library's internal invariants.",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "sanitize",
+      "inherits": "base",
+      "displayName": "Debug + ASan/UBSan",
+      "description": "Debug build with AddressSanitizer and UndefinedBehaviorSanitizer. See DUI_ENABLE_SANITIZERS. Skia is built with ASan too, into lib/<config>-asan, and that is not optional: an instrumented dui linked against the uninstrumented Skia disagrees with it about the layout of every type containing a SkTArray, and ASan then reports heap-buffer-overflows inside objects Skia allocated. Expect a full Skia build the first time this preset is used in a tree.",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "DUI_ENABLE_SANITIZERS": "ON"
+      }
+    },
+    {
+      "name": "cef",
+      "inherits": "base",
+      "displayName": "Release + CEF",
+      "description": "Release build with the CEF browser integration and the cef/CefBrowser examples. CEF is downloaded by cmake/dui_deps.cmake on first configure.",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "DUI_ENABLE_CEF": "ON",
+        "DUI_BUILD_CEF_EXAMPLES": "ON"
+      }
+    },
+    {
+      "name": "mvvm",
+      "inherits": "base",
+      "displayName": "Release + data binding",
+      "description": "Release build with the optional MVVM data-binding module (docs/Binding.md).",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "DUI_ENABLE_MVVM": "ON",
+        "DUI_BUILD_MVVM_EXAMPLES": "ON"
+      }
+    },
+    {
+      "name": "xml",
+      "inherits": "base",
+      "displayName": "Release, XML examples only",
+      "description": "Only the XML-mode examples, for a much shorter build.",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "DUI_EXAMPLES_MODE": "XML"
+      }
+    },
+    {
+      "name": "gen",
+      "inherits": "base",
+      "displayName": "Release, generated-code examples only",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "DUI_EXAMPLES_MODE": "GEN"
+      }
+    },
+    {
+      "name": "code",
+      "inherits": "base",
+      "displayName": "Release, pure-code examples only",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "DUI_EXAMPLES_MODE": "CODE"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "release", "configurePreset": "release" },
+    { "name": "debug", "configurePreset": "debug" },
+    { "name": "sanitize", "configurePreset": "sanitize" },
+    { "name": "cef", "configurePreset": "cef" },
+    { "name": "mvvm", "configurePreset": "mvvm" },
+    { "name": "xml", "configurePreset": "xml" },
+    { "name": "gen", "configurePreset": "gen" },
+    { "name": "code", "configurePreset": "code" }
+  ],
+  "testPresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "error" }
+    },
+    {
+      "name": "release",
+      "inherits": "base",
+      "configurePreset": "release"
+    },
+    {
+      "name": "debug",
+      "inherits": "base",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "sanitize",
+      "inherits": "base",
+      "configurePreset": "sanitize",
+      "description": "Runs the sanitized tests. Note: no detect_leaks here on purpose. LeakSanitizer does not exist in the macOS ASan runtime, and asking for it there is fatal, not ignored: the process exits at startup with 'AddressSanitizer: detect_leaks is not supported on this platform'. Leak detection is on by default on Linux anyway. halt_on_error=0 keeps a run going so that one crash does not hide the errors behind it; a run is still reported as failed.",
+      "environment": {
+        "ASAN_OPTIONS": "abort_on_error=0",
+        "UBSAN_OPTIONS": "print_stacktrace=1:halt_on_error=0"
+      }
+    }
+  ]
+}

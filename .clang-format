@@ -1,0 +1,88 @@
+# clang-format configuration for dui.
+#
+# This describes the style the code is already written in, so that formatting a
+# file shows only the change you made, not a reflow of the surrounding code.
+# The tree is NOT bulk-reformatted: apply this to new code and to files you are
+# already editing.
+#
+# The brace style is the part worth reading. dui is NOT plain Allman: functions,
+# classes, structs, enums and namespaces put the brace on its own line, while
+# control statements (if/for/while/switch) keep it on the same line. A stock
+# "BasedOnStyle: Allman" gets this wrong in both directions and would rewrite
+# every `if` in the codebase.
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# p99 of the existing sources is 138 columns, p90 is 76. 120 is close enough to
+# the observed style that formatting a file does not rewrap most of it.
+ColumnLimit: 120
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterStruct: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  # Control statements keep their brace on the same line, as written throughout
+  # the codebase: `if (p != nullptr) {`, `switch (type) {`.
+  AfterControlStatement: Never
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+# `public:` / `private:` sit at the class's own indentation level.
+AccessModifierOffset: -4
+IndentCaseLabels: false
+NamespaceIndentation: None
+
+# `Control* pControl`, not `Control *pControl`.
+PointerAlignment: Left
+DerivePointerAlignment: false
+ReferenceAlignment: Left
+
+# One initialiser per line, with the colon left at the end of the constructor
+# line and commas at the end of each initialiser — the shape used throughout:
+#     EventArgs::EventArgs() :
+#         eventType(EventType::kEventNone),
+#         vkCode(VirtualKeyCode::kVK_None)
+# AfterColon is spelled AfterComma from clang-format 10 onwards; both names are
+# accepted, BeforeColon/BeforeComma is the leading-comma style dui does not use.
+BreakConstructorInitializers: AfterColon
+PackConstructorInitializers: Never
+
+# Short inline accessors stay on one line, as in Box.h:
+#     void SetAutoDestroyChild(bool bAuto) { m_bAutoDestroyChild = bAuto; }
+# Measured over 40 files: Inline produces the least diff (4060 lines) against
+# this tree, versus All (5604) and None (4066).
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+
+# Keep include blocks exactly as authored. They are already grouped (project
+# headers, then system) and sorted within each group; letting clang-format
+# reorder them turns an unrelated edit into a noisy diff.
+SortIncludes: false
+
+# Comments are left exactly as written. Without this, clang-format rewrites the
+# common `//no space after the slashes` form to `// with a space`, which alone
+# accounts for a large share of the diff on every file in the tree.
+ReflowComments: false
+
+# The codebase habitually separates the include block from the first declaration
+# with two blank lines; the LLVM default of 1 collapses them.
+MaxEmptyLinesToKeep: 2
+
+SpaceBeforeParens: ControlStatements
+SpacesBeforeTrailingComments: 1

@@ -11,7 +11,45 @@ elseif(WIN32)
     # The Windows system libraries are represented on dui::dui by the export.
 endif()
 
+# Resolve the dependencies the exported targets name. Being a static library does
+# not make this optional: CMake records a static library's private dependencies in
+# its interface as $<LINK_ONLY:...>, and that is still a target reference. Left
+# unresolved, find_package(dui) fails at generate time with "the following imported
+# targets are referenced, but are missing" -- before any consumer code is configured.
+if(NOT WIN32)
+    # The same branch that links them into dui (the non-Wayland, non-FreeBSD one).
+    find_dependency(Freetype REQUIRED)
+    find_dependency(Fontconfig REQUIRED)
+endif()
+# dui::dui-png is exported alongside dui and carries ZLIB::ZLIB on its interface.
+find_dependency(ZLIB REQUIRED)
+
 include("${CMAKE_CURRENT_LIST_DIR}/duiTargets.cmake")
+
+# dui::app and dui_finalize_app(), so an application built against the installed
+# package is written the same way an in-tree example is.
+include("${CMAKE_CURRENT_LIST_DIR}/dui_app.cmake")
+
+# Skia is compiled by dui rather than taken from the system (cmake/dui_deps.cmake: a
+# pinned upstream commit plus third_party/skia-patches/dui.patch, built with gn + ninja),
+# so the package ships its archives and this recreates the import. dui is a static
+# library: it does not resolve their symbols. Without this, find_package(dui) succeeds and
+# every program that actually calls into dui fails to link on sk_*/Sk* symbols.
+if(NOT TARGET dui::skia)
+    add_library(dui::skia INTERFACE IMPORTED)
+    target_link_libraries(dui::skia INTERFACE
+@DUI_SKIA_IMPORT_CODE@    )
+endif()
+
+if(TARGET dui::skia)
+    # Appended, not prepended: for a static library the archive that satisfies the symbols
+    # has to come after the one that references them, so Skia follows libdui.a.
+    set_property(TARGET dui::dui APPEND PROPERTY INTERFACE_LINK_LIBRARIES dui::skia)
+else()
+    message(FATAL_ERROR
+        "dui: this package carries no Skia archives, so nothing that uses dui can be "
+        "linked against it. Reinstall from a build that had Skia built.")
+endif()
 
 set(DUI_RESOURCES_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_DATADIR@/dui/resources")
 set(dui_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
