@@ -82,7 +82,12 @@ void ToolTip::TImpl::SetMouseTracking(const WindowBase* pParentWnd, bool bTracki
     if (pParentWnd == nullptr) {
         return;
     }
-    if (bTracking && !m_bMouseTracking) {
+    //Tracking is armed on every mouse move, not only the first one after the last
+    //WM_MOUSELEAVE: the OS registration is one-shot, while m_bMouseTracking only mirrors
+    //what the last caller asked for. Skipping the re-arm while that flag was still set
+    //meant the window stopped getting WM_MOUSELEAVE at all, so a hovered control kept
+    //its highlight after the pointer had left the window.
+    if (bTracking) {
         TRACKMOUSEEVENT tme = { 0 };
         tme.cbSize = sizeof(TRACKMOUSEEVENT);
         tme.dwFlags = TME_HOVER | TME_LEAVE;
@@ -158,7 +163,15 @@ void ToolTip::TImpl::ShowToolTip(const WindowBase* pParentWnd,
         ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFOW, 0, (LPARAM)&m_ToolTip);
         ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ToolTip);
     }
-    ::SendMessage(m_hwndTooltip, TTM_TRACKPOSITION, 0, (LPARAM)(DWORD)MAKELONG(trackPos.x, trackPos.y));
+    //TTM_TRACKPOSITION expects screen coordinates, while trackPos is in the parent
+    //window's client coordinates (same contract as the macOS implementation, which
+    //converts it the same way): without the conversion the tooltip lands as many
+    //pixels away from the pointer as the window's origin.
+    UiPoint ptTrack = trackPos;
+    if (pParentWnd->NativeWnd() != nullptr) {
+        pParentWnd->NativeWnd()->ClientToScreen(ptTrack);
+    }
+    ::SendMessage(m_hwndTooltip, TTM_TRACKPOSITION, 0, (LPARAM)(DWORD)MAKELONG(ptTrack.x, ptTrack.y));
     m_hParentWnd = hParentWnd;
 }
 

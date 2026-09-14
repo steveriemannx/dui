@@ -795,6 +795,11 @@ protected:
     * @return Returns the result of processing the message; if the application handled the message it should return zero
     */
     virtual LRESULT OnMouseMoveMsg(const UiPoint& pt, uint32_t modifierKey, bool bFromNC, const NativeMsg& nativeMsg, bool& bHandled) override;
+    /** Whether the point is inside the window's resize border.
+     *  Such a point belongs to the non-client frame (the system reports HTTOP/HTLEFT/...),
+     *  so no control is considered hovered there even though a control may be under it.
+     */
+    bool IsPtInResizeBorder(const UiPoint& pt) const;
 
     /** Mouse hover message (WM_MOUSEHOVER)
     * @param [in] pt The mouse position, in client coordinates

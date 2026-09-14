@@ -1774,14 +1774,18 @@ LRESULT Window::OnMouseMoveMsg(const UiPoint& pt, uint32_t modifierKey, bool bFr
     }
 #endif
 
-    //Whether ToolTip needs to be handled (not for NC messages, because handling them triggers WM_MOUSEMOVE, which affects the flow)
+    //Whether the ToolTip has to be evaluated (not for NC messages, because handling
+    //them triggers WM_MOUSEMOVE, which affects the flow)
     bool bProcessToolTip = !bFromNC;
 
     bHandled = false;
     LRESULT lResult = 0;
-    if (bProcessToolTip) {
-        m_toolTip->SetMouseTracking(this, true);
-    }
+    //The mouse-leave tracking has to be (re-)armed for non-client moves as well: the
+    //caption bar is reported as non-client, so a pointer that leaves the window that
+    //way (e.g. moving up or right off the caption buttons, which are client controls)
+    //would otherwise never produce a WM_MOUSELEAVE and the hover of the last control
+    //would stay behind.
+    m_toolTip->SetMouseTracking(this, true);
     SetLastMousePos(pt);
 
     // Do not move the focus to the new control when the mouse is pressed
@@ -1815,10 +1819,35 @@ LRESULT Window::OnMouseMoveMsg(const UiPoint& pt, uint32_t modifierKey, bool bFr
 }
 
 
+bool Window::IsPtInResizeBorder(const UiPoint& pt) const
+{
+    //The resize border is drawn inside the window (the client area covers the whole
+    //window), but the system reports it as a non-client hit (HTTOP/HTLEFT/...). A
+    //pointer there is resizing the window, not hovering whatever control it overlaps.
+    if (IsWindowMaximized()) {
+        return false;
+    }
+    const UiRect& rcSizeBox = GetSizeBox();
+    if ((rcSizeBox.left <= 0) && (rcSizeBox.top <= 0) && (rcSizeBox.right <= 0) && (rcSizeBox.bottom <= 0)) {
+        return false;
+    }
+    UiRect rcClient;
+    GetClientRect(rcClient);
+    const UiPadding rcShadow = GetCurrentShadowCorner();
+    rcClient.Deflate(rcShadow);
+    if ((pt.x < rcClient.left) || (pt.x > rcClient.right) || (pt.y < rcClient.top) || (pt.y > rcClient.bottom)) {
+        return false;
+    }
+    return (pt.x < (rcClient.left + rcSizeBox.left)) ||
+           (pt.x > (rcClient.right - rcSizeBox.right)) ||
+           (pt.y < (rcClient.top + rcSizeBox.top)) ||
+           (pt.y > (rcClient.bottom - rcSizeBox.bottom));
+}
+
 bool Window::HandleMouseEnterLeave(const UiPoint& pt, uint32_t modifierKey, bool bHideToolTip)
 {
     std::weak_ptr<WeakFlag> windowFlag = GetWeakFlag();
-    ControlPtr pNewHover = ControlPtr(FindControl(pt));
+    ControlPtr pNewHover = IsPtInResizeBorder(pt) ? ControlPtr() : ControlPtr(FindControl(pt));
     //Set the new Hover control (the m_pEventHover value must be set first, otherwise the Enter/Leave mouse message handling logic in Control::HandleEvent conflicts)
     ControlPtr pOldHover = m_pEventHover;
     m_pEventHover = pNewHover;
@@ -1909,6 +1938,18 @@ LRESULT Window::OnMouseHoverMsg(const UiPoint& pt, uint32_t modifierKey, const N
 LRESULT Window::OnMouseLeaveMsg(const NativeMsg& /*nativeMsg*/, bool& bHandled)
 {
     bHandled = false;
+    //The pointer can still be on this window when WM_MOUSELEAVE arrives: a popup that
+    //belongs to it (the ToolTip window, the Windows 11 snap-layout flyout, ...) taking
+    //the mouse posts the leave although the pointer never left the window. Acting on it
+    //would drop the highlight of the control under the pointer, so the hover (and the
+    //ToolTip) is only cleared when the pointer really has left the window.
+    UiPoint ptCursor;
+    GetCursorPos(ptCursor);
+    UiRect rcWindow;
+    GetWindowRect(rcWindow);
+    if (rcWindow.ContainsPt(ptCursor)) {
+        return 0;
+    }
     m_toolTip->HideToolTip();
     m_toolTip->ClearMouseTracking();
     return 0;
