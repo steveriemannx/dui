@@ -1,6 +1,7 @@
 #include "dui/Core/GlobalManager.h"
 #include "dui/Utils/StringUtil.h"
 #include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/LogUtil.h"
 #include "dui/Core/Window.h"
 #include "dui/Core/Control.h"
 #include "dui/Core/Box.h"
@@ -178,6 +179,9 @@ bool GlobalManager::Startup(const ResourceParam& resParam,
     if (!StartInnerThread(ThreadIdentifier::kThreadWorker) ||
         !StartInnerThread(ThreadIdentifier::kThreadImage1) ||
         !StartInnerThread(ThreadIdentifier::kThreadImage2)) {
+        //Startup() returns false here, and a caller that ignores the result runs with
+        //no worker or image-decode threads at all
+        DUI_LOG_ERROR("the internal worker threads could not be started; startup failed");
         Shutdown();
         return false;
     }
@@ -357,6 +361,7 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
     if (resParam.GetResType() == ResourceType::kLocalFiles) {
         //In the form of local files, all resources exist as local files
         if (strResourcePath.IsEmpty()) {
+            DUI_LOG_ERROR("no resource path was given; no theme, font or image resource can be found");
             return false;
         }
     }
@@ -367,6 +372,8 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
         if (!bResOpenOk) {
             //No assert: the check above is the contract, and a bad resource blob
             //is exactly what it exists to report.
+            DUI_LOG_ERROR(StringUtil::Printf("the embedded resource data (%u bytes) could not be opened; no theme, font or image resource can be found",
+                                             (uint32_t)param.nSize));
             return false;
         }
     }
@@ -433,9 +440,15 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
                 if (pBox != nullptr) {
                     pBox->Invalidate();
                 }
-            }            
+            }
         }
     }
+    //The paths that were resolved are the answer to "why is the theme not applied",
+    //and they are not visible anywhere else
+    DUI_LOG_INFO(StringUtil::Printf("resources loaded: theme root \"%s\", global xml \"%s\", fonts \"%s\"",
+                                    GetResourcePath().ToString().c_str(),
+                                    resParam.globalXmlFileName.c_str(),
+                                    GetFontFilePath().ToString().c_str()));
     return true;
 }
 
@@ -627,6 +640,18 @@ FilePath GlobalManager::GetExistsResFullPath(const FilePath& windowResPath,
                 }
             }
         }
+    }
+    if (imageFullPath.IsEmpty() && !resPath.IsEmpty()) {
+        //Every image, icon and cursor path goes through here, and an empty result
+        //means the caller draws nothing: without this line the only trace is a
+        //missing picture
+        std::string requestText;
+        if (!windowXmlPath.IsEmpty()) {
+            requestText = StringUtil::Printf(" (requested by \"%s\")", windowXmlPath.ToString().c_str());
+        }
+        DUI_LOG_WARN(StringUtil::Printf("resource \"%s\" was not found%s; the image, icon or cursor that names it is not drawn",
+                                        resPath.ToString().c_str(),
+                                        requestText.c_str()));
     }
     ASSERT(!imageFullPath.IsEmpty() && !resPath.IsEmpty() && "Image File Not Found!");
     return imageFullPath;

@@ -4,6 +4,7 @@
 #include "dui/Render/IRender.h"
 #include "dui/Utils/StringUtil.h"
 #include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/LogUtil.h"
 
 namespace ui 
 {
@@ -27,6 +28,11 @@ bool FontManager::AddFont(const std::string& fontId, const UiFont& fontInfo, boo
 
     ASSERT(fontInfo.m_fontSize > 0);
     if (fontInfo.m_fontSize <= 0) {
+        //The assert above is gone in a release build, and without this line the font
+        //id is simply missing from then on
+        DUI_LOG_WARN(StringUtil::Printf("font \"%s\" was not added: size %d is not a usable size",
+                                        fontId.c_str(),
+                                        fontInfo.m_fontSize));
         return false;
     }
 
@@ -138,11 +144,13 @@ IFont* FontManager::GetIFont(const std::string& fontId, uint32_t nZoomPercent)
     //Initialize the default font family names
     IFontMgr* pFontMgr = pRenderFactory->GetFontMgr();
     if (!m_bDefaultFontInited && !m_defaultFontFamilyNames.empty() && (pFontMgr != nullptr)) {
+        std::string missingFontNames;
         auto pos = m_defaultFontFamilyNames.begin();
         while (pos != m_defaultFontFamilyNames.end()) {
             const std::string& fontFamilyName = *pos;
             if (!pFontMgr->HasFontName(fontFamilyName)) {
                 //Remove fonts that do not exist
+                missingFontNames += StringUtil::Printf("\"%s\" ", fontFamilyName.c_str());
                 pos = m_defaultFontFamilyNames.erase(pos);
             }
             else {
@@ -150,8 +158,20 @@ IFont* FontManager::GetIFont(const std::string& fontId, uint32_t nZoomPercent)
             }
         }
         m_bDefaultFontInited = true;
+        StringUtil::TrimRight(missingFontNames);
         if (!m_defaultFontFamilyNames.empty()) {
             pFontMgr->SetDefaultFontName(m_defaultFontFamilyNames.front());
+            if (!missingFontNames.empty()) {
+                //A font that is configured but not installed is otherwise invisible:
+                //the text simply comes out in another face
+                DUI_LOG_WARN(StringUtil::Printf("default font families not installed: %s; text uses \"%s\"",
+                                                missingFontNames.c_str(),
+                                                m_defaultFontFamilyNames.front().c_str()));
+            }
+        }
+        else {
+            DUI_LOG_WARN(StringUtil::Printf("none of the default font families is installed (%s); text uses the platform's default typeface",
+                                            missingFontNames.c_str()));
         }
     }
 
@@ -181,6 +201,10 @@ IFont* FontManager::GetIFont(const std::string& fontId, uint32_t nZoomPercent)
     }
     bool isInitOk = pFont->InitFont(fontInfo);
     if (!isInitOk) {
+        DUI_LOG_WARN(StringUtil::Printf("font \"%s\" (face \"%s\", size %d) could not be created; text using it falls back to the default font",
+                                        realFontId.c_str(),
+                                        fontInfo.m_fontName.c_str(),
+                                        (int32_t)fontInfo.m_fontSize));
         delete pFont;
         pFont = nullptr;
         return nullptr;
@@ -288,6 +312,11 @@ bool FontManager::AddFontFile(const std::string& strFontFile, const std::string&
     else {
         //Load from the file
         bRet = pFontMgr->LoadFontFile(fontFilePath.ToString());
+    }
+    if (!bRet) {
+        //The font is not registered at all, so every font id that names it silently
+        //resolves to the default face
+        DUI_LOG_WARN(StringUtil::Printf("font file \"%s\" could not be loaded", fontFilePath.ToString().c_str()));
     }
     ASSERT(bRet);
     return bRet;

@@ -57,6 +57,7 @@
 #include "dui/Utils/StringConvert.h"
 #include "dui/Utils/AttributeUtil.h"
 #include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/LogUtil.h"
 
 #include "third_party/xml/pugixml.hpp"
 #include <set>
@@ -239,10 +240,23 @@ bool WindowBuilder::ParseXmlData(const std::string& xmlFileData, const FilePath&
                                                            xmlFileData.size() * sizeof(std::string::value_type),
                                                            pugi::parse_default, encoding);
         isLoaded = result.status == pugi::status_ok;
+        if (!isLoaded) {
+            //No assert: malformed XML is input, not a programming error, and this is the
+            //path that reports it.
+            DUI_LOG_ERROR(StringUtil::Printf("cannot parse xml \"%s\" (%u bytes): %s (at offset %d)",
+                                             xmlFilePath.ToString().c_str(),
+                                             (uint32_t)xmlFileData.size(),
+                                             result.description(),
+                                             (int32_t)result.offset));
+        }
+    }
+    else {
+        //The data is not XML text. This overload does not read files, so there is
+        //nothing left to try, and the caller gets no layout without this line.
+        DUI_LOG_ERROR(StringUtil::Printf("xml \"%s\" does not start with '<'; it is not xml text and this call does not read files",
+                                         xmlFilePath.ToString().c_str()));
     }
     if (!isLoaded) {
-        //No assert: malformed XML is input, not a programming error, and this is the
-        //path that reports it.
         return false;
     }
     m_xmlFilePath = xmlFilePath;
@@ -263,6 +277,11 @@ bool WindowBuilder::ParseXmlData(const std::vector<unsigned char>& xmlFileData, 
     if (!isLoaded) {
         //No assert: malformed XML is input, not a programming error, and this is the
         //path that reports it.
+        DUI_LOG_ERROR(StringUtil::Printf("cannot parse xml \"%s\" (%u bytes): %s (at offset %d)",
+                                         xmlFilePath.ToString().c_str(),
+                                         (uint32_t)xmlFileData.size(),
+                                         result.description(),
+                                         (int32_t)result.offset));
         return false;
     }
     m_xmlFilePath = xmlFilePath;
@@ -295,6 +314,11 @@ bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& wi
             if (GlobalManager::Instance().MemoryResources().GetData(sFile, file_data)) {
                 pugi::xml_parse_result result = m_xml->load_buffer(file_data.data(), file_data.size());
                 if (result.status != pugi::status_ok) {
+                    DUI_LOG_ERROR(StringUtil::Printf("cannot parse xml \"%s\" from the embedded resources (%u bytes): %s (at offset %d)",
+                                                     sFile.ToString().c_str(),
+                                                     (uint32_t)file_data.size(),
+                                                     result.description(),
+                                                     (int32_t)result.offset));
                     ASSERT(!"WindowBuilder::ParseXmlFile load xml from memory data failed!");
                     return false;
                 }
@@ -323,12 +347,32 @@ bool WindowBuilder::ParseXmlFile(const FilePath& xmlFilePath, const FilePath& wi
         }
         pugi::xml_parse_result result = m_xml->load_file(xmlFileFullPath.NativePathA().c_str());
         if (result.status != pugi::status_ok) {
+            //Covers both a missing file ("File was not found") and malformed xml
+            DUI_LOG_ERROR(StringUtil::Printf("cannot load xml file \"%s\" (requested as \"%s\"): %s (at offset %d)",
+                                             xmlFileFullPath.NativePathA().c_str(),
+                                             xmlFilePath.ToString().c_str(),
+                                             result.description(),
+                                             (int32_t)result.offset));
             ASSERT(!"WindowBuilder::ParseXmlFile load xml file failed!");
             return false;
         }
         isLoaded = true;
     }
     if (!isLoaded) {
+        //The layout is missing: the window is created without the controls it
+        //describes, and nothing else in the run says why
+        std::string searchedRoots;
+        for (const FilePath& root : resRoots) {
+            searchedRoots += StringUtil::Printf(" \"%s\"", root.ToString().c_str());
+        }
+        std::string windowResPathText;
+        if (!windowResPath.IsEmpty()) {
+            windowResPathText = StringUtil::Printf(", or under the window path \"%s\"", windowResPath.ToString().c_str());
+        }
+        DUI_LOG_ERROR(StringUtil::Printf("xml layout file \"%s\" was not found under%s%s",
+                                         xmlFilePath.ToString().c_str(),
+                                         searchedRoots.c_str(),
+                                         windowResPathText.c_str()));
         ASSERT(!"WindowBuilder::ParseXmlFile load xmlFilePath failed!");
         return false;
     }
@@ -1207,6 +1251,16 @@ Control* WindowBuilder::ParseXmlNodeChildren(const pugi::xml_node& xmlNode, Cont
 
         if(pControl == nullptr) {
             std::string nodeName = strClass;
+            std::string parentName = (pParent != nullptr) ? pParent->GetName() : std::string();
+            if (parentName.empty()) {
+                parentName = "(unnamed)";
+            }
+            //Nothing else reports this node: it creates no control, so a mistyped
+            //tag costs a piece of the layout and the xml still looks right
+            DUI_LOG_WARN(StringUtil::Printf("unknown xml node name <%s> under control \"%s\" in \"%s\"; no control was created for it",
+                                            nodeName.c_str(),
+                                            parentName.c_str(),
+                                            m_xmlFilePath.ToString().c_str()));
             ASSERT(!"Found unknown node name, can't create control!");
             continue;
         }
@@ -1303,6 +1357,11 @@ bool WindowBuilder::ParseRichTextXmlText(const std::string& xmlText, Control* pC
                                                     pugi::parse_default,
                                                     encoding);
     if (result.status != pugi::status_ok) {
+        DUI_LOG_ERROR(StringUtil::Printf("cannot parse the <RichText> body of control \"%s\" (%u bytes): %s (at offset %d)",
+                                         (pControl != nullptr) ? pControl->GetName().c_str() : "",
+                                         (uint32_t)xmlText.size(),
+                                         result.description(),
+                                         (int32_t)result.offset));
         ASSERT(!"WindowBuilder::ParseRichTextXmlText load xml text failed!");
         return false;
     }
@@ -1314,6 +1373,9 @@ bool WindowBuilder::ParseRichTextXmlText(const std::string& xmlText, Control* pC
     }
     rootName = root.name();
     if (rootName != DUI_CTR_RICHTEXT) {
+        DUI_LOG_WARN(StringUtil::Printf("the <RichText> body of control \"%s\" has root <%s> instead of <RichText>; the text is not shown",
+                                        (pControl != nullptr) ? pControl->GetName().c_str() : "",
+                                        rootName.c_str()));
         return false;
     }
     return ParseRichTextXmlNode(root, pControl, nullptr);
@@ -1410,6 +1472,8 @@ bool WindowBuilder::ParseRichTextXmlNode(const pugi::xml_node& xmlNode, RichText
         }
         else {
             //Ignore unknown nodes
+            DUI_LOG_WARN(StringUtil::Printf("unknown node name <%s> in a <RichText> body; the node is ignored",
+                                            nodeName.c_str()));
             ASSERT(!"Found unknown xml node name!");
             continue;
         }

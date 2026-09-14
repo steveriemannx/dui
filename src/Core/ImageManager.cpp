@@ -9,6 +9,7 @@
 #include "dui/Utils/StringConvert.h"
 #include "dui/Utils/FileUtil.h"
 #include "dui/Utils/FilePathUtil.h"
+#include "dui/Utils/LogUtil.h"
 
 #ifdef DUI_BUILD_FOR_WIN
     //#define OUTPUT_IMAGE_LOG 1
@@ -107,6 +108,8 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
                 GlobalManager::Instance().MemoryResources().GetData(imageFilePath, fileData);
                 if (fileData.empty()) {
                     //Load failed
+                    DUI_LOG_WARN(StringUtil::Printf("image \"%s\" is not in the embedded resources; the control draws without it",
+                                                    imageFullPath.c_str()));
                     return nullptr;
                 }
             }
@@ -128,6 +131,8 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
                     }                    
                     if (fileData.empty()) {
                         //Load failed
+                        DUI_LOG_WARN(StringUtil::Printf("image file \"%s\" could not be read; the control draws without the image",
+                                                        imageFilePath.ToString().c_str()));
                         return nullptr;
                     }
                 }
@@ -139,6 +144,8 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
                     }
                     if (fileHeaderData.empty()) {
                         //Load failed
+                        DUI_LOG_WARN(StringUtil::Printf("image file \"%s\" could not be read (its header is missing); the control draws without the image",
+                                                        imageFilePath.ToString().c_str()));
                         return nullptr;
                     }
                 }
@@ -184,12 +191,18 @@ std::shared_ptr<ImageInfo> ImageManager::GetImage(const ImageLoadParam& loadPara
         }        
         if (pImageData == nullptr) {
             //Load failed
+            DUI_LOG_WARN(StringUtil::Printf("image \"%s\" could not be decoded (no decoder accepted its format, or the data is damaged); the control draws without it",
+                                            imageFullPath.c_str()));
             return nullptr;
         }
 
         ASSERT((pImageData->GetWidth() > 0) && (pImageData->GetHeight() > 0));
         if ((pImageData->GetWidth() <= 0) || (pImageData->GetHeight() <= 0)) {
             //Load failed
+            DUI_LOG_WARN(StringUtil::Printf("image \"%s\" decoded to an invalid size (%d x %d); the control draws without it",
+                                            imageFullPath.c_str(),
+                                            pImageData->GetWidth(),
+                                            pImageData->GetHeight()));
             return nullptr;
         }
         //Assign, and add to the container (replace the delete function)
