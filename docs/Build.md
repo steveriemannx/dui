@@ -9,7 +9,7 @@ The CEF module setup is documented separately in [docs/CEF.md](CEF.md).
 (1) First install python3    
 (2) In the directory where `python.exe` is located, copy `python.exe` and rename the copy to `python3.exe`: so that `python3.exe` is accessible from the command line   
 (3) Verify from the command line: `> python3.exe --version` displays the Python version number     
-2. Install Git For Windows: version 2.44 (other versions work too); git needs to be added to the Path environment variable so that `git.exe` is accessible from the command line. (The build also uses git or `patch` — both ship with Git for Windows — to apply dui's Skia patch, `third_party/skia-patches/dui.patch`, so git has to be on Path even if you never invoke it yourself.)    
+2. Install Git For Windows: version 2.44 (other versions work too); git needs to be added to the Path environment variable so that `git.exe` is accessible from the command line. (The build also uses git or `patch` — both ship with Git for Windows — to apply dui's Skia patches, `third_party/skia-patches/`, so git has to be on Path even if you never invoke it yourself.)    
 3. Install Visual Studio; during installation, be sure to also select the correct Windows SDK version   
    It is recommended to install the Windows 11 SDK, because the CEF module depends on the Windows 11 SDK; the Windows 10 SDK will cause CEF-related modules to fail to compile;    
    If you don't use CEF, the Windows 10 SDK is fine
@@ -139,7 +139,7 @@ The X11 backend requires X11, Freetype, Fontconfig, pthread, and libdl developme
 
 **CMake 4.0 or newer is required** (`cmake_minimum_required(VERSION 4.0)` in `CMakeLists.txt`), and the `cmake` packages in the lists above are usually older than that — Ubuntu 24.04 ships 3.28, for example. Install a current one from Kitware (`https://apt.kitware.com`, the `cmake` tarballs on the Kitware GitHub releases page, or `pip install cmake`), then check with `cmake --version` before configuring.
 
-Skia is fetched automatically as upstream `google/skia` at a pinned commit plus the patch `third_party/skia-patches/dui.patch`, so applying it needs **`patch` or `git`** on PATH. `patch` ships with most distributions but is not in every list above; if configure stops with "needs either 'patch' or 'git' on PATH", install `patch` and re-run it.
+Skia is fetched automatically as upstream `google/skia` at a pinned commit plus the patch set in `third_party/skia-patches/`, so applying it needs **`patch` or `git`** on PATH. `patch` ships with most distributions but is not in every list above; if configure stops with "needs either 'patch' or 'git' on PATH", install `patch` and re-run it.
 
 ### II. Automated build with a script (recommended)
 The script automatically handles downloading and building the relevant source code.    

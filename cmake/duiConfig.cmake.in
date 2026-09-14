@@ -31,7 +31,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/duiTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/dui_app.cmake")
 
 # Skia is compiled by dui rather than taken from the system (cmake/dui_deps.cmake: a
-# pinned upstream commit plus third_party/skia-patches/dui.patch, built with gn + ninja),
+# pinned upstream commit plus the patches in third_party/skia-patches/, built with gn + ninja),
 # so the package ships its archives and this recreates the import. dui is a static
 # library: it does not resolve their symbols. Without this, find_package(dui) succeeds and
 # every program that actually calls into dui fails to link on sk_*/Sk* symbols.

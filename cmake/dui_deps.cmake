@@ -154,7 +154,7 @@ function(dui_deps_add_targets)
     # dependency tracking - keeping only progress and error lines visible, and
     # (c) prepends the directory of the gn binary (%~3) to PATH, since skia's
     # find_headers.py action runs a bare "gn" (a dui change, carried by
-    # third_party/skia-patches/dui.patch, not by upstream Skia).
+    # third_party/skia-patches/, not by upstream Skia).
     #   Usage: dui_ninja.bat <ninja> <build-dir> [gn-path] [target...]
     if(WIN32)
         set(DUI_NINJA_FILTER_BAT "${CMAKE_CURRENT_BINARY_DIR}/dui_ninja.bat")
@@ -474,12 +474,12 @@ endfunction()
 function(dui_deps_download_skia)
     # What is fetched is upstream Skia at one pinned commit, from google/skia, plus
     # dui's own changes held as a patch in this repository
-    # (third_party/skia-patches/dui.patch). The marker records both, because the
+    # (third_party/skia-patches/). The marker records both, because the
     # extracted tree alone cannot say which upstream commit or which patch revision
     # produced it -- so changing either one has to re-extract, or it would be
     # silently ignored.
     set(_skia_upstream_commit "34aa71b8bee4648a442b7125680232d803374f19")
-    set(_skia_patch_revision   "dui.2")  # bump whenever the patch set changes
+    set(_skia_patch_revision   "dui.3")  # bump whenever the patch set changes
     set(_skia_version "skia-${_skia_upstream_commit}+${_skia_patch_revision}")
     if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version")
         file(READ "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" _skia_have_version)

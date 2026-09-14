@@ -1,6 +1,6 @@
 # Third-Party Libraries Used
 
-Skia is not vendored: `third_party/skia` is produced at configure time from upstream `google/skia` at a pinned commit plus dui's own changes held as a patch (`third_party/skia-patches/dui.patch`), and then built with gn + ninja. The CEF binary distribution is downloaded automatically when missing.
+Skia is not vendored: `third_party/skia` is produced at configure time from upstream `google/skia` at a pinned commit plus dui's own changes held as a set of patches (`third_party/skia-patches/`), and then built with gn + ninja. The CEF binary distribution is downloaded automatically when missing.
 
 | Name     |Code subdirectory                 | Purpose                                 | License file        | License category          |
 | :---     | :---                      |:---                                  |:---               |:---               |

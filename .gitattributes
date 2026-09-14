@@ -1,6 +1,5 @@
-# The Skia customization patch is consumed byte-for-byte by `patch`, and its added
-# lines carry CRLF (they reproduce files that are CRLF in the tree dui builds). Git
-# normalizing line endings -- core.autocrlf defaults to true in Git for Windows --
-# would append a CR to every line of the patch, including the hunk headers, which
-# breaks both the syntax and the CRLF it is supposed to restore.
+# The Skia customization patches are applied verbatim by `patch`, and they are plain LF
+# text (the tree they produce is LF, like upstream). Git normalizing them would convert
+# the patch body to CRLF on a Windows checkout -- core.autocrlf defaults to true there --
+# at which point every context line stops matching the LF files it is meant to patch.
 third_party/skia-patches/*.patch -text
