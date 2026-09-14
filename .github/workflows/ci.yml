@@ -100,9 +100,22 @@
 name: CI
 
 # Manual runs only (Actions tab -> CI -> Run workflow): pushes and PRs no longer
-# trigger anything. Switch `on:` back to push/pull_request to restore that.
+# trigger anything. The platform input picks which job(s) to run; "all" keeps the
+# full matrix. Switch `on:` back to push/pull_request to restore auto-runs.
 on:
   workflow_dispatch:
+    inputs:
+      platform:
+        description: "Platform / job to build"
+        type: choice
+        required: true
+        default: all
+        options:
+          - all
+          - macOS
+          - Linux
+          - Windows
+          - sanitizers
 
 # A new run on the same ref cancels the previous one: a cold Skia build (the most
 # expensive thing here) is not worth running twice over.
@@ -116,6 +129,7 @@ jobs:
   # macOS / Linux / Windows: configure, build the library and the tests, run ctest.
   # ------------------------------------------------------------------------------------
   build:
+    if: inputs.platform == 'all' || contains(matrix.name, inputs.platform)
     name: build / ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
@@ -369,6 +383,7 @@ jobs:
   # same).
   # ------------------------------------------------------------------------------------
   sanitizers:
+    if: inputs.platform == 'all' || inputs.platform == 'sanitizers'
     name: sanitizers / macOS (ASan + UBSan)
     runs-on: macos-14
     timeout-minutes: 90
