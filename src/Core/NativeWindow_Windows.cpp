@@ -60,6 +60,13 @@ static bool UiIsWindows11OrGreater()
 //Timer ID for delayed display of the system menu
 #define UI_SYS_MEMU_TIMER_ID 711
 
+
+/** Side of the diagonal (corner) resize grip, DPI scaled.
+* It is intentionally larger than the border thickness reported by the window's
+* "size_box" attribute, which is what the corner zones used to be limited to.
+*/
+static constexpr int32_t kResizeCornerGrip = 10;
+
 NativeWindow_Windows::NativeWindow_Windows(INativeWindow* pOwner):
     m_pOwner(pOwner),
     m_hWnd(nullptr),
@@ -2391,9 +2398,38 @@ LRESULT NativeWindow_Windows::OnNcHitTestMsg(UINT uMsg, WPARAM /*wParam*/, LPARA
     m_pOwner->OnNativeGetShadowCorner(rcCorner);
     rcClient.Deflate(rcCorner);
 
+
+
     if (!IsWindowMaximized()) {
         //Not maximized state
         UiRect rcSizeBox = m_pOwner->OnNativeGetSizeBox();
+        //The diagonal corners are checked first, and are deliberately wider than the
+        //border bands: with the usual 4px size box the diagonal zone is only 4x4 px,
+        //so anything but a pixel-exact hit on the corner reports a horizontal or
+        //vertical resize (the cursor flips to the "left-right" arrow a few pixels
+        //away from the corner).
+        const int32_t nCornerGrip = m_pOwner->OnNativeGetDpi().GetScaleInt(kResizeCornerGrip);
+        const int32_t nCornerLeft = std::max(rcSizeBox.left, nCornerGrip);
+        const int32_t nCornerRight = std::max(rcSizeBox.right, nCornerGrip);
+        const int32_t nCornerTop = std::max(rcSizeBox.top, nCornerGrip);
+        const int32_t nCornerBottom = std::max(rcSizeBox.bottom, nCornerGrip);
+        if ((pt.x >= rcClient.left) && (pt.x < (rcClient.left + nCornerLeft))) {
+            if ((pt.y >= rcClient.top) && (pt.y < (rcClient.top + nCornerTop))) {
+                return HTTOPLEFT;//In the top-left corner of the window border
+            }
+            if ((pt.y <= rcClient.bottom) && (pt.y > (rcClient.bottom - nCornerBottom))) {
+                return HTBOTTOMLEFT;//In the bottom-left corner of the window border
+            }
+        }
+        if ((pt.x <= rcClient.right) && (pt.x > (rcClient.right - nCornerRight))) {
+            if ((pt.y >= rcClient.top) && (pt.y < (rcClient.top + nCornerTop))) {
+                return HTTOPRIGHT;//In the top-right corner of the window border
+            }
+            if ((pt.y <= rcClient.bottom) && (pt.y > (rcClient.bottom - nCornerBottom))) {
+                return HTBOTTOMRIGHT;//In the bottom-right corner of the window border
+            }
+        }
+
         if (pt.y < rcClient.top + rcSizeBox.top) {
             if (pt.y >= rcClient.top) {
                 if (pt.x < (rcClient.left + rcSizeBox.left) && pt.x >= rcClient.left) {
