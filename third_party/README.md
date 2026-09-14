@@ -23,7 +23,7 @@
 | libcef (cef_binary)|2026-08-06|<div style="width: 160px">cef_binary_142.0.10+g29548e2+chromium-142.0.7444.135</div>|No |https://cef-builds.spotifycdn.com/index.html| Downloaded and extracted to third_party/libcef/cef_binary automatically at configure time (cmake/dui_deps.cmake); the wrapper is built from it (third_party/CMakeLists.txt). CEF 109 (Win7): see the libcef_win_109 row above |
 | WebView2      |2025-06-28|1.0.3296.44 |No | Installed via the NuGet package WebView2 SDK: <br>Microsoft.Web.WebView2| |
 | libpag        |2025-11-13|main branch |No | https://github.com/Tencent/libpag| No modification |
-| skia          |2026-08-02|skia-dui-0.1.0 |No |https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.0.zip| Tagged from the dui branch of the fork; includes the expat patch. Downloaded and extracted to third_party/skia automatically by CMake at configure time (cmake/dui_deps.cmake), built with gn + ninja at make time |
+| skia          |2026-08-05|34aa71b8bee4 (2026-02-10) + dui.1 |Yes |https://github.com/google/skia/archive/34aa71b8bee4648a442b7125680232d803374f19.zip| **Upstream Skia plus a patch in this repository**, not a fork archive. Upstream is fetched from google/skia at the pinned commit and `third_party/skia-patches/dui.patch` is applied to it — the patch is everything dui changes, and it is what to review or rebase when moving to a newer Skia (41 files: 20 modified, 21 added — the expat sources). Downloaded, extracted and patched at configure time (cmake/dui_deps.cmake), built with gn + ninja at make time |
 
 ## libpng Update Notes
 1. Download the latest release package (save the archive under `third_party/downloads/`): https://github.com/pnggroup/libpng/ or https://sourceforge.net/projects/libpng/

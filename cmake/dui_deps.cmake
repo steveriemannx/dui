@@ -41,9 +41,11 @@ function(dui_deps_configure)
     if(NOT EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn")
         message(FATAL_ERROR
             "Skia source not found at ${DUI_SKIA_SRC_ROOT_DIR}.\n"
-            "The automatic download failed; retry cmake configure, or download and extract\n"
-            "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip\n"
-            "into ${DUI_SKIA_SRC_ROOT_DIR} manually.\n"
+            "The automatic download failed. Retry cmake configure, or build the tree by\n"
+            "hand: fetch\n"
+            "  https://github.com/google/skia/archive/34aa71b8bee4648a442b7125680232d803374f19.zip\n"
+            "extract it into ${DUI_SKIA_SRC_ROOT_DIR}, then apply\n"
+            "  third_party/skia-patches/dui.patch  (patch -p1 -N -f)\n"
             "(or set -DDUI_BUILD_SKIA_FROM_SOURCE=OFF and provide Skia yourself)")
     endif()
 
@@ -69,6 +71,20 @@ extra_cflags = [ \"-I/usr/local/include\", \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER
         else()
             set(_gn_extra "extra_cflags = [ \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\" ]
 ")
+        endif()
+
+        # A sanitizer build changes the layout of Skia's own types. SkASAN.h defines
+        # SK_SANITIZE_ADDRESS whenever a translation unit is compiled with
+        # -fsanitize=address, and SkTArray has a member under it -- so an instrumented
+        # dui linked against an uninstrumented Skia disagrees with it about every type
+        # containing a TArray, SkSVGContainer::fChildren among them. The observable
+        # result is heap-buffer-overflow reports inside objects Skia allocated, which
+        # are artifacts of the mismatch rather than defects: measured, SkSVGSVG is 848
+        # bytes in dui's translation units and 840 in Skia's.
+        # The cost is that toggling DUI_ENABLE_SANITIZERS rewrites args.gn, which
+        # re-runs gn and rebuilds Skia.
+        if(DUI_ENABLE_SANITIZERS)
+            string(APPEND _gn_extra "sanitize = \"ASAN\"\n")
         endif()
 
         # Common gn args (everything except is_debug, which differs per config)
@@ -137,7 +153,8 @@ function(dui_deps_add_targets)
     # including file") from the console - ninja still parses them internally for
     # dependency tracking - keeping only progress and error lines visible, and
     # (c) prepends the directory of the gn binary (%~3) to PATH, since skia's
-    # find_headers.py action runs a bare "gn" (fork change in skia-dui-0.1.1).
+    # find_headers.py action runs a bare "gn" (a dui change, carried by
+    # third_party/skia-patches/dui.patch, not by upstream Skia).
     #   Usage: dui_ninja.bat <ninja> <build-dir> [gn-path] [target...]
     if(WIN32)
         set(DUI_NINJA_FILTER_BAT "${CMAKE_CURRENT_BINARY_DIR}/dui_ninja.bat")
@@ -455,10 +472,15 @@ endfunction()
 # The zip is cached in third_party/downloads/ (gitignored); only the extraction temp dir is
 # removed, so a later configure re-extracts from the cached archive without re-downloading.
 function(dui_deps_download_skia)
-    # Version marker: the extracted dir alone does not say which zip it came from,
-    # so a version bump would otherwise be silently ignored. Re-extract whenever
-    # the marker is missing or differs from the expected version.
-    set(_skia_version "skia-dui-0.1.1")  # keep in sync with the zip tag below
+    # What is fetched is upstream Skia at one pinned commit, from google/skia, plus
+    # dui's own changes held as a patch in this repository
+    # (third_party/skia-patches/dui.patch). The marker records both, because the
+    # extracted tree alone cannot say which upstream commit or which patch revision
+    # produced it -- so changing either one has to re-extract, or it would be
+    # silently ignored.
+    set(_skia_upstream_commit "34aa71b8bee4648a442b7125680232d803374f19")
+    set(_skia_patch_revision   "dui.1")  # bump whenever the patch file changes
+    set(_skia_version "skia-${_skia_upstream_commit}+${_skia_patch_revision}")
     if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version")
         file(READ "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" _skia_have_version)
         string(STRIP "${_skia_have_version}" _skia_have_version)
@@ -475,10 +497,12 @@ function(dui_deps_download_skia)
         file(REMOVE_RECURSE "${DUI_SKIA_SRC_ROOT_DIR}")
     endif()
 
-    set(_skia_url "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip")
-    set(_skia_topdir "skia-skia-dui-0.1.1")  # the single top-level folder inside the zip
+    # Upstream zip, not a fork archive: what dui builds from is a public commit plus a
+    # diff that anyone can read, and moving to a newer Skia is "rebase one file".
+    set(_skia_url "https://github.com/google/skia/archive/${_skia_upstream_commit}.zip")
+    set(_skia_topdir "skia-${_skia_upstream_commit}")  # the single top-level folder inside the zip
     set(_skia_dl_dir "${DUI_ROOT}/third_party/downloads")
-    set(_skia_archive "${_skia_dl_dir}/skia-dui-0.1.1.zip")
+    set(_skia_archive "${_skia_dl_dir}/skia-${_skia_upstream_commit}.zip")
 
     file(MAKE_DIRECTORY "${_skia_dl_dir}")
     dui_deps_download_retry("${_skia_url}" "${_skia_archive}" "zip")
@@ -519,6 +543,49 @@ function(dui_deps_download_skia)
         message(FATAL_ERROR "Skia archive extraction failed: ${_skia_archive}")
     endif()
     file(REMOVE_RECURSE "${_skia_tmp_dir}")  # keep the zip itself for offline re-extract
+
+    # ---- Apply dui's changes -------------------------------------------------------
+    # Everything dui needs from Skia that upstream does not provide lives in this one
+    # file, applied to the freshly extracted upstream tree. The post-condition is not
+    # the exit code alone: a patch that matched nothing can still exit 0 with -N, so
+    # the sentinel is a file the patch is known to add.
+    set(_skia_patch "${DUI_ROOT}/third_party/skia-patches/dui.patch")
+    if(NOT EXISTS "${_skia_patch}")
+        message(FATAL_ERROR "Skia customization patch is missing: ${_skia_patch}")
+    endif()
+    find_program(_dui_patch_tool NAMES patch)
+    if(_dui_patch_tool)
+        # -N + -f keep it non-interactive; a mismatch still has to fail, which the
+        # sentinel check below is for.
+        set(_dui_apply_cmd "${_dui_patch_tool}" -p1 -N -f -i "${_skia_patch}")
+    else()
+        find_program(_dui_git_tool NAMES git)
+        if(NOT _dui_git_tool)
+            message(FATAL_ERROR
+                "Applying ${_skia_patch} needs either 'patch' or 'git' on PATH. Both ship "
+                "with Git for Windows; or apply the patch by hand into "
+                "${DUI_SKIA_SRC_ROOT_DIR} and re-run configure.")
+        endif()
+        set(_dui_apply_cmd "${_dui_git_tool}" apply -p1 --whitespace=nowarn "${_skia_patch}")
+    endif()
+    message(STATUS "Applying dui's Skia customizations (${_skia_patch_revision})...")
+    execute_process(
+        COMMAND ${_dui_apply_cmd}
+        WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
+        RESULT_VARIABLE _skia_patch_result
+        OUTPUT_VARIABLE _skia_patch_out
+        ERROR_VARIABLE _skia_patch_err
+    )
+    if(NOT _skia_patch_result EQUAL 0 OR NOT EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/gn/is_mingw.py")
+        string(REPLACE "\n" "\n    " _skia_patch_report "${_skia_patch_out}${_skia_patch_err}")
+        file(REMOVE_RECURSE "${DUI_SKIA_SRC_ROOT_DIR}")  # never leave a half-patched tree
+        message(FATAL_ERROR
+            "Applying the Skia customization patch failed (exit ${_skia_patch_result}).\n"
+            "The tree has been removed rather than left half-patched; fix the patch or\n"
+            "regenerate it (see third_party/skia-patches/README.md) and re-run configure.\n"
+            "    ${_skia_patch_report}")
+    endif()
+
     file(WRITE "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" "${_skia_version}")
     message(STATUS "Skia source ready: ${DUI_SKIA_SRC_ROOT_DIR} (${_skia_version})")
 endfunction()
