@@ -133,12 +133,11 @@ jobs:
   # ------------------------------------------------------------------------------------
   # Resolve the manual checkboxes into the matrix legs to build. Job-level `if`
   # cannot see the matrix context, so the selection happens here: each leg is emitted
-  # as JSON and the build job consumes it with fromJSON. Nothing checked = everything
-  # (keeps the old "all" behavior when the defaults are untouched... and when a caller
-  # unchecks everything by accident, the full matrix still runs — the conservative
-  # reading of "user unchecked nothing meaningful" is to build it all).
+  # as JSON and the build job consumes it with fromJSON. Nothing checked = nothing
+  # runs (build skips itself with the same condition; sanitizers has its own).
   # ------------------------------------------------------------------------------------
   select:
+    if: inputs.macos || inputs.linux || inputs.windows
     name: select platform(s)
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -167,8 +166,9 @@ jobs:
           [ "$LINUX" = "true" ] && parts+=("$linux_min" "$linux")
           [ "$WINDOWS" = "true" ] && parts+=("$win")
           if [ ${#parts[@]} -eq 0 ]; then
-            parts=("$mac" "$linux_min" "$linux" "$win")
-            echo "nothing selected - building everything" >&2
+            echo "no build platform selected - nothing to build" >&2
+            echo "legs=[]" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           legs="[$(IFS=,; echo "${parts[*]}")]"
           echo "legs=$legs" >> "$GITHUB_OUTPUT"
@@ -177,7 +177,7 @@ jobs:
   # macOS / Linux / Windows: configure, build the library and the tests, run ctest.
   # ------------------------------------------------------------------------------------
   build:
-    if: inputs.macos || inputs.linux || inputs.windows || !inputs.sanitizers
+    if: inputs.macos || inputs.linux || inputs.windows
     name: build / ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     needs: select
@@ -398,7 +398,7 @@ jobs:
   # same).
   # ------------------------------------------------------------------------------------
   sanitizers:
-    if: inputs.sanitizers || !(inputs.macos || inputs.linux || inputs.windows)
+    if: inputs.sanitizers
     name: sanitizers / macOS (ASan + UBSan)
     runs-on: macos-14
     timeout-minutes: 90
