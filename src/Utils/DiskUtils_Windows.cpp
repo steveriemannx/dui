@@ -49,7 +49,7 @@ bool DiskUtils::GetLogicalDriveList(std::vector<std::string>& driveList)
 
 bool DiskUtils::GetLogicalDriveInfo(const std::string& driveString, DiskInfo& diskInfo)
 {
-    HMODULE hShell32Dll = ::LoadLibrary("Shell32.dll");
+    HMODULE hShell32Dll = ::LoadLibraryW(L"Shell32.dll");
     if (hShell32Dll == nullptr) {
         return false;
     }

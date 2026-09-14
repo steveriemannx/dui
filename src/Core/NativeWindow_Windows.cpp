@@ -457,7 +457,7 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
     //Handle IsDialogMessage to support text input in RichEdit controls
     {
         FARPROC targetFunc = nullptr;
-        HMODULE hModule = ::GetModuleHandle("User32.dll");
+        HMODULE hModule = ::GetModuleHandleW(L"User32.dll");
         if (hModule != nullptr) {
 #if defined(UNICODE) || defined(_UNICODE)
             targetFunc = ::GetProcAddress(hModule, "IsDialogMessageW");
@@ -1438,7 +1438,10 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     //Large icon
     int32_t cxIcon = GetSystemMetricsForDpiWrapper(SM_CXICON, uDpi);
     int32_t cyIcon = GetSystemMetricsForDpiWrapper(SM_CYICON, uDpi);
-    HICON hIcon = (HICON)::LoadImage(nullptr, iconFilePath.NativePath().c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
+    // NativePath() is UTF-8 and LoadImageW wants UTF-16; converted at the boundary,
+    // like the other Win32 calls in this file.
+    const std::wstring iconFilePathW = StringConvert::UTF8ToWString(iconFilePath.NativePath());
+    HICON hIcon = (HICON)::LoadImageW(nullptr, iconFilePathW.c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
     if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), ".ico")) {
         ASSERT(hIcon != nullptr);
     }    
@@ -1452,7 +1455,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     //Small icon
     cxIcon = GetSystemMetricsForDpiWrapper(SM_CXSMICON, uDpi);
     cyIcon = GetSystemMetricsForDpiWrapper(SM_CYSMICON, uDpi);
-    hIcon = (HICON)::LoadImage(nullptr, iconFilePath.NativePath().c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
+    hIcon = (HICON)::LoadImageW(nullptr, iconFilePathW.c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
     if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), ".ico")) {
         ASSERT(hIcon != nullptr);
     }

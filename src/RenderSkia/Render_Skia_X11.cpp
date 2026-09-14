@@ -1,10 +1,13 @@
 #include "dui/RenderSkia/Render_Skia_X11.h"
-#include "tools/window/unix/RasterWindowContext_unix.h"
-#include "tools/window/unix/XlibWindowInfo.h"
 #include "tools/window/WindowContext.h"
 #include "tools/window/DisplayParams.h"
 
 #ifdef DUI_BUILD_FOR_X11
+
+// Skia's unix headers, inside the guard: they include <X11/X.h>, and this file is
+// compiled on Windows and macOS too, where its whole body is switched off.
+#include "tools/window/unix/RasterWindowContext_unix.h"
+#include "tools/window/unix/XlibWindowInfo.h"
 
 #include "dui/RenderSkia/SkiaHeaderBegin.h"
 

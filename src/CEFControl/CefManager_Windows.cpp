@@ -181,8 +181,10 @@ void CefManager_Windows::AddCefDllToPath()
         return;
     }
 
-    TCHAR path_envirom[4096] = { 0 };
-    ::GetEnvironmentVariable("path", path_envirom, 4096);
+    // Wide throughout: the Windows environment is UTF-16 and the string model here is
+    // UTF-8, so the conversion would otherwise have to happen twice.
+    wchar_t path_envirom[4096] = { 0 };
+    ::GetEnvironmentVariableW(L"path", path_envirom, 4096);
 
     FilePath cefDllDir = ui::FilePathUtil::GetCurrentModuleDirectory();
     cefDllDir /= FilePath(cefMoudlePath);
@@ -195,9 +197,9 @@ void CefManager_Windows::AddCefDllToPath()
         ::MessageBoxW(nullptr, errMsg.c_str(), L"Error Hint", MB_OK);
         exit(0);
     }
-    std::string new_envirom(cefDllDir.NativePath());
-    new_envirom.append(";").append(path_envirom);
-    ::SetEnvironmentVariable("path", new_envirom.c_str());
+    std::wstring new_envirom(cefDllDir.ToStringW());
+    new_envirom.append(L";").append(path_envirom);
+    ::SetEnvironmentVariableW(L"path", new_envirom.c_str());
 }
 
 #if CEF_VERSION_MAJOR <= 109
