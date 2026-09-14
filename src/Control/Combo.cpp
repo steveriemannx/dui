@@ -267,6 +267,9 @@ void CComboWnd::OnInitWindow()
     SetShadowBorderSize(0);
 
     Box* pRoot = new Box(this);
+    //The TreeView belongs to the Combo control; this popup window only borrows it for
+    //display, so the container must not destroy it (see Box::ReleaseItem and the
+    //ownership check in Box::DoAddItemAt)
     pRoot->SetAutoDestroyChild(false);
     pRoot->AddItem(m_pOwner->GetTreeView());
     AttachBox(AttachShadow(pRoot));
@@ -566,7 +569,8 @@ void Combo::RemoveControl(Control* pControl)
     if (IsInited() && (GetItemCount() > 0)) {
         HBox* pBox = dynamic_cast<HBox*>(GetItemAt(0));
         if (pBox != nullptr) {
-            pBox->RemoveItem(pControl);
+            //Detach it; the caller keeps ownership and destroys it when it is done
+            pBox->ReleaseItem(pControl);
         }
     }
 }

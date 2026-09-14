@@ -127,6 +127,16 @@ public:
      */
     virtual void RemoveAllItems();
 
+    /** Detach a control from the container without destroying it
+     * @param[in] pControl The pointer of the control to remove
+     * @return Returns the detached control, whose ownership is handed over to the caller;
+     *         nullptr if the control is not a child of this container
+     * @note This is the ownership-transfer operation: afterwards the control has no parent
+     *       and no container will destroy it. Callers used to hand-roll it by clearing
+     *       IsAutoDestroyChild around RemoveItem and restoring it afterwards.
+     */
+    Control* ReleaseItem(Control* pControl);
+
     /** @} */
 
 public:

@@ -455,6 +455,10 @@ void Window::OnFinalMessage()
 
 void Window::ClearWindow()
 {
+    //The window is going away: nothing can be deferred any more, so the pending
+    //controls are destroyed here rather than at the next safe point
+    FlushPendingDelete();
+
     //Recycles the control
     GlobalManager::Instance().Windows().RemoveWindow(this);
     ReapObjects(GetRoot());
@@ -497,8 +501,7 @@ bool Window::AttachBox(Box* pRoot)
         Box* pOldRoot = m_pRoot.get();
         m_pRoot.reset();
         if (pOldRoot != nullptr) {
-            delete pOldRoot;
-            pOldRoot = nullptr;
+            RequestDeleteControl(pOldRoot);
         }
     }
     // Set the dialog root element
@@ -515,6 +518,47 @@ bool Window::AttachBox(Box* pRoot)
 Box* Window::GetRoot() const
 {
     return m_pRoot.get();
+}
+
+void Window::RequestDeleteControl(Control* pControl)
+{
+    if (pControl == nullptr) {
+        return;
+    }
+    if (pControl == m_pRoot.get()) {
+        //The root container belongs to the window: AttachBox replaces it, ClearWindow
+        //destroys it. Deleting it from here would leave the window without a root.
+        ASSERT(0);
+        return;
+    }
+    if (std::find(m_pendingDelete.begin(), m_pendingDelete.end(), pControl) != m_pendingDelete.end()) {
+        //Already pending: it is destroyed exactly once
+        return;
+    }
+    m_pendingDelete.push_back(pControl);
+}
+
+void Window::FlushPendingDelete()
+{
+    if (m_pendingDelete.empty()) {
+        return;
+    }
+    //Take the list over first: destroying a control can destroy the controls below it
+    //(and lets them request a deferred deletion of their own).
+    std::vector<Control*> pendingDelete;
+    pendingDelete.swap(m_pendingDelete);
+    for (Control* pControl : pendingDelete) {
+        if (pControl == nullptr) {
+            continue;
+        }
+        Box* pParent = pControl->GetParent();
+        if (pParent != nullptr) {
+            //Detach it first: a control destroyed while it is still listed in a
+            //container's item list would leave a dangling pointer behind
+            pParent->ReleaseItem(pControl);
+        }
+        delete pControl;
+    }
 }
 
 Box* Window::GetXmlRoot() const
@@ -1137,6 +1181,9 @@ void Window::OnDisplayScaleChanged(uint32_t nOldScaleFactor, uint32_t nNewScaleF
 LRESULT Window::OnWindowMessage(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, bool& bHandled)
 {
     bHandled = false;
+    //Top of the message loop: no control-tree walk is in progress here, so this is the
+    //safe point at which controls whose destruction was deferred are destroyed
+    FlushPendingDelete();
     return 0;
 }
 
@@ -1265,6 +1312,9 @@ bool Window::OnPreparePaint()
 
 LRESULT Window::OnPaintMsg(const UiRect& rcPaint, const NativeMsg& /*nativeMsg*/, bool& bHandled)
 {
+    //Top of the render pass: nothing of the control tree is being walked yet, so the
+    //controls whose destruction was deferred are destroyed here as well as on dispatch
+    FlushPendingDelete();
     PerformanceStat statPerformance("PaintWindow, Window::OnPaintMsg");
     bHandled = false;
     if (!IsWindowFirstShown()) {

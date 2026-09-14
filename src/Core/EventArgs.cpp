@@ -241,15 +241,26 @@ bool EventSource::IsEmpty() const
 
 bool EventSource::operator() (const ui::EventArgs& args) const
 {
-    //Supports operating on this container inside the callback function
+    //Supports operating on this container inside the callback function: a callback may
+    //add or remove callbacks while this loop runs. The contract is the one a snapshot
+    //would give -- every callback registered when the dispatch began runs once, in
+    //order, unless it was removed before its turn, and one added during the dispatch
+    //does not run in it -- but without copying the list on every event.
+    //nIndex is advanced by hand below, because a removal shifts the list under it.
     const size_t nMaxCallbackCount = m_callbackList.size(); //The maximum callback count for this invocation
-    for (size_t nIndex = 0; nIndex < nMaxCallbackCount; ++nIndex) {
+    for (size_t nIndex = 0; nIndex < nMaxCallbackCount; ) {
         if (args.IsSenderExpired()) {
             //The Sender control has expired, no more callback events are generated
             return false;
         }
+        if (nIndex >= m_callbackList.size()) {
+            //Everything from this position on was removed by an earlier callback, so
+            //there is nothing left to run.
+            break;
+        }
         //Need to copy a copy, to avoid operating on this container inside the callback function, which would invalidate the container contents and cause a crash
-        EventCallback callback = m_callbackList.at(nIndex).m_callback;
+        const EventCallbackID callbackID = m_callbackList[nIndex].m_callbackID;
+        EventCallback callback = m_callbackList[nIndex].m_callback;
         if (callback == nullptr) {
             return false;
         }
@@ -271,9 +282,14 @@ bool EventSource::operator() (const ui::EventArgs& args) const
         //The sender is alive, therefore this object is too -- FireNormalEvents only
         //reaches here when the sender is the control that owns this EventSource, so
         //the container is valid and can be inspected again.
-        if (nIndex >= m_callbackList.size()) {
-            //Avoid removing the callback function from the container inside the callback, which would cause an out-of-bounds index access
-            break;
+        //A removal shifts every later callback down one slot, so where the next one
+        //lives depends on whether the callback that just ran is still here: if it is,
+        //nothing before it moved and the successor is the following slot; if it is
+        //not, the successor has moved into this one. Advancing unconditionally would
+        //skip a callback -- and did: with a later callback still registered, the pre-
+        //dispatch index ran off the end of the shrunken list and .at() threw.
+        if ((nIndex < m_callbackList.size()) && (m_callbackList[nIndex].m_callbackID == callbackID)) {
+            ++nIndex;
         }
     }
     return true;

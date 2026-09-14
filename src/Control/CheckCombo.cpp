@@ -318,9 +318,8 @@ CheckCombo::CheckCombo(Window* pWindow) :
 
 CheckCombo::~CheckCombo()
 {
-    SetAutoDestroyChild(false);
-    Box::RemoveItem(m_pList.get());
-    SetAutoDestroyChild(true);
+    //Detach the drop-down list from this container; m_pList owns it and destroys it below
+    ReleaseItem(m_pList.get());
     m_pList.reset();
     m_pDropList.reset();
 }

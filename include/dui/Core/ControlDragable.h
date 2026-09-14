@@ -737,10 +737,8 @@ bool ControlDragableT<T>::DragOutMouseUp(const EventArgs& msg)
         Box* pNewBox = m_pTargetBox;
         size_t nNewItemIndex = nIndex;
 
-        bool bAutoDestroyChild = pParent->IsAutoDestroyChild();
-        pParent->SetAutoDestroyChild(false);
-        pParent->RemoveItem(this);
-        pParent->SetAutoDestroyChild(bAutoDestroyChild);
+        //Detach it from the original container; the ownership is handed over to us
+        pParent->ReleaseItem(this);
 
         this->SetVisible(true);
         m_pTargetBox->AddItem(this);

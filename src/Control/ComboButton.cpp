@@ -527,7 +527,8 @@ void ComboButton::RemoveControl(Control* pControl)
     if (IsInited() && (GetItemCount() > 0)) {
         HBox* pBox = dynamic_cast<HBox*>(GetItemAt(0));
         if (pBox != nullptr) {
-            pBox->RemoveItem(pControl);
+            //Detach it; the caller keeps ownership and destroys it when it is done
+            pBox->ReleaseItem(pControl);
         }
     }
 }

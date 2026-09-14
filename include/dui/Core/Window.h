@@ -69,6 +69,31 @@ public:
     */
     Box* GetXmlRoot() const;
 
+    /** Requests that a control be destroyed later, at the next safe point
+
+        Destroying a control in the middle of an event callback, a layout pass or any
+        other walk of the control tree pulls the memory out from under the calling code.
+        Callers that cannot rule that out (an event callback, a timer, a callback
+        originated by the control itself) hand the control over here instead: the window
+        takes ownership of it and destroys it at the top of the next message dispatch or
+        paint pass, when no control-tree walk is in progress (see FlushPendingDelete).
+        Nothing happens before that point: the control stays where it is, alive, so the
+        caller and everything else on the call stack can keep using it. The deferred path
+        is opt-in - RemoveItem and friends keep destroying immediately. The control is
+        destroyed as a detached control is (see Box::ReleaseItem): no kEventDestroy
+        notification is sent.
+    * @param [in] pControl The control to destroy, which must not be the window's root.
+                             It is detached from its parent and then destroyed at the safe
+                             point, so the caller must not use it afterwards.
+    */
+    void RequestDeleteControl(Control* pControl);
+
+    /** Destroys the controls requested through RequestDeleteControl
+        The framework calls this at the top of the message dispatch and paint paths; it is
+        safe to call anywhere no control-tree walk is in progress.
+    */
+    void FlushPendingDelete();
+
     /** Gets the parent window
     */
     Window* GetParentWindow() const;
@@ -1083,6 +1108,11 @@ private:
     /** The container associated with the window, the root node
     */
     BoxPtr m_pRoot;
+
+    /** The controls whose destruction was deferred (see RequestDeleteControl); the window
+        owns them until FlushPendingDelete destroys them
+    */
+    std::vector<Control*> m_pendingDelete;
 
     /** Window shadow
     */
