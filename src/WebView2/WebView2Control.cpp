@@ -21,29 +21,29 @@ WebView2Control::~WebView2Control()
 {
 }
 
-DString WebView2Control::GetType() const { return DUI_CTR_WEBVIEW2; }
+std::string WebView2Control::GetType() const { return DUI_CTR_WEBVIEW2; }
 
-void WebView2Control::SetAttribute(const DString& strName, const DString& strValue)
+void WebView2Control::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("url")) {
+    if (strName == "url") {
         //URL to load during initialization
         SetInitURL(strValue);
     }
-    else if (strName == DUI_T("url_is_local_file")) {
+    else if (strName == "url_is_local_file") {
         //Whether the URL loaded during initialization is a local file
-        SetInitUrlIsLocalFile(strValue == DUI_T("true"));
+        SetInitUrlIsLocalFile(strValue == "true");
     }
-    else if (strName == DUI_T("devtools_enabled")) {
+    else if (strName == "devtools_enabled") {
         //Whether developer tools are allowed to be opened
-        SetAreDevToolsEnabled(strValue == DUI_T("true"));
+        SetAreDevToolsEnabled(strValue == "true");
     }
-    else if (strName == DUI_T("F12")) {
+    else if (strName == "F12") {
         //Whether pressing F12 to open developer tools is allowed
-        SetEnableF12(strValue == DUI_T("true"));
+        SetEnableF12(strValue == "true");
     }
-    else if (strName == DUI_T("F11")) {
+    else if (strName == "F11") {
         //Whether the F11 shortcut key is allowed (enter fullscreen page / exit fullscreen page)
-        SetEnableF11(strValue == DUI_T("true"));
+        SetEnableF11(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -76,32 +76,32 @@ void WebView2Control::OnInit()
         return;
     }
     BaseClass::OnInit();
-    DString initUrl = GetInitURL();
+    std::string initUrl = GetInitURL();
     if (!initUrl.empty()) {
         Navigate(initUrl);
     }
 }
 
-void WebView2Control::SetInitURL(const DString& url)
+void WebView2Control::SetInitURL(const std::string& url)
 {
     m_initUrl = url;
 }
 
-DString WebView2Control::GetInitURL() const
+std::string WebView2Control::GetInitURL() const
 {
-    DString initUrl = m_initUrl.c_str();
+    std::string initUrl = m_initUrl.c_str();
     if (IsInitUrlIsLocalFile() && !initUrl.empty()) {
         //This URL is a local path
-        DString url = StringUtil::MakeLowerString(initUrl);
-        if ((url.find(DUI_T("http://")) != 0) && (url.find(DUI_T("https://")) != 0) && (url.find(DUI_T("file:///")) != 0)) {
+        std::string url = StringUtil::MakeLowerString(initUrl);
+        if ((url.find("http://") != 0) && (url.find("https://") != 0) && (url.find("file:///") != 0)) {
             //When there is an explicit protocol prefix, no conversion is done; otherwise, load it as a resource file relative to the directory of the local exe
             FilePath webViewHtml = GlobalManager::GetDefaultResourcePath(true);
             webViewHtml.NormalizeDirectoryPath();
             webViewHtml += initUrl;
             webViewHtml.NormalizeFilePath();
-            initUrl = DUI_T("file:///");
+            initUrl = "file:///";
             initUrl += webViewHtml.ToString();
-            StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), initUrl);
+            StringUtil::ReplaceAll("\\", "/", initUrl);
         }
     }
     return initUrl;
@@ -163,18 +163,18 @@ void WebView2Control::SetWindow(Window* pWindow)
 }
 
 // Implementation of the other member functions, forwarded to the Impl class
-bool WebView2Control::InitializeAsync(const DString& userDataFolder, InitializeCompletedCallback callback)
+bool WebView2Control::InitializeAsync(const std::string& userDataFolder, InitializeCompletedCallback callback)
 {
     HRESULT hr = m_pImpl->InitializeAsync(userDataFolder, callback);
     m_pImpl->SetLastErrorCode(hr);
     return SUCCEEDED(hr);
 }
 
-bool WebView2Control::Navigate(const DString& url)
+bool WebView2Control::Navigate(const std::string& url)
 {
-    DString navUrl = url;
-    if (navUrl.find(DUI_T("://")) == DString::npos) {
-        navUrl = DUI_T("https://") + navUrl;
+    std::string navUrl = url;
+    if (navUrl.find("://") == std::string::npos) {
+        navUrl = "https://" + navUrl;
     }
     if (!IsInitializing() && !IsInitialized()) {
         //Automatically initialize (using default parameters)
@@ -215,35 +215,35 @@ bool WebView2Control::Stop()
     return SUCCEEDED(hr);
 }
 
-bool WebView2Control::ExecuteScript(const DString& script, std::function<void(const DString& result, HRESULT hr)> callback)
+bool WebView2Control::ExecuteScript(const std::string& script, std::function<void(const std::string& result, HRESULT hr)> callback)
 {
     HRESULT hr = m_pImpl->ExecuteScript(script, callback);
     m_pImpl->SetLastErrorCode(hr);
     return SUCCEEDED(hr);
 }
 
-bool WebView2Control::PostWebMessageAsJson(const DString& json)
+bool WebView2Control::PostWebMessageAsJson(const std::string& json)
 {
     HRESULT hr = m_pImpl->PostWebMessageAsJson(json);
     m_pImpl->SetLastErrorCode(hr);
     return SUCCEEDED(hr);
 }
 
-bool WebView2Control::PostWebMessageAsString(const DString& message)
+bool WebView2Control::PostWebMessageAsString(const std::string& message)
 {
     HRESULT hr = m_pImpl->PostWebMessageAsString(message);
     m_pImpl->SetLastErrorCode(hr);
     return SUCCEEDED(hr);
 }
 
-bool WebView2Control::SetUserAgent(const DString& userAgent)
+bool WebView2Control::SetUserAgent(const std::string& userAgent)
 {
     HRESULT hr = m_pImpl->SetUserAgent(userAgent);
     m_pImpl->SetLastErrorCode(hr);
     return SUCCEEDED(hr);
 }
 
-DString WebView2Control::GetUserAgent() const
+std::string WebView2Control::GetUserAgent() const
 {
     return m_pImpl->GetUserAgent();
 }
@@ -374,8 +374,8 @@ void WebView2Control::SetFavIconChangedCallback(FavIconChangedCallback callback)
     m_pImpl->SetFavIconChangedCallback(callback);
 }
 
-bool WebView2Control::CapturePreview(const DString& filePath,
-    std::function<void(const DString& filePath, HRESULT hr)> callback)
+bool WebView2Control::CapturePreview(const std::string& filePath,
+    std::function<void(const std::string& filePath, HRESULT hr)> callback)
 {
     HRESULT hr = m_pImpl->CapturePreview(filePath, callback);
     m_pImpl->SetLastErrorCode(hr);
@@ -392,12 +392,12 @@ bool WebView2Control::IsInitialized() const
     return m_pImpl->IsInitialized();
 }
 
-DString WebView2Control::GetUrl() const
+std::string WebView2Control::GetUrl() const
 {
     return m_pImpl->GetUrl();
 }
 
-DString WebView2Control::GetTitle() const
+std::string WebView2Control::GetTitle() const
 {
     return m_pImpl->GetTitle();
 }

@@ -28,8 +28,8 @@ public:
     virtual ~TreeNode() override;
 
     /// Override the parent class method to provide personalized functionality; please refer to the parent class declaration
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual bool SupportCheckMode() const override;
 
     /** DPI changed, update the control size and layout
@@ -130,14 +130,14 @@ public:
     * @param [in] bRecursive true means recursive search, false means non-recursive search, only searching the first-level child nodes of the current node
     * @return Returns the pointer of the matching tree node; if names are duplicated, only the first one is returned
     */
-    TreeNode* FindChildNodeByName(const DString& name, bool bRecursive) const;
+    TreeNode* FindChildNodeByName(const std::string& name, bool bRecursive) const;
 
     /** Find a child node by the display text (Text) of the child node
     * @param [in] name The display text of the child node to find (i.e. the value of LabelTemplate::GetText())
     * @return Returns the pointer of the matching tree node; if the display text is duplicated, only the first one is returned
     * @param [in] bRecursive true means recursive search, false means non-recursive search, only searching the first-level child nodes of the current node
     */
-    TreeNode* FindChildNodeByText(const DString& text, bool bRecursive) const;
+    TreeNode* FindChildNodeByText(const std::string& text, bool bRecursive) const;
 
     /** Determine whether it is in the expanded state
      * @return Returns true if expanded, otherwise false
@@ -206,7 +206,7 @@ private:
     *   Scope of application: the node itself
     * @param [in] expandClass The Class attribute of the expand flag image
     */
-    void SetExpandImageClass(const DString& expandClass);
+    void SetExpandImageClass(const std::string& expandClass);
 
     /** Set the Class associated with the CheckBox. If not empty, the CheckBox feature is enabled; if empty, it is disabled
     *   Scope of application: the node itself
@@ -214,7 +214,7 @@ private:
                   normal_image: the image of the normal state, a required attribute (i.e. the image when not checked)
                   selected_normal_image: the image of the normal state when selected, a required attribute (i.e. the image when checked)
     */
-    bool SetCheckBoxClass(const DString& checkBoxClass);
+    bool SetCheckBoxClass(const std::string& checkBoxClass);
 
     /** Change the check status of all child nodes, but do not trigger the selection change event
     * @param [in] bChecked The check status (checked or unchecked)
@@ -243,25 +243,25 @@ private:
      * @param [in] stateType The state of the image to get; refer to the ControlStateType enumeration
      * @return Returns the image path and attributes
      */
-    DString GetExpandStateImage(ControlStateType stateType);
+    std::string GetExpandStateImage(ControlStateType stateType);
 
     /** Set the image of the expanded state
      * @param [in] stateType The state of the image to set
      * @param [in] strImage The image path and attributes
      */
-    void SetExpandStateImage(ControlStateType stateType, const DString& strImage);
+    void SetExpandStateImage(ControlStateType stateType, const std::string& strImage);
 
     /** Get the image of the collapsed state
      * @param [in] stateType The state of the image to get; refer to the ControlStateType enumeration
      * @return Returns the image path and attributes
      */
-    DString GetCollapseStateImage(ControlStateType stateType);
+    std::string GetCollapseStateImage(ControlStateType stateType);
 
     /** Set the image of the collapsed state
      * @param [in] stateType The state of the image to set
      * @param [in] strImage The image path and attributes
      */
-    void SetCollapseStateImage(ControlStateType stateType, const DString& strImage);
+    void SetCollapseStateImage(ControlStateType stateType, const std::string& strImage);
 
 private:
     /** Delete itself
@@ -381,8 +381,8 @@ public:
     virtual ~TreeView() override;
 
     /// Override the parent class method to provide personalized functionality; please refer to the parent class declaration
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void SetParent(Box* pParent) override;
     virtual void SetWindow(Window* pWindow) override;
 
@@ -412,11 +412,11 @@ public:
     *   Scope of application: all nodes of the tree
     * @param [in] className The Class attribute of the expand flag image
     */
-    void SetExpandImageClass(const DString& className);
+    void SetExpandImageClass(const std::string& className);
 
     /** Get the Class associated with the [collapsed/expanded] flag image
     */
-    DString GetExpandImageClass() const;
+    std::string GetExpandImageClass() const;
 
     /** Set the Class associated with the CheckBox. If not empty, the CheckBox feature is enabled; if empty, it is disabled
     *   Scope of application: all nodes of the tree
@@ -424,11 +424,11 @@ public:
                   normal_image: the image of the normal state, a required attribute (i.e. the image when not checked)
                   selected_normal_image: the image of the normal state when selected, a required attribute (i.e. the image when checked)
     */
-    void SetCheckBoxClass(const DString& className);
+    void SetCheckBoxClass(const std::string& className);
 
     /** Get the Class associated with the CheckBox
     */
-    DString GetCheckBoxClass() const;
+    std::string GetCheckBoxClass() const;
 
     /** Set whether to display the icon
     */

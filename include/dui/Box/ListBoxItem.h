@@ -176,7 +176,7 @@ public:
     explicit ListBoxItemTemplate(Window* pWindow);
 
     /// Overrides the parent class methods to provide customized functionality. Please refer to the parent class declarations
-    virtual DString GetType() const override;    
+    virtual std::string GetType() const override;    
     virtual void HandleEvent(const EventArgs& msg) override;
 
     /** Whether to draw the background color in the selected state, provided as an optional virtual function
@@ -299,7 +299,7 @@ ListBoxItemTemplate<InheritType>::ListBoxItemTemplate(Window* pWindow):
 }
 
 template<typename InheritType>
-DString ListBoxItemTemplate<InheritType>::GetType() const { return DUI_CTR_LISTBOX_ITEM; }
+std::string ListBoxItemTemplate<InheritType>::GetType() const { return DUI_CTR_LISTBOX_ITEM; }
 
 template<typename InheritType>
 void ListBoxItemTemplate<InheritType>::SetItemSelected(bool bSelected)

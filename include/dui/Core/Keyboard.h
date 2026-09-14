@@ -44,7 +44,7 @@ public:
     * @param [in] nVirtKey The virtual key code
     * @param [in] fExtended Whether it has the extended flag
     */
-    static DString GetKeyName(VirtualKeyCode nVirtKey, bool fExtended);
+    static std::string GetKeyName(VirtualKeyCode nVirtKey, bool fExtended);
 };
 
 } // namespace ui

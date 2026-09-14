@@ -13,7 +13,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     # explicitly: this covers <X11/Xlib.h>, <fontconfig/fontconfig.h>, ... for the
     # library and every example, regardless of the compiler's default search path.
     set(CMAKE_INCLUDE_PATH "/usr/local/include" ${CMAKE_INCLUDE_PATH})
-    include_directories(/usr/local/include)
+    # The include path itself is no longer directory-scoped here: it is set on the dui
+    # target (src/CMakeLists.txt) and on dui::app (cmake/dui_app_freebsd.cmake). A
+    # directory-scoped include reached the third_party subprojects too, where the system
+    # expat.h shadows Skia's bundled copy.
     # dui_common.cmake is included once per example scope (each example configures
     # its own project()), so announce the platform only once instead of every time.
     get_property(_dui_os_announced GLOBAL PROPERTY DUI_OS_ANNOUNCED)
@@ -48,13 +51,33 @@ endif()
 # Switch for the skia lib subdirectory name (by default Windows assembles the path by rules; other platforms can pin a fixed directory, e.g. the llvm build)
 option(DUI_SKIA_LIB_SUBPATH "Skia lib sub path" OFF)
 
-# Linux and FreeBSD use native X11 by default and can opt into Wayland.
+# Linux and FreeBSD select the native backend from the desktop session unless
+# the caller explicitly provides DUI_ENABLE_WAYLAND.
 if(DUI_OS_LINUX OR DUI_OS_FREEBSD)
-    option(DUI_ENABLE_WAYLAND "Enable the native Wayland backend" OFF)
+    # -Wl,--no-as-needed is set on the targets that need it rather than directory-scoped:
+    # on the dui target for in-tree consumers, and on dui::app for standalone application
+    # builds that link dui by bare name.
+    if(NOT DEFINED DUI_ENABLE_WAYLAND)
+        set(DUI_ENABLE_WAYLAND_DEFAULT OFF)
+        if("$ENV{XDG_SESSION_TYPE}" STREQUAL "wayland" OR DEFINED ENV{WAYLAND_DISPLAY})
+            set(DUI_ENABLE_WAYLAND_DEFAULT ON)
+        endif()
+        set(DUI_ENABLE_WAYLAND "${DUI_ENABLE_WAYLAND_DEFAULT}" CACHE BOOL
+            "Enable the native Wayland backend (auto-detected from the desktop session)")
+        if(DUI_ENABLE_WAYLAND)
+            message(STATUS "Desktop session detected as Wayland; enabling native Wayland backend")
+        else()
+            message(STATUS "Desktop session detected as X11 or headless; enabling native X11 backend")
+        endif()
+    else()
+        set(DUI_ENABLE_WAYLAND "${DUI_ENABLE_WAYLAND}" CACHE BOOL
+            "Enable the native Wayland backend (explicit override)")
+        message(STATUS "Native backend explicitly selected: ${DUI_ENABLE_WAYLAND}")
+    endif()
 endif()
 
 if(DUI_OS_LINUX)
-    set(DUI_EXAMPLE_THEME gnome46 CACHE STRING "Theme used by Linux examples" FORCE)
+    set(DUI_EXAMPLE_THEME gnome CACHE STRING "Theme used by Linux examples" FORCE)
 elseif(DUI_OS_FREEBSD)
     set(DUI_EXAMPLE_THEME freebsd CACHE STRING "Theme used by FreeBSD examples" FORCE)
 elseif(DUI_OS_WINDOWS)
@@ -65,15 +88,34 @@ else()
     set(DUI_EXAMPLE_THEME default CACHE STRING "Theme used by examples" FORCE)
 endif()
 
-# SDL has been removed from every supported platform. Pin the cache entry so
-# stale build directories cannot select the deleted backend.
-set(DUI_ENABLE_SDL OFF CACHE BOOL "SDL is not supported" FORCE)
-
 # CEF support: off by default, only enabled by specific projects
 option(DUI_ENABLE_CEF "Enable CEF" OFF)
 
 # Whether to enable CEF 109 (off by default; CEF 109 supports Windows 7, while other CEF versions only run on Windows 10 and later)
 option(DUI_CEF_109 "Enable CEF 109" OFF)
+
+# MVVM data-binding module. Purely additive: it adds new files under src/Binding
+# and include/dui/Binding and modifies no existing library source, so enabling it
+# cannot change the behavior of code that does not call it.
+# The options keep the "MVVM" name (the feature people ask for); the code --
+# namespace ui::binding, src/Binding, include/dui/Binding -- is named after the
+# mechanism, since the binding engine also serves a plain MVC-style model.
+#   DUI_ENABLE_MVVM         - compile the module into the dui library
+#   DUI_BUILD_MVVM_EXAMPLES - build the binding demo examples
+# The library is compiled once, at root scope; an example cannot switch the module
+# on for the library, so src/CMakeLists.txt builds it when EITHER option is on.
+# This mirrors DUI_ENABLE_CEF / DUI_BUILD_CEF_EXAMPLES.
+option(DUI_ENABLE_MVVM "Enable the MVVM data-binding module" OFF)
+option(DUI_BUILD_MVVM_EXAMPLES "Build the Mvvm examples" ON)
+
+# Derived: true when the MVVM module is actually compiled into the dui library.
+# Consumers (examples, tests) should gate on this rather than on DUI_ENABLE_MVVM,
+# so they stay in sync with what src/CMakeLists.txt actually builds.
+if(DUI_ENABLE_MVVM OR DUI_BUILD_MVVM_EXAMPLES)
+    set(DUI_MVVM_AVAILABLE ON)
+else()
+    set(DUI_MVVM_AVAILABLE OFF)
+endif()
 
 # WebView2 control binaries
 if(DUI_OS_WINDOWS)
@@ -94,6 +136,28 @@ else()
     set(DUI_COMPILER_NAME "unknown")
     message(WARNING "Unknown CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 endif() 
+
+# ISO C++20 instead of the compiler's default dialect (gnu++20 with GCC/Clang).
+# Nothing in the project needs a GNU extension: every library and example
+# translation unit the macOS configuration builds (240 + 182 files) compiles clean
+# under -std=c++20, and the full library plus the examples were then built and
+# tested with it. MSVC -- the other supported toolchain -- has no GNU extensions at
+# all, so leaving the default on would only hide portability mistakes until someone
+# tries a Windows build. Set here rather than next to CMAKE_CXX_STANDARD
+# (src/CMakeLists.txt, cmake/dui_app.cmake) because dui_common.cmake is the one
+# module the library, the tests and the examples all include, so one line covers all
+# three. Pass -DCMAKE_CXX_EXTENSIONS=ON to get the GNU dialect back.
+if(NOT DEFINED CMAKE_CXX_EXTENSIONS)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
+# AddressSanitizer + UndefinedBehaviorSanitizer (development builds only, off by default).
+# The flags are applied to the dui target as PUBLIC compile/link options in
+# src/CMakeLists.txt, so every consumer of the library (tests, examples) is
+# instrumented along with it. Instrumenting the library alone would leave the
+# calling code unchecked and would mix instrumented and uninstrumented
+# allocations in one process, which ASan does not support.
+option(DUI_ENABLE_SANITIZERS "Build dui with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 
 # CPU type
 # Linux/macOS: only 64-bit is supported; no need for 32-bit
@@ -192,6 +256,25 @@ else()
     # no longer gets a separate variant prefix directory.
     set(DUI_SKIA_LIB_PATH "${DUI_LIB_PATH}/${DUI_BUILD_TYPE}")
 endif()
+# An instrumented dui must not link the uninstrumented Skia. SkASAN.h defines
+# SK_SANITIZE_ADDRESS whenever a translation unit is compiled with -fsanitize=address,
+# and SkTArray has a member under it, so the two disagree about the layout of every
+# type containing a TArray. Measured: SkSVGSVG is 848 bytes in dui's translation units
+# and 840 in Skia's, and reading a member of one makes ASan report heap-buffer-overflow
+# inside an object Skia allocated -- an artifact of the mismatch, not a defect.
+# A separate directory makes the two structurally unable to mix, and means switching
+# the option on an existing tree builds Skia again instead of silently reusing what is
+# already there. The cost is a full Skia build per sanitizer tree.
+if(DUI_ENABLE_SANITIZERS)
+    string(APPEND DUI_SKIA_LIB_PATH "-asan")
+    if(DEFINED DUI_SKIA_LIB_PATH_DEBUG)
+        string(APPEND DUI_SKIA_LIB_PATH_DEBUG "-asan")
+    endif()
+    if(DEFINED DUI_SKIA_LIB_PATH_RELEASE)
+        string(APPEND DUI_SKIA_LIB_PATH_RELEASE "-asan")
+    endif()
+endif()
+
 set(DUI_SKIA_LIBS svg skshaper skottie sksg jsonreader skia)
 
 # Build Skia from the zip-downloaded source at make time (see cmake/dui_deps.cmake: dui_skia target).

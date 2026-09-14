@@ -29,7 +29,7 @@ protected:
 public:
     /** Get the path where the CEF module runtime library file is located
     */
-    virtual DString GetCefMoudlePath() const override;
+    virtual std::string GetCefMoudlePath() const override;
 
     /** Initialize the runtime environment; must be called before using the CEF module features
     */
@@ -45,7 +45,7 @@ public:
     * @return bool true to continue running, false to end the program
     */
     virtual bool Initialize(bool bEnableOffScreenRendering,
-                            const DString& appName,
+                            const std::string& appName,
                             int argc,
                             char** argv,
                             OnCefSettingsEvent callback,
@@ -73,7 +73,7 @@ private:
 #if CEF_VERSION_MAJOR <= 109
     /** Browser singleton control callback function
     */
-    static void OnBrowserAlreadyRunningAppRelaunch(const std::vector<DString>& argumentList);
+    static void OnBrowserAlreadyRunningAppRelaunch(const std::vector<std::string>& argumentList);
 #endif
 
 private:

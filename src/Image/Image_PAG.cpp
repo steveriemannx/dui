@@ -148,7 +148,6 @@ bool Image_PAG::LoadImageFile(std::vector<uint8_t>& fileData,
                               const UiSize& rcMaxDestRectSize,
                               bool bAssertEnabled)
 {
-    ASSERT(!fileData.empty() || !imageFilePath.IsEmpty());
     if (fileData.empty() && imageFilePath.IsEmpty()) {
         return false;
     }
@@ -246,7 +245,6 @@ int32_t Image_PAG::GetFrameDelayMs(uint32_t /*nFrameIndex*/)
 bool Image_PAG::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSize*/, AnimationFrame* pAnimationFrame)
 {
     GlobalManager::Instance().AssertUIThread();
-    ASSERT(pAnimationFrame != nullptr);
     if (pAnimationFrame == nullptr) {
         return false;
     }
@@ -266,7 +264,6 @@ bool Image_PAG::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSiz
         return false;
     }
 
-    ASSERT(m_impl->m_pagDecoder != nullptr);
     if (m_impl->m_pagDecoder == nullptr) {
         m_impl->m_bDecodeError = true;
         pAnimationFrame->m_bDataError = true;
@@ -274,14 +271,12 @@ bool Image_PAG::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSiz
     }
 
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         m_impl->m_bDecodeError = true;
         pAnimationFrame->m_bDataError = true;
         return false;
     }
     std::shared_ptr<IBitmap> pBitmap(pRenderFactory->CreateBitmap());
-    ASSERT(pBitmap != nullptr);
     if (pBitmap == nullptr) {
         m_impl->m_bDecodeError = true;
         pAnimationFrame->m_bDataError = true;
@@ -298,7 +293,6 @@ bool Image_PAG::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSiz
     }
     int32_t index = nFrameIndex;
     void* pixels = pBitmap->LockPixelBits();
-    ASSERT(pixels != nullptr);
     if (pixels == nullptr) {
         m_impl->m_bDecodeError = true;
         pAnimationFrame->m_bDataError = true;

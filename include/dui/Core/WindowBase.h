@@ -6,14 +6,14 @@
 #include "dui/Utils/FilePath.h"
 #include "dui/Core/EventArgs.h"
 
-#if defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
-    #include "dui/Core/NativeWindow_SDL.h"
+#if defined (DUI_BUILD_FOR_WAYLAND)
+    #include "dui/Core/NativeWindow_Wayland.h"
+#elif defined (DUI_BUILD_FOR_X11)
+    #include "dui/Core/NativeWindow_X11.h"
 #elif defined (DUI_BUILD_FOR_WIN)
     #include "dui/Core/NativeWindow_Windows.h"
 #elif defined (DUI_BUILD_FOR_MACOS)
     #include "dui/Core/NativeWindow_MacOS.h"
-#else
-    class NativeWindow;
 #endif
 
 namespace ui
@@ -107,17 +107,17 @@ public:
         e.g. "font='system_bold_16' text_align='left,vcenter'" — applied on
         top of the theme class. XML attribute: caption_title_style="...".
     */
-    void SetCaptionTitleStyle(const DString& strCaptionTitleStyle);
+    void SetCaptionTitleStyle(const std::string& strCaptionTitleStyle);
 
     /** Get the per-window caption title style (empty when unset).
     */
-    const DString& GetCaptionTitleStyle() const;
+    const std::string& GetCaptionTitleStyle() const;
 
 protected:
     /** Called after the window title changes so derived windows can update
         their self-drawn title controls.
     */
-    virtual void OnWindowTextChanged(const DString& strText);
+    virtual void OnWindowTextChanged(const std::string& strText);
 
 public:
 
@@ -309,37 +309,37 @@ public:
     *  @param [in] iconFileData The data of the icon file
     *  @param [in] iconFileName The file name including the extension, used to identify the image type
     */
-    bool SetWindowIcon(const std::vector<uint8_t>& iconFileData, const DString& iconFileName);
+    bool SetWindowIcon(const std::vector<uint8_t>& iconFileData, const std::string& iconFileName);
 
     /** Set the window title bar text
     * @param [in] strText The window title bar text
     */
-    void SetText(const DString& strText);
+    void SetText(const std::string& strText);
 
     /** Get the window title bar text
     */
-    DString GetText() const;
+    std::string GetText() const;
 
     /** Set the window title bar text according to the text ID in the language list
     * @param [in] strTextId The language ID; this ID must exist in the language file
     */
-    void SetTextId(const DString& strTextId);
+    void SetTextId(const std::string& strTextId);
 
     /** Get the text ID of the window title bar text
     */
-    const DString& GetTextId() const;
+    const std::string& GetTextId() const;
 
     /** Get the window ID
     */
-    const DString& GetWindowId() const;
+    const std::string& GetWindowId() const;
 
     /** Set the window ID
     */
-    void SetWindowId(const DString& windowId);
+    void SetWindowId(const std::string& windowId);
 
     /** Get the Class name of the window
     */
-    const DString& GetWindowClassName() const;
+    const std::string& GetWindowClassName() const;
 
     /** Get the DPI manager corresponding to this window
     */
@@ -599,18 +599,18 @@ public:
     */
     void SetLastMousePos(const UiPoint& pt);
 
-    /** Get the window handle (on the Windows platform, the window handle HWND is returned; in the SDL implementation, SDL_Window* is returned)
+    /** Get the window handle (on the Windows platform, the window handle HWND is returned; in the native backend implementation, Native_Window* is returned)
     */
     void* GetWindowHandle() const;
 
-#ifdef DUI_BUILD_FOR_SDL
+#if defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_X11)
     /** Get the driver name of the current window implementation
     */
-    DString GetVideoDriverName() const;
+    std::string GetVideoDriverName() const;
 
     /** Get the name of the current Render drawing engine
     */
-    DString GetWindowRenderName() const;
+    std::string GetWindowRenderName() const;
 #endif
 
     /** Whether the interface has completed its first display
@@ -1294,7 +1294,7 @@ protected:
     * @param [in] dropType The source type of the drag-and-drop operation
     * @param [in,out] pDropData The specific type is determined by dropType:
     *                 When dropType is kControlDropTypeWindows (representing the Windows platform SDK implementation), the type of pDropData is ControlDropData_Windows*
-    *                 When dropType is kControlDropTypeSDL (representing the SDL implementation), the type of pDropData is ControlDropData_SDL*
+    *                 When dropType is kControlDropTypeWayland (representing the native backend implementation), the type of pDropData is ControlDropData_Wayland*
     *                 pDropData->m_bHandled is the message handling flag; if true is returned, it means the event has been handled and will not be forwarded to other UI controls in the interface for handling, which is equivalent to intercepting this message
     *                 pDropData->m_hResult is the return value after the message is handled, finally returned to the operating system; on the Windows platform, success returns S_OK
     */
@@ -1312,7 +1312,7 @@ protected:
 
     /** Handle the system notification message for DPI changes (WM_DPICHANGED)
     * @param [in] fNewDisplayScale The new interface display scale value of the window; 1.0f means no scaling
-    * @param [in] fNewPixelDensity The new pixel density value of the window (only used in the SDL implementation)
+    * @param [in] fNewPixelDensity The new pixel density value of the window (only used in the native backend implementation)
     */
     virtual void OnDisplayScaleChangedMsg(float fNewDisplayScale, float fNewPixelDensity) = 0;
 
@@ -1327,7 +1327,7 @@ protected:
 
     /** Handle the system notification message for DPI changes
     * @param [in] fNewDisplayScale The new interface display scale value of the window; 1.0f means no scaling
-    * @param [in] fNewPixelDensity The new pixel density value of the window (only used in the SDL implementation)
+    * @param [in] fNewPixelDensity The new pixel density value of the window (only used in the native backend implementation)
     */
     void OnProcessDisplayScaleChangedMsg(float fNewDisplayScale, float fNewPixelDensity);
 
@@ -1460,13 +1460,13 @@ private:
 
 private:
     //The text ID of the window title bar text
-    DString m_textId;
+    std::string m_textId;
 
     //The window ID
-    DString m_windowId;
+    std::string m_windowId;
 
     //The class name of the window
-    DString m_windowClassName;
+    std::string m_windowClassName;
 
     //The stretchable range info of the four window edges
     UiRect m_rcSizeBox;
@@ -1505,7 +1505,7 @@ private:
     bool m_bShowCaptionTitle = false;
 
     //Per-window caption title style (macOS; empty = use the theme class).
-    DString m_strCaptionTitleStyle;
+    std::string m_strCaptionTitleStyle;
 };
 
 } // namespace ui

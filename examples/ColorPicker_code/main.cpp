@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("ColorPicker (Pure Code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("ColorPicker (Pure Code)", EmbeddedResources());
 }

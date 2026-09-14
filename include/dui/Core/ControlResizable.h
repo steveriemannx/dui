@@ -16,8 +16,8 @@ public:
     virtual ~ControlResizableT() override;
 
     /// Override the parent class methods to provide customized features, please refer to the parent class declarations
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** Set whether the control size can be changed by mouse dragging
     */
@@ -200,36 +200,36 @@ ControlResizableT<T>::~ControlResizableT()
 }
 
 template<typename T>
-inline DString ControlResizableT<T>::GetType() const { return DUI_CTR_CONTROL_RESIZABLE; }
+inline std::string ControlResizableT<T>::GetType() const { return DUI_CTR_CONTROL_RESIZABLE; }
 
 template<>
-inline DString ControlResizableT<Box>::GetType() const { return DUI_CTR_BOX_RESIZABLE; }
+inline std::string ControlResizableT<Box>::GetType() const { return DUI_CTR_BOX_RESIZABLE; }
 
 template<>
-inline DString ControlResizableT<HBox>::GetType() const { return DUI_CTR_HBOX_RESIZABLE; }
+inline std::string ControlResizableT<HBox>::GetType() const { return DUI_CTR_HBOX_RESIZABLE; }
 
 template<>
-inline DString ControlResizableT<VBox>::GetType() const { return DUI_CTR_VBOX_RESIZABLE; }
+inline std::string ControlResizableT<VBox>::GetType() const { return DUI_CTR_VBOX_RESIZABLE; }
 
 template<typename T>
-void ControlResizableT<T>::SetAttribute(const DString& strName, const DString& strValue)
+void ControlResizableT<T>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("enable_resize")) {
-        SetEnableResize(strValue == DUI_T("true"));
+    if (strName == "enable_resize") {
+        SetEnableResize(strValue == "true");
     }
-    else if (strName == DUI_T("resize_size_box")) {
+    else if (strName == "resize_size_box") {
         UiRect rcSizeBox;
         AttributeUtil::ParseRectValue(strValue.c_str(), rcSizeBox, false);
         SetSizeBox(rcSizeBox);
     }
-    else if (strName == DUI_T("resize_reserve_width")) {
+    else if (strName == "resize_reserve_width") {
         SetResizeReserveWidth(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("resize_reserve_height")) {
+    else if (strName == "resize_reserve_height") {
         SetResizeReserveHeight(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("resize_keep_within_parent")) {
-        SetResizeKeepWithinParent(strValue == DUI_T("true"));
+    else if (strName == "resize_keep_within_parent") {
+        SetResizeKeepWithinParent(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);

@@ -4,9 +4,8 @@
 
 namespace ui 
 {
-void ColorMap::AddColor(const DString& strName, const DString& strValue)
+void ColorMap::AddColor(const std::string& strName, const std::string& strValue)
 {
-    ASSERT(!strName.empty() && !strValue.empty());
     if (strName.empty() || strValue.empty()) {
         return;
     }
@@ -14,9 +13,8 @@ void ColorMap::AddColor(const DString& strName, const DString& strValue)
     AddColor(strName, color);
 }
 
-void ColorMap::AddColor(const DString& strName, UiColor argb)
+void ColorMap::AddColor(const std::string& strName, UiColor argb)
 {
-    ASSERT(!strName.empty() && (argb.GetARGB() != 0));
     if (strName.empty() || (argb.GetARGB() == 0)) {
         return;
     }
@@ -30,7 +28,7 @@ void ColorMap::AddColor(const DString& strName, UiColor argb)
     m_colorMap[strName] = argb;
 }
 
-UiColor ColorMap::GetColor(const DString& strName) const
+UiColor ColorMap::GetColor(const std::string& strName) const
 {
     auto it = m_colorMap.find(strName);
     if (it != m_colorMap.end()) {
@@ -39,7 +37,7 @@ UiColor ColorMap::GetColor(const DString& strName) const
     return UiColor();
 }
 
-void ColorMap::RemoveColor(const DString& strName)
+void ColorMap::RemoveColor(const std::string& strName)
 {
     auto it = m_colorMap.find(strName);
     if (it != m_colorMap.end()) {
@@ -55,21 +53,21 @@ void ColorMap::RemoveAllColors()
 ColorManager::ColorManager()
 {
     // Initialize the standard color table; strings are case-insensitive
-    std::vector<std::pair<DString, int32_t>> uiColors;
+    std::vector<std::pair<std::string, int32_t>> uiColors;
     UiColors::GetUiColorsString(uiColors);
     for (auto iter : uiColors) {        
         m_standardColorMap.AddColor(StringUtil::MakeLowerString(iter.first), UiColor(iter.second));
     }
 }
 
-UiColor ColorManager::ConvertToUiColor(const DString& strColor)
+UiColor ColorManager::ConvertToUiColor(const std::string& strColor)
 {
     ASSERT(!strColor.empty());
     UiColor color;
     if (strColor.empty()) {
         return color;
     }
-    if (strColor.at(0) != DUI_T('#')) {
+    if (strColor.at(0) != '#') {
         // Get by the standard color value
         color = GlobalManager::Instance().Color().GetStandardColor(strColor);
         if (!color.IsEmpty()) {
@@ -78,49 +76,46 @@ UiColor ColorManager::ConvertToUiColor(const DString& strColor)
     }
 
     // The specific color value, format like: #FFFFFFFF or #FFFFFF
-    ASSERT((strColor.size() == 9) || (strColor.size() == 7));
     if ((strColor.size() != 9) && (strColor.size() != 7)) {
         return color;
     }
-    ASSERT(strColor.at(0) == DUI_T('#'));
-    if (strColor.at(0) != DUI_T('#')) {
+    if (strColor.at(0) != '#') {
         return color;
     }
     for (size_t i = 1; i < strColor.size(); ++i) {
-        DString::value_type ch = strColor.at(i);
-        bool isValid = (((ch >= DUI_T('0')) && (ch <= DUI_T('9'))) ||
-            ((ch >= DUI_T('a')) && (ch <= DUI_T('f'))) ||
-            ((ch >= DUI_T('A')) && (ch <= DUI_T('F'))));
-        ASSERT(isValid);
+        std::string::value_type ch = strColor.at(i);
+        bool isValid = (((ch >= '0') && (ch <= '9')) ||
+            ((ch >= 'a') && (ch <= 'f')) ||
+            ((ch >= 'A') && (ch <= 'F')));
         if (!isValid) {
             return color;
         }
     }
-    DString colorValue = strColor.substr(1);
+    std::string colorValue = strColor.substr(1);
     if (colorValue.size() == 6) {
         // If it is in the #FFFFFF format, add the Alpha value automatically
-        colorValue = DUI_T("FF") + colorValue;
+        colorValue = "FF" + colorValue;
     }
     UiColor::ARGB argb = StringUtil::StringToUInt32(colorValue.c_str(), nullptr, 16);
     return UiColor(argb);
 }
 
-void ColorManager::AddColor(const DString& strName, const DString& strValue)
+void ColorManager::AddColor(const std::string& strName, const std::string& strValue)
 {
     m_colorMap.AddColor(strName, strValue);
 }
 
-void ColorManager::AddColor(const DString& strName, UiColor argb)
+void ColorManager::AddColor(const std::string& strName, UiColor argb)
 {
     m_colorMap.AddColor(strName, argb);
 }
 
-UiColor ColorManager::GetColor(const DString& strName) const
+UiColor ColorManager::GetColor(const std::string& strName) const
 {
     return m_colorMap.GetColor(strName);
 }
 
-UiColor ColorManager::GetStandardColor(const DString& strName) const
+UiColor ColorManager::GetStandardColor(const std::string& strName) const
 {
     // The name is case-insensitive
     return m_standardColorMap.GetColor(StringUtil::MakeLowerString(strName));
@@ -139,22 +134,22 @@ void ColorManager::Clear()
     m_standardColorMap.RemoveAllColors();
 }
 
-const DString& ColorManager::GetDefaultDisabledTextColor()
+const std::string& ColorManager::GetDefaultDisabledTextColor()
 {
     return m_defaultDisabledTextColor;
 }
 
-void ColorManager::SetDefaultDisabledTextColor(const DString& strColor)
+void ColorManager::SetDefaultDisabledTextColor(const std::string& strColor)
 {
     m_defaultDisabledTextColor = strColor;
 }
 
-const DString& ColorManager::GetDefaultTextColor()
+const std::string& ColorManager::GetDefaultTextColor()
 {
     return m_defaultTextColor;
 }
 
-void ColorManager::SetDefaultTextColor(const DString& strColor)
+void ColorManager::SetDefaultTextColor(const std::string& strColor)
 {
     m_defaultTextColor = strColor;
 }

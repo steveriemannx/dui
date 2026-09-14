@@ -20,47 +20,47 @@ AddressBar::AddressBar(Window* pWindow):
     m_bEscUpdateUI(true),
     m_bKillFocusUpdateUI(true),
     m_bUpdatingUI(false),
-    m_editClass(DUI_T("address_bar_edit")),
-    m_editClearBtnClass(DUI_T("rich_edit_clear_btn")),
-    m_subPathHBoxClass(DUI_T("address_bar_sub_path_hbox")),
-    m_subPathBtnClass(DUI_T("address_bar_sub_path_button")),
-    m_subPathRootClass(DUI_T("address_bar_sub_path_root")),
-    m_pathSeparatorClass(DUI_T("address_bar_path_separator"))
+    m_editClass("address_bar_edit"),
+    m_editClearBtnClass("rich_edit_clear_btn"),
+    m_subPathHBoxClass("address_bar_sub_path_hbox"),
+    m_subPathBtnClass("address_bar_sub_path_button"),
+    m_subPathRootClass("address_bar_sub_path_root"),
+    m_pathSeparatorClass("address_bar_path_separator")
 {
 }
 
-DString AddressBar::GetType() const { return DUI_CTR_ADDRESS_BAR; }
+std::string AddressBar::GetType() const { return DUI_CTR_ADDRESS_BAR; }
 
-void AddressBar::SetAttribute(const DString& strName, const DString& strValue)
+void AddressBar::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("path_tooltip")) {
-        SetEnablePathTooltip(strValue == DUI_T("true"));
+    if (strName == "path_tooltip") {
+        SetEnablePathTooltip(strValue == "true");
     }
-    else if (strName == DUI_T("return_update_ui")) {
-        SetReturnUpdateUI(strValue == DUI_T("true"));
+    else if (strName == "return_update_ui") {
+        SetReturnUpdateUI(strValue == "true");
     }
-    else if (strName == DUI_T("esc_update_ui")) {
-        SetEscUpdateUI(strValue == DUI_T("true"));
+    else if (strName == "esc_update_ui") {
+        SetEscUpdateUI(strValue == "true");
     }
-    else if (strName == DUI_T("kill_focus_update_ui")) {
-        SetKillFocusUpdateUI(strValue == DUI_T("true"));
+    else if (strName == "kill_focus_update_ui") {
+        SetKillFocusUpdateUI(strValue == "true");
     }
-    else if (strName == DUI_T("rich_edit_class")) {
+    else if (strName == "rich_edit_class") {
         SetRichEditClass(strValue);
     }
-    else if (strName == DUI_T("rich_edit_clear_btn_class")) {
+    else if (strName == "rich_edit_clear_btn_class") {
         SetRichEditClearBtnClass(strValue);
     }
-    else if (strName == DUI_T("sub_path_hbox_class")) {
+    else if (strName == "sub_path_hbox_class") {
         SetSubPathHBoxClass(strValue);
     }
-    else if (strName == DUI_T("sub_path_button_class")) {
+    else if (strName == "sub_path_button_class") {
         SetSubPathBtnClass(strValue);
     }
-    else if (strName == DUI_T("sub_path_root_class")) {
+    else if (strName == "sub_path_root_class") {
         SetSubPathRootClass(strValue);
     }
-    else if (strName == DUI_T("path_separator_class")) {
+    else if (strName == "path_separator_class") {
         SetPathSeparatorClass(strValue);
     }
     else {
@@ -108,62 +108,62 @@ bool AddressBar::IsKillFocusUpdateUI() const
     return m_bKillFocusUpdateUI;
 }
 
-void AddressBar::SetRichEditClass(const DString& editClass)
+void AddressBar::SetRichEditClass(const std::string& editClass)
 {
     m_editClass = editClass;
 }
 
-DString AddressBar::GetRichEditClass() const
+std::string AddressBar::GetRichEditClass() const
 {
     return m_editClass.c_str();
 }
 
-void AddressBar::SetRichEditClearBtnClass(const DString& clearBtnClass)
+void AddressBar::SetRichEditClearBtnClass(const std::string& clearBtnClass)
 {
     m_editClearBtnClass = clearBtnClass;
 }
 
-DString AddressBar::GetRichEditClearBtnClass() const
+std::string AddressBar::GetRichEditClearBtnClass() const
 {
     return m_editClearBtnClass.c_str();
 }
 
-void AddressBar::SetSubPathHBoxClass(const DString& hboxClass)
+void AddressBar::SetSubPathHBoxClass(const std::string& hboxClass)
 {
     m_subPathHBoxClass = hboxClass;
 }
 
-DString AddressBar::GetSubPathHBoxClass() const
+std::string AddressBar::GetSubPathHBoxClass() const
 {
     return m_subPathHBoxClass.c_str();
 }
 
-void AddressBar::SetSubPathBtnClass(const DString& subPathBtnClass)
+void AddressBar::SetSubPathBtnClass(const std::string& subPathBtnClass)
 {
     m_subPathBtnClass = subPathBtnClass;
 }
 
-DString AddressBar::GetSubPathBtnClass() const
+std::string AddressBar::GetSubPathBtnClass() const
 {
     return m_subPathBtnClass.c_str();
 }
 
-void AddressBar::SetSubPathRootClass(const DString& subPathRootClass)
+void AddressBar::SetSubPathRootClass(const std::string& subPathRootClass)
 {
     m_subPathRootClass = subPathRootClass;
 }
 
-DString AddressBar::GetSubPathRootClass() const
+std::string AddressBar::GetSubPathRootClass() const
 {
     return m_subPathRootClass.c_str();
 }
 
-void AddressBar::SetPathSeparatorClass(const DString& pathSeparatorClass)
+void AddressBar::SetPathSeparatorClass(const std::string& pathSeparatorClass)
 {
     m_pathSeparatorClass = pathSeparatorClass;
 }
 
-DString AddressBar::GetPathSeparatorClass() const
+std::string AddressBar::GetPathSeparatorClass() const
 {
     return m_pathSeparatorClass.c_str();
 }
@@ -279,14 +279,12 @@ void AddressBar::ShowAddressEdit(bool bShow)
     }
 }
 
-bool AddressBar::AddSubPath(const DString& displayName, const DString& filePath)
+bool AddressBar::AddSubPath(const std::string& displayName, const std::string& filePath)
 {
-    ASSERT(!filePath.empty());
     if (filePath.empty()) {
         return false;
     }
 
-    ASSERT(m_pBarBox != nullptr);
     if (m_pBarBox == nullptr) {
         return false;
     }
@@ -298,7 +296,7 @@ bool AddressBar::AddSubPath(const DString& displayName, const DString& filePath)
 
     Button* pDisplayNameBtn = new Button(GetWindow());
     pBox->AddItem(pDisplayNameBtn);    
-    if (filePath == DUI_T("/")) {
+    if (filePath == "/") {
         //Root directory
         pDisplayNameBtn->SetClass(GetSubPathBtnClass());
         pDisplayNameBtn->SetClass(GetSubPathRootClass());
@@ -324,7 +322,7 @@ bool AddressBar::AddSubPath(const DString& displayName, const DString& filePath)
     return true;
 }
 
-void AddressBar::OnClickedSubPath(const DString& filePath)
+void AddressBar::OnClickedSubPath(const std::string& filePath)
 {
     m_clickedAddressPath = filePath;
     if (!m_clickedAddressPath.empty()) {
@@ -332,7 +330,7 @@ void AddressBar::OnClickedSubPath(const DString& filePath)
     }    
 }
 
-DString AddressBar::GetClickedAddressPath() const
+std::string AddressBar::GetClickedAddressPath() const
 {
     return m_clickedAddressPath.c_str();
 }
@@ -349,7 +347,7 @@ void AddressBar::OnAddressBarKillFocus(Control* pNewFocus)
         auto flag = GetWeakFlag();
         if (m_bKillFocusUpdateUI) {
             if (!m_bUpdatingUI) {
-                DString addressPath;
+                std::string addressPath;
                 if (m_pRichEdit != nullptr) {
                     addressPath = m_pRichEdit->GetText();
                 }
@@ -371,7 +369,7 @@ void AddressBar::OnAddressBarKillFocus(Control* pNewFocus)
 
 void AddressBar::OnAddressBarReturn()
 {
-    DString addressPath;
+    std::string addressPath;
     if (m_pRichEdit != nullptr) {
         addressPath = m_pRichEdit->GetText();
     }
@@ -402,7 +400,7 @@ void AddressBar::OnAddressBarEsc()
     SendEvent(kEventEsc);
 }
 
-void AddressBar::SetAddressPath(const DString& addressPath)
+void AddressBar::SetAddressPath(const std::string& addressPath)
 {
     m_addressPath = addressPath;
     if (m_pRichEdit != nullptr) {
@@ -411,17 +409,17 @@ void AddressBar::SetAddressPath(const DString& addressPath)
     UpdateAddressBarControls(addressPath);
 }
 
-DString AddressBar::GetAddressPath() const
+std::string AddressBar::GetAddressPath() const
 {
     return m_showAddressPath.c_str();
 }
 
-DString AddressBar::GetPreviousAddressPath() const
+std::string AddressBar::GetPreviousAddressPath() const
 {
     return m_prevShowAddressPath.c_str();
 }
 
-bool AddressBar::UpdateAddressBarControls(const DString& addressPath)
+bool AddressBar::UpdateAddressBarControls(const std::string& addressPath)
 {
     if (m_showAddressPath == addressPath) {
         return false;
@@ -451,7 +449,7 @@ bool AddressBar::UpdateAddressBarControls(const DString& addressPath)
     }
 
     bool bRoot = true;
-    DString displayName;
+    std::string displayName;
     for (const FilePath& subPath : pathList) {
         displayName = subPath.GetFileName();
         if (bRoot && displayName.empty()) {            

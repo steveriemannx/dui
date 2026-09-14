@@ -47,7 +47,6 @@ Render_Skia_Windows::Render_Skia_Windows(HWND hWnd, RenderBackendType backendTyp
 {
     if (backendType == RenderBackendType::kNativeGL_BackendType) {
         //GPU drawing must be bound to a window
-        ASSERT(::IsWindow(hWnd));
         if (!::IsWindow(hWnd)) {
             backendType = RenderBackendType::kRaster_BackendType;
         }
@@ -92,7 +91,6 @@ bool Render_Skia_Windows::Resize(int32_t width, int32_t height)
         return true;
     }
 
-    ASSERT(m_pWindowContext != nullptr);
     if (m_pWindowContext == nullptr) {
         return false;
     }
@@ -156,7 +154,6 @@ bool Render_Skia_Windows::PaintAndSwapBuffers(IRenderPaint* pRenderPaint)
 
 SkSurface* Render_Skia_Windows::GetSkSurface() const
 {
-    ASSERT(m_pWindowContext != nullptr);
     if (m_pWindowContext == nullptr) {
         return nullptr;
     }
@@ -168,12 +165,10 @@ SkSurface* Render_Skia_Windows::GetSkSurface() const
 
 SkCanvas* Render_Skia_Windows::GetSkCanvas() const
 {
-    ASSERT(m_pWindowContext != nullptr);
     if (m_pWindowContext == nullptr) {
         return nullptr;
     }
     sk_sp<SkSurface> backbuffer = m_pWindowContext->getBackbufferSurface();
-    ASSERT(backbuffer != nullptr);
     if (backbuffer == nullptr) {
         return nullptr;
     }
@@ -187,11 +182,9 @@ HDC Render_Skia_Windows::GetRenderDC(HWND hWnd)
         return m_hDC;
     }
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return nullptr;
     }
-    ASSERT(m_pWindowContext != nullptr);
     if (m_pWindowContext == nullptr) {
         return nullptr;
     }
@@ -203,7 +196,6 @@ HDC Render_Skia_Windows::GetRenderDC(HWND hWnd)
     }
 
     HBITMAP hBitmap = pWindowContext->GetHBitmap();
-    ASSERT(hBitmap != nullptr);
     if (hBitmap == nullptr) {
         return nullptr;
     }

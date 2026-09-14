@@ -45,7 +45,13 @@ protected:
 
 private:
     ClickZone HitTestZone(const UiPoint& pt) const;
-    UiColor GetZoneColor(ClickZone zone, bool bHover, bool bPressed) const;
+    UiColor GetZoneColor(ClickZone zone, bool bPressed) const;
+    /** Paint the glyphs shown inside the circles while the pointer is on them:
+     *  "x" (close), "-" (minimize) and the two facing triangles (zoom).
+     *  @param [in] cx Window-absolute x of the three circle centers
+     *  @param [in] cy Window-absolute y of the circle centers
+     */
+    void PaintGlyphs(IRender* pRender, float fScale, const float (&cx)[3], float cy) const;
 
     bool m_bWindowActive = true;
     ClickZone m_hoverZone = ClickZone::kNone;

@@ -22,7 +22,7 @@ namespace ui
  * (2) CEF 133 and later have built-in singleton control; just implementing the interface is enough. CEF 109 has no such feature and allows multiple Browser processes to coexist
  * @param [in] argumentList Launch argument list of the relaunched Browser process
  */
-typedef std::function<void (const std::vector<DString>& argumentList)> OnAlreadyRunningAppRelaunchEvent;
+typedef std::function<void (const std::vector<std::string>& argumentList)> OnAlreadyRunningAppRelaunchEvent;
 
 /** Callback to set the CEF initialization parameters; the parameters can be modified in the callback function
  * @param [in] settings Initialization parameters of the CEF module
@@ -56,11 +56,11 @@ public:
     *   It can be a relative path. If a relative directory is set, the corresponding relative directory will be created in the current program directory
     *   Default rule: "${program directory}/cef_cache/${program name}"
     */
-    virtual void SetCefCachePath(const DString& cefCachePath);
+    virtual void SetCefCachePath(const std::string& cefCachePath);
 
     /** Get the current CEF web page cache directory
     */
-    virtual DString GetCefCachePath() const;
+    virtual std::string GetCefCachePath() const;
 
     /** Set the path of the CEF module runtime library file (libcef.dll) (Windows only; if not set, the default rule directory is used)
     *   It can be a relative path. If a relative directory is set, the corresponding relative directory will be matched in the current program directory
@@ -69,20 +69,20 @@ public:
     *       Windows x64: "libcef_win_109\\x64" (CEF 109)
     *       Windows x86: "libcef_win_109\\Win32" (CEF 109)
     */
-    virtual void SetCefMoudlePath(const DString& cefMoudlePath);
+    virtual void SetCefMoudlePath(const std::string& cefMoudlePath);
 
     /** Get the path of the CEF module runtime library file
     */
-    virtual DString GetCefMoudlePath() const;
+    virtual std::string GetCefMoudlePath() const;
 
     /** Set the default language; if not set, the default is Simplified Chinese ("zh-CN")
     * @param [in] lang Language string, e.g. "en-US" for English
     */
-    virtual void SetCefLanguage(const DString& lang);
+    virtual void SetCefLanguage(const std::string& lang);
 
     /** Get the default language
     */
-    virtual DString GetCefLanguage() const;
+    virtual std::string GetCefLanguage() const;
 
     /** Set the CEF log severity level
     */
@@ -106,7 +106,7 @@ public:
     * @return bool true to continue running, false to end the program
     */
     virtual bool Initialize(bool bEnableOffScreenRendering,
-                            const DString& appName,
+                            const std::string& appName,
                             int argc,
                             char** argv,
                             OnCefSettingsEvent callback,
@@ -179,11 +179,11 @@ public:
     * @param [in] name Name of the argument
     * @param [in] value Value of the argument
     */
-    void AppendSwitchWithValue(const DString& name, const DString& value);
+    void AppendSwitchWithValue(const std::string& name, const std::string& value);
 
     /** Get the extra startup arguments of the CEF module
     */
-    const std::vector<std::pair<DString, DString>>& GetSwitchWithValues() const;
+    const std::vector<std::pair<std::string, std::string>>& GetSwitchWithValues() const;
 
 public:
     // CEF process type
@@ -225,19 +225,19 @@ private:
     /** CEF web page cache directory (if not set, the default rule directory is used)
     *   Default rule: "${program directory}/cef_cache/${program name}"
     */
-    DString m_cefCachePath;
+    std::string m_cefCachePath;
 
     /** Path of the CEF module runtime library file (libcef.dll) (Windows only; if not set, the default rule directory is used)
     */
-    DString m_cefMoudlePath;
+    std::string m_cefMoudlePath;
 
     /** Application name
     */
-    DString m_appName;
+    std::string m_appName;
 
     /** Default CEF language
     */
-    DString m_lang;
+    std::string m_lang;
 
     /** Callback function for CEF configuration
     */
@@ -245,7 +245,7 @@ private:
 
     /** Extra startup arguments of the CEF module
     */
-    std::vector<std::pair<DString, DString>> m_cefSwitchWithValues;
+    std::vector<std::pair<std::string, std::string>> m_cefSwitchWithValues;
 
     /** CEF log severity level
     */

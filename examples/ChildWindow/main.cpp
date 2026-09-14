@@ -4,7 +4,7 @@
 
 int main()
 {
-    return ui::Run<MainForm>(DUI_T("ChildWindow"), [](MainForm* window) {
+    return ui::Run<MainForm>("ChildWindow", [](MainForm* window) {
         window->PaintNextChildWindow();
     });
 }

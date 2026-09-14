@@ -11,7 +11,7 @@ struct DownloadTask
 {
     int nId; //Unique ID
     bool bSelected = false;//Selection state
-    DString::value_type* sName = nullptr;//Name
+    std::string::value_type* sName = nullptr;//Name
 };
 
 class DataProvider : public ui::VirtualListBoxElement
@@ -67,7 +67,7 @@ public:
 public:
     void SetTotal(int nTotal);
     void RemoveTask(size_t nIndex);
-    void ChangeTaskName(size_t nIndex, const DString& sName);
+    void ChangeTaskName(size_t nIndex, const std::string& sName);
 
 private:
     int m_nTotal;

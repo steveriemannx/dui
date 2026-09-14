@@ -25,8 +25,8 @@ public:
      * GetSkinFolder        The interface sets the window skin resource path to be drawn
      * GetSkinFile            The interface sets the xml description file of the window to be drawn
      */
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual std::string GetSkinFolder() override;
+    virtual std::string GetSkinFile() override;
 
 public:
     /** Set the selected color
@@ -59,7 +59,7 @@ protected:
     * @param [in] strClass The control name
     * @return Returns a custom control pointer; in general, create a custom control according to the strClass parameter
     */
-    virtual Control* CreateControl(const DString& strClass) override;
+    virtual Control* CreateControl(const std::string& strClass) override;
 
 private:
     /** Called after the window is created, for subclasses to do some initialization work

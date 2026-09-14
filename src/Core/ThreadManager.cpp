@@ -17,14 +17,12 @@ ThreadManager::~ThreadManager()
 bool ThreadManager::RegisterThread(int32_t nThreadIdentifier, FrameworkThread* pThread)
 {
     ASSERT(nThreadIdentifier >= 0);
-    ASSERT(pThread != nullptr);
     if (pThread == nullptr) {
         return false;
     }
 
     ScopedLock threadGuard(m_threadMutex);
     auto iter = m_threadsMap.find(nThreadIdentifier);
-    ASSERT(iter == m_threadsMap.end());
     if (iter != m_threadsMap.end()) {
         return false;
     }
@@ -72,7 +70,6 @@ int32_t ThreadManager::GetCurrentThreadIdentifier() const
 
 size_t ThreadManager::PostTask(int32_t nThreadIdentifier, const StdClosure& task)
 {
-    ASSERT(task != nullptr);
     if (task == nullptr) {
         return 0;
     }
@@ -94,7 +91,6 @@ size_t ThreadManager::PostTask(int32_t nThreadIdentifier, const StdClosure& task
 
 size_t ThreadManager::PostDelayedTask(int32_t nThreadIdentifier, const StdClosure& task, int32_t nDelayMs)
 {
-    ASSERT(task != nullptr);
     if (task == nullptr) {
         return 0;
     }
@@ -114,7 +110,6 @@ size_t ThreadManager::PostDelayedTask(int32_t nThreadIdentifier, const StdClosur
 size_t ThreadManager::PostRepeatedTask(int32_t nThreadIdentifier, const StdClosure& task,
                                        int32_t nIntervalMs, int32_t nTimes)
 {
-    ASSERT(task != nullptr);
     if (task == nullptr) {
         return 0;
     }

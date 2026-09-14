@@ -56,7 +56,7 @@ int32_t WindowBase::DoModal(WindowBase* pParentWindow, const WindowCreateParam& 
 
 bool WindowBase::CreateChildWnd(WindowBase* pParentWindow, int32_t nX, int32_t nY, int32_t nWidth, int32_t nHeight)
 {
-    SetWindowId(DUI_T(""));
+    SetWindowId("");
     m_pParentWindow = pParentWindow;
     NativeWindow* pNativeWindow = pParentWindow != nullptr ? pParentWindow->NativeWnd() : nullptr;
     return m_pNativeWindow->CreateChildWnd(pNativeWindow, nX, nY, nWidth, nHeight);
@@ -121,12 +121,12 @@ bool WindowBase::IsShowCaptionTitle() const
     return m_bShowCaptionTitle;
 }
 
-void WindowBase::SetCaptionTitleStyle(const DString& strCaptionTitleStyle)
+void WindowBase::SetCaptionTitleStyle(const std::string& strCaptionTitleStyle)
 {
     m_strCaptionTitleStyle = strCaptionTitleStyle;
 }
 
-const DString& WindowBase::GetCaptionTitleStyle() const
+const std::string& WindowBase::GetCaptionTitleStyle() const
 {
     return m_strCaptionTitleStyle;
 }
@@ -239,7 +239,6 @@ WindowBase* WindowBase::GetParentWindow() const
 
 bool WindowBase::SetParentWindow(WindowBase* pParentWindow)
 {
-    ASSERT((pParentWindow != nullptr) && pParentWindow->IsWindow());
     if ((pParentWindow == nullptr) || !pParentWindow->IsWindow()) {
         return false;
     }
@@ -259,7 +258,6 @@ bool WindowBase::IsChildWindow() const
 
 void WindowBase::InitWindowBase()
 {
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return;
     }
@@ -532,39 +530,39 @@ bool WindowBase::SetWindowIcon(const FilePath& iconFilePath)
     return m_pNativeWindow->SetWindowIcon(iconFilePath);
 }
 
-bool WindowBase::SetWindowIcon(const std::vector<uint8_t>& iconFileData, const DString& iconFileName)
+bool WindowBase::SetWindowIcon(const std::vector<uint8_t>& iconFileData, const std::string& iconFileName)
 {
     return m_pNativeWindow->SetWindowIcon(iconFileData, iconFileName);
 }
 
-void WindowBase::SetText(const DString& strText)
+void WindowBase::SetText(const std::string& strText)
 {
     m_pNativeWindow->SetText(strText);
     OnWindowTextChanged(strText);
 }
 
-void WindowBase::OnWindowTextChanged(const DString& /*strText*/)
+void WindowBase::OnWindowTextChanged(const std::string& /*strText*/)
 {
 }
 
-DString WindowBase::GetText() const
+std::string WindowBase::GetText() const
 {
     return m_pNativeWindow->GetText();
 }
 
-void WindowBase::SetTextId(const DString& strTextId)
+void WindowBase::SetTextId(const std::string& strTextId)
 {
     ASSERT(IsWindow());
     m_textId = strTextId;
     m_pNativeWindow->SetText(GlobalManager::Instance().Lang().GetStringViaID(strTextId));  
 }
 
-const DString& WindowBase::GetTextId() const
+const std::string& WindowBase::GetTextId() const
 {
     return m_textId;
 }
 
-const DString& WindowBase::GetWindowId() const
+const std::string& WindowBase::GetWindowId() const
 {
     return m_windowId;
 }
@@ -582,7 +580,7 @@ static std::string generate_12digit_random()
     return std::to_string(distribution(generator));
 }
 
-void WindowBase::SetWindowId(const DString& windowId)
+void WindowBase::SetWindowId(const std::string& windowId)
 {
     m_windowId = windowId;
     if (m_windowId.empty()) {
@@ -591,7 +589,7 @@ void WindowBase::SetWindowId(const DString& windowId)
     }
 }
 
-const DString& WindowBase::GetWindowClassName() const
+const std::string& WindowBase::GetWindowClassName() const
 {
     return m_windowClassName;
 }
@@ -603,7 +601,6 @@ const DpiManager& WindowBase::Dpi() const
 
 bool WindowBase::ChangeDisplayScale(uint32_t nNewDisplayScaleFactor, bool bDisableDpiAware)
 {
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return false;
     }
@@ -918,13 +915,13 @@ void* WindowBase::GetWindowHandle() const
     return m_pNativeWindow->GetWindowHandle();
 }
 
-#ifdef DUI_BUILD_FOR_SDL
-DString WindowBase::GetVideoDriverName() const
+#ifdef DUI_BUILD_FOR_WAYLAND
+std::string WindowBase::GetVideoDriverName() const
 {
     return m_pNativeWindow->GetVideoDriverName();
 }
 
-DString WindowBase::GetWindowRenderName() const
+std::string WindowBase::GetWindowRenderName() const
 {
     return m_pNativeWindow->GetWindowRenderName();
 }
@@ -1533,8 +1530,8 @@ static bool IsDragDropMsgHandled(ControlDropType dropType, void* pDropData)
             bHandled = dropData->m_bHandled;
         }
     }
-    else if (dropType == ui::kControlDropTypeSDL) {
-        const ui::ControlDropData_SDL* dropData = (const ui::ControlDropData_SDL*)pDropData;
+    else if (dropType == ui::kControlDropTypeWayland) {
+        const ui::ControlDropData_Wayland* dropData = (const ui::ControlDropData_Wayland*)pDropData;
         if (dropData != nullptr) {
             bHandled = dropData->m_bHandled;
         }

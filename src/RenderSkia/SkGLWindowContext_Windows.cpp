@@ -69,12 +69,10 @@ sk_sp<SkSurface> SkGLWindowContext_Windows::getBackbufferSurface()
 
 sk_sp<const GrGLInterface> SkGLWindowContext_Windows::onInitializeContext()
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return nullptr;
     }
     const skwindow::DisplayParams* pDisplayParams = getDisplayParams();
-    ASSERT(pDisplayParams != nullptr);
     if (pDisplayParams == nullptr) {
         return nullptr;
     }
@@ -185,7 +183,6 @@ bool SkGLWindowContext_Windows::PaintAndSwapBuffers(IRender* /*pRender*/, IRende
     }
 
     sk_sp<SkSurface> backbuffer = getBackbufferSurface();
-    ASSERT(backbuffer != nullptr);
     if (backbuffer == nullptr) {
         return false;
     }

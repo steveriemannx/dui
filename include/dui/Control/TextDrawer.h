@@ -26,9 +26,9 @@ public:
      * @return Returns the width and height of the text string, with the result expressed as a rectangle
      */
     UiRect MeasureString(IRender* pRender,
-                         const DString& strText,
+                         const std::string& strText,
                          const MeasureStringParam& measureParam,
-                         const DString& fontId,
+                         const std::string& fontId,
                          bool bRichText,
                          Control* pOwner);
 
@@ -41,9 +41,9 @@ public:
      * @param [in] pOwner Associated control interface
      */
     void DrawString(IRender* pRender,
-                    const DString& strText,
+                    const std::string& strText,
                     const DrawStringParam& drawParam,
-                    const DString& fontId,
+                    const std::string& fontId,
                     bool bRichText,
                     Control* pOwner);
 
@@ -58,7 +58,7 @@ private:
     * @param [in] fSpacingAdd Line spacing addition: fixed additional pixel value (default is usually 0)
     * @param [in] fontId Default font ID
     */
-    void UpdateTextDrawProps(uint32_t uFormat, float fSpacingMul, float fSpacingAdd, const DString& fontId);
+    void UpdateTextDrawProps(uint32_t uFormat, float fSpacingMul, float fSpacingAdd, const std::string& fontId);
 
 private:
     /** RichText implementation interface

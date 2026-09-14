@@ -102,12 +102,10 @@ bool CefJSBridge::ExecuteJSCallbackFunc(int js_callback_id, bool has_error, cons
 bool CefJSBridge::RegisterJSFunc(const CefString& function_name, CefRefPtr<CefV8Value> function, bool replace/* = false*/)
 {
     CefRefPtr<CefV8Context> context = CefV8Context::GetCurrentContext();
-    ASSERT(context != nullptr);
     if (context == nullptr) {
         return false;
     }
     CefRefPtr<CefFrame> frame = context->GetFrame();
-    ASSERT(frame != nullptr);
     if (frame == nullptr) {
         return false;
     }
@@ -124,7 +122,6 @@ bool CefJSBridge::RegisterJSFunc(const CefString& function_name, CefRefPtr<CefV8
 
 void CefJSBridge::UnRegisterJSFunc(const CefString& function_name, CefRefPtr<CefFrame> frame)
 {
-    ASSERT(frame != nullptr);
     if (frame == nullptr) {
         return;
     }
@@ -145,7 +142,6 @@ void CefJSBridge::UnRegisterJSFuncWithFrame(CefRefPtr<CefFrame> frame)
 
 bool CefJSBridge::ExecuteJSFunc(const CefString& function_name, const CefString& json_params, CefRefPtr<CefFrame> frame, int cpp_callback_id)
 {
-    ASSERT(frame != nullptr);
     if (frame == nullptr) {
         return false;
     }
@@ -301,7 +297,7 @@ bool CefJSBridge::ExecuteCppFunc(const CefString& function_name, const CefString
 
 CefString CefJSBridge::Int64ToCefString(int64_t nValue)
 {
-    DString str = StringUtil::Int64ToString(nValue);
+    std::string str = StringUtil::Int64ToString(nValue);
     return CefString(str);
 }
 

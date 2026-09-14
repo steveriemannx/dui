@@ -223,7 +223,6 @@ void Render_Skia::RestoreClip(int32_t nState)
 {
     SkCanvas* skCanvas = GetSkCanvas();
     ASSERT(skCanvas != nullptr);
-    ASSERT(m_saveCount == nState);
     if (m_saveCount != nState) {
         return;
     }
@@ -300,23 +299,19 @@ void Render_Skia::SetRopMode(SkPaint& skPaint, RopMode rop) const
 bool Render_Skia::BitBlt(int32_t x, int32_t y, int32_t cx, int32_t cy, IRender* pSrcRender, int32_t xSrc, int32_t ySrc, RopMode rop)
 {
     ASSERT((GetWidth() > 0) && (GetHeight() > 0));
-    ASSERT(pSrcRender != nullptr);
     if (pSrcRender == nullptr) {
         return false;
     }
 
     Render_Skia* pSkiaRender = dynamic_cast<Render_Skia*>(pSrcRender);
-    ASSERT(pSkiaRender != nullptr);
     if (pSkiaRender == nullptr) {
         return false;
     }
     SkSurface* skSurface = pSkiaRender->GetSkSurface();
-    ASSERT(skSurface != nullptr);
     if (skSurface == nullptr) {
         return false;
     }
     sk_sp<SkImage> skSrcImage = skSurface->makeImageSnapshot();
-    ASSERT(skSrcImage != nullptr);
     if (skSrcImage == nullptr) {
         return false;
     }
@@ -344,23 +339,19 @@ bool Render_Skia::BitBlt(int32_t x, int32_t y, int32_t cx, int32_t cy, IRender* 
 bool Render_Skia::StretchBlt(int32_t xDest, int32_t yDest, int32_t widthDest, int32_t heightDest, IRender* pSrcRender, int32_t xSrc, int32_t ySrc, int32_t widthSrc, int32_t heightSrc, RopMode rop)
 {
     ASSERT((GetWidth() > 0) && (GetHeight() > 0));
-    ASSERT(pSrcRender != nullptr);
     if (pSrcRender == nullptr) {
         return false;
     }
 
     Render_Skia* pSkiaRender = dynamic_cast<Render_Skia*>(pSrcRender);
-    ASSERT(pSkiaRender != nullptr);
     if (pSkiaRender == nullptr) {
         return false;
     }
     SkSurface* skSurface = pSkiaRender->GetSkSurface();
-    ASSERT(skSurface != nullptr);
     if (skSurface == nullptr) {
         return false;
     }
     sk_sp<SkImage> skSrcImage = skSurface->makeImageSnapshot();
-    ASSERT(skSrcImage != nullptr);
     if (skSrcImage == nullptr) {
         return false;
     }
@@ -388,23 +379,19 @@ bool Render_Skia::StretchBlt(int32_t xDest, int32_t yDest, int32_t widthDest, in
 bool Render_Skia::AlphaBlend(int32_t xDest, int32_t yDest, int32_t widthDest, int32_t heightDest, IRender* pSrcRender, int32_t xSrc, int32_t ySrc, int32_t widthSrc, int32_t heightSrc, uint8_t alpha)
 {
     ASSERT((GetWidth() > 0) && (GetHeight() > 0));
-    ASSERT(pSrcRender != nullptr);
     if (pSrcRender == nullptr) {
         return false;
     }
 
     Render_Skia* pSkiaRender = dynamic_cast<Render_Skia*>(pSrcRender);
-    ASSERT(pSkiaRender != nullptr);
     if (pSkiaRender == nullptr) {
         return false;
     }
     SkSurface* skSurface = pSkiaRender->GetSkSurface();
-    ASSERT(skSurface != nullptr);
     if (skSurface == nullptr) {
         return false;
     }
     sk_sp<SkImage> skSrcImage = skSurface->makeImageSnapshot();
-    ASSERT(skSrcImage != nullptr);
     if (skSrcImage == nullptr) {
         return false;
     }
@@ -503,19 +490,16 @@ void Render_Skia::DrawImage(const UiRect& rcPaint, IBitmap* pBitmap,
     if (!UiRect::Intersect(rcTestTemp, rcDest, rcPaint)) {
         return;
     }
-    PerformanceStat statPerformance(DUI_T("Render_Skia::DrawImage"));
+    PerformanceStat statPerformance("Render_Skia::DrawImage");
 
-    ASSERT(pBitmap != nullptr);
     if (pBitmap == nullptr) {
         return;
     }
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return;
     }
     Bitmap_Skia* skiaBitmap = dynamic_cast<Bitmap_Skia*>(pBitmap);
-    ASSERT(skiaBitmap != nullptr);
     if (skiaBitmap == nullptr) {
         return;
     }
@@ -872,13 +856,11 @@ void Render_Skia::DrawImageRect(const UiRect& rcPaint, IBitmap* pBitmap,
         }
     }
 
-    ASSERT(pBitmap != nullptr);
     if (pBitmap == nullptr) {
         return;
     }
 
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return;
     }
@@ -892,7 +874,6 @@ void Render_Skia::DrawImageRect(const UiRect& rcPaint, IBitmap* pBitmap,
     skPaint.setBlendMode(SkBlendMode::kSrcOver);
 
     Bitmap_Skia* skiaBitmap = dynamic_cast<Bitmap_Skia*>(pBitmap);
-    ASSERT(skiaBitmap != nullptr);
     if (skiaBitmap == nullptr) {
         return;
     }
@@ -1023,7 +1004,6 @@ void Render_Skia::DrawLine(const UiPointF& pt1, const UiPointF& pt2, UiColor pen
 
 void Render_Skia::DrawLine(const UiPointF& pt1, const UiPointF& pt2, IPen* pen)
 {
-    ASSERT(pen != nullptr);
     if (pen == nullptr) {
         return;
     }
@@ -1072,7 +1052,6 @@ void Render_Skia::DrawRect(const UiRectF& rc, UiColor penColor, float fWidth, bo
 
 void Render_Skia::DrawRect(const UiRectF& rc, IPen* pen, bool bLineInRect)
 {
-    ASSERT(pen != nullptr);
     if (pen == nullptr) {
         return;
     }
@@ -1118,7 +1097,6 @@ void Render_Skia::DrawRoundRect(const UiRectF& rc, float rx, float ry, UiColor p
 
 void Render_Skia::DrawRoundRect(const UiRectF& rc, float rx, float ry, IPen* pen)
 {
-    ASSERT(pen != nullptr);
     if (pen == nullptr) {
         return;
     }
@@ -1201,7 +1179,6 @@ void Render_Skia::DrawCircle(const UiPointF& centerPt, float radius, UiColor pen
 
 void Render_Skia::DrawCircle(const UiPointF& centerPt, float radius, IPen* pen)
 {
-    ASSERT(pen != nullptr);
     if (pen == nullptr) {
         return;
     }
@@ -1244,7 +1221,6 @@ void Render_Skia::DrawArc(const UiRect& rc, float startAngle, float sweepAngle, 
                           UiColor* gradientColor,
                           const UiRect* gradientRect)
 {
-    ASSERT(pen != nullptr);
     if (pen == nullptr) {
         return;
     }
@@ -1289,7 +1265,6 @@ void Render_Skia::DrawPath(const IPath* path, const IPen* pen)
         return;
     }
     const Path_Skia* pSkiaPath = dynamic_cast<const Path_Skia*>(path);
-    ASSERT(pSkiaPath != nullptr);
     if (pSkiaPath == nullptr) {
         return;
     }
@@ -1424,7 +1399,6 @@ void Render_Skia::FillPath(const IPath* path, const IBrush* brush)
         return;
     }
     const Path_Skia* pSkiaPath = dynamic_cast<const Path_Skia*>(path);
-    ASSERT(pSkiaPath != nullptr);
     if (pSkiaPath == nullptr) {
         return;
     }
@@ -1446,12 +1420,10 @@ void Render_Skia::FillPath(const IPath* path, const IBrush* brush)
 
 void Render_Skia::FillPath(const IPath* path, const UiRectF& rc, UiColor dwColor, UiColor dwColor2, int8_t nColor2Direction)
 {
-    ASSERT(path != nullptr);
     if (path == nullptr){
         return;
     }
     const Path_Skia* pSkiaPath = dynamic_cast<const Path_Skia*>(path);
-    ASSERT(pSkiaPath != nullptr);
     if (pSkiaPath == nullptr) {
         return;
     }
@@ -1472,7 +1444,7 @@ void Render_Skia::FillPath(const IPath* path, const UiRectF& rc, UiColor dwColor
     }
 }
 
-void Render_Skia::DrawString(const DString& strText, const DrawStringParam& drawParam)
+void Render_Skia::DrawString(const std::string& strText, const DrawStringParam& drawParam)
 {
     if ((GetWidth() <= 0) || (GetHeight() <= 0)) {
         //This is the case where the window size is 0; return without asserting
@@ -1489,8 +1461,7 @@ void Render_Skia::DrawString(const DString& strText, const DrawStringParam& draw
         return drawTextUtil.DrawString(strText, drawParam);
     }
 
-    PerformanceStat statPerformance(DUI_T("Render_Skia::DrawString"));
-    ASSERT(!strText.empty());
+    PerformanceStat statPerformance("Render_Skia::DrawString");
     if (strText.empty()) {
         return;
     }
@@ -1498,13 +1469,11 @@ void Render_Skia::DrawString(const DString& strText, const DrawStringParam& draw
     if (drawParam.textRect.IsEmpty()) {
         return;
     }
-    ASSERT(drawParam.pFont != nullptr);
     if (drawParam.pFont == nullptr) {
         return;
     }
 
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return;
     }
@@ -1513,12 +1482,10 @@ void Render_Skia::DrawString(const DString& strText, const DrawStringParam& draw
     
     //Get the font interface    
     Font_Skia* pSkiaFont = dynamic_cast<Font_Skia*>(drawParam.pFont);
-    ASSERT(pSkiaFont != nullptr);
     if (pSkiaFont == nullptr) {
         return;
     }
     const SkFont* pSkFont = pSkiaFont->GetFontHandle();
-    ASSERT(pSkFont != nullptr);
     if (pSkFont == nullptr) {
         return;
     }
@@ -1599,13 +1566,13 @@ void Render_Skia::DrawString(const DString& strText, const DrawStringParam& draw
     }
     skTextBox.draw(skCanvas, 
                    (const char*)strText.c_str(), 
-                   strText.size() * sizeof(DString::value_type),
+                   strText.size() * sizeof(std::string::value_type),
                    textEncoding, 
                    *pSkFont,
                    skPaint);
 }
 
-UiRect Render_Skia::MeasureString(const DString& strText, const MeasureStringParam& measureParam)
+UiRect Render_Skia::MeasureString(const std::string& strText, const MeasureStringParam& measureParam)
 {
     if ((GetWidth() <= 0) || (GetHeight() <= 0)) {
         //This is the case where the window size is 0; return empty without asserting
@@ -1622,30 +1589,25 @@ UiRect Render_Skia::MeasureString(const DString& strText, const MeasureStringPar
         return drawTextUtil.MeasureString(strText, measureParam);
     }
 
-    PerformanceStat statPerformance(DUI_T("Render_Skia::MeasureString"));    
-    ASSERT(!strText.empty());
+    PerformanceStat statPerformance("Render_Skia::MeasureString");    
     if (strText.empty()) {
         return UiRect();
     }
-    ASSERT(measureParam.pFont != nullptr);
     if (measureParam.pFont == nullptr) {
         return UiRect();
     }
 
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return UiRect();
     }
 
     //Get the font interface
     Font_Skia* pSkiaFont = dynamic_cast<Font_Skia*>(measureParam.pFont);
-    ASSERT(pSkiaFont != nullptr);
     if (pSkiaFont == nullptr) {
         return UiRect();
     }
     const SkFont* pSkFont = pSkiaFont->GetFontHandle();
-    ASSERT(pSkFont != nullptr);
     if (pSkFont == nullptr) {
         return UiRect();
     }
@@ -1666,7 +1628,7 @@ UiRect Render_Skia::MeasureString(const DString& strText, const MeasureStringPar
         //Single-line mode
         SkRect bounds; //For italic text, this width includes the extended width
         SkScalar textWidth = pSkFont->measureText(strText.c_str(),
-                                                  strText.size() * sizeof(DString::value_type),
+                                                  strText.size() * sizeof(std::string::value_type),
                                                   GetTextEncoding(),
                                                   &bounds,
                                                   &skPaint);
@@ -1696,7 +1658,7 @@ UiRect Render_Skia::MeasureString(const DString& strText, const MeasureStringPar
         }
         std::vector<size_t> lineLenList; //The length of each line's text data (bytes)
         int lineCount = SkTextLineBreaker::CountLines((const char*)strText.c_str(),
-                                                      strText.size() * sizeof(DString::value_type),
+                                                      strText.size() * sizeof(std::string::value_type),
                                                       GetTextEncoding(),
                                                       *pSkFont,
                                                       skPaint,
@@ -1707,19 +1669,19 @@ UiRect Render_Skia::MeasureString(const DString& strText, const MeasureStringPar
         int32_t textWidth = 0;
         ASSERT((int)lineLenList.size() == lineCount);
         if (!lineLenList.empty()) {
-            std::vector<DString> lineTextList; //The text of each line
+            std::vector<std::string> lineTextList; //The text of each line
             size_t nTextPos = 0;
             for (size_t len : lineLenList) {
-                ASSERT((len % sizeof(DString::value_type)) == 0);
-                size_t nTextLen = len / sizeof(DString::value_type);
+                ASSERT((len % sizeof(std::string::value_type)) == 0);
+                size_t nTextLen = len / sizeof(std::string::value_type);
                 lineTextList.push_back(strText.substr(nTextPos, nTextLen));
                 nTextPos += nTextLen;
             }
-            for (const DString& lineText : lineTextList) {
+            for (const std::string& lineText : lineTextList) {
                 //Evaluate each line as single-line text and take the maximum width
                 SkRect bounds; //For italic text, this width includes the extended width
                 SkScalar lineTextLen = pSkFont->measureText(lineText.c_str(),
-                                                            lineText.size() * sizeof(DString::value_type),
+                                                            lineText.size() * sizeof(std::string::value_type),
                                                             GetTextEncoding(),
                                                             &bounds,
                                                             &skPaint);
@@ -1755,7 +1717,7 @@ void Render_Skia::MeasureRichText(const UiRect& textRect,
                                   const std::vector<RichTextData>& richTextData,
                                   std::vector<std::vector<UiRect>>* pRichTextRects)
 {
-    PerformanceStat statPerformance(DUI_T("Render_Skia::MeasureRichText"));
+    PerformanceStat statPerformance("Render_Skia::MeasureRichText");
     ui::DrawRichText drawRichText(this, GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
     drawRichText.InternalDrawRichText(textRect, szScrollOffset, pRenderFactory, richTextData, 255, true, nullptr, nullptr, pRichTextRects);
 }
@@ -1767,7 +1729,7 @@ void Render_Skia::MeasureRichText2(const UiRect& textRect,
                                    RichTextLineInfoParam* pLineInfoParam,
                                    std::vector<std::vector<UiRect>>* pRichTextRects)
 {
-    PerformanceStat statPerformance(DUI_T("Render_Skia::MeasureRichText2"));
+    PerformanceStat statPerformance("Render_Skia::MeasureRichText2");
     ui::DrawRichText drawRichText(this, GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
     drawRichText.InternalDrawRichText(textRect, szScrollOffset, pRenderFactory, richTextData, 255, true, pLineInfoParam, nullptr, pRichTextRects);
 }
@@ -1780,7 +1742,7 @@ void Render_Skia::MeasureRichText3(const UiRect& textRect,
                                    std::shared_ptr<DrawRichTextCache>& spDrawRichTextCache,
                                    std::vector<std::vector<UiRect>>* pRichTextRects)
 {
-    PerformanceStat statPerformance(DUI_T("Render_Skia::MeasureRichText3"));
+    PerformanceStat statPerformance("Render_Skia::MeasureRichText3");
     ui::DrawRichText drawRichText(this, GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
     drawRichText.InternalDrawRichText(textRect, szScrollOffset, pRenderFactory, richTextData, 255, true, pLineInfoParam, &spDrawRichTextCache, pRichTextRects);
 }
@@ -1792,7 +1754,7 @@ void Render_Skia::DrawRichText(const UiRect& textRect,
                                uint8_t uFade,
                                std::vector<std::vector<UiRect>>* pRichTextRects)
 {
-    PerformanceStat statPerformance(DUI_T("Render_Skia::DrawRichText"));
+    PerformanceStat statPerformance("Render_Skia::DrawRichText");
     ui::DrawRichText drawRichText(this, GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
     drawRichText.InternalDrawRichText(textRect, szScrollOffset, pRenderFactory, richTextData, uFade, false, nullptr, nullptr, pRichTextRects);
 }
@@ -1803,7 +1765,7 @@ bool Render_Skia::CreateDrawRichTextCache(const UiRect& textRect,
                                           const std::vector<RichTextData>& richTextData,
                                           std::shared_ptr<DrawRichTextCache>& spDrawRichTextCache)
 {
-    PerformanceStat statPerformance(DUI_T("Render_Skia::CreateDrawRichTextCache"));
+    PerformanceStat statPerformance("Render_Skia::CreateDrawRichTextCache");
     spDrawRichTextCache.reset();
     ui::DrawRichText drawRichText(this, GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
     drawRichText.InternalDrawRichText(textRect, szScrollOffset, pRenderFactory, richTextData, 255, true, nullptr, &spDrawRichTextCache, nullptr);
@@ -1828,7 +1790,7 @@ bool Render_Skia::UpdateDrawRichTextCache(std::shared_ptr<DrawRichTextCache>& sp
                                           size_t nDeletedRows,
                                           const std::vector<int32_t>& rowRectTopList)
 {
-    PerformanceStat statPerformance(DUI_T("Render_Skia::UpdateDrawRichTextCache"));
+    PerformanceStat statPerformance("Render_Skia::UpdateDrawRichTextCache");
     ui::DrawRichText drawRichText(this, GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
     return drawRichText.UpdateDrawRichTextCache(spOldDrawRichTextCache,
                                                 spUpdateDrawRichTextCache,
@@ -1863,10 +1825,10 @@ void Render_Skia::DrawRichTextCacheData(const std::shared_ptr<DrawRichTextCache>
                                               pRichTextRects);
 }
 
-size_t Render_Skia::GetUTF16CharCount(const DStringW::value_type* srcPtr, size_t textStartIndex) const
+size_t Render_Skia::GetUTF16CharCount(const std::wstring::value_type* srcPtr, size_t textStartIndex) const
 {
     if (srcPtr != nullptr) {
-        ASSERT(sizeof(uint16_t) == sizeof(DStringW::value_type));
+        ASSERT(sizeof(uint16_t) == sizeof(std::wstring::value_type));
         const uint16_t* src = (const uint16_t*)(srcPtr + textStartIndex);
         ASSERT(!SkUTF16_IsLowSurrogate(*src));
         if (SkUTF16_IsHighSurrogate(*src)) {
@@ -1892,7 +1854,6 @@ void Render_Skia::DrawBoxShadow(const UiRect& rc,
     }
 
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return;
     }
@@ -1952,11 +1913,9 @@ void Render_Skia::DrawBoxShadow(const UiRect& rc,
 
 bool Render_Skia::ReadPixels(const UiRect& rc, void* dstPixels, size_t dstPixelsLen)
 {
-    ASSERT(dstPixels != nullptr);
     if (dstPixels == nullptr) {
         return false;
     }
-    ASSERT(!rc.IsEmpty());
     if (rc.IsEmpty()) {
         return false;
     }
@@ -1966,7 +1925,6 @@ bool Render_Skia::ReadPixels(const UiRect& rc, void* dstPixels, size_t dstPixels
     }
 
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return false;
     }
@@ -1981,21 +1939,17 @@ bool Render_Skia::ReadPixels(const UiRect& rc, void* dstPixels, size_t dstPixels
 
 bool Render_Skia::WritePixels(void* srcPixels, size_t srcPixelsLen, const UiRect& rc)
 {
-    ASSERT(srcPixels != nullptr);
     if (srcPixels == nullptr) {
         return false;
     }
-    ASSERT(!rc.IsEmpty());
     if (rc.IsEmpty()) {
         return false;
     }
-    ASSERT(srcPixelsLen == (rc.Width() * rc.Height() * sizeof(uint32_t)));
     if (srcPixelsLen != (rc.Width() * rc.Height() * sizeof(uint32_t))) {
         return false;
     }
 
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return false;
     }
@@ -2014,28 +1968,23 @@ bool Render_Skia::WritePixels(void* srcPixels, size_t srcPixelsLen, const UiRect
     if (rc == rcPaint) {
         return WritePixels(srcPixels, srcPixelsLen, rc);
     }
-    ASSERT(srcPixels != nullptr);
     if (srcPixels == nullptr) {
         return false;
     }
-    ASSERT(!rc.IsEmpty());
     if (rc.IsEmpty()) {
         return false;
     }
-    ASSERT(srcPixelsLen == (rc.Width() * rc.Height() * sizeof(uint32_t)));
     if (srcPixelsLen != (rc.Width() * rc.Height() * sizeof(uint32_t))) {
         return false;
     }
 
     SkCanvas* skCanvas = GetSkCanvas();
-    ASSERT(skCanvas != nullptr);
     if (skCanvas == nullptr) {
         return false;
     }
 
     UiRect updateRect = rc;
     updateRect.Intersect(rcPaint);
-    ASSERT(!updateRect.IsEmpty());
     if (updateRect.IsEmpty()) {
         return false;
     }
@@ -2127,7 +2076,7 @@ void Render_Skia::SetRenderDpi(const IRenderDpiPtr& spRenderDpi)
 
 SkTextEncoding Render_Skia::GetTextEncoding() const
 {
-    constexpr const size_t nValueLen = sizeof(DString::value_type);
+    constexpr const size_t nValueLen = sizeof(std::string::value_type);
     if constexpr (nValueLen == 1) {
         return SkTextEncoding::kUTF8;
     }
@@ -2138,11 +2087,7 @@ SkTextEncoding Render_Skia::GetTextEncoding() const
         return SkTextEncoding::kUTF32;
     }
     else {
-#ifdef DUI_UNICODE
-        return SkTextEncoding::kUTF16;
-#else
         return SkTextEncoding::kUTF8;
-#endif
     }
 }
 

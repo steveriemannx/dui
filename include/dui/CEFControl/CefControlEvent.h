@@ -87,8 +87,8 @@ namespace ui
     typedef std::function<void (CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 cef_errorcode_t errorCode,
-                                const DString& errorText,
-                                const DString& failedUrl)> OnLoadErrorEvent;
+                                const std::string& errorText,
+                                const std::string& failedUrl)> OnLoadErrorEvent;
 
     //Browser object creation complete (called on the main process's UI thread)
     typedef std::function<void (CefRefPtr<CefBrowser> browser)> OnAfterCreatedEvent;
@@ -115,16 +115,16 @@ namespace ui
 
     //Title change (called on the main process's UI thread)
     typedef std::function<void (CefRefPtr<CefBrowser> browser,
-                                const DString& title)> OnTitleChangeEvent;
+                                const std::string& title)> OnTitleChangeEvent;
 
     //URL change (called on the main process's UI thread)
     typedef std::function<void (CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
-                                const DString& url)> OnUrlChangeEvent;
+                                const std::string& url)> OnUrlChangeEvent;
 
     //Main frame URL change (called on the main process's UI thread)
-    typedef std::function<void (const DString& oldUrl,
-                                const DString& newUrl)> OnMainUrlChangeEvent;
+    typedef std::function<void (const std::string& oldUrl,
+                                const std::string& newUrl)> OnMainUrlChangeEvent;
 
     //Favicon URL change (called on the main process's UI thread)
     typedef std::function<void (CefRefPtr<CefBrowser> browser,
@@ -136,7 +136,7 @@ namespace ui
 
     //Status message change (called on the main process's UI thread)
     typedef std::function<void (CefRefPtr<CefBrowser> browser,
-                                const DString& value)> OnStatusMessageEvent;
+                                const std::string& value)> OnStatusMessageEvent;
 
     //Loading progress change (called on the main process's UI thread)
     typedef std::function<void (CefRefPtr<CefBrowser> browser,
@@ -258,15 +258,15 @@ public:
 
     /** Title change (called on the main process's UI thread)
     */
-    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title) {}
+    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const std::string& title) {}
     
     /** URL change (called on the main process's UI thread)
     */
-    virtual void OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const DString& url) {}
+    virtual void OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const std::string& url) {}
     
     /** Main frame URL change (called on the main process's UI thread)
     */
-    virtual void OnMainUrlChange(const DString& oldUrl, const DString& newUrl) {}
+    virtual void OnMainUrlChange(const std::string& oldUrl, const std::string& newUrl) {}
     
     /** Favicon URL change (called on the main process's UI thread)
     */
@@ -278,7 +278,7 @@ public:
     
     /** Status message change (called on the main process's UI thread)
     */
-    virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const DString& value) {}
+    virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const std::string& value) {}
     
     /** Loading progress change (called on the main process's UI thread)
     */
@@ -371,8 +371,8 @@ public:
     virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
                              cef_errorcode_t errorCode,
-                             const DString& errorText,
-                             const DString& failedUrl) {}
+                             const std::string& errorText,
+                             const std::string& failedUrl) {}
 
     /** The dev tools' visibility state changed (called on the main process's UI thread)
     */

@@ -86,11 +86,10 @@
     #define DUI_BIT_64   1
 #endif
 
-/** Unicode or Ansi version (for the Ansi version, the file encoding is UTF-8, so the string encoding is also UTF-8)
-*/
-#if defined(UNICODE) || defined(_UNICODE)
-    #define DUI_UNICODE 1
-#endif
+//DUI_UNICODE is gone. It used to be derived from UNICODE/_UNICODE and selected a
+//std::wstring string type on Windows; strings are std::string (UTF-8) everywhere now.
+//UNICODE/_UNICODE are still defined on Windows, but only so that the unsuffixed
+//Win32 calls resolve to their -W variants -- that is unrelated to the string type.
 
 //Unused variable macro, to avoid compiler warnings
 #ifndef UNUSED_VARIABLE
@@ -98,7 +97,7 @@
 #endif
 
 #ifndef ASSERT_UNUSED_VARIABLE
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)
         #define ASSERT_UNUSED_VARIABLE(expr)  ASSERT(expr)
     #else
         #define ASSERT_UNUSED_VARIABLE(expr)  UNUSED_VARIABLE(expr)
@@ -116,7 +115,7 @@
     #include "dui_config_linux.h"
     #include <cassert>
 
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)
         #define ASSERT(expr)  assert(expr)
     #else
         #define ASSERT(expr)  ((void)(0))
@@ -126,7 +125,7 @@
     #include "dui_config_macos.h"
     #include <cassert>
 
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)
         #define ASSERT(expr)  assert(expr)
     #else
         #define ASSERT(expr)  ((void)(0))
@@ -136,7 +135,7 @@
     #include "dui_config_freebsd.h"
     #include <cassert>
 
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)
         #define ASSERT(expr)  assert(expr)
     #else
         #define ASSERT(expr)  ((void)(0))

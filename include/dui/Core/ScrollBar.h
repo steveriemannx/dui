@@ -22,7 +22,7 @@ public:
     void SetOwner(ScrollBox* pOwner);
 
     /// Override the base class methods to provide customized behavior; see the base class declaration
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
     virtual void SetFocus() override;
     virtual bool ButtonUp(const EventArgs& msg) override;
     virtual bool HasHotState() override;
@@ -31,7 +31,7 @@ public:
 
     virtual void SetPos(UiRect rc) override;
     virtual void HandleEvent(const EventArgs& msg) override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void Paint(IRender* pRender, const UiRect& rcPaint) override;
     virtual void ClearImageCache() override;
 
@@ -128,7 +128,7 @@ public:
      * @param[in] stateType The state to get, see the ControlStateType enum
      * @return Returns the image location
      */
-    DString GetButton1StateImage(ControlStateType stateType);
+    std::string GetButton1StateImage(ControlStateType stateType);
 
     /**
      * @brief Set the left or up button image for the specified state
@@ -136,7 +136,7 @@ public:
      * @param[in] pStrImage The image location
      * @return None
      */
-    void SetButton1StateImage(ControlStateType stateType, const DString& pStrImage);
+    void SetButton1StateImage(ControlStateType stateType, const std::string& pStrImage);
 
     /**
      * @brief Whether to show the right or down button
@@ -156,7 +156,7 @@ public:
      * @param[in] stateType The state to get, see the ControlStateType enum
      * @return Returns the image location
      */
-    DString GetButton2StateImage(ControlStateType stateType);
+    std::string GetButton2StateImage(ControlStateType stateType);
 
     /**
      * @brief Set the right or down button image for the specified state
@@ -164,14 +164,14 @@ public:
      * @param[in] pStrImage The image location
      * @return None
      */
-    void SetButton2StateImage(ControlStateType stateType, const DString& pStrImage);
+    void SetButton2StateImage(ControlStateType stateType, const std::string& pStrImage);
 
     /**
      * @brief Get the thumb image for the specified state
      * @param[in] stateType The state identifier to get, see the ControlStateType enum
      * @return Returns the image location
      */
-    DString GetThumbStateImage(ControlStateType stateType);
+    std::string GetThumbStateImage(ControlStateType stateType);
 
     /**
      * @brief Set the thumb image for the specified state
@@ -179,14 +179,14 @@ public:
      * @param[in] pStrImage The image location
      * @return None
      */
-    void SetThumbStateImage(ControlStateType stateType, const DString& pStrImage);
+    void SetThumbStateImage(ControlStateType stateType, const std::string& pStrImage);
 
     /**
      * @brief Get the rail image in the middle of the thumb for the specified state
      * @param[in] stateType The state identifier to get, see the ControlStateType enum
      * @return Returns the image location
      */
-    DString GetRailStateImage(ControlStateType stateType);
+    std::string GetRailStateImage(ControlStateType stateType);
 
     /**
      * @brief Set the rail image in the middle of the thumb for the specified state
@@ -194,14 +194,14 @@ public:
      * @param[in] pStrImage The image location
      * @return None
      */
-    void SetRailStateImage(ControlStateType stateType, const DString& pStrImage);
+    void SetRailStateImage(ControlStateType stateType, const std::string& pStrImage);
 
     /**
      * @brief Get the background image for the specified state
      * @param[in] stateType The state identifier to get, see the ControlStateType enum
      * @return Returns the image location
      */
-    DString GetBkStateImage(ControlStateType stateType);
+    std::string GetBkStateImage(ControlStateType stateType);
 
     /**
      * @brief Set the background image for the specified state
@@ -209,7 +209,7 @@ public:
      * @param[in] pStrImage The image location
      * @return None
      */
-    void SetBkStateImage(ControlStateType stateType, const DString& pStrImage);
+    void SetBkStateImage(ControlStateType stateType, const std::string& pStrImage);
 
     /**
      * @brief Whether to automatically hide the scroll bar
@@ -323,7 +323,7 @@ private:
     ControlStateType m_uThumbState;
 
     //The target area of the image, used for drawing
-    DString m_sImageModify;
+    std::string m_sImageModify;
 
     //The background images for each state
     std::unique_ptr<StateImage> m_bkStateImage;

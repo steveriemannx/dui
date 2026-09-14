@@ -22,11 +22,11 @@ public:
 
     /** Control type
     */
-    virtual DString GetType() const;
+    virtual std::string GetType() const;
 
     /** Get the control name, corresponding to the name attribute in xml
      */
-    DString GetName() const;
+    std::string GetName() const;
 
     /** Get the control name, corresponding to the name attribute in xml
      * @return Returns the control name (UTF8 encoded)
@@ -36,7 +36,7 @@ public:
     /** Set the control name; setting it in memory will not write it to the xml
      * @param [in] strName The name to set
      */
-    void SetName(const DString& strName);
+    void SetName(const std::string& strName);
 
     /** Set the control name; setting it in memory will not write it to the xml (UTF8 encoded)
      * @param [in] strName The name to set
@@ -45,7 +45,7 @@ public:
 
     /** Determine whether the control names are equal
     */
-    bool IsNameEquals(const DString& name) const;
+    bool IsNameEquals(const std::string& name) const;
 
     /** Determine whether it has a name
     */
@@ -54,7 +54,7 @@ public:
     /** Get the ancestor container pointer by name
     * @param [in] strName The name of the ancestor container to get
     */
-    Box* GetAncestor(const DString& strName);
+    Box* GetAncestor(const std::string& strName);
 
     /** Set the container's owning window
      * @param [in] pParent The parent container pointer

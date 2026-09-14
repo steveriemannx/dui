@@ -31,21 +31,21 @@ public:
     * @param [in] strText The text content to be evaluated
     * @param [in] measureParam The parameters required for evaluation
     */
-    UiRect MeasureString(const DString& strText, const MeasureStringParam& measureParam);
+    UiRect MeasureString(const std::string& strText, const MeasureStringParam& measureParam);
 
     /** Draw text vertically: the drawing direction is top to bottom, right to left
     * @param [in] strText The text content to be drawn
     * @param [in] measureParam The parameters required for drawing
     */
-    void DrawString(const DString& strText, const DrawStringParam& drawParam);
+    void DrawString(const std::string& strText, const DrawStringParam& drawParam);
 
 private:
-    /** Get the UTF16 string and preprocess it (for vertical text drawing)
+    /** Preprocess the text for vertical drawing, keeping its native encoding
     */
-    UTF16String GetDrawStringUTF16(const DString& strText, bool bSingleLineMode) const;
+    std::string GetDrawStringText(const std::string& strText, bool bSingleLineMode) const;
 
     /** Calculate the rectangle range occupied by the drawing of each character
-    * @param [in] textUTF16 The string
+    * @param [in] text The preprocessed string, in the platform-native std::string encoding
     * @param [in] pSkFont The font
     * @param [in] skPaint The drawing attributes
     * @param [in] bUseFontHeight When drawing vertically, use the font's default height instead of each font's height (all fonts display at the same height)
@@ -53,7 +53,7 @@ private:
     * @param [in] bRotate90ForAscii When drawing vertically, rotate letters, digits, etc. by 90 degrees for display
     * @param [out] charRects Returns the rectangle range occupied by the drawing of each character
     */
-    bool CalculateTextCharBounds(const UTF16String& textUTF16, const SkFont* pSkFont, const SkPaint* skPaint,
+    bool CalculateTextCharBounds(const std::string& text, const SkFont* pSkFont, const SkPaint* skPaint,
                                  bool bUseFontHeight, float fFontHeight, bool bRotate90ForAscii,
                                  std::vector<TVerticalChar>& charRects) const;
 
@@ -83,10 +83,11 @@ private:
     float CalculateDefaultCharWidth(const SkFont* pSkFont, const SkPaint* skPaint) const;
 
     /** Determine whether characters in vertical text need to be rotated 90 degrees for display
-     * @param ch The wide character (wchar_t)
+     * @param unichar The code point (SkUnichar, which is int32_t; spelled out here so that
+     *                this header can keep forward-declaring Skia instead of including it)
      * @return true: needs to be rotated 90 degrees; false: remains upright
     */
-    bool NeedRotateForVertical(DUTF16Char ch) const;
+    bool NeedRotateForVertical(int32_t unichar) const;
 
 private:
     /** The drawing canvas

@@ -12,6 +12,8 @@
 * [Control Events/Messages](Events.md)
 * [XML Node Names of Controls](XmlNode.md)
 * [Responding to Control Events Directly in XML](XmlEvents.md)
+* [Data Binding (ui::binding)](Binding.md)
+* [Logging](Logging.md)
 * [CEF Control](CEF.md)
 * [Build Process per Platform](Build.md)
 * [Build-related Documents and Scripts](../scripts/build.md)
@@ -175,7 +177,7 @@ For detailed interface descriptions of each class, please refer to the associate
 | FontMgr_Skia | [include/dui/RenderSkia/FontMgr_Skia.h](../include/dui/RenderSkia/FontMgr_Skia.h) | Interface implementation of the font manager |
 | Render_Skia | [include/dui/RenderSkia/Render_Skia.h](../include/dui/RenderSkia/Render_Skia.h) | Implementation of the rendering interface, used for drawing images, text, etc. |
 | Render_Skia_Windows | [include/dui/RenderSkia/Render_Skia_Windows.h](../include/dui/RenderSkia/Render_Skia_Windows.h) | Implementation of the Windows-related functionality of the rendering interface |
-| Render_Skia_SDL | [include/dui/RenderSkia/Render_Skia_SDL.h](../include/dui/RenderSkia/Render_Skia_SDL.h) | Implementation of the SDL-related functionality of the rendering interface, mainly used on Linux; Windows is also supported |
+| Render_Skia_Wayland | [include/dui/RenderSkia/Render_Skia_Wayland.h](../include/dui/RenderSkia/Render_Skia_Wayland.h) | Native Wayland rendering implementation |
 
 * Controls / functional components
 
@@ -209,7 +211,7 @@ For detailed interface descriptions of each class, please refer to the associate
 | RichEdit | ScrollBox| [include/dui/Control/RichEdit.h](../include/dui/Control/RichEdit.h) | Rich text edit control |
 | RichEdit implementation classes | | [include/dui/Control/RichEditCtrl_Windows.h](../include/dui/Control/RichEditCtrl_Windows.h) | Core functionality wrapper of the rich text edit control (Windows) |
 | RichEdit implementation classes | | [include/dui/Control/RichEditHost_Windows.h](../include/dui/Control/RichEditHost_Windows.h) | Core functionality implementation of the rich text edit control (Windows) |
-| RichEdit implementation classes | | [include/dui/Control/RichEdit_SDL.h](../include/dui/Control/RichEdit_SDL.h) | Core functionality wrapper of the rich text edit control (SDL) |
+| RichEdit implementation classes | | [include/dui/Control/RichEdit_Native.h](../include/dui/Control/RichEdit_Native.h) | Core functionality wrapper of the rich text edit control (native backend) |
 | RichText | Control| [include/dui/Control/RichText.h](../include/dui/Control/RichText.h) | Formatted text (HTML-like format) |
 | Split | Control| [include/dui/Control/Split.h](../include/dui/Control/Split.h) | Splitter control |
 | SplitBox | Box| [include/dui/Control/Split.h](../include/dui/Control/Split.h) | Splitter container |

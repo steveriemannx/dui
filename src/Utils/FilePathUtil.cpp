@@ -32,9 +32,9 @@ FilePath FilePathUtil::JoinFilePath(const FilePath& path1, const FilePath& path2
 FilePath FilePathUtil::NormalizeFilePath(const FilePath& filePath)
 {
 #ifdef DUI_BUILD_FOR_WIN
-    DStringW nativePath;
+    std::wstring nativePath;
 #else
-    DStringA nativePath;
+    std::string nativePath;
 #endif
     try {
 #ifdef DUI_BUILD_FOR_WIN
@@ -49,34 +49,26 @@ FilePath FilePathUtil::NormalizeFilePath(const FilePath& filePath)
     return FilePath(nativePath, true);
 }
 
-DString FilePathUtil::NormalizeFilePath(const DString& filePath)
+std::string FilePathUtil::NormalizeFilePath(const std::string& filePath)
 {
 #ifdef DUI_BUILD_FOR_WIN
     //Windows platform
-    DStringW nativePath;
+    std::wstring nativePath;
     try {
-#ifdef DUI_UNICODE
-        std::filesystem::path file_path(filePath);
-#else
 #ifdef DUI_BUILD_FOR_WIN
         std::filesystem::path file_path(StringConvert::UTF8ToWString(filePath));
 #else
         std::filesystem::path file_path(filePath);
 #endif
-#endif
         nativePath = file_path.lexically_normal().native();
     }
     catch (...) {
     }
-#ifdef DUI_UNICODE
-    return nativePath;
-#else
     return StringConvert::WStringToUTF8(nativePath);
-#endif
 
 #else
     //Linux platform
-    DString nativePath;
+    std::string nativePath;
     try {
         std::filesystem::path file_path(filePath);
         nativePath = file_path.lexically_normal().native();
@@ -87,7 +79,7 @@ DString FilePathUtil::NormalizeFilePath(const DString& filePath)
 #endif
 }
 
-bool FilePathUtil::CreateOneDirectory(const DString& filePath)
+bool FilePathUtil::CreateOneDirectory(const std::string& filePath)
 {
     bool bCreated = false;
     try {
@@ -101,7 +93,7 @@ bool FilePathUtil::CreateOneDirectory(const DString& filePath)
     return bCreated;
 }
 
-bool FilePathUtil::CreateDirectories(const DString& filePath)
+bool FilePathUtil::CreateDirectories(const std::string& filePath)
 {
     bool bCreated = false;
     try {
@@ -115,22 +107,22 @@ bool FilePathUtil::CreateDirectories(const DString& filePath)
     return bCreated;
 }
 
-DString FilePathUtil::GetFileExtension(const DString& filePath)
+std::string FilePathUtil::GetFileExtension(const std::string& filePath)
 {
-    DString path = filePath;
+    std::string path = filePath;
 #ifdef DUI_BUILD_FOR_WIN
-    size_t pos = filePath.find_last_of(DUI_T("/\\"));
+    size_t pos = filePath.find_last_of("/\\");
 #else
-    size_t pos = filePath.find_last_of(DUI_T("/"));
+    size_t pos = filePath.find_last_of("/");
 #endif
-    if ((pos != DString::npos) && ((pos + 1) < filePath.size())) {
-        path = filePath.substr(pos + 1, DString::npos);
+    if ((pos != std::string::npos) && ((pos + 1) < filePath.size())) {
+        path = filePath.substr(pos + 1, std::string::npos);
     }
 
-    DString fileExt;
-    pos = path.rfind(DUI_T("."));
-    if ((pos != DString::npos) && ((pos + 1) < path.size())) {
-        fileExt = path.substr(pos + 1, DString::npos);
+    std::string fileExt;
+    pos = path.rfind(".");
+    if ((pos != std::string::npos) && ((pos + 1) < path.size())) {
+        fileExt = path.substr(pos + 1, std::string::npos);
         fileExt = StringUtil::MakeUpperString(fileExt);
     }
     return fileExt;
@@ -139,7 +131,7 @@ DString FilePathUtil::GetFileExtension(const DString& filePath)
 FilePath FilePathUtil::GetCurrentModuleDirectory()
 {
 #ifdef DUI_BUILD_FOR_WIN
-    DStringW dirPath;
+    std::wstring dirPath;
     dirPath.resize(1024, 0);
     dirPath.resize(::GetModuleFileNameW(nullptr, &dirPath[0], (uint32_t)dirPath.size()));
     FilePath currentDir(dirPath);
@@ -148,7 +140,7 @@ FilePath FilePathUtil::GetCurrentModuleDirectory()
 #elif defined (DUI_BUILD_FOR_LINUX)
     std::error_code ec;
     std::filesystem::path exeFullPath = std::filesystem::canonical("/proc/self/exe", ec);
-    DString dirPath = exeFullPath.parent_path().native();
+    std::string dirPath = exeFullPath.parent_path().native();
     if (dirPath.empty()) {
         dirPath = std::filesystem::current_path().native();
     }
@@ -201,7 +193,7 @@ FilePath FilePathUtil::GetCurrentModuleDirectory()
         std::error_code ec;
         exeFullPath = std::filesystem::canonical(path, ec);
     }
-    DString dirPath = exeFullPath.parent_path().native();
+    std::string dirPath = exeFullPath.parent_path().native();
     if (dirPath.empty()) {
         dirPath = std::filesystem::current_path().native();
     }
@@ -209,7 +201,7 @@ FilePath FilePathUtil::GetCurrentModuleDirectory()
     filePath.NormalizeDirectoryPath();
     return filePath;
 #else
-    DString dirPath = std::filesystem::current_path().native(); 
+    std::string dirPath = std::filesystem::current_path().native(); 
     FilePath filePath(dirPath);
     filePath.NormalizeDirectoryPath();
     return filePath;
@@ -219,7 +211,7 @@ FilePath FilePathUtil::GetCurrentModuleDirectory()
 #ifdef DUI_BUILD_FOR_MACOS
 FilePath FilePathUtil::GetBundleResourcesPath()
 {
-    DString dirPath;
+    std::string dirPath;
     CFBundleRef mainBundle = CFBundleGetMainBundle();
     if (mainBundle) {
         CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);

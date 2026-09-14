@@ -2,7 +2,7 @@
 # Dependency management for Skia / CEF:
 #   - Skia sources are vendored as zip downloads (third_party/skia);
 #     when missing they are downloaded and extracted automatically at configure time
-#     (see dui_deps_download_skia / dui_deps_download_sdl below), so they are present
+#     (see dui_deps_download_skia below), so they are present
 #     at configure time (src/CMakeLists.txt compiles skia's tools/window sources directly
 #     into the dui library). The zip archives are kept in third_party/downloads/
 #     (gitignored) so that deleting the extracted source and reconfiguring re-extracts
@@ -41,9 +41,11 @@ function(dui_deps_configure)
     if(NOT EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/BUILD.gn")
         message(FATAL_ERROR
             "Skia source not found at ${DUI_SKIA_SRC_ROOT_DIR}.\n"
-            "The automatic download failed; retry cmake configure, or download and extract\n"
-            "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip\n"
-            "into ${DUI_SKIA_SRC_ROOT_DIR} manually.\n"
+            "The automatic download failed. Retry cmake configure, or build the tree by\n"
+            "hand: fetch\n"
+            "  https://github.com/google/skia/archive/34aa71b8bee4648a442b7125680232d803374f19.zip\n"
+            "extract it into ${DUI_SKIA_SRC_ROOT_DIR}, then apply every patch in\n"
+            "  third_party/skia-patches/  in name order  (patch -p1 -N -f)\n"
             "(or set -DDUI_BUILD_SKIA_FROM_SOURCE=OFF and provide Skia yourself)")
     endif()
 
@@ -69,6 +71,20 @@ extra_cflags = [ \"-I/usr/local/include\", \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER
         else()
             set(_gn_extra "extra_cflags = [ \"-DSK_DISABLE_LEGACY_PNG_WRITEBUFFER\" ]
 ")
+        endif()
+
+        # A sanitizer build changes the layout of Skia's own types. SkASAN.h defines
+        # SK_SANITIZE_ADDRESS whenever a translation unit is compiled with
+        # -fsanitize=address, and SkTArray has a member under it -- so an instrumented
+        # dui linked against an uninstrumented Skia disagrees with it about every type
+        # containing a TArray, SkSVGContainer::fChildren among them. The observable
+        # result is heap-buffer-overflow reports inside objects Skia allocated, which
+        # are artifacts of the mismatch rather than defects: measured, SkSVGSVG is 848
+        # bytes in dui's translation units and 840 in Skia's.
+        # The cost is that toggling DUI_ENABLE_SANITIZERS rewrites args.gn, which
+        # re-runs gn and rebuilds Skia.
+        if(DUI_ENABLE_SANITIZERS)
+            string(APPEND _gn_extra "sanitize = \"ASAN\"\n")
         endif()
 
         # Common gn args (everything except is_debug, which differs per config)
@@ -107,12 +123,16 @@ ${_gn_extra}
             file(MAKE_DIRECTORY "${DUI_SKIA_LIB_PATH_RELEASE}")
             file(WRITE "${DUI_SKIA_LIB_PATH_RELEASE}/args.gn" "${GN_ARGS_COMMON}is_debug = false\n")
         else()
-            set(_is_debug false)
-            if(DUI_BUILD_TYPE STREQUAL "debug")
-                set(_is_debug true)
-            endif()
+            # is_debug is always false, matching the multi-config branch above and for
+            # the same reason. It is not merely a preference: skia's own BUILDCONFIG.gn
+            # contains `assert(!(is_debug && is_official_build))`, and GN_ARGS_COMMON
+            # sets is_official_build = true, so writing is_debug = true here made
+            # `gn gen` abort -- a Debug build of dui on macOS/Linux did not work at all.
+            # The dui targets still build with -g and no optimisation; only Skia is
+            # release-grade, which is the usual arrangement when debugging against a
+            # prebuilt dependency.
             file(MAKE_DIRECTORY "${DUI_SKIA_LIB_PATH}")
-            file(WRITE "${DUI_SKIA_LIB_PATH}/args.gn" "${GN_ARGS_COMMON}is_debug = ${_is_debug}\n")
+            file(WRITE "${DUI_SKIA_LIB_PATH}/args.gn" "${GN_ARGS_COMMON}is_debug = false\n")
         endif()
     endif()
 endfunction()
@@ -133,7 +153,8 @@ function(dui_deps_add_targets)
     # including file") from the console - ninja still parses them internally for
     # dependency tracking - keeping only progress and error lines visible, and
     # (c) prepends the directory of the gn binary (%~3) to PATH, since skia's
-    # find_headers.py action runs a bare "gn" (fork change in skia-dui-0.1.1).
+    # find_headers.py action runs a bare "gn" (a dui change, carried by
+    # third_party/skia-patches/, not by upstream Skia).
     #   Usage: dui_ninja.bat <ninja> <build-dir> [gn-path] [target...]
     if(WIN32)
         set(DUI_NINJA_FILTER_BAT "${CMAKE_CURRENT_BINARY_DIR}/dui_ninja.bat")
@@ -200,7 +221,7 @@ function(dui_deps_add_targets)
                     "then re-run cmake configure.")
         endif()
 
-        # ---- gn: built from source at make time (ordered before SDL3/skia) ----
+        # ---- gn: built from source at make time (ordered before Skia) ----
         set(DUI_GN_BIN "")  # set when the gn source build is available; skia uses it below
         if(EXISTS "${DUI_ROOT}/third_party/gn/build/gen.py")
             find_program(DUI_GN_PYTHON NAMES python3 python)
@@ -239,16 +260,24 @@ function(dui_deps_add_targets)
                             COMMAND "${DUI_NINJA_BIN}" -C "${CMAKE_BINARY_DIR}/tools/gn")
                     endif()
                 else()
+                    # Build gn the way upstream does: in its own tree, with a
+                    # RELATIVE --out-path. gen.py derives every path it emits
+                    # from that argument, and it also hardcodes "../build/gen.py"
+                    # into the regen rule - so an absolute (or out-of-tree) path
+                    # makes ninja consider build.ninja perpetually dirty and it
+                    # loops ("still dirty after 100 tries"). The binary is then
+                    # copied where the rest of the build expects it.
                     set(_gn_commands
-                        COMMAND "${DUI_GN_PYTHON}" build/gen.py --out-path "${CMAKE_BINARY_DIR}/tools/gn"
-                        COMMAND "${DUI_NINJA_BIN}" -C "${CMAKE_BINARY_DIR}/tools/gn")
+                        COMMAND "${DUI_GN_PYTHON}" build/gen.py --out-path "out"
+                        COMMAND "${DUI_NINJA_BIN}" -C "${DUI_ROOT}/third_party/gn/out" gn
+                        COMMAND "${CMAKE_COMMAND}" -E copy "${DUI_ROOT}/third_party/gn/out/gn" "${DUI_GN_BIN}")
                 endif()
                 add_custom_command(
                     OUTPUT "${DUI_GN_BIN}"
                     ${_gn_commands}
                     WORKING_DIRECTORY "${DUI_ROOT}/third_party/gn"
                     DEPENDS "${DUI_ROOT}/third_party/gn/build/gen.py"
-                    COMMENT "Building gn (python build/gen.py + ninja -C ${CMAKE_BINARY_DIR}/tools/gn)..."
+                    COMMENT "Building gn (python build/gen.py + ninja)..."
                     USES_TERMINAL VERBATIM
                 )
                 add_custom_target(dui_gn DEPENDS "${DUI_GN_BIN}")
@@ -388,7 +417,7 @@ function(dui_deps_add_targets)
 
 endfunction()
 
-# ---- Download helper: verify cached archive, retry on failure (shared by skia/SDL3/CEF/WebView2) ----
+# ---- Download helper: verify cached archive, retry on failure (shared by Skia/CEF/WebView2) ----
 # Checks the integrity of a cached archive before it is used, so a partial download left by an
 # interrupted previous configure is detected and re-downloaded instead of failing at extraction.
 # Retries the download up to 3 times and removes the partial file after each failure, so the
@@ -443,10 +472,15 @@ endfunction()
 # The zip is cached in third_party/downloads/ (gitignored); only the extraction temp dir is
 # removed, so a later configure re-extracts from the cached archive without re-downloading.
 function(dui_deps_download_skia)
-    # Version marker: the extracted dir alone does not say which zip it came from,
-    # so a version bump would otherwise be silently ignored. Re-extract whenever
-    # the marker is missing or differs from the expected version.
-    set(_skia_version "skia-dui-0.1.1")  # keep in sync with the zip tag below
+    # What is fetched is upstream Skia at one pinned commit, from google/skia, plus
+    # dui's own changes held as a patch in this repository
+    # (third_party/skia-patches/). The marker records both, because the
+    # extracted tree alone cannot say which upstream commit or which patch revision
+    # produced it -- so changing either one has to re-extract, or it would be
+    # silently ignored.
+    set(_skia_upstream_commit "34aa71b8bee4648a442b7125680232d803374f19")
+    set(_skia_patch_revision   "dui.3")  # bump whenever the patch set changes
+    set(_skia_version "skia-${_skia_upstream_commit}+${_skia_patch_revision}")
     if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version")
         file(READ "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" _skia_have_version)
         string(STRIP "${_skia_have_version}" _skia_have_version)
@@ -463,10 +497,12 @@ function(dui_deps_download_skia)
         file(REMOVE_RECURSE "${DUI_SKIA_SRC_ROOT_DIR}")
     endif()
 
-    set(_skia_url "https://github.com/steveriemannx/skia/archive/refs/tags/skia-dui-0.1.1.zip")
-    set(_skia_topdir "skia-skia-dui-0.1.1")  # the single top-level folder inside the zip
+    # Upstream zip, not a fork archive: what dui builds from is a public commit plus a
+    # diff that anyone can read, and moving to a newer Skia is "rebase one file".
+    set(_skia_url "https://github.com/google/skia/archive/${_skia_upstream_commit}.zip")
+    set(_skia_topdir "skia-${_skia_upstream_commit}")  # the single top-level folder inside the zip
     set(_skia_dl_dir "${DUI_ROOT}/third_party/downloads")
-    set(_skia_archive "${_skia_dl_dir}/skia-dui-0.1.1.zip")
+    set(_skia_archive "${_skia_dl_dir}/skia-${_skia_upstream_commit}.zip")
 
     file(MAKE_DIRECTORY "${_skia_dl_dir}")
     dui_deps_download_retry("${_skia_url}" "${_skia_archive}" "zip")
@@ -507,6 +543,75 @@ function(dui_deps_download_skia)
         message(FATAL_ERROR "Skia archive extraction failed: ${_skia_archive}")
     endif()
     file(REMOVE_RECURSE "${_skia_tmp_dir}")  # keep the zip itself for offline re-extract
+
+    # ---- Apply dui's changes -------------------------------------------------------
+    # Everything dui needs from Skia that upstream does not provide lives in this one
+    # file, applied to the freshly extracted upstream tree. The post-condition is not
+    # the exit code alone: a patch that matched nothing can still exit 0 with -N, so
+    # the sentinel is a file the patch is known to add.
+    # Applied in order. The list is explicit rather than a glob over the directory: the
+    # order is part of the patch set, and a glob would impose an alphabetical one that
+    # happens to be right today.
+    set(_skia_patches
+        "${DUI_ROOT}/third_party/skia-patches/010-mingw-and-msvc.patch"
+        "${DUI_ROOT}/third_party/skia-patches/020-freebsd.patch"
+        "${DUI_ROOT}/third_party/skia-patches/030-text-shaping.patch"
+        "${DUI_ROOT}/third_party/skia-patches/040-viewer-imgui.patch"
+        "${DUI_ROOT}/third_party/skia-patches/050-expat-vendored.patch"
+    )
+    foreach(_skia_patch ${_skia_patches})
+        if(NOT EXISTS "${_skia_patch}")
+            message(FATAL_ERROR "Skia customization patch is missing: ${_skia_patch}")
+        endif()
+    endforeach()
+
+    find_program(_dui_patch_tool NAMES patch)
+    find_program(_dui_git_tool NAMES git)
+    if(NOT _dui_patch_tool AND NOT _dui_git_tool)
+        message(FATAL_ERROR
+            "Applying the Skia customization patches needs either 'patch' or 'git' on "
+            "PATH. Both ship with Git for Windows; or apply ${_skia_patches} by hand "
+            "(-p1) into ${DUI_SKIA_SRC_ROOT_DIR} and re-run configure.")
+    endif()
+
+    list(LENGTH _skia_patches _skia_patch_count)
+    message(STATUS "Applying dui's Skia customizations (${_skia_patch_revision}, ${_skia_patch_count} patches)...")
+    set(_skia_patch_result 0)
+    set(_skia_patch_report "")
+    foreach(_skia_patch ${_skia_patches})
+        get_filename_component(_skia_patch_name "${_skia_patch}" NAME)
+        if(_dui_patch_tool)
+            # -N + -f keep it non-interactive; a mismatch still has to fail, which the
+            # sentinel check below is for.
+            set(_dui_apply_cmd "${_dui_patch_tool}" -p1 -N -f -i "${_skia_patch}")
+        else()
+            set(_dui_apply_cmd "${_dui_git_tool}" apply -p1 --whitespace=nowarn "${_skia_patch}")
+        endif()
+        execute_process(
+            COMMAND ${_dui_apply_cmd}
+            WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
+            RESULT_VARIABLE _skia_one_result
+            OUTPUT_VARIABLE _skia_patch_out
+            ERROR_VARIABLE _skia_patch_err
+        )
+        if(NOT _skia_one_result EQUAL 0)
+            set(_skia_patch_result ${_skia_one_result})
+            string(APPEND _skia_patch_report
+                "\n  ${_skia_patch_name} (exit ${_skia_one_result})\n${_skia_patch_out}${_skia_patch_err}")
+            break()
+        endif()
+    endforeach()
+
+    if(NOT _skia_patch_result EQUAL 0 OR NOT EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/gn/is_mingw.py")
+        string(REPLACE "\n" "\n    " _skia_patch_report "${_skia_patch_report}")
+        file(REMOVE_RECURSE "${DUI_SKIA_SRC_ROOT_DIR}")  # never leave a half-patched tree
+        message(FATAL_ERROR
+            "Applying the Skia customization patches failed.\n"
+            "The tree has been removed rather than left half-patched; fix the patches or\n"
+            "regenerate them (see third_party/skia-patches/README.md) and re-run configure.\n"
+            "    ${_skia_patch_report}")
+    endif()
+
     file(WRITE "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" "${_skia_version}")
     message(STATUS "Skia source ready: ${DUI_SKIA_SRC_ROOT_DIR} (${_skia_version})")
 endfunction()
@@ -515,7 +620,7 @@ endfunction()
 # Building skia requires gn. Prebuilt CIPD binaries only cover amd64 reliably, so clone the
 # gn source at configure time and build it at make time via the dui_gn target
 # (build/gen.py + ninja -C out, per https://gn.googlesource.com/gn/+/refs/heads/main/README.md),
-# ordered before the SDL3/skia builds. The binary lands in build/tools/gn/gn (gn.exe on
+# ordered before the Skia build. The binary lands in build/tools/gn/gn (gn.exe on
 # Windows). A system gn is preferred and skips the clone entirely; if the clone is
 # unavailable, configure falls back to a system gn or skia's bin/ at make time.
 function(dui_deps_download_gn)
@@ -633,7 +738,7 @@ function(dui_deps_download_gn)
 endfunction()
 
 # ---- CEF binary distribution download (only when missing) ----
-# The tar.bz2 is cached in third_party/downloads/ (gitignored), like the skia/SDL3 zips;
+# The tar.bz2 is cached in third_party/downloads/ (gitignored), like the Skia zips;
 # only the extraction target (third_party/libcef/cef_binary) is re-created when missing.
 function(dui_deps_download_cef)
     if(DEFINED CEF_ROOT)
@@ -714,7 +819,7 @@ function(dui_deps_download_cef)
 endfunction()
 
 # ---- WebView2 SDK NuGet package download (only when missing) ----
-# The .nupkg is cached in third_party/downloads/ (gitignored), like the skia/SDL3 zips.
+# The .nupkg is cached in third_party/downloads/ (gitignored), like the Skia zips.
 function(dui_deps_download_webview2)
     set(_wv2_dest "${DUI_ROOT}/third_party/Microsoft.Web.WebView2")
     if(EXISTS "${_wv2_dest}/build/native/${DUI_SYSTEM_PROCESSOR}/WebView2Loader.dll.lib")

@@ -17,7 +17,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_MENU_LISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_MENU_LISTBOX; }
 
     /** Calculate how many sub-items are displayed in this page
     * @param [in] bIsHorizontal Whether the current layout is a horizontal layout

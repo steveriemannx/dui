@@ -21,8 +21,8 @@ public:
     virtual ~ControlMovableT() override;
 
     /// Override the parent class methods to provide customized features, please refer to the parent class declarations
-    virtual DString GetType() const override;    
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;    
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** Set whether the control position can be changed by mouse dragging
     */
@@ -223,47 +223,47 @@ ControlMovableT<T>::~ControlMovableT()
 }
 
 template<typename T>
-inline DString ControlMovableT<T>::GetType() const { return DUI_CTR_CONTROL_MOVABLE; }
+inline std::string ControlMovableT<T>::GetType() const { return DUI_CTR_CONTROL_MOVABLE; }
 
 template<>
-inline DString ControlMovableT<Box>::GetType() const { return DUI_CTR_BOX_MOVABLE; }
+inline std::string ControlMovableT<Box>::GetType() const { return DUI_CTR_BOX_MOVABLE; }
 
 template<>
-inline DString ControlMovableT<HBox>::GetType() const { return DUI_CTR_HBOX_MOVABLE; }
+inline std::string ControlMovableT<HBox>::GetType() const { return DUI_CTR_HBOX_MOVABLE; }
 
 template<>
-inline DString ControlMovableT<VBox>::GetType() const { return DUI_CTR_VBOX_MOVABLE; }
+inline std::string ControlMovableT<VBox>::GetType() const { return DUI_CTR_VBOX_MOVABLE; }
 
 template<typename T>
-void ControlMovableT<T>::SetAttribute(const DString& strName, const DString& strValue)
+void ControlMovableT<T>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("enable_move_pos")) {
-        SetEnableMovePos(strValue == DUI_T("true"));
+    if (strName == "enable_move_pos") {
+        SetEnableMovePos(strValue == "true");
     }
-    else if (strName == DUI_T("move_parent_pos")) {
-        SetMoveParentPos(strValue == DUI_T("true"));
+    else if (strName == "move_parent_pos") {
+        SetMoveParentPos(strValue == "true");
     }
-    else if (strName == DUI_T("move_pos_alpha")) {
+    else if (strName == "move_pos_alpha") {
         SetMovePosAlpha((uint8_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("move_pos_non_draggable_margin")) {
+    else if (strName == "move_pos_non_draggable_margin") {
         UiMargin rcNonDraggableMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcNonDraggableMargin);
         SetNonDraggableMargin(rcNonDraggableMargin);
     }
-    else if (strName == DUI_T("move_pos_draggable_border")) {
+    else if (strName == "move_pos_draggable_border") {
         UiPadding rcDraggableBorder;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcDraggableBorder);
         SetDraggableBorder(rcDraggableBorder);
     }
-    else if (strName == DUI_T("move_pos_reserve_width")) {
+    else if (strName == "move_pos_reserve_width") {
         SetMovePosReserveWidth(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("move_pos_reserve_height")) {
+    else if (strName == "move_pos_reserve_height") {
         SetMovePosReserveHeight(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("move_pos_keep_within_parent")) {
-        SetMovePosKeepWithinParent(strValue == DUI_T("true"));
+    else if (strName == "move_pos_keep_within_parent") {
+        SetMovePosKeepWithinParent(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);

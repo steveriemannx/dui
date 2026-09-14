@@ -31,7 +31,7 @@ public:
     }
 };
 
-ui::Control* Menu::CreateControl(const DString& pstrClass)
+ui::Control* Menu::CreateControl(const std::string& pstrClass)
 {
     if (pstrClass == DUI_CTR_MENU_ITEM){
         return new MenuItem(this);
@@ -88,9 +88,9 @@ Menu::Menu(Window* pParentWindow, Control* pRelatedControl, MenuBar* pMenuBar):
     m_pOwner(nullptr),
     m_pListBox(nullptr)
 {
-    m_skinFolder = DString(DUI_T("public/menu/"));
-    m_submenuXml = DString(DUI_T("submenu.xml"));
-    m_submenuNodeName = DString(DUI_T("submenu"));
+    m_skinFolder = std::string("public/menu/");
+    m_submenuXml = std::string("submenu.xml");
+    m_submenuNodeName = std::string("submenu");
 }
 
 void Menu::CloseAllMenus()
@@ -228,25 +228,25 @@ void Menu::CloseSubmenus()
     }
 }
 
-void Menu::SetSkinFolder(const DString& skinFolder)
+void Menu::SetSkinFolder(const std::string& skinFolder)
 {
     m_skinFolder = skinFolder;
 }
 
-void Menu::SetSubMenuXml(const DString& submenuXml, const DString& submenuNodeName)
+void Menu::SetSubMenuXml(const std::string& submenuXml, const std::string& submenuNodeName)
 {
     m_submenuXml = submenuXml;
     m_submenuNodeName = submenuNodeName;
 }
 
-void Menu::ShowMenu(const DString& xml, const UiPoint& point, MenuPopupPosType popupPosType, bool noFocus, MenuItem* pOwner)
+void Menu::ShowMenu(const std::string& xml, const UiPoint& point, MenuPopupPosType popupPosType, bool noFocus, MenuItem* pOwner)
 {
     m_menuPoint = point;
     m_popupPosType = popupPosType;
 
     if (xml.empty()) {
         //Pure-code mode: no XML template, all menu items are added by code
-        m_skinFolder = DUI_T("");
+        m_skinFolder = "";
     }
     m_xml = xml;
     m_noFocus = noFocus;
@@ -366,12 +366,12 @@ void Menu::DetachOwner()
     }
 }
 
-DString Menu::GetSkinFolder()
+std::string Menu::GetSkinFolder()
 {
     return m_skinFolder.c_str();
 }
 
-DString Menu::GetSkinFile() 
+std::string Menu::GetSkinFile() 
 {
     return m_xml.c_str();
 }
@@ -612,7 +612,6 @@ LRESULT Menu::OnMouseRButtonDbClickMsg(const UiPoint& /*pt*/, uint32_t /*modifie
 bool Menu::ResizeMenu()
 {
     ui::Control* pRoot = GetRoot();
-    ASSERT(pRoot != nullptr);
     if (pRoot == nullptr) {
         return false;
     }
@@ -687,7 +686,6 @@ bool Menu::ResizeMenu()
 
 bool Menu::ResizeSubMenu()
 {
-    ASSERT(m_pOwner != nullptr);
     if (m_pOwner == nullptr) {
         return false;
     }
@@ -832,8 +830,8 @@ void Menu::PreInitWindow()
         //Pure-code mode: when there is no XML template, build the root node layout (consistent with the MenuListBox in the XML template)
         SetShadowAttached(true);
         MenuListBox* pListBox = new MenuListBox(this);
-        pListBox->SetClass(DUI_T("menu"));
-        pListBox->SetAttribute(DUI_T("name"), DUI_T("main_menu"));
+        pListBox->SetClass("menu");
+        pListBox->SetAttribute("name", "main_menu");
         AttachBox(pListBox);
     }
 }
@@ -853,7 +851,6 @@ void Menu::PostInitWindow()
             //Pure-code mode: when the submenu XML template does not exist, the root node is the ListBox
             m_pListBox = dynamic_cast<ui::ListBox*>(GetRoot());
         }
-        ASSERT(m_pListBox != nullptr);
         if (m_pListBox == nullptr) {
             return;
         }
@@ -900,8 +897,8 @@ ListBox* Menu::GetLayoutListBox() const
     return m_pListBox.get();
 }
 
-void Menu::OnMenuItemActivated(const DString& menuName, int32_t nMenuLevel,
-                               const DString& itemName, size_t nItemIndex)
+void Menu::OnMenuItemActivated(const std::string& menuName, int32_t nMenuLevel,
+                               const std::string& itemName, size_t nItemIndex)
 {
     Menu* pParentMenu = nullptr;
     if (GetParentWindow() != nullptr) {
@@ -994,7 +991,6 @@ bool Menu::AddMenuItem(MenuItem* pMenuItem)
 bool Menu::AddMenuControl(Control* pControl)
 {
     //Pure-code mode: add normal controls (such as separator lines, custom rows) to the menu
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return false;
     }
@@ -1017,7 +1013,6 @@ bool Menu::AddMenuItemAt(MenuItem* pMenuItem, size_t iIndex)
     //Currently, only the first-level menu can access this interface
     ASSERT(m_pOwner == nullptr);
     ListBox* pLayoutListBox = Menu::GetLayoutListBox();
-    ASSERT(pLayoutListBox != nullptr);
     if (pLayoutListBox == nullptr) {
         return false;
     }
@@ -1093,7 +1088,6 @@ MenuItem* Menu::GetMenuItemAt(size_t iIndex) const
     //Currently, only the first-level menu can access this interface
     ASSERT(m_pOwner == nullptr);
     ListBox* pLayoutListBox = Menu::GetLayoutListBox();
-    ASSERT(pLayoutListBox != nullptr);
     if (pLayoutListBox == nullptr) {
         return nullptr;
     }
@@ -1114,7 +1108,7 @@ MenuItem* Menu::GetMenuItemAt(size_t iIndex) const
     return pElementUI;
 }
 
-MenuItem* Menu::GetMenuItemByName(const DString& name) const
+MenuItem* Menu::GetMenuItemByName(const std::string& name) const
 {
     //Currently, only the first-level menu can access this interface
     ASSERT(m_pOwner == nullptr);
@@ -1146,7 +1140,6 @@ void MenuItem::GetAllSubMenuItem(const MenuItem* pParentElementUI,
                                        std::vector<MenuItem*>& submenuItems)
 {
     submenuItems.clear();
-    ASSERT(pParentElementUI != nullptr);
     if (pParentElementUI == nullptr) {
         return;
     }
@@ -1178,7 +1171,6 @@ void MenuItem::GetAllSubMenuControls(const MenuItem* pParentElementUI,
                                            std::vector<Control*>& submenuControls)
 {
     submenuControls.clear();
-    ASSERT(pParentElementUI != nullptr);
     if (pParentElementUI == nullptr) {
         return;
     }
@@ -1343,7 +1335,7 @@ MenuItem* MenuItem::GetSubMenuItemAt(size_t iIndex) const
     return foundItem;
 }
 
-MenuItem* MenuItem::GetSubMenuItemByName(const DString& name) const
+MenuItem* MenuItem::GetSubMenuItemByName(const std::string& name) const
 {
     std::vector<MenuItem*> submenuItems;
     GetAllSubMenuItem(this, submenuItems);
@@ -1360,7 +1352,6 @@ MenuItem* MenuItem::GetSubMenuItemByName(const DString& name) const
 bool MenuItem::ButtonUp(const ui::EventArgs& msg)
 {
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return false;
     }
@@ -1381,7 +1372,6 @@ bool MenuItem::ButtonUp(const ui::EventArgs& msg)
 bool MenuItem::MouseEnter(const ui::EventArgs& msg)
 {
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return BaseClass::MouseEnter(msg);
     }
@@ -1460,7 +1450,6 @@ bool MenuItem::CheckSubMenuItem()
 
 void MenuItem::CreateMenuWnd()
 {
-    ASSERT(m_pSubWindow == nullptr);
     if (m_pSubWindow != nullptr) {
         return;
     }
@@ -1476,12 +1465,12 @@ void MenuItem::CreateMenuWnd()
     Menu* pParentWindow = dynamic_cast<Menu*>(pWindow);
     ASSERT(pParentWindow != nullptr);
     if (pParentWindow != nullptr) {
-        const DString skinFolder = pParentWindow->GetSkinFolder();
+        const std::string skinFolder = pParentWindow->GetSkinFolder();
         m_pSubWindow->SetSkinFolder(skinFolder);
-        DString subMenuXml;
+        std::string subMenuXml;
         if (pParentWindow->m_xml.empty()) {
             //Pure-code mode: the submenu has no XML template, menu items are added by code
-            subMenuXml = DUI_T("");
+            subMenuXml = "";
         }
         else {
             FilePath xmlPath = pParentWindow->GetXmlPath();
@@ -1521,11 +1510,11 @@ void MenuItem::Activate(const EventArgs* pMsg)
         //During event handling, the control has already become invalid
         return;
     }
-    DString itemName = GetName();
+    std::string itemName = GetName();
     size_t nItemIndex = GetListBoxIndex();
     Menu* pMenu = dynamic_cast<Menu*>(GetWindow());
     if (pMenu != nullptr) {
-        DString menuName;
+        std::string menuName;
         if (pMenu->GetLayoutListBox() != nullptr) {
             menuName = pMenu->GetLayoutListBox()->GetName();
         }

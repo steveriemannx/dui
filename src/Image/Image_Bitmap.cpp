@@ -172,12 +172,10 @@ std::unique_ptr<IImage> Image_Bitmap::MakeImage(uint32_t nWidth, uint32_t nHeigh
 {
 
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return nullptr;
     }
     IBitmap* pBitmap = pRenderFactory->CreateBitmap();
-    ASSERT(pBitmap != nullptr);
     if (pBitmap == nullptr) {
         return nullptr;
     }
@@ -197,7 +195,6 @@ std::unique_ptr<IImage> Image_Bitmap::MakeImage(uint32_t nWidth, uint32_t nHeigh
 
 std::unique_ptr<IImage> Image_Bitmap::MakeImage(const std::shared_ptr<IBitmap>& pBitmap, float fImageSizeScale)
 {
-    ASSERT(pBitmap != nullptr);
     if (pBitmap == nullptr) {
         return nullptr;
     }
@@ -217,7 +214,6 @@ std::unique_ptr<IImage> Image_Bitmap::MakeImage(const std::shared_ptr<IBitmap>& 
 
 std::unique_ptr<IImage> Image_Bitmap::MakeImage(const std::shared_ptr<IBitmapImage>& pBitmap)
 {
-    ASSERT(pBitmap != nullptr);
     if (pBitmap == nullptr) {
         return nullptr;
     }
@@ -234,7 +230,6 @@ std::unique_ptr<IImage> Image_Bitmap::MakeImage(const std::shared_ptr<IBitmapIma
 
 std::unique_ptr<IImage> Image_Bitmap::MakeImage(const std::shared_ptr<IAnimationImage>& pAnimationImage)
 {
-    ASSERT(pAnimationImage != nullptr);
     if (pAnimationImage == nullptr) {
         return nullptr;
     }

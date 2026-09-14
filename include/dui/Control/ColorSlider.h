@@ -60,7 +60,7 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
     /** Set the color information (color in ARGB format)
     */

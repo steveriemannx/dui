@@ -1,0 +1,31 @@
+# Viewer against the newer ImGui API.
+#
+# One of the patches cmake/dui_deps.cmake applies in order to the upstream Skia
+# commit; see README.md in this directory. Applied with -p1 -N -f from the root of
+# the extracted tree.
+#
+# Files: 2
+#   tools/viewer/Viewer.cpp
+#   tools/viewer/ImGuiLayer.h
+--- a/tools/viewer/Viewer.cpp
++++ b/tools/viewer/Viewer.cpp
+@@ -2908,7 +2908,7 @@
+             }
+ 
+             if (fShowSlidePicker) {
+-                ImGui::SetNextTreeNodeOpen(true);
++                ImGui::SetNextItemOpen(true, 0);
+             }
+             if (ImGui::CollapsingHeader("Slide")) {
+                 static ImGuiTextFilter filter;
+--- a/tools/viewer/ImGuiLayer.h
++++ b/tools/viewer/ImGuiLayer.h
+@@ -51,7 +51,7 @@
+             aspect = h / w;
+         }
+ 
+-        float availWidth = std::max(ImGui::GetContentRegionAvailWidth(), 1.0f);
++        float availWidth = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
+         fPos = ImGui::GetCursorScreenPos();
+         fSize = ImVec2(availWidth, availWidth * aspect);
+ 

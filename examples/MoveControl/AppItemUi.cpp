@@ -10,7 +10,7 @@ AppItemUi* AppItemUi::Create(const AppItem& item, Box* p)
     ASSERT(p->GetWindow() != nullptr);
     AppItemUi* uiItem = new AppItemUi(p->GetWindow());
     uiItem->SetAppdata(item, false);
-    ui::GlobalManager::Instance().FillBoxWithCache(uiItem, ui::FilePath(DUI_T("move_control/app_item.xml")));
+    ui::GlobalManager::Instance().FillBoxWithCache(uiItem, ui::FilePath("move_control/app_item.xml"));
     return uiItem;
 }
 
@@ -25,11 +25,11 @@ void AppItemUi::OnInit()
         return;
     }
     BaseClass::OnInit();
-    m_app_icon = static_cast<ui::Control*>(FindSubControl(DUI_T("app_icon")));
+    m_app_icon = static_cast<ui::Control*>(FindSubControl("app_icon"));
     if (m_app_icon) {
         m_app_icon->SetBkImage(m_app_data.m_icon);
     }
-    m_app_name = static_cast<ui::Label*>(FindSubControl(DUI_T("app_name")));
+    m_app_name = static_cast<ui::Label*>(FindSubControl("app_name"));
     if (m_app_name) {
         m_app_name->SetText(m_app_data.m_name);
     }
@@ -54,7 +54,7 @@ ui::Control* AppItemUi::CreateDestControl(Box* pTargetBox)
 {
     Control* pControl = BaseClass::CreateDestControl(pTargetBox);
     if (pControl != nullptr) {
-        pControl->SetBkImage(DUI_T("file='move_control/1.png'"));
+        pControl->SetBkImage("file='move_control/1.png'");
     }
     return pControl;
 }

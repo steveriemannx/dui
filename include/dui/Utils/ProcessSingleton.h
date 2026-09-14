@@ -15,7 +15,7 @@ namespace ui
 /** Callback function for cross-process singleton control
  * @param [in] argumentList Startup argument list of the newly launched process (passed to the already-running process via cross-process communication)
  */
-typedef std::function<void (const std::vector<DString>& argumentList)> OnAlreadyRunningAppRelaunchEvent;
+typedef std::function<void (const std::vector<std::string>& argumentList)> OnAlreadyRunningAppRelaunchEvent;
 
 /** Cross-process singleton implementation
 */
@@ -32,7 +32,7 @@ public:
     /** Create an instance
     * @param strAppName A string identifying an application; the same identifier is treated as the same program
     */
-    static std::unique_ptr<ProcessSingleton> Create(const DString& strAppName);
+    static std::unique_ptr<ProcessSingleton> Create(const std::string& strAppName);
 
 public:
     /** Whether another process is running

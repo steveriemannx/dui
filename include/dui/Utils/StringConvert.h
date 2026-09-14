@@ -13,33 +13,29 @@ public:
     //Convert a UTF8 string to UTF16
     static std::basic_string<DUTF16Char> UTF8ToUTF16(const DUTF8Char* utf8, size_t length);
 
-    //Convert a UTF8 string to DStringW
-    static DStringW UTF8ToWString(const std::string& utf8);
+    //Convert a UTF8 string to std::wstring
+    static std::wstring UTF8ToWString(const std::string& utf8);
 
     //Convert a UTF16 string to a UTF8 string
     static std::string UTF16ToUTF8(const DUTF16Char* utf16, size_t length);
 
-    //Convert a DStringW string to a UTF8 string
-    static std::string WStringToUTF8(const DStringW& wstr);
+    //Convert a std::wstring string to a UTF8 string
+    static std::string WStringToUTF8(const std::wstring& wstr);
 
-    //Convert a DString to a UTF8 string
+    //Convert a std::string to a UTF8 string
     static std::string TToUTF8(const std::wstring& str);
     static const std::string& TToUTF8(const std::string& str);
 
-    //Convert a UTF8 string to DString
-    static DString UTF8ToT(const std::string& utf8);
-    static DString UTF8ToT(const DUTF8Char* utf8, size_t length);
+    //Convert a UTF8 string to std::string
+    static std::string UTF8ToT(const std::string& utf8);
+    static std::string UTF8ToT(const DUTF8Char* utf8, size_t length);
 
-    //Convert a DString to DStringW
-    static const DStringW& TToWString(const std::wstring& str);
-    static DStringW TToWString(const std::string& str);
+    //Convert a std::string to std::wstring
+    static const std::wstring& TToWString(const std::wstring& str);
+    static std::wstring TToWString(const std::string& str);
 
-    //Convert a DStringW to DString
-#ifdef DUI_UNICODE
-    static const DString& WStringToT(const std::wstring& wstr);
-#else
-    static DString WStringToT(const std::wstring& wstr);
-#endif
+    //Convert a std::wstring to std::string
+    static std::string WStringToT(const std::wstring& wstr);
 
     //Convert UTF8 to a UTF32 string
     static std::basic_string<DUTF32Char> UTF8ToUTF32(const DUTF8Char* utf8, size_t length);
@@ -52,12 +48,12 @@ public:
     //Convert UTF16 to a UTF32 string
     static std::basic_string<DUTF32Char> UTF16ToUTF32(const DUTF16Char* utf16, size_t length);
 
-    //Convert a DStringW string to a UTF32 string
-    static std::basic_string<DUTF32Char> WStringToUTF32(const DStringW& wstr);
+    //Convert a std::wstring string to a UTF32 string
+    static std::basic_string<DUTF32Char> WStringToUTF32(const std::wstring& wstr);
 
-    //Convert a UTF32 string to DStringW
-    static DStringW UTF32ToWString(const DUTF32Char* utf32, size_t length);
-    static DStringW UTF32ToWString(const std::basic_string<DUTF32Char>& utf32);
+    //Convert a UTF32 string to std::wstring
+    static std::wstring UTF32ToWString(const DUTF32Char* utf32, size_t length);
+    static std::wstring UTF32ToWString(const std::basic_string<DUTF32Char>& utf32);
 
 #ifdef DUI_BUILD_FOR_WIN
     //Convert local Ansi encoding or UTF8 encoding, etc., to Unicode encoding
@@ -67,28 +63,28 @@ public:
     //Convert Unicode encoding to local Ansi encoding or UTF8 encoding, etc.
     static std::string UnicodeToMBCS(const std::wstring& input, int32_t code_page = CP_ACP);
     //Convert a local encoding string to UTF8 or UTF16 encoding
-    static DString MBCSToT(const std::string& input);
+    static std::string MBCSToT(const std::string& input);
     //Return the string encoding: local Ansi encoding
-    static std::string TToMBCS(const DString& input);
+    static std::string TToMBCS(const std::string& input);
 #endif
 
     //When non-Unicode:
     //          input is UTF-8 encoded; on Windows platforms, return the local Ansi encoding, on non-Windows platforms return input
     //When Unicode: return input
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_UNICODE)
-    static DString TToLocal(const DString& input);
+#if defined (DUI_BUILD_FOR_WIN)
+    static std::string TToLocal(const std::string& input);
 #else
-    static const DString& TToLocal(const DString& input);
+    static const std::string& TToLocal(const std::string& input);
 #endif
 
     //When non-Unicode:
     //          On Windows platforms: input is local Ansi encoding, return UTF-8 encoding
     //          On non-Windows platforms: input is local UTF-8 encoding, return UTF-8 encoding
     //When Unicode: return input
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_UNICODE)
-    static DString LocalToT(const DString& input);
+#if defined (DUI_BUILD_FOR_WIN)
+    static std::string LocalToT(const std::string& input);
 #else
-    static const DString& LocalToT(const DString& input);
+    static const std::string& LocalToT(const std::string& input);
 #endif
 };
 

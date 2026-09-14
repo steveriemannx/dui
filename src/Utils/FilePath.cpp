@@ -114,36 +114,29 @@ uint64_t FilePath::GetFileSize() const noexcept
     return (uint64_t)fileSize;
 }
 
-DString::value_type FilePath::GetPathSeparator()
+std::string::value_type FilePath::GetPathSeparator()
 {
 #ifdef DUI_BUILD_FOR_WIN
-    return DUI_T('\\');
+    return '\\';
 #else
-    return DUI_T('/');
+    return '/';
 #endif
 }
 
-DString FilePath::GetPathSeparatorStr()
+std::string FilePath::GetPathSeparatorStr()
 {
 #ifdef DUI_BUILD_FOR_WIN
-    return DUI_T("\\");
+    return "\\";
 #else
-    return DUI_T("/");
+    return "/";
 #endif
 }
 
-#ifdef DUI_UNICODE
-    //Unicode version
-    const DStringW& FilePath::NativePath() const
-    {
-        return m_filePath.native();
-    }
-#else
     //Non-Unicode version
-    DStringA FilePath::NativePath() const
+    std::string FilePath::NativePath() const
     {
         if (m_filePath.empty()) {
-            return DStringA();
+            return std::string();
         }
         #ifdef DUI_BUILD_FOR_WIN
             //Convert to a string in the native encoding
@@ -152,12 +145,11 @@ DString FilePath::GetPathSeparatorStr()
             return m_filePath.native();
         #endif
     }
-#endif
 
-DStringA FilePath::NativePathA() const
+std::string FilePath::NativePathA() const
 {
     if (m_filePath.empty()) {
-        return DStringA();
+        return std::string();
     }
 #ifdef DUI_BUILD_FOR_WIN
     //Convert to a string in the native encoding
@@ -167,29 +159,22 @@ DStringA FilePath::NativePathA() const
 #endif
 }
 
-#ifdef DUI_UNICODE
-const DString& FilePath::ToString() const
-{
-    return m_filePath.native();
-}
-#else
 #ifdef DUI_BUILD_FOR_WIN
-DString FilePath::ToString() const
+std::string FilePath::ToString() const
 {
     if (m_filePath.empty()) {
-        return DStringA();
+        return std::string();
     }
     return StringConvert::WStringToUTF8(m_filePath.native());
 }
 #else
-const DString& FilePath::ToString() const
+const std::string& FilePath::ToString() const
 {
     return m_filePath.native();
 }
 #endif
-#endif
 
-DStringW FilePath::ToStringW() const
+std::wstring FilePath::ToStringW() const
 {
 #ifdef DUI_BUILD_FOR_WIN
     return m_filePath.native();
@@ -198,10 +183,10 @@ DStringW FilePath::ToStringW() const
 #endif
 }
  
-DStringA FilePath::ToStringA() const
+std::string FilePath::ToStringA() const
 {
     if (m_filePath.empty()) {
-        return DStringA();
+        return std::string();
     }
 #ifdef DUI_BUILD_FOR_WIN
     return StringConvert::WStringToUTF8(m_filePath.native());
@@ -210,36 +195,28 @@ DStringA FilePath::ToStringA() const
 #endif
 }
 
-DString FilePath::GetFileName() const
+std::string FilePath::GetFileName() const
 {
     if (m_filePath.empty()) {
-        return DString();
+        return std::string();
     }
-#ifdef DUI_UNICODE
-    return m_filePath.filename().native();
-#else
     #ifdef DUI_BUILD_FOR_WIN
         return StringConvert::WStringToUTF8(m_filePath.filename().native());
     #else
         return m_filePath.filename().native();
     #endif
-#endif
 }
 
-DString FilePath::GetFileExtension() const
+std::string FilePath::GetFileExtension() const
 {
     if (m_filePath.empty()) {
-        return DString();
+        return std::string();
     }
-#ifdef DUI_UNICODE
-    return m_filePath.extension().native();
-#else
     #ifdef DUI_BUILD_FOR_WIN
         return StringConvert::WStringToUTF8(m_filePath.extension().native());
     #else
         return m_filePath.extension().native();
     #endif
-#endif
 }
 
 FilePath FilePath::GetParentPath() const
@@ -274,7 +251,7 @@ void FilePath::TrimRightPathSeparator()
 #ifdef DUI_BUILD_FOR_WIN
     if (str == L"/") {
 #else
-    if (str == DUI_T("/")) {
+    if (str == "/") {
 #endif
         return;
     }
@@ -301,9 +278,9 @@ void FilePath::NormalizeFilePath()
         //Only normalize absolute paths; normalizing relative paths can produce incorrect results
         if (m_filePath.is_absolute()) {
 #ifndef DUI_BUILD_FOR_WIN
-            if (m_filePath.native().find(DUI_T('\\')) != std::filesystem::path::string_type::npos) {
+            if (m_filePath.native().find('\\') != std::filesystem::path::string_type::npos) {
                 std::filesystem::path::string_type oldValue = m_filePath.native();
-                StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), oldValue);
+                StringUtil::ReplaceAll("\\", "/", oldValue);
                 m_filePath = oldValue;
             }
 #endif
@@ -377,17 +354,13 @@ void FilePath::GetParentPathList(std::vector<FilePath>& parentPathList) const
     }
 }
 
-FilePath& FilePath::operator = (const DString& rightPath)
+FilePath& FilePath::operator = (const std::string& rightPath)
 {
-#ifdef DUI_UNICODE
-    m_filePath = rightPath;
-#else
 #ifdef DUI_BUILD_FOR_WIN
-    DStringW rightPathW = StringConvert::UTF8ToWString(rightPath);
+    std::wstring rightPathW = StringConvert::UTF8ToWString(rightPath);
     m_filePath = rightPathW;
 #else
     m_filePath = rightPath;
-#endif
 #endif
     m_bLexicallyNormal = false;
     return *this;
@@ -420,17 +393,13 @@ FilePath& FilePath::operator += (const FilePath& rightPath)
     return *this;
 }
 
-FilePath& FilePath::operator += (const DString& rightPath)
+FilePath& FilePath::operator += (const std::string& rightPath)
 {
-#ifdef DUI_UNICODE
-    m_filePath += rightPath;
-#else
 #ifdef DUI_BUILD_FOR_WIN
-    DStringW rightPathW = StringConvert::UTF8ToWString(rightPath);
+    std::wstring rightPathW = StringConvert::UTF8ToWString(rightPath);
     m_filePath += rightPathW;
 #else
     m_filePath += rightPath;
-#endif
 #endif
     m_bLexicallyNormal = false;
     return *this;

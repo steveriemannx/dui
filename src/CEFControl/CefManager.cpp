@@ -28,10 +28,10 @@
 namespace ui
 {
 //Callback function for creating CEF controls
-static Control* DuiCreateCefControl(const DString& className)
+static Control* DuiCreateCefControl(const std::string& className)
 {
     Control* pControl = nullptr;
-    if (className == DUI_T("CefControl")) {
+    if (className == "CefControl") {
         if (ui::CefManager::GetInstance()->IsEnableOffScreenRendering()) {
             pControl = new CefControlOffScreen(nullptr);
         }
@@ -84,48 +84,48 @@ CefManager* CefManager::GetInstance()
 #endif
 }
 
-void CefManager::SetCefCachePath(const DString& cefCachePath)
+void CefManager::SetCefCachePath(const std::string& cefCachePath)
 {
     ASSERT(!m_bCefInit);
     m_cefCachePath = cefCachePath;
     m_bHasCefCachePath = true;
 }
 
-DString CefManager::GetCefCachePath() const
+std::string CefManager::GetCefCachePath() const
 {
     if (m_bHasCefCachePath) {
         return m_cefCachePath;
     }
-    DString defaultCachePath = DUI_T("cef_cache");
+    std::string defaultCachePath = "cef_cache";
     defaultCachePath += FilePath::GetPathSeparatorStr();
     defaultCachePath += m_appName;
     defaultCachePath += FilePath::GetPathSeparatorStr();
     return defaultCachePath;
 }
 
-void CefManager::SetCefMoudlePath(const DString& cefMoudlePath)
+void CefManager::SetCefMoudlePath(const std::string& cefMoudlePath)
 {
     ASSERT(!m_bCefInit);
     m_cefMoudlePath = cefMoudlePath;
 }
 
-DString CefManager::GetCefMoudlePath() const
+std::string CefManager::GetCefMoudlePath() const
 {
     return m_cefMoudlePath;
 }
 
-void CefManager::SetCefLanguage(const DString& lang)
+void CefManager::SetCefLanguage(const std::string& lang)
 {
     ASSERT(!m_bCefInit);
     m_lang = lang;
 }
 
-DString CefManager::GetCefLanguage() const
+std::string CefManager::GetCefLanguage() const
 {
     if (!m_lang.empty()) {
         return m_lang;
     }
-    return DUI_T("zh-CN");
+    return "zh-CN";
 }
 
 void CefManager::SetLogSeverity(cef_log_severity_t log_severity)
@@ -145,7 +145,7 @@ bool CefManager::InitEnv()
 }
 
 bool CefManager::Initialize(bool bEnableOffScreenRendering,
-                            const DString& appName,
+                            const std::string& appName,
                             int /*argc*/,
                             char** /*argv*/,
                             OnCefSettingsEvent callback,
@@ -312,7 +312,7 @@ bool CefManager::IsMultiThreadedMessageLoop() const
 
 void CefManager::GetCefSetting(CefSettings& settings)
 {
-    DString appDataRootDir = GetCefCachePath();
+    std::string appDataRootDir = GetCefCachePath();
     if (!appDataRootDir.empty()) {
         FilePath filePath(appDataRootDir);
         filePath.NormalizeDirectoryPath();
@@ -329,9 +329,19 @@ void CefManager::GetCefSetting(CefSettings& settings)
     }
     settings.no_sandbox = true;
 
+#if defined(DUI_BUILD_FOR_LINUX)
+    // The Linux CEF library is linked from its Release directory, while the
+    // application stages runtime resources beside the executable.
+    FilePath resourcePath = FilePathUtil::GetCurrentModuleDirectory();
+    resourcePath += "cef_binary";
+    FilePath localePath = FilePathUtil::JoinFilePath(resourcePath, FilePath("locales"));
+    CefString(&settings.resources_dir_path) = resourcePath.NativePath();
+    CefString(&settings.locales_dir_path) = localePath.NativePath();
+#endif
+
     //Set localstorage; do not add "\\" at the end of the path, otherwise an error will be reported at runtime
     if (!appDataRootDir.empty()) {
-        const DString cachePath = appDataRootDir + DUI_T("CefLocalStorage");
+        const std::string cachePath = appDataRootDir + "CefLocalStorage";
         CefString(&settings.cache_path) = cachePath;
         CefString(&settings.root_cache_path) = cachePath;
     }
@@ -341,7 +351,7 @@ void CefManager::GetCefSetting(CefSettings& settings)
 
     // Set the debug log file location
     if (settings.log_severity != cef_log_severity_t::LOGSEVERITY_DISABLE) {
-        CefString(&settings.log_file) = appDataRootDir + DUI_T("cef.log");
+        CefString(&settings.log_file) = appDataRootDir + "cef.log";
     }
 
     // cef2623/2526 debug mode: exiting the program while using multi_threaded_message_loop triggers a breakpoint
@@ -431,15 +441,15 @@ CefManager::ProcessType CefManager::GetProcessType(CefRefPtr<CefCommandLine> com
     return OtherProcess;
 }
 
-void CefManager::AppendSwitchWithValue(const DString& name, const DString& value)
+void CefManager::AppendSwitchWithValue(const std::string& name, const std::string& value)
 {
     ASSERT(!value.empty());
     if (!value.empty()) {
-        m_cefSwitchWithValues.push_back(std::pair<DString, DString>(name, value));
+        m_cefSwitchWithValues.push_back(std::pair<std::string, std::string>(name, value));
     }
 }
 
-const std::vector<std::pair<DString, DString>>& CefManager::GetSwitchWithValues() const
+const std::vector<std::pair<std::string, std::string>>& CefManager::GetSwitchWithValues() const
 {
     return m_cefSwitchWithValues;
 }

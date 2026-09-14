@@ -3,11 +3,10 @@
 #include "dui/Core/WindowMessage.h"
 #include "dui/Core/ScopedLock.h"
 
-#if defined (DUI_BUILD_FOR_SDL)
-    #include "dui/Core/MessageLoop_SDL.h"
-    #include <SDL3/SDL.h>
-#elif defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_WAYLAND)
     #include "dui/Core/MessageLoop_Wayland.h"
+#elif defined (DUI_BUILD_FOR_X11)
+    #include "dui/Core/MessageLoop_X11.h"
 #elif defined (DUI_BUILD_FOR_WIN)
     #include "dui/Core/MessageLoop_Windows.h"
 #elif defined (DUI_BUILD_FOR_MACOS)
@@ -18,9 +17,9 @@
 
 /** User-defined message
 */
-#if defined (DUI_BUILD_FOR_SDL)
-    #define WM_USER_DEFINED_MSG     (SDL_EVENT_USER + 1)
-#elif defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_WAYLAND)
+    #define WM_USER_DEFINED_MSG     (kWM_USER + 1)
+#elif defined (DUI_BUILD_FOR_X11)
     #define WM_USER_DEFINED_MSG     (kWM_USER + 1)
 #else
     #define WM_USER_DEFINED_MSG     (kWM_USER + 568)
@@ -28,7 +27,7 @@
 
 namespace ui 
 {
-FrameworkThread::FrameworkThread(const DString& threadName, int32_t nThreadIdentifier):
+FrameworkThread::FrameworkThread(const std::string& threadName, int32_t nThreadIdentifier):
     m_bThreadUI(false),
     m_bRunning(false),
     m_bSupportIdle(false),
@@ -41,10 +40,10 @@ FrameworkThread::FrameworkThread(const DString& threadName, int32_t nThreadIdent
         m_nThisThreadId = std::this_thread::get_id();
         m_bThreadUI = true;
 
-#ifdef DUI_BUILD_FOR_SDL
-        MessageLoop_SDL::CheckInitSDL();
-#elif defined(DUI_BUILD_FOR_WAYLAND)
+#ifdef DUI_BUILD_FOR_WAYLAND
         MessageLoop_Wayland::CheckInitWayland();
+#elif defined(DUI_BUILD_FOR_X11)
+        MessageLoop_X11::CheckInitX11();
 #endif
         //Initialize the mechanism for communicating with the main thread
         m_threadMsg.Initialize(GlobalManager::Instance().GetPlatformData());
@@ -64,7 +63,6 @@ FrameworkThread::~FrameworkThread()
 bool FrameworkThread::RunMessageLoop(bool bSupportIdle)
 {
     ASSERT(m_nThreadIdentifier == kThreadUI);
-    ASSERT(!m_bRunning);
     if (m_bRunning) {
         return false;
     }
@@ -94,7 +92,6 @@ void FrameworkThread::OnMainThreadExit()
 
 bool FrameworkThread::Start()
 {
-    ASSERT(!m_bRunning);
     if (m_bRunning) {
         return false;
     }
@@ -149,20 +146,13 @@ std::thread::id FrameworkThread::GetThreadId() const
     return m_nThisThreadId;
 }
 
-DString FrameworkThread::ThreadIdToString(const std::thread::id& threadId)
+std::string FrameworkThread::ThreadIdToString(const std::thread::id& threadId)
 {
     // Convert to a string
-#ifdef DUI_UNICODE    
-    std::wstringstream ss;
-    ss << threadId;
-    std::wstring thread_id_str = ss.str();
-    return thread_id_str;
-#else
     std::stringstream ss;
     ss << threadId;
     std::string thread_id_str = ss.str();
     return thread_id_str;
-#endif
 }
 
 int32_t FrameworkThread::GetThreadIdentifier() const
@@ -170,7 +160,7 @@ int32_t FrameworkThread::GetThreadIdentifier() const
     return m_nThreadIdentifier;
 }
 
-const DString& FrameworkThread::GetThreadName() const
+const std::string& FrameworkThread::GetThreadName() const
 {
     return m_threadName;
 }
@@ -183,7 +173,6 @@ size_t FrameworkThread::GetNextTaskId() const
 
 size_t FrameworkThread::PostTask(const StdClosure& task, const StdClosure& unlockClosure)
 {
-    ASSERT(task != nullptr);
     if (task == nullptr) {
         return 0;
     }
@@ -208,7 +197,6 @@ size_t FrameworkThread::PostTask(const StdClosure& task, const StdClosure& unloc
 
 size_t FrameworkThread::PostDelayedTask(const StdClosure& task, int32_t nDelayMs)
 {
-    ASSERT(task != nullptr);
     if (task == nullptr) {
         return 0;
     }
@@ -280,8 +268,8 @@ bool FrameworkThread::NotifyExecTask(size_t nTaskId,
 {
     if (IsUIThread()) {
         //UI thread: execute asynchronously
-#ifdef DUI_BUILD_FOR_SDL
-        //Release the outer lock, to avoid deadlock caused by reverse calls of the SDL underlying locks
+#ifdef DUI_BUILD_FOR_WAYLAND
+        //Release the outer lock, to avoid deadlock caused by reverse calls of the native backend underlying locks
         if (unlockClosure1) {
             unlockClosure1();
         }
@@ -293,7 +281,7 @@ bool FrameworkThread::NotifyExecTask(size_t nTaskId,
         UNUSED_VARIABLE(unlockClosure2);
 #endif
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
         //Process the delayed messages first
         std::vector<size_t> winTaskIds;
         {
@@ -316,11 +304,11 @@ bool FrameworkThread::NotifyExecTask(size_t nTaskId,
 
         uint32_t nErrorCode = 0;
         bool bRet = m_threadMsg.PostMsg(WM_USER_DEFINED_MSG, nTaskId, 0, &nErrorCode);
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
         if (!bRet) {
             if (nErrorCode == ERROR_NOT_ENOUGH_QUOTA) {
                 if (!GlobalManager::Instance().IsInUIThread()) { //Executed in a worker thread
-                    //Release the outer lock, to avoid deadlock caused by reverse calls of the SDL underlying locks
+                    //Release the outer lock, to avoid deadlock caused by reverse calls of the native backend underlying locks
                     if (unlockClosure1) {
                         unlockClosure1();
                     }
@@ -446,12 +434,12 @@ void FrameworkThread::OnInit()
 
 void FrameworkThread::OnRunMessageLoop()
 {
-#if defined (DUI_BUILD_FOR_SDL)
-    MessageLoop_SDL msgLoop;
-    MessageLoop_SDL::CheckInitSDL();
-#elif defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_WAYLAND)
     MessageLoop_Wayland msgLoop;
     MessageLoop_Wayland::CheckInitWayland();
+#elif defined (DUI_BUILD_FOR_X11)
+    MessageLoop_X11 msgLoop;
+    MessageLoop_X11::CheckInitX11();
 #elif defined (DUI_BUILD_FOR_WIN)
     MessageLoop_Windows msgLoop;
 #elif defined (DUI_BUILD_FOR_MACOS)
@@ -469,7 +457,7 @@ void FrameworkThread::OnRunMessageLoop()
             });
     }
     else {
-#if defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_X11)
         // Wayland backend always needs idle for painting
         msgLoop.Run([this]() {
             return OnMessageLoopIdle();

@@ -34,25 +34,25 @@ public:
     * @param [in] strImageString The image attribute string
     * @param [in] dpi The DPI scaling interface
     */
-    void SetImageString(const DString& strImageString, const DpiManager& dpi);
+    void SetImageString(const std::string& strImageString, const DpiManager& dpi);
 
     /** Update the image attributes
     * @param [in] strImageString The image attribute string
     * @param [in] dpi The DPI scaling interface
     */
-    void UpdateImageAttribute(const DString& strImageString, const DpiManager& dpi);
+    void UpdateImageAttribute(const std::string& strImageString, const DpiManager& dpi);
 
     /** Get the image attributes (including the file name, image setting attributes, etc.)
     */
-    DString GetImageString() const;
+    std::string GetImageString() const;
 
     /** Determine whether the image attributes are equal
     */
-    bool EqualToImageString(const DString& imageString) const;
+    bool EqualToImageString(const std::string& imageString) const;
 
     /** Get the image file name (including the relative path, excluding the image attributes)
     */
-    DString GetImagePath() const;
+    std::string GetImagePath() const;
 
     /** Get the outer margin of the image attributes
     * @param [in] dpi The DPI scaling manager
@@ -206,7 +206,7 @@ public:
 public:
     /** Get the name of the image (can be used as the unique ID of the image)
     */
-    DString GetImageName() const;
+    std::string GetImageName() const;
 
     /** Set whether an error occurred while loading the image (after an error, the image will no longer be loaded)
     */

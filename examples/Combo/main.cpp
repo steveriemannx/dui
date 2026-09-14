@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<MainForm>(DUI_T("Combo Shadow Test"));
+    return ui::Run<MainForm>("Combo Shadow Test");
 }

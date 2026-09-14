@@ -3,10 +3,10 @@
 #include <sstream>
 #include <iomanip>
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     #include "dui/Control/DateTimeWnd_Windows.h"
-#elif defined (DUI_BUILD_FOR_SDL) || defined (DUI_BUILD_FOR_WAYLAND)
-    #include "dui/Control/DateTimeWnd_SDL.h"
+#elif defined (DUI_BUILD_FOR_WAYLAND) || defined (DUI_BUILD_FOR_X11)
+    #include "dui/Control/DateTimeWnd_Native.h"
 #elif defined (DUI_BUILD_FOR_MACOS)
     #include "dui/Control/DateTimeWnd_MacOS.h"
 #endif
@@ -18,16 +18,16 @@ DateTime::DateTime(Window* pWindow):
     m_dateTime({0,}),
     m_pDateWindow(nullptr),
     m_editFormat(EditFormat::kDateCalendar),
-    m_dateSeparator(DUI_T('-'))
+    m_dateSeparator('-')
 {
     //Set the default attributes
-    SetAttribute(DUI_T("border_size"), DUI_T("1"));
-    SetAttribute(DUI_T("border_color"), DUI_T("gray"));
-    SetAttribute(DUI_T("text_align"), DUI_T("vcenter"));
-    SetAttribute(DUI_T("text_padding"), DUI_T("2,0,0,0"));
-#ifdef DUI_BUILD_FOR_SDL
-    SetAttribute(DUI_T("padding"), DUI_T("1,1,1,1"));
-    SetAttribute(DUI_T("spin_class"), DUI_T("rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down"));
+    SetAttribute("border_size", "1");
+    SetAttribute("border_color", "gray");
+    SetAttribute("text_align", "vcenter");
+    SetAttribute("text_padding", "2,0,0,0");
+#if defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_X11)
+    SetAttribute("padding", "1,1,1,1");
+    SetAttribute("spin_class", "rich_edit_spin_box,rich_edit_spin_btn_up,rich_edit_spin_btn_down");
 #endif
 }
 
@@ -35,37 +35,37 @@ DateTime::~DateTime()
 {
 }
 
-DString DateTime::GetType() const { return DUI_CTR_DATETIME; }
+std::string DateTime::GetType() const { return DUI_CTR_DATETIME; }
 
-void DateTime::SetAttribute(const DString& strName, const DString& strValue)
+void DateTime::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("format")) {
+    if (strName == "format") {
         SetStringFormat(strValue);
     }
-    else if (strName == DUI_T("edit_format")) {
-        if (strValue == DUI_T("date_calendar")) {
+    else if (strName == "edit_format") {
+        if (strValue == "date_calendar") {
             SetEditFormat(EditFormat::kDateCalendar);
         }
-        else if (strValue == DUI_T("date_up_down")) {
+        else if (strValue == "date_up_down") {
             SetEditFormat(EditFormat::kDateUpDown);
         }
-        else if (strValue == DUI_T("date_time_up_down")) {
+        else if (strValue == "date_time_up_down") {
             SetEditFormat(EditFormat::kDateTimeUpDown);
         }
-        else if (strValue == DUI_T("date_minute_up_down")) {
+        else if (strValue == "date_minute_up_down") {
             SetEditFormat(EditFormat::kDateMinuteUpDown);
         }
-        else if (strValue == DUI_T("time_up_down")) {
+        else if (strValue == "time_up_down") {
             SetEditFormat(EditFormat::kTimeUpDown);
         }
-        else if (strValue == DUI_T("minute_up_down")) {
+        else if (strValue == "minute_up_down") {
             SetEditFormat(EditFormat::kMinuteUpDown);
         }
         else {
             ASSERT(0);
         }
     }
-    else if (strName == DUI_T("spin_class")) {
+    else if (strName == "spin_class") {
         SetSpinClass(strValue);
     }
     else {
@@ -108,62 +108,46 @@ void DateTime::SetDateTime(const struct tm& dateTime)
     }
 }
 
-DString DateTime::GetDateTimeString() const
+std::string DateTime::GetDateTimeString() const
 {
-    DString dateTime;
+    std::string dateTime;
     if (IsValidDateTime()) {
         struct tm tmSystemDate = m_dateTime;
-#ifdef DUI_UNICODE
-        std::wstringstream ss;
-#else
         std::stringstream ss;
-#endif
         ss << std::put_time(&tmSystemDate, GetStringFormat().c_str());
         dateTime = ss.str();
     }
     return dateTime;
 }
 
-bool DateTime::SetDateTimeString(const DString& dateTime)
+bool DateTime::SetDateTimeString(const std::string& dateTime)
 {
     bool bRet = false;
-    DString sFormat = GetStringFormat();
+    std::string sFormat = GetStringFormat();
     ASSERT(!sFormat.empty());
     struct tm t = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
-#ifdef DUI_UNICODE
-    std::wistringstream ss(dateTime);
-#else
     std::istringstream ss(dateTime);
-#endif
     ss >> std::get_time(&t, sFormat.c_str());
     if (ss.fail()) {
         //After failure, intelligently recognize the separators of the year, month and day
-        if (dateTime.find(DUI_T('-')) != DString::npos) {
-            StringUtil::ReplaceAll(DUI_T("/"), DUI_T("-"), sFormat);
-#ifdef DUI_UNICODE
-            std::wistringstream ss2(dateTime);
-#else
+        if (dateTime.find('-') != std::string::npos) {
+            StringUtil::ReplaceAll("/", "-", sFormat);
             std::istringstream ss2(dateTime);
-#endif
             ss2 >> std::get_time(&t, sFormat.c_str());
             if (!ss2.fail()) {
                 m_dateTime = t;
                 bRet = true;
-                m_dateSeparator = DUI_T('-');
+                m_dateSeparator = '-';
             }
         }
-        else if (dateTime.find(DUI_T('/')) != DString::npos) {
-            StringUtil::ReplaceAll(DUI_T("-"), DUI_T("/"), sFormat);
-#ifdef DUI_UNICODE
-            std::wistringstream ss2(dateTime);
-#else
+        else if (dateTime.find('/') != std::string::npos) {
+            StringUtil::ReplaceAll("-", "/", sFormat);
             std::istringstream ss2(dateTime);
-#endif
             ss2 >> std::get_time(&t, sFormat.c_str());
             if (!ss2.fail()) {
                 m_dateTime = t;
                 bRet = true;
-                m_dateSeparator = DUI_T('/');
+                m_dateSeparator = '/';
             }
         }
     }
@@ -245,7 +229,7 @@ bool DateTime::IsValidDateTime() const
     return true;
 }
 
-void DateTime::SetStringFormat(const DString& sFormat)
+void DateTime::SetStringFormat(const std::string& sFormat)
 {
     if (!IsInited()) {
         m_sFormat = sFormat;
@@ -260,36 +244,36 @@ void DateTime::SetStringFormat(const DString& sFormat)
     }
 }
 
-DString DateTime::GetStringFormat() const
+std::string DateTime::GetStringFormat() const
 {
-    DString sFormat = m_sFormat.c_str();
+    std::string sFormat = m_sFormat.c_str();
     if (sFormat.empty()) {
         EditFormat editFormat = GetEditFormat();
         switch (editFormat) {
         case EditFormat::kDateCalendar:
         case EditFormat::kDateUpDown:
-            sFormat = DUI_T("%Y-%m-%d");
+            sFormat = "%Y-%m-%d";
             break;
         case EditFormat::kDateTimeUpDown:
-            sFormat = DUI_T("%Y-%m-%d %H:%M:%S");
+            sFormat = "%Y-%m-%d %H:%M:%S";
             break;
         case EditFormat::kDateMinuteUpDown:
-            sFormat = DUI_T("%Y-%m-%d %H:%M");
+            sFormat = "%Y-%m-%d %H:%M";
             break;
         case EditFormat::kTimeUpDown:
-            sFormat = DUI_T("%H:%M:%S");
+            sFormat = "%H:%M:%S";
             break;
         case EditFormat::kMinuteUpDown:
-            sFormat = DUI_T("%H:%M");
+            sFormat = "%H:%M";
             break;
         default:
-            sFormat = DUI_T("%Y-%m-%d");
+            sFormat = "%Y-%m-%d";
             break;
         }
-        if (m_dateSeparator != DUI_T('-')) {
-            DString separator;
+        if (m_dateSeparator != '-') {
+            std::string separator;
             separator = m_dateSeparator;
-            StringUtil::ReplaceAll(DUI_T("-"), separator, sFormat);
+            StringUtil::ReplaceAll("-", separator, sFormat);
         }        
     }
     return sFormat;
@@ -301,7 +285,7 @@ void DateTime::SetEditFormat(EditFormat editFormat)
         m_editFormat = editFormat;
     }
     else if (m_editFormat != editFormat) {
-        DString oldFormat = GetStringFormat();
+        std::string oldFormat = GetStringFormat();
         m_editFormat = editFormat;
         if (oldFormat != GetStringFormat()) {
             //Update the displayed text
@@ -317,7 +301,7 @@ DateTime::EditFormat DateTime::GetEditFormat() const
     return m_editFormat;
 }
 
-DString::value_type DateTime::GetDateSeparator() const
+std::string::value_type DateTime::GetDateSeparator() const
 {
     return m_dateSeparator;
 }
@@ -425,7 +409,7 @@ void DateTime::OnInit()
     BaseClass::OnInit();
 
     if (!IsValidDateTime()) {
-        DString text = GetText();
+        std::string text = GetText();
         //Convert the displayed text into a date time format
         if (!text.empty()) {
             SetDateTimeString(text);
@@ -433,12 +417,12 @@ void DateTime::OnInit()
     }
 }
 
-void DateTime::SetSpinClass(const DString& spinClass)
+void DateTime::SetSpinClass(const std::string& spinClass)
 {
     m_spinClass = spinClass;
 }
 
-DString DateTime::GetSpinClass() const
+std::string DateTime::GetSpinClass() const
 {
     return m_spinClass.c_str();
 }

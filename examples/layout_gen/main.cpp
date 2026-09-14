@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("Layout (XML-to-code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("Layout (XML-to-code)", EmbeddedResources());
 }

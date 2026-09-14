@@ -1,0 +1,5 @@
+# The Skia customization patches are applied verbatim by `patch`, and they are plain LF
+# text (the tree they produce is LF, like upstream). Git normalizing them would convert
+# the patch body to CRLF on a Windows checkout -- core.autocrlf defaults to true there --
+# at which point every context line stops matching the LF files it is meant to patch.
+third_party/skia-patches/*.patch -text

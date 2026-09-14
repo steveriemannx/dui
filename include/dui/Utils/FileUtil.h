@@ -32,13 +32,13 @@ public:
     * @param [in] filePath Local file path (absolute path)
     * @param [in] fileData File data
     */
-    static bool WriteFileData(const FilePath& filePath, const DStringW& fileData);
+    static bool WriteFileData(const FilePath& filePath, const std::wstring& fileData);
 
     /** Write file contents
     * @param [in] filePath Local file path (absolute path)
     * @param [in] fileData File data
     */
-    static bool WriteFileData(const FilePath& filePath, const DStringA& fileData);
+    static bool WriteFileData(const FilePath& filePath, const std::string& fileData);
 };
 
 }

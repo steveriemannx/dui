@@ -34,7 +34,7 @@ private:
 
     /** Output a log
     */
-    void PrintLog(const DString& log);
+    void PrintLog(const std::string& log);
 
 private:
     /** Interface to the main form

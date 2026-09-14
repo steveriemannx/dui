@@ -4,7 +4,7 @@
 // dui
 #include "dui/dui.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include <shobjidl_core.h>
 
@@ -43,7 +43,7 @@ public:
     * @param [in] taskbarTitle the title displayed on the taskbar thumbnail
     * @param [in] id the unique id of the thumbnail Tab
     */
-    void Init(const DString& taskbarTitle, const std::string& id);
+    void Init(const std::string& taskbarTitle, const std::string& id);
 
     /** Uninitialization function
     */
@@ -52,7 +52,7 @@ public:
     /** Set the title of this Tab's thumbnail
     * @param[in] title the title
     */
-    void SetTaskbarTitle(const DString& title);
+    void SetTaskbarTitle(const std::string& title);
 
     /** Set the window icon of this Tab's thumbnail
     * @param [in] title the title
@@ -239,6 +239,6 @@ private:
     ITaskbarList4* m_pTaskbarList;
 };
 
-#endif //(DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //(DUI_BUILD_FOR_WIN)
 
 #endif //EXAMPLES_TASKBAR_MANAGER_H_

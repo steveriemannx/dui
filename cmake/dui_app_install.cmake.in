@@ -1,0 +1,107 @@
+# The installed counterpart of the build tree's cmake/dui_app.cmake, for applications
+# built against an installed dui rather than inside its source tree. It exists so that an
+# application author writes the same thing an in-tree example does:
+#
+#     find_package(dui CONFIG REQUIRED)          # loads this file
+#     add_executable(my_app MainForm.cpp main.cpp)
+#     target_link_libraries(my_app PRIVATE dui::app)
+#     dui_finalize_app(my_app)
+#
+# It is deliberately *not* the same file. The build-tree version includes
+# dui_common.cmake, which runs dependency configuration -- it downloads Skia, fetches gn
+# and builds the archives. A consumer must never trigger that from find_package: their
+# Skia is already built and installed alongside the dui archives. So this variant carries
+# only what an application needs in order to link and to be packaged.
+#
+# What is missing here on purpose, because it is a build-tree capability rather than a
+# packaging one: CEF and WebView2 runtime staging, and the code-generation / embedded
+# resource targets (dui_gen_code.cmake, dui_embed_res.cmake). An application that needs
+# those builds inside the dui source tree.
+
+if(NOT TARGET dui::app)
+    add_library(dui::app INTERFACE IMPORTED)
+    # Everything a plain application needs is reachable from the library target: its
+    # include directories, the C++ standard it requires, the frameworks and system
+    # libraries, the vendored image decoders, and Skia (duiConfig.cmake appends dui::skia
+    # to dui::dui's interface). The build-tree version adds the application-specific
+    # include root and a set of warning flags of its own; those are dui's own build
+    # hygiene and have no business being forced onto a consumer's translation units.
+    target_link_libraries(dui::app INTERFACE dui::dui)
+endif()
+
+# Finishes an application target: the work that cannot travel through an INTERFACE
+# target, because RUNTIME_OUTPUT_DIRECTORY is not an interface property, a POST_BUILD
+# step has no interface form at all, and add_dependencies has to name a concrete target.
+#
+# Paths are derived from this file's own location rather than from PACKAGE_PREFIX_DIR,
+# which keeps the package relocatable and avoids depending on the scope find_package ran
+# in. CMAKE_CURRENT_FUNCTION_LIST_DIR is required inside a function: CMAKE_CURRENT_LIST_DIR
+# there is the *caller's* directory, not this file's.
+function(dui_finalize_app)
+    set(_dui_target "${PROJECT_NAME}")
+    if(ARGN)
+        set(_dui_target "${ARGN}")
+    endif()
+
+    if(NOT TARGET "${_dui_target}")
+        message(FATAL_ERROR
+            "dui_finalize_app: '${_dui_target}' is not a target. Create it with "
+            "add_executable() before calling this.")
+    endif()
+
+    # The resources that were installed with the package. An in-tree application points
+    # at the source tree instead; a consumer has no source tree.
+    get_filename_component(_dui_prefix
+        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../.." ABSOLUTE)
+    set(_dui_resources "${_dui_prefix}/@CMAKE_INSTALL_DATADIR@/dui/resources")
+
+    # Binaries into bin/, next to the other build output, unless the application has
+    # already decided where its binaries go.
+    get_target_property(_dui_out_dir "${_dui_target}" RUNTIME_OUTPUT_DIRECTORY)
+    if(NOT _dui_out_dir)
+        set_target_properties("${_dui_target}" PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+    endif()
+
+    if(WIN32)
+        # The entry point shim: provides WinMain/wWinMain and forwards to main(), which
+        # is what an application that does not define its own entry needs.
+        if(TARGET dui::dui_entry)
+            target_link_libraries("${_dui_target}" PRIVATE dui::dui_entry)
+        endif()
+        target_compile_definitions("${_dui_target}" PRIVATE UNICODE _UNICODE)
+    endif()
+
+    if(APPLE)
+        # Assemble a .app bundle around the executable. Kept as a POST_BUILD step rather
+        # than MACOSX_BUNDLE so the bundle only appears once the target is actually built
+        # (MACOSX_BUNDLE creates an empty shell at configure time).
+        set(_dui_bundle_dir "${CMAKE_BINARY_DIR}/bin/${_dui_target}.app")
+
+        set(BUNDLE_EXECUTABLE "${_dui_target}")
+        set(BUNDLE_IDENTIFIER "com.dui.${_dui_target}")
+        set(BUNDLE_NAME "${_dui_target}")
+        set(BUNDLE_SHORT_VERSION "1.0")
+        set(BUNDLE_VERSION "1.0")
+        configure_file(
+            "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/MacOSXBundleInfo.plist.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/${_dui_target}.Info.plist"
+            @ONLY)
+
+        add_custom_command(TARGET "${_dui_target}" POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${_dui_bundle_dir}/Contents/MacOS"
+            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${_dui_target}>"
+                    "${_dui_bundle_dir}/Contents/MacOS/${_dui_target}"
+            COMMAND ${CMAKE_COMMAND} -E copy
+                    "${CMAKE_CURRENT_BINARY_DIR}/${_dui_target}.Info.plist"
+                    "${_dui_bundle_dir}/Contents/Info.plist"
+            COMMAND ${CMAKE_COMMAND} -E rm -f "${_dui_bundle_dir}/Contents/MacOS/resources"
+            COMMAND ${CMAKE_COMMAND} -E create_symlink
+                    "${_dui_resources}"
+                    "${_dui_bundle_dir}/Contents/MacOS/resources"
+            # Ad-hoc signature: without it Finder shows a "prohibited" icon even though
+            # the binary runs.
+            COMMAND /usr/bin/codesign --force --deep --sign - "${_dui_bundle_dir}"
+            COMMENT "Assembling ${_dui_target}.app")
+    endif()
+endfunction()

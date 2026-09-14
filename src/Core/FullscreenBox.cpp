@@ -14,7 +14,7 @@ FullscreenBox::FullscreenBox(Window* pWindow) :
     SetEnableControlPadding(false);
 
     //The background color defaults to white (if no background color is set, the window may appear transparent in some cases, e.g. when the WebView2 control's web page is fullscreen)
-    SetBkColor(DUI_T("white"));
+    SetBkColor("white");
 
     //Save the original state of the window
     if (pWindow != nullptr) {
@@ -33,24 +33,20 @@ FullscreenBox::~FullscreenBox()
     }
 }
 
-DString FullscreenBox::GetType() const { return DUI_T("FullscreenBox"); }
+std::string FullscreenBox::GetType() const { return "FullscreenBox"; }
 
-bool FullscreenBox::EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenControl, const DString& exitButtonClass)
+bool FullscreenBox::EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenControl, const std::string& exitButtonClass)
 {
-    ASSERT((pOldRoot != nullptr) && (pFullscreenControl != nullptr));
     if ((pOldRoot == nullptr) || (pFullscreenControl == nullptr)) {
         return false;
     }
 
-    ASSERT(m_pFullscreenControl == nullptr);
     if (m_pFullscreenControl != nullptr) {
         return false;
     }
-    ASSERT(m_pOldParent == nullptr);
     if (m_pOldParent != nullptr) {
         return false;
     }
-    ASSERT(m_pOldRoot == nullptr);
     if (m_pOldRoot != nullptr) {
         return false;
     }
@@ -71,7 +67,7 @@ bool FullscreenBox::EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenCo
     return true;
 }
 
-bool FullscreenBox::UpdateControlFullscreen(Control* pFullscreenControl, const DString& exitButtonClass)
+bool FullscreenBox::UpdateControlFullscreen(Control* pFullscreenControl, const std::string& exitButtonClass)
 {
     if (pFullscreenControl == nullptr) {
         return false;
@@ -111,11 +107,8 @@ void FullscreenBox::RemoveControlFromBox(Control* pFullscreenControl)
         //Record the index in the parent container
         m_nOldItemIndex = m_pOldParent->GetItemIndex(pFullscreenControl);
 
-        //Remove it from the original parent container
-        bool bOldAutoDestroyChild = m_pOldParent->IsAutoDestroyChild();
-        m_pOldParent->SetAutoDestroyChild(false);
-        m_pOldParent->Box::RemoveItem(pFullscreenControl);
-        m_pOldParent->SetAutoDestroyChild(bOldAutoDestroyChild);
+        //Detach it from the original parent container; the ownership is handed over to us
+        m_pOldParent->ReleaseItem(pFullscreenControl);
 
         //Save the outer margin
         m_rcOldMargin = pFullscreenControl->GetMargin();
@@ -126,9 +119,8 @@ void FullscreenBox::RemoveControlFromBox(Control* pFullscreenControl)
 void FullscreenBox::RestoreControlToBox()
 {
     if ((m_pOldParent != nullptr) && (m_pFullscreenControl != nullptr)) {
-        SetAutoDestroyChild(false);
-        RemoveItem(m_pFullscreenControl.get());
-        SetAutoDestroyChild(true);
+        //Detach it from the fullscreen container; the ownership is handed back to us
+        ReleaseItem(m_pFullscreenControl.get());
 
         //Restore the original outer margin
         m_pFullscreenControl->SetMargin(m_rcOldMargin, false);
@@ -142,7 +134,7 @@ void FullscreenBox::RestoreControlToBox()
     m_rcOldMargin.Clear();
 }
 
-void FullscreenBox::UpdateExitFullscreenBtn(const DString& exitButtonClass)
+void FullscreenBox::UpdateExitFullscreenBtn(const std::string& exitButtonClass)
 {
     if (m_exitButtonClass == exitButtonClass) {
         if (m_exitButtonClass.empty()) {

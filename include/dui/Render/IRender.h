@@ -19,7 +19,7 @@ public:
 
     /** Get the font name
     */
-    virtual DString FontName() const = 0;
+    virtual std::string FontName() const = 0;
 
     /** Get the font size (font height)
     */
@@ -57,24 +57,24 @@ public:
     * @param [out] fontName Returns the font name
     * @return Returns true on success, false on failure
     */
-    virtual bool GetFontName(uint32_t nIndex, DString& fontName) const = 0;
+    virtual bool GetFontName(uint32_t nIndex, std::string& fontName) const = 0;
 
     /** Determine whether the font exists
     * @param [int] fontName The font name
     * @return Returns true if a font matching the font name exists, otherwise false
     */
-    virtual bool HasFontName(const DString& fontName) const = 0;
+    virtual bool HasFontName(const std::string& fontName) const = 0;
 
     /** Set the default font name (used when the font to be loaded does not exist)
     * @param [in] fontName The default font name
     */
-    virtual void SetDefaultFontName(const DString& fontName) = 0;
+    virtual void SetDefaultFontName(const std::string& fontName) = 0;
 
     /** Load the specified font file
     * @param [in] fontFilePath The path of the font file (local absolute path)
     * @return Returns true on success, false on failure
     */
-    virtual bool LoadFontFile(const DString& fontFilePath) = 0;
+    virtual bool LoadFontFile(const std::string& fontFilePath) = 0;
 
     /** Load the specified font data
     * @param [in] data The in-memory data of the font file
@@ -1071,13 +1071,13 @@ public:
     * @param [in] measureParam The parameters used for measuring
     * @return Returns the width and height of the text string, represented as a rectangle
     */
-    virtual UiRect MeasureString(const DString& strText, const MeasureStringParam& measureParam) = 0;
+    virtual UiRect MeasureString(const std::string& strText, const MeasureStringParam& measureParam) = 0;
 
     /** Draw text
     * @param [in] strText The text content
     * @param [in] drawParam The parameters related to text drawing
     */
-    virtual void DrawString(const DString& strText, const DrawStringParam& drawParam) = 0;
+    virtual void DrawString(const std::string& strText, const DrawStringParam& drawParam) = 0;
 
     /** Measure the width and height of the rich text
     * @param [in] textRect The rectangle area for drawing the text

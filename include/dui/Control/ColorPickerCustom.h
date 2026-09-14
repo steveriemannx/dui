@@ -20,7 +20,7 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
     /** Select a color
     */
@@ -73,7 +73,7 @@ private:
 
     /** Judge whether the input is a legal color string, e.g. "#FF123456"
     */
-    bool IsValidColorString(const DString& colorText) const;
+    bool IsValidColorString(const std::string& colorText) const;
 
 private:
     /** UI control for one color channel

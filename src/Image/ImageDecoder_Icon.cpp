@@ -12,12 +12,12 @@ ImageDecoder_Icon::~ImageDecoder_Icon()
 {
 }
 
-DString ImageDecoder_Icon::GetFormatName() const
+std::string ImageDecoder_Icon::GetFormatName() const
 {
-    return DUI_T("ICON");
+    return "ICON";
 }
 
-bool ImageDecoder_Icon::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_Icon::CanDecode(const std::string& imageFilePath) const
 {
     IconManager& iconManager = GlobalManager::Instance().Icon();
     if (iconManager.IsIconString(imageFilePath)) {
@@ -38,7 +38,7 @@ std::unique_ptr<IImage> ImageDecoder_Icon::LoadImageData(const ImageDecodeParam&
 {
     std::unique_ptr<IImage> pImage;
     IconManager& iconManager = GlobalManager::Instance().Icon();
-    const DString imageFilePath = decodeParam.m_imageFilePath.NativePath(); //Image file path
+    const std::string imageFilePath = decodeParam.m_imageFilePath.NativePath(); //Image file path
     if (iconManager.IsIconString(imageFilePath)) {
         uint32_t nIconID = iconManager.GetIconID(imageFilePath);
         if (!iconManager.IsImageString(nIconID)) {

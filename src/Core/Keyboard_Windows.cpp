@@ -1,6 +1,7 @@
 #include "dui/Core/Keyboard.h"
+#include "dui/Utils/StringConvert.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 namespace ui
 {
@@ -24,7 +25,7 @@ bool Keyboard::IsCapsLockOn()
     return (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
 }
 
-DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool fExtended)
+std::string Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool fExtended)
 {
     UINT nScanCode = ::MapVirtualKeyEx(nVirtKey, 0, ::GetKeyboardLayout(0));
     switch (nVirtKey)
@@ -49,9 +50,11 @@ DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool fExtended)
         nScanCode |= 0x01000000L;
     }
 
-    TCHAR szStr[MAX_PATH] = { 0 };
-    ::GetKeyNameText(nScanCode << 16, szStr, MAX_PATH);
-    return DString(szStr);
+    // wchar_t rather than TCHAR: the string model is UTF-8 everywhere now, and the key
+    // name comes back from the W API, so it is converted once on the way out.
+    wchar_t szStr[MAX_PATH] = { 0 };
+    ::GetKeyNameTextW(nScanCode << 16, szStr, MAX_PATH);
+    return StringConvert::WStringToUTF8(szStr);
 }
 
 } // namespace ui

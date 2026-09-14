@@ -3,7 +3,7 @@
 
 #include "dui/Core/UiTypes.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 //Implemented using Windows' ITextHost
 #include <Richedit.h>
@@ -59,7 +59,7 @@ public:
     bool IsShowPassword() const;//Whether to show the password
     void SetFlashPasswordChar(bool bFlash);
     bool IsFlashPasswordChar() const;
-    DString GetPasswordText() const;
+    std::string GetPasswordText() const;
 
     //Whether only numeric characters are allowed
     bool IsNumberOnly() const;

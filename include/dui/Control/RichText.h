@@ -20,8 +20,8 @@ public:
     virtual ~RichTextT() override;
 
     /// Override parent class methods to provide personalized features, please refer to the parent class declaration
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void PaintText(IRender* pRender) override;
 
     /** Set the window to which the container belongs
@@ -59,20 +59,20 @@ public:
     /** Get the current font ID
      * @return Returns the font ID, this ID is identified in global.xml
      */
-    DString GetFontId() const;
+    std::string GetFontId() const;
 
     /** Set the current font ID
      * @param [in] strFontId The font ID to set, this ID can exist in global.xml
      */
-    void SetFontId(const DString& strFontId);
+    void SetFontId(const std::string& strFontId);
 
     /** Get the default text color
      */
-    DString GetTextColor() const;
+    std::string GetTextColor() const;
 
     /** Set the default text color
      */
-    void SetTextColor(const DString& sTextColor);
+    void SetTextColor(const std::string& sTextColor);
 
     /** Get the row spacing multiplier
     */
@@ -121,13 +121,13 @@ public:
     * @param [in] richText Text content with formatting
     * @param [in] bRedraw true triggers a redraw, false does not trigger a redraw
     */
-    bool SetText(const DString& richText, bool bRedraw = true);
+    bool SetText(const std::string& richText, bool bRedraw = true);
 
     /** Set the formatted text ID
     * @param [in] richTextId The ID of the formatted text content
     * @param [in] bRedraw true triggers a redraw, false does not trigger a redraw
     */
-    bool SetTextId(const DString& richTextId, bool bRedraw = true);
+    bool SetTextId(const std::string& richTextId, bool bRedraw = true);
 
     /** Clear the original formatted text
     */
@@ -145,13 +145,13 @@ public:
     * @param [in,out] text The text to be processed is passed in, and the processed text is passed out
     * @return Returns the reference to text
     */
-    const DString& TrimText(DString& text);
+    const std::string& TrimText(std::string& text);
 
     /** Perform Trim processing on the text according to the Trim scheme, removing extra spaces
     * @param [in] text The text to be processed
     * @return Returns the processed string
     */
-    DString TrimText(const DString::value_type* text);
+    std::string TrimText(const std::string::value_type* text);
 
     /** Set whether redrawing is allowed
     * @param [in] bEnable true means redrawing is allowed, false means redrawing is prohibited
@@ -165,7 +165,7 @@ public:
 public:
     /** Output formatted text
     */
-    DString ToString() const;
+    std::string ToString() const;
 
     /** Listen for the hyperlink click event
      * @param [in] callback The callback function after the hyperlink is clicked
@@ -206,19 +206,19 @@ RichTextT<T>::~RichTextT()
 }
 
 template<typename T>
-inline DString RichTextT<T>::GetType() const { return DUI_CTR_RICHTEXT; }
+inline std::string RichTextT<T>::GetType() const { return DUI_CTR_RICHTEXT; }
 
 template<>
-inline DString RichTextT<Box>::GetType() const { return DUI_CTR_RICHTEXT_BOX; }
+inline std::string RichTextT<Box>::GetType() const { return DUI_CTR_RICHTEXT_BOX; }
 
 template<>
-inline DString RichTextT<HBox>::GetType() const { return DUI_CTR_RICHTEXT_HBOX; }
+inline std::string RichTextT<HBox>::GetType() const { return DUI_CTR_RICHTEXT_HBOX; }
 
 template<>
-inline DString RichTextT<VBox>::GetType() const { return DUI_CTR_RICHTEXT_VBOX; }
+inline std::string RichTextT<VBox>::GetType() const { return DUI_CTR_RICHTEXT_VBOX; }
 
 template<typename T>
-void RichTextT<T>::SetAttribute(const DString& strName, const DString& strValue)
+void RichTextT<T>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
     if (!m_impl->SetAttribute(strName, strValue)) {
         BaseClass::SetAttribute(strName, strValue);
@@ -271,13 +271,13 @@ void RichTextT<T>::SetTextPadding(const UiPadding& padding, bool bNeedDpiScale)
 }
 
 template<typename T>
-const DString& RichTextT<T>::TrimText(DString& text)
+const std::string& RichTextT<T>::TrimText(std::string& text)
 {
     return m_impl->TrimText(text);
 }
 
 template<typename T>
-DString RichTextT<T>::TrimText(const DString::value_type* text)
+std::string RichTextT<T>::TrimText(const std::string::value_type* text)
 {
     return m_impl->TrimText(text);
 }
@@ -295,13 +295,13 @@ bool RichTextT<T>::IsEnableRedraw() const
 }
 
 template<typename T>
-bool RichTextT<T>::SetText(const DString& richText, bool bRedraw)
+bool RichTextT<T>::SetText(const std::string& richText, bool bRedraw)
 {
     return m_impl->SetText(richText, bRedraw);
 }
 
 template<typename T>
-bool RichTextT<T>::SetTextId(const DString& richTextId, bool bRedraw)
+bool RichTextT<T>::SetTextId(const std::string& richTextId, bool bRedraw)
 {
     return m_impl->SetTextId(richTextId, bRedraw);
 }
@@ -313,25 +313,25 @@ void RichTextT<T>::Clear()
 }
 
 template<typename T>
-DString RichTextT<T>::GetFontId() const
+std::string RichTextT<T>::GetFontId() const
 {
     return m_impl->GetFontId();
 }
 
 template<typename T>
-void RichTextT<T>::SetFontId(const DString& strFontId)
+void RichTextT<T>::SetFontId(const std::string& strFontId)
 {
     m_impl->SetFontId(strFontId);
 }
 
 template<typename T>
-DString RichTextT<T>::GetTextColor() const
+std::string RichTextT<T>::GetTextColor() const
 {
     return m_impl->GetTextColor();
 }
 
 template<typename T>
-void RichTextT<T>::SetTextColor(const DString& sTextColor)
+void RichTextT<T>::SetTextColor(const std::string& sTextColor)
 {
     m_impl->SetTextColor(sTextColor);
 }
@@ -409,7 +409,7 @@ void RichTextT<T>::AppendTextSlice(const RichTextSlice& textSlice)
 }
 
 template<typename T>
-DString RichTextT<T>::ToString() const
+std::string RichTextT<T>::ToString() const
 {
     return m_impl->ToString();
 }

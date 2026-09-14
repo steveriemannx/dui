@@ -16,10 +16,10 @@ public:
     {
     }
     /// Override the parent class methods to provide custom features; please refer to the parent class declarations
-    virtual DString GetType() const override { return DUI_CTR_HYPER_LINK; }
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override
+    virtual std::string GetType() const override { return DUI_CTR_HYPER_LINK; }
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override
     {
-        if (strName == DUI_T("url")) {
+        if (strName == "url") {
             m_url = strValue;
         }
         else {
@@ -32,7 +32,7 @@ public:
         if (!IsActivatable()) {
             return;
         }
-        DString url = m_url.c_str();
+        std::string url = m_url.c_str();
         SendEvent(kEventLinkClick, (WPARAM)url.c_str());
     }
 

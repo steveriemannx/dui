@@ -14,8 +14,8 @@ public:
     MainForm();
     virtual ~MainForm() override;
 
-    virtual DString GetSkinFolder() override { return DUI_T("child_window"); }
-    virtual DString GetSkinFile() override { return DUI_T(""); }
+    virtual std::string GetSkinFolder() override { return "child_window"; }
+    virtual std::string GetSkinFile() override { return ""; }
 
 public:
     /** Draw this child window immediately

@@ -9,142 +9,142 @@
 namespace ui
 {
     //Defines all control types
-    #define  DUI_CTR_CONTROL                         (DUI_T("Control"))
-    #define  DUI_CTR_CONTROL_DRAGABLE                (DUI_T("ControlDragable"))
-    #define  DUI_CTR_CONTROL_MOVABLE                 (DUI_T("ControlMovable"))
-    #define  DUI_CTR_CONTROL_RESIZABLE               (DUI_T("ControlResizable"))
-    #define  DUI_CTR_LABEL                           (DUI_T("Label"))
-    #define  DUI_CTR_RICHTEXT                        (DUI_T("RichText"))
-    #define  DUI_CTR_HYPER_LINK                      (DUI_T("HyperLink"))
-    #define  DUI_CTR_BUTTON                          (DUI_T("Button"))
-    #define  DUI_CTR_OPTION                          (DUI_T("Option"))
-    #define  DUI_CTR_CHECKBOX                        (DUI_T("CheckBox"))
-    #define  DUI_CTR_SPLIT                           (DUI_T("Split"))
+    #define  DUI_CTR_CONTROL                         ("Control")
+    #define  DUI_CTR_CONTROL_DRAGABLE                ("ControlDragable")
+    #define  DUI_CTR_CONTROL_MOVABLE                 ("ControlMovable")
+    #define  DUI_CTR_CONTROL_RESIZABLE               ("ControlResizable")
+    #define  DUI_CTR_LABEL                           ("Label")
+    #define  DUI_CTR_RICHTEXT                        ("RichText")
+    #define  DUI_CTR_HYPER_LINK                      ("HyperLink")
+    #define  DUI_CTR_BUTTON                          ("Button")
+    #define  DUI_CTR_OPTION                          ("Option")
+    #define  DUI_CTR_CHECKBOX                        ("CheckBox")
+    #define  DUI_CTR_SPLIT                           ("Split")
 
-    #define  DUI_CTR_LABELBOX                        (DUI_T("LabelBox"))
-    #define  DUI_CTR_LABELHBOX                       (DUI_T("LabelHBox"))
-    #define  DUI_CTR_LABELVBOX                       (DUI_T("LabelVBox"))
+    #define  DUI_CTR_LABELBOX                        ("LabelBox")
+    #define  DUI_CTR_LABELHBOX                       ("LabelHBox")
+    #define  DUI_CTR_LABELVBOX                       ("LabelVBox")
 
-    #define  DUI_CTR_RICHTEXT_BOX                    (DUI_T("RichTextBox"))
-    #define  DUI_CTR_RICHTEXT_HBOX                   (DUI_T("RichTextHBox"))
-    #define  DUI_CTR_RICHTEXT_VBOX                   (DUI_T("RichTextVBox"))
+    #define  DUI_CTR_RICHTEXT_BOX                    ("RichTextBox")
+    #define  DUI_CTR_RICHTEXT_HBOX                   ("RichTextHBox")
+    #define  DUI_CTR_RICHTEXT_VBOX                   ("RichTextVBox")
 
-    #define  DUI_CTR_BUTTONBOX                       (DUI_T("ButtonBox"))
-    #define  DUI_CTR_BUTTONHBOX                      (DUI_T("ButtonHBox"))
-    #define  DUI_CTR_BUTTONVBOX                      (DUI_T("ButtonVBox"))
+    #define  DUI_CTR_BUTTONBOX                       ("ButtonBox")
+    #define  DUI_CTR_BUTTONHBOX                      ("ButtonHBox")
+    #define  DUI_CTR_BUTTONVBOX                      ("ButtonVBox")
 
-    #define  DUI_CTR_CHECKBOXBOX                     (DUI_T("CheckBoxBox"))
-    #define  DUI_CTR_CHECKBOXHBOX                    (DUI_T("CheckBoxHBox"))
-    #define  DUI_CTR_CHECKBOXVBOX                    (DUI_T("CheckBoxVBox"))
+    #define  DUI_CTR_CHECKBOXBOX                     ("CheckBoxBox")
+    #define  DUI_CTR_CHECKBOXHBOX                    ("CheckBoxHBox")
+    #define  DUI_CTR_CHECKBOXVBOX                    ("CheckBoxVBox")
 
-    #define  DUI_CTR_OPTIONBOX                       (DUI_T("OptionBox"))
-    #define  DUI_CTR_OPTIONHBOX                      (DUI_T("OptionHBox"))
-    #define  DUI_CTR_OPTIONVBOX                      (DUI_T("OptionVBox"))
+    #define  DUI_CTR_OPTIONBOX                       ("OptionBox")
+    #define  DUI_CTR_OPTIONHBOX                      ("OptionHBox")
+    #define  DUI_CTR_OPTIONVBOX                      ("OptionVBox")
 
-    #define  DUI_CTR_SPLITBOX                        (DUI_T("SplitBox"))
+    #define  DUI_CTR_SPLITBOX                        ("SplitBox")
 
-    #define  DUI_CTR_BOX                             (DUI_T("Box"))
-    #define  DUI_CTR_HBOX                            (DUI_T("HBox"))
-    #define  DUI_CTR_VBOX                            (DUI_T("VBox"))
-    #define  DUI_CTR_HFLOWBOX                        (DUI_T("HFlowBox"))
-    #define  DUI_CTR_VFLOWBOX                        (DUI_T("VFlowBox"))
-    #define  DUI_CTR_XMLBOX                          (DUI_T("XmlBox"))
+    #define  DUI_CTR_BOX                             ("Box")
+    #define  DUI_CTR_HBOX                            ("HBox")
+    #define  DUI_CTR_VBOX                            ("VBox")
+    #define  DUI_CTR_HFLOWBOX                        ("HFlowBox")
+    #define  DUI_CTR_VFLOWBOX                        ("VFlowBox")
+    #define  DUI_CTR_XMLBOX                          ("XmlBox")
 
-    #define  DUI_CTR_VTILE_BOX                       (DUI_T("VTileBox"))
-    #define  DUI_CTR_HTILE_BOX                       (DUI_T("HTileBox"))
+    #define  DUI_CTR_VTILE_BOX                       ("VTileBox")
+    #define  DUI_CTR_HTILE_BOX                       ("HTileBox")
 
-    #define  DUI_CTR_BOX_DRAGABLE                    (DUI_T("BoxDragable"))
-    #define  DUI_CTR_HBOX_DRAGABLE                   (DUI_T("HBoxDragable"))
-    #define  DUI_CTR_VBOX_DRAGABLE                   (DUI_T("VBoxDragable"))
+    #define  DUI_CTR_BOX_DRAGABLE                    ("BoxDragable")
+    #define  DUI_CTR_HBOX_DRAGABLE                   ("HBoxDragable")
+    #define  DUI_CTR_VBOX_DRAGABLE                   ("VBoxDragable")
 
-    #define  DUI_CTR_BOX_MOVABLE                     (DUI_T("BoxMovable"))
-    #define  DUI_CTR_HBOX_MOVABLE                    (DUI_T("HBoxMovable"))
-    #define  DUI_CTR_VBOX_MOVABLE                    (DUI_T("VBoxMovable"))
+    #define  DUI_CTR_BOX_MOVABLE                     ("BoxMovable")
+    #define  DUI_CTR_HBOX_MOVABLE                    ("HBoxMovable")
+    #define  DUI_CTR_VBOX_MOVABLE                    ("VBoxMovable")
 
-    #define  DUI_CTR_BOX_RESIZABLE                   (DUI_T("BoxResizable"))
-    #define  DUI_CTR_HBOX_RESIZABLE                  (DUI_T("HBoxResizable"))
-    #define  DUI_CTR_VBOX_RESIZABLE                  (DUI_T("VBoxResizable"))
+    #define  DUI_CTR_BOX_RESIZABLE                   ("BoxResizable")
+    #define  DUI_CTR_HBOX_RESIZABLE                  ("HBoxResizable")
+    #define  DUI_CTR_VBOX_RESIZABLE                  ("VBoxResizable")
 
-    #define  DUI_CTR_GROUP_BOX                       (DUI_T("GroupBox"))
-    #define  DUI_CTR_GROUP_HBOX                      (DUI_T("GroupHBox"))
-    #define  DUI_CTR_GROUP_VBOX                      (DUI_T("GroupVBox"))
+    #define  DUI_CTR_GROUP_BOX                       ("GroupBox")
+    #define  DUI_CTR_GROUP_HBOX                      ("GroupHBox")
+    #define  DUI_CTR_GROUP_VBOX                      ("GroupVBox")
 
-    #define  DUI_CTR_SCROLLBOX                       (DUI_T("ScrollBox"))
-    #define  DUI_CTR_HSCROLLBOX                      (DUI_T("HScrollBox"))
-    #define  DUI_CTR_VSCROLLBOX                      (DUI_T("VScrollBox"))
-    #define  DUI_CTR_HFLOW_SCROLLBOX                 (DUI_T("HFlowScrollBox"))
-    #define  DUI_CTR_VFLOW_SCROLLBOX                 (DUI_T("VFlowScrollBox"))
-    #define  DUI_CTR_HTILE_SCROLLBOX                 (DUI_T("HTileScrollBox"))
-    #define  DUI_CTR_VTILE_SCROLLBOX                 (DUI_T("VTileScrollBox"))
+    #define  DUI_CTR_SCROLLBOX                       ("ScrollBox")
+    #define  DUI_CTR_HSCROLLBOX                      ("HScrollBox")
+    #define  DUI_CTR_VSCROLLBOX                      ("VScrollBox")
+    #define  DUI_CTR_HFLOW_SCROLLBOX                 ("HFlowScrollBox")
+    #define  DUI_CTR_VFLOW_SCROLLBOX                 ("VFlowScrollBox")
+    #define  DUI_CTR_HTILE_SCROLLBOX                 ("HTileScrollBox")
+    #define  DUI_CTR_VTILE_SCROLLBOX                 ("VTileScrollBox")
 
-    #define  DUI_CTR_LISTBOX_ITEM                    (DUI_T("ListBoxItem"))
-    #define  DUI_CTR_HLISTBOX                        (DUI_T("HListBox"))
-    #define  DUI_CTR_VLISTBOX                        (DUI_T("VListBox"))
-    #define  DUI_CTR_HTILE_LISTBOX                   (DUI_T("HTileListBox"))
-    #define  DUI_CTR_VTILE_LISTBOX                   (DUI_T("VTileListBox"))
+    #define  DUI_CTR_LISTBOX_ITEM                    ("ListBoxItem")
+    #define  DUI_CTR_HLISTBOX                        ("HListBox")
+    #define  DUI_CTR_VLISTBOX                        ("VListBox")
+    #define  DUI_CTR_HTILE_LISTBOX                   ("HTileListBox")
+    #define  DUI_CTR_VTILE_LISTBOX                   ("VTileListBox")
 
-    #define  DUI_CTR_LISTCTRL                        (DUI_T("ListCtrl"))
-    #define  DUI_CTR_PROPERTY_GRID                   (DUI_T("PropertyGrid"))
+    #define  DUI_CTR_LISTCTRL                        ("ListCtrl")
+    #define  DUI_CTR_PROPERTY_GRID                   ("PropertyGrid")
 
-    #define  DUI_CTR_VIRTUAL_VLISTBOX                (DUI_T("VirtualVListBox"))
-    #define  DUI_CTR_VIRTUAL_HLISTBOX                (DUI_T("VirtualHListBox"))
-    #define  DUI_CTR_VIRTUAL_HTILE_LISTBOX           (DUI_T("VirtualHTileListBox"))
-    #define  DUI_CTR_VIRTUAL_VTILE_LISTBOX           (DUI_T("VirtualVTileListBox"))
+    #define  DUI_CTR_VIRTUAL_VLISTBOX                ("VirtualVListBox")
+    #define  DUI_CTR_VIRTUAL_HLISTBOX                ("VirtualHListBox")
+    #define  DUI_CTR_VIRTUAL_HTILE_LISTBOX           ("VirtualHTileListBox")
+    #define  DUI_CTR_VIRTUAL_VTILE_LISTBOX           ("VirtualVTileListBox")
 
-    #define  DUI_CTR_TABBOX                          (DUI_T("TabBox"))
-    #define  DUI_CTR_GRIDBOX                         (DUI_T("GridBox"))
-    #define  DUI_CTR_GRID_SCROLLBOX                  (DUI_T("GridScrollBox"))
+    #define  DUI_CTR_TABBOX                          ("TabBox")
+    #define  DUI_CTR_GRIDBOX                         ("GridBox")
+    #define  DUI_CTR_GRID_SCROLLBOX                  ("GridScrollBox")
 
-    #define  DUI_CTR_TREENODE                        (DUI_T("TreeNode"))
-    #define  DUI_CTR_TREEVIEW                        (DUI_T("TreeView"))
-    #define  DUI_CTR_DIRECTORY_TREE                  (DUI_T("DirectoryTree"))
+    #define  DUI_CTR_TREENODE                        ("TreeNode")
+    #define  DUI_CTR_TREEVIEW                        ("TreeView")
+    #define  DUI_CTR_DIRECTORY_TREE                  ("DirectoryTree")
 
-    #define  DUI_CTR_RICHEDIT                        (DUI_T("RichEdit"))
-    #define  DUI_CTR_COMBO                           (DUI_T("Combo"))
-    #define  DUI_CTR_COMBO_BUTTON                    (DUI_T("ComboButton"))
-    #define  DUI_CTR_FILTER_COMBO                    (DUI_T("FilterCombo"))
-    #define  DUI_CTR_CHECK_COMBO                     (DUI_T("CheckCombo"))
-    #define  DUI_CTR_SLIDER                          (DUI_T("Slider"))
-    #define  DUI_CTR_PROGRESS                        (DUI_T("Progress"))
-    #define  DUI_CTR_CIRCLEPROGRESS                  (DUI_T("CircleProgress"))
-    #define  DUI_CTR_SCROLLBAR                       (DUI_T("ScrollBar"))
+    #define  DUI_CTR_RICHEDIT                        ("RichEdit")
+    #define  DUI_CTR_COMBO                           ("Combo")
+    #define  DUI_CTR_COMBO_BUTTON                    ("ComboButton")
+    #define  DUI_CTR_FILTER_COMBO                    ("FilterCombo")
+    #define  DUI_CTR_CHECK_COMBO                     ("CheckCombo")
+    #define  DUI_CTR_SLIDER                          ("Slider")
+    #define  DUI_CTR_PROGRESS                        ("Progress")
+    #define  DUI_CTR_CIRCLEPROGRESS                  ("CircleProgress")
+    #define  DUI_CTR_SCROLLBAR                       ("ScrollBar")
 
-    #define  DUI_CTR_MENU                            (DUI_T("Menu"))
-    #define  DUI_CTR_SUB_MENU                        (DUI_T("SubMenu"))
-    #define  DUI_CTR_MENU_ITEM                       (DUI_T("MenuItem"))
-    #define  DUI_CTR_MENU_LISTBOX                    (DUI_T("MenuListBox"))
-    #define  DUI_CTR_MENU_BAR                        (DUI_T("MenuBar"))
+    #define  DUI_CTR_MENU                            ("Menu")
+    #define  DUI_CTR_SUB_MENU                        ("SubMenu")
+    #define  DUI_CTR_MENU_ITEM                       ("MenuItem")
+    #define  DUI_CTR_MENU_LISTBOX                    ("MenuListBox")
+    #define  DUI_CTR_MENU_BAR                        ("MenuBar")
 
-    #define  DUI_CTR_DATETIME                        (DUI_T("DateTime"))
-    #define  DUI_CTR_CEF                             (DUI_T("CefControl"))
-    #define  DUI_CTR_WEBVIEW2                        (DUI_T("WebView2Control"))
+    #define  DUI_CTR_DATETIME                        ("DateTime")
+    #define  DUI_CTR_CEF                             ("CefControl")
+    #define  DUI_CTR_WEBVIEW2                        ("WebView2Control")
 
     //Color-related controls
-    #define  DUI_CTR_COLOR_CONTROL                   (DUI_T("ColorControl"))
-    #define  DUI_CTR_COLOR_SLIDER                    (DUI_T("ColorSlider"))
-    #define  DUI_CTR_COLOR_PICKER_REGULAR            (DUI_T("ColorPickerRegular"))
-    #define  DUI_CTR_COLOR_PICKER_STANDARD           (DUI_T("ColorPickerStatard"))
-    #define  DUI_CTR_COLOR_PICKER_STANDARD_GRAY      (DUI_T("ColorPickerStatardGray"))
-    #define  DUI_CTR_COLOR_PICKER_CUSTOM             (DUI_T("ColorPickerCustom"))
+    #define  DUI_CTR_COLOR_CONTROL                   ("ColorControl")
+    #define  DUI_CTR_COLOR_SLIDER                    ("ColorSlider")
+    #define  DUI_CTR_COLOR_PICKER_REGULAR            ("ColorPickerRegular")
+    #define  DUI_CTR_COLOR_PICKER_STANDARD           ("ColorPickerStatard")
+    #define  DUI_CTR_COLOR_PICKER_STANDARD_GRAY      ("ColorPickerStatardGray")
+    #define  DUI_CTR_COLOR_PICKER_CUSTOM             ("ColorPickerCustom")
 
-    #define  DUI_CTR_LINE                            (DUI_T("Line"))
-    #define  DUI_CTR_IPADDRESS                       (DUI_T("IPAddress"))
-    #define  DUI_CTR_HOTKEY                          (DUI_T("HotKey"))
-    #define  DUI_CTR_TAB_CTRL                        (DUI_T("TabCtrl"))
-    #define  DUI_CTR_TAB_CTRL_ITEM                   (DUI_T("TabCtrlItem"))    
-    #define  DUI_CTR_ADDRESS_BAR                     (DUI_T("AddressBar"))
-    #define  DUI_CTR_ICON_CONTROL                    (DUI_T("IconControl"))
-    #define  DUI_CTR_BITMAP_CONTROL                  (DUI_T("BitmapControl"))
-    #define  DUI_CTR_CHILD_WINDOW                    (DUI_T("ChildWindow"))
+    #define  DUI_CTR_LINE                            ("Line")
+    #define  DUI_CTR_IPADDRESS                       ("IPAddress")
+    #define  DUI_CTR_HOTKEY                          ("HotKey")
+    #define  DUI_CTR_TAB_CTRL                        ("TabCtrl")
+    #define  DUI_CTR_TAB_CTRL_ITEM                   ("TabCtrlItem")    
+    #define  DUI_CTR_ADDRESS_BAR                     ("AddressBar")
+    #define  DUI_CTR_ICON_CONTROL                    ("IconControl")
+    #define  DUI_CTR_BITMAP_CONTROL                  ("BitmapControl")
+    #define  DUI_CTR_CHILD_WINDOW                    ("ChildWindow")
 
     //Window title bar buttons: names of maximize, minimize, close, restore and fullscreen buttons, hard-coded
-    #define  DUI_CTR_CAPTION_BAR                     (DUI_T("window_caption_bar"))
-    #define  DUI_CTR_CAPTION_TITLE                   (DUI_T("window_caption_title"))
-    #define  DUI_CTR_BUTTON_CLOSE                    (DUI_T("closebtn"))
-    #define  DUI_CTR_BUTTON_MIN                      (DUI_T("minbtn"))
-    #define  DUI_CTR_BUTTON_MAX                      (DUI_T("maxbtn"))
-    #define  DUI_CTR_BUTTON_RESTORE                  (DUI_T("restorebtn"))
-    #define  DUI_CTR_BUTTON_FULLSCREEN               (DUI_T("fullscreenbtn"))
+    #define  DUI_CTR_CAPTION_BAR                     ("window_caption_bar")
+    #define  DUI_CTR_CAPTION_TITLE                   ("window_caption_title")
+    #define  DUI_CTR_BUTTON_CLOSE                    ("closebtn")
+    #define  DUI_CTR_BUTTON_MIN                      ("minbtn")
+    #define  DUI_CTR_BUTTON_MAX                      ("maxbtn")
+    #define  DUI_CTR_BUTTON_RESTORE                  ("restorebtn")
+    #define  DUI_CTR_BUTTON_FULLSCREEN               ("fullscreenbtn")
 
     class Control;
     class Image;
@@ -214,7 +214,7 @@ namespace ui
     struct ImageAnimationStatus
     {
         //Image name: the value of the name field in the image attribute in the XML, used to identify the image resource
-        DString m_name;
+        std::string m_name;
 
         //Whether the current animated image is a background image
         bool m_bBkImage;
@@ -261,7 +261,7 @@ namespace ui
     enum ControlDropType
     {
         kControlDropTypeWindows = 0, //Indicates an event from the ControlDropTarget_Windows interface
-        kControlDropTypeSDL     = 1, //Indicates an event from the ControlDropTarget_SDL interface
+        kControlDropTypeWayland     = 1, //Indicates an event from the ControlDropTarget_Wayland interface
     };
 
     //Windows platform drop data: for the related values, see the IDropTarget interface declaration
@@ -274,29 +274,29 @@ namespace ui
         uint32_t m_dwEffect;    //The parameter return value
         int32_t m_hResult;      //The function return value
         bool m_bHandled;        //Whether the event has been fully handled; returning true means it was handled and is not dispatched to UI controls
-        std::vector<DString> m_textList;    //The text content contained in m_pDataObj; each element represents one line
-        std::vector<DString> m_fileList;    //The text content contained in m_pDataObj; each element represents a file path
+        std::vector<std::string> m_textList;    //The text content contained in m_pDataObj; each element represents one line
+        std::vector<std::string> m_fileList;    //The text content contained in m_pDataObj; each element represents a file path
     };
 
-    //SDL drag-and-drop data
-    struct ControlDropData_SDL
+    //native backend drag-and-drop data
+    struct ControlDropData_Wayland
     {
         bool m_bHandled;                    //Whether the event has been fully handled; returning true means it was handled and is not dispatched to UI controls
         bool m_bTextData;                   // true means m_textList holds the valid data; false means m_fileList does
         int32_t m_ptClientX;                // The X coordinate of the mouse position, in client coordinates
         int32_t m_ptClientY;                // The Y coordinate of the mouse position, in client coordinates
 
-        std::vector<DString> m_textList;    //The text content included in the drag-and-drop operation; each element represents one line
+        std::vector<std::string> m_textList;    //The text content included in the drag-and-drop operation; each element represents one line
 
-        DString m_source;                   // Valid when m_bTextData is false
-        std::vector<DString> m_fileList;    //The text content included in the drag-and-drop operation; each element represents a file path
+        std::string m_source;                   // Valid when m_bTextData is false
+        std::vector<std::string> m_fileList;    //The text content included in the drag-and-drop operation; each element represents a file path
     };
 
     //The DPI of the screen containing the window changed; related data
     struct WindowDisplayScaleData
     {
         float m_fNewDisplayScale;   //The new window UI display scale; 1.0f means no scaling
-        float m_fNewPixelDensity;   //The new window pixel density (only used in the SDL implementation)
+        float m_fNewPixelDensity;   //The new window pixel density (only used in the native backend implementation)
     };
 
     //The resolution of the screen containing the window changed; related data
@@ -312,8 +312,8 @@ namespace ui
     {
         Control* m_pControl;    //the control associated with the image
         Image* m_pImage;        //the image resource interface
-        DString m_imageFilePath;//The image path
-        DString m_imageName;    //Image name, unique ID
+        std::string m_imageFilePath;//The image path
+        std::string m_imageName;    //Image name, unique ID
         bool m_bBkImage;        //Whether the image is a background image
         bool m_bLoadError;      //Whether the image has a loading error
         bool m_bDecodeError;    //Whether the image has a data decoding error
@@ -401,7 +401,7 @@ namespace ui
         kEventReturn,               //ListCtrl, VirtualListBox, ListBoxItem, RichEdit, AddressBar: triggered when the Enter key is received
         kEventEsc,                  //RichEdit, AddressBar: triggered when the ESC key is received
         kEventTab,                  //RichEdit: triggered when the TAB key is received while WantTab is false
-        kEventLinkClick,            //RichEdit, RichText: triggered when clicking on hyperlink data; the clicked URL can be obtained from WPARAM, of type const DStringW::value_type*
+        kEventLinkClick,            //RichEdit, RichText: triggered when clicking on hyperlink data; the clicked URL can be obtained from WPARAM, of type const std::wstring::value_type*
 
         kEventScrollPosChanged,     //ScrollBox: triggered when the scrollbar position changes
         kEventValueChanged,         //DateTime and Slider: triggered when the value changes. For Slider, WPARAM is the new value and LPARAM is the old value
@@ -441,7 +441,7 @@ namespace ui
         kEventDropLeave,            //No additional description
         kEventDropData,             //wParam is ControlDropType, representing the source type, 
                                     //lParam represents the associated data: when wParam is kControlDropTypeWindows, lParam is a pointer to ControlDropData_Windows
-                                    //                   When wParam is kControlDropTypeSDL, lParam is a pointer to ControlDropData_SDL
+                                    //                   When wParam is kControlDropTypeWayland, lParam is a pointer to ControlDropData_Wayland
 
         kEventImageAnimationStart,      // Starts playing the image animation (background image): wParam is a data pointer: ui::ImageAnimationStatus*
         kEventImageAnimationPlayFrame,  // A frame of the image animation is played (background image): wParam is a data pointer: ui::ImageAnimationStatus*
@@ -496,13 +496,13 @@ namespace ui
         kWindowCaptureChangedMsg,   //The window lost mouse capture
         kWindowDropEnterMsg,        //Window drag-and-drop: drag in; wParam is ControlDropType, representing the source type
                                     //                  When wParam is kControlDropTypeWindows, lParam is a pointer to ControlDropData_Windows
-                                    //                  When wParam is kControlDropTypeSDL, lParam is a pointer to ControlDropData_SDL
+                                    //                  When wParam is kControlDropTypeWayland, lParam is a pointer to ControlDropData_Wayland
         kWindowDropOverMsg,         //Window drag-and-drop: drag over; wParam is ControlDropType, representing the source type
                                     //                  When wParam is kControlDropTypeWindows, lParam is a pointer to ControlDropData_Windows
-                                    //                  When wParam is kControlDropTypeSDL, lParam is a pointer to ControlDropData_SDL
+                                    //                  When wParam is kControlDropTypeWayland, lParam is a pointer to ControlDropData_Wayland
         kWindowDropMsg,             //Window drag-and-drop: drop operation; wParam is ControlDropType, representing the source type
                                     //                  When wParam is kControlDropTypeWindows, lParam is a pointer to ControlDropData_Windows
-                                    //                  When wParam is kControlDropTypeSDL, lParam is a pointer to ControlDropData_SDL
+                                    //                  When wParam is kControlDropTypeWayland, lParam is a pointer to ControlDropData_Wayland
         kWindowDropLeaveMsg,        //Window drag-and-drop: leave, no parameters
         kWindowMsgEnd               //The end of window messages
     };

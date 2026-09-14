@@ -12,7 +12,7 @@
  *  Extraction targets (strings shown to users / literals):
  *    - XML:  any attribute value containing CJK (text, tooltip_text, prompttext, ...)
  *    - XML:  element text content containing CJK (RichText etc.)
- *    - C++:  DUI_T("...") / L"..." literals containing CJK
+ *    - C++:  "..." / L"..." literals containing CJK
  *  Excluded (kept as-is):
  *    - bin/resources/lang/zh_CN.txt (language pack)
  *    - MultiLang/MultiLang.xml and global.xml text_id mechanism is runtime-switched
@@ -194,7 +194,7 @@ static const std::vector<std::string> kSkipSuffixes = {
 };
 static const std::vector<std::string> kSkipDirs = {
     "build_temp", ".git", "third_party", "lib", "bin/cef",
-    "CefBrowser.app", "cef.app", "SDL", "skia"
+    "CefBrowser.app", "cef.app", "native backend", "skia"
 };
 
 static bool isSkipped(const fs::path& rel) {
@@ -311,7 +311,7 @@ static void extractFromXml(const std::string& text, std::set<std::string>& out) 
 }
 
 // One-line C string literal starting at 'open' (index of the opening '"').
-// requireParen mirrors the Python regexes: DUI_T("...") needs the closing ')',
+// requireParen mirrors the Python regexes: "..." needs the closing ')',
 // L"..." does not. Raw newlines are not allowed inside.
 static std::string codeLiteral(const std::string& text, size_t open, bool requireParen) {
     std::string content;
@@ -336,10 +336,10 @@ static std::string codeLiteral(const std::string& text, size_t open, bool requir
 }
 
 static void extractFromCode(const std::string& text, std::set<std::string>& out) {
-    // DUI_T("...") with CJK (single-line only)
-    const std::string kOpen1 = "DUI_T(\"";
-    for (size_t i = 0; (i = text.find(kOpen1, i)) != std::string::npos; ++i) {
-        const std::string s = codeLiteral(text, i + kOpen1.size() - 1, true);
+    // "..." with CJK (single-line only).
+    // Text literals are plain "..." now that the DUI_T wrapper is gone.
+    for (size_t i = 0; (i = text.find('"', i)) != std::string::npos; ++i) {
+        const std::string s = codeLiteral(text, i, true);
         if (!s.empty() && containsCjk(s)) out.insert(s);
     }
     // L"..." with CJK (single-line only)
@@ -408,7 +408,6 @@ static void applyFiles(const fs::path& root, const std::map<std::string, std::st
                     else if (c == '\n') escEn += "\\n";
                     else escEn.push_back(c);
                 }
-                replaceAll(text, "DUI_T(\"" + zh + "\")", "DUI_T(\"" + escEn + "\")");
                 replaceAll(text, "L\"" + zh + "\"", "L\"" + escEn + "\"");
                 replaceAll(text, "\"" + zh + "\"", "\"" + escEn + "\"");
             }

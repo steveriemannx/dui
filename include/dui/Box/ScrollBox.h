@@ -24,8 +24,8 @@ public:
     ScrollBox& operator=(const ScrollBox& r) = delete;
     virtual ~ScrollBox() override;
 
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& pstrName, const DString& pstrValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& pstrName, const std::string& pstrValue) override;
     virtual void SetPos(UiRect rc) override;
     virtual void HandleEvent(const EventArgs& msg) override;
     virtual bool MouseEnter(const EventArgs& msg) override;
@@ -343,7 +343,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_HSCROLLBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_HSCROLLBOX; }
 };
 
 /** ScrollBox with vertical layout
@@ -356,7 +356,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VSCROLLBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VSCROLLBOX; }
 };
 
 /** ScrollBox with horizontal flow layout
@@ -369,7 +369,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_HFLOW_SCROLLBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_HFLOW_SCROLLBOX; }
 };
 
 /** ScrollBox with vertical flow layout
@@ -382,7 +382,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VFLOW_SCROLLBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VFLOW_SCROLLBOX; }
 };
 
 /** ScrollBox with tile layout (horizontal layout)
@@ -395,7 +395,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_HTILE_SCROLLBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_HTILE_SCROLLBOX; }
 };
 
 /** ScrollBox with tile layout (vertical layout)
@@ -408,7 +408,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VTILE_SCROLLBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VTILE_SCROLLBOX; }
 };
 
 } // namespace ui

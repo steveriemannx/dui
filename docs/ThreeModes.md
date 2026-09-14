@@ -52,10 +52,10 @@ The following internal control skins continue to be read from XML on disk; none 
 
 ```cpp
 ui::Menu* menu = new ui::Menu(this, pRelatedControl);
-menu->ShowMenu(_T(""), point);          // empty XML = pure code mode
+menu->ShowMenu(DUI_T(""), point);          // empty XML = pure code mode
 ui::MenuItem* pItem = new ui::MenuItem(menu);
-pItem->SetClass(_T("menu_element"));
-pItem->SetText(_T("Menu item"));
+pItem->SetClass(DUI_T("menu_element"));
+pItem->SetText(DUI_T("Menu item"));
 pItem->SetFixedWidth(ui::UiFixedInt(180), true, true);
 menu->AddMenuItem(pItem);               // sub-menus use pItem->AddSubMenuItem(pSub)
 menu->AddMenuControl(pControl);         // add ordinary controls such as separators
@@ -90,8 +90,9 @@ mkdir build && cd build
 cmake ..          # Release by default when no build type is specified
 make -j6          # builds everything at once; make basic etc. builds only a single target
 ```
-- The third-party libraries are vendored under `third_party/`; skia and SDL3 are built automatically by the top-level build (`dui_skia` / `dui_sdl` targets) when their libraries are missing
+- Skia is vendored under `third_party/` and built automatically by the top-level build (`dui_skia` target) when its library is missing
 - Platform notes: WebView2/WebView2Browser are Windows-only
+- FreeBSD uses the GNOME theme resources copied to resources/themes/freebsd; its native window backend is selected with the same X11/Wayland CMake option as Linux.
 - Each example directory is still an independent CMake project and can be built alone with `cmake -S examples/<name> -B build/...`
 
 ### Selecting Example Modes

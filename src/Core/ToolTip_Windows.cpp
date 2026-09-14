@@ -2,7 +2,7 @@
 #include "dui/Core/WindowBase.h"
 #include "dui/Utils/StringConvert.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include <CommCtrl.h>
 
@@ -36,7 +36,7 @@ public:
                      const UiRect& rect, 
                      uint32_t maxWidth,
                      const UiPoint& trackPos,
-                     const DString& text);
+                     const std::string& text);
 
     /**@brief Hide ToolTip information
     */
@@ -79,11 +79,15 @@ ToolTip::TImpl::~TImpl()
 
 void ToolTip::TImpl::SetMouseTracking(const WindowBase* pParentWnd, bool bTracking)
 {
-    ASSERT(pParentWnd != nullptr);
     if (pParentWnd == nullptr) {
         return;
     }
-    if (bTracking && !m_bMouseTracking) {
+    //Tracking is armed on every mouse move, not only the first one after the last
+    //WM_MOUSELEAVE: the OS registration is one-shot, while m_bMouseTracking only mirrors
+    //what the last caller asked for. Skipping the re-arm while that flag was still set
+    //meant the window stopped getting WM_MOUSELEAVE at all, so a hovered control kept
+    //its highlight after the pointer had left the window.
+    if (bTracking) {
         TRACKMOUSEEVENT tme = { 0 };
         tme.cbSize = sizeof(TRACKMOUSEEVENT);
         tme.dwFlags = TME_HOVER | TME_LEAVE;
@@ -99,9 +103,8 @@ void ToolTip::TImpl::ShowToolTip(const WindowBase* pParentWnd,
                                  const UiRect& rect, 
                                  uint32_t maxWidth,
                                  const UiPoint& trackPos,
-                                 const DString& text)
+                                 const std::string& text)
 {
-    ASSERT(pParentWnd != nullptr);
     if (pParentWnd == nullptr) {
         return;
     }
@@ -109,13 +112,9 @@ void ToolTip::TImpl::ShowToolTip(const WindowBase* pParentWnd,
         return;
     }
     // If the length is exceeded, truncate it
-    DStringW newText;
-#ifdef DUI_UNICODE
-    newText = text;    
-#else
+    std::wstring newText;
     // text is in UTF8 encoding
     newText = StringConvert::UTF8ToWString(text);
-#endif
     if (newText.size() > TOOLTIP_MAX_LEN) {
         newText.resize(TOOLTIP_MAX_LEN);
     }
@@ -126,11 +125,11 @@ void ToolTip::TImpl::ShowToolTip(const WindowBase* pParentWnd,
         toolTip.cbSize = sizeof(TOOLINFOW);
         toolTip.hwnd = hParentWnd;
         toolTip.uId = (UINT_PTR)hParentWnd;
-        DStringW oldText;
+        std::wstring oldText;
         oldText.resize(TOOLTIP_MAX_LEN + 1);
         toolTip.lpszText = const_cast<LPWSTR>((LPCWSTR)oldText.c_str());
         ::SendMessage(m_hwndTooltip, TTM_GETTOOLINFOW, 0, (LPARAM)&toolTip);
-        oldText = DStringW(oldText.c_str());
+        oldText = std::wstring(oldText.c_str());
         if (newText == oldText) {
             // The text content is unchanged; do not set it again
             return;
@@ -164,7 +163,15 @@ void ToolTip::TImpl::ShowToolTip(const WindowBase* pParentWnd,
         ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFOW, 0, (LPARAM)&m_ToolTip);
         ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ToolTip);
     }
-    ::SendMessage(m_hwndTooltip, TTM_TRACKPOSITION, 0, (LPARAM)(DWORD)MAKELONG(trackPos.x, trackPos.y));
+    //TTM_TRACKPOSITION expects screen coordinates, while trackPos is in the parent
+    //window's client coordinates (same contract as the macOS implementation, which
+    //converts it the same way): without the conversion the tooltip lands as many
+    //pixels away from the pointer as the window's origin.
+    UiPoint ptTrack = trackPos;
+    if (pParentWnd->NativeWnd() != nullptr) {
+        pParentWnd->NativeWnd()->ClientToScreen(ptTrack);
+    }
+    ::SendMessage(m_hwndTooltip, TTM_TRACKPOSITION, 0, (LPARAM)(DWORD)MAKELONG(ptTrack.x, ptTrack.y));
     m_hParentWnd = hParentWnd;
 }
 
@@ -205,7 +212,7 @@ void ToolTip::ShowToolTip(WindowBase* pParentWnd,
                           const UiRect& rect, 
                           uint32_t maxWidth,
                           const UiPoint& trackPos,
-                          const DString& text)
+                          const std::string& text)
 {
     m_impl->ShowToolTip(pParentWnd, rect, maxWidth, trackPos, text);
 }

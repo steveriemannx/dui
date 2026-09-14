@@ -21,9 +21,13 @@ option(DUI_BUILD_WEBVIEW2_EXAMPLES "Build the WebView2/WebView2Browser examples 
 # ---- XML mode (original examples) ----
 if(DUI_EXAMPLES_MODE STREQUAL "ALL" OR DUI_EXAMPLES_MODE STREQUAL "XML")
 add_subdirectory(basic)
+# The binding module is optional; this example only exists when it is compiled in.
+if(DUI_MVVM_AVAILABLE)
+    add_subdirectory(Binding)
+endif()
 # CEF is not supported on FreeBSD (no official binary distribution; see src/CMakeLists.txt)
 # nor on MinGW (the MinGW build scripts exclude it)
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW AND DUI_BUILD_CEF_EXAMPLES)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW AND NOT DUI_ENABLE_WAYLAND AND DUI_BUILD_CEF_EXAMPLES)
     add_subdirectory(cef)
     add_subdirectory(CefBrowser)
 endif()

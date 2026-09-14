@@ -9,7 +9,7 @@ The CEF module setup is documented separately in [docs/CEF.md](CEF.md).
 (1) First install python3    
 (2) In the directory where `python.exe` is located, copy `python.exe` and rename the copy to `python3.exe`: so that `python3.exe` is accessible from the command line   
 (3) Verify from the command line: `> python3.exe --version` displays the Python version number     
-2. Install Git For Windows: version 2.44 (other versions work too); git needs to be added to the Path environment variable so that `git.exe` is accessible from the command line    
+2. Install Git For Windows: version 2.44 (other versions work too); git needs to be added to the Path environment variable so that `git.exe` is accessible from the command line. (The build also uses git or `patch` — both ship with Git for Windows — to apply dui's Skia patches, `third_party/skia-patches/`, so git has to be on Path even if you never invoke it yourself.)    
 3. Install Visual Studio; during installation, be sure to also select the correct Windows SDK version   
    It is recommended to install the Windows 11 SDK, because the CEF module depends on the Windows 11 SDK; the Windows 10 SDK will cause CEF-related modules to fail to compile;    
    If you don't use CEF, the Windows 10 SDK is fine
@@ -72,6 +72,24 @@ cmake --build build --target dui_core_tests --config Release
 ctest --test-dir build -C Release --output-on-failure
 ```
 
+`DUI_ENABLE_SANITIZERS=ON` builds the library with AddressSanitizer and
+UndefinedBehaviorSanitizer (development and CI only, never for release):
+
+```bat
+cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug -DDUI_ENABLE_SANITIZERS=ON
+cmake --build build-asan --target dui_core_tests
+ctest --test-dir build-asan --output-on-failure
+```
+
+The flags are added to the `dui` target as PUBLIC compile and link options, so
+the tests and the examples are instrumented along with the library. On MSVC only
+the address half exists (`/fsanitize=address`); the undefined-behavior half needs
+clang-cl. Skia is built by its own gn/ninja rules and is not instrumented, so a
+report that ends inside Skia means the bug is in the interaction rather than in
+Skia itself. Do not install or ship a sanitized build: the flags are part of the
+exported interface, and a sanitized `libdui.a` can only be linked by a sanitized
+binary. `CMakePresets.json` ships matching `sanitize` configure/test presets.
+
 The library install package exports `dui::dui` and `dui::dui_entry`:
 
 ```bat
@@ -111,6 +129,17 @@ On different operating systems, install the required software following the list
 |Debian                   |GNOME (Wayland)|`sudo apt install -y gcc g++ gdb make git ninja-build generate-ninja python3 cmake llvm clang unzip libfontconfig-dev libgl1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libvulkan-dev libxext-dev libxcursor-dev libxi-dev libxrandr-dev libdbus-1-dev libibus-1.0-dev libwayland-dev libxkbcommon-dev`| 
 |Fedora                   |GNOME (Wayland)|`sudo dnf install -y gcc g++ gdb make git ninja-build gn python cmake llvm clang unzip fontconfig-devel mesa-libGL-devel mesa-libGLU-devel mesa-libGLES-devel mesa-libEGL-devel vulkan-devel libXext-devel libXcursor-devel libXi-devel libXrandr-devel dbus-devel ibus-devel wayland-devel libxkbcommon-devel`|
 |OpenSuse                 |KDE (X11)      |`sudo zypper install -y gcc gcc-c++ gdb make git ninja gn python cmake llvm clang unzip fontconfig-devel Mesa-libGL-devel Mesa-libEGL-devel Mesa-libGLESv3-devel glu-devel vulkan-devel libXext-devel libXcursor-devel libXi-devel libXrandr-devel dbus-1-devel ibus-devel`|
+
+dui uses native Linux window backends. X11 is the default for X11 or headless sessions; Wayland is selected automatically when the current session is Wayland. Override the selection explicitly during configuration:
+
+    cmake -S . -B build-x11 -DDUI_ENABLE_WAYLAND=OFF
+    cmake -S . -B build-wayland -DDUI_ENABLE_WAYLAND=ON
+
+The X11 backend requires X11, Freetype, Fontconfig, pthread, and libdl development packages. The Wayland backend additionally requires wayland-client, wayland-egl, wayland-cursor, wayland-protocols, and xkbcommon development packages. FreeBSD uses the same native X11/Wayland backends and the resources/themes/freebsd theme tree is kept in sync with the GNOME theme resources.
+
+**CMake 4.0 or newer is required** (`cmake_minimum_required(VERSION 4.0)` in `CMakeLists.txt`), and the `cmake` packages in the lists above are usually older than that — Ubuntu 24.04 ships 3.28, for example. Install a current one from Kitware (`https://apt.kitware.com`, the `cmake` tarballs on the Kitware GitHub releases page, or `pip install cmake`), then check with `cmake --version` before configuring.
+
+Skia is fetched automatically as upstream `google/skia` at a pinned commit plus the patch set in `third_party/skia-patches/`, so applying it needs **`patch` or `git`** on PATH. `patch` ships with most distributions but is not in every list above; if configure stops with "needs either 'patch' or 'git' on PATH", install `patch` and re-run it.
 
 ### II. Automated build with a script (recommended)
 The script automatically handles downloading and building the relevant source code.    
@@ -166,12 +195,13 @@ Update Homebrew:
 brew update
 ```
 #### Software already included with the system (no installation needed)
-`git make unzip python3`
+`git make unzip python3 patch`
 
 #### Install cmake
 ```
 brew install cmake
 ```
+The project requires **CMake 4.0 or newer**; check with `cmake --version` before configuring.
 #### Install ninja
 ```
 brew install ninja
@@ -214,7 +244,7 @@ The compiled example programs are in the bin directory.
 ## D. Build Process (FreeBSD platform)
 ### I. Prerequisites: Install the required software
 ```
-sudo pkg install git unzip python3 cmake ninja gn llvm fontconfig freetype2
+sudo pkg install git unzip python3 patch cmake ninja gn llvm fontconfig freetype2
 ```
 ### II. Automated build with a script (recommended)
 The script automatically handles downloading and building the relevant source code.    
@@ -249,3 +279,56 @@ chmod +x ./dui/scripts/build_dui_all_in_one.sh
 The compiled example programs are in the bin directory.
 
 Note: CEF (Chromium Embedded Framework) is not supported on the FreeBSD platform.
+
+## E. Continuous integration
+
+`.github/workflows/ci.yml` configures, builds and tests the library on macOS (Debug),
+Linux (Debug) and Windows (Debug, MSVC), plus a macOS job that builds with
+`-DDUI_ENABLE_SANITIZERS=ON` (ASan + UBSan). Each job builds only the `dui` target and
+`dui_core_tests` and then runs `ctest --output-on-failure` — the 55 examples are
+configured but not built, to keep the run short.
+
+The CEF examples are switched off, but CEF itself is switched **on**
+(`-DDUI_ENABLE_CEF=ON -DDUI_BUILD_CEF_EXAMPLES=OFF`). That is not a typo: the library
+compiles the CEFControl code on every platform — `include/dui/dui_config.h` defines
+`DUI_BUILD_FOR_CEF` unconditionally outside Windows, and `src/CMakeLists.txt` always adds
+the CEF distribution's directory to the include path — while only
+`cmake/dui_deps.cmake` downloads that distribution, and it only does so when CEF or the
+CEF examples are enabled. With CEF off, a clean checkout fails on
+`#include "include/cef_app.h"`. Enabling CEF gets the headers; the `libcef_dll_wrapper`
+target it also defines is not a dependency of the library or of the tests, so it is
+configured but never built.
+
+Reproducing a job locally, on macOS or Linux (the presets in `CMakePresets.json` are what
+the workflow uses):
+
+```
+cmake --preset debug -DDUI_ENABLE_CEF=ON -DDUI_BUILD_CEF_EXAMPLES=OFF -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF
+cmake --build --preset debug --target dui dui_core_tests
+ctest --test-dir build-presets/debug --output-on-failure
+```
+
+and for the sanitizer job, `cmake --preset sanitize` instead of `debug`.
+
+Three things dominate the first run, and CI caches the downloads and the Skia build
+output, keyed on the Skia and CEF versions `cmake/dui_deps.cmake` pins:
+
+* the downloads — a 70 MB Skia zip and a ~200-260 MB CEF archive per platform (both kept
+  in `third_party/downloads/`, which is what the cache stores along with the extracted
+  Skia source). The CEF distribution itself (~700 MB extracted, larger on Windows) is
+  deliberately not cached: re-extracting it from the cached archive is cheaper than
+  moving that much through the cache, and the script integrity-checks the archive first;
+* the Skia build — `gn gen` plus `ninja` over the whole Skia `all` target, roughly 900
+  compile steps, run by the `dui_skia` custom target in `<build>/lib/<config>/`, whose
+  output is cached in its own entry (keyed additionally on the build type and on the hash
+  of the dependency cmake files, since those produce Skia's `args.gn`).
+
+`dui`'s own sources are deliberately not cached: compiling them is the point of the job,
+and a caching mistake there would hide exactly the breakage CI exists to find.
+
+The Windows job has never been executed — the project had no reachable Windows machine
+when it was written (see `production.md` §P1). It uses the Visual Studio generator, not
+Ninja, because Debug on MSVC is `/MTd` and Skia is only built as `/MTd` by
+`cmake/dui_deps.cmake`'s `DUI_MULTI_CONFIG` branch, which a single-config generator does
+not take; expect the first run to need fixes.
+

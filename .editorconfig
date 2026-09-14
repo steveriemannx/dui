@@ -1,0 +1,41 @@
+# Editor defaults for dui. Pairs with .clang-format: this covers the files
+# clang-format does not (CMake, XML, scripts), and gives editors that do not
+# read .clang-format the right indentation and line endings.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{c,cc,cpp,cxx,h,hpp,hxx,mm}]
+indent_style = space
+indent_size = 4
+
+[*.{cmake,txt}]
+indent_style = space
+indent_size = 4
+
+[CMakeLists.txt]
+indent_style = space
+indent_size = 4
+
+# XML layouts under resources/ are tab-indented by the authoring tool; leave
+# their indentation alone but keep the rest of the rules.
+[*.xml]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = false
+
+[*.{yml,yaml,json}]
+indent_style = space
+indent_size = 2
+
+[*.sh]
+indent_style = space
+indent_size = 4
+
+[*.md]
+# Markdown uses two trailing spaces as a hard line break.
+trim_trailing_whitespace = false

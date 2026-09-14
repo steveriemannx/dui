@@ -2,4 +2,4 @@
 #include "MainForm.h"
 #include "dui/Utils/UiBuilder.h"
 
-int main() { return ui::Run<MainForm>(DUI_T("XmlPreview")); }
+int main() { return ui::Run<MainForm>("XmlPreview"); }

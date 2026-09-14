@@ -187,28 +187,6 @@ static ::Window FindWindowBelow(Display* display, ::Window window, int rootX, in
     std::vector<::Window> allDisplayWindows;
     GetDisplayOrderedWindows(display, allDisplayWindows);
 
-    //TEST
-    if(0) {
-        std::cout << "allDisplayWindows: " << allDisplayWindows.size() << std::endl;
-        for (::Window windowNum : allDisplayWindows) {
-            XWindowAttributes attrs;
-            if (XGetWindowAttributes(display, windowNum, &attrs)) {
-                std::string windowText = GetWindowTitle(display, windowNum);
-                pid_t targetPid = GetWindowPID(display, windowNum);    
-                std::cout << "Window ID: " << windowNum 
-                            << " | Name: " << (!windowText.empty() ? windowText.c_str() : "N/A") 
-                            << " | PID: " << targetPid ;
-
-                std::cout << " | 坐标: (" << attrs.x << ", " << attrs.y << ")"
-                        << " | 尺寸: " << attrs.width << "x" << attrs.height
-                        << " | 可视状态: " << (attrs.map_state == IsUnmapped ? "未映射" : 
-                                            attrs.map_state == IsUnviewable ? "不可见" : "可见")
-                        << std::endl;
-            }
-        }
-    }
-    //TEST
-
     // Find the position of the target window in the Z order
     int targetIndex = -1;
     for (size_t i = 0; i < allDisplayWindows.size(); ++i) {

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 4.0)
 
 # MSVC runtime library flags are selected by an abstraction.
 set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
@@ -6,14 +6,25 @@ set(CMAKE_POLICY_DEFAULT_CMP0091 NEW)
 # Define the project name and language
 project(ChildWindow CXX)
 
-# dui source root directory
-get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE) 
+# dui source root, and the build entry point (it includes dui_common.cmake itself).
+get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
-# Project source directory
-get_filename_component(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/" ABSOLUTE) 
+# The application owns its target: sources are listed, not globbed.
+# The three ChildWindowPaint_* files are each compiled only on their own platform
+# (they are guarded by DUI_BUILD_FOR_WIN / DUI_BUILD_FOR_MACOS internally), so the
+# list is the same everywhere.
+add_executable(ChildWindow
+    ChildWindowPaint_MacOS.cpp
+    ChildWindowPaint_Native.cpp
+    ChildWindowPaint_Win.cpp
+    MainForm.cpp
+    MyChildWindowEvents.cpp
+    main.cpp
+)
 
-# Include the common implementation
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
+target_link_libraries(ChildWindow PRIVATE dui::app)
 
-
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")
+# Output directory, Windows entry point, the macOS .app bundle and its code signature,
+# and build ordering for the Skia archive and any generated code.
+dui_finalize_app(ChildWindow)

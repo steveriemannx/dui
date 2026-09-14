@@ -9,14 +9,14 @@ TestForm::~TestForm()
 {
 }
 
-DString TestForm::GetSkinFolder()
+std::string TestForm::GetSkinFolder()
 {
-    return DUI_T("controls_round");
+    return "controls_round";
 }
 
-DString TestForm::GetSkinFile()
+std::string TestForm::GetSkinFile()
 {
-    return DUI_T("test.xml");
+    return "test.xml";
 }
 
 void TestForm::OnInitWindow()
@@ -31,14 +31,14 @@ void TestForm::OnInitWindow()
 
 void TestForm::OnTimer()
 {
-    ui::Label* pLabel = ui::Find<ui::Label>(this, DUI_T("progress_text"));
-    std::vector<DString> controlList = {DUI_T("progress11"), DUI_T("progress12"), DUI_T("progress13"), DUI_T("progress14"),
-                                        DUI_T("progress21"), DUI_T("progress22"), DUI_T("progress23"), DUI_T("progress24") };
-    for (const DString& name : controlList) {
+    ui::Label* pLabel = ui::Find<ui::Label>(this, "progress_text");
+    std::vector<std::string> controlList = {"progress11", "progress12", "progress13", "progress14",
+                                        "progress21", "progress22", "progress23", "progress24" };
+    for (const std::string& name : controlList) {
         ui::Progress* pProgress = ui::Find<ui::Progress>(this, name);
         if (pProgress != nullptr) {
             if (pLabel != nullptr) {
-                pLabel->SetText(ui::StringUtil::Printf(DUI_T("%d%%"), (int32_t)m_nProgressValue));                
+                pLabel->SetText(ui::StringUtil::Printf("%d%%", (int32_t)m_nProgressValue));                
             }
             pProgress->SetValue(m_nProgressValue);
         }

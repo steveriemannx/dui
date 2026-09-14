@@ -5,7 +5,7 @@
 
 /**  Windows platform implementation of the tab box
 */
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 class TaskbarTabItem;
 
 class BrowserBox_Windows: public BrowserBox
@@ -27,12 +27,12 @@ public:
 
     /** Control type
     */
-    virtual DString GetType() const override { return DUI_T("BrowserBox_Windows"); }
+    virtual std::string GetType() const override { return "BrowserBox_Windows"; }
 
     /** Initialize the browser box
     * @param [in] url the initial URL
     */
-    virtual void InitBrowserBox(const DString& url);
+    virtual void InitBrowserBox(const std::string& url);
 
     /** Uninitialize the browser box
     */
@@ -49,7 +49,7 @@ public:
 
     /** Title changed (callback thread: UI thread of the main process)
     */
-    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title) override;
+    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const std::string& title) override;
 
      /** Website icon download finished event (callback thread: UI thread of the main process)
     */
@@ -68,6 +68,6 @@ private:
     TaskbarTabItem* m_pTaskBarItem;
 };
 
-#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN)
 
 #endif //EXAMPLES_BROWSER_BOX_WINDOWS_H_

@@ -58,7 +58,6 @@ void SkRasterWindowContext_Windows::resize(int nWidth, int nHeight)
         return;
     }
     const skwindow::DisplayParams* pDisplayParams = getDisplayParams();
-    ASSERT(pDisplayParams != nullptr);
     if (pDisplayParams == nullptr) {
         return;
     }
@@ -78,13 +77,11 @@ void SkRasterWindowContext_Windows::resize(int nWidth, int nHeight)
 
     LPVOID pixels = nullptr;
     HBITMAP hBitmap = CreateHBitmap(nWidth, nHeight, true, &pixels);
-    ASSERT(hBitmap != nullptr);
     if (hBitmap == nullptr) {
         fWidth = 0;
         fHeight = 0;
         return;
     }
-    ASSERT(pixels != nullptr);
     if (pixels == nullptr) {
         ::DeleteObject(hBitmap);
         fWidth = 0;
@@ -94,7 +91,6 @@ void SkRasterWindowContext_Windows::resize(int nWidth, int nHeight)
     m_hBitmap = hBitmap;
     SkImageInfo info = SkImageInfo::Make(nWidth, nHeight, pDisplayParams->colorType(), SkAlphaType::kPremul_SkAlphaType, pDisplayParams->colorSpace());
     m_fBackbufferSurface = SkSurfaces::WrapPixels(info, pixels, sizeof(uint32_t) * nWidth);
-    ASSERT(m_fBackbufferSurface != nullptr);
     if (m_fBackbufferSurface == nullptr) {
         if (m_hBitmap != nullptr) {
             ::DeleteObject(m_hBitmap);
@@ -189,8 +185,7 @@ bool SkRasterWindowContext_Windows::PaintAndSwapBuffers(IRender* pRender, IRende
 
 bool SkRasterWindowContext_Windows::SwapPaintBuffers(HDC hPaintDC, const UiRect& rcPaint, IRender* pRender, uint8_t nLayeredWindowAlpha) const
 {
-    PerformanceStat statPerformance(DUI_T("SkRasterWindowContext_Windows::SwapPaintBuffers"));
-    ASSERT(hPaintDC != nullptr);
+    PerformanceStat statPerformance("SkRasterWindowContext_Windows::SwapPaintBuffers");
     if (hPaintDC == nullptr) {
         return false;
     }
@@ -198,13 +193,11 @@ bool SkRasterWindowContext_Windows::SwapPaintBuffers(HDC hPaintDC, const UiRect&
     if (rcPaint.IsEmpty()) {
         return false;
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return false;
     }
     //The renderer's DC
     HDC hRenderDC = pRender->GetRenderDC(m_hWnd);
-    ASSERT(hRenderDC != nullptr);
     if (hRenderDC == nullptr) {
         return false;
     }

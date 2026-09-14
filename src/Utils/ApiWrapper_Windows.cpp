@@ -749,7 +749,6 @@ static bool CreateIconsFromImageData(const std::vector<uint8_t>& iconFileData,
         }
 
         void* pPixelBits = pBitmap->LockPixelBits();
-        ASSERT(pPixelBits != nullptr);
         if (pPixelBits == nullptr) {
             continue;
         }
@@ -853,7 +852,7 @@ static bool CreateIconsFromImageData(const std::vector<uint8_t>& iconFileData,
 }
 
 bool CreateIconsFromData(const std::vector<uint8_t>& iconFileData,
-                         const DString& imageFilePath,
+                         const std::string& imageFilePath,
                          uint32_t uDpiScaleFactor,
                          HICON* hSmallIcon, HICON* hBigIcon)
 {

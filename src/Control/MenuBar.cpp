@@ -64,7 +64,7 @@ MenuBar::MenuBar(Window* pWindow):
 {
 }
 
-DString MenuBar::GetType() const { return DUI_CTR_MENU_BAR; }
+std::string MenuBar::GetType() const { return DUI_CTR_MENU_BAR; }
 
 void MenuBar::OnInit()
 {
@@ -98,7 +98,7 @@ void MenuBar::AddTopMenuToUI(const TopMenuData& menuData, size_t nInsertItem)
         }
         else {
             //Use the default value
-            pNewItem->SetClass(DUI_T("menu_bar_button"));
+            pNewItem->SetClass("menu_bar_button");
         }
         if (!menuData.m_menuTextButtonAttributes.empty()) {
             pNewItem->ApplyAttributeList(menuData.m_menuTextButtonAttributes.c_str());
@@ -126,12 +126,12 @@ void MenuBar::RemoveTopMenuFromUI(const TopMenuData& menuData)
     }
 }
 
-int32_t MenuBar::AddTopMenu(const DString& menuItemId,
-                            const DString& menuText,
-                            const DString& menuTextId,
-                            const DString& menuXmlPath,
-                            const DString& menuTextButtonClass,
-                            const DString& menuTextButtonAttributes)
+int32_t MenuBar::AddTopMenu(const std::string& menuItemId,
+                            const std::string& menuText,
+                            const std::string& menuTextId,
+                            const std::string& menuXmlPath,
+                            const std::string& menuTextButtonClass,
+                            const std::string& menuTextButtonAttributes)
 {
     return InsertTopMenu((int32_t)m_topMenuList.size(), menuItemId, menuText, menuTextId, menuXmlPath, menuTextButtonClass, menuTextButtonAttributes);
 }
@@ -141,11 +141,11 @@ int32_t MenuBar::AddTopMenu(const MenuBarItem& menuBarItem)
     return InsertTopMenu((int32_t)m_topMenuList.size(), menuBarItem);
 }
 
-int32_t MenuBar::AddTopMenu(const DString& menuItemId,
-                            const DString& menuText,
+int32_t MenuBar::AddTopMenu(const std::string& menuItemId,
+                            const std::string& menuText,
                             const std::function<void(Menu*)>& menuBuilder,
-                            const DString& menuTextButtonClass,
-                            const DString& menuTextButtonAttributes)
+                            const std::string& menuTextButtonClass,
+                            const std::string& menuTextButtonAttributes)
 {
     ASSERT(!(menuText.empty()) && (menuBuilder != nullptr));
     if (menuText.empty() || (menuBuilder == nullptr)) {
@@ -156,7 +156,7 @@ int32_t MenuBar::AddTopMenu(const DString& menuItemId,
     TopMenuData menuData;
     menuData.m_menuItemId = menuItemId;
     menuData.m_menuText = menuText;
-    menuData.m_menuXmlPath = DUI_T("");
+    menuData.m_menuXmlPath = "";
     menuData.m_menuTextButtonClass = menuTextButtonClass;
     menuData.m_menuTextButtonAttributes = menuTextButtonAttributes;
     menuData.m_menuBuilder = menuBuilder;
@@ -183,14 +183,13 @@ int32_t MenuBar::InsertTopMenu(int32_t nMenuIndex, const MenuBarItem& menuBarIte
 }
 
 int32_t MenuBar::InsertTopMenu(int32_t nMenuIndex,
-                               const DString& menuItemId,
-                               const DString& menuText,
-                               const DString& menuTextId,
-                               const DString& menuXmlPath,
-                               const DString& menuTextButtonClass,
-                               const DString& menuTextButtonAttributes)
+                               const std::string& menuItemId,
+                               const std::string& menuText,
+                               const std::string& menuTextId,
+                               const std::string& menuXmlPath,
+                               const std::string& menuTextButtonClass,
+                               const std::string& menuTextButtonAttributes)
 {
-    ASSERT(!(menuText.empty() && menuTextId.empty()) && !menuXmlPath.empty());
     if ((menuText.empty() && menuTextId.empty()) || menuXmlPath.empty()) {
         return -1;
     }
@@ -373,12 +372,10 @@ void MenuBar::OnMenuMouseButtonUp(MenuBarButton* /*pButton*/, const EventArgs& /
 
 void MenuBar::ShowPopupMenu(MenuBarButton* pButton)
 {
-    ASSERT(pButton != nullptr);
     if (pButton == nullptr) {
         return;
     }
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return;
     }
@@ -391,7 +388,6 @@ void MenuBar::ShowPopupMenu(MenuBarButton* pButton)
             topMenuData = menuData;
         }
     }
-    ASSERT(bFoundMenu);
     if (!bFoundMenu) {
         return;
     }
@@ -413,7 +409,7 @@ void MenuBar::ShowPopupMenu(MenuBarButton* pButton)
 
     if (topMenuData.m_menuBuilder) {
         //Pure-code mode: no XML template, menu items are added by the callback function
-        pMenu->ShowMenu(DUI_T(""), point);
+        pMenu->ShowMenu("", point);
         topMenuData.m_menuBuilder(pMenu);
     }
     else {
@@ -424,14 +420,14 @@ void MenuBar::ShowPopupMenu(MenuBarButton* pButton)
 
     std::weak_ptr<WeakFlag> menuBarFlag = GetWeakFlag();
     //Menu command event response
-    DString menuItemId = topMenuData.m_menuItemId.c_str();
-    MenuItemActivatedEvent callback = [this, menuBarFlag, menuItemId](const DString& menuName, int32_t nMenuLevel,
-                                                                      const DString& itemName, size_t nItemIndex) {
+    std::string menuItemId = topMenuData.m_menuItemId.c_str();
+    MenuItemActivatedEvent callback = [this, menuBarFlag, menuItemId](const std::string& menuName, int32_t nMenuLevel,
+                                                                      const std::string& itemName, size_t nItemIndex) {
             //Menu command activated, notify the application layer
             if (!menuBarFlag.expired()) {
-                DString activeMenuName = menuName;
+                std::string activeMenuName = menuName;
                 int32_t activeMenuLevel = nMenuLevel;
-                DString activeItemName = itemName;
+                std::string activeItemName = itemName;
                 size_t activeItemIndex = nItemIndex;
                 std::vector<MenuBarItemActivatedEvent> callbackList(m_callbackList);
                 for (MenuBarItemActivatedEvent callback : callbackList) {

@@ -3,7 +3,7 @@
 #include "dui/Core/ControlPtrT.h"
 #include "dui/Core/GlobalManager.h"
 #include "dui/Core/WindowBuilder.h"
-#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Core/NativeWindow_Wayland.h"
 #include "dui/Control/Label.h"
 
 #ifdef DUI_BUILD_FOR_WAYLAND
@@ -15,12 +15,12 @@ class ToolTipWindow: public Window
 public:
     ToolTipWindow()
     {
-        InitSkin(DUI_T("public/tooltip/"), DUI_T("tooltip.xml"));
+        InitSkin("public/tooltip/", "tooltip.xml");
     }
 
     virtual void OnInitWindow() override
     {
-        m_pToolTipText = dynamic_cast<Label*>(FindControl(DUI_T("tooltip_text")));
+        m_pToolTipText = dynamic_cast<Label*>(FindControl("tooltip_text"));
         if (!m_text.empty() && (m_pToolTipText != nullptr)) {
             m_pToolTipText->SetText(m_text);
         }
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    void SetToolTipText(const DString& text)
+    void SetToolTipText(const std::string& text)
     {
         m_text = text;
         if (m_pToolTipText != nullptr) {
@@ -47,7 +47,7 @@ public:
 
 private:
     ControlPtrT<Label> m_pToolTipText;
-    DString m_text;
+    std::string m_text;
     int32_t m_nMaxWidth = INT32_MAX;
 };
 
@@ -59,7 +59,7 @@ public:
 
     void SetMouseTracking(WindowBase* pParentWnd, bool bTracking);
     void ShowToolTip(WindowBase* pParentWnd, const UiRect& rect, uint32_t maxWidth,
-                     const UiPoint& trackPos, const DString& text);
+                     const UiPoint& trackPos, const std::string& text);
     void HideToolTip();
     void ClearMouseTracking();
     void DestroyToolTip();
@@ -97,7 +97,6 @@ void ToolTip::TImpl::StopHoverTimer()
 
 void ToolTip::TImpl::SetMouseTracking(WindowBase* pParentWnd, bool bTracking)
 {
-    ASSERT(pParentWnd != nullptr);
     if (pParentWnd == nullptr) {
         return;
     }
@@ -106,7 +105,7 @@ void ToolTip::TImpl::SetMouseTracking(WindowBase* pParentWnd, bool bTracking)
         ControlPtrT<WindowBase> spParentWnd(pParentWnd);
         auto hoverCallback = [this, pParentWnd]() {
             if (pParentWnd != nullptr) {
-                pParentWnd->PostMsg(NativeWindow_SDL::GetHoverMsgId());
+                pParentWnd->PostMsg(NativeWindow_Wayland::GetHoverMsgId());
                 m_nTimerId = 0;
                 m_bMouseTracking = false;
                 m_hoverFlag.reset();
@@ -122,7 +121,7 @@ void ToolTip::TImpl::SetMouseTracking(WindowBase* pParentWnd, bool bTracking)
 }
 
 void ToolTip::TImpl::ShowToolTip(WindowBase* pParentWnd, const UiRect& rect, uint32_t maxWidth,
-                                  const UiPoint& trackPos, const DString& text)
+                                  const UiPoint& trackPos, const std::string& text)
 {
     (void)trackPos;
     if (text.empty()) {
@@ -133,7 +132,7 @@ void ToolTip::TImpl::ShowToolTip(WindowBase* pParentWnd, const UiRect& rect, uin
         m_pTooltipWnd = new ToolTipWindow;
         WindowCreateParam createParam;
         
-        createParam.m_className = DUI_T("tooltip");
+        createParam.m_className = "tooltip";
         m_pTooltipWnd->CreateWnd(pParentWnd, createParam);
     }
     if (m_pTooltipWnd != nullptr) {
@@ -187,7 +186,7 @@ void ToolTip::SetMouseTracking(WindowBase* pParentWnd, bool bTracking)
 }
 
 void ToolTip::ShowToolTip(WindowBase* pParentWnd, const UiRect& rect, uint32_t maxWidth,
-                          const UiPoint& trackPos, const DString& text)
+                          const UiPoint& trackPos, const std::string& text)
 {
     m_impl->ShowToolTip(pParentWnd, rect, maxWidth, trackPos, text);
 }

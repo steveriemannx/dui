@@ -10,7 +10,7 @@ This example will guide you through quickly deploying a basic application based 
 git clone https://github.com/steveriemannx/dui dui
 ```
 
-2. Note on dependencies: the dependencies (Skia rendering engine, SDL3, etc.) are vendored in the `third_party` directory and are downloaded/built automatically by the build scripts — no separate manual preparation is needed.
+2. Note on dependencies: the Skia rendering engine is downloaded/built automatically by the build scripts — no separate manual preparation is needed.
 3. In the working directory, the basic directory structure of the source code of the projects is as follows    
 
 <img src="./Images/vs00.png"/>
@@ -61,7 +61,7 @@ Create the file `main.cpp` with the following content (create the `MainForm` cla
 class App : public ui::FrameworkThread
 {
 public:
-    App() : FrameworkThread(_T("App"), ui::kThreadUI) {}
+    App() : FrameworkThread(DUI_T("App"), ui::kThreadUI) {}
 
     void Run() { RunMessageLoop(); }
 
@@ -70,12 +70,12 @@ private:
     {
         // initialize global resources, using a local folder as the resource
         ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-        resourcePath += _T("resources\\");
+        resourcePath += DUI_T("resources\\");
         ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
         // create a default centered window with a shadow
         MainForm* window = new MainForm();
-        window->CreateWnd(nullptr, ui::WindowCreateParam(_T("MyDuiApp"), true));
+        window->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("MyDuiApp"), true));
         window->PostQuitMsgWhenClosed(true);
         window->ShowWindow(ui::kSW_SHOW_NORMAL);
     }
@@ -148,12 +148,12 @@ MainForm::~MainForm()
 
 DString MainForm::GetSkinFolder()
 {
-    return _T("my_dui_app");
+    return DUI_T("my_dui_app");
 }
 
 DString MainForm::GetSkinFile()
 {
-    return _T("MyDuiForm.xml");
+    return DUI_T("MyDuiForm.xml");
 }
 
 void MainForm::OnInitWindow()

@@ -18,7 +18,7 @@ public:
     virtual ~FullscreenBox() override;
 
     //The control type
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
 public:
     /** Enter control fullscreen
@@ -26,13 +26,13 @@ public:
     * @param [in] pFullscreenControl The interface of the control to be fullscreen
     * @param [in] exitButtonClass The Class name of the exit fullscreen button; if empty, the exit fullscreen button is not shown
     */
-    bool EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenControl, const DString& exitButtonClass);
+    bool EnterControlFullscreen(Box* pOldRoot, Control* pFullscreenControl, const std::string& exitButtonClass);
 
     /** Update the fullscreen control (when already in the control fullscreen state)
     * @param [in] pFullscreenControl The interface of the control to be fullscreen
     * @param [in] exitButtonClass The Class name of the exit fullscreen button; if empty, the exit fullscreen button is not shown
     */
-    bool UpdateControlFullscreen(Control* pFullscreenControl, const DString& exitButtonClass);
+    bool UpdateControlFullscreen(Control* pFullscreenControl, const std::string& exitButtonClass);
 
     /** Exit control fullscreen
     */
@@ -71,7 +71,7 @@ private:
 
     /** Update the "exit fullscreen" button
     */
-    void UpdateExitFullscreenBtn(const DString& exitButtonClass);
+    void UpdateExitFullscreenBtn(const std::string& exitButtonClass);
 
 private:
     /** The original Root container
@@ -102,7 +102,7 @@ private:
 
     /** The Class attribute of the exit fullscreen button
     */
-    DString m_exitButtonClass;
+    std::string m_exitButtonClass;
 
 private:
     /** The original state of the window was maximized

@@ -73,7 +73,7 @@ ListCtrl::~ListCtrl()
     }
 }
 
-DString ListCtrl::GetType() const { return DUI_CTR_LISTCTRL; }
+std::string ListCtrl::GetType() const { return DUI_CTR_LISTCTRL; }
 
 void ListCtrl::SetImageList(ListCtrlType type, const ImageListPtr& spImageList)
 {
@@ -107,110 +107,110 @@ ImageListPtr ListCtrl::GetImageList(ListCtrlType type) const
     }
 }
 
-void ListCtrl::SetAttribute(const DString& strName, const DString& strValue)
+void ListCtrl::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("header_class")) {
+    if (strName == "header_class") {
         SetHeaderClass(strValue);
     }
-    else if (strName == DUI_T("header_item_class")) {
+    else if (strName == "header_item_class") {
         SetHeaderItemClass(strValue);
     }
-    else if (strName == DUI_T("header_split_box_class")) {
+    else if (strName == "header_split_box_class") {
         SetHeaderSplitBoxClass(strValue);
     }
-    else if (strName == DUI_T("header_split_control_class")) {
+    else if (strName == "header_split_control_class") {
         SetHeaderSplitControlClass(strValue);
     }
-    else if (strName == DUI_T("enable_header_drag_order")) {
-        SetEnableHeaderDragOrder(strValue == DUI_T("true"));
+    else if (strName == "enable_header_drag_order") {
+        SetEnableHeaderDragOrder(strValue == "true");
     }
-    else if (strName == DUI_T("check_box_class")) {
+    else if (strName == "check_box_class") {
         SetCheckBoxClass(strValue);
     }
-    else if (strName == DUI_T("data_item_class")) {
+    else if (strName == "data_item_class") {
         SetDataItemClass(strValue);
     }
-    else if (strName == DUI_T("data_sub_item_class")) {
+    else if (strName == "data_sub_item_class") {
         SetDataSubItemClass(strValue);
     }
-    else if (strName == DUI_T("row_grid_line_width")) {
+    else if (strName == "row_grid_line_width") {
         SetRowGridLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("row_grid_line_color")) {
+    else if (strName == "row_grid_line_color") {
         SetRowGridLineColor(strValue);
     }
-    else if (strName == DUI_T("column_grid_line_width")) {
+    else if (strName == "column_grid_line_width") {
         SetColumnGridLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("column_grid_line_color")) {
+    else if (strName == "column_grid_line_color") {
         SetColumnGridLineColor(strValue);
     }
-    else if (strName == DUI_T("report_view_class")) {
+    else if (strName == "report_view_class") {
         SetReportViewClass(strValue);
     }
-    else if (strName == DUI_T("header_height")) {
+    else if (strName == "header_height") {
         SetHeaderHeight(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("data_item_height")) {
+    else if (strName == "data_item_height") {
         SetDataItemHeight(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("show_header")) {
-        SetHeaderVisible(strValue == DUI_T("true"));
+    else if (strName == "show_header") {
+        SetHeaderVisible(strValue == "true");
     }
-    else if (strName == DUI_T("multi_select")) {
-        SetMultiSelect(strValue == DUI_T("true"));
+    else if (strName == "multi_select") {
+        SetMultiSelect(strValue == "true");
     }
-    else if (strName == DUI_T("enable_column_width_auto")) {
-        SetEnableColumnWidthAuto(strValue == DUI_T("true"));
+    else if (strName == "enable_column_width_auto") {
+        SetEnableColumnWidthAuto(strValue == "true");
     }
-    else if (strName == DUI_T("auto_check_select")) {
-        SetAutoCheckSelect(strValue == DUI_T("true"));
+    else if (strName == "auto_check_select") {
+        SetAutoCheckSelect(strValue == "true");
     }
-    else if (strName == DUI_T("show_header_checkbox")) {
-        SetHeaderShowCheckBox(strValue == DUI_T("true"));
+    else if (strName == "show_header_checkbox") {
+        SetHeaderShowCheckBox(strValue == "true");
     }
-    else if (strName == DUI_T("show_data_item_checkbox")) {
-        SetDataItemShowCheckBox(strValue == DUI_T("true"));
+    else if (strName == "show_data_item_checkbox") {
+        SetDataItemShowCheckBox(strValue == "true");
     }
-    else if (strName == DUI_T("type")) {
-        if (strValue == DUI_T("report")) {
+    else if (strName == "type") {
+        if (strValue == "report") {
             SetListCtrlType(ListCtrlType::Report);
         }
-        else if (strValue == DUI_T("icon")) {
+        else if (strValue == "icon") {
             SetListCtrlType(ListCtrlType::Icon);
         }
-        else if (strValue == DUI_T("list")) {
+        else if (strValue == "list") {
             SetListCtrlType(ListCtrlType::List);
         }
     }
-    else if (strName == DUI_T("icon_view_class")) {
+    else if (strName == "icon_view_class") {
         SetIconViewClass(strValue);
     }
-    else if (strName == DUI_T("icon_view_item_class")) {
+    else if (strName == "icon_view_item_class") {
         SetIconViewItemClass(strValue);
     }
-    else if (strName == DUI_T("icon_view_item_image_class")) {
+    else if (strName == "icon_view_item_image_class") {
         SetIconViewItemImageClass(strValue);
     }
-    else if (strName == DUI_T("icon_view_item_label_class")) {
+    else if (strName == "icon_view_item_label_class") {
         SetIconViewItemLabelClass(strValue);
     }
-    else if (strName == DUI_T("list_view_class")) {
+    else if (strName == "list_view_class") {
         SetListViewClass(strValue);
     }
-    else if (strName == DUI_T("list_view_item_class")) {
+    else if (strName == "list_view_item_class") {
         SetListViewItemClass(strValue);
     }
-    else if (strName == DUI_T("list_view_item_image_class")) {
+    else if (strName == "list_view_item_image_class") {
         SetListViewItemImageClass(strValue);
     }
-    else if (strName == DUI_T("list_view_item_label_class")) {
+    else if (strName == "list_view_item_label_class") {
         SetListViewItemLabelClass(strValue);
     }
-    else if (strName == DUI_T("enable_item_edit")) {
-        SetEnableItemEdit(strValue == DUI_T("true"));
+    else if (strName == "enable_item_edit") {
+        SetEnableItemEdit(strValue == "true");
     }
-    else if (strName == DUI_T("list_ctrl_richedit_class")) {
+    else if (strName == "list_ctrl_richedit_class") {
         SetRichEditClass(strValue);
     }
     else {
@@ -327,7 +327,6 @@ void ListCtrl::OnInit()
 
 void ListCtrl::InitReportView()
 {
-    ASSERT(m_pReportView != nullptr);
     if (m_pReportView == nullptr) {
         return;
     }
@@ -405,7 +404,6 @@ void ListCtrl::InitReportView()
 
 void ListCtrl::InitIconView()
 {
-    ASSERT(m_pIconView != nullptr);
     if (m_pIconView == nullptr) {
         return;
     }
@@ -477,7 +475,6 @@ void ListCtrl::InitIconView()
 
 void ListCtrl::InitListView()
 {
-    ASSERT(m_pListView != nullptr);
     if (m_pListView == nullptr) {
         return;
     }
@@ -735,7 +732,7 @@ ListCtrlListView* ListCtrl::GetListView() const
     return m_pListView;
 }
 
-void ListCtrl::SetHeaderClass(const DString& className)
+void ListCtrl::SetHeaderClass(const std::string& className)
 {
     m_headerClass = className;
     if (IsInited() && (m_pHeaderCtrl != nullptr)) {
@@ -743,47 +740,47 @@ void ListCtrl::SetHeaderClass(const DString& className)
     }
 }
 
-void ListCtrl::SetHeaderItemClass(const DString& className)
+void ListCtrl::SetHeaderItemClass(const std::string& className)
 {
     m_headerItemClass = className;
 }
 
-DString ListCtrl::GetHeaderItemClass() const
+std::string ListCtrl::GetHeaderItemClass() const
 {
     return m_headerItemClass.c_str();
 }
 
-void ListCtrl::SetHeaderSplitBoxClass(const DString& className)
+void ListCtrl::SetHeaderSplitBoxClass(const std::string& className)
 {
     m_headerSplitBoxClass = className;
 }
 
-DString ListCtrl::GetHeaderSplitBoxClass() const
+std::string ListCtrl::GetHeaderSplitBoxClass() const
 {
     return m_headerSplitBoxClass.c_str();
 }
 
-void ListCtrl::SetHeaderSplitControlClass(const DString& className)
+void ListCtrl::SetHeaderSplitControlClass(const std::string& className)
 {
     m_headerSplitControlClass = className;
 }
 
-DString ListCtrl::GetHeaderSplitControlClass() const
+std::string ListCtrl::GetHeaderSplitControlClass() const
 {
     return m_headerSplitControlClass.c_str();
 }
 
-void ListCtrl::SetCheckBoxClass(const DString& className)
+void ListCtrl::SetCheckBoxClass(const std::string& className)
 {
     m_checkBoxClass = className;
 }
 
-DString ListCtrl::GetCheckBoxClass() const
+std::string ListCtrl::GetCheckBoxClass() const
 {
     return m_checkBoxClass.c_str();
 }
 
-void ListCtrl::SetReportViewClass(const DString& className)
+void ListCtrl::SetReportViewClass(const std::string& className)
 {
     m_reportViewClass = className;
     if (IsInited() && (m_pReportView != nullptr)) {
@@ -791,22 +788,22 @@ void ListCtrl::SetReportViewClass(const DString& className)
     }
 }
 
-DString ListCtrl::GetReportViewClass() const
+std::string ListCtrl::GetReportViewClass() const
 {
     return m_reportViewClass.c_str();
 }
 
-void ListCtrl::SetDataItemClass(const DString& className)
+void ListCtrl::SetDataItemClass(const std::string& className)
 {
     m_dataItemClass = className;
 }
 
-DString ListCtrl::GetDataItemClass() const
+std::string ListCtrl::GetDataItemClass() const
 {
     return m_dataItemClass.c_str();
 }
 
-void ListCtrl::SetDataSubItemClass(const DString& className)
+void ListCtrl::SetDataSubItemClass(const std::string& className)
 {
     m_dataSubItemClass = className;
     if (IsInited() && !className.empty()) {
@@ -816,12 +813,12 @@ void ListCtrl::SetDataSubItemClass(const DString& className)
     }
 }
 
-DString ListCtrl::GetDataSubItemClass() const
+std::string ListCtrl::GetDataSubItemClass() const
 {
     return m_dataSubItemClass.c_str();
 }
 
-void ListCtrl::SetIconViewClass(const DString& className)
+void ListCtrl::SetIconViewClass(const std::string& className)
 {
     m_iconViewClass = className;
     if (IsInited() && (m_pIconView != nullptr)) {
@@ -829,42 +826,42 @@ void ListCtrl::SetIconViewClass(const DString& className)
     }
 }
 
-DString ListCtrl::GetIconViewClass() const
+std::string ListCtrl::GetIconViewClass() const
 {
     return m_iconViewClass.c_str();
 }
 
-void ListCtrl::SetIconViewItemClass(const DString& className)
+void ListCtrl::SetIconViewItemClass(const std::string& className)
 {
     m_iconViewItemClass = className;
 }
 
-DString ListCtrl::GetIconViewItemClass() const
+std::string ListCtrl::GetIconViewItemClass() const
 {
     return m_iconViewItemClass.c_str();
 }
 
-void ListCtrl::SetIconViewItemImageClass(const DString& className)
+void ListCtrl::SetIconViewItemImageClass(const std::string& className)
 {
     m_iconViewItemImageClass = className;
 }
 
-DString ListCtrl::GetIconViewItemImageClass() const
+std::string ListCtrl::GetIconViewItemImageClass() const
 {
     return m_iconViewItemImageClass.c_str();
 }
 
-void ListCtrl::SetIconViewItemLabelClass(const DString& className)
+void ListCtrl::SetIconViewItemLabelClass(const std::string& className)
 {
     m_iconViewItemLabelClass = className;
 }
 
-DString ListCtrl::GetIconViewItemLabelClass() const
+std::string ListCtrl::GetIconViewItemLabelClass() const
 {
     return m_iconViewItemLabelClass.c_str();
 }
 
-void ListCtrl::SetListViewClass(const DString& className)
+void ListCtrl::SetListViewClass(const std::string& className)
 {
     m_listViewClass = className;
     if (IsInited() && (m_pListView != nullptr)) {
@@ -872,42 +869,42 @@ void ListCtrl::SetListViewClass(const DString& className)
     }
 }
 
-DString ListCtrl::GetListViewClass() const
+std::string ListCtrl::GetListViewClass() const
 {
     return m_listViewClass.c_str();
 }
 
-void ListCtrl::SetListViewItemClass(const DString& className)
+void ListCtrl::SetListViewItemClass(const std::string& className)
 {
     m_listViewItemClass = className;
 }
 
-DString ListCtrl::GetListViewItemClass() const
+std::string ListCtrl::GetListViewItemClass() const
 {
     return m_listViewItemClass.c_str();
 }
 
-void ListCtrl::SetListViewItemImageClass(const DString& className)
+void ListCtrl::SetListViewItemImageClass(const std::string& className)
 {
     m_listViewItemImageClass = className;
 }
 
-DString ListCtrl::GetListViewItemImageClass() const
+std::string ListCtrl::GetListViewItemImageClass() const
 {
     return m_listViewItemImageClass.c_str();
 }
 
-void ListCtrl::SetListViewItemLabelClass(const DString& className)
+void ListCtrl::SetListViewItemLabelClass(const std::string& className)
 {
     m_listViewItemLabelClass = className;
 }
 
-DString ListCtrl::GetListViewItemLabelClass() const
+std::string ListCtrl::GetListViewItemLabelClass() const
 {
     return m_listViewItemLabelClass.c_str();
 }
 
-void ListCtrl::SetRichEditClass(const DString& richEditClass)
+void ListCtrl::SetRichEditClass(const std::string& richEditClass)
 {
     if (m_listCtrlRichEditClass != richEditClass) {
         m_listCtrlRichEditClass = richEditClass;
@@ -932,7 +929,7 @@ RichEdit* ListCtrl::GetRichEdit() const
     return m_pRichEdit;
 }
 
-DString ListCtrl::GetRichEditClass() const
+std::string ListCtrl::GetRichEditClass() const
 {
     return m_listCtrlRichEditClass.c_str();
 }
@@ -947,12 +944,12 @@ int32_t ListCtrl::GetRowGridLineWidth() const
     return m_pReportView->GetRowGridLineWidth();
 }
 
-void ListCtrl::SetRowGridLineColor(const DString& color)
+void ListCtrl::SetRowGridLineColor(const std::string& color)
 {
     m_pReportView->SetRowGridLineColor(color);
 }
 
-DString ListCtrl::GetRowGridLineColor() const
+std::string ListCtrl::GetRowGridLineColor() const
 {
     return m_pReportView->GetRowGridLineColor();
 }
@@ -967,12 +964,12 @@ int32_t ListCtrl::GetColumnGridLineWidth() const
     return m_pReportView->GetColumnGridLineWidth();
 }
 
-void ListCtrl::SetColumnGridLineColor(const DString& color)
+void ListCtrl::SetColumnGridLineColor(const std::string& color)
 {
     m_pReportView->SetColumnGridLineColor(color);
 }
 
-DString ListCtrl::GetColumnGridLineColor() const
+std::string ListCtrl::GetColumnGridLineColor() const
 {
     return m_pReportView->GetColumnGridLineColor();
 }
@@ -989,7 +986,6 @@ bool ListCtrl::IsEnableColumnWidthAuto() const
 
 ListCtrlHeaderItem* ListCtrl::InsertColumn(int32_t columnIndex, const ListCtrlColumn& columnInfo)
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return nullptr;
     }
@@ -1000,7 +996,6 @@ ListCtrlHeaderItem* ListCtrl::InsertColumn(int32_t columnIndex, const ListCtrlCo
 
 size_t ListCtrl::GetColumnCount() const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return 0;
     }
@@ -1011,7 +1006,6 @@ size_t ListCtrl::GetColumnCount() const
 
 int32_t ListCtrl::GetColumnWidth(size_t columnIndex) const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return 0;
     }
@@ -1167,7 +1161,6 @@ bool ListCtrl::SetColumnWidth(const std::vector<UiFixedInt>& columnWidthList, bo
 
 ListCtrlHeaderItem* ListCtrl::GetColumn(size_t columnIndex) const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return nullptr;
     }
@@ -1178,7 +1171,6 @@ ListCtrlHeaderItem* ListCtrl::GetColumn(size_t columnIndex) const
 
 ListCtrlHeaderItem* ListCtrl::GetColumnById(size_t columnId) const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return nullptr;
     }
@@ -1189,7 +1181,6 @@ ListCtrlHeaderItem* ListCtrl::GetColumnById(size_t columnId) const
 
 size_t ListCtrl::GetColumnIndex(size_t columnId) const
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return Box::InvalidIndex;
     }
@@ -1215,7 +1206,6 @@ bool ListCtrl::IsValidColumnId(size_t columnId) const
 
 bool ListCtrl::DeleteColumn(size_t columnIndex)
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return false;
     }
@@ -1226,7 +1216,6 @@ bool ListCtrl::DeleteColumn(size_t columnIndex)
 
 bool ListCtrl::DeleteColumnById(size_t columnId)
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return false;
     }
@@ -1515,7 +1504,6 @@ bool ListCtrl::SortDataItems(size_t columnIndex, bool bSortedUp, uint8_t nSortFl
                              void* pUserData)
 {
     size_t nColumnId = GetColumnId(columnIndex);
-    ASSERT(nColumnId != Box::InvalidIndex);
     if (nColumnId == Box::InvalidIndex) {
         return false;
     }
@@ -1526,7 +1514,6 @@ bool ListCtrl::SortDataItemsById(size_t columnId, bool bSortedUp, uint8_t nSortF
                                  ListCtrlDataCompareFunc pfnCompareFunc, void* pUserData)
 {
     size_t columnIndex = GetColumnIndex(columnId);
-    ASSERT(columnIndex != Box::InvalidIndex);
     if (columnIndex == Box::InvalidIndex) {
         return false;
     }
@@ -1611,7 +1598,6 @@ void ListCtrl::OnHeaderColumnSplitDoubleClick(ListCtrlHeaderItem* pHeaderItem)
 
 void ListCtrl::UpdateHeaderColumnCheckBox(size_t nColumnId)
 {
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return;
     }
@@ -1652,7 +1638,6 @@ void ListCtrl::UpdateHeaderCheckBox()
         return;
     }
 
-    ASSERT(m_pHeaderCtrl != nullptr);
     if (m_pHeaderCtrl == nullptr) {
         return;
     }
@@ -1693,7 +1678,6 @@ bool ListCtrl::SetDataItemCount(size_t itemCount)
 size_t ListCtrl::AddDataItem(const ListCtrlSubItemData& dataItem)
 {
     size_t columnId = GetColumnId(0);
-    ASSERT(columnId != Box::InvalidIndex);
     if (columnId == Box::InvalidIndex) {
         return Box::InvalidIndex;
     }
@@ -1708,7 +1692,6 @@ size_t ListCtrl::AddDataItem(const ListCtrlSubItemData& dataItem)
 bool ListCtrl::InsertDataItem(size_t itemIndex, const ListCtrlSubItemData& dataItem)
 {
     size_t columnId = GetColumnId(0);
-    ASSERT(columnId != Box::InvalidIndex);
     if (columnId == Box::InvalidIndex) {
         return Box::InvalidIndex;
     }
@@ -1876,22 +1859,22 @@ int32_t ListCtrl::GetDataItemHeight(size_t itemIndex) const
     return m_pData->GetDataItemHeight(itemIndex);
 }
 
-bool ListCtrl::SetSubItemText(size_t itemIndex, size_t columnIndex, const DString& text)
+bool ListCtrl::SetSubItemText(size_t itemIndex, size_t columnIndex, const std::string& text)
 {
     return SetSubItemTextById(itemIndex, GetColumnId(columnIndex), text);
 }
 
-bool ListCtrl::SetSubItemTextById(size_t itemIndex, size_t columnId, const DString& text)
+bool ListCtrl::SetSubItemTextById(size_t itemIndex, size_t columnId, const std::string& text)
 {
     return m_pData->SetSubItemText(itemIndex, columnId, text);
 }
 
-DString ListCtrl::GetSubItemText(size_t itemIndex, size_t columnIndex) const
+std::string ListCtrl::GetSubItemText(size_t itemIndex, size_t columnIndex) const
 {
     return GetSubItemTextById(itemIndex, GetColumnId(columnIndex));
 }
 
-DString ListCtrl::GetSubItemTextById(size_t itemIndex, size_t columnId) const
+std::string ListCtrl::GetSubItemTextById(size_t itemIndex, size_t columnId) const
 {
     return m_pData->GetSubItemText(itemIndex, columnId);
 }
@@ -1936,22 +1919,22 @@ uint64_t ListCtrl::GetSubItemUserDataNById(size_t itemIndex, size_t columnId) co
     return m_pData->GetSubItemUserDataN(itemIndex, columnId);
 }
 
-bool ListCtrl::SetSubItemUserDataS(size_t itemIndex, size_t columnIndex, const DString& userDataS)
+bool ListCtrl::SetSubItemUserDataS(size_t itemIndex, size_t columnIndex, const std::string& userDataS)
 {
     return SetSubItemUserDataSById(itemIndex, GetColumnId(columnIndex), userDataS);
 }
 
-bool ListCtrl::SetSubItemUserDataSById(size_t itemIndex, size_t columnId, const DString& userDataS)
+bool ListCtrl::SetSubItemUserDataSById(size_t itemIndex, size_t columnId, const std::string& userDataS)
 {
     return m_pData->SetSubItemUserDataS(itemIndex, columnId, userDataS);
 }
 
-DString ListCtrl::GetSubItemUserDataS(size_t itemIndex, size_t columnIndex) const
+std::string ListCtrl::GetSubItemUserDataS(size_t itemIndex, size_t columnIndex) const
 {
     return GetSubItemUserDataSById(itemIndex, GetColumnId(columnIndex));
 }
 
-DString ListCtrl::GetSubItemUserDataSById(size_t itemIndex, size_t columnId) const
+std::string ListCtrl::GetSubItemUserDataSById(size_t itemIndex, size_t columnId) const
 {
     return m_pData->GetSubItemUserDataS(itemIndex, columnId);
 }
@@ -2421,8 +2404,7 @@ void ListCtrl::OnItemEnterEditMode(size_t itemIndex, size_t nColumnId,
         return;
     }
 
-    DString editClass = GetRichEditClass();
-    ASSERT(!editClass.empty());
+    std::string editClass = GetRichEditClass();
     if (editClass.empty()) {
         return;
     }
@@ -2446,11 +2428,9 @@ bool ListCtrl::IsValidItemEditState(const ListCtrlEditParam& editParam) const
     if (editParam.listCtrlType == ListCtrlType::Icon) {
         //Icon view
         ListCtrlIconViewItem* pItem = dynamic_cast<ListCtrlIconViewItem*>(editParam.pItem);
-        ASSERT((pItem != nullptr) && pItem->IsVisible() && pItem->IsSelected() && pItem->IsFocused());
         if ((pItem == nullptr) || !pItem->IsVisible() || !pItem->IsSelected() || !pItem->IsFocused()) {
             return false;
         }
-        ASSERT(m_pIconView != nullptr);
         if (m_pIconView == nullptr) {
             return false;
         }
@@ -2458,11 +2438,9 @@ bool ListCtrl::IsValidItemEditState(const ListCtrlEditParam& editParam) const
     else if (editParam.listCtrlType == ListCtrlType::List) {
         //List view
         ListCtrlListViewItem* pItem = dynamic_cast<ListCtrlListViewItem*>(editParam.pItem);
-        ASSERT((pItem != nullptr) && pItem->IsVisible() && pItem->IsSelected() && pItem->IsFocused());
         if ((pItem == nullptr) || !pItem->IsVisible() || !pItem->IsSelected() || !pItem->IsFocused()) {
             return false;
         }
-        ASSERT(m_pListView != nullptr);
         if (m_pListView == nullptr) {
             return false;
         }
@@ -2470,11 +2448,9 @@ bool ListCtrl::IsValidItemEditState(const ListCtrlEditParam& editParam) const
     else {
         //Report view
         ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(editParam.pItem);
-        ASSERT((pItem != nullptr) && pItem->IsVisible() && pItem->IsSelected() && pItem->IsFocused());
         if ((pItem == nullptr) || !pItem->IsVisible() || !pItem->IsSelected() || !pItem->IsFocused()) {
             return false;
         }
-        ASSERT(m_pReportView != nullptr);
         if (m_pReportView == nullptr) {
             return false;
         }
@@ -2490,7 +2466,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
     if (editParam.listCtrlType == ListCtrlType::Icon) {
         //Icon view
         ListCtrlIconViewItem* pItem = dynamic_cast<ListCtrlIconViewItem*>(editParam.pItem);
-        ASSERT(pItem != nullptr);
         if (pItem == nullptr) {
             return false;
         }
@@ -2504,7 +2479,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
             }
             pNextItem = GetNextDisplayIconItem(pNextItem);
         }
-        ASSERT(pDestItem == pItem);
         if (pDestItem != pItem) {
             //Already changed
             return false;
@@ -2517,7 +2491,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
         }
 
         size_t nColumnIndex = editParam.nColumnIndex;
-        ASSERT(GetColumnId(nColumnIndex) == editParam.nColumnId);
         if (GetColumnId(nColumnIndex) != editParam.nColumnId) {
             return false;
         }
@@ -2525,7 +2498,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
     else if (editParam.listCtrlType == ListCtrlType::List) {
         //List view
         ListCtrlListViewItem* pItem = dynamic_cast<ListCtrlListViewItem*>(editParam.pItem);
-        ASSERT(pItem != nullptr);
         if (pItem == nullptr) {
             return false;
         }
@@ -2539,7 +2511,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
             }
             pNextItem = GetNextDisplayListItem(pNextItem);
         }
-        ASSERT(pDestItem == pItem);
         if (pDestItem != pItem) {
             //Already changed
             return false;
@@ -2552,7 +2523,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
         }
 
         size_t nColumnIndex = editParam.nColumnIndex;
-        ASSERT(GetColumnId(nColumnIndex) == editParam.nColumnId);
         if (GetColumnId(nColumnIndex) != editParam.nColumnId) {
             return false;
         }
@@ -2561,7 +2531,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
         //Report view
         ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(editParam.pItem);
         ListCtrlSubItem* pSubItem = dynamic_cast<ListCtrlSubItem*>(editParam.pSubItem);
-        ASSERT((pItem != nullptr) && (pSubItem != nullptr));
         if ((pItem == nullptr) || (pSubItem == nullptr)) {
             return false;
         }
@@ -2576,7 +2545,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
             }
             pNextItem = GetNextDisplayItem(pNextItem);
         }
-        ASSERT(pDestItem == pItem);
         if (pDestItem != pItem) {
             //Already changed
             return false;
@@ -2584,7 +2552,6 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
         if (pItem->GetSubItemIndex(pSubItem) != nColumnIndex) {
             return false;
         }
-        ASSERT(GetColumnId(nColumnIndex) == editParam.nColumnId);
         if (GetColumnId(nColumnIndex) != editParam.nColumnId) {
             return false;
         }
@@ -2594,8 +2561,7 @@ bool ListCtrl::IsValidItemEditParam(const ListCtrlEditParam& editParam) const
 
 void ListCtrl::OnItemEditMode(ListCtrlEditParam editParam)
 {
-    DString editClass = GetRichEditClass();
-    ASSERT(!editClass.empty());
+    std::string editClass = GetRichEditClass();
     if (editClass.empty()) {
         return;
     }
@@ -2626,7 +2592,7 @@ void ListCtrl::OnItemEditMode(ListCtrlEditParam editParam)
     }
     size_t nDataItemIndex = editParam.nItemIndex;
 
-    DString sOldItemText = pSubItem->GetText();
+    std::string sOldItemText = pSubItem->GetText();
     UiRect rcItem = pSubItem->GetTextRect();
     UiPoint offsetPt = pSubItem->GetScrollOffsetInScrollBox();
     rcItem.Offset(-offsetPt.x, -offsetPt.y);
@@ -2683,7 +2649,7 @@ void ListCtrl::OnItemEditMode(ListCtrlEditParam editParam)
 
     //When the editing ends, trigger the event
     auto OnLeaveRichEdit = [this, sOldItemText, RestoreItemFocus, editParam]() {
-        DString sNewItemText;
+        std::string sNewItemText;
         if ((m_pRichEdit != nullptr) && m_pRichEdit->IsVisible()) {
             sNewItemText = m_pRichEdit->GetText();
             m_pRichEdit->SetVisible(false);                     
@@ -2806,7 +2772,7 @@ void ListCtrl::UpdateRichEditSize(ListCtrlLabel* pSubItem)
     }
 }
 
-void ListCtrl::OnItemEdited(const ListCtrlEditParam& editParam, const DString& newItemText)
+void ListCtrl::OnItemEdited(const ListCtrlEditParam& editParam, const std::string& newItemText)
 {
     //Trigger the event: end editing; if the user cancelled the edit, do not perform the modification
     ListCtrlEditParam leaveEditParam = editParam;

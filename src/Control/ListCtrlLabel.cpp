@@ -15,7 +15,7 @@ ListCtrlLabel::ListCtrlLabel(Window* pWindow) :
     SetKeyboardEnabled(false);
 }
 
-DString ListCtrlLabel::GetType() const { return DUI_T("ListCtrlLabel"); }
+std::string ListCtrlLabel::GetType() const { return "ListCtrlLabel"; }
 
 void ListCtrlLabel::HandleEvent(const EventArgs& msg)
 {
@@ -44,20 +44,16 @@ bool ListCtrlLabel::OnMouseEvent(const EventArgs& msg)
         return false;
     }
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return false;
     }
-    ASSERT(IsEnabled() && IsMouseEnabled());
     if (!IsEnabled() || !IsMouseEnabled()) {
         return false;
     }
-    ASSERT(m_pListBoxItem != nullptr);
     if (m_pListBoxItem == nullptr) {
         return false;
     }
     IListCtrlViewItem* pViewItem = dynamic_cast<IListCtrlViewItem*>(m_pListBoxItem);
-    ASSERT(pViewItem != nullptr);
     if (pViewItem == nullptr) {
         return false;
     }

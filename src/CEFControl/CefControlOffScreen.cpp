@@ -15,13 +15,12 @@
 #include <cmath>
 #include <functional>
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     #include "dui/CEFControl/internal/Windows/util_win.h"
     #include "dui/CEFControl/internal/Windows/osr_ime_handler_win.h"
 #endif
 
-#if defined (DUI_BUILD_FOR_SDL)
-    #include <SDL3/SDL.h>
+#if defined (DUI_BUILD_FOR_WAYLAND)
 #endif
 
 namespace ui {
@@ -118,7 +117,7 @@ void CefControlOffScreen::Init()
     if (!m_jsBridge.get()) {
         m_jsBridge.reset(new CefJSBridge);
     }
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
     RegisterImeCaretUpdater();
 #endif
     BaseClass::Init();
@@ -128,12 +127,10 @@ void CefControlOffScreen::ReCreateBrowser()
 {
     GlobalManager::Instance().AssertUIThread();
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return;
     }
     ASSERT(pWindow->IsWindow());
-    ASSERT(m_pBrowserHandler != nullptr);
     if (m_pBrowserHandler == nullptr) {
         return;
     }
@@ -261,7 +258,7 @@ if (CefManager::GetInstance()->IsEnableOffScreenRendering() ){
     }
 }
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
 
 // Convert the CEF cursor type to the dui standard cursor type (only part of the cursor types are supported)
 static CursorType CefCursorTypeToUiCursor(cef_cursor_type_t cefCursor)
@@ -332,11 +329,11 @@ static CursorType CefCursorTypeToUiCursor(cef_cursor_type_t cefCursor)
     return CursorType::kCursorArrow;
 }
 
-#endif //DUI_BUILD_FOR_SDL
+#endif //DUI_BUILD_FOR_WAYLAND
 
 void CefControlOffScreen::OnCursorChange(cef_cursor_type_t type)
 {
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
     CursorType uiCursorType = CefCursorTypeToUiCursor(type);
     SetCursorType(uiCursorType);
 #else
@@ -346,8 +343,8 @@ void CefControlOffScreen::OnCursorChange(cef_cursor_type_t type)
 
 bool CefControlOffScreen::OnSetCursor(const EventArgs& msg)
 {
-#ifdef DUI_BUILD_FOR_SDL
-    // When using SDL, the cursor needs to be set
+#ifdef DUI_BUILD_FOR_WAYLAND
+    // When using native backend, the cursor needs to be set
     return BaseClass::OnSetCursor(msg);
 #else
     // In off-screen rendering, the control itself does not handle the cursor; the CEF module handles it internally, otherwise the mouse cursor in Cef would be affected
@@ -689,7 +686,7 @@ bool CefControlOffScreen::OnKillFocus(const EventArgs& msg)
 bool CefControlOffScreen::OnChar(const EventArgs& msg)
 {
     bool bRet = BaseClass::OnChar(msg);
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     bool bHandled = false;
     if (msg.modifierKey & ModifierKey::kIsSystemKey) {
         SendKeyEvent(WM_SYSCHAR, msg.wParam, msg.lParam, bHandled);
@@ -698,14 +695,14 @@ bool CefControlOffScreen::OnChar(const EventArgs& msg)
         SendKeyEvent(WM_CHAR, msg.wParam, msg.lParam, bHandled);
     }
     return bRet || bHandled;
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     // insertText: on macOS commits an ongoing IME composition. CEF expects
     // ImeCommitText() in that case; sending only KEYEVENT_CHAR leaves the old
     // pinyin composition visible after the committed Chinese text.
     if (m_bImeComposition && (msg.wParam != 0) && (msg.lParam > 0)) {
         CefRefPtr<CefBrowserHost> host = GetCefBrowserHost();
         if (host != nullptr) {
-            DStringW text = (DStringW::value_type*)msg.wParam;
+            std::wstring text = (std::wstring::value_type*)msg.wParam;
             CefString commitText(text);
             host->ImeCommitText(commitText, CefRange::InvalidRange(), 0);
             m_bImeComposition = false;
@@ -731,7 +728,7 @@ bool CefControlOffScreen::OnChar(const EventArgs& msg)
 bool CefControlOffScreen::OnKeyDown(const EventArgs& msg)
 {
     bool bRet = BaseClass::OnKeyDown(msg);
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     bool bHandled = false;
     if (msg.modifierKey & ModifierKey::kIsSystemKey) {
         SendKeyEvent(WM_SYSKEYDOWN, msg.wParam, msg.lParam, bHandled);
@@ -740,7 +737,7 @@ bool CefControlOffScreen::OnKeyDown(const EventArgs& msg)
         SendKeyEvent(WM_KEYDOWN, msg.wParam, msg.lParam, bHandled);
     }
     return bRet || bHandled;
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     // During an active IME composition, Backspace is handled by the system
     // updating the marked text (which we forward with ImeSetComposition).
     // Sending KEYEVENT_KEYDOWN as well makes CEF delete/redraw twice and
@@ -759,7 +756,7 @@ bool CefControlOffScreen::OnKeyDown(const EventArgs& msg)
 bool CefControlOffScreen::OnKeyUp(const EventArgs& msg)
 {
     bool bRet = BaseClass::OnKeyUp(msg);
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     bool bHandled = false;
     if (msg.modifierKey & ModifierKey::kIsSystemKey) {
         SendKeyEvent(WM_SYSKEYUP, msg.wParam, msg.lParam, bHandled);
@@ -768,7 +765,7 @@ bool CefControlOffScreen::OnKeyUp(const EventArgs& msg)
         SendKeyEvent(WM_KEYUP, msg.wParam, msg.lParam, bHandled);
     }
     return bRet || bHandled;
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     // See OnKeyDown: avoid double-handling Backspace during composition.
     if (m_bImeComposition && (msg.vkCode == kVK_BACK)) {
         return bRet;
@@ -798,7 +795,7 @@ bool CefControlOffScreen::IsCefOsrImeMode() const
 
 bool CefControlOffScreen::OnImeSetContext(const EventArgs& msg)
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 if (IsCefOsrImeMode() ){
         OnIMESetContext(WM_IME_SETCONTEXT, msg.wParam, msg.lParam);
     }
@@ -810,11 +807,11 @@ if (IsCefOsrImeMode() ){
 
 bool CefControlOffScreen::OnImeStartComposition(const EventArgs& /*msg*/)
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 if (IsCefOsrImeMode() ){
         OnIMEStartComposition();
     }
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     m_bImeComposition = true;
     m_imeMarkedText.clear();
     // The focused-node callback only provides the whole HTML input bounds.
@@ -827,17 +824,17 @@ if (IsCefOsrImeMode() ){
 
 bool CefControlOffScreen::OnImeComposition(const EventArgs& msg)
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 if (IsCefOsrImeMode() ){
         OnIMEComposition(WM_IME_COMPOSITION, msg.wParam, msg.lParam);
     }
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     // macOS delivers the marked/composition text through OnNativeMarkedText:
     // wParam points to the whole string and lParam is its length. Forward it to
     // CEF so the pinyin letters and the composition underline are rendered.
     if ((msg.wParam != 0) && (msg.lParam > 0)) {
         m_bImeComposition = true;
-        DStringW text = (DStringW::value_type*)msg.wParam;
+        std::wstring text = (std::wstring::value_type*)msg.wParam;
         CefRefPtr<CefBrowser> browser;
         if (m_pBrowserHandler != nullptr) {
             browser = m_pBrowserHandler->GetBrowser();
@@ -873,11 +870,11 @@ if (IsCefOsrImeMode() ){
 
 bool CefControlOffScreen::OnImeEndComposition(const EventArgs& /*msg*/)
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 if (IsCefOsrImeMode() ){
         OnIMECancelCompositionEvent();
     }
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     m_bImeComposition = false;
     m_imeMarkedText.clear();
     CefRefPtr<CefBrowser> browser;
@@ -915,27 +912,27 @@ if (IsCefOsrImeMode() ){
     return false;
 }
 
-#if defined (DUI_BUILD_FOR_SDL) 
+#if defined (DUI_BUILD_FOR_WAYLAND)
 
 /** Get the key flags
 */
-static uint32_t GetCefModifiers(SDL_Keymod mod)
+static uint32_t GetCefModifiers(Native_Keymod mod)
 {
     uint32_t modifiers = 0;
-    if (mod & SDL_KMOD_CTRL) {
+    if (mod & Native_KMOD_CTRL) {
         modifiers |= EVENTFLAG_CONTROL_DOWN;
     }
-    if (mod & SDL_KMOD_SHIFT) {
+    if (mod & Native_KMOD_SHIFT) {
         modifiers |= EVENTFLAG_SHIFT_DOWN;
     }
-    if (mod & SDL_KMOD_ALT) {
+    if (mod & Native_KMOD_ALT) {
         modifiers |= EVENTFLAG_ALT_DOWN;
     }
 
-    if (mod & SDL_KMOD_CAPS) {
+    if (mod & Native_KMOD_CAPS) {
         modifiers |= EVENTFLAG_CAPS_LOCK_ON;
     }
-    if (mod & SDL_KMOD_NUM) {
+    if (mod & Native_KMOD_NUM) {
         modifiers |= EVENTFLAG_NUM_LOCK_ON;
     }
     return modifiers;
@@ -955,23 +952,23 @@ if (!IsVisible() || !IsEnabled() ){
         return;
     }
 
-    SDL_EventType eventType = (SDL_EventType)msg.wParam;
+    Native_EventType eventType = (Native_EventType)msg.wParam;
     if (type == KEYEVENT_KEYDOWN) {
-        ASSERT(eventType == SDL_EVENT_KEY_DOWN);
+        ASSERT(eventType == Native_EVENT_KEY_DOWN);
         ASSERT(msg.lParam != 0);
-if ((eventType != SDL_EVENT_KEY_DOWN) || (msg.lParam == 0) ){
+if ((eventType != Native_EVENT_KEY_DOWN) || (msg.lParam == 0) ){
             return;
         }
     }
     else if (type == KEYEVENT_KEYUP) {
-        ASSERT(eventType == SDL_EVENT_KEY_UP);
+        ASSERT(eventType == Native_EVENT_KEY_UP);
         ASSERT(msg.lParam != 0);
-if ((eventType != SDL_EVENT_KEY_UP) || (msg.lParam == 0) ){
+if ((eventType != Native_EVENT_KEY_UP) || (msg.lParam == 0) ){
             return;
         }
     }
 if ((type == KEYEVENT_KEYDOWN) || (type == KEYEVENT_KEYUP) ){
-        SDL_KeyboardEvent* key = (SDL_KeyboardEvent*)msg.lParam;
+        Native_KeyboardEvent* key = (Native_KeyboardEvent*)msg.lParam;
         CefKeyEvent event;
         event.type = (type == KEYEVENT_KEYDOWN) ? KEYEVENT_KEYDOWN : KEYEVENT_KEYUP;
         event.windows_key_code = msg.vkCode;
@@ -982,14 +979,14 @@ if ((type == KEYEVENT_KEYDOWN) || (type == KEYEVENT_KEYUP) ){
         host->SendKeyEvent(event);
     }
     else if (type == KEYEVENT_CHAR) {
-        ASSERT(msg.eventData == SDL_EVENT_TEXT_INPUT);
+        ASSERT(msg.eventData == Native_EVENT_TEXT_INPUT);
         ASSERT(msg.vkCode == kVK_None);
-if ((msg.eventData == SDL_EVENT_TEXT_INPUT) && (msg.wParam != 0) && (msg.lParam > 0) ){
+if ((msg.eventData == Native_EVENT_TEXT_INPUT) && (msg.wParam != 0) && (msg.lParam > 0) ){
             // The currently entered character or string (for example, when entering Chinese, the candidate word is entered at once, unlike the Windows SDK which enters character by character)
-            DStringW text = (DStringW::value_type*)msg.wParam;
+            std::wstring text = (std::wstring::value_type*)msg.wParam;
             CefKeyEvent event;
             event.type = KEYEVENT_CHAR;
-            event.modifiers = GetCefModifiers(SDL_GetModState());
+            event.modifiers = GetCefModifiers(Native_GetModState());
             size_t nCharCount = text.size();
             for (size_t nCharIndex = 0; nCharIndex < nCharCount; ++nCharIndex) {
                 event.character = text[nCharIndex];
@@ -1004,8 +1001,40 @@ if ((msg.eventData == SDL_EVENT_TEXT_INPUT) && (msg.wParam != 0) && (msg.lParam 
 }
 #endif
 
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
-// macOS native: forward keyboard messages to BrowserHost without SDL.
+#if defined (DUI_BUILD_FOR_X11)
+static uint32_t GetCefX11Modifiers(uint32_t modifierKey)
+{
+    uint32_t modifiers = 0;
+    if (modifierKey & ModifierKey::kControl) modifiers |= EVENTFLAG_CONTROL_DOWN;
+    if (modifierKey & ModifierKey::kShift) modifiers |= EVENTFLAG_SHIFT_DOWN;
+    if (modifierKey & ModifierKey::kAlt) modifiers |= EVENTFLAG_ALT_DOWN;
+    return modifiers;
+}
+
+void CefControlOffScreen::SendKeyEvent(const EventArgs& msg, cef_key_event_type_t type)
+{
+    if (!IsVisible() || !IsEnabled()) return;
+    CefRefPtr<CefBrowserHost> host = GetCefBrowserHost();
+    if (host == nullptr) return;
+
+    CefKeyEvent event;
+    event.type = type;
+    event.windows_key_code = static_cast<int>(msg.vkCode);
+    event.native_key_code = static_cast<int>(msg.vkCode);
+    event.modifiers = GetCefX11Modifiers(msg.modifierKey);
+    if (type == KEYEVENT_CHAR) {
+        if (msg.wParam == 0 || msg.lParam <= 0) return;
+        const std::wstring::value_type* text =
+            reinterpret_cast<const std::wstring::value_type*>(msg.wParam);
+        event.character = static_cast<char16_t>(text[0]);
+        event.unmodified_character = event.character;
+    }
+    host->SendKeyEvent(event);
+}
+#endif
+
+#if defined(DUI_BUILD_FOR_MACOS)
+// macOS native: forward keyboard messages to BrowserHost without native backend.
 static uint16_t GetNativeKeyCodeFromDui(VirtualKeyCode vkCode)
 {
     // Reverse of GetVirtualKeyCodeFromNativeKeyCode() in Keycode_MacOS.cpp.
@@ -1151,7 +1180,7 @@ void CefControlOffScreen::SendKeyEvent(const EventArgs& msg, cef_key_event_type_
         // wParam points to the whole UTF-16 string and lParam is its length.
         // CEF needs each character delivered as a separate KEYEVENT_CHAR.
         if ((msg.wParam != 0) && (msg.lParam > 0)) {
-            DStringW text = (DStringW::value_type*)msg.wParam;
+            std::wstring text = (std::wstring::value_type*)msg.wParam;
             const size_t nCharCount = text.size();
             for (size_t nCharIndex = 0; nCharIndex < nCharCount; ++nCharIndex) {
                 CefKeyEvent event;
@@ -1219,7 +1248,7 @@ void CefControlOffScreen::SendKeyEvent(const EventArgs& msg, cef_key_event_type_
 }
 #endif
 
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
 void CefControlOffScreen::RegisterImeCaretUpdater()
 {
     if (!m_jsBridge.get()) {
@@ -1333,7 +1362,7 @@ void CefControlOffScreen::QueryImeCaretFromJS()
 }
 #endif
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 static int LogicalToDevice(int value, float device_scale_factor)
 {
     float scaled_val = static_cast<float>(value) * device_scale_factor;
@@ -1351,7 +1380,7 @@ static CefRect LogicalToDevice(const CefRect& value, float device_scale_factor)
 
 void CefControlOffScreen::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> /*browser*/, const CefRange& selected_range, const std::vector<CefRect>& character_bounds)
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     CefCurrentlyOn(TID_UI);
     if (m_imeHandler != nullptr) {
         float device_scale_factor = Dpi().GetDisplayScale();
@@ -1366,7 +1395,7 @@ void CefControlOffScreen::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> /*b
         }
         m_imeHandler->ChangeCompositionRange(selected_range, device_bounds);
     }
-#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#elif defined(DUI_BUILD_FOR_MACOS)
     CefCurrentlyOn(TID_UI);
     // CEF may deliver one final composition-bounds callback after Space has
     // committed the text. Those bounds still describe the old marked text and
@@ -1486,7 +1515,7 @@ if (!IsVisible() || !IsEnabled() || !IsFocused() ){
         inputRect.bottom = inputRect.top;
 
         pWindow->NativeWnd()->SetTextInputArea(&inputRect, 0);
-#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
+#if defined(DUI_BUILD_FOR_MACOS)
         // Resolve the initial position to the actual DOM caret. This is
         // asynchronous, but avoids keeping the whole input element as the
         // IME anchor after the first focus event.
@@ -1515,7 +1544,7 @@ if ((render != nullptr) && m_pCefMemData->MakeImageSnapshot(render.get()) ){
     return nullptr;
 }
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 LRESULT CefControlOffScreen::SendKeyEvent(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled)
 {
@@ -1555,7 +1584,6 @@ void CefControlOffScreen::OnIMEStartComposition()
         ASSERT(GetWindow()->IsWindow());
         hWnd = (HWND)GetWindow()->GetWindowHandle();
     }
-    ASSERT(hWnd != nullptr);
     if (hWnd == nullptr) {
         return;
     }
@@ -1653,7 +1681,7 @@ if ((browser != nullptr) && (browser->GetHost() != nullptr) ){
 }
 
 
-#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN)
 
 } //namespace ui
 

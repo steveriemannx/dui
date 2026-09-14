@@ -8,7 +8,7 @@ namespace ui
 IconManager::IconManager():
     m_nNextID(0),
     m_nNextCallbackID(0),
-    m_prefix(DUI_T("icon:"))
+    m_prefix("icon:")
 {
 }
 
@@ -19,34 +19,34 @@ IconManager::~IconManager()
     m_imageStringMap.clear();
 }
 
-DString IconManager::GetIconString(uint32_t id) const
+std::string IconManager::GetIconString(uint32_t id) const
 {
     if (id == 0) {
-        return DString();
+        return std::string();
     }
-    DString str = m_prefix;
+    std::string str = m_prefix;
     str += StringUtil::UInt32ToString(id);
     return str;
 }
 
-bool IconManager::IsIconString(const DString& str) const
+bool IconManager::IsIconString(const std::string& str) const
 {
     return str.find(m_prefix) == 0;
 }
 
-uint32_t IconManager::GetIconID(const DString& str) const
+uint32_t IconManager::GetIconID(const std::string& str) const
 {
     uint32_t id = 0;
     size_t pos = str.find(m_prefix);
     ASSERT(pos == 0);
     if (pos == 0) {
-        DString idStr = str.substr(pos + m_prefix.size());
+        std::string idStr = str.substr(pos + m_prefix.size());
         id = StringUtil::StringToUInt32(idStr.c_str(), nullptr, 10);
     }
     return id;
 }
 
-UiSize IconManager::GetIconSize(const DString& str) const
+UiSize IconManager::GetIconSize(const std::string& str) const
 {
     UiSize iconSize;
     uint32_t id = GetIconID(str);
@@ -79,7 +79,6 @@ uint32_t IconManager::AddIcon(const uint8_t* pBitmapData, int32_t nBitmapDataSiz
     if ((pBitmapData == nullptr) || (nBitmapDataSize < 1) || (nBitmapWidth < 1) || (nBitmapHeight < 1)) {
         return 0;
     }
-    ASSERT(nBitmapDataSize == nBitmapHeight * nBitmapWidth * 4);
     if (nBitmapDataSize != nBitmapHeight * nBitmapWidth * 4) {
         return 0;
     }
@@ -102,9 +101,8 @@ uint32_t IconManager::AddIconBitmapData(IconBitmapData& bitmapData)
     return nIconID;
 }
 
-uint32_t IconManager::AddIcon(const DString& imageString)
+uint32_t IconManager::AddIcon(const std::string& imageString)
 {
-    ASSERT(!imageString.empty());
     if (imageString.empty()) {
         return 0;
     }
@@ -120,14 +118,14 @@ bool IconManager::IsImageString(uint32_t id) const
     return m_imageStringMap.find(id) != m_imageStringMap.end();
 }
 
-DString IconManager::GetImageString(uint32_t id) const
+std::string IconManager::GetImageString(uint32_t id) const
 {
     std::lock_guard<std::mutex> threadGuard(m_iconMutex);
     auto iter = m_imageStringMap.find(id);
     if (iter != m_imageStringMap.end()) {
         return iter->second.c_str();
     }
-    return DString();
+    return std::string();
 }
 
 void IconManager::RemoveIcon(uint32_t id)
@@ -257,7 +255,6 @@ static bool IconToBitmap(HICON hIcon, IconBitmapData& bitmapData)
                                      reinterpret_cast<void**>(&bits),
                                      nullptr,
                                      0);
-    ASSERT(dib != nullptr);
     if (dib == nullptr)    {
         ::ReleaseDC(hWnd, hdc);
         return false;

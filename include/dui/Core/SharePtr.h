@@ -144,8 +144,13 @@ public:
     void Release() const
     {
         if (1 == m_nRefCnt.fetch_add(-1, std::memory_order_acq_rel)) {
-            // restore the 1 for our destructor's assert
-#ifdef _DEBUG
+            // restore the 1 for our destructor's assert. This has to be enabled in
+            // exactly the configurations where ASSERT is live, or every last release
+            // aborts: ASSERT tracks NDEBUG outside MSVC (dui_config.h) and _DEBUG on
+            // it, but this used to be guarded by _DEBUG alone -- which nothing in this
+            // CMake defines on macOS or Linux, so the assert fired with the count
+            // still at 0.
+#if defined(_DEBUG) || !defined(NDEBUG)
             m_nRefCnt.store(1, std::memory_order_relaxed);
 #endif
             delete (const Derived*)this;

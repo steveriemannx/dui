@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("Basic (Generated Code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("Basic (Generated Code)", EmbeddedResources());
 }

@@ -25,7 +25,7 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
 public:
     /** Set the icon bitmap data

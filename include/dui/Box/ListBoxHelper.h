@@ -31,11 +31,11 @@ public:
 
     /** Set the fill color of the mouse frame selection
     */
-    void SetFrameSelectionColor(const DString& frameSelectionColor);
+    void SetFrameSelectionColor(const std::string& frameSelectionColor);
 
     /** Get the fill color of the mouse frame selection
     */
-    DString GetFrameSelectionColor() const;
+    std::string GetFrameSelectionColor() const;
 
     /** Set the Alpha value of the mouse frame selection fill color
     */
@@ -47,11 +47,11 @@ public:
 
     /** Set the border color of the mouse frame selection
     */
-    void SetFrameSelectionBorderColor(const DString& frameSelectionBorderColor);
+    void SetFrameSelectionBorderColor(const std::string& frameSelectionBorderColor);
 
     /** Get the border color of the mouse frame selection
     */
-    DString GetFrameSelectionBorderColor() const;
+    std::string GetFrameSelectionBorderColor() const;
 
     /** Set the border size of the mouse frame selection
     * @param [in] nBorderSize The border size (not DPI scaled)

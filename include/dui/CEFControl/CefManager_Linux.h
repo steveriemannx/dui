@@ -32,7 +32,7 @@ public:
     * @return bool true to continue running, false to end the program
     */
     virtual bool Initialize(bool bEnableOffScreenRendering,
-                            const DString& appName,
+                            const std::string& appName,
                             int argc,
                             char** argv,
                             OnCefSettingsEvent callback,

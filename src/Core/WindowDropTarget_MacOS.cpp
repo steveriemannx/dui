@@ -26,12 +26,12 @@ void WindowDropTarget::OnDropPosition(const UiPoint& /*pt*/)
     // TODO: macOS native drag and drop is not implemented yet
 }
 
-void WindowDropTarget::OnDropText(const DStringA& /*utf8Text*/)
+void WindowDropTarget::OnDropText(const std::string& /*utf8Text*/)
 {
     // TODO: macOS native drag and drop is not implemented yet
 }
 
-void WindowDropTarget::OnDropFile(const DStringA& /*utf8Source*/, const DStringA& /*utf8File*/)
+void WindowDropTarget::OnDropFile(const std::string& /*utf8Source*/, const std::string& /*utf8File*/)
 {
     // TODO: macOS native drag and drop is not implemented yet
 }
@@ -41,9 +41,9 @@ void WindowDropTarget::OnDropComplete()
     // TODO: macOS native drag and drop is not implemented yet
 }
 
-ControlPtrT<ControlDropTarget_SDL> WindowDropTarget::GetControlDropTarget(const UiPoint& /*clientPt*/) const
+ControlPtrT<ControlDropTarget_Wayland> WindowDropTarget::GetControlDropTarget(const UiPoint& /*clientPt*/) const
 {
-    return ControlPtrT<ControlDropTarget_SDL>();
+    return ControlPtrT<ControlDropTarget_Wayland>();
 }
 
 void WindowDropTarget::ClearDropStatus()

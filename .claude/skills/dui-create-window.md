@@ -51,12 +51,12 @@ Create `<FormName>.cpp`:
 
 DString <FormName>::GetSkinFolder()
 {
-    return _T("<skin_folder>");
+    return DUI_T("<skin_folder>");
 }
 
 DString <FormName>::GetSkinFile()
 {
-    return _T("<skin_file>.xml");
+    return DUI_T("<skin_file>.xml");
 }
 
 void <FormName>::OnInitWindow()
@@ -110,7 +110,7 @@ Add the following wherever this window needs to be opened:
 
 // Create and show the window
 <FormName>* window = new <FormName>();
-window->CreateWnd(nullptr, ui::WindowCreateParam(_T("<WindowTitle>"), true));
+window->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("<WindowTitle>"), true));
 window->ShowWindow(ui::kSW_SHOW_NORMAL);
 // If this is the main window, add:
 // window->PostQuitMsgWhenClosed(true);

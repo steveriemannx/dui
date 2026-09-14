@@ -12,7 +12,7 @@ StateColorMap::StateColorMap(Control* pControl):
     m_stateColors.resize(kControlStateCount);
 }
 
-void StateColorMap::SetStateColor(ControlStateType stateType, const DString& color)
+void StateColorMap::SetStateColor(ControlStateType stateType, const std::string& color)
 {
     size_t nIndex = (size_t)stateType;
     ASSERT(nIndex < m_stateColors.size());
@@ -45,18 +45,17 @@ bool StateColorMap::HasStateColor(ControlStateType stateType) const
     return false;
 }
 
-DString StateColorMap::GetStateColor(ControlStateType stateType) const
+std::string StateColorMap::GetStateColor(ControlStateType stateType) const
 {
     size_t nIndex = (size_t)stateType;
     if (nIndex < m_stateColors.size()) {
         return m_stateColors[nIndex].c_str();
     }
-    return DString();
+    return std::string();
 }
 
 void StateColorMap::PaintStateColor(IRender* pRender, const UiRect& rcPaint, ControlStateType stateType) const
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -65,7 +64,7 @@ void StateColorMap::PaintStateColor(IRender* pRender, const UiRect& rcPaint, Con
             if ((stateType == kControlStateNormal || stateType == kControlStateHot) && HasStateColor(kControlStateHot)) {
                 const uint8_t nHotAlpha = m_pControl->GetHotAlpha();
                 // Draw the default color first
-                DString strColor = GetStateColor(kControlStateNormal);
+                std::string strColor = GetStateColor(kControlStateNormal);
                 if (!strColor.empty()) {
                     pRender->FillRect(UiRectF::MakeFromRect(rcPaint), m_pControl->GetUiColor(strColor), 255 - nHotAlpha);
                 }
@@ -85,7 +84,7 @@ void StateColorMap::PaintStateColor(IRender* pRender, const UiRect& rcPaint, Con
     if (stateType == kControlStateDisabled && !HasStateColor(kControlStateDisabled)) {
         stateType = kControlStateNormal;
     }
-    DString strColor = GetStateColor(stateType);
+    std::string strColor = GetStateColor(stateType);
     if (!strColor.empty()) {
         UiColor color = m_pControl ? m_pControl->GetUiColor(strColor) :
                                      GlobalManager::Instance().Color().GetColor(strColor);

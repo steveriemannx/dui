@@ -11,11 +11,11 @@ IPAddress::IPAddress(Window* pWindow):
 {
 }
 
-DString IPAddress::GetType() const { return DUI_CTR_IPADDRESS; }
+std::string IPAddress::GetType() const { return DUI_CTR_IPADDRESS; }
 
-void IPAddress::SetAttribute(const DString& strName, const DString& strValue)
+void IPAddress::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("ip")) {
+    if (strName == "ip") {
         SetIPAddress(strValue);
     }    
     else {
@@ -32,21 +32,21 @@ void IPAddress::OnInit()
     m_editList.clear();
     for (size_t index = 0; index < 4; ++index) {
         RichEdit* pRichEdit = new RichEdit(GetWindow());
-        pRichEdit->SetText(DUI_T(""));
-        pRichEdit->SetAttribute(DUI_T("text_align"), DUI_T("vcenter,hcenter"));
-        pRichEdit->SetAttribute(DUI_T("limit_text"), DUI_T("3"));
-        pRichEdit->SetAttribute(DUI_T("want_return_msg"), DUI_T("false"));
-        pRichEdit->SetAttribute(DUI_T("want_tab"), DUI_T("false"));
-        pRichEdit->SetAttribute(DUI_T("number_only"), DUI_T("true"));
+        pRichEdit->SetText("");
+        pRichEdit->SetAttribute("text_align", "vcenter,hcenter");
+        pRichEdit->SetAttribute("limit_text", "3");
+        pRichEdit->SetAttribute("want_return_msg", "false");
+        pRichEdit->SetAttribute("want_tab", "false");
+        pRichEdit->SetAttribute("number_only", "true");
         pRichEdit->SetMinNumber(0);
         pRichEdit->SetMaxNumber(255);
         AddItem(pRichEdit);
         m_editList.push_back(pRichEdit);
         if (index != 3) {
             Label* pLabel = new Label(GetWindow());
-            pLabel->SetText(DUI_T("."));
-            pLabel->SetAttribute(DUI_T("text_align"), DUI_T("bottom,hcenter"));
-            pLabel->SetAttribute(DUI_T("width"), DUI_T("4"));
+            pLabel->SetText(".");
+            pLabel->SetAttribute("text_align", "bottom,hcenter");
+            pLabel->SetAttribute("width", "4");
             pLabel->SetTabStop(false);
             pLabel->SetNoFocus();
             pLabel->SetMouseEnabled(false);
@@ -99,11 +99,11 @@ void IPAddress::SetFocus()
     }
 }
 
-void IPAddress::SetIPAddress(const DString& ipAddress)
+void IPAddress::SetIPAddress(const std::string& ipAddress)
 {
     m_ipAddress = ipAddress;
     if (!ipAddress.empty() && m_editList.size() == 4) {
-        std::list<DString> ipList = StringUtil::Split(ipAddress, DUI_T("."));
+        std::list<std::string> ipList = StringUtil::Split(ipAddress, ".");
         if (ipList.size() == 4) {
             auto iter = ipList.begin();
             int32_t ip1 = std::min(StringUtil::StringToInt32((*iter++)), 255);
@@ -114,17 +114,17 @@ void IPAddress::SetIPAddress(const DString& ipAddress)
             ip2 = std::max(ip2, 0);
             ip3 = std::max(ip3, 0);
             ip4 = std::max(ip4, 0);
-            m_editList[0]->SetText(StringUtil::Printf(DUI_T("%d"), ip1));
-            m_editList[1]->SetText(StringUtil::Printf(DUI_T("%d"), ip2));
-            m_editList[2]->SetText(StringUtil::Printf(DUI_T("%d"), ip3));
-            m_editList[3]->SetText(StringUtil::Printf(DUI_T("%d"), ip4));
+            m_editList[0]->SetText(StringUtil::Printf("%d", ip1));
+            m_editList[1]->SetText(StringUtil::Printf("%d", ip2));
+            m_editList[2]->SetText(StringUtil::Printf("%d", ip3));
+            m_editList[3]->SetText(StringUtil::Printf("%d", ip4));
         }
     }
 }
 
-DString IPAddress::GetIPAddress() const
+std::string IPAddress::GetIPAddress() const
 {
-    DString ipAddress;
+    std::string ipAddress;
     if (m_editList.size() == 4) {
         int32_t ip1 = std::min(StringUtil::StringToInt32(m_editList[0]->GetText()), 255);
         int32_t ip2 = std::min(StringUtil::StringToInt32(m_editList[1]->GetText()), 255);
@@ -134,7 +134,7 @@ DString IPAddress::GetIPAddress() const
         ip2 = std::max(ip2, 0);
         ip3 = std::max(ip3, 0);
         ip4 = std::max(ip4, 0);
-        ipAddress = StringUtil::Printf(DUI_T("%d.%d.%d.%d"), ip1, ip2, ip3, ip4);
+        ipAddress = StringUtil::Printf("%d.%d.%d.%d", ip1, ip2, ip3, ip4);
     }
     else {
         ipAddress = m_ipAddress.c_str();

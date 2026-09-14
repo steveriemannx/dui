@@ -12,8 +12,11 @@ std::basic_string<DUTF16Char> StringConvert::UTF8ToUTF16(const DUTF8Char* utf8, 
     if ((utf8 == nullptr) || (length == 0)) {
         return std::basic_string<DUTF16Char>();
     }
+    //Size the buffer from the input instead of a fixed 8192 elements: the old fixed
+    //size allocated (and zero-filled) 8-32 KB on every call, however short the string.
+    //A UTF-8 byte never yields more than one UTF-16 unit, so length+1 is a safe bound.
     std::vector<DUTF16Char> data;
-    data.resize(8192);
+    data.resize(length + 1);
     DUTF16Char* output = &data[0];
     const UTF8* src_begin = reinterpret_cast<const UTF8*>(utf8);
     const UTF8* src_end = src_begin + length;
@@ -37,7 +40,7 @@ std::basic_string<DUTF16Char> StringConvert::UTF8ToUTF16(const DUTF8Char* utf8, 
     return utf16;
 }
 
-DStringW StringConvert::UTF8ToWString(const std::string& utf8)
+std::wstring StringConvert::UTF8ToWString(const std::string& utf8)
 {
 #if defined(WCHAR_T_IS_UTF16)
     return UTF8ToUTF16(utf8.c_str(), utf8.length());
@@ -51,8 +54,9 @@ std::string StringConvert::UTF16ToUTF8(const DUTF16Char* utf16, size_t length)
     if ((utf16 == nullptr) || (length == 0)) {
         return std::string();
     }
+    //A BMP UTF-16 unit becomes at most 3 UTF-8 bytes
     std::vector<DUTF8Char> data;
-    data.resize(8192);
+    data.resize(length * 3 + 1);
     DUTF8Char* output = &data[0];
     const UTF16* src_begin = reinterpret_cast<const UTF16*>(utf16);
     const UTF16* src_end = src_begin + length;
@@ -89,8 +93,12 @@ std::string StringConvert::WStringToUTF8(const std::wstring& wstr)
 
 std::basic_string<DUTF32Char> StringConvert::UTF8ToUTF32(const DUTF8Char* utf8, size_t length)
 {
+    if ((utf8 == nullptr) || (length == 0)) {
+        return std::basic_string<DUTF32Char>();
+    }
+    //A UTF-8 byte never yields more than one code point
     std::vector<DUTF32Char> data;
-    data.resize(8192);
+    data.resize(length + 1);
     DUTF32Char* output = &data[0];
     const UTF8* src_begin = reinterpret_cast<const UTF8*>(utf8);
     const UTF8* src_end = src_begin + length;
@@ -119,8 +127,12 @@ std::basic_string<DUTF32Char> StringConvert::UTF8ToUTF32(const DUTF8Char* utf8, 
 
 std::string StringConvert::UTF32ToUTF8(const DUTF32Char* utf32, size_t length)
 {
+    if ((utf32 == nullptr) || (length == 0)) {
+        return std::string();
+    }
+    //One code point becomes at most 4 UTF-8 bytes
     std::vector<DUTF8Char> data;
-    data.resize(8192);
+    data.resize(length * 4 + 1);
     DUTF8Char* output = &data[0];
     const UTF32* src_begin = reinterpret_cast<const UTF32*>(utf32);
     const UTF32* src_end = src_begin + length;
@@ -152,8 +164,9 @@ std::basic_string<DUTF32Char> StringConvert::UTF16ToUTF32(const DUTF16Char* utf1
     if ((utf16 == nullptr) || (length == 0)) {
         return std::basic_string<DUTF32Char>();
     }
+    //A surrogate pair (2 units) collapses to 1 code point, so never more than `length`
     std::vector<DUTF32Char> data;
-    data.resize(8192);
+    data.resize(length + 1);
     DUTF32Char* output = &data[0];
     const UTF16* src_begin = reinterpret_cast<const UTF16*>(utf16);
     const UTF16* src_end = src_begin + length;
@@ -176,7 +189,7 @@ std::basic_string<DUTF32Char> StringConvert::UTF16ToUTF32(const DUTF16Char* utf1
     return utf32;
 }
 
-std::basic_string<DUTF32Char> StringConvert::WStringToUTF32(const DStringW& wstr)
+std::basic_string<DUTF32Char> StringConvert::WStringToUTF32(const std::wstring& wstr)
 {
 #if defined(WCHAR_T_IS_UTF16)
     ASSERT(sizeof(DUTF16Char) == sizeof(std::wstring::value_type));
@@ -189,14 +202,15 @@ std::basic_string<DUTF32Char> StringConvert::WStringToUTF32(const DStringW& wstr
 #endif
 }
 
-DStringW StringConvert::UTF32ToWString(const DUTF32Char* utf32, size_t length)
+std::wstring StringConvert::UTF32ToWString(const DUTF32Char* utf32, size_t length)
 {
     if ((utf32 == nullptr) || (length == 0)) {
-        return DStringW();
+        return std::wstring();
     }
 #if defined(WCHAR_T_IS_UTF16)
+    //A code point outside the BMP becomes a surrogate pair
     std::vector<DUTF16Char> data;
-    data.resize(8192);
+    data.resize(length * 2 + 1);
     DUTF16Char* output = &data[0];
     const UTF32* src_begin = reinterpret_cast<const UTF32*>(utf32);
     const UTF32* src_end = src_begin + length;
@@ -224,7 +238,7 @@ DStringW StringConvert::UTF32ToWString(const DUTF32Char* utf32, size_t length)
 #endif
 }
 
-DStringW StringConvert::UTF32ToWString(const std::basic_string<DUTF32Char>& utf32)
+std::wstring StringConvert::UTF32ToWString(const std::basic_string<DUTF32Char>& utf32)
 {
     return UTF32ToWString(utf32.c_str(), utf32.length());
 }
@@ -239,45 +253,30 @@ const std::string& StringConvert::TToUTF8(const std::string& str)
     return str;
 }
 
-DString StringConvert::UTF8ToT(const DUTF8Char* utf8, size_t length)
+std::string StringConvert::UTF8ToT(const DUTF8Char* utf8, size_t length)
 {
-#ifdef DUI_UNICODE
-    return StringConvert::UTF8ToUTF16(utf8, length);
-#else
     return std::string(utf8, length);
-#endif
 }
 
-DString StringConvert::UTF8ToT(const std::string& utf8)
+std::string StringConvert::UTF8ToT(const std::string& utf8)
 {
-#ifdef DUI_UNICODE
-    return StringConvert::UTF8ToWString(utf8);
-#else
     return utf8;
-#endif
 }
 
-const DStringW& StringConvert::TToWString(const std::wstring& str)
+const std::wstring& StringConvert::TToWString(const std::wstring& str)
 {
     return str;
 }
 
-DStringW StringConvert::TToWString(const std::string& str)
+std::wstring StringConvert::TToWString(const std::string& str)
 {
     return StringConvert::UTF8ToWString(str);
 }
 
-#ifdef DUI_UNICODE
-const DString& StringConvert::WStringToT(const std::wstring& wstr)
-{
-    return wstr;
-}
-#else
-DString StringConvert::WStringToT(const std::wstring& wstr)
+std::string StringConvert::WStringToT(const std::wstring& wstr)
 {
     return StringConvert::WStringToUTF8(wstr);
 }
-#endif
 
 std::basic_string<DUTF32Char> StringConvert::UTF8ToUTF32(const std::string& utf8)
 {
@@ -314,15 +313,11 @@ std::wstring StringConvert::MBCSToUnicode2(const char* input, size_t inputSize, 
     return output;
 }
 
-DString StringConvert::MBCSToT(const std::string& input)
+std::string StringConvert::MBCSToT(const std::string& input)
 {
-    DString output;
-#ifdef DUI_UNICODE
-    output = MBCSToUnicode(input);
-#else
+    std::string output;
     std::wstring temp = MBCSToUnicode(input);
     output = WStringToUTF8(temp);
-#endif
     return output;
 }
 
@@ -342,43 +337,39 @@ std::string StringConvert::UnicodeToMBCS(const std::wstring& input, int32_t code
     return output;
 }
 
-std::string StringConvert::TToMBCS(const DString& input)
+std::string StringConvert::TToMBCS(const std::string& input)
 {
     std::string output;
-#ifdef DUI_UNICODE
-    output = UnicodeToMBCS(input);
-#else
     std::wstring temp = UTF8ToWString(input);
     output = UnicodeToMBCS(temp);
-#endif
     return output;
 }
 
 #endif //DUI_BUILD_FOR_WIN
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_UNICODE)
-DString StringConvert::TToLocal(const DString& input)
+#if defined (DUI_BUILD_FOR_WIN)
+std::string StringConvert::TToLocal(const std::string& input)
 {
-    DString output;
+    std::string output;
     std::wstring temp = UTF8ToWString(input);
     output = UnicodeToMBCS(temp);
     return output;
 }
 #else
-const DString& StringConvert::TToLocal(const DString& input)
+const std::string& StringConvert::TToLocal(const std::string& input)
 {
     return input;
 }
 #endif
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_UNICODE)
-DString StringConvert::LocalToT(const DString& input)
+#if defined (DUI_BUILD_FOR_WIN)
+std::string StringConvert::LocalToT(const std::string& input)
 {
-    DStringW output = MBCSToUnicode(input);
+    std::wstring output = MBCSToUnicode(input);
     return WStringToUTF8(output);
 }
 #else
-const DString& StringConvert::LocalToT(const DString& input)
+const std::string& StringConvert::LocalToT(const std::string& input)
 {
     return input;
 }

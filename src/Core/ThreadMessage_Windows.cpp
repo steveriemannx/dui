@@ -1,6 +1,6 @@
 #include "dui/Core/ThreadMessage.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Core/GlobalManager.h"
 
@@ -62,7 +62,6 @@ ThreadMessage::~ThreadMessage()
 
 void ThreadMessage::Initialize(void* platformData)
 {
-    ASSERT(m_impl->m_hMessageWnd == nullptr);
     if (m_impl->m_hMessageWnd != nullptr) {
         return;
     }

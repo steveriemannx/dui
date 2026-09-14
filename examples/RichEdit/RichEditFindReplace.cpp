@@ -16,7 +16,7 @@ void RichEditFindReplace::SetRichEdit(ui::RichEdit* pRichEdit)
     m_pRichEdit = pRichEdit;
 }
 
-bool RichEditFindReplace::FindRichText(const DString& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
+bool RichEditFindReplace::FindRichText(const std::string& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
 {
     bool bChanged = false;
     if (m_sFindNext != findText) {
@@ -70,7 +70,7 @@ bool RichEditFindReplace::FindNext()
     }
 }
 
-bool RichEditFindReplace::ReplaceRichText(const DString& findText, const DString& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
+bool RichEditFindReplace::ReplaceRichText(const std::string& findText, const std::string& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
 {
     m_sFindNext = findText;
     m_sReplaceWith = replaceText;
@@ -116,7 +116,7 @@ bool RichEditFindReplace::ReplaceRichText(const DString& findText, const DString
     return bReplaced;
 }
 
-bool RichEditFindReplace::ReplaceAllRichText(const DString& findText, const DString& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
+bool RichEditFindReplace::ReplaceAllRichText(const std::string& findText, const std::string& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
 {
     m_sFindNext = findText;
     m_sReplaceWith = replaceText;
@@ -165,7 +165,7 @@ bool RichEditFindReplace::ReplaceAllRichText(const DString& findText, const DStr
     return replaceCount > 0;
 }
 
-bool RichEditFindReplace::FindTextSimple(const DString& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord)
+bool RichEditFindReplace::FindTextSimple(const std::string& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord)
 {
     if (m_pRichEdit == nullptr) {
         return false;
@@ -246,12 +246,12 @@ bool RichEditFindReplace::FindAndSelect(const ui::FindTextParam& findParam)
     return false;
 }
 
-bool RichEditFindReplace::SameAsSelected(const DString& replaceText, bool bMatchCase)
+bool RichEditFindReplace::SameAsSelected(const std::string& replaceText, bool bMatchCase)
 {
     if (m_pRichEdit == nullptr) {
         return false;
     }
-    DString selectedText = m_pRichEdit->GetSelText();
+    std::string selectedText = m_pRichEdit->GetSelText();
     if (bMatchCase) {
         return selectedText == replaceText;
     }
@@ -260,7 +260,7 @@ bool RichEditFindReplace::SameAsSelected(const DString& replaceText, bool bMatch
     }
 }
 
-void RichEditFindReplace::TextNotFound(const DString& findText)
+void RichEditFindReplace::TextNotFound(const std::string& findText)
 {
     m_bFirstSearch = true;
     m_nInitialSearchPos = 0;
@@ -299,7 +299,7 @@ void RichEditFindReplace::AdjustDialogPosition(ui::Window* pWndDialog)
     }
 }
 
-void RichEditFindReplace::OnTextNotFound(const DString& findText)
+void RichEditFindReplace::OnTextNotFound(const std::string& findText)
 {
 }
 

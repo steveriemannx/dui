@@ -122,11 +122,9 @@ bool CefClientApp::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
 {
     (void)source_process;
     ASSERT(source_process == PID_BROWSER);
-    ASSERT(message != nullptr);
     if (message == nullptr) {
         return false;
     }
-    ASSERT(browser != nullptr);
     if (browser == nullptr) {
         return false;
     }

@@ -15,20 +15,20 @@ public:
 
 public:
     // Find
-    bool FindRichText(const DString& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
+    bool FindRichText(const std::string& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
 
     // Find Next
     bool FindNext();
 
     // Replace
-    bool ReplaceRichText(const DString& findText, const DString& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
+    bool ReplaceRichText(const std::string& findText, const std::string& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
     
     // Replace All
-    bool ReplaceAllRichText(const DString& findText, const DString& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
+    bool ReplaceAllRichText(const std::string& findText, const std::string& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog);
 
 protected:
     // Not found, callback function
-    virtual void OnTextNotFound(const DString& findText);
+    virtual void OnTextNotFound(const std::string& findText);
 
     // Start replacing all
     virtual void OnReplaceAllCoreBegin();
@@ -38,16 +38,16 @@ protected:
 
 private:
     // Find function implementation
-    bool FindTextSimple(const DString& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord);
+    bool FindTextSimple(const std::string& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord);
 
     // Find and select
     bool FindAndSelect(const ui::FindTextParam& findParam);
 
     // Compare whether the current selection matches the text
-    bool SameAsSelected(const DString& replaceText, bool bMatchCase);
+    bool SameAsSelected(const std::string& replaceText, bool bMatchCase);
 
     // Not found, callback function
-    void TextNotFound(const DString& findText);
+    void TextNotFound(const std::string& findText);
 
     // Adjust the position of the find/replace window
     void AdjustDialogPosition(ui::Window* pWndDialog);
@@ -57,10 +57,10 @@ private:
     ui::RichEdit* m_pRichEdit;
 
     // Find text
-    DString m_sFindNext;
+    std::string m_sFindNext;
 
     // Replace text
-    DString m_sReplaceWith;
+    std::string m_sReplaceWith;
 
     // Search direction options
     bool m_bFindDown;

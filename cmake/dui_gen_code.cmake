@@ -149,5 +149,6 @@ endif()
 add_custom_target("${PROJECT_NAME}_gen_xml_code" DEPENDS "${GENERATED_SRC}")
 list(APPEND DUI_GENERATED_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 
-# Stash for dui_bin.cmake to add dependency
+# Kept for callers that still read it; dui_finalize_app() wires the dependency onto the
+# application target by name, so nothing has to consume this any more.
 set(DUI_GEN_CODE_SRC "${GENERATED_SRC}")

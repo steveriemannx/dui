@@ -92,7 +92,16 @@ void SkRasterWindowContext_Wayland::resize(int nWidth, int nHeight)
         return;
     }
 
-    SkImageInfo info = SkImageInfo::Make(nWidth, nHeight, pDisplayParams->colorType(),
+    // The surface is wrapped around a wl_shm buffer declared ARGB8888. In a
+    // little-endian 32-bit word that format is A[31:24] R[23:16] G[15:8]
+    // B[7:0], so the bytes in memory run B,G,R,A -- which is Skia's
+    // kBGRA_8888, not its "native" kN32. This Skia fork builds kN32 as RGBA
+    // (see the note in SkRasterWindowContext_MacOS.mm), so leaving the color
+    // type at the display default made Skia write R,G,B,A into a buffer the
+    // compositor read as B,G,R,A: every colour in every window came out with
+    // red and blue swapped. Declaring the layout the buffer actually
+    // describes is what fixes it, and it holds whichever way kN32 is built.
+    SkImageInfo info = SkImageInfo::Make(nWidth, nHeight, SkColorType::kBGRA_8888_SkColorType,
                                           SkAlphaType::kPremul_SkAlphaType, pDisplayParams->colorSpace());
     m_fBackbufferSurface = SkSurfaces::WrapPixels(info, pixels, sizeof(uint32_t) * nWidth);
     if (m_fBackbufferSurface == nullptr) {
@@ -250,13 +259,15 @@ bool SkRasterWindowContext_Wayland::PaintAndSwapBuffers(IRender* pRender, IRende
     uint8_t nLayeredWindowAlpha = pRenderPaint->GetLayeredWindowAlpha();
     const bool bFullPaint = (rcPaint.Width() == width()) && (rcPaint.Height() == height());
 
-    SkCanvas* skCanvas = nullptr;
-    if (!bFullPaint) {
-        skCanvas = m_fBackbufferSurface->getCanvas();
-        if (skCanvas != nullptr) {
-            skCanvas->save();
+    SkCanvas* skCanvas = m_fBackbufferSurface->getCanvas();
+    if (skCanvas != nullptr) {
+        skCanvas->save();
+        if (!bFullPaint) {
             skCanvas->clipIRect(SkIRect::MakeLTRB(rcPaint.left, rcPaint.top, rcPaint.right, rcPaint.bottom));
         }
+        // Clear before repainting transparent shadows; otherwise repeated
+        // partial paints accumulate the shadow alpha in the backbuffer.
+        skCanvas->clear(SK_ColorTRANSPARENT);
     }
 
     bool bRet = pRenderPaint->DoPaint(rcPaint);
@@ -276,7 +287,7 @@ bool SkRasterWindowContext_Wayland::PaintAndSwapBuffers(IRender* pRender, IRende
 
 bool SkRasterWindowContext_Wayland::SwapPaintBuffers(const UiRect& rcPaint, uint8_t nLayeredWindowAlpha)
 {
-    PerformanceStat statPerformance(DUI_T("PaintWindow, SkRasterWindowContext_Wayland::SwapPaintBuffers"));
+    PerformanceStat statPerformance("PaintWindow, SkRasterWindowContext_Wayland::SwapPaintBuffers");
     (void)nLayeredWindowAlpha;
 
     if (rcPaint.IsEmpty() || !m_wlSurface) return false;

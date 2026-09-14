@@ -25,7 +25,7 @@ public:
 
     /**@brief Get the font name
      */
-    virtual DString FontName() const override { return m_uiFont.m_fontName.c_str(); }
+    virtual std::string FontName() const override { return m_uiFont.m_fontName.c_str(); }
 
     /**@brief Get the font size
      */

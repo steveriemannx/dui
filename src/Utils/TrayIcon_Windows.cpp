@@ -1,6 +1,6 @@
 #include "dui/Utils/TrayIcon.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Core/Window.h"
 #include "dui/Core/Control.h"
@@ -31,12 +31,12 @@ public:
     * @param [in] tooltip Tray tooltip text
     * @return Returns true on successful initialization, false on failure
     */
-    bool Initialize(const Window* pWindow, const DString& iconFilePath, const DString& tooltip);
+    bool Initialize(const Window* pWindow, const std::string& iconFilePath, const std::string& tooltip);
 
 public:
-    virtual bool SetIcon(const Window* pWindow, const DString& iconFilePath) override;
-    virtual bool SetTooltip(const DString& tooltip) override;
-    virtual bool ShowBalloon(const DString& title, const DString& content, uint32_t timeoutMs = 3000) override;
+    virtual bool SetIcon(const Window* pWindow, const std::string& iconFilePath) override;
+    virtual bool SetTooltip(const std::string& tooltip) override;
+    virtual bool ShowBalloon(const std::string& title, const std::string& content, uint32_t timeoutMs = 3000) override;
     virtual bool Hide() override;
     virtual bool Show() override;
     virtual bool IsTrayVisible() const override;
@@ -48,14 +48,14 @@ private:
     * @param [in] iconFilePath Icon file path
     * @return The icon handle, or nullptr on failure
     */
-    HICON LoadIconFromFile(const Window* pWindow, const DString& iconFilePath);
+    HICON LoadIconFromFile(const Window* pWindow, const std::string& iconFilePath);
 
     /** Load an icon from file data
     * @param [in] fileData The file data
     * @param [in] iconFilePath The file path
     * @return The icon handle, or nullptr on failure
     */
-    HICON LoadIconFromFileData(const std::vector<uint8_t>& fileData, const DString& iconFilePath);
+    HICON LoadIconFromFileData(const std::vector<uint8_t>& fileData, const std::string& iconFilePath);
 
     /** Update the tray icon
     * @param [in] dwMessage Message type (NIM_ADD, NIM_MODIFY, NIM_DELETE)
@@ -82,7 +82,7 @@ private:
 
     /** Tooltip text
     */
-    DString m_tooltip;
+    std::string m_tooltip;
 
     /** Whether hidden
     */
@@ -124,7 +124,7 @@ TrayIconImpl::~TrayIconImpl()
 //Name of the window class
 #define DUI_TRAY_MESSAGE_WINDOW_CLASS L"TrayIconMessageWindow"
 
-bool TrayIconImpl::Initialize(const Window* pWindow, const DString& iconFilePath, const DString& tooltip)
+bool TrayIconImpl::Initialize(const Window* pWindow, const std::string& iconFilePath, const std::string& tooltip)
 {
     // Create a hidden message window to receive tray messages
     HINSTANCE hInstance = (HINSTANCE)GlobalManager::Instance().GetPlatformData();
@@ -169,7 +169,7 @@ bool TrayIconImpl::Initialize(const Window* pWindow, const DString& iconFilePath
     return UpdateTrayIcon(NIM_ADD);
 }
 
-HICON TrayIconImpl::LoadIconFromFile(const Window* pWindow, const DString& iconFilePath)
+HICON TrayIconImpl::LoadIconFromFile(const Window* pWindow, const std::string& iconFilePath)
 {
     if (iconFilePath.empty()) {
         return nullptr;
@@ -182,7 +182,6 @@ HICON TrayIconImpl::LoadIconFromFile(const Window* pWindow, const DString& iconF
         windowXmlPath = pWindow->GetXmlPath();
     }
     FilePath iconFullPath = GlobalManager::Instance().GetExistsResFullPath(windowResPath, windowXmlPath, FilePath(iconFilePath));
-    ASSERT(!iconFullPath.IsEmpty());
     if (iconFullPath.IsEmpty()) {
         return nullptr;
     }
@@ -196,7 +195,6 @@ HICON TrayIconImpl::LoadIconFromFile(const Window* pWindow, const DString& iconF
     }
     else {
         //Use the local file
-        ASSERT(iconFullPath.IsExistsFile());
         if (!iconFullPath.IsExistsFile()) {
             return nullptr;
         }
@@ -211,7 +209,7 @@ HICON TrayIconImpl::LoadIconFromFile(const Window* pWindow, const DString& iconF
     }
 }
 
-HICON TrayIconImpl::LoadIconFromFileData(const std::vector<uint8_t>& fileData, const DString& iconFilePath)
+HICON TrayIconImpl::LoadIconFromFileData(const std::vector<uint8_t>& fileData, const std::string& iconFilePath)
 {
     uint32_t uDpiScaleFactor = ui::GlobalManager::Instance().Dpi().GetDisplayScaleFactor();
     HICON hSmallIcon = nullptr;
@@ -252,7 +250,7 @@ bool TrayIconImpl::UpdateTrayIcon(DWORD dwMessage)
     return result == TRUE;
 }
 
-bool TrayIconImpl::SetIcon(const Window* pWindow, const DString& iconFilePath)
+bool TrayIconImpl::SetIcon(const Window* pWindow, const std::string& iconFilePath)
 {
     if (m_hIcon != nullptr) {
         ::DestroyIcon(m_hIcon);
@@ -267,13 +265,13 @@ bool TrayIconImpl::SetIcon(const Window* pWindow, const DString& iconFilePath)
     return UpdateTrayIcon(NIM_MODIFY);
 }
 
-bool TrayIconImpl::SetTooltip(const DString& tooltip)
+bool TrayIconImpl::SetTooltip(const std::string& tooltip)
 {
     m_tooltip = tooltip;
     return UpdateTrayIcon(NIM_MODIFY);
 }
 
-bool TrayIconImpl::ShowBalloon(const DString& title, const DString& content, uint32_t timeoutMs)
+bool TrayIconImpl::ShowBalloon(const std::string& title, const std::string& content, uint32_t timeoutMs)
 {
     if (m_hWnd == nullptr || m_bHidden) {
         return false;
@@ -414,7 +412,7 @@ LRESULT CALLBACK TrayIconImpl::TrayIconWndProc(HWND hWnd, UINT uMsg, WPARAM wPar
 }
 
 // Create function of the TrayIcon base class, Windows platform implementation
-std::unique_ptr<TrayIcon> TrayIcon::Create(const Window* pWindow, const DString& iconFilePath, const DString& tooltip)
+std::unique_ptr<TrayIcon> TrayIcon::Create(const Window* pWindow, const std::string& iconFilePath, const std::string& tooltip)
 {
     std::unique_ptr<TrayIconImpl> pTrayIcon = std::make_unique<TrayIconImpl>();
     if (pTrayIcon->Initialize(pWindow, iconFilePath, tooltip)) {

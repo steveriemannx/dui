@@ -83,7 +83,7 @@ void GetStorageForString(STGMEDIUM* stgmed, const std::basic_string<T>& data) {
 }
 
 void GetStorageForFileDescriptor(STGMEDIUM* storage,
-                                 const DString& file_name) {
+                                 const std::string& file_name) {
   DCHECK(!file_name.empty());
   HANDLE hdata = GlobalAlloc(GPTR, sizeof(FILEGROUPDESCRIPTOR));
 
@@ -222,12 +222,12 @@ void CFHtmlToHtml(const std::string& cf_html,
 }
 
 DWORD GetMozUrlFormat() {
-  static DWORD moz_url_format = ::RegisterClipboardFormat(DUI_T("text/x-moz-url"));
+  static DWORD moz_url_format = ::RegisterClipboardFormat("text/x-moz-url");
   return moz_url_format;
 }
 
 DWORD GetHtmlFormat() {
-  static DWORD html_format = ::RegisterClipboardFormat(DUI_T("HTML Format"));
+  static DWORD html_format = ::RegisterClipboardFormat("HTML Format");
   return html_format;
 }
 
@@ -291,7 +291,7 @@ bool DragDataToDataObject(CefRefPtr<CefDragData> drag_data,
 #if defined(UNICODE) || defined(_UNICODE)
     GetStorageForFileDescriptor(&stgmeds[curr_index], fileName.ToWString());
 #else
-    DString temp = ui::StringConvert::TToMBCS(fileName.ToString());
+    std::string temp = ui::StringConvert::TToMBCS(fileName.ToString());
     GetStorageForFileDescriptor(&stgmeds[curr_index], temp);
 #endif
     fmtetc.cfFormat = static_cast<decltype(fmtetc.cfFormat)>(file_desc_format);

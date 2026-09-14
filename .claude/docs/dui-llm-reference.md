@@ -10,7 +10,7 @@
 <Window size="800,600" min_size="80,60"
         caption="0,0,0,36" use_system_caption="false"
         snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36"
-        shadow_type="default" shadow_attached="true"
+        shadow_type="draw_default" shadow_attached="true"
         layered_window="true" alpha="255" size_box="4,4,4,4"
         icon="../public/caption/logo.ico">
   <VBox bkcolor="bk_wnd_darkcolor">
@@ -323,8 +323,8 @@ public:
 MyForm::MyForm() {}
 MyForm::~MyForm() {}
 
-DString MyForm::GetSkinFolder() { return _T("my_skin"); }
-DString MyForm::GetSkinFile() { return _T("my_form.xml"); }
+DString MyForm::GetSkinFolder() { return DUI_T("my_skin"); }
+DString MyForm::GetSkinFile() { return DUI_T("my_form.xml"); }
 
 void MyForm::OnInitWindow()
 {
@@ -351,17 +351,17 @@ private:
 #include "MainThread.h"
 #include "MyForm.h"
 
-MainThread::MainThread() : FrameworkThread(_T("MainThread"), ui::kThreadUI) {}
+MainThread::MainThread() : FrameworkThread(DUI_T("MainThread"), ui::kThreadUI) {}
 MainThread::~MainThread() {}
 
 void MainThread::OnInit()
 {
     ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-    resourcePath += _T("resources\\");
+    resourcePath += DUI_T("resources\\");
     ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 
     MyForm* window = new MyForm();
-    window->CreateWnd(nullptr, ui::WindowCreateParam(_T("MyApp"), true));
+    window->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("MyApp"), true));
     window->PostQuitMsgWhenClosed(true);
     window->ShowWindow(ui::kSW_SHOW_NORMAL);
 }
@@ -386,17 +386,17 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
 ### Control Operations
 ```cpp
 // Find a control
-ui::Button* btn = dynamic_cast<ui::Button*>(FindControl(_T("my_button")));
-ui::Label* label = dynamic_cast<ui::Label*>(FindControl(_T("my_label")));
-ui::RichEdit* edit = dynamic_cast<ui::RichEdit*>(FindControl(_T("my_edit")));
-ui::CheckBox* check = dynamic_cast<ui::CheckBox*>(FindControl(_T("my_check")));
-ui::Combo* combo = dynamic_cast<ui::Combo*>(FindControl(_T("my_combo")));
-ui::ListBox* list = dynamic_cast<ui::ListBox*>(FindControl(_T("my_list")));
-ui::Progress* progress = dynamic_cast<ui::Progress*>(FindControl(_T("my_progress")));
+ui::Button* btn = dynamic_cast<ui::Button*>(FindControl(DUI_T("my_button")));
+ui::Label* label = dynamic_cast<ui::Label*>(FindControl(DUI_T("my_label")));
+ui::RichEdit* edit = dynamic_cast<ui::RichEdit*>(FindControl(DUI_T("my_edit")));
+ui::CheckBox* check = dynamic_cast<ui::CheckBox*>(FindControl(DUI_T("my_check")));
+ui::Combo* combo = dynamic_cast<ui::Combo*>(FindControl(DUI_T("my_combo")));
+ui::ListBox* list = dynamic_cast<ui::ListBox*>(FindControl(DUI_T("my_list")));
+ui::Progress* progress = dynamic_cast<ui::Progress*>(FindControl(DUI_T("my_progress")));
 
 // Set attributes
-label->SetText(_T("Hello"));
-edit->SetText(_T("Input"));
+label->SetText(DUI_T("Hello"));
+edit->SetText(DUI_T("Input"));
 DString text = edit->GetText();
 check->SetSelected(true);
 bool isChecked = check->IsSelected();
@@ -414,7 +414,7 @@ void MyForm::OnInitWindow()
     BaseClass::OnInitWindow();
 
     // Button click
-    ui::Button* btn = dynamic_cast<ui::Button*>(FindControl(_T("btn_ok")));
+    ui::Button* btn = dynamic_cast<ui::Button*>(FindControl(DUI_T("btn_ok")));
     if (btn) {
         btn->AttachClick([this](const ui::EventArgs& args) {
             // Handle logic
@@ -423,7 +423,7 @@ void MyForm::OnInitWindow()
     }
 
     // Checkbox state change
-    ui::CheckBox* check = dynamic_cast<ui::CheckBox*>(FindControl(_T("my_check")));
+    ui::CheckBox* check = dynamic_cast<ui::CheckBox*>(FindControl(DUI_T("my_check")));
     if (check) {
         check->AttachSelect([this](const ui::EventArgs& args) {
             // Selected
@@ -436,7 +436,7 @@ void MyForm::OnInitWindow()
     }
 
     // Text change
-    ui::RichEdit* edit = dynamic_cast<ui::RichEdit*>(FindControl(_T("my_edit")));
+    ui::RichEdit* edit = dynamic_cast<ui::RichEdit*>(FindControl(DUI_T("my_edit")));
     if (edit) {
         edit->AttachTextChange([this](const ui::EventArgs& args) {
             // Text changed
@@ -445,7 +445,7 @@ void MyForm::OnInitWindow()
     }
 
     // List selection
-    ui::ListBox* list = dynamic_cast<ui::ListBox*>(FindControl(_T("my_list")));
+    ui::ListBox* list = dynamic_cast<ui::ListBox*>(FindControl(DUI_T("my_list")));
     if (list) {
         list->AttachSelect([this](const ui::EventArgs& args) {
             size_t newIndex = args.wParam;
@@ -463,11 +463,11 @@ void MyForm::OnInitWindow()
 
 ### ListBox Dynamically Adding Items
 ```cpp
-ui::ListBox* list = dynamic_cast<ui::ListBox*>(FindControl(_T("my_list")));
+ui::ListBox* list = dynamic_cast<ui::ListBox*>(FindControl(DUI_T("my_list")));
 for (int i = 0; i < 100; i++) {
     ui::ListBoxItem* item = new ui::ListBoxItem(this);
-    item->SetText(ui::StringUtil::Printf(_T("Item %d"), i));
-    item->SetClass(_T("listitem"));
+    item->SetText(ui::StringUtil::Printf(DUI_T("Item %d"), i));
+    item->SetClass(DUI_T("listitem"));
     item->SetFixedHeight(ui::UiFixedInt(20), true, true);
     list->AddItem(item);
 }
@@ -475,23 +475,23 @@ for (int i = 0; i < 100; i++) {
 
 ### TreeView Dynamically Adding Nodes
 ```cpp
-ui::TreeView* tree = dynamic_cast<ui::TreeView*>(FindControl(_T("my_tree")));
+ui::TreeView* tree = dynamic_cast<ui::TreeView*>(FindControl(DUI_T("my_tree")));
 ui::TreeNode* root = tree->GetRootNode();
 ui::TreeNode* node = new ui::TreeNode(this);
-node->SetClass(_T("tree_node"));
-node->SetText(_T("New Node"));
+node->SetClass(DUI_T("tree_node"));
+node->SetText(DUI_T("New Node"));
 root->AddChildNode(node);
 ```
 
 ### Combo Dynamically Adding Options
 ```cpp
-ui::Combo* combo = dynamic_cast<ui::Combo*>(FindControl(_T("my_combo")));
+ui::Combo* combo = dynamic_cast<ui::Combo*>(FindControl(DUI_T("my_combo")));
 ui::TreeView* treeView = combo->GetTreeView();
 ui::TreeNode* treeNode = treeView->GetRootNode();
 for (int i = 0; i < 10; i++) {
     ui::TreeNode* node = new ui::TreeNode(this);
-    node->SetClass(_T("tree_node"));
-    node->SetText(ui::StringUtil::Printf(_T("Option %d"), i));
+    node->SetClass(DUI_T("tree_node"));
+    node->SetText(ui::StringUtil::Printf(DUI_T("Option %d"), i));
     treeNode->AddChildNode(node);
 }
 combo->SetCurSel(0); // Select the first item by default

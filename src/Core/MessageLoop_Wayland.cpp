@@ -1,5 +1,5 @@
 #include "dui/Core/MessageLoop_Wayland.h"
-#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Core/NativeWindow_Wayland.h"
 #include "dui/Utils/StringConvert.h"
 #include <algorithm>
 
@@ -34,7 +34,7 @@ std::vector<MessageLoop_Wayland::UserEvent> MessageLoop_Wayland::s_userEvents;
 std::mutex MessageLoop_Wayland::s_userEventMutex;
 float MessageLoop_Wayland::s_fDisplayScale = 1.0f;
 static bool s_bQuitEventReceived = false;
-static std::vector<NativeWindow_SDL*> s_paintWindows;
+static std::vector<NativeWindow_Wayland*> s_paintWindows;
 static std::mutex s_paintWindowsMutex;
 
 // Registry listener
@@ -199,9 +199,9 @@ bool MessageLoop_Wayland::CheckInitWayland()
     return true;
 }
 
-DString MessageLoop_Wayland::GetCurrentVideoDriverName()
+std::string MessageLoop_Wayland::GetCurrentVideoDriverName()
 {
-    return DUI_T("wayland");
+    return "wayland";
 }
 
 float MessageLoop_Wayland::GetPrimaryDisplayContentScale()
@@ -365,6 +365,9 @@ int32_t MessageLoop_Wayland::Run(MessageLoopIdleCallback idleCallback)
     close(epollFd);
     
     // Cleanup Wayland resources
+    // Cursor buffers and pointer objects must be released while the display
+    // and seat are still valid.
+    ShutdownWaylandInput();
     if (s_pXdgWmBase) { xdg_wm_base_destroy(s_pXdgWmBase); s_pXdgWmBase = nullptr; }
     if (s_pOutput) { wl_output_destroy(s_pOutput); s_pOutput = nullptr; }
     if (s_pSeat) { wl_seat_destroy(s_pSeat); s_pSeat = nullptr; }
@@ -374,7 +377,6 @@ int32_t MessageLoop_Wayland::Run(MessageLoopIdleCallback idleCallback)
     if (s_pDisplay) { wl_display_disconnect(s_pDisplay); s_pDisplay = nullptr; }
     if (s_eventFd >= 0) { close(s_eventFd); s_eventFd = -1; }
 
-    ShutdownWaylandInput();
     s_bInitialized = false;
     return 0;
 }
@@ -384,9 +386,9 @@ void MessageLoop_Wayland::ProcessWaylandEvents()
     // Check for quit condition - currently handled by the run loop directly
 }
 
-void MessageLoop_Wayland::RunDoModal(NativeWindow_SDL& nativeWindow, bool bCloseByEsc, bool bCloseByEnter)
+void MessageLoop_Wayland::RunDoModal(NativeWindow_Wayland& nativeWindow, bool bCloseByEsc, bool bCloseByEnter)
 {
-    // Will be implemented when NativeWindow_SDL is available
+    // Will be implemented when NativeWindow_Wayland is available
     (void)nativeWindow;
     (void)bCloseByEsc;
     (void)bCloseByEnter;
@@ -526,7 +528,7 @@ void MessageLoop_Wayland::Flush()
     }
 }
 
-void MessageLoop_Wayland::RegisterPaintWindow(NativeWindow_SDL* window)
+void MessageLoop_Wayland::RegisterPaintWindow(NativeWindow_Wayland* window)
 {
     std::lock_guard<std::mutex> lock(s_paintWindowsMutex);
     for (auto* w : s_paintWindows) {
@@ -535,7 +537,7 @@ void MessageLoop_Wayland::RegisterPaintWindow(NativeWindow_SDL* window)
     s_paintWindows.push_back(window);
 }
 
-void MessageLoop_Wayland::UnregisterPaintWindow(NativeWindow_SDL* window)
+void MessageLoop_Wayland::UnregisterPaintWindow(NativeWindow_Wayland* window)
 {
     std::lock_guard<std::mutex> lock(s_paintWindowsMutex);
     s_paintWindows.erase(
@@ -548,7 +550,8 @@ void MessageLoop_Wayland::PaintAllWindows()
 {
     std::lock_guard<std::mutex> lock(s_paintWindowsMutex);
     for (auto* window : s_paintWindows) {
-        if (window && window->IsWindowVisible() && !window->IsClosingWnd()) {
+        if (window && window->IsWindowVisible() && !window->IsClosingWnd() &&
+            !window->GetUpdateRect().IsEmpty()) {
             window->PaintWindow(false);
         }
     }

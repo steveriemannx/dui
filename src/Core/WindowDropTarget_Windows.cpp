@@ -1,7 +1,7 @@
 #include "dui/Core/WindowDropTarget_Windows.h"
 #include "dui/Core/ControlDropTarget.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Core/NativeWindow_Windows.h"
 #include "dui/Core/Control.h"

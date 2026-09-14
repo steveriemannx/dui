@@ -10,7 +10,7 @@ description: dui resource deployment and custom binary embedding; configure how 
 ### Mode 1: Local folder (recommended during development)
 ```cpp
 ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-resourcePath += _T("resources\\");
+resourcePath += DUI_T("resources\\");
 ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 ```
 Directory structure:

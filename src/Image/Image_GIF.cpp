@@ -122,7 +122,6 @@ static AnimationFramePtr UiGifToRgbaFrames(FrameSequence_gif& gif,
         return nullptr;
     }
 
-    ASSERT(nPrevFrameIndex == (nFrameIndex - 1));
     if (nPrevFrameIndex != (nFrameIndex - 1)) {
         return nullptr;
     }
@@ -135,7 +134,6 @@ static AnimationFramePtr UiGifToRgbaFrames(FrameSequence_gif& gif,
 
     // Get the render factory instance
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return nullptr;
     }
@@ -252,7 +250,6 @@ public:
                        float fImageSizeScale,
                        const UiSize& rcMaxDestRectSize)
     {
-        ASSERT(dec != nullptr);
         if (dec == nullptr) {
             return false;
         }
@@ -371,7 +368,6 @@ bool Image_GIF::LoadImageFile(std::vector<uint8_t>& fileData,
                               const UiSize& rcMaxDestRectSize,
                               bool bAssertEnabled)
 {
-    ASSERT(!fileData.empty() || !imageFilePath.IsEmpty());
     if (fileData.empty() && imageFilePath.IsEmpty()) {
         return false;
     }
@@ -391,7 +387,7 @@ bool Image_GIF::LoadImageFile(std::vector<uint8_t>& fileData,
         return m_impl->InitImageData(dec, fileData, bLoadAllFrames, bAsyncDecode, fImageSizeScale, rcMaxDestRectSize);
     }
     else {
-        DStringA gifFileName = imageFilePath.NativePathA();
+        std::string gifFileName = imageFilePath.NativePathA();
         ASSERT(!gifFileName.empty());
         int nErrorCode = 0;
         GifFileType* dec = DGifOpenFileName(gifFileName.c_str(), &nErrorCode);
@@ -564,7 +560,6 @@ int32_t Image_GIF::GetFrameDelayMs(uint32_t nFrameIndex)
 bool Image_GIF::ReadFrameData(int32_t nFrameIndex, const UiSize& /*szDestRectSize*/, AnimationFrame* pAnimationFrame)
 {
     GlobalManager::Instance().AssertUIThread();
-    ASSERT(pAnimationFrame != nullptr);
     if (pAnimationFrame == nullptr) {
         return false;
     }

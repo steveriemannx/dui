@@ -60,8 +60,8 @@ typedef class ReceiverImpl<bool, ContextMenuParam> ContextMenuReceiver;
 * @param [in] itemName Name of the menu item, equivalent to the command ID (i.e., the name attribute in XML, which represents the ID of the menu item)
 * @param [in] nItemIndex Index number of the menu item (the index starts from 0)
 */
-typedef std::function<void (const DString& menuName, int32_t nMenuLevel,
-                            const DString& itemName, size_t nItemIndex)> MenuItemActivatedEvent;
+typedef std::function<void (const std::string& menuName, int32_t nMenuLevel,
+                            const std::string& itemName, size_t nItemIndex)> MenuItemActivatedEvent;
 
 /** Menu class
 */
@@ -83,13 +83,13 @@ public:
     /** Set the folder name for resource loading; if not set, it defaults to "menu" internally
     *   Resources in XML files (images, XML, etc.) are all searched in this folder
     */
-    void SetSkinFolder(const DString& skinFolder);
+    void SetSkinFolder(const std::string& skinFolder);
 
     /** Set the XML template file and properties of the multi-level submenu
     @param [in] submenuXml The XML template file name of the submenu; if not set, it defaults to "submenu.xml" internally
     @param [in] submenuNodeName The node name in the submenu XML file where submenu items are inserted; if not set, it defaults to "submenu" internally
     */
-    void SetSubMenuXml(const DString& submenuXml, const DString& submenuNodeName);
+    void SetSubMenuXml(const std::string& submenuXml, const std::string& submenuNodeName);
 
     /** Initialize the menu configuration and display the menu
     *   After it returns, the FindControl function can be used to find menu items for subsequent operations
@@ -99,7 +99,7 @@ public:
     * @param [in] noFocus After the menu pops up, do not activate the window, to avoid grabbing the focus
     * @Param [in] pOwner The interface of the parent menu; if this value is not nullptr, this menu is in multi-level menu mode
     */
-    void ShowMenu(const DString& xml, 
+    void ShowMenu(const std::string& xml, 
                   const UiPoint& point,
                   MenuPopupPosType popupPosType = MenuPopupPosType::LEFT_TOP, 
                   bool noFocus = false,
@@ -137,7 +137,7 @@ public:
 
     //Get the menu item interface
     MenuItem* GetMenuItemAt(size_t iIndex) const;
-    MenuItem* GetMenuItemByName(const DString& name) const;
+    MenuItem* GetMenuItemByName(const std::string& name) const;
 
     //Get the control associated with the menu
     Control* GetRelatedControl() const;
@@ -190,16 +190,16 @@ private:
     * @param [in] itemName Name of the menu item (i.e., the name attribute in XML, which represents the ID of the menu item)
     * @param [in] nItemIndex Index number of the menu item (the index starts from 0)
     */
-    void OnMenuItemActivated(const DString& menuName, int32_t nMenuLevel,
-                             const DString& itemName, size_t nItemIndex);
+    void OnMenuItemActivated(const std::string& menuName, int32_t nMenuLevel,
+                             const std::string& itemName, size_t nItemIndex);
 
 private:
 
     virtual bool Receive(ContextMenuParam param) override;
 
-    virtual ui::Control* CreateControl(const DString& pstrClass) override;
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual ui::Control* CreateControl(const std::string& pstrClass) override;
+    virtual std::string GetSkinFolder() override;
+    virtual std::string GetSkinFile() override;
     virtual void PreInitWindow() override;
     virtual void PostInitWindow() override;
     virtual void OnCloseWindow() override;
@@ -283,9 +283,9 @@ private:
     //Information of the activated menu item
     struct ActiveMenuItem
     {
-        DString m_menuName;
+        std::string m_menuName;
         int32_t m_menuLevel = 0;
-        DString m_itemName;
+        std::string m_itemName;
         size_t m_itemIndex = Box::InvalidIndex;
     };
     std::unique_ptr<ActiveMenuItem> m_pActiveMenuItem;
@@ -313,7 +313,7 @@ public:
 
     //Get the submenu item interface
     MenuItem* GetSubMenuItemAt(size_t iIndex) const;
-    MenuItem* GetSubMenuItemByName(const DString& name) const;
+    MenuItem* GetSubMenuItemByName(const std::string& name) const;
 
     //Menu item activation (activated by click or by pressing Enter)
     virtual void Activate(const EventArgs* pMsg) override;

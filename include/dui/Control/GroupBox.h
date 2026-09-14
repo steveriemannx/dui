@@ -19,8 +19,8 @@ public:
     virtual ~GroupBoxTemplate() override;
         
     /// Override the base class method to provide customized functionality; refer to the base class declaration
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void PaintText(IRender* pRender) override;
 
     /** When the DPI changes, update the control size and layout
@@ -47,7 +47,7 @@ public:
 
     /** Set the line color
     */
-    void SetLineColor(const DString& lineColor);
+    void SetLineColor(const std::string& lineColor);
 
 private:
     /** Get a color with a certain transparency
@@ -70,8 +70,8 @@ GroupBoxTemplate<InheritType>::GroupBoxTemplate(Window* pWindow):
     LabelTemplate<InheritType>(pWindow),
     m_nLineWidth(0)
 {
-    SetAttribute(DUI_T("text_align"), DUI_T("top,left"));
-    SetAttribute(DUI_T("text_padding"), DUI_T("8,0,0,0"));
+    SetAttribute("text_align", "top,left");
+    SetAttribute("text_padding", "8,0,0,0");
 }
 
 template<typename InheritType>
@@ -80,16 +80,16 @@ GroupBoxTemplate<InheritType>::~GroupBoxTemplate()
 }
 
 template<typename InheritType>
-inline DString GroupBoxTemplate<InheritType>::GetType() const { return DUI_T("GroupBoxTemplate"); }
+inline std::string GroupBoxTemplate<InheritType>::GetType() const { return "GroupBoxTemplate"; }
 
 template<>
-inline DString GroupBoxTemplate<Box>::GetType() const { return DUI_CTR_GROUP_BOX; }
+inline std::string GroupBoxTemplate<Box>::GetType() const { return DUI_CTR_GROUP_BOX; }
 
 template<>
-inline DString GroupBoxTemplate<HBox>::GetType() const { return DUI_CTR_GROUP_HBOX; }
+inline std::string GroupBoxTemplate<HBox>::GetType() const { return DUI_CTR_GROUP_HBOX; }
 
 template<>
-inline DString GroupBoxTemplate<VBox>::GetType() const { return DUI_CTR_GROUP_VBOX; }
+inline std::string GroupBoxTemplate<VBox>::GetType() const { return DUI_CTR_GROUP_VBOX; }
 
 template<typename InheritType>
 void GroupBoxTemplate<InheritType>::SetCornerSize(UiSize cxyRound, bool bNeedDpiScale)
@@ -150,7 +150,7 @@ int32_t GroupBoxTemplate<InheritType>::GetLineWidth() const
 }
 
 template<typename InheritType>
-void GroupBoxTemplate<InheritType>::SetLineColor(const DString& lineColor)
+void GroupBoxTemplate<InheritType>::SetLineColor(const std::string& lineColor)
 {
     if (m_lineColor != lineColor) {
         m_lineColor = lineColor;
@@ -166,24 +166,24 @@ UiColor GroupBoxTemplate<InheritType>::GetFadeColor(UiColor color, uint8_t nFade
 }
 
 template<typename InheritType>
-void GroupBoxTemplate<InheritType>::SetAttribute(const DString& strName, const DString& strValue)
+void GroupBoxTemplate<InheritType>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("corner_size")) {
+    if (strName == "corner_size") {
         //Corner size
         UiSize cxyRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), cxyRound);
         this->SetCornerSize(cxyRound, true);
     }
-    else if (strName == DUI_T("line_width")) {
+    else if (strName == "line_width") {
         //Line width
         ASSERT(StringUtil::StringToInt32(strValue) >= 0);
         this->SetLineWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("line_color")) {
+    else if (strName == "line_color") {
         //Line color
         this->SetLineColor(strValue);
     }
-    else if (strName == DUI_T("text")) {
+    else if (strName == "text") {
         //Set the text content
         BaseClass::SetAttribute(strName, strValue);
     }
@@ -219,7 +219,7 @@ void GroupBoxTemplate<InheritType>::PaintText(IRender* pRender)
     }
 
     UiPadding rcPadding = this->GetControlPadding();
-    DString textValue = this->GetText();//text content
+    std::string textValue = this->GetText();//text content
     UiRect drawTextRect;//draw area of the text
     bool hasClip = false;
     if (!textValue.empty()) {

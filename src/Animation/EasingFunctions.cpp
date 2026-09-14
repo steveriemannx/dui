@@ -478,49 +478,49 @@ EasingFunction EasingFunctions::GetEasingFunction(EasingFunctionType function)
     return it == easingFunctions.end() ? nullptr : it->second;
 }
 
-EasingFunctionType EasingFunctions::GetEasingFunctionType(DString easingFunctionName)
+EasingFunctionType EasingFunctions::GetEasingFunctionType(std::string easingFunctionName)
 {
     // Static map: initialized only once, for better performance
-    static std::map<DString, EasingFunctionType> easingFunctions;
+    static std::map<std::string, EasingFunctionType> easingFunctions;
     if (easingFunctions.empty()) {
         // Initialize the mapping between the enum values and the functions
-        easingFunctions.insert(std::make_pair(DUI_T("EaseLinear"), EaseLinear));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInSine"), EaseInSine));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutSine"), EaseOutSine));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutSine"), EaseInOutSine));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInQuad"), EaseInQuad));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutQuad"), EaseOutQuad));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutQuad"), EaseInOutQuad));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInCubic"), EaseInCubic));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutCubic"), EaseOutCubic));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutCubic"), EaseInOutCubic));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInQuart"), EaseInQuart));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutQuart"), EaseOutQuart));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutQuart"), EaseInOutQuart));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInQuint"), EaseInQuint));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutQuint"), EaseOutQuint));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutQuint"), EaseInOutQuint));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInExpo"), EaseInExpo));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutExpo"), EaseOutExpo));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutExpo"), EaseInOutExpo));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInCirc"), EaseInCirc));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutCirc"), EaseOutCirc));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutCirc"), EaseInOutCirc));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInBack"), EaseInBack));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutBack"), EaseOutBack));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutBack"), EaseInOutBack));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInElastic"), EaseInElastic));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutElastic"), EaseOutElastic));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutElastic"), EaseInOutElastic));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInBounce"), EaseInBounce));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseOutBounce"), EaseOutBounce));
-        easingFunctions.insert(std::make_pair(DUI_T("EaseInOutBounce"), EaseInOutBounce));
+        easingFunctions.insert(std::make_pair("EaseLinear", EaseLinear));
+        easingFunctions.insert(std::make_pair("EaseInSine", EaseInSine));
+        easingFunctions.insert(std::make_pair("EaseOutSine", EaseOutSine));
+        easingFunctions.insert(std::make_pair("EaseInOutSine", EaseInOutSine));
+        easingFunctions.insert(std::make_pair("EaseInQuad", EaseInQuad));
+        easingFunctions.insert(std::make_pair("EaseOutQuad", EaseOutQuad));
+        easingFunctions.insert(std::make_pair("EaseInOutQuad", EaseInOutQuad));
+        easingFunctions.insert(std::make_pair("EaseInCubic", EaseInCubic));
+        easingFunctions.insert(std::make_pair("EaseOutCubic", EaseOutCubic));
+        easingFunctions.insert(std::make_pair("EaseInOutCubic", EaseInOutCubic));
+        easingFunctions.insert(std::make_pair("EaseInQuart", EaseInQuart));
+        easingFunctions.insert(std::make_pair("EaseOutQuart", EaseOutQuart));
+        easingFunctions.insert(std::make_pair("EaseInOutQuart", EaseInOutQuart));
+        easingFunctions.insert(std::make_pair("EaseInQuint", EaseInQuint));
+        easingFunctions.insert(std::make_pair("EaseOutQuint", EaseOutQuint));
+        easingFunctions.insert(std::make_pair("EaseInOutQuint", EaseInOutQuint));
+        easingFunctions.insert(std::make_pair("EaseInExpo", EaseInExpo));
+        easingFunctions.insert(std::make_pair("EaseOutExpo", EaseOutExpo));
+        easingFunctions.insert(std::make_pair("EaseInOutExpo", EaseInOutExpo));
+        easingFunctions.insert(std::make_pair("EaseInCirc", EaseInCirc));
+        easingFunctions.insert(std::make_pair("EaseOutCirc", EaseOutCirc));
+        easingFunctions.insert(std::make_pair("EaseInOutCirc", EaseInOutCirc));
+        easingFunctions.insert(std::make_pair("EaseInBack", EaseInBack));
+        easingFunctions.insert(std::make_pair("EaseOutBack", EaseOutBack));
+        easingFunctions.insert(std::make_pair("EaseInOutBack", EaseInOutBack));
+        easingFunctions.insert(std::make_pair("EaseInElastic", EaseInElastic));
+        easingFunctions.insert(std::make_pair("EaseOutElastic", EaseOutElastic));
+        easingFunctions.insert(std::make_pair("EaseInOutElastic", EaseInOutElastic));
+        easingFunctions.insert(std::make_pair("EaseInBounce", EaseInBounce));
+        easingFunctions.insert(std::make_pair("EaseOutBounce", EaseOutBounce));
+        easingFunctions.insert(std::make_pair("EaseInOutBounce", EaseInOutBounce));
     }
 
     if (!easingFunctionName.empty()) {
-        if ((easingFunctionName[0] >= DUI_T('a')) && (easingFunctionName[0] <= DUI_T('z'))) {
+        if ((easingFunctionName[0] >= 'a') && (easingFunctionName[0] <= 'z')) {
             //Convert the first character to uppercase (the first character of the passed-in parameter may be lowercase)
-            easingFunctionName[0] = easingFunctionName[0] - (DUI_T('a') - DUI_T('A'));
+            easingFunctionName[0] = easingFunctionName[0] - ('a' - 'A');
         }
     }
     // Look up the corresponding function
@@ -534,7 +534,6 @@ EasingFunctions::EasingFunctions(int32_t nStartValue, int32_t nEndValue, int32_t
     m_nFrameCount(nFrameCount)
 {
     m_easingFunction = GetEasingFunction(easingFunctionType);
-    ASSERT(m_easingFunction != nullptr);
     if (m_easingFunction == nullptr) {
         m_easingFunction = easeLinear;
     }

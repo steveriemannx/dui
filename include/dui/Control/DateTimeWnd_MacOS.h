@@ -47,7 +47,7 @@ private:
 
     /** Create a text control
     */
-    Control* CreateLabel(const DString& text) const;
+    Control* CreateLabel(const std::string& text) const;
 
     /** Control the day range (leap year, etc.)
     */
@@ -55,7 +55,7 @@ private:
 
     /** Set the Class name of the Spin feature
     */
-    bool SetSpinClass(const DString& spinClass);
+    bool SetSpinClass(const std::string& spinClass);
 
     /** Adjust the numeric value of the text
     */

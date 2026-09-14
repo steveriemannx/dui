@@ -8,20 +8,20 @@ AboutForm::~AboutForm()
 {
 }
 
-DString AboutForm::GetSkinFolder()
+std::string AboutForm::GetSkinFolder()
 {
-    return DUI_T("controls");
+    return "controls";
 }
 
-DString AboutForm::GetSkinFile()
+std::string AboutForm::GetSkinFile()
 {
-    return DUI_T("about.xml");
+    return "about.xml";
 }
 
 void AboutForm::OnInitWindow()
 {
     ui::WindowImplBase::OnInitWindow();
-    ui::Label* link = ui::Find<ui::Label>(this, DUI_T("link"));
+    ui::Label* link = ui::Find<ui::Label>(this, "link");
     if (link != nullptr) {
         link->AttachButtonUp([link](const ui::EventArgs& args) {
             ui::SystemUtil::OpenUrl(link->GetText());

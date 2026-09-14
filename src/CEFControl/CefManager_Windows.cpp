@@ -28,22 +28,22 @@ CefManager_Windows::~CefManager_Windows()
 {
 }
 
-DString CefManager_Windows::GetCefMoudlePath() const
+std::string CefManager_Windows::GetCefMoudlePath() const
 {
-    DString cefMoudlePath = BaseClass::GetCefMoudlePath();
+    std::string cefMoudlePath = BaseClass::GetCefMoudlePath();
     if (cefMoudlePath.empty()) {
         //Use the default rules
 #if CEF_VERSION_MAJOR <= 109
     //CEF 109 version
     #ifdef _WIN64
-        cefMoudlePath = DUI_T("libcef_win_109\\x64");
+        cefMoudlePath = "libcef_win_109\\x64";
     #else
-        cefMoudlePath = DUI_T("libcef_win_109\\Win32");
+        cefMoudlePath = "libcef_win_109\\Win32";
     #endif
 #else
     //CEF higher versions: the runtime files are staged into the program dir's
     //cef_binary directory (one copy, same name on Windows and Linux).
-    cefMoudlePath = DUI_T("cef_binary");
+    cefMoudlePath = "cef_binary";
 #endif
     }
     return cefMoudlePath;
@@ -76,7 +76,7 @@ bool CefManager_Windows::InitEnv()
 }
 
 bool CefManager_Windows::Initialize(bool bEnableOffScreenRendering,
-                                    const DString& appName,
+                                    const std::string& appName,
                                     int argc,
                                     char** argv,
                                     OnCefSettingsEvent callback,
@@ -176,13 +176,15 @@ OnAlreadyRunningAppRelaunchEvent CefManager_Windows::GetAlreadyRunningAppRelaunc
 
 void CefManager_Windows::AddCefDllToPath()
 {
-    DString cefMoudlePath = GetCefMoudlePath();
+    std::string cefMoudlePath = GetCefMoudlePath();
     if (cefMoudlePath.empty()) {
         return;
     }
 
-    TCHAR path_envirom[4096] = { 0 };
-    ::GetEnvironmentVariable(DUI_T("path"), path_envirom, 4096);
+    // Wide throughout: the Windows environment is UTF-16 and the string model here is
+    // UTF-8, so the conversion would otherwise have to happen twice.
+    wchar_t path_envirom[4096] = { 0 };
+    ::GetEnvironmentVariableW(L"path", path_envirom, 4096);
 
     FilePath cefDllDir = ui::FilePathUtil::GetCurrentModuleDirectory();
     cefDllDir /= FilePath(cefMoudlePath);
@@ -190,20 +192,20 @@ void CefManager_Windows::AddCefDllToPath()
     FilePath cefDllPath = cefDllDir;
     cefDllPath /= FilePath(L"libcef.dll");
     if (!cefDllDir.IsExistsDirectory() || !cefDllPath.IsExistsFile()) {
-        DStringW errMsg = L"Failed to load libcef.dll!\nPlease extract the CEF binaries (libcef.dll etc.) and resource files to the following directory:\n";
+        std::wstring errMsg = L"Failed to load libcef.dll!\nPlease extract the CEF binaries (libcef.dll etc.) and resource files to the following directory:\n";
         errMsg += cefDllDir.ToStringW();
         ::MessageBoxW(nullptr, errMsg.c_str(), L"Error Hint", MB_OK);
         exit(0);
     }
-    DString new_envirom(cefDllDir.NativePath());
-    new_envirom.append(DUI_T(";")).append(path_envirom);
-    ::SetEnvironmentVariable(DUI_T("path"), new_envirom.c_str());
+    std::wstring new_envirom(cefDllDir.ToStringW());
+    new_envirom.append(L";").append(path_envirom);
+    ::SetEnvironmentVariableW(L"path", new_envirom.c_str());
 }
 
 #if CEF_VERSION_MAJOR <= 109
 /** Browser singleton control callback function
 */
-void CefManager_Windows::OnBrowserAlreadyRunningAppRelaunch(const std::vector<DString>& argumentList)
+void CefManager_Windows::OnBrowserAlreadyRunningAppRelaunch(const std::vector<std::string>& argumentList)
 {
     OnAlreadyRunningAppRelaunchEvent pfnAlreadyRunningAppRelaunch = CefManager::GetInstance()->GetAlreadyRunningAppRelaunch();
     if (pfnAlreadyRunningAppRelaunch != nullptr) {

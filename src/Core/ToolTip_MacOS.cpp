@@ -17,14 +17,14 @@ class ToolTipWindow: public Window
 public:
     ToolTipWindow()
     {
-        InitSkin(DUI_T("public/tooltip/"), DUI_T("tooltip.xml"));
+        InitSkin("public/tooltip/", "tooltip.xml");
     }
 
     /** Called after the window has been created, for subclasses to do some initialization work
     */
     virtual void OnInitWindow() override
     {
-        m_pToolTipText = dynamic_cast<Label*>(FindControl(DUI_T("tooltip_text")));
+        m_pToolTipText = dynamic_cast<Label*>(FindControl("tooltip_text"));
         if (!m_text.empty() && (m_pToolTipText != nullptr)) {
             m_pToolTipText->SetText(m_text);
         }
@@ -35,7 +35,7 @@ public:
 
     /** Set the text
     */
-    void SetToolTipText(const DString& text)
+    void SetToolTipText(const std::string& text)
     {
         m_text = text;
         if (m_pToolTipText != nullptr) {
@@ -65,7 +65,7 @@ private:
 
     /** ToolTip text content
     */
-    DString m_text;
+    std::string m_text;
 
     /** Maximum width of the text
     */
@@ -96,7 +96,7 @@ public:
                      const UiRect& rect, 
                      uint32_t maxWidth,
                      const UiPoint& trackPos,
-                     const DString& text);
+                     const std::string& text);
 
     /**@brief Hide ToolTip information
     */
@@ -156,13 +156,12 @@ void ToolTip::TImpl::StopHoverTimer()
 
 void ToolTip::TImpl::SetMouseTracking(WindowBase* pParentWnd, bool bTracking)
 {
-    ASSERT(pParentWnd != nullptr);
     if (pParentWnd == nullptr) {
         return;
     }
     if (bTracking && !m_bMouseTracking) {
         // Start the timer to post the synthetic hover message after the tooltip
-        // delay, matching the SDL/Windows tooltip timing.
+        // delay, matching the native backend/Windows tooltip timing.
         m_hoverFlag = pParentWnd->GetWeakFlag();
         auto hoverCallback = [this, pParentWnd]() {
                 if (pParentWnd != nullptr) {
@@ -185,9 +184,8 @@ void ToolTip::TImpl::ShowToolTip(WindowBase* pParentWnd,
                                  const UiRect& /*rect*/,
                                  uint32_t maxWidth,
                                  const UiPoint& trackPos,
-                                 const DString& text)
+                                 const std::string& text)
 {
-    ASSERT(pParentWnd != nullptr);
     if (pParentWnd == nullptr) {
         return;
     }
@@ -201,8 +199,8 @@ void ToolTip::TImpl::ShowToolTip(WindowBase* pParentWnd,
     if ((m_pTooltipWnd == nullptr) || m_pTooltipWnd->IsClosingWnd()) {
         m_pTooltipWnd = new ToolTipWindow;
     }    
-    DString skinFolder = m_pTooltipWnd->GetSkinFolder();
-    DString skinFile = m_pTooltipWnd->GetSkinFile();
+    std::string skinFolder = m_pTooltipWnd->GetSkinFolder();
+    std::string skinFile = m_pTooltipWnd->GetSkinFile();
     FilePath xmlPath(skinFolder);
     xmlPath.NormalizeDirectoryPath();
     xmlPath += skinFile;
@@ -322,7 +320,7 @@ void ToolTip::ShowToolTip(WindowBase* pParentWnd,
                           const UiRect& rect, 
                           uint32_t maxWidth,
                           const UiPoint& trackPos,
-                          const DString& text)
+                          const std::string& text)
 {
     m_impl->ShowToolTip(pParentWnd, rect, maxWidth, trackPos, text);
 }

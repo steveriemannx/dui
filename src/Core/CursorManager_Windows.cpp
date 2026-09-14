@@ -1,8 +1,9 @@
 #include "dui/Core/CursorManager.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Core/GlobalManager.h"
+#include "dui/Utils/StringConvert.h"
 #include "dui/Core/Window.h"
 #include "dui/Core/Control.h"
 #include "dui/Utils/FilePathUtil.h"
@@ -148,7 +149,6 @@ static HCURSOR LoadCursorFromData(const Window* pWindow, std::vector<uint8_t>& f
             }
         }
     }
-    ASSERT(bValidIcoFile);
     if (!bValidIcoFile) {
         return nullptr;
     }
@@ -177,7 +177,6 @@ bool CursorManager::SetImageCursor(const Window* pWindow, const FilePath& curIma
 
     //Set the window icon
     FilePath cursorFullPath = GlobalManager::Instance().GetExistsResFullPath(pWindow->GetResourcePath(), pWindow->GetXmlPath(), curImagePath);
-    ASSERT(!cursorFullPath.IsEmpty());
     if (cursorFullPath.IsEmpty()) {
         return false;
     }
@@ -205,7 +204,9 @@ bool CursorManager::SetImageCursor(const Window* pWindow, const FilePath& curIma
         }
         else {
             //Use the local file
-            hCursor = (HCURSOR)::LoadImage(nullptr, cursorFullPath.NativePath().c_str(), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE);
+            // NativePath() is UTF-8 and LoadImageW wants UTF-16; converted at the boundary.
+            const std::wstring cursorFullPathW = StringConvert::UTF8ToWString(cursorFullPath.NativePath());
+            hCursor = (HCURSOR)::LoadImageW(nullptr, cursorFullPathW.c_str(), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE);
             ASSERT(hCursor != nullptr);
             if (hCursor != nullptr) {
                 m_impl->m_cursorMap[cursorFullPath] = hCursor;

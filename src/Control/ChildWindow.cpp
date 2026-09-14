@@ -22,11 +22,11 @@ ChildWindow::~ChildWindow()
     m_pChildWnd.reset();
 }
 
-DString ChildWindow::GetType() const { return DUI_CTR_CHILD_WINDOW; }
+std::string ChildWindow::GetType() const { return DUI_CTR_CHILD_WINDOW; }
 
-void ChildWindow::SetAttribute(const DString& strName, const DString& strValue)
+void ChildWindow::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("child_window_margin")) {
+    if (strName == "child_window_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetChildWindowMargin(rcMargin, true);
@@ -126,8 +126,8 @@ void ChildWindow::AdjustChildWindowPos()
         UiPoint pt;
         pt.x = rc.left;
         pt.y = rc.top;
-#if defined (DUI_BUILD_FOR_SDL) && !defined (DUI_BUILD_FOR_WIN)
-        //SDL uses screen coordinates, while the Windows SDK uses client area coordinates
+#if defined (DUI_BUILD_FOR_WAYLAND) && !defined (DUI_BUILD_FOR_WIN)
+        //native backend uses screen coordinates, while the Windows SDK uses client area coordinates
         UiRect rcWindow;
         if (GetWindow() != nullptr) {
             GetWindow()->GetWindowRect(rcWindow);
@@ -150,12 +150,10 @@ void ChildWindow::AdjustChildWindowPos()
 
 bool ChildWindow::CreateChildWindow(ChildWindowEvents* pChildWindowEvents)
 {
-    ASSERT(m_pChildWnd == nullptr);
     if (m_pChildWnd != nullptr) {
         return false;
     }
     Window* pWindow = GetWindow();
-    ASSERT((pWindow != nullptr) && pWindow->IsWindow());
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return false;
     }
@@ -178,7 +176,6 @@ bool ChildWindow::CreateChildWindow(ChildWindowEvents* pChildWindowEvents)
 
 void ChildWindow::RegisterWindowCallbacks(Window* pWindow)
 {
-    ASSERT((pWindow != nullptr) && pWindow->IsWindow());
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return;
     }
@@ -200,7 +197,6 @@ void ChildWindow::RegisterWindowCallbacks(Window* pWindow)
 
 void ChildWindow::UnregisterWindowCallbacks(Window* pWindow)
 {
-    ASSERT((pWindow != nullptr) && pWindow->IsWindow());
     if ((pWindow == nullptr) || !pWindow->IsWindow()) {
         return;
     }
@@ -216,7 +212,6 @@ void ChildWindow::CloseChildWindow()
 
 void ChildWindow::SetChildWindowEvents(ChildWindowEvents* pChildWindowEvents)
 {
-    ASSERT(m_pChildWnd != nullptr);
     if (m_pChildWnd == nullptr) {
         return;
     }

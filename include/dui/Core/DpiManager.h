@@ -4,7 +4,7 @@
 #include "dui/Core/UiTypes.h"
 #include "dui/Core/DpiAwareness.h"
 
-#if defined DUI_BUILD_FOR_WIN && defined DUI_BUILD_FOR_SDL
+#if defined DUI_BUILD_FOR_WIN && defined DUI_BUILD_FOR_WAYLAND
     //Define a macro dedicated to testing (can simulate a high-DPI screen in the Windows environment for functional testing)
     //#define DUI_HDPI_TEST_PIXEL_DENSITY (1.5f)
 #endif
@@ -29,6 +29,13 @@ public:
      * @param [in] dpiInitParam The initialization parameter, see the parameter description for details
      */
     void InitDpiAwareness(const DpiInitParam& dpiInitParam);
+
+    /** Return the manager to the state it is in just after construction.
+     *  GlobalManager::Shutdown calls this so that a later Startup starts from a clean
+     *  slate; previously the initialised flag survived Shutdown, so DpiInitParam passed
+     *  to the second Startup was silently ignored.
+     */
+    void Reset();
 
     /** Get the DPI awareness mode of the process
      * This property is a per-process property, set once after program startup and cannot be changed afterwards
@@ -87,7 +94,7 @@ public:
     bool CheckDisplayScaleFactor(uint32_t nCheckScaleFactor) const;
 
 public:
-    /** Whether window pixel density is supported (supported only when using the SDL implementation)
+    /** Whether window pixel density is supported (supported only when using the native backend implementation)
     */
     bool IsPixelDensityEnabled() const;
 
@@ -198,7 +205,7 @@ private:
     */
     bool m_bUserDefinedDpi;
 
-    /** Whether UI pixel density is supported (this value is only valid when SDL is enabled, and only takes effect in system environments that support high-DPI screens)
+    /** Whether UI pixel density is supported (this value is only valid when native backend is enabled, and only takes effect in system environments that support high-DPI screens)
      *  In macOS/Wayland desktop environments: true means high-DPI screens are supported, false means high-DPI screens are not supported
      *  In Windows/X11 desktop environments: this parameter is invalid
      */

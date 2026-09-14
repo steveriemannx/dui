@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<ListBoxForm>(DUI_T("ListBox (Pure Code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<ListBoxForm>("ListBox (Pure Code)", EmbeddedResources());
 }

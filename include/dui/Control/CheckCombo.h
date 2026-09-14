@@ -20,8 +20,8 @@ public:
 
 public:
     /// Override the parent class methods to provide personalized features; please refer to the parent class declarations
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void Activate(const EventArgs* pMsg) override;
 
     /** DPI change: update the control size and layout
@@ -45,16 +45,16 @@ public:
     /** Add a list item to the drop-down box
     * @param [in] itemText The text content
     */
-    bool AddTextItem(const DString& itemText);
+    bool AddTextItem(const std::string& itemText);
 
     /** Add a list item to the drop-down box
     * @param [in] itemTextId The text content ID (supports multilingual versions)
     */
-    bool AddTextIdItem(const DString& itemTextId);
+    bool AddTextIdItem(const std::string& itemTextId);
 
     /** Get the list of selected texts
     */
-    void GetSelectedText(std::vector<DString>& selectedText) const;
+    void GetSelectedText(std::vector<std::string>& selectedText) const;
 
     /** Clear all list items and selected items
     */
@@ -68,7 +68,7 @@ public:
     /** Set the attribute information of the drop-down box
     * @param [in] pstrList The escaped XML-format attribute list
     */
-    void SetDropBoxAttributeList(const DString& pstrList);
+    void SetDropBoxAttributeList(const std::string& pstrList);
 
     /** Get the size of the drop-down box container
     */
@@ -91,11 +91,11 @@ public:
 
     /** Set the attribute of each list item in the drop-down list
     */
-    void SetDropboxItemClass(const DString& classValue);
+    void SetDropboxItemClass(const std::string& classValue);
 
     /** Set the attribute of each child item in the selected items
     */
-    void SetSelectedItemClass(const DString& classValue);
+    void SetSelectedItemClass(const std::string& classValue);
 
     /** Update the position of the drop-down list window
     */
@@ -138,12 +138,12 @@ private:
 private:
     /** Parse the attribute list
     */
-    void ParseAttributeList(const DString& strList,
-                            std::vector<std::pair<DString, DString>>& attributeList) const;
+    void ParseAttributeList(const std::string& strList,
+                            std::vector<std::pair<std::string, std::string>>& attributeList) const;
 
     /** Set the attribute list of the control
     */
-    void SetAttributeList(Control* pControl, const DString& classValue);
+    void SetAttributeList(Control* pControl, const std::string& classValue);
 
     /** Update the height of the selected list
     */

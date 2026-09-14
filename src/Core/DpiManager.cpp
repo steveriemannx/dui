@@ -5,18 +5,23 @@
 
 namespace ui
 {
-DpiManager::DpiManager():
-    m_bDpiInited(false),
-    m_bUserDefinedDpi(false),
-    m_bEnablePixelDensity(true),
-    m_dpiAwarenessMode(DpiAwarenessMode::kFromManifest),
-    m_nScaleFactor(100),
-    m_fPixelDensity(1.0f)
+void DpiManager::Reset()
 {
+    m_bDpiInited = false;
+    m_bUserDefinedDpi = false;
+    m_bEnablePixelDensity = true;
+    m_dpiAwarenessMode = DpiAwarenessMode::kFromManifest;
+    m_nScaleFactor = 100;
+    m_fPixelDensity = 1.0f;
 #ifdef DUI_BUILD_FOR_WIN
     //Windows systems: this option is not supported
     m_bEnablePixelDensity = false;
 #endif
+}
+
+DpiManager::DpiManager()
+{
+    Reset();
 }
 
 DpiManager::~DpiManager()
@@ -26,7 +31,6 @@ DpiManager::~DpiManager()
 void DpiManager::InitDpiAwareness(const DpiInitParam& dpiInitParam)
 {
     //If already initialized, do not initialize again
-    ASSERT(!m_bDpiInited);
     if (m_bDpiInited) {
         return;
     }
@@ -117,7 +121,8 @@ void DpiManager::SetDisplayScaleForWindow(const WindowBase* pWindow)
 
 void DpiManager::SetDisplayScale(float fDisplayScale, float fPixelDensity)
 {
-    ASSERT(GlobalManager::Instance().Dpi().m_bDpiInited);
+    //No assertion that the global DPI is initialised: the branch below handles
+    //exactly that case, and a standalone DpiManager is a legitimate thing to use.
     if (!m_bDpiInited && GlobalManager::Instance().Dpi().m_bDpiInited) {
         //Initialize the DPI state variables from the global object to keep the state consistent across the whole system
         m_bDpiInited = true;

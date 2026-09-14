@@ -69,11 +69,11 @@ private:
     */
     void Initialize();
 
-    /** Initialize the header of the DUI_T("Computer") view
+    /** Initialize the header of the "Computer" view
     */
     void InitViewHeader();
 
-    /** Double-click in the DUI_T("Computer") view
+    /** Double-click in the "Computer" view
     */
     bool OnExplorerViewDoubleClick(const ui::EventArgs& msg);
 
@@ -84,11 +84,11 @@ private:
 
     /** Convert the file size to a display string
     */
-    DString FormatFileSize(bool bFolder, uint64_t nFileSize) const;
+    std::string FormatFileSize(bool bFolder, uint64_t nFileSize) const;
 
     /** Convert the file modification time to a display string
     */
-    DString FormatFileTime(const ui::FileTime& fileTime) const;
+    std::string FormatFileTime(const ui::FileTime& fileTime) const;
 
 private:
     /** Get the real column index

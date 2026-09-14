@@ -5,7 +5,7 @@
 Besides the English translation, the project structure has been reorganized compared with the original:
 
 - **Source layout**: library sources in `src/`, public headers in `include/dui/`
-- **Vendored dependencies**: everything under `third_party/` — Skia and SDL3 are built automatically, the CEF binary distribution is downloaded automatically
+- **Vendored dependencies**: Skia is built automatically and the CEF binary distribution is downloaded automatically
 - **CMake-based builds**: top-level CMake management (`cmake -S . -B build`), one-click scripts for each platform, and the Windows Visual Studio solutions
 - **Three development modes**: every example is available in three variants — XML layout, XML-to-code generation, and pure C++ code
 
@@ -32,7 +32,7 @@ See [docs/ThreeModes.md](docs/ThreeModes.md) for details.
  - **Window shadows**: selectable self-drawn shadows, or the **OS-provided shadow** (Windows DWM / macOS NSWindow) with Win11-style rounded corners (Windows).
  - **DPI awareness**: four modes (Unaware / SystemAware / PerMonitorAware / PerMonitorAware_V2), independent DPI settings (Windows only).
  - **CEF control**: libcef 109 (Windows 7) and libcef 142 (Windows 10+/Linux/macOS).
- - **WebView2 control** (Windows only); **SDL3** window/input backend (Linux/macOS — Windows uses the native Win32/DWM backend).
+ - **WebView2 control** (Windows only); native X11/Wayland window and input backends on Linux/FreeBSD.
 
 ## Directory Structure
 | Directory     | Description |
@@ -52,7 +52,7 @@ See [docs/ThreeModes.md](docs/ThreeModes.md) for details.
 
 ## Quick Start
 
-The Skia and SDL3 sources are downloaded and extracted automatically at configure time, so no manual fetching is needed. The `cef`/`CefBrowser`/`WebView2`/`WebView2Browser` examples are included by default in the `ALL`/`XML` example modes and download large binary distributions at configure time (CEF ≈ 200 MB). To build without them (no CEF/WebView2 download):
+The Skia sources are downloaded and extracted automatically at configure time, so no manual fetching is needed. The `cef`/`CefBrowser`/`WebView2`/`WebView2Browser` examples are included by default in the `ALL`/`XML` example modes and download large binary distributions at configure time (CEF ≈ 200 MB). To build without them (no CEF/WebView2 download):
 
 ```
 # Build everything except the CEF and WebView2 examples
@@ -105,6 +105,7 @@ The compiled example programs are in `bin/`. Platform prerequisites and detailed
 - [Getting Started](docs/Getting-Started.md) · [Example Programs](docs/Examples.md)
 - [Global styles](docs/Global.md) · [Window](docs/Window.md) · [Box](docs/Box.md) · [Control](docs/Control.md) · [Menu](docs/Menu.md)
 - [Events](docs/Events.md) · [XML node names](docs/XmlNode.md) · [XML inline events](docs/XmlEvents.md)
+- [Data binding](docs/Binding.md) — optional module; makes MVVM possible, works with a plain MVC-style model too
 - [CEF control](docs/CEF.md)
 - [Third-party libraries & licenses](docs/ThirdParty.md)
 - [History: modifications vs. NIM_Duilib_Framework](docs/History.md)

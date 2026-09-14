@@ -12,9 +12,9 @@ public:
     explicit TrayIconImpl(const Window* pWindow) : m_pWindow(pWindow) {}
     virtual ~TrayIconImpl() override {}
 
-    virtual bool SetIcon(const Window* pWindow, const DString& iconFilePath) override { (void)pWindow; (void)iconFilePath; return false; }
-    virtual bool SetTooltip(const DString& tooltip) override { (void)tooltip; return false; }
-    virtual bool ShowBalloon(const DString& title, const DString& content, uint32_t timeoutMs) override { (void)title; (void)content; (void)timeoutMs; return false; }
+    virtual bool SetIcon(const Window* pWindow, const std::string& iconFilePath) override { (void)pWindow; (void)iconFilePath; return false; }
+    virtual bool SetTooltip(const std::string& tooltip) override { (void)tooltip; return false; }
+    virtual bool ShowBalloon(const std::string& title, const std::string& content, uint32_t timeoutMs) override { (void)title; (void)content; (void)timeoutMs; return false; }
     virtual bool Hide() override { return false; }
     virtual bool Show() override { return false; }
     virtual bool IsTrayVisible() const override { return false; }
@@ -25,7 +25,7 @@ private:
     const Window* m_pWindow;
 };
 
-std::unique_ptr<TrayIcon> TrayIcon::Create(const Window* pWindow, const DString& iconFilePath, const DString& tooltip)
+std::unique_ptr<TrayIcon> TrayIcon::Create(const Window* pWindow, const std::string& iconFilePath, const std::string& tooltip)
 {
     (void)iconFilePath; (void)tooltip;
     return std::make_unique<TrayIconImpl>(pWindow);

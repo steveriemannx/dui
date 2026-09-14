@@ -13,7 +13,6 @@ ImageDecoderFactory::~ImageDecoderFactory()
 
 bool ImageDecoderFactory::AddImageDecoder(const std::shared_ptr<IImageDecoder>& pImageDecoder)
 {
-    ASSERT(pImageDecoder != nullptr);
     if (pImageDecoder == nullptr) {
         return false;
     }
@@ -27,7 +26,6 @@ bool ImageDecoderFactory::AddImageDecoder(const std::shared_ptr<IImageDecoder>& 
 
 bool ImageDecoderFactory::RemoveImageDecoder(const std::shared_ptr<IImageDecoder>& pImageDecoder)
 {
-    ASSERT(pImageDecoder != nullptr);
     if (pImageDecoder == nullptr) {
         return false;
     }
@@ -46,10 +44,9 @@ void ImageDecoderFactory::Clear()
 
 std::unique_ptr<IImage> ImageDecoderFactory::LoadImageData(const ImageDecodeParam& decodeParam)
 {
-    PerformanceStat statPerformance(DUI_T("ImageDecoderFactory::LoadImageData"));
+    PerformanceStat statPerformance("ImageDecoderFactory::LoadImageData");
     const bool bHasFileData = (decodeParam.m_pFileData != nullptr) && !decodeParam.m_pFileData->empty(); //Image file data
-    const DString imageFilePath = decodeParam.m_imageFilePath.NativePath(); //Image file path
-    ASSERT(!imageFilePath.empty() || bHasFileData);
+    const std::string imageFilePath = decodeParam.m_imageFilePath.NativePath(); //Image file path
     if (imageFilePath.empty() && !bHasFileData) {
         return nullptr;
     }
@@ -60,7 +57,6 @@ std::unique_ptr<IImage> ImageDecoderFactory::LoadImageData(const ImageDecodePara
 
     std::unique_ptr<IImage> pImageData;
     for (std::shared_ptr<IImageDecoder> pImageDecoder : m_imageDecoders) {
-        ASSERT(pImageDecoder != nullptr);
         if (pImageDecoder == nullptr) {
             continue;
         }

@@ -18,7 +18,7 @@ void MainForm::BuildUI()
 void MainForm::BindEvents()
 {
     /* Show select language menu */
-    ui::Button* select = ui::Find<ui::Button>(this, DUI_T("language"));
+    ui::Button* select = ui::Find<ui::Button>(this, "language");
     ASSERT(select != nullptr);
     if (select == nullptr) {
         return;
@@ -41,28 +41,28 @@ void MainForm::ShowPopupMenu(const ui::UiPoint& point)
 {
     ui::Menu* menu = new ui::Menu(this);// The parent window must be set; otherwise, when the menu pops up, the program status bar becomes inactive
     InitLang_menu(menu);
-    menu->ShowMenu(DUI_T(""), point);
+    menu->ShowMenu("", point);
 
     // Current language file
-    DString currentLangFileName = ui::GlobalManager::Instance().GetLanguageFileName();
+    std::string currentLangFileName = ui::GlobalManager::Instance().GetLanguageFileName();
 
     // The list of available language files and their display names
-    std::vector<std::pair<DString, DString>> languageList;
+    std::vector<std::pair<std::string, std::string>> languageList;
     ui::GlobalManager::Instance().GetLanguageList(languageList);
     if (languageList.empty()) {
-        languageList.push_back({ currentLangFileName , DUI_T("")});
+        languageList.push_back({ currentLangFileName , ""});
     }
 
     // Add menu items dynamically
     for (auto& lang : languageList) {
-        const DString fileName = lang.first;
-        DString& displayName = lang.second;
+        const std::string fileName = lang.first;
+        std::string& displayName = lang.second;
 
         ui::MenuItem* pMenuItem = new ui::MenuItem(menu);
-        pMenuItem->SetClass(DUI_T("menu_element"));
+        pMenuItem->SetClass("menu_element");
         ui::CheckBox* pCheckBox = new ui::CheckBox(menu);
-        pCheckBox->SetClass(DUI_T("menu_checkbox"));
-        pCheckBox->SetAttribute(DUI_T("margin"), DUI_T("0,5,0,10"));
+        pCheckBox->SetClass("menu_checkbox");
+        pCheckBox->SetAttribute("margin", "0,5,0,10");
         pCheckBox->SetText(!displayName.empty() ? displayName : fileName);
         pMenuItem->AddItem(pCheckBox);
         menu->AddMenuItem(pMenuItem);

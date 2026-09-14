@@ -1,0 +1,496 @@
+# dui CI — configure, build the library + tests, run ctest, on all three first-class
+# platforms, plus an ASan/UBSan job.
+#
+# Why this file exists (production.md §P1): dui has never had CI. Windows in particular
+# has never once been compiled by this project, which is exactly the platform where the
+# unmerged string migration on branch `utf8string` is expected to break.
+#
+# ---- What each job does -------------------------------------------------------------
+#   build / macOS      Debug, configure -> `--target dui dui_core_tests` -> ctest
+#   build / Linux      Debug, same
+#   build / Windows    Debug, same; Visual Studio generator, see the note below
+#   sanitizers         Debug + -DDUI_ENABLE_SANITIZERS=ON (ASan/UBSan), macOS
+#
+# ---- Why CEF is ON and the CEF/WebView2 examples are OFF ---------------------------
+# `-DDUI_ENABLE_CEF=ON -DDUI_BUILD_CEF_EXAMPLES=OFF` looks like a contradiction but is
+# the only configuration in which the library compiles from a fresh checkout:
+#   * `include/dui/dui_config.h` defines DUI_BUILD_FOR_CEF unconditionally on every
+#     non-Windows platform (line ~75), and `src/dui.cpp` includes `dui/dui_cef.h`
+#     unconditionally outside FreeBSD, so CEFControl headers are always compiled in.
+#   * `src/CMakeLists.txt` always adds `third_party/libcef/<CEF_LIB_DIR>/` as an include
+#     root, but only `cmake/dui_deps.cmake` *fetches* it (and `third_party/CMakeLists.txt`
+#     only calls that fetch) when DUI_ENABLE_CEF or DUI_BUILD_CEF_EXAMPLES is ON.
+# So with both OFF, a clean checkout fails on `#include "include/cef_app.h"` — verified
+# locally against a pristine `git archive HEAD` tree. Enabling CEF (but not the CEF
+# examples) downloads/extracts the binary distribution, which is what provides the
+# headers; the `libcef_dll_wrapper` target it also defines is not a dependency of `dui`
+# or `dui_core_tests`, so it is configured but never built. (A cleaner fix would be for
+# DUI_BUILD_FOR_CEF to follow the CMake option on all platforms; until then CI has to do
+# this.) WebView2 needs no such trick: the one header the library includes is tracked in
+# git.
+#
+# ---- Cost, honestly ----------------------------------------------------------------
+# A COLD run (no caches) per platform is dominated by the dependencies. Numbers measured
+# while writing this file, on an 8-core macOS machine shared with other work, so read them
+# as "at -j3", which is roughly what a 3-core runner delivers:
+#   * configure: ~45 s, mostly the 55 example subprojects (the dependencies are already in
+#     place at that point);
+#   * Skia: 70 MB zip download + ~390 MB extraction, then gn (a ~5 MB prebuilt binary from
+#     CIPD, via third_party/skia/bin/fetch-gn) and `gn gen` + `ninja` over the whole Skia
+#     `all` target — 984 edges, ~12 min measured; ~3 min on an idle 8-core box. Budget
+#     about twice that on Windows, where the Visual Studio generator makes
+#     DUI_MULTI_CONFIG true and skia is built twice (a /MT Release copy and an /MTd Debug
+#     copy — see cmake/dui_deps.cmake);
+#   * CEF: ~200-260 MB archive download (per platform) + ~700 MB extraction, which the
+#     library needs only for its headers;
+#   * dui + third-party targets + the test binary: 235 translation units, ~8 min measured.
+# So a cold job is roughly 25-35 min and a warm one about 10 min (the Skia half is what
+# the caches remove; dui's own objects are deliberately NOT cached, because compiling them
+# is the point of the job).
+#
+# ---- Cache strategy ----------------------------------------------------------------
+#   1. deps-<os>-<skia version>-<cef version>   third_party/downloads and
+#      third_party/skia — the two archives (Skia zip, CEF tarball) plus the extracted
+#      Skia source, all of them gitignored and all of them (re)created by
+#      cmake/dui_deps.cmake at configure time. The versions are read out of the script
+#      that pins them, because the .dui_skia_version marker is written by the download
+#      itself and is not in git. Restoring this also restores third_party/skia/bin/gn,
+#      which is what lets configure skip the gn download.
+#      The extracted CEF distribution is deliberately not cached, even though it has to
+#      be re-extracted from the (cached) archive on every run: it is ~700 MB on macOS and
+#      larger on Windows, which ships .pdb files. Extracting is the dependency script's
+#      own code path, and it integrity-checks the archive first, so a restored archive
+#      that is somehow broken is re-downloaded rather than silently believed.
+#   2. skia-lib-<os>-<arch>-<preset>-<version>-<hash of the two dependency cmake files>
+#      build-presets/<preset>/lib, which is where the `dui_skia` custom target runs gn
+#      and ninja (DUI_SKIA_LIB_PATH). When the libraries are already there, cmake's
+#      guard prints "Using prebuilt Skia" and the whole gn+ninja step is skipped (a path
+#      that was exercised locally). The key covers everything that feeds args.gn except
+#      the compiler: build type and target cpu (preset + runner.arch), the Skia version
+#      and the two cmake files that generate the gn args. A runner image that changes
+#      clang/gcc will therefore reuse the previous Skia archives — normally harmless for
+#      a static library, and the fix is to bump the key (or delete the cache) if it ever
+#      is not.
+#
+# Neither cache uses restore-keys on purpose: a partially-matching dependency cache would
+# be silently wrong (a stale Skia would be linked, or — worse, because nothing checks it
+# the way the Skia version marker does — a stale CEF distribution would be used), and it
+# would hide the fact that a pinned version moved.
+#
+# ---- Windows -----------------------------------------------------------------------
+# The Windows job uses the Visual Studio generator (`-G "Visual Studio 17 2022" -A x64`)
+# rather than Ninja, and that is not cosmetic:
+#   * dui's own MSVC runtime is /MTd in Debug (DUI_MD defaults to OFF ->
+#     CMAKE_MSVC_RUNTIME_LIBRARY = MultiThreaded+Debug), and Skia gets /MTd only in
+#     cmake/dui_deps.cmake's DUI_MULTI_CONFIG branch. With a single-config generator the
+#     Debug Skia is built with the plain release /MT and the link fails with LNK2038
+#     ("RuntimeLibrary mismatch"). The VS generator takes the DUI_MULTI_CONFIG path.
+#   * It is also the configuration the project actually ships and documents
+#     (scripts/examples.sln), so it is the one worth being first-class in CI.
+# The MSVC environment (INCLUDE/LIB/PATH) is set up with ilammy/msvc-dev-cmd so that the
+# ninja/cl processes the skia build spawns inherit it.
+#
+# NOTE: the Windows job has never been executed — it was written without access to a
+# Windows machine (production.md: the only Windows host was unreachable). The macOS job's
+# command sequence was run end to end locally; the Linux job's commands are the same bar
+# the apt step, which was not run. The Windows job is written from the dependency
+# script's own requirements (cmake/dui_deps.cmake's WIN32 branches) and should be
+# expected to need at least one round of fixing on its first real run.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# A new push to the same branch cancels the previous run: a cold Skia build (the most
+# expensive thing here) is not worth running twice over.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  # ------------------------------------------------------------------------------------
+  # macOS / Linux / Windows: configure, build the library and the tests, run ctest.
+  # ------------------------------------------------------------------------------------
+  build:
+    name: build / ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS (Debug)
+            os: macos-14
+            preset: debug
+            cmake: 4.3.2
+            # Extra arguments per platform (quoted YAML strings, spliced into the
+            # command lines below).
+            configure_args: ""
+            build_args: ""
+            ctest_args: ""
+          # The declared floor, exercised on purpose. CMakeLists.txt requires 4.0, and a
+          # minimum nobody builds with is a claim rather than a requirement: this entry is
+          # what catches a 4.1+ API creeping into the CMake files. The runners' own CMake
+          # is 3.x, so every entry installs the version it needs (see "Install CMake").
+          - name: Linux (Debug, CMake 4.0.0 - the declared minimum)
+            os: ubuntu-24.04
+            preset: debug
+            cmake: 4.0.0
+            configure_args: ""
+            build_args: ""
+            ctest_args: ""
+          - name: Linux (Debug)
+            os: ubuntu-24.04
+            preset: debug
+            cmake: 4.3.2
+            configure_args: ""
+            build_args: ""
+            ctest_args: ""
+          - name: Windows (Debug, MSVC)
+            os: windows-2022
+            preset: debug
+            cmake: 4.3.2
+            configure_args: '-G "Visual Studio 17 2022" -A x64'
+            build_args: "--config Debug"
+            ctest_args: "-C Debug"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install CMake ${{ matrix.cmake }}
+        shell: bash
+        env:
+          CMAKE_VERSION: ${{ matrix.cmake }}
+        run: |
+          set -euo pipefail
+          # The runners ship CMake 3.x; this project requires 4.0 (cmake_minimum_required
+          # in CMakeLists.txt), so the version is installed explicitly rather than
+          # inherited from the image. One matrix entry pins exactly 4.0.0, because a
+          # declared minimum that nothing builds with is a claim, not a requirement.
+          if command -v cmake >/dev/null && cmake --version | head -1 | grep -qF "$CMAKE_VERSION"; then
+            echo "cmake $CMAKE_VERSION is already on PATH"
+            exit 0
+          fi
+          case "${RUNNER_OS}-${RUNNER_ARCH}" in
+            Linux-X64)   asset="linux-x86_64.tar.gz" ;;
+            Linux-ARM64) asset="linux-aarch64.tar.gz" ;;
+            macOS-*)     asset="macos-universal.tar.gz" ;;
+            Windows-*)   asset="windows-x86_64.zip" ;;
+            *) echo "::error::no CMake release asset for ${RUNNER_OS}/${RUNNER_ARCH}"; exit 1 ;;
+          esac
+          url="https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-${asset}"
+          mkdir -p "$RUNNER_TEMP/cmake"
+          curl -fsSL -o "$RUNNER_TEMP/$asset" "$url"
+          # tar (bsdtar on the Windows runners) reads both the .tar.gz and the .zip.
+          tar -xf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP/cmake" --strip-components=1
+          # macOS nests the binaries under CMake.app/Contents/bin; Linux and Windows use
+          # bin/ directly. GITHUB_PATH only affects later steps, so nothing here verifies
+          # the version -- the "Check the toolchain" step below does that.
+          bindir="$RUNNER_TEMP/cmake/bin"
+          if [ -d "$RUNNER_TEMP/cmake/CMake.app/Contents/bin" ]; then
+            bindir="$RUNNER_TEMP/cmake/CMake.app/Contents/bin"
+          fi
+          echo "$bindir" >> "$GITHUB_PATH"
+
+      # The versions cmake/dui_deps.cmake pins, used as cache keys: the Skia zip tag and
+      # the CEF release. They are read out of the script because the marker files they
+      # produce live only on a machine that has already downloaded the dependencies.
+      # A cache key may not contain arbitrary characters, hence the sanitized cef_key.
+      - name: Read the pinned dependency versions
+        id: deps
+        shell: bash
+        run: |
+          # Skia's identity is now "upstream commit + patch revision". Both belong in the
+          # key: a new upstream commit or a new patch must not restore a Skia built from
+          # the old pair. (This used to grep a "skia-dui-X.Y.Z" tag that no longer exists.)
+          skia_commit="$(sed -n 's/^[[:space:]]*set(_skia_upstream_commit "\([^"]*\)").*/\1/p' cmake/dui_deps.cmake | head -1)"
+          skia_rev="$(sed -n 's/^[[:space:]]*set(_skia_patch_revision[[:space:]]*"\([^"]*\)").*/\1/p' cmake/dui_deps.cmake | head -1)"
+          skia="${skia_commit}-${skia_rev}"
+          cef="$(sed -n 's/^[[:space:]]*set(_cef_ver "\([^"]*\)").*/\1/p' cmake/dui_deps.cmake | head -1)"
+          if [ -z "$skia" ] || [ -z "$cef" ]; then
+            echo "::error::could not read the pinned Skia/CEF versions out of cmake/dui_deps.cmake"
+            exit 1
+          fi
+          echo "skia=$skia" >> "$GITHUB_OUTPUT"
+          echo "cef=$cef" >> "$GITHUB_OUTPUT"
+          echo "cef_key=$(printf '%s' "$cef" | tr -c 'A-Za-z0-9.' '_')" >> "$GITHUB_OUTPUT"
+          echo "pinned: skia $skia, cef $cef"
+
+      - name: Cache the dependency archives and the Skia source
+        uses: actions/cache@v4
+        with:
+          path: |
+            third_party/downloads
+            third_party/skia
+          key: deps-${{ runner.os }}-${{ steps.deps.outputs.skia }}-${{ steps.deps.outputs.cef_key }}
+
+      - name: Cache the built Skia libraries
+        uses: actions/cache@v4
+        with:
+          path: build-presets/${{ matrix.preset }}/lib
+          key: skia-lib-${{ runner.os }}-${{ runner.arch }}-${{ matrix.preset }}-${{ steps.deps.outputs.skia }}-${{ hashFiles('cmake/dui_deps.cmake', 'cmake/dui_common.cmake') }}
+
+      # Only what the library actually asks for on the default (X11) backend:
+      # src/CMakeLists.txt does find_package(X11 REQUIRED), Freetype and Fontconfig, and
+      # cmake/dui_bin_linux.cmake links X11/freetype/fontconfig/pthread/dl. No GL/EGL/
+      # Vulkan packages: Skia binds GL through its own function tables (no system GL
+      # headers) and those pkg_check_modules calls are inside the DUI_ENABLE_WAYLAND
+      # branch, which is off. unzip is required — cmake/dui_deps.cmake extracts the Skia
+      # zip with it on every non-Windows platform.
+      - name: Install build dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            ninja-build unzip bzip2 pkg-config \
+            libfontconfig-dev libfreetype-dev \
+            libx11-dev libxext-dev libxcursor-dev libxi-dev libxrandr-dev
+
+      # MSVC environment for the whole job. The Skia build runs `ninja`, which spawns
+      # cl.exe ~900 times; gn's generated build.ninja carries the include/lib paths
+      # itself (which is why cmake/dui_deps.cmake's Windows .bat only adds CL=/utf-8),
+      # so strictly this may be redundant — but cmake/dui_deps.cmake documents that its
+      # fallback path (building gn from source, build/gen.py + a hand-written
+      # build.ninja that invokes a bare cl.exe) does need vcvarsall, and this makes that
+      # path work too. Third-party action (vswhere + vcvarsall, then exports the env).
+      - name: Set up the MSVC environment (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      # Deliberately after the steps above so that the versions printed are the ones the
+      # build will actually use. The cmake floor is not cosmetic: CMakePresets.json is
+      # schema version 6, which cmake refuses to read before 3.23 — and a clear failure
+      # here beats cmake's own parse error three steps later.
+      - name: Check the toolchain
+        shell: bash
+        run: |
+          cmake --version | head -1
+          echo "ninja:  $(ninja --version 2>/dev/null || echo MISSING)"
+          echo "python: $(python3 --version 2>&1 || python --version 2>&1 || echo MISSING)"
+          cmake_version="$(cmake --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+          cmake_major="${cmake_version%%.*}"
+          cmake_minor="$(echo "$cmake_version" | cut -d. -f2)"
+          # The project's floor is CMake 4.0 (cmake_minimum_required in CMakeLists.txt).
+          # It used to be declared as 3.23 here, which was wrong twice over: CMakePresets
+          # schema version 6 needs 3.25, not 3.23, and the CMake files themselves now
+          # require 4.0 anyway.
+          if [ "$cmake_major" -lt 4 ]; then
+            echo "::error::cmake $cmake_version is too old: the project requires 4.0 (see cmake_minimum_required in CMakeLists.txt)"
+            exit 1
+          fi
+
+      # gn has to be reachable at configure time, and this is where it will be: the
+      # source cache restores third_party/skia/bin/gn, so on a warm cache
+      # cmake/dui_deps.cmake's find_program(gn) succeeds and the ~5 MB CIPD download
+      # (skia's bin/fetch-gn, pinned to a specific gn revision) is skipped. On a cold
+      # run the directory does not exist yet, cmake fetches gn into it during configure,
+      # and this same PATH entry is what makes it visible to the build step.
+      #
+      # The build step also gets it on PATH for a second reason: skia's BUILD.gn defines
+      # a `skia.h` action that shells out to a bare `gn`. With the gn args
+      # cmake/dui_deps.cmake writes, that action does not survive into the generated
+      # build.ninja (verified locally: no find_headers.py edge, `phony/skia.h` is only an
+      # alias), so today it is belt-and-braces — and it is what dui_deps.cmake's own
+      # Windows .bat does, for the configuration where it does matter.
+      - name: Put Skia's gn on PATH
+        shell: bash
+        run: echo "${GITHUB_WORKSPACE}/third_party/skia/bin" >> "$GITHUB_PATH"
+
+      # DUI_ENABLE_CEF=ON is required for the library to compile at all — see the note at
+      # the top of this file. DUI_BUILD_CEF_EXAMPLES=OFF keeps the CEF example
+      # executables (and WebView2's) out of the build; they are the only consumers that
+      # link libcef, and this job builds the library and the tests.
+      - name: Configure
+        shell: bash
+        run: |
+          cmake --preset ${{ matrix.preset }} \
+            -DDUI_ENABLE_CEF=ON \
+            -DDUI_BUILD_CEF_EXAMPLES=OFF \
+            -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF \
+            ${{ matrix.configure_args }}
+
+      # The test executables are discovered rather than named: the suite is growing
+      # (dui_behaviour_tests landed while this workflow was being written), and ctest
+      # reports a missing binary as "Unable to find executable ... (Not Run)", which
+      # reads like a test failure. Makefile and Ninja generators list their targets for
+      # `--target help`; the Visual Studio generator instead lays down one .vcxproj per
+      # target. The examples are never part of this, so `all` stays out of reach.
+      - name: Build dui and the tests
+        shell: bash
+        run: |
+          build_dir="build-presets/${{ matrix.preset }}"
+          test_targets="$({ cmake --build "$build_dir" --target help 2>/dev/null \
+                             | grep -oE 'dui_[a-z0-9_]*tests' || true
+                           ls "$build_dir"/tests/*.vcxproj 2>/dev/null \
+                             | sed 's#.*/##; s#\.vcxproj$##' || true
+                         } | sort -u | tr '\n' ' ')"
+          if [ -z "${test_targets// /}" ]; then
+            echo "::error::no test executable found in $build_dir (expected dui_core_tests)"
+            exit 1
+          fi
+          echo "test executables: $test_targets"
+          cmake --build --preset ${{ matrix.preset }} \
+            --target dui $test_targets \
+            ${{ matrix.build_args }}
+
+      # --no-tests=error is deliberate: an empty test set would otherwise pass silently,
+      # and this repo has already shipped a release configuration in which the tests
+      # were compiled but vacuous.
+      - name: Run the tests
+        shell: bash
+        run: |
+          ctest --test-dir build-presets/${{ matrix.preset }} \
+            ${{ matrix.ctest_args }} \
+            --output-on-failure \
+            --no-tests=error
+
+      - name: Upload the ctest log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctest-log-${{ matrix.name }}
+          path: build-presets/${{ matrix.preset }}/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+
+  # ------------------------------------------------------------------------------------
+  # ASan + UBSan. Named platform: macOS, so the sanitized run also covers the
+  # Apple-only test (dui_timer_message_loop) and reproduces on the development machine.
+  #
+  # DUI_ENABLE_SANITIZERS is a cache option (default OFF) that adds
+  # -fsanitize=address,undefined to the `dui` target and PUBLICly to its consumers, so
+  # dui_core_tests inherits it. Skia is linked in prebuilt and uninstrumented, so
+  # coverage is dui's own code only (CMakePresets.json's "sanitize" preset says the
+  # same).
+  # ------------------------------------------------------------------------------------
+  sanitizers:
+    name: sanitizers / macOS (ASan + UBSan)
+    runs-on: macos-14
+    timeout-minutes: 90
+    env:
+      # Mirrors the environment of the "sanitize" test preset in CMakePresets.json. It is
+      # repeated here because the tests are invoked with --test-dir rather than with
+      # --preset. Note what is absent: detect_leaks. On macOS the ASan runtime has no
+      # LeakSanitizer and asking for it is fatal rather than ignored — every test process
+      # exits at startup with "detect_leaks is not supported on this platform" — which
+      # would turn this job red for a reason that has nothing to do with dui. Linux's ASan
+      # does have it, and turns it on by default.
+      ASAN_OPTIONS: abort_on_error=0
+      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=0
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install CMake 4.3.2
+        shell: bash
+        env:
+          CMAKE_VERSION: 4.3.2
+        run: |
+          set -euo pipefail
+          # Same as the build job: the runner ships 3.x and the project requires 4.0+.
+          # The floor itself is exercised by the Linux entry of the build matrix.
+          if command -v cmake >/dev/null && cmake --version | head -1 | grep -qF "$CMAKE_VERSION"; then
+            echo "cmake $CMAKE_VERSION is already on PATH"
+            exit 0
+          fi
+          case "${RUNNER_OS}-${RUNNER_ARCH}" in
+            Linux-X64)   asset="linux-x86_64.tar.gz" ;;
+            Linux-ARM64) asset="linux-aarch64.tar.gz" ;;
+            macOS-*)     asset="macos-universal.tar.gz" ;;
+            Windows-*)   asset="windows-x86_64.zip" ;;
+            *) echo "::error::no CMake release asset for ${RUNNER_OS}/${RUNNER_ARCH}"; exit 1 ;;
+          esac
+          url="https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-${asset}"
+          mkdir -p "$RUNNER_TEMP/cmake"
+          curl -fsSL -o "$RUNNER_TEMP/$asset" "$url"
+          tar -xf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP/cmake" --strip-components=1
+          bindir="$RUNNER_TEMP/cmake/bin"
+          if [ -d "$RUNNER_TEMP/cmake/CMake.app/Contents/bin" ]; then
+            bindir="$RUNNER_TEMP/cmake/CMake.app/Contents/bin"
+          fi
+          echo "$bindir" >> "$GITHUB_PATH"
+
+      - name: Read the pinned dependency versions
+        id: deps
+        shell: bash
+        run: |
+          # Skia's identity is now "upstream commit + patch revision". Both belong in the
+          # key: a new upstream commit or a new patch must not restore a Skia built from
+          # the old pair. (This used to grep a "skia-dui-X.Y.Z" tag that no longer exists.)
+          skia_commit="$(sed -n 's/^[[:space:]]*set(_skia_upstream_commit "\([^"]*\)").*/\1/p' cmake/dui_deps.cmake | head -1)"
+          skia_rev="$(sed -n 's/^[[:space:]]*set(_skia_patch_revision[[:space:]]*"\([^"]*\)").*/\1/p' cmake/dui_deps.cmake | head -1)"
+          skia="${skia_commit}-${skia_rev}"
+          cef="$(sed -n 's/^[[:space:]]*set(_cef_ver "\([^"]*\)").*/\1/p' cmake/dui_deps.cmake | head -1)"
+          if [ -z "$skia" ] || [ -z "$cef" ]; then
+            echo "::error::could not read the pinned Skia/CEF versions out of cmake/dui_deps.cmake"
+            exit 1
+          fi
+          echo "skia=$skia" >> "$GITHUB_OUTPUT"
+          echo "cef_key=$(printf '%s' "$cef" | tr -c 'A-Za-z0-9.' '_')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the dependency archives and the Skia source
+        uses: actions/cache@v4
+        with:
+          path: |
+            third_party/downloads
+            third_party/skia
+          key: deps-${{ runner.os }}-${{ steps.deps.outputs.skia }}-${{ steps.deps.outputs.cef_key }}
+
+      # Same shape as the build job's Skia cache, different build directory (the
+      # "sanitize" preset has its own): nothing is shared between the two jobs, so a
+      # cache hit here can never hand the plain Debug job a sanitized archive or vice
+      # versa.
+      - name: Cache the built Skia libraries
+        uses: actions/cache@v4
+        with:
+          path: build-presets/sanitize/lib
+          key: skia-lib-${{ runner.os }}-${{ runner.arch }}-sanitize-${{ steps.deps.outputs.skia }}-${{ hashFiles('cmake/dui_deps.cmake', 'cmake/dui_common.cmake') }}
+
+      - name: Put Skia's gn on PATH
+        shell: bash
+        run: echo "${GITHUB_WORKSPACE}/third_party/skia/bin" >> "$GITHUB_PATH"
+
+      - name: Configure (DUI_ENABLE_SANITIZERS=ON)
+        shell: bash
+        run: |
+          cmake --preset sanitize \
+            -DDUI_ENABLE_CEF=ON \
+            -DDUI_BUILD_CEF_EXAMPLES=OFF \
+            -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF
+
+      # Same target discovery as the build job (see the comment there).
+      - name: Build dui and the tests
+        shell: bash
+        run: |
+          build_dir="build-presets/sanitize"
+          test_targets="$({ cmake --build "$build_dir" --target help 2>/dev/null \
+                             | grep -oE 'dui_[a-z0-9_]*tests' || true
+                           ls "$build_dir"/tests/*.vcxproj 2>/dev/null \
+                             | sed 's#.*/##; s#\.vcxproj$##' || true
+                         } | sort -u | tr '\n' ' ')"
+          if [ -z "${test_targets// /}" ]; then
+            echo "::error::no test executable found in $build_dir (expected dui_core_tests)"
+            exit 1
+          fi
+          echo "test executables: $test_targets"
+          cmake --build --preset sanitize --target dui $test_targets
+
+      - name: Run the tests
+        shell: bash
+        run: |
+          ctest --test-dir build-presets/sanitize \
+            --output-on-failure \
+            --no-tests=error
+
+      - name: Upload the ctest log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctest-log-sanitize
+          path: build-presets/sanitize/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore

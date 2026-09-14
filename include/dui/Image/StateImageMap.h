@@ -24,14 +24,14 @@ public:
     */
     void SetImageString(StateImageType stateImageType,
                         ControlStateType stateType,
-                        const DString& strImagePath,
+                        const std::string& strImagePath,
                         const DpiManager& dpi);
 
     /** Get the image attributes
     *@param [in] stateImageType The image type, e.g., the foreground image or background image of the normal state; the foreground image or background image of the selected state, etc.
     *@param [in] stateType The image state, e.g., normal, focused, pushed, disabled states, etc.
     */
-    DString GetImageString(StateImageType stateImageType, ControlStateType stateType) const;
+    std::string GetImageString(StateImageType stateImageType, ControlStateType stateType) const;
 
     /** Whether the image of the Hot state is included
     */
@@ -56,7 +56,7 @@ public:
     bool PaintStateImage(IRender* pRender,
                          StateImageType stateImageType,
                          ControlStateType stateType,
-                         const DString& sImageModify = DUI_T(""),
+                         const std::string& sImageModify = "",
                          UiRect* pDestRect = nullptr);
 
     /** Get the image interface used to estimate the Control control size (width and height)
@@ -85,7 +85,7 @@ public:
 
     /** Get the image interface with the specified name
     */
-    Image* FindImageByName(const DString& imageName) const;
+    Image* FindImageByName(const std::string& imageName) const;
 
 private:
     //The associated control interface

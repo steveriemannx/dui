@@ -29,18 +29,18 @@ public:
     * @param [in] dpi The DPI scaling management interface
     */
     void SetImageString(ControlStateType stateType,
-                        const DString& strImageString,
+                        const std::string& strImageString,
                         const DpiManager& dpi);
 
     /** Get the image attributes
     *@param [in] stateType The image type
     */
-    DString GetImageString(ControlStateType stateType) const;
+    std::string GetImageString(ControlStateType stateType) const;
 
     /** Get the image file name
     *@param [in] stateType The image type
     */
-    DString GetImagePath(ControlStateType stateType) const;
+    std::string GetImagePath(ControlStateType stateType) const;
 
     /** Compare whether the image source areas of two states are the same
     *@param [in] stateType1 Image type 1
@@ -74,7 +74,7 @@ public:
     * @return Returns true if the drawing succeeds, otherwise false
     */
     bool PaintStateImage(IRender* pRender, ControlStateType stateType,
-                         const DString& sImageModify = DUI_T(""),
+                         const std::string& sImageModify = "",
                          UiRect* pDestRect = nullptr);
 
     /** Get the image interface used to estimate the Control control size (width and height)
@@ -99,7 +99,7 @@ public:
 
     /** Get the image interface with the specified name
     */
-    Image* FindImageByName(const DString& imageName) const;
+    Image* FindImageByName(const std::string& imageName) const;
 
 private:
     //The associated control interface

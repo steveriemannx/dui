@@ -21,10 +21,10 @@ ListCtrlIconView::~ListCtrlIconView()
 {
 }
 
-void ListCtrlIconView::SetAttribute(const DString& strName, const DString& strValue)
+void ListCtrlIconView::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("horizontal_layout")) {
-        SetHorizontalLayout(strValue == DUI_T("true"));
+    if (strName == "horizontal_layout") {
+        SetHorizontalLayout(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -181,7 +181,6 @@ void ListCtrlIconView::Refresh(bool bSync)
 
 Control* ListCtrlIconView::CreateDataItem()
 {
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return nullptr;
     }
@@ -203,7 +202,6 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
                                     const ListCtrlItemData& itemData,
                                     const std::vector<ListCtrlSubItemData2Pair>& subItemList)
 {
-    ASSERT((pControl != nullptr) && (m_pListCtrl != nullptr));
     if ((pControl == nullptr) || (m_pListCtrl == nullptr)) {
         return false;
     }
@@ -224,14 +222,12 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
         nImageId = itemData.nImageId;
     }
     ListCtrlIconViewItem* pViewItem = dynamic_cast<ListCtrlIconViewItem*>(pControl);
-    ASSERT(pViewItem != nullptr);
     if (pViewItem == nullptr) {
         return false;
     }
 
     ListCtrlIcon* pItemImage = dynamic_cast<ListCtrlIcon*>(pViewItem->GetItemAt(0));
     ListCtrlLabel* pItemLabel = dynamic_cast<ListCtrlLabel*>(pViewItem->GetItemAt(1));
-    ASSERT((pItemImage != nullptr) && (pItemLabel != nullptr));
     if ((pItemImage == nullptr) || (pItemLabel == nullptr)) {
         return false;
     }
@@ -241,7 +237,7 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
     //Attributes of the text
     pItemLabel->SetClass(m_pListCtrl->GetIconViewItemLabelClass());
 
-    DString imageString;
+    std::string imageString;
     UiSize imageSize;
     if (nImageId >= 0) {
         ImageListPtr pImageList = m_pListCtrl->GetImageList(ListCtrlType::Icon);
@@ -267,7 +263,7 @@ bool ListCtrlIconView::FillDataItem(Control* pControl,
         pItemLabel->SetText(pSubItemData->text.c_str());
     }
     else {
-        pItemLabel->SetText(DUI_T(""));
+        pItemLabel->SetText("");
     }
 
     //Set attributes such as not getting focus

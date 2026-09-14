@@ -101,12 +101,12 @@ public:
     * @param[in] global_function Whether it is a global method
     * @return Returns true if registration succeeded, false if it may already be registered
     */
-    bool RegisterCppFunc(const DString& function_name, CppFunction function, bool global_function = false);
+    bool RegisterCppFunc(const std::string& function_name, CppFunction function, bool global_function = false);
 
     /** Unregisters a C++ method
     * @param[in] function_name The method name
     */
-    void UnRegisterCppFunc(const DString& function_name);
+    void UnRegisterCppFunc(const std::string& function_name);
 
     /** Calls a method already registered by the frontend
     * @param[in] js_function_name The method name provided by the frontend
@@ -115,7 +115,7 @@ public:
     * @param[in] frame_name The name of the frame whose methods are to be called; the main frame is used by default
     * @return Returns true on a successful call, false on failure; the method may not exist
     */
-    bool CallJSFunction(const DString& js_function_name, const DString& params, CallJsFunctionCallback callback, const DString& frame_name = DUI_T(""));
+    bool CallJSFunction(const std::string& js_function_name, const std::string& params, CallJsFunctionCallback callback, const std::string& frame_name = "");
 
     /** Calls a method already registered by the frontend
     * @param[in] js_function_name The method name provided by the frontend
@@ -124,7 +124,7 @@ public:
     * @param[in] frame_id The ID of the frame whose methods are to be called; the main frame is used by default
     * @return Returns true on a successful call, false on failure; the method may not exist
     */
-    bool CallJSFunction(const DString& js_function_name, const DString& params, ui::CallJsFunctionCallback callback, const CefString& frame_id);
+    bool CallJSFunction(const std::string& js_function_name, const std::string& params, ui::CallJsFunctionCallback callback, const CefString& frame_id);
 
     /** Repairs the browser object (if the Browser object has not been created, it will be recreated)
     */
@@ -194,11 +194,11 @@ public:
 
     /** Sets the initially loaded URL (only effective when called before the control is initialized)
     */
-    void SetInitURL(const DString& url);
+    void SetInitURL(const std::string& url);
 
     /** Gets the initially loaded URL
     */
-    DString GetInitURL() const;
+    std::string GetInitURL() const;
 
     /** Sets whether the initially loaded URL is a local file
     */
@@ -406,11 +406,11 @@ public:
 public:
     /** Gets the control type
     */
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
 
     /** Sets the specified control attribute
      */
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
 protected:
     /** Re-creates the Browser object
@@ -453,7 +453,7 @@ protected:
     virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) override;
     virtual void OnFaviconURLChange(CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls) override;
     virtual void OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool fullscreen) override;
-    virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const DString& value) override;
+    virtual void OnStatusMessage(CefRefPtr<CefBrowser> browser, const std::string& value) override;
     virtual void OnLoadingProgressChange(CefRefPtr<CefBrowser> browser, double progress) override;
     virtual void OnMediaAccessChange(CefRefPtr<CefBrowser> browser, bool has_video_access, bool has_audio_access) override;
 

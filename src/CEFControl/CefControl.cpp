@@ -35,29 +35,29 @@ CefControl::~CefControl(void)
 {
 }
 
-DString CefControl::GetType() const { return DUI_CTR_CEF; }
+std::string CefControl::GetType() const { return DUI_CTR_CEF; }
 
-void CefControl::SetAttribute(const DString& strName, const DString& strValue)
+void CefControl::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("url")) {
+    if (strName == "url") {
         //The URL to load on initialization
         SetInitURL(strValue);
     }
-    else if (strName == DUI_T("url_is_local_file")) {
+    else if (strName == "url_is_local_file") {
         //Whether the URL loaded on initialization is a local file
-        SetInitUrlIsLocalFile(strValue == DUI_T("true"));
+        SetInitUrlIsLocalFile(strValue == "true");
     }
-    else if (strName == DUI_T("F12")) {
+    else if (strName == "F12") {
         //Whether F12 is allowed to open the developer tools
-        SetEnableF12(strValue == DUI_T("true"));
+        SetEnableF12(strValue == "true");
     }
-    else if (strName == DUI_T("F11")) {
+    else if (strName == "F11") {
         //Whether the F11 shortcut is allowed (page fullscreen/exit page fullscreen)
-        SetEnableF11(strValue == DUI_T("true"));
+        SetEnableF11(strValue == "true");
     }
-    else if (strName == DUI_T("download_favicon_image")) {
+    else if (strName == "download_favicon_image") {
         //Whether to download the website's favicon
-        SetDownloadFaviconImage(strValue == DUI_T("true"));
+        SetDownloadFaviconImage(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -191,7 +191,7 @@ CefString CefControl::GetMainURL(const CefString& url)
     return CefString(temp.c_str());
 }
 
-bool CefControl::RegisterCppFunc(const DString& function_name, ui::CppFunction function, bool global_function/* = false*/)
+bool CefControl::RegisterCppFunc(const std::string& function_name, ui::CppFunction function, bool global_function/* = false*/)
 {
     if (m_pBrowserHandler.get() && m_pBrowserHandler->GetBrowser().get() && m_jsBridge.get()) {
         return m_jsBridge->RegisterCppFunc(ui::StringConvert::TToUTF8(function_name).c_str(), function, global_function ? nullptr : m_pBrowserHandler->GetBrowser());
@@ -199,14 +199,14 @@ bool CefControl::RegisterCppFunc(const DString& function_name, ui::CppFunction f
     return false;
 }
 
-void CefControl::UnRegisterCppFunc(const DString& function_name)
+void CefControl::UnRegisterCppFunc(const std::string& function_name)
 {
     if (m_pBrowserHandler.get() && m_pBrowserHandler->GetBrowser().get() && m_jsBridge.get()) {
         m_jsBridge->UnRegisterCppFunc(ui::StringConvert::TToUTF8(function_name).c_str(), m_pBrowserHandler->GetBrowser());
     }
 }
 
-bool CefControl::CallJSFunction(const DString& js_function_name, const DString& params, ui::CallJsFunctionCallback callback, const DString& frame_name /*= DUI_T("")*/)
+bool CefControl::CallJSFunction(const std::string& js_function_name, const std::string& params, ui::CallJsFunctionCallback callback, const std::string& frame_name /*= ""*/)
 {
     if (m_pBrowserHandler.get() && m_pBrowserHandler->GetBrowser().get() && m_jsBridge.get()) {
         CefRefPtr<CefFrame> frame;
@@ -232,7 +232,7 @@ bool CefControl::CallJSFunction(const DString& js_function_name, const DString& 
     return false;
 }
 
-bool CefControl::CallJSFunction(const DString& js_function_name, const DString& params, ui::CallJsFunctionCallback callback, const CefString& frame_id)
+bool CefControl::CallJSFunction(const std::string& js_function_name, const std::string& params, ui::CallJsFunctionCallback callback, const CefString& frame_id)
 {
     if (m_pBrowserHandler.get() && m_pBrowserHandler->GetBrowser().get() && m_jsBridge.get()) {
         CefRefPtr<CefFrame> frame;
@@ -376,26 +376,26 @@ bool CefControl::IsDownloadFaviconImage() const
     return m_bDownloadFaviconImage;
 }
 
-void CefControl::SetInitURL(const DString& url)
+void CefControl::SetInitURL(const std::string& url)
 {
     m_initUrl = url;
 }
 
-DString CefControl::GetInitURL() const
+std::string CefControl::GetInitURL() const
 {
-    DString initUrl = m_initUrl.c_str();
+    std::string initUrl = m_initUrl.c_str();
     if (IsInitUrlIsLocalFile() && !initUrl.empty()) {
         //This URL is a local path
-        DString url = StringUtil::MakeLowerString(initUrl);
-        if ((url.find(DUI_T("http://")) != 0) && (url.find(DUI_T("https://")) != 0) && (url.find(DUI_T("file:///")) != 0)) {
+        std::string url = StringUtil::MakeLowerString(initUrl);
+        if ((url.find("http://") != 0) && (url.find("https://") != 0) && (url.find("file:///") != 0)) {
             //If there is an explicit protocol prefix, do not convert it; otherwise load the resource file from the local exe's directory
             FilePath cefHtml = GlobalManager::GetDefaultResourcePath(true);
             cefHtml.NormalizeDirectoryPath();
             cefHtml += initUrl;            
             cefHtml.NormalizeFilePath();
-            initUrl = DUI_T("file:///");
+            initUrl = "file:///";
             initUrl += cefHtml.ToString();
-            StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), initUrl);
+            StringUtil::ReplaceAll("\\", "/", initUrl);
         }
     }
     return initUrl;
@@ -491,7 +491,7 @@ bool CefControl::AttachDevTools()
             else {
                 //Show in a popup window
 #ifdef DUI_BUILD_FOR_WIN
-                windowInfo.SetAsPopup(nullptr, DUI_T("cef_devtools"));
+                windowInfo.SetAsPopup(nullptr, "cef_devtools");
 #endif
                 browser->GetHost()->ShowDevTools(windowInfo, new DevToolBrowserHandler(this), settings, CefPoint());
                 SetAttachedDevTools(true, true);
@@ -611,8 +611,8 @@ void CefControl::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
     }
 
     if ((frame != nullptr) && frame->IsMain()) {
-        DString oldUrl = m_url.c_str();
-        DString newUrl = frame->GetURL();
+        std::string oldUrl = m_url.c_str();
+        std::string newUrl = frame->GetURL();
         m_url = newUrl;
         if (m_pfnMainUrlChange != nullptr && GetMainURL(oldUrl).compare(GetMainURL(newUrl)) != 0) {
             m_pfnMainUrlChange(oldUrl, newUrl);
@@ -723,7 +723,7 @@ void CefControl::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool full
     }
 }
 
-void CefControl::OnStatusMessage(CefRefPtr<CefBrowser> browser, const DString& value)
+void CefControl::OnStatusMessage(CefRefPtr<CefBrowser> browser, const std::string& value)
 {
     GlobalManager::Instance().AssertUIThread();
     if (m_pfnStatusMessage) {

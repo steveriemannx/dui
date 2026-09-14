@@ -45,8 +45,8 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void HandleEvent(const EventArgs& msg) override;
 
     /** The DPI has changed, update the control size and layout
@@ -352,8 +352,8 @@ public:
     * @param [in] columnId The column ID
     * @param [in] text The text content to set
     */
-    bool SetSubItemText(size_t itemIndex, size_t columnIndex, const DString& text);
-    bool SetSubItemTextById(size_t itemIndex, size_t columnId, const DString& text);
+    bool SetSubItemText(size_t itemIndex, size_t columnIndex, const std::string& text);
+    bool SetSubItemTextById(size_t itemIndex, size_t columnId, const std::string& text);
 
     /** Get the text of the specified data item
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
@@ -361,8 +361,8 @@ public:
     * @param [in] columnId The column ID
     * @return The text content associated with the data item
     */
-    DString GetSubItemText(size_t itemIndex, size_t columnIndex) const;
-    DString GetSubItemTextById(size_t itemIndex, size_t columnId) const;
+    std::string GetSubItemText(size_t itemIndex, size_t columnIndex) const;
+    std::string GetSubItemTextById(size_t itemIndex, size_t columnId) const;
 
     /** Set the sort group of the specified data item (integer)
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
@@ -406,8 +406,8 @@ public:
     * @param [in] columnId The column ID
     * @param [in] userDataS The string data associated with the data item to set
     */
-    bool SetSubItemUserDataS(size_t itemIndex, size_t columnIndex, const DString& userDataS);
-    bool SetSubItemUserDataSById(size_t itemIndex, size_t columnId, const DString& userDataS);
+    bool SetSubItemUserDataS(size_t itemIndex, size_t columnIndex, const std::string& userDataS);
+    bool SetSubItemUserDataSById(size_t itemIndex, size_t columnId, const std::string& userDataS);
 
     /** Get the associated user data of the specified data item (string)
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
@@ -415,8 +415,8 @@ public:
     * @param [in] columnId The column ID
     * @return The string data associated with the data item
     */
-    DString GetSubItemUserDataS(size_t itemIndex, size_t columnIndex) const;
-    DString GetSubItemUserDataSById(size_t itemIndex, size_t columnId) const;
+    std::string GetSubItemUserDataS(size_t itemIndex, size_t columnIndex) const;
+    std::string GetSubItemUserDataSById(size_t itemIndex, size_t columnId) const;
 
 public:
     /** Set the text color of the specified data item
@@ -765,8 +765,8 @@ public:
     /** The color of the horizontal grid lines
     * @param [in] color The color of the horizontal grid lines
     */
-    void SetRowGridLineColor(const DString& color);
-    DString GetRowGridLineColor() const;
+    void SetRowGridLineColor(const std::string& color);
+    std::string GetRowGridLineColor() const;
 
     /** The width of the vertical grid lines
     * @param [in] nLineWidth The width of the grid lines; if it is 0, the vertical grid lines are not shown
@@ -778,8 +778,8 @@ public:
     /** The color of the vertical grid lines
     * @param [in] color The color of the vertical grid lines
     */
-    void SetColumnGridLineColor(const DString& color);
-    DString GetColumnGridLineColor() const;
+    void SetColumnGridLineColor(const std::string& color);
+    std::string GetColumnGridLineColor() const;
 
     /** Whether double-clicking the Header's splitter automatically adjusts the column width
     */
@@ -1052,87 +1052,87 @@ protected:
 
     /** Set the attribute Class of ListCtrlHeader
     */
-    void SetHeaderClass(const DString& className);
+    void SetHeaderClass(const std::string& className);
 
     /** The attribute Class of ListCtrlHeaderItem
     */
-    void SetHeaderItemClass(const DString& className);
-    DString GetHeaderItemClass() const;
+    void SetHeaderItemClass(const std::string& className);
+    std::string GetHeaderItemClass() const;
 
     /** The attribute Class of ListCtrlHeader/SplitBox
     */
-    void SetHeaderSplitBoxClass(const DString& className);
-    DString GetHeaderSplitBoxClass() const;
+    void SetHeaderSplitBoxClass(const std::string& className);
+    std::string GetHeaderSplitBoxClass() const;
 
     /** The attribute Class of ListCtrlHeader/SplitBox/Control
     */
-    void SetHeaderSplitControlClass(const DString& className);
-    DString GetHeaderSplitControlClass() const;
+    void SetHeaderSplitControlClass(const std::string& className);
+    std::string GetHeaderSplitControlClass() const;
 
     /** The Class attribute of CheckBox (applied to the Header and ListCtrl data)
     */
-    void SetCheckBoxClass(const DString& className);
-    DString GetCheckBoxClass() const;
+    void SetCheckBoxClass(const std::string& className);
+    std::string GetCheckBoxClass() const;
 
     /** The Class attribute of the ListBox in the data Report view
     */
-    void SetReportViewClass(const DString& className);
-    DString GetReportViewClass() const;
+    void SetReportViewClass(const std::string& className);
+    std::string GetReportViewClass() const;
 
     /** The Class attribute of ListCtrlItem
     */
-    void SetDataItemClass(const DString& className);
-    DString GetDataItemClass() const;
+    void SetDataItemClass(const std::string& className);
+    std::string GetDataItemClass() const;
 
     /** The Class attribute of ListCtrlItem/ListCtrlSubItem
     */
-    void SetDataSubItemClass(const DString& className);
-    DString GetDataSubItemClass() const;
+    void SetDataSubItemClass(const std::string& className);
+    std::string GetDataSubItemClass() const;
 
     /** The Class attribute of the ListBox in the data Icon view
     */
-    void SetIconViewClass(const DString& className);
-    DString GetIconViewClass() const;
+    void SetIconViewClass(const std::string& className);
+    std::string GetIconViewClass() const;
 
     /** The Class attribute of the child items of the ListBox in the data Icon view
     */
-    void SetIconViewItemClass(const DString& className);
-    DString GetIconViewItemClass() const;
+    void SetIconViewItemClass(const std::string& className);
+    std::string GetIconViewItemClass() const;
 
     /** The Class attribute of the images in the child items of the ListBox in the data Icon view
     */
-    void SetIconViewItemImageClass(const DString& className);
-    DString GetIconViewItemImageClass() const;
+    void SetIconViewItemImageClass(const std::string& className);
+    std::string GetIconViewItemImageClass() const;
 
     /** The Class attribute of the Labels in the child items of the ListBox in the data Icon view
     */
-    void SetIconViewItemLabelClass(const DString& className);
-    DString GetIconViewItemLabelClass() const;
+    void SetIconViewItemLabelClass(const std::string& className);
+    std::string GetIconViewItemLabelClass() const;
 
     /** The Class attribute of the ListBox in the data List view
     */
-    void SetListViewClass(const DString& className);
-    DString GetListViewClass() const;
+    void SetListViewClass(const std::string& className);
+    std::string GetListViewClass() const;
 
     /** The Class attribute of the child items of the ListBox in the data List view
     */
-    void SetListViewItemClass(const DString& className);
-    DString GetListViewItemClass() const;
+    void SetListViewItemClass(const std::string& className);
+    std::string GetListViewItemClass() const;
 
     /** The Class attribute of the images of the child items of the ListBox in the data List view
     */
-    void SetListViewItemImageClass(const DString& className);
-    DString GetListViewItemImageClass() const;
+    void SetListViewItemImageClass(const std::string& className);
+    std::string GetListViewItemImageClass() const;
 
     /** The Class attribute of the Labels of the child items of the ListBox in the data List view
     */
-    void SetListViewItemLabelClass(const DString& className);
-    DString GetListViewItemLabelClass() const;
+    void SetListViewItemLabelClass(const std::string& className);
+    std::string GetListViewItemLabelClass() const;
 
     /** The Class attribute of the edit control
     */
-    void SetRichEditClass(const DString& richEditClass);
-    DString GetRichEditClass() const;
+    void SetRichEditClass(const std::string& richEditClass);
+    std::string GetRichEditClass() const;
 
 protected:
     /** Add a column
@@ -1226,7 +1226,7 @@ private:
 
     /** Sub-item edit event
     */
-    void OnItemEdited(const ListCtrlEditParam& editParam, const DString& newItemText);
+    void OnItemEdited(const ListCtrlEditParam& editParam, const std::string& newItemText);
 
     /** The view received a mouse message
     */

@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<ListBoxForm>(DUI_T("ListBox"));
+    return ui::Run<ListBoxForm>("ListBox");
 }

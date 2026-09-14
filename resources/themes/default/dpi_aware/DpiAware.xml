@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window size="900,640" min_size="80,50" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,36,36" caption="0,0,0,36" shadow_attached="true" alpha="255" size_box="4,4,4,4">
+<Window size="900,640" min_size="80,50" use_system_caption="false" snap_layout_menu="true" sys_menu="true" sys_menu_rect="0,0,32,32" caption="0,0,0,32" shadow_type="system_default" shadow_attached="true" size_box="4,4,4,4">
     <VBox bkcolor="bk_wnd_darkcolor" visible="true">    
         <!-- Title bar area -->
-        <HBox name="window_caption_bar" width="stretch" height="36" bkcolor="bk_wnd_lightcolor">
+        <HBox name="window_caption_bar" width="stretch" height="32" bkcolor="bk_wnd_lightcolor">
             <Label name="title" width="100%" height="100%" mouse_enabled="false" text_padding="10,0,0,0" text_align="vcenter"/>
-            <Button class="btn_wnd_min_11" height="32" width="40" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
-            <Box height="stretch" width="40" margin="0,2,0,2">
+            <Button class="btn_wnd_min_11" height="32" width="46" name="minbtn" margin="0,0,0,0" tooltip_text="Minimize"/>
+            <Box height="stretch" width="46" margin="0,0,0,0">
                 <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
                 <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
             </Box>
-            <Button class="btn_wnd_close_11" height="stretch" width="40" name="closebtn" margin="0,0,0,2" tooltip_text="Close"/>
+            <Button class="btn_wnd_close_11" height="stretch" width="46" name="closebtn" margin="0,0,0,0" tooltip_text="Close"/>
         </HBox>
         
         <!-- Work area: everything outside the title bar goes into this large Box area -->
@@ -41,26 +41,26 @@
                         <Label name="window_client_size" text="L:0,T:0,W:0,H:0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                 </VBox>
-                <VBox name="SDL" height="auto" visible="true" width="100%" valign="center" padding="20,0,0,0" margin="0,4,0,0">
+                <VBox name="native backend" height="auto" visible="true" width="100%" valign="center" padding="20,0,0,0" margin="0,4,0,0">
                     <HBox height="auto" >
-                        <Label text="SDL_GetWindowSize：" width="300" text_align="right,vcenter"/>
-                        <Label name="SDL_GetWindowSize" text="W:0,H:0" width="auto" text_align="left,vcenter"/>
+                        <Label text="Native_GetWindowSize：" width="300" text_align="right,vcenter"/>
+                        <Label name="Native_GetWindowSize" text="W:0,H:0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                     <HBox height="auto" >
-                        <Label text="SDL_GetWindowSizeInPixels：" width="300" text_align="right,vcenter"/>
-                        <Label name="SDL_GetWindowSizeInPixels" text="W:0,H:0" width="auto" text_align="left,vcenter"/>
+                        <Label text="Native_GetWindowSizeInPixels：" width="300" text_align="right,vcenter"/>
+                        <Label name="Native_GetWindowSizeInPixels" text="W:0,H:0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                     <HBox height="auto" >
-                        <Label text="SDL_GetDisplayContentScale：" width="300" text_align="right,vcenter"/>
-                        <Label name="SDL_GetDisplayContentScale" text="0" width="auto" text_align="left,vcenter"/>
+                        <Label text="Native_GetDisplayContentScale：" width="300" text_align="right,vcenter"/>
+                        <Label name="Native_GetDisplayContentScale" text="0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                     <HBox height="auto" >
-                        <Label text="SDL_GetWindowDisplayScale：" width="300" text_align="right,vcenter"/>
-                        <Label name="SDL_GetWindowDisplayScale" text="0" width="auto" text_align="left,vcenter"/>
+                        <Label text="Native_GetWindowDisplayScale：" width="300" text_align="right,vcenter"/>
+                        <Label name="Native_GetWindowDisplayScale" text="0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                     <HBox height="auto" >
-                        <Label text="SDL_GetWindowPixelDensity：" width="300" text_align="right,vcenter"/>
-                        <Label name="SDL_GetWindowPixelDensity" text="0" width="auto" text_align="left,vcenter"/>
+                        <Label text="Native_GetWindowPixelDensity：" width="300" text_align="right,vcenter"/>
+                        <Label name="Native_GetWindowPixelDensity" text="0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                 </VBox>
                 <HBox height="auto" width="100%" valign="center" margin="0,8,0,8">

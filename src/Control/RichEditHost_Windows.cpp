@@ -4,7 +4,7 @@
 #include "dui/Core/Window.h"
 #include "dui/Utils/StringConvert.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include <TextServ.h>
 
@@ -569,13 +569,10 @@ HRESULT RichEditHost::TxGetScrollBars(DWORD* pdwScrollBar)
 
 HRESULT RichEditHost::TxGetPasswordChar(_Out_ TCHAR* pch)
 {
-    ASSERT(pch != nullptr);
     if (pch == nullptr) {
         return NOERROR;
     }
-#ifndef DUI_UNICODE
     ASSERT(m_chPasswordChar <= CHAR_MAX);
-#endif // !DUI_UNICODE
     *pch = (TCHAR)m_chPasswordChar;
     if (!IsPassword()) {
         //Password not enabled
@@ -618,7 +615,6 @@ HRESULT RichEditHost::OnTxParaFormatChange(const PARAFORMAT*/*ppf*/)
 
 HRESULT RichEditHost::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits)
 {
-    ASSERT(pdwBits != nullptr);
     if (pdwBits == nullptr) {
         return S_OK;
     }
@@ -756,8 +752,7 @@ bool RichEditHost::IsReadOnly() const
 
 void RichEditHost::SetPasswordChar(WCHAR chPasswordChar)
 {
-    ASSERT(chPasswordChar != DUI_T('\0'));
-    if (chPasswordChar == DUI_T('\0')) {
+    if (chPasswordChar == '\0') {
         return;
     }
     //Enable password
@@ -811,9 +806,9 @@ bool RichEditHost::IsFlashPasswordChar() const
     return m_bFlashPasswordChar;
 }
 
-DString RichEditHost::GetPasswordText() const
+std::string RichEditHost::GetPasswordText() const
 {
-    DString pwdText;
+    std::string pwdText;
     if (IsPassword() && (m_pTextServices != nullptr)) {        
         ITextServices* pTextServices = m_pTextServices;
         BSTR bstrText = nullptr;
@@ -972,7 +967,6 @@ void RichEditHost::SetClientRect(const UiRect& rc)
         return;
     }
     m_rcClient = rc;
-    ASSERT(m_pRichEdit != nullptr);
     if (m_pRichEdit == nullptr) {
         return;
     }

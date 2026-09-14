@@ -36,8 +36,8 @@ public:
     ListBox& operator=(const ListBox& r) = delete;
 
     /// Overrides the parent class methods to provide customized functionality. Please refer to the parent class declarations
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void HandleEvent(const EventArgs& msg) override;
     virtual void SendEventMsg(const EventArgs& msg) override;
 
@@ -173,7 +173,7 @@ public:
     /** Scrolls to the position of the specified child item
      * @param [in] itemName The name of the child item (i.e., Control::GetName())
      */
-    virtual bool ScrollItemToTop(const DString& itemName);
+    virtual bool ScrollItemToTop(const std::string& itemName);
 
     /** Gets the first child item within the current rect (Control::GetPos())
      */
@@ -222,11 +222,11 @@ public:
 
     /** Sets the fill color of the mouse frame selection
     */
-    void SetFrameSelectionColor(const DString& frameSelectionColor);
+    void SetFrameSelectionColor(const std::string& frameSelectionColor);
 
     /** Gets the fill color of the mouse frame selection
     */
-    DString GetFrameSelectionColor() const;
+    std::string GetFrameSelectionColor() const;
 
     /** Sets the Alpha value of the mouse frame selection fill color
     */
@@ -238,11 +238,11 @@ public:
 
     /** Sets the border color of the mouse frame selection
     */
-    void SetFrameSelectionBorderColor(const DString& frameSelectionBorderColor);
+    void SetFrameSelectionBorderColor(const std::string& frameSelectionBorderColor);
 
     /** Gets the border color of the mouse frame selection
     */
-    DString GetFrameSelectionBorderColor() const;
+    std::string GetFrameSelectionBorderColor() const;
 
     /** Sets the border size of the mouse frame selection
     * @param [in] nBorderSize The border size (not DPI scaled)
@@ -708,7 +708,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_HLISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_HLISTBOX; }
 };
 
 /** ListBox with a vertical layout
@@ -721,7 +721,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VLISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VLISTBOX; }
 };
 
 /** ListBox with a tile layout (horizontal layout)
@@ -734,7 +734,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_HTILE_LISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_HTILE_LISTBOX; }
 };
 
 /** ListBox with a tile layout (vertical layout)
@@ -747,7 +747,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VTILE_LISTBOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VTILE_LISTBOX; }
 };
 
 } // namespace ui

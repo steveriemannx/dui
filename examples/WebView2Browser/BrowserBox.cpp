@@ -24,26 +24,26 @@ ui::WebView2Control* BrowserBox::GetWebView2Control()
     return m_pWebView2Control;
 }
 
-const DString& BrowserBox::GetTitle() const
+const std::string& BrowserBox::GetTitle() const
 {
     return m_title;
 }
 
-void BrowserBox::InitBrowserBox(const DString& url)
+void BrowserBox::InitBrowserBox(const std::string& url)
 {
-    m_pWebView2Control = static_cast<ui::WebView2Control*>(FindSubControl(DUI_T("webview2_control")));
+    m_pWebView2Control = static_cast<ui::WebView2Control*>(FindSubControl("webview2_control"));
     ASSERT(m_pWebView2Control != nullptr);
     if (m_pWebView2Control == nullptr) {
         return;
     }
     //Attach events
-    m_pWebView2Control->SetSourceChangedCallback([this](const DString& url) {
+    m_pWebView2Control->SetSourceChangedCallback([this](const std::string& url) {
         ui::GlobalManager::Instance().AssertUIThread();
         m_url = url;
         m_pBrowserForm->SetURL(m_browserId, url);
         });
 
-    m_pWebView2Control->SetDocumentTitleChangedCallback([this](const DString& title) {
+    m_pWebView2Control->SetDocumentTitleChangedCallback([this](const std::string& title) {
         ui::GlobalManager::Instance().AssertUIThread();
         m_title = title;
         m_pBrowserForm->SetTabItemName(ui::StringConvert::UTF8ToT(m_browserId), title);
@@ -57,7 +57,7 @@ void BrowserBox::InitBrowserBox(const DString& url)
         if (m_pWebView2Control != nullptr) {
             //Test code
             if (state == WebView2Control::NavigationState::Completed) {
-               // m_pWebView2Control->PostWebMessageAsString(DUI_T("hello world!"));               
+               // m_pWebView2Control->PostWebMessageAsString("hello world!");               
             }
         }
         });
@@ -79,18 +79,18 @@ void BrowserBox::InitBrowserBox(const DString& url)
         //Test code
         ui::GlobalManager::Instance().AssertUIThread();
         });
-    m_pWebView2Control->SetWebMessageReceivedCallback([this](const DString& url,
-                                                             const DString& webMessageAsJson,
-                                                             const DString& webMessageAsString) {
+    m_pWebView2Control->SetWebMessageReceivedCallback([this](const std::string& url,
+                                                             const std::string& webMessageAsJson,
+                                                             const std::string& webMessageAsString) {
         //Test code
         ui::GlobalManager::Instance().AssertUIThread();
         //Send a reply to the HTML page
-        m_pWebView2Control->PostWebMessageAsString(DUI_T("Hello from C++!"));
+        m_pWebView2Control->PostWebMessageAsString("Hello from C++!");
         });
 
     //New window request callback function
-    m_pWebView2Control->SetNewWindowRequestedCallback([this](const DString& sourceUrl, const DString& sourceFrame,
-                                                             const DString& targetUrl, const DString& targetFrame,
+    m_pWebView2Control->SetNewWindowRequestedCallback([this](const std::string& sourceUrl, const std::string& sourceFrame,
+                                                             const std::string& targetUrl, const std::string& targetFrame,
                                                              bool bUserInitiated) {
             // Returning true allows creating the popup page, but the new page navigates in the current page and no new window pops up;
             // Returning false blocks the popup page, and the display logic of the new page is managed inside the callback function
@@ -118,24 +118,24 @@ void BrowserBox::InitBrowserBox(const DString& url)
             return false;
         });
 
-    m_pWebView2Control->InitializeAsync(DUI_T(""), [this](HRESULT result) {
+    m_pWebView2Control->InitializeAsync("", [this](HRESULT result) {
         //Test code
         ui::GlobalManager::Instance().AssertUIThread();
         });
 
     //Navigate to the URL
-    DString navigateUrl = url;
+    std::string navigateUrl = url;
     if (navigateUrl.empty()) {
-        navigateUrl = DUI_T("www.baidu.com");
+        navigateUrl = "www.baidu.com";
 
         ////Test JS-C++ communication
         //ui::FilePath webViewHtml = GlobalManager::GetDefaultResourcePath(true);
         //webViewHtml.NormalizeDirectoryPath();
-        //webViewHtml += DUI_T("themes/default/webview2_browser/WebView2Demo.html");
+        //webViewHtml += "themes/default/webview2_browser/WebView2Demo.html";
         //webViewHtml.NormalizeFilePath();
-        //navigateUrl = DUI_T("file:///");
+        //navigateUrl = "file:///";
         //navigateUrl += webViewHtml.ToString();
-        //StringUtil::ReplaceAll(DUI_T("\\"), DUI_T("/"), navigateUrl);
+        //StringUtil::ReplaceAll("\\", "/", navigateUrl);
     }
     m_pWebView2Control->Navigate(navigateUrl);
 }

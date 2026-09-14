@@ -3,7 +3,7 @@
 
 #include "dui/Core/UiTypes.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include <Richedit.h>
 #include <TextServ.h>
@@ -42,10 +42,13 @@ public:
 
     static LPCTSTR GetLibraryName()
     {
+        // LPCTSTR is LPCWSTR under UNICODE, so these have to be wide. They were DUI_T()
+        // literals before the string model was unified; the migration made them narrow
+        // and this is a Windows-only header, so nothing on macOS or Linux noticed.
 #if (_RICHEDIT_VER >= 0x0500)
-        return DUI_T("MSFTEDIT.DLL");
+        return L"MSFTEDIT.DLL";
 #else
-        return DUI_T("RICHED20.DLL");
+        return L"RICHED20.DLL";
 #endif
     }
 
@@ -110,7 +113,6 @@ public:
     int GetLine(int nIndex, LPWSTR lpszBuffer, int nMaxLength) const
     {
         ASSERT(m_pTextServices != nullptr);
-        ASSERT(lpszBuffer != nullptr);
         if (lpszBuffer == nullptr) {
             return 0;
         }
@@ -236,11 +238,11 @@ public:
             return TRUE;
         }
         textLen += 1;
-        DStringW::value_type* pText = new DStringW::value_type[textLen];
+        std::wstring::value_type* pText = new std::wstring::value_type[textLen];
         if (pText == nullptr) {
             return FALSE;
         }
-        memset(pText, 0, sizeof(DStringW::value_type) * textLen);
+        memset(pText, 0, sizeof(std::wstring::value_type) * textLen);
         if (TxSendMessage(EM_GETSELTEXT, 0, (LPARAM)pText) == 0) {
             delete[] pText;
             return FALSE;

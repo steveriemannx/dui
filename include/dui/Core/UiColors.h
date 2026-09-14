@@ -158,7 +158,7 @@ namespace UiColors
 
     /** String constants corresponding to common color values
     */
-    void GetUiColorsString(std::vector<std::pair<DString, int32_t>>& uiColors);
+    void GetUiColorsString(std::vector<std::pair<std::string, int32_t>>& uiColors);
 
 }// namespace UiColors
 } // namespace ui

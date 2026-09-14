@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "dui/Core/Control.h"
 #include "dui/Core/ControlLoading.h"
 #include "dui/Core/Window.h"
@@ -16,12 +17,8 @@
 #include "dui/Utils/AttributeUtil.h"
 #include "dui/Utils/PerformanceUtil.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     #include "dui/Core/ControlDropTargetImpl_Windows.h"
-#endif
-
-#ifdef DUI_BUILD_FOR_SDL
-    #include "dui/Core/ControlDropTargetImpl_SDL.h"
 #endif
 
 namespace ui 
@@ -75,97 +72,97 @@ Control::~Control()
     m_pBorderData.reset();
 }
 
-DString Control::GetType() const { return DUI_CTR_CONTROL; }
+std::string Control::GetType() const { return DUI_CTR_CONTROL; }
 
-void Control::SetAttribute(const DString& strName, const DString& strValue)
+void Control::SetAttribute(const std::string& strName, const std::string& strValue)
 {
     ASSERT(GetWindow() != nullptr);// The associated window must be set first because DPI awareness is needed
-    if (strName == DUI_T("class")) {
+    if (strName == "class") {
         SetClass(strValue);
     }
-    else if (strName == DUI_T("halign")) {
-        if (strValue == DUI_T("left")) {
+    else if (strName == "halign") {
+        if (strValue == "left") {
             SetHorAlignType(HorAlignType::kAlignLeft);
         }
-        else if (strValue == DUI_T("center")) {
+        else if (strValue == "center") {
             SetHorAlignType(HorAlignType::kAlignCenter);
         }
-        else if (strValue == DUI_T("right")) {
+        else if (strValue == "right") {
             SetHorAlignType(HorAlignType::kAlignRight);
         }
         else {
             ASSERT(0);
         }
     }
-    else if (strName == DUI_T("valign")) {
-        if (strValue == DUI_T("top")) {
+    else if (strName == "valign") {
+        if (strValue == "top") {
             SetVerAlignType(VerAlignType::kAlignTop);
         }
-        else if (strValue == DUI_T("center")) {
+        else if (strValue == "center") {
             SetVerAlignType(VerAlignType::kAlignCenter);
         }
-        else if (strValue == DUI_T("bottom")) {
+        else if (strValue == "bottom") {
             SetVerAlignType(VerAlignType::kAlignBottom);
         }
         else {
             ASSERT(0);
         }
     }
-    else if (strName == DUI_T("align")) {
+    else if (strName == "align") {
         // Horizontal alignment
-        if (strValue.find(DUI_T("left")) != DString::npos) {
+        if (strValue.find("left") != std::string::npos) {
             SetHorAlignType(HorAlignType::kAlignLeft);
         }
-        else if (strValue.find(DUI_T("hcenter")) != DString::npos) {
+        else if (strValue.find("hcenter") != std::string::npos) {
             SetHorAlignType(HorAlignType::kAlignCenter);
         }
-        else if (strValue.find(DUI_T("right")) != DString::npos) {
+        else if (strValue.find("right") != std::string::npos) {
             SetHorAlignType(HorAlignType::kAlignRight);
         }
         // Vertical alignment
-        if (strValue.find(DUI_T("top")) != DString::npos) {
+        if (strValue.find("top") != std::string::npos) {
             SetVerAlignType(VerAlignType::kAlignTop);
         }
-        else if (strValue.find(DUI_T("vcenter")) != DString::npos) {
+        else if (strValue.find("vcenter") != std::string::npos) {
             SetVerAlignType(VerAlignType::kAlignCenter);
         }
-        else if (strValue.find(DUI_T("bottom")) != DString::npos) {
+        else if (strValue.find("bottom") != std::string::npos) {
             SetVerAlignType(VerAlignType::kAlignBottom);
         }
     }
-    else if (strName == DUI_T("margin")) {
+    else if (strName == "margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetMargin(rcMargin, true);
     }
-    else if (strName == DUI_T("padding")) {
+    else if (strName == "padding") {
         UiPadding rcPadding;
         AttributeUtil::ParsePaddingValue(strValue.c_str(), rcPadding);
         SetPadding(rcPadding, true);
     }
-    else if (strName == DUI_T("control_padding")) {
-        SetEnableControlPadding(strValue == DUI_T("true"));
+    else if (strName == "control_padding") {
+        SetEnableControlPadding(strValue == "true");
     }
-    else if (strName == DUI_T("bkcolor")) {
+    else if (strName == "bkcolor") {
         // Background color
         SetBkColor(strValue);
     }
-    else if (strName == DUI_T("bkcolor2")) {
+    else if (strName == "bkcolor2") {
         // Second background color (implements the gradient background color)
         SetBkColor2(strValue);
     }
-    else if (strName == DUI_T("bkcolor2_direction")) {
+    else if (strName == "bkcolor2_direction") {
         // Direction of the second background color: "1": left->right, "2": top->bottom, "3": top-left->bottom-right, "4": top-right->bottom-left
         SetBkColor2Direction(strValue);
     }
-    else if (strName == DUI_T("fore_color")) {
+    else if (strName == "fore_color") {
         // Foreground color
         SetForeColor(strValue);
     }
-    else if ((strName == DUI_T("border_size")) || (strName == DUI_T("bordersize"))) {
+    else if ((strName == "border_size") || (strName == "bordersize")) {
         // Border width
-        DString nValue = strValue;
-        if (nValue.find(DUI_T(',')) == DString::npos) {
+        std::string nValue = strValue;
+        if (nValue.find(',') == std::string::npos) {
             int32_t nBorderSize = StringUtil::StringToInt32(strValue);
             if (nBorderSize < 0) {
                 nBorderSize = 0;
@@ -180,50 +177,50 @@ void Control::SetAttribute(const DString& strName, const DString& strValue)
             SetBorderSize(rcBorder, true);
         }
     }
-    else if (strName == DUI_T("border_dash_style")) {
+    else if (strName == "border_dash_style") {
         // Border dash style (the dash styles of the four borders can only be the same, separate settings are not supported)
         IPen::DashStyle dashStyle = IPen::kDashStyleSolid;
-        if (strValue == DUI_T("solid")) {
+        if (strValue == "solid") {
             dashStyle = IPen::kDashStyleSolid;
         }
-        else if (strValue == DUI_T("dash")) {
+        else if (strValue == "dash") {
             dashStyle = IPen::kDashStyleDash;
         }
-        else if (strValue == DUI_T("dot")) {
+        else if (strValue == "dot") {
             dashStyle = IPen::kDashStyleDot;
         }
-        else if (strValue == DUI_T("dash_dot")) {
+        else if (strValue == "dash_dot") {
             dashStyle = IPen::kDashStyleDashDot;
         }
-        else if (strValue == DUI_T("dash_dot_dot")) {
+        else if (strValue == "dash_dot_dot") {
             dashStyle = IPen::kDashStyleDashDotDot;
         }
         SetBorderDashStyle((int8_t)dashStyle);
     }
-    else if (strName == DUI_T("borders_on_top")) {
+    else if (strName == "borders_on_top") {
         // Whether the border is on top (i.e. draw the child controls first, then the border, to avoid the border being covered by child controls)
-        SetBordersOnTop(strValue == DUI_T("true"));
+        SetBordersOnTop(strValue == "true");
     }
-    else if ((strName == DUI_T("border_round")) || (strName == DUI_T("borderround"))) {
+    else if ((strName == "border_round") || (strName == "borderround")) {
         // Border round size
         UiSize cxyRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), cxyRound);
         SetBorderRound(cxyRound);
     }
-    else if ((strName == DUI_T("box_shadow")) || (strName == DUI_T("boxshadow"))) {
+    else if ((strName == "box_shadow") || (strName == "boxshadow")) {
         SetBoxShadow(strValue);
     }
-    else if (strName == DUI_T("width")) {
-        if (strValue == DUI_T("stretch")) {
+    else if (strName == "width") {
+        if (strValue == "stretch") {
             // Width is stretch: the width is allocated by the parent container
             SetFixedWidth(UiFixedInt::MakeStretch(), true, true);
         }
-        else if (strValue == DUI_T("auto")) {
+        else if (strValue == "auto") {
             // Width is auto: the width is calculated automatically based on the control's text, image, etc.
             SetFixedWidth(UiFixedInt::MakeAuto(), true, true);
         }
         else if (!strValue.empty()) {
-            if (strValue.back() == DUI_T('%')) {
+            if (strValue.back() == '%') {
                 // Width is stretch: the width is allocated by the parent container by percentage, e.g. width="30%" means the expected width of the control is 30% of the parent control's width
                 int32_t iValue = StringUtil::StringToInt32(strValue);
                 if ((iValue <= 0) || (iValue > 100)) {
@@ -241,17 +238,17 @@ void Control::SetAttribute(const DString& strName, const DString& strValue)
             SetFixedWidth(UiFixedInt(0), true, true);
         }
     }
-    else if (strName == DUI_T("height")) {
-        if (strValue == DUI_T("stretch")) {
+    else if (strName == "height") {
+        if (strValue == "stretch") {
             // Height is stretch: the height is allocated by the parent container
             SetFixedHeight(UiFixedInt::MakeStretch(), true, true);
         }
-        else if (strValue == DUI_T("auto")) {
+        else if (strValue == "auto") {
             // Height is auto: the height is calculated automatically based on the control's text, image, etc.
             SetFixedHeight(UiFixedInt::MakeAuto(), true, true);
         }
         else if (!strValue.empty()) {
-            if (strValue.back() == DUI_T('%')) {
+            if (strValue.back() == '%') {
                 // Height is stretch: the height is allocated by the parent container by percentage, e.g. height="30%" means the expected height of the control is 30% of the parent control's height
                 int32_t iValue = StringUtil::StringToInt32(strValue);
                 if ((iValue <= 0) || (iValue > 100)) {
@@ -269,332 +266,332 @@ void Control::SetAttribute(const DString& strName, const DString& strValue)
             SetFixedHeight(UiFixedInt(0), true, true);
         }
     }
-    else if (strName == DUI_T("state")) {
-        if (strValue == DUI_T("normal")) {
+    else if (strName == "state") {
+        if (strValue == "normal") {
             SetState(kControlStateNormal);
         }
-        else if (strValue == DUI_T("hot")) {
+        else if (strValue == "hot") {
             SetState(kControlStateHot);
         }
-        else if (strValue == DUI_T("pushed")) {
+        else if (strValue == "pushed") {
             SetState(kControlStatePushed);
         }
-        else if (strValue == DUI_T("disabled")) {
+        else if (strValue == "disabled") {
             SetState(kControlStateDisabled);
         }
         else {
             ASSERT(0);
         }
     }
-    else if ((strName == DUI_T("cursor_type")) || (strName == DUI_T("cursortype"))) {
-        if (strValue == DUI_T("arrow")) {
+    else if ((strName == "cursor_type") || (strName == "cursortype")) {
+        if (strValue == "arrow") {
             SetCursorType(CursorType::kCursorArrow);
         }
-        else if (strValue == DUI_T("ibeam")) {
+        else if (strValue == "ibeam") {
             SetCursorType(CursorType::kCursorIBeam);
         }
-        else if (strValue == DUI_T("hand")) {
+        else if (strValue == "hand") {
             SetCursorType(CursorType::kCursorHand);
         }
-        else if (strValue == DUI_T("wait")) {
+        else if (strValue == "wait") {
             SetCursorType(CursorType::kCursorWait);
         }
-        else if (strValue == DUI_T("cross")) {
+        else if (strValue == "cross") {
             SetCursorType(CursorType::kCursorCross);
         }
-        else if (strValue == DUI_T("size_we")) {
+        else if (strValue == "size_we") {
             SetCursorType(CursorType::kCursorSizeWE);
         }
-        else if (strValue == DUI_T("size_ns")) {
+        else if (strValue == "size_ns") {
             SetCursorType(CursorType::kCursorSizeNS);
         }
-        else if (strValue == DUI_T("size_nwse")) {
+        else if (strValue == "size_nwse") {
             SetCursorType(CursorType::kCursorSizeNWSE);
         }
-        else if (strValue == DUI_T("size_nesw")) {
+        else if (strValue == "size_nesw") {
             SetCursorType(CursorType::kCursorSizeNESW);
         }
-        else if (strValue == DUI_T("size_all")) {
+        else if (strValue == "size_all") {
             SetCursorType(CursorType::kCursorSizeAll);
         }
-        else if (strValue == DUI_T("no")) {
+        else if (strValue == "no") {
             SetCursorType(CursorType::kCursorNo);
         }
-        else if (strValue == DUI_T("progress")) {
+        else if (strValue == "progress") {
             SetCursorType(CursorType::kCursorProgress);
         }
         else {
             ASSERT(0);
         }
     }
-    else if ((strName == DUI_T("render_offset")) || (strName == DUI_T("renderoffset"))) {
+    else if ((strName == "render_offset") || (strName == "renderoffset")) {
         UiPoint renderOffset;
         AttributeUtil::ParsePointValue(strValue.c_str(), renderOffset);
         SetRenderOffset(renderOffset, true);
     }
-    else if ((strName == DUI_T("normal_color")) || (strName == DUI_T("normalcolor"))) {
+    else if ((strName == "normal_color") || (strName == "normalcolor")) {
         SetStateColor(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("hot_color")) || (strName == DUI_T("hotcolor"))) {
+    else if ((strName == "hot_color") || (strName == "hotcolor")) {
         SetStateColor(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("pushed_color")) || (strName == DUI_T("pushedcolor"))) {
+    else if ((strName == "pushed_color") || (strName == "pushedcolor")) {
         SetStateColor(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("disabled_color")) || (strName == DUI_T("disabledcolor"))) {
+    else if ((strName == "disabled_color") || (strName == "disabledcolor")) {
         SetStateColor(kControlStateDisabled, strValue);
     }
-    else if (strName == DUI_T("normal_color_margin")) {
+    else if (strName == "normal_color_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetStateColorMargin(kControlStateNormal, rcMargin, true);
     }
-    else if (strName == DUI_T("hot_color_margin")) {
+    else if (strName == "hot_color_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetStateColorMargin(kControlStateHot, rcMargin, true);
     }
-    else if (strName == DUI_T("pushed_color_margin")) {
+    else if (strName == "pushed_color_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetStateColorMargin(kControlStatePushed, rcMargin, true);
     }
-    else if (strName == DUI_T("disabled_color_margin")) {
+    else if (strName == "disabled_color_margin") {
         UiMargin rcMargin;
         AttributeUtil::ParseMarginValue(strValue.c_str(), rcMargin);
         SetStateColorMargin(kControlStateDisabled, rcMargin, true);
     }
-    else if (strName == DUI_T("normal_color_round")) {
+    else if (strName == "normal_color_round") {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetStateColorRound(kControlStateNormal, szRound, true);
     }
-    else if (strName == DUI_T("hot_color_round")) {
+    else if (strName == "hot_color_round") {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetStateColorRound(kControlStateHot, szRound, true);
     }
-    else if (strName == DUI_T("pushed_color_round")) {
+    else if (strName == "pushed_color_round") {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetStateColorRound(kControlStatePushed, szRound, true);
     }
-    else if (strName == DUI_T("disabled_color_round")) {
+    else if (strName == "disabled_color_round") {
         UiSize szRound;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szRound);
         SetStateColorRound(kControlStateDisabled, szRound, true);
     }
-    else if ((strName == DUI_T("border_color")) || (strName == DUI_T("bordercolor"))) {
+    else if ((strName == "border_color") || (strName == "bordercolor")) {
         SetBorderColor(strValue);
     }
-    else if (strName == DUI_T("normal_border_color")) {
+    else if (strName == "normal_border_color") {
         SetBorderColor(kControlStateNormal, strValue);
     }
-    else if (strName == DUI_T("hot_border_color")) {
+    else if (strName == "hot_border_color") {
         SetBorderColor(kControlStateHot, strValue);
     }
-    else if (strName == DUI_T("pushed_border_color")) {
+    else if (strName == "pushed_border_color") {
         SetBorderColor(kControlStatePushed, strValue);
     }
-    else if (strName == DUI_T("disabled_border_color")) {
+    else if (strName == "disabled_border_color") {
         SetBorderColor(kControlStateDisabled, strValue);
     }
-    else if (strName == DUI_T("focus_border_color")) {
+    else if (strName == "focus_border_color") {
         SetFocusBorderColor(strValue);
     }
-    else if ((strName == DUI_T("left_border_size")) || (strName == DUI_T("leftbordersize"))) {
+    else if ((strName == "left_border_size") || (strName == "leftbordersize")) {
         SetLeftBorderSize((float)StringUtil::StringToInt32(strValue), true);
     }
-    else if ((strName == DUI_T("top_border_size")) || (strName == DUI_T("topbordersize"))) {
+    else if ((strName == "top_border_size") || (strName == "topbordersize")) {
         SetTopBorderSize((float)StringUtil::StringToInt32(strValue), true);
     }
-    else if ((strName == DUI_T("right_border_size")) || (strName == DUI_T("rightbordersize"))) {
+    else if ((strName == "right_border_size") || (strName == "rightbordersize")) {
         SetRightBorderSize((float)StringUtil::StringToInt32(strValue), true);
     }
-    else if ((strName == DUI_T("bottom_border_size")) || (strName == DUI_T("bottombordersize"))) {
+    else if ((strName == "bottom_border_size") || (strName == "bottombordersize")) {
         SetBottomBorderSize((float)StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("bkimage")) {
+    else if (strName == "bkimage") {
         SetBkImage(strValue);
     }
-    else if ((strName == DUI_T("min_width")) || (strName == DUI_T("minwidth"))) {
+    else if ((strName == "min_width") || (strName == "minwidth")) {
         SetMinWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if ((strName == DUI_T("max_width")) || (strName == DUI_T("maxwidth"))) {
+    else if ((strName == "max_width") || (strName == "maxwidth")) {
         SetMaxWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if ((strName == DUI_T("min_height")) || (strName == DUI_T("minheight"))) {
+    else if ((strName == "min_height") || (strName == "minheight")) {
         SetMinHeight(StringUtil::StringToInt32(strValue), true);
     }
-    else if ((strName == DUI_T("max_height")) || (strName == DUI_T("maxheight"))) {
+    else if ((strName == "max_height") || (strName == "maxheight")) {
         SetMaxHeight(StringUtil::StringToInt32(strValue), true);
     }
-    else if (strName == DUI_T("name")) {
+    else if (strName == "name") {
         SetName(strValue);
     }
-    else if ((strName == DUI_T("tooltip_text")) || (strName == DUI_T("tooltiptext"))) {
+    else if ((strName == "tooltip_text") || (strName == "tooltiptext")) {
         SetToolTipText(strValue);
     }
-    else if ((strName == DUI_T("tooltip_text_id")) || (strName == DUI_T("tooltip_textid")) || (strName == DUI_T("tooltiptextid"))) {
+    else if ((strName == "tooltip_text_id") || (strName == "tooltip_textid") || (strName == "tooltiptextid")) {
         SetToolTipTextId(strValue);
     }
-    else if (strName == DUI_T("tooltip_width")) {
+    else if (strName == "tooltip_width") {
         SetToolTipWidth(StringUtil::StringToInt32(strValue), true);
     }
-    else if ((strName == DUI_T("data_id")) || (strName == DUI_T("dataid"))) {
+    else if ((strName == "data_id") || (strName == "dataid")) {
         SetDataID(strValue);
     }
-    else if ((strName == DUI_T("user_data_id")) || (strName == DUI_T("user_dataid"))) {
+    else if ((strName == "user_data_id") || (strName == "user_dataid")) {
         SetUserDataID(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("enabled")) {
-        SetEnabled(strValue == DUI_T("true"));
+    else if (strName == "enabled") {
+        SetEnabled(strValue == "true");
     }
-    else if ((strName == DUI_T("mouse_enabled")) || (strName == DUI_T("mouse"))) {
-        SetMouseEnabled(strValue == DUI_T("true"));
+    else if ((strName == "mouse_enabled") || (strName == "mouse")) {
+        SetMouseEnabled(strValue == "true");
     }
-    else if ((strName == DUI_T("keyboard_enabled")) || (strName == DUI_T("keyboard"))) {
-        SetKeyboardEnabled(strValue == DUI_T("true"));
+    else if ((strName == "keyboard_enabled") || (strName == "keyboard")) {
+        SetKeyboardEnabled(strValue == "true");
     }
-    else if (strName == DUI_T("visible")) {
-        SetVisible(strValue == DUI_T("true"));
+    else if (strName == "visible") {
+        SetVisible(strValue == "true");
     }
-    else if ((strName == DUI_T("fade_visible")) || (strName == DUI_T("fadevisible"))) {
-        SetFadeVisible(strValue == DUI_T("true"));
+    else if ((strName == "fade_visible") || (strName == "fadevisible")) {
+        SetFadeVisible(strValue == "true");
     }
-    else if (strName == DUI_T("float")) {
-        SetFloat(strValue == DUI_T("true"));
+    else if (strName == "float") {
+        SetFloat(strValue == "true");
     }
-    else if (strName == DUI_T("keep_float_pos")) {
-        SetKeepFloatPos(strValue == DUI_T("true"));
+    else if (strName == "keep_float_pos") {
+        SetKeepFloatPos(strValue == "true");
     }
-    else if (strName == DUI_T("cache")) {
+    else if (strName == "cache") {
         // Ignore this option: the corresponding feature has been removed
     }
-    else if ((strName == DUI_T("no_focus")) || (strName == DUI_T("nofocus"))) {
+    else if ((strName == "no_focus") || (strName == "nofocus")) {
         SetNoFocus();
     }
-    else if (strName == DUI_T("alpha")) {
+    else if (strName == "alpha") {
         SetAlpha(ui::TruncateToUInt8(StringUtil::StringToInt32(strValue)));
     }
-    else if ((strName == DUI_T("normal_image")) || (strName == DUI_T("normalimage"))) {
+    else if ((strName == "normal_image") || (strName == "normalimage")) {
         SetStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("hot_image")) || (strName == DUI_T("hotimage"))) {
+    else if ((strName == "hot_image") || (strName == "hotimage")) {
         SetStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("pushed_image")) || (strName == DUI_T("pushedimage"))) {
+    else if ((strName == "pushed_image") || (strName == "pushedimage")) {
         SetStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("disabled_image")) || (strName == DUI_T("disabledimage"))) {
+    else if ((strName == "disabled_image") || (strName == "disabledimage")) {
         SetStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == DUI_T("fore_normal_image")) || (strName == DUI_T("forenormalimage"))) {
+    else if ((strName == "fore_normal_image") || (strName == "forenormalimage")) {
         SetForeStateImage(kControlStateNormal, strValue);
     }
-    else if ((strName == DUI_T("fore_hot_image")) || (strName == DUI_T("forehotimage"))) {
+    else if ((strName == "fore_hot_image") || (strName == "forehotimage")) {
         SetForeStateImage(kControlStateHot, strValue);
     }
-    else if ((strName == DUI_T("fore_pushed_image")) || (strName == DUI_T("forepushedimage"))) {
+    else if ((strName == "fore_pushed_image") || (strName == "forepushedimage")) {
         SetForeStateImage(kControlStatePushed, strValue);
     }
-    else if ((strName == DUI_T("fore_disabled_image")) || (strName == DUI_T("foredisabledimage"))) {
+    else if ((strName == "fore_disabled_image") || (strName == "foredisabledimage")) {
         SetForeStateImage(kControlStateDisabled, strValue);
     }
-    else if ((strName == DUI_T("fade_alpha")) || (strName == DUI_T("fadealpha"))) {
-        bool bFadeVisible = strValue != DUI_T("false");
+    else if ((strName == "fade_alpha") || (strName == "fadealpha")) {
+        bool bFadeVisible = strValue != "false";
         uint8_t nEndAlpha = GetAlpha();
         if (bFadeVisible) {
-            if (strValue != DUI_T("true")) {
+            if (strValue != "true") {
                 nEndAlpha = ui::TruncateToUInt8(StringUtil::StringToInt32(strValue));
             }
         }
         GetAnimationManager().SetFadeAlpha(bFadeVisible, nEndAlpha);
     }
-    else if ((strName == DUI_T("fade_hot")) || (strName == DUI_T("fadehot"))) {
-        SetFadeHot(strValue == DUI_T("true"));
+    else if ((strName == "fade_hot") || (strName == "fadehot")) {
+        SetFadeHot(strValue == "true");
     }
-    else if (strName == DUI_T("fade_hot_frame_interval_ms")) {
+    else if (strName == "fade_hot_frame_interval_ms") {
         SetFadeHotFrameIntervalMillSeconds(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("fade_hot_total_ms")) {
+    else if (strName == "fade_hot_total_ms") {
         SetFadeHotTotalMillSeconds(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("fade_hot_easing_function")) {
+    else if (strName == "fade_hot_easing_function") {
         SetFadeHotEasingFunctionType(EasingFunctions::GetEasingFunctionType(strValue));
     }
-    else if ((strName == DUI_T("fade_width")) || (strName == DUI_T("fadewidth"))) {
-        GetAnimationManager().SetFadeWidth(strValue == DUI_T("true"));
+    else if ((strName == "fade_width") || (strName == "fadewidth")) {
+        GetAnimationManager().SetFadeWidth(strValue == "true");
     }
-    else if ((strName == DUI_T("fade_height")) || (strName == DUI_T("fadeheight"))) {
-        GetAnimationManager().SetFadeHeight(strValue == DUI_T("true"));
+    else if ((strName == "fade_height") || (strName == "fadeheight")) {
+        GetAnimationManager().SetFadeHeight(strValue == "true");
     }
-    else if (strName == DUI_T("fade_size")) {
-        GetAnimationManager().SetFadeSize(strValue == DUI_T("true"));
+    else if (strName == "fade_size") {
+        GetAnimationManager().SetFadeSize(strValue == "true");
     }
-    else if ((strName == DUI_T("fade_in_out_x_from_left")) || (strName == DUI_T("fadeinoutxfromleft"))) {
-        GetAnimationManager().SetFadeInOutX(strValue == DUI_T("true"), false);
+    else if ((strName == "fade_in_out_x_from_left") || (strName == "fadeinoutxfromleft")) {
+        GetAnimationManager().SetFadeInOutX(strValue == "true", false);
     }
-    else if ((strName == DUI_T("fade_in_out_x_from_right")) || (strName == DUI_T("fadeinoutxfromright"))) {
-        GetAnimationManager().SetFadeInOutX(strValue == DUI_T("true"), true);
+    else if ((strName == "fade_in_out_x_from_right") || (strName == "fadeinoutxfromright")) {
+        GetAnimationManager().SetFadeInOutX(strValue == "true", true);
     }
-    else if ((strName == DUI_T("fade_in_out_y_from_top")) || (strName == DUI_T("fadeinoutyfromtop"))) {
-        GetAnimationManager().SetFadeInOutY(strValue == DUI_T("true"), false);
+    else if ((strName == "fade_in_out_y_from_top") || (strName == "fadeinoutyfromtop")) {
+        GetAnimationManager().SetFadeInOutY(strValue == "true", false);
     }
-    else if ((strName == DUI_T("fade_in_out_y_from_bottom")) || (strName == DUI_T("fadeinoutyfrombottom"))) {
-        GetAnimationManager().SetFadeInOutY(strValue == DUI_T("true"), true);
+    else if ((strName == "fade_in_out_y_from_bottom") || (strName == "fadeinoutyfrombottom")) {
+        GetAnimationManager().SetFadeInOutY(strValue == "true", true);
     }
-    else if (strName == DUI_T("fade_frame_interval_ms")) {
+    else if (strName == "fade_frame_interval_ms") {
         GetAnimationManager().SetFrameIntervalMillSeconds(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("fade_total_ms")) {
+    else if (strName == "fade_total_ms") {
         GetAnimationManager().SetTotalMillSeconds(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("fade_easing_function")) {        
+    else if (strName == "fade_easing_function") {        
         GetAnimationManager().SetEasingFunctionType(EasingFunctions::GetEasingFunctionType(strValue));
     }
-    else if ((strName == DUI_T("tab_stop")) || (strName == DUI_T("tabstop"))) {
-        SetTabStop(strValue == DUI_T("true"));
+    else if ((strName == "tab_stop") || (strName == "tabstop")) {
+        SetTabStop(strValue == "true");
     }
-    else if (strName == DUI_T("loading")) {
+    else if (strName == "loading") {
         SetLoadingAttribute(strValue);
     }
-    else if (strName == DUI_T("show_focus_rect")) {
-        SetShowFocusRect(strValue == DUI_T("true"));
+    else if (strName == "show_focus_rect") {
+        SetShowFocusRect(strValue == "true");
     }
-    else if (strName == DUI_T("focus_rect_color")) {
+    else if (strName == "focus_rect_color") {
         SetFocusRectColor(strValue);
     }
-    else if (strName == DUI_T("paint_order")) {
+    else if (strName == "paint_order") {
         uint8_t nPaintOrder = TruncateToUInt8(StringUtil::StringToInt32(strValue));
         SetPaintOrder(nPaintOrder);
     }
-    else if ((strName == DUI_T("start_image_animation")) || (strName == DUI_T("start_gif_play"))) {
+    else if ((strName == "start_image_animation") || (strName == "start_gif_play")) {
         ParseStartImageAnimation(strValue);
     }
-    else if ((strName == DUI_T("stop_image_animation")) || (strName == DUI_T("stop_gif_play"))) {
+    else if ((strName == "stop_image_animation") || (strName == "stop_gif_play")) {
         ParseStopImageAnimation(strValue);
     }
-    else if (strName == DUI_T("set_image_animation_frame")) {
+    else if (strName == "set_image_animation_frame") {
         ParseSetImageAnimationFrame(strValue);
     }
-    else if (strName == DUI_T("enable_drag_drop")) {
+    else if (strName == "enable_drag_drop") {
         // Whether drag and drop operations are allowed
-        SetEnableDragDrop(strValue == DUI_T("true"));
+        SetEnableDragDrop(strValue == "true");
     }
-    else if (strName == DUI_T("enable_drop_file")) {
+    else if (strName == "enable_drop_file") {
         // Whether dropping files is allowed
-        SetEnableDropFile(strValue == DUI_T("true"));
+        SetEnableDropFile(strValue == "true");
     }
-    else if (strName == DUI_T("drop_file_types")) {
+    else if (strName == "drop_file_types") {
         // The list of file extensions that can be dropped
         SetDropFileTypes(strValue);
     }
-    else if (strName == DUI_T("row_span")) {
+    else if (strName == "row_span") {
         // Set the cell spanning property (how many rows it spans); only takes effect in the GridLayout
         SetRowSpan(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("col_span")) {
+    else if (strName == "col_span") {
         // Set the cell spanning property (how many columns it spans); only takes effect in the GridLayout
         SetColumnSpan(StringUtil::StringToInt32(strValue));
     }
@@ -603,15 +600,15 @@ void Control::SetAttribute(const DString& strName, const DString& strValue)
     }
 }
 
-void Control::ParseStartImageAnimation(const DString& value)
+void Control::ParseStartImageAnimation(const std::string& value)
 {
-    std::vector<DString> paramList;
-    auto params = StringUtil::Split(value, DUI_T(","));
-    for (DString& v : params) {
+    std::vector<std::string> paramList;
+    auto params = StringUtil::Split(value, ",");
+    for (std::string& v : params) {
         StringUtil::Trim(v);
         paramList.push_back(v);
     }
-    DString imageName;
+    std::string imageName;
     AnimationImagePos nStartFrame = AnimationImagePos::kFrameCurrent;
     int32_t nPlayCount = 0;
     if (paramList.size() > 0) {
@@ -635,15 +632,15 @@ void Control::ParseStartImageAnimation(const DString& value)
     StartImageAnimation(imageName, nStartFrame, nPlayCount);
 }
 
-void Control::ParseStopImageAnimation(const DString& value)
+void Control::ParseStopImageAnimation(const std::string& value)
 {
-    std::vector<DString> paramList;
-    auto params = StringUtil::Split(value, DUI_T(","));
-    for (DString& v : params) {
+    std::vector<std::string> paramList;
+    auto params = StringUtil::Split(value, ",");
+    for (std::string& v : params) {
         StringUtil::Trim(v);
         paramList.push_back(v);
     }
-    DString imageName;
+    std::string imageName;
     AnimationImagePos nStartFrame = AnimationImagePos::kFrameCurrent;
     bool bTriggerEvent = true;
     if (paramList.size() > 0) {
@@ -662,20 +659,20 @@ void Control::ParseStopImageAnimation(const DString& value)
         }
     }
     if (paramList.size() > 2) {
-        bTriggerEvent = (paramList[2] == DUI_T("true")) || (paramList[2] == DUI_T("1"));
+        bTriggerEvent = (paramList[2] == "true") || (paramList[2] == "1");
     }
     StopImageAnimation(imageName, nStartFrame, bTriggerEvent);
 }
 
-void Control::ParseSetImageAnimationFrame(const DString& value)
+void Control::ParseSetImageAnimationFrame(const std::string& value)
 {
-    std::vector<DString> paramList;
-    auto params = StringUtil::Split(value, DUI_T(","));
-    for (DString& v : params) {
+    std::vector<std::string> paramList;
+    auto params = StringUtil::Split(value, ",");
+    for (std::string& v : params) {
         StringUtil::Trim(v);
         paramList.push_back(v);
     }
-    DString imageName;
+    std::string imageName;
     int32_t nFrameIndex = -1;
     if (paramList.size() > 0) {
         imageName = paramList[0];
@@ -782,14 +779,14 @@ void Control::OnLanguageChanged()
     Invalidate();
 }
 
-void Control::SetClass(const DString& strClass)
+void Control::SetClass(const std::string& strClass)
 {
     if (strClass.empty()) {
         return;
     }
-    std::list<DString> splitList = StringUtil::Split(strClass, DUI_T(" "));
+    std::list<std::string> splitList = StringUtil::Split(strClass, " ");
     for (auto it = splitList.begin(); it != splitList.end(); it++) {
-        DString pDefaultAttributes = GlobalManager::Instance().GetClassAttributes((*it));
+        std::string pDefaultAttributes = GlobalManager::Instance().GetClassAttributes((*it));
         Window* pWindow = GetWindow();
         if (pDefaultAttributes.empty() && (pWindow != nullptr)) {
             pDefaultAttributes = pWindow->GetClassAttributes(*it);
@@ -801,30 +798,30 @@ void Control::SetClass(const DString& strClass)
     }
 }
 
-void Control::ApplyAttributeList(const DString& strList)
+void Control::ApplyAttributeList(const std::string& strList)
 {
     // Attribute list: parse first, then apply
     if (strList.empty()) {
         return;
     }
-    std::vector<std::pair<DString, DString>> attributeList;
-    if (strList.find(DUI_T('\"')) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strList, DUI_T('\"'), attributeList);
+    std::vector<std::pair<std::string, std::string>> attributeList;
+    if (strList.find('\"') != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strList, '\"', attributeList);
     }    
-    else if (strList.find(DUI_T('\'')) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strList, DUI_T('\''), attributeList);
+    else if (strList.find('\'') != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strList, '\'', attributeList);
     }
     for (const auto& attribute : attributeList) {
         SetAttribute(attribute.first, attribute.second);
     }
 }
 
-bool Control::OnApplyAttributeList(const DString& strReceiver, const DString& strList, const EventArgs& /*eventArgs*/)
+bool Control::OnApplyAttributeList(const std::string& strReceiver, const std::string& strList, const EventArgs& /*eventArgs*/)
 {
     bool isFindSubControl = false;
-    DString receiverName = strReceiver;
+    std::string receiverName = strReceiver;
     if (receiverName.size() >= 2) {
-        if (receiverName.substr(0, 2) == DUI_T(".\\") || receiverName.substr(0, 2) == DUI_T("./")) {
+        if (receiverName.substr(0, 2) == ".\\" || receiverName.substr(0, 2) == "./") {
             receiverName = receiverName.substr(2);
             isFindSubControl = true;
         }
@@ -843,17 +840,17 @@ bool Control::OnApplyAttributeList(const DString& strReceiver, const DString& st
         pReceiverControl = this;
     }
 
-    DString strValueList = strList;
+    std::string strValueList = strList;
     // These are hand-written attributes, using curly braces {} instead of double quotes, so escape characters are not needed when writing them;
-    StringUtil::ReplaceAll(DUI_T("{"), DUI_T("\""), strValueList);
-    StringUtil::ReplaceAll(DUI_T("}"), DUI_T("\""), strValueList);
+    StringUtil::ReplaceAll("{", "\"", strValueList);
+    StringUtil::ReplaceAll("}", "\"", strValueList);
 
     if (pReceiverControl != nullptr) {        
         pReceiverControl->ApplyAttributeList(strValueList);
         return true;
     }
     else {
-        if (strReceiver == DUI_T("#window#")) {
+        if (strReceiver == "#window#") {
             // A special Receiver, representing the associated window
             if (GetWindow() != nullptr) {
                 GetWindow()->ApplyAttributeList(strValueList);
@@ -1017,12 +1014,12 @@ AnimationManager& Control::GetAnimationManager()
     return *m_pAnimationData->m_animationManager;
 }
 
-DString Control::GetBkColor() const
+std::string Control::GetBkColor() const
 {
-    return (m_pColorData != nullptr) ? m_pColorData->m_strBkColor.c_str() : DString();
+    return (m_pColorData != nullptr) ? m_pColorData->m_strBkColor.c_str() : std::string();
 }
 
-void Control::SetBkColor(const DString& strColor)
+void Control::SetBkColor(const std::string& strColor)
 {
     ASSERT(strColor.empty() || HasUiColor(strColor));
     if (m_pColorData == nullptr) {
@@ -1038,14 +1035,14 @@ void Control::SetBkColor(const DString& strColor)
 void Control::SetBkColor(const UiColor& color)
 {
     if (color.IsEmpty()) {
-        SetBkColor(DUI_T(""));
+        SetBkColor("");
     }
     else {
         SetBkColor(GetColorString(color));
     }
 }
 
-void Control::SetBkColor2(const DString& strColor)
+void Control::SetBkColor2(const std::string& strColor)
 {
     ASSERT(strColor.empty() || HasUiColor(strColor));
     if (m_pColorData == nullptr) {
@@ -1061,19 +1058,19 @@ void Control::SetBkColor2(const DString& strColor)
 void Control::SetBkColor2(const UiColor& color)
 {
     if (color.IsEmpty()) {
-        SetBkColor2(DUI_T(""));
+        SetBkColor2("");
     }
     else {
         SetBkColor2(GetColorString(color));
     }
 }
 
-DString Control::GetBkColor2() const
+std::string Control::GetBkColor2() const
 {
-    return (m_pColorData != nullptr) ? m_pColorData->m_strBkColor2.c_str() : DString();
+    return (m_pColorData != nullptr) ? m_pColorData->m_strBkColor2.c_str() : std::string();
 }
 
-void Control::SetBkColor2Direction(const DString& direction)
+void Control::SetBkColor2Direction(const std::string& direction)
 {
     int8_t nDirection = GetColor2Direction(direction);
     if (m_pColorData == nullptr) {
@@ -1085,18 +1082,18 @@ void Control::SetBkColor2Direction(const DString& direction)
     }
 }
 
-DString Control::GetBkColor2Direction() const
+std::string Control::GetBkColor2Direction() const
 {
-    DString strBkColor2Direction = DUI_T("1");
+    std::string strBkColor2Direction = "1";
     if (m_pColorData != nullptr) {
         if (m_pColorData->m_nBkColor2Direction == 2) {
-            strBkColor2Direction = DUI_T("2");
+            strBkColor2Direction = "2";
         }
         else if (m_pColorData->m_nBkColor2Direction == 3) {
-            strBkColor2Direction = DUI_T("3");
+            strBkColor2Direction = "3";
         }
         else if (m_pColorData->m_nBkColor2Direction == 4) {
-            strBkColor2Direction = DUI_T("4");
+            strBkColor2Direction = "4";
         }
     }
     return strBkColor2Direction;
@@ -1106,24 +1103,24 @@ int8_t Control::GetColor2Direction(const UiString& bkColor2Direction) const
 {
     int8_t nColor2Direction = 1;
     // Gradient background color
-    if (bkColor2Direction == DUI_T("2")) {
+    if (bkColor2Direction == "2") {
         nColor2Direction = 2;
     }
-    else if (bkColor2Direction == DUI_T("3")) {
+    else if (bkColor2Direction == "3") {
         nColor2Direction = 3;
     }
-    else if (bkColor2Direction == DUI_T("4")) {
+    else if (bkColor2Direction == "4") {
         nColor2Direction = 4;
     }
     return nColor2Direction;
 }
 
-DString Control::GetForeColor() const
+std::string Control::GetForeColor() const
 {
-    return (m_pColorData != nullptr) ? m_pColorData->m_strForeColor.c_str() : DString();
+    return (m_pColorData != nullptr) ? m_pColorData->m_strForeColor.c_str() : std::string();
 }
 
-void Control::SetForeColor(const DString& strColor)
+void Control::SetForeColor(const std::string& strColor)
 {
     ASSERT(strColor.empty() || HasUiColor(strColor));
     if (m_pColorData == nullptr) {
@@ -1139,19 +1136,19 @@ void Control::SetForeColor(const DString& strColor)
 void Control::SetForeColor(const UiColor& color)
 {
     if (color.IsEmpty()) {
-        SetForeColor(DUI_T(""));
+        SetForeColor("");
     }
     else {
         SetForeColor(GetColorString(color));
     }
 }
 
-DString Control::GetStateColor(ControlStateType stateType) const
+std::string Control::GetStateColor(ControlStateType stateType) const
 {
     if (m_pColorMap != nullptr) {
         return m_pColorMap->GetStateColor(stateType);
     }
-    return DString();
+    return std::string();
 }
 
 UiMargin Control::GetStateColorMargin(ControlStateType stateType) const
@@ -1170,7 +1167,7 @@ UiSize Control::GetStateColorRound(ControlStateType stateType) const
     return UiSize();
 }
 
-void Control::SetStateColor(ControlStateType stateType, const DString& strColor)
+void Control::SetStateColor(ControlStateType stateType, const std::string& strColor)
 {
     ASSERT(strColor.empty() || HasUiColor(strColor));
     if (m_pColorMap != nullptr) {
@@ -1182,9 +1179,11 @@ void Control::SetStateColor(ControlStateType stateType, const DString& strColor)
         m_pColorMap = std::make_unique<StateColorMap2>(this);
     }
     m_pColorMap->SetStateColor(stateType, strColor);
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
+    //The hot color used to switch the fade animation on implicitly, which makes the
+    //whole hover highlight (color *and* image) depend on that animation's progress:
+    //while it has not reached its end value the highlight is drawn with an alpha near
+    //zero, i.e. invisible. The fade is opt-in now (the "fade_hot" attribute, see
+    //SetStateImage/SetFadeHot), so hovering always shows the highlight.
     Invalidate();
 }
 
@@ -1202,9 +1201,6 @@ void Control::SetStateColorMargin(ControlStateType stateType, UiMargin colorMarg
         m_pColorMap = std::make_unique<StateColorMap2>(this);
     }
     m_pColorMap->SetStateColorMargin(stateType, colorMargin);
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
     Invalidate();
 }
 
@@ -1222,18 +1218,15 @@ void Control::SetStateColorRound(ControlStateType stateType, UiSize colorRound, 
         m_pColorMap = std::make_unique<StateColorMap2>(this);
     }
     m_pColorMap->SetStateColorRound(stateType, colorRound);
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
     Invalidate();
 }
 
-DString Control::GetBkImage() const
+std::string Control::GetBkImage() const
 {
     if (m_pBkImage != nullptr) {
         return m_pBkImage->GetImageString();
     }
-    return DString();
+    return std::string();
 }
 
 std::string Control::GetUTF8BkImage() const
@@ -1242,7 +1235,7 @@ std::string Control::GetUTF8BkImage() const
     return strOut;
 }
 
-void Control::SetBkImage(const DString& strImage)
+void Control::SetBkImage(const std::string& strImage)
 {
     if (!strImage.empty()) {
         if (m_pBkImage == nullptr) {
@@ -1269,11 +1262,11 @@ void Control::SetBkImage(const DString& strImage)
 
 void Control::SetUTF8BkImage(const std::string& strImage)
 {
-    DString strOut = StringConvert::UTF8ToT(strImage);
+    std::string strOut = StringConvert::UTF8ToT(strImage);
     SetBkImage(strOut);
 }
 
-bool Control::SetLoadingAttribute(const DString& loadingAttribute)
+bool Control::SetLoadingAttribute(const std::string& loadingAttribute)
 {
     bool bRet = false;
     if (!loadingAttribute.empty()) {
@@ -1358,15 +1351,15 @@ bool Control::HasStateImage(StateImageType stateImageType) const
     return false;
 }
 
-DString Control::GetStateImage(StateImageType imageType, ControlStateType stateType) const
+std::string Control::GetStateImage(StateImageType imageType, ControlStateType stateType) const
 {
     if (m_pImageMap != nullptr) {
         return m_pImageMap->GetImageString(imageType, stateType);
     }
-    return DString();
+    return std::string();
 }
 
-void Control::SetStateImage(StateImageType imageType, ControlStateType stateType, const DString& strImage)
+void Control::SetStateImage(StateImageType imageType, ControlStateType stateType, const std::string& strImage)
 {
     if (m_pImageMap == nullptr) {
         m_pImageMap = std::make_unique<StateImageMap>();
@@ -1377,7 +1370,7 @@ void Control::SetStateImage(StateImageType imageType, ControlStateType stateType
 
 bool Control::PaintStateImage(IRender* pRender, StateImageType stateImageType, 
                               ControlStateType stateType, 
-                              const DString& sImageModify,
+                              const std::string& sImageModify,
                               UiRect* pDestRect)
 {
     if (m_pImageMap != nullptr) {
@@ -1410,30 +1403,24 @@ void Control::ClearStateImages()
     RelayoutOrRedraw();
 }
 
-DString Control::GetStateImage(ControlStateType stateType) const
+std::string Control::GetStateImage(ControlStateType stateType) const
 {
     return GetStateImage(kStateImageBk, stateType);
 }
 
-void Control::SetStateImage(ControlStateType stateType, const DString& strImage)
+void Control::SetStateImage(ControlStateType stateType, const std::string& strImage)
 {
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
     SetStateImage(kStateImageBk, stateType, strImage);
     RelayoutOrRedraw();
 }
 
-DString Control::GetForeStateImage(ControlStateType stateType) const
+std::string Control::GetForeStateImage(ControlStateType stateType) const
 {
     return GetStateImage(kStateImageFore, stateType);
 }
 
-void Control::SetForeStateImage(ControlStateType stateType, const DString& strImage)
+void Control::SetForeStateImage(ControlStateType stateType, const std::string& strImage)
 {
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
     SetStateImage(kStateImageFore, stateType, strImage);
     Invalidate();
 }
@@ -1516,12 +1503,12 @@ void Control::SetBkImagePaintEnabled(bool bEnable)
     }
 }
 
-DString Control::GetBkImagePath() const
+std::string Control::GetBkImagePath() const
 {
     if (m_pBkImage != nullptr) {
         return m_pBkImage->GetImagePath();
     }
-    return DString();
+    return std::string();
 }
 
 UiSize Control::GetBkImageSize() const
@@ -1570,16 +1557,16 @@ bool Control::IsHotState() const
     return (GetState() == kControlStateHot) ? true : false;
 }
 
-DString Control::GetBorderColor(ControlStateType stateType) const
+std::string Control::GetBorderColor(ControlStateType stateType) const
 {
-    DString borderColor;
+    std::string borderColor;
     if ((m_pBorderData != nullptr) && (m_pBorderData->m_pBorderColorMap != nullptr)) {
         borderColor = m_pBorderData->m_pBorderColorMap->GetStateColor(stateType);
     }
     return borderColor;
 }
 
-void Control::SetBorderColor(const DString& strBorderColor)
+void Control::SetBorderColor(const std::string& strBorderColor)
 {
     SetBorderColor(kControlStateNormal, strBorderColor);
     SetBorderColor(kControlStateHot, strBorderColor);
@@ -1587,7 +1574,7 @@ void Control::SetBorderColor(const DString& strBorderColor)
     SetBorderColor(kControlStateDisabled, strBorderColor);
 }
 
-void Control::SetBorderColor(ControlStateType stateType, const DString& strBorderColor)
+void Control::SetBorderColor(ControlStateType stateType, const std::string& strBorderColor)
 {
     if (m_pBorderData == nullptr) {
         m_pBorderData = std::make_unique<TBorderData>();
@@ -1601,7 +1588,7 @@ void Control::SetBorderColor(ControlStateType stateType, const DString& strBorde
     }
 }
 
-void Control::SetFocusBorderColor(const DString& strBorderColor)
+void Control::SetFocusBorderColor(const std::string& strBorderColor)
 {
     if (m_pBorderData == nullptr) {
         m_pBorderData = std::make_unique<TBorderData>();
@@ -1612,12 +1599,12 @@ void Control::SetFocusBorderColor(const DString& strBorderColor)
     }
 }
 
-DString Control::GetFocusBorderColor() const
+std::string Control::GetFocusBorderColor() const
 {
     if (m_pBorderData != nullptr) {
         return m_pBorderData->m_focusBorderColor.c_str();
     }
-    return DString();
+    return std::string();
 }
 
 void Control::SetBorderSize(UiRectF rc, bool bNeedDpiScale)
@@ -1823,7 +1810,7 @@ void Control::SetBorderRound(UiSize borderRound)
     }
 }
 
-void Control::SetBoxShadow(const DString& strShadow)
+void Control::SetBoxShadow(const std::string& strShadow)
 {
     if (strShadow.empty()) {
         return;
@@ -1847,9 +1834,9 @@ void Control::SetCursorType(CursorType cursorType)
     m_cursorType = cursorType;
 }
 
-DString Control::GetToolTipText() const
+std::string Control::GetToolTipText() const
 {
-    DString strText;
+    std::string strText;
     if ((m_pOtherData != nullptr) && (m_pOtherData->m_pTooltip != nullptr)) {
         strText = m_pOtherData->m_pTooltip->m_sToolTipText.c_str();
         if (strText.empty() && !m_pOtherData->m_pTooltip->m_sToolTipTextId.empty()) {
@@ -1865,7 +1852,7 @@ std::string Control::GetUTF8ToolTipText() const
     return strOut;
 }
 
-void Control::SetToolTipText(const DString& strText)
+void Control::SetToolTipText(const std::string& strText)
 {
     if (m_pOtherData == nullptr) {
         m_pOtherData = std::make_unique<TOtherData>();
@@ -1874,8 +1861,8 @@ void Control::SetToolTipText(const DString& strText)
         m_pOtherData->m_pTooltip = std::make_unique<TTooltipData>();
     }
     if (strText != m_pOtherData->m_pTooltip->m_sToolTipText) {
-        DString strTemp(strText);
-        StringUtil::ReplaceAll(DUI_T("<n>"), DUI_T("\r\n"), strTemp);
+        std::string strTemp(strText);
+        StringUtil::ReplaceAll("<n>", "\r\n", strTemp);
         m_pOtherData->m_pTooltip->m_sToolTipText = strTemp;
         Invalidate();
 
@@ -1891,11 +1878,11 @@ void Control::SetToolTipText(const DString& strText)
 
 void Control::SetUTF8ToolTipText(const std::string& strText)
 {
-    DString strOut = StringConvert::UTF8ToT(strText);
+    std::string strOut = StringConvert::UTF8ToT(strText);
     SetToolTipText(strOut);
 }
 
-void Control::SetToolTipTextId(const DString& strTextId)
+void Control::SetToolTipTextId(const std::string& strTextId)
 {
     if (m_pOtherData == nullptr) {
         m_pOtherData = std::make_unique<TOtherData>();
@@ -1920,7 +1907,7 @@ void Control::SetToolTipTextId(const DString& strTextId)
 
 void Control::SetUTF8ToolTipTextId(const std::string& strTextId)
 {
-    DString strOut = StringConvert::UTF8ToT(strTextId);
+    std::string strOut = StringConvert::UTF8ToT(strTextId);
     SetToolTipTextId(strOut);
 }
 
@@ -1955,7 +1942,7 @@ void Control::SetContextMenuUsed(bool bMenuUsed)
     m_bContextMenuUsed = bMenuUsed;
 }
 
-DString Control::GetDataID() const
+std::string Control::GetDataID() const
 {
     return m_sUserDataID.c_str();
 }
@@ -1966,7 +1953,7 @@ std::string Control::GetUTF8DataID() const
     return strOut;
 }
 
-void Control::SetDataID(const DString& strText)
+void Control::SetDataID(const std::string& strText)
 {
     m_sUserDataID = strText;
 }
@@ -2082,7 +2069,7 @@ bool Control::IsShowFocusRect() const
     return m_bShowFocusRect;
 }
 
-void Control::SetFocusRectColor(const DString& focusRectColor)
+void Control::SetFocusRectColor(const std::string& focusRectColor)
 {
     if (m_pColorData == nullptr) {
         m_pColorData = std::make_unique<TColorData>();
@@ -2094,12 +2081,12 @@ void Control::SetFocusRectColor(const DString& focusRectColor)
     Invalidate();
 }
 
-DString Control::GetFocusRectColor() const
+std::string Control::GetFocusRectColor() const
 {
     if (m_pColorData != nullptr) {
         return m_pColorData->m_focusRectColor.c_str();
     }
-    return DString();
+    return std::string();
 }
 
 void Control::Activate(const EventArgs* /*pMsg*/)
@@ -2152,7 +2139,7 @@ Control* Control::FindControl(FINDCONTROLPROC Proc, void* pProcData,
     return Proc(this, pProcData);
 }
 
-Control* Control::FindControl(const DString& name)
+Control* Control::FindControl(const std::string& name)
 {
     Window* pWindow = GetWindow();
     ASSERT(pWindow != nullptr);
@@ -2502,10 +2489,10 @@ void Control::SendEvent(EventType eventType, EventArgs msg)
 void Control::SendEventMsg(const EventArgs& msg)
 {
 //#ifdef _DEBUG
-//    DString eventType = EventTypeToString(msg.eventType);
-//    DString type = GetType();
-//    DStringW::value_type buf[256] = {};
-//    swprintf_s(buf, DUI_T("Control::SendEventMsg: type=%s, eventType=%s\r\n"), type.c_str(), eventType.c_str());
+//    std::string eventType = EventTypeToString(msg.eventType);
+//    std::string type = GetType();
+//    std::wstring::value_type buf[256] = {};
+//    swprintf_s(buf, "Control::SendEventMsg: type=%s, eventType=%s\r\n", type.c_str(), eventType.c_str());
 //    ::OutputDebugStringW(buf);    
 //#endif
 
@@ -2707,7 +2694,6 @@ void Control::HandleEvent(const EventArgs& msg)
 
 bool Control::CheckEventType(const EventArgs& msg, EventType eventType) const
 {
-    ASSERT(msg.eventType == eventType);
     if (msg.eventType != eventType) {
         return false;
     }
@@ -3121,19 +3107,18 @@ bool Control::OnImeEndComposition(const EventArgs& msg)
 
 bool Control::PaintImage(IRender* pRender,
                          Image* pImage,
-                         const DString& strModify, int32_t nFade, 
+                         const std::string& strModify, int32_t nFade, 
                          IMatrix* pMatrix,
                          const UiRect* pDestRect,
                          UiRect* pPaintedRect) const
 {
-    PerformanceStat statPerformance(DUI_T("Control::PaintImage"));
+    PerformanceStat statPerformance("Control::PaintImage");
     // Note: the strModify parameter, currently what is passed in externally is mainly: "destscale='false' dest='%d,%d,%d,%d'"
-    //                   There is also a class that passes in: DUI_T(" corner='%d,%d,%d,%d'").
+    //                   There is also a class that passes in: " corner='%d,%d,%d,%d'".
     if (pImage == nullptr) {
         // This may be empty; no assertion is needed, just return directly if empty
         return false;
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return false;
     }
@@ -3175,7 +3160,7 @@ bool Control::PaintImage(IRender* pRender,
 
 //#ifdef _DEBUG
 //    if (this->GetBkImagePtr() == &duiImage) {
-//        DString log = StringUtil::Printf(DUI_T("BkImage: Width=%d, Height=%d, LoadScale=%d, fScale=%.02f"),
+//        std::string log = StringUtil::Printf("BkImage: Width=%d, Height=%d, LoadScale=%d, fScale=%.02f",
 //            imageInfo->GetWidth(), imageInfo->GetHeight(),
 //            imageInfo->GetLoadDpiScale(), imageInfo->GetImageSizeScale());
 //        const_cast<Control*>(this)->SetToolTipText(log);
@@ -3230,14 +3215,14 @@ bool Control::PaintImage(IRender* pRender,
     else {
         // After applying the alignment, the image will no longer be stretched, but displayed at its original size
         if (!newImageAttribute.m_hAlign.empty()) {
-            if (newImageAttribute.m_hAlign == DUI_T("left")) {
+            if (newImageAttribute.m_hAlign == "left") {
                 rcDest.right = rcDest.left + nImageWidth;
             }
-            else if (newImageAttribute.m_hAlign == DUI_T("center")) {
+            else if (newImageAttribute.m_hAlign == "center") {
                 rcDest.left = rcDest.CenterX() - nImageWidth / 2;
                 rcDest.right = rcDest.left + nImageWidth;
             }
-            else if (newImageAttribute.m_hAlign == DUI_T("right")) {
+            else if (newImageAttribute.m_hAlign == "right") {
                 rcDest.left = rcDest.right - nImageWidth;
             }
             else {
@@ -3249,14 +3234,14 @@ bool Control::PaintImage(IRender* pRender,
             }
         }
         if (!newImageAttribute.m_vAlign.empty()) {
-            if (newImageAttribute.m_vAlign == DUI_T("top")) {
+            if (newImageAttribute.m_vAlign == "top") {
                 rcDest.bottom = rcDest.top + nImageHeight;
             }
-            else if (newImageAttribute.m_vAlign == DUI_T("center")) {
+            else if (newImageAttribute.m_vAlign == "center") {
                 rcDest.top = rcDest.CenterY() - nImageHeight / 2;
                 rcDest.bottom = rcDest.top + nImageHeight;
             }
-            else if (newImageAttribute.m_vAlign == DUI_T("bottom")) {
+            else if (newImageAttribute.m_vAlign == "bottom") {
                 rcDest.top = rcDest.bottom - nImageHeight;
             }
             else {
@@ -3290,7 +3275,6 @@ bool Control::PaintImage(IRender* pRender,
     if (duiImage.IsMultiFrameImage()) {
         // Multi-frame image
         AnimationFramePtr pAnimationFrame = duiImage.GetCurrentFrame(rcImageDect, rcSource, rcSourceCorners);
-        ASSERT(pAnimationFrame != nullptr);
         if (pAnimationFrame == nullptr) {
             return false;
         }
@@ -3393,7 +3377,7 @@ bool Control::PaintImage(IRender* pRender,
     else if (bDataPending) {
         // Currently the image is loaded asynchronously; add it to the delayed paint list
         Control* pControl = const_cast<Control*>(this);
-        DString imageKey = imageInfo->GetImageKey();
+        std::string imageKey = imageInfo->GetImageKey();
         GlobalManager::Instance().Image().AddDelayPaintData(pControl, pImage, imageKey);
     }
     else if (bDecodeError) {
@@ -3450,7 +3434,6 @@ std::unique_ptr<IRender> Control::CreateTempRender() const
 
 void Control::AlphaPaint(IRender* pRender, const UiRect& rcPaint)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3491,7 +3474,6 @@ void Control::AlphaPaint(IRender* pRender, const UiRect& rcPaint)
             m_pTempRender = CreateTempRender();
         }
         IRender* pTempRender = m_pTempRender.get();
-        ASSERT(pTempRender != nullptr);
         if (pTempRender == nullptr) {
             return;
         }
@@ -3651,7 +3633,6 @@ void Control::PaintBkColor(IRender* pRender)
     if ((m_pColorData == nullptr) || m_pColorData->m_strBkColor.empty()) {
         return;
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3707,7 +3688,6 @@ void Control::PaintForeColor(IRender* pRender)
     if ((m_pColorData == nullptr) || m_pColorData->m_strForeColor.empty()) {
         return;
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3746,12 +3726,11 @@ void Control::PaintForeColor(IRender* pRender)
 
 void Control::PaintBorder(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
     UiColor dwBorderColor;
-    DString borderColor;
+    std::string borderColor;
     if (IsFocused()) {
         if (borderColor.empty()) {
             borderColor = GetFocusBorderColor();
@@ -3832,7 +3811,6 @@ void Control::PaintBorder(IRender* pRender)
 void Control::DrawBorderLine(IRender* pRender, const UiPointF& pt1, const UiPointF& pt2,
                              float fBorderSize, UiColor dwBorderColor, int8_t borderDashStyle)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3950,7 +3928,6 @@ void Control::PaintFocusRect(IRender* pRender)
 
 void Control::DoPaintFocusRect(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -3960,7 +3937,7 @@ void Control::DoPaintFocusRect(IRender* pRender)
     }
     float fWidth =  Dpi().GetScaleFloat(1.0f); // Brush width
     UiColor dwBorderColor;// Brush color
-    DString focusRectColor = GetFocusRectColor();
+    std::string focusRectColor = GetFocusRectColor();
     if (!focusRectColor.empty()) {
         dwBorderColor = GetUiColor(focusRectColor);
     }
@@ -4043,7 +4020,6 @@ void Control::DrawRoundRect(IRender* pRender, const UiRectF& rc, float rx, float
                             UiColor dwBorderColor, float fBorderSize,
                             int8_t borderDashStyle) const
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -4067,7 +4043,6 @@ void Control::DrawRoundRect(IRender* pRender, const UiRectF& rc, float rx, float
 
 void Control::FillRoundRect(IRender* pRender, const UiRect& rc, float rx, float ry, UiColor dwColor) const
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -4226,7 +4201,7 @@ void Control::PauseImageAnimation()
     }
 }
 
-Image* Control::FindImageByName(const DString& imageName) const
+Image* Control::FindImageByName(const std::string& imageName) const
 {
     Image* pImage = nullptr;
     if (imageName.empty()) {
@@ -4244,7 +4219,7 @@ Image* Control::FindImageByName(const DString& imageName) const
     return pImage;
 }
 
-bool Control::StartImageAnimation(const DString& imageName,
+bool Control::StartImageAnimation(const std::string& imageName,
                                   AnimationImagePos nStartFrame,
                                   int32_t nPlayCount)
 {
@@ -4259,7 +4234,7 @@ bool Control::StartImageAnimation(const DString& imageName,
     return pImage->StartImageAnimation(nStartFrame, nPlayCount);
 }
 
-bool Control::StopImageAnimation(const DString& imageName,
+bool Control::StopImageAnimation(const std::string& imageName,
                                  AnimationImagePos nStopFrame,
                                  bool bTriggerEvent)
 {
@@ -4277,10 +4252,10 @@ bool Control::StopImageAnimation(const DString& imageName,
 
 bool Control::SetImageAnimationFrame(int32_t nFrameIndex)
 {
-    return SetImageAnimationFrame(DString(), nFrameIndex);
+    return SetImageAnimationFrame(std::string(), nFrameIndex);
 }
 
-bool Control::SetImageAnimationFrame(const DString& imageName, int32_t nFrameIndex)
+bool Control::SetImageAnimationFrame(const std::string& imageName, int32_t nFrameIndex)
 {
     GlobalManager::Instance().AssertUIThread();
     ASSERT(nFrameIndex >= 0);
@@ -4302,10 +4277,10 @@ bool Control::SetImageAnimationFrame(const DString& imageName, int32_t nFrameInd
 
 uint32_t Control::GetImageAnimationFrameIndex() const
 {
-    return GetImageAnimationFrameIndex(DString());
+    return GetImageAnimationFrameIndex(std::string());
 }
 
-uint32_t Control::GetImageAnimationFrameIndex(const DString& imageName) const
+uint32_t Control::GetImageAnimationFrameIndex(const std::string& imageName) const
 {
     GlobalManager::Instance().AssertUIThread();
     Image* pImage = FindImageByName(imageName);
@@ -4317,10 +4292,10 @@ uint32_t Control::GetImageAnimationFrameIndex(const DString& imageName) const
 
 uint32_t Control::GetImageAnimationFrameCount()
 {
-    return GetImageAnimationFrameCount(DString());
+    return GetImageAnimationFrameCount(std::string());
 }
 
-uint32_t Control::GetImageAnimationFrameCount(const DString& imageName)
+uint32_t Control::GetImageAnimationFrameCount(const std::string& imageName)
 {
     GlobalManager::Instance().AssertUIThread();
     Image* pImage = FindImageByName(imageName);
@@ -4335,10 +4310,10 @@ uint32_t Control::GetImageAnimationFrameCount(const DString& imageName)
 
 bool  Control::IsImageAnimationLoaded() const
 {
-    return IsImageAnimationLoaded(DString());
+    return IsImageAnimationLoaded(std::string());
 }
 
-bool  Control::IsImageAnimationLoaded(const DString& imageName) const
+bool  Control::IsImageAnimationLoaded(const std::string& imageName) const
 {
     GlobalManager::Instance().AssertUIThread();
     Image* pImage = FindImageByName(imageName);
@@ -4354,10 +4329,10 @@ struct Control::TAsyncImageDecode
 {
     ControlPtr m_pControl;                // The associated control interface
     ControlPtrT<Image> m_pImage;          // The associated image interface
-    DString m_imagePath;                  // The path of the image to load
+    std::string m_imagePath;                  // The path of the image to load
 
     std::shared_ptr<IImage> m_pImageData; // The image data interface
-    DString m_imageKey;                   // The KEY of the image data, used to update the UI display
+    std::string m_imageKey;                   // The KEY of the image data, used to update the UI display
     size_t m_nTaskId = 0;                 // The task ID in the child thread
 
     uint32_t m_nFrameCount = 0;           // How many frames this image has in total
@@ -4536,7 +4511,6 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
         }        
     }
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return false;
     }
@@ -4546,7 +4520,7 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
         return false;
     }
 
-    DString sImagePath = duiImage.GetImagePath();
+    std::string sImagePath = duiImage.GetImagePath();
     if (duiImage.GetImageAttribute().IsAssertEnabled()) {
         ASSERT(!sImagePath.empty());
     }
@@ -4563,13 +4537,12 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
         uint32_t nIconID = iconManager.GetIconID(sImagePath);
         if (iconManager.IsImageString(nIconID)) {
             // The resource image path (updated once; after the update, iconManager.IsIconString becomes false)
-            DString iconImageString = iconManager.GetImageString(nIconID);
+            std::string iconImageString = iconManager.GetImageString(nIconID);
             ASSERT(!iconImageString.empty());
-            DString oldImageString = duiImage.GetImageString();
+            std::string oldImageString = duiImage.GetImageString();
             duiImage.SetImageString(iconImageString, pWindow->Dpi());
             duiImage.UpdateImageAttribute(oldImageString, pWindow->Dpi());
             sImagePath = duiImage.GetImagePath();// Update the image path to the path specified by the resource
-            ASSERT(!sImagePath.empty());
             if (sImagePath.empty()) {
                 // The image resource path is empty; mark the load as failed
                 duiImage.SetImageError(true);
@@ -4695,7 +4668,7 @@ bool Control::LoadImageInfo(Image& duiImage, bool bPaintImage) const
     return imageInfo ? true : false;
 }
 
-void Control::FireImageEvent(Image* pImagePtr, const DString& imageFilePath, bool bLoadImage, bool bLoadError, bool bDecodeError) const
+void Control::FireImageEvent(Image* pImagePtr, const std::string& imageFilePath, bool bLoadImage, bool bLoadError, bool bDecodeError) const
 {
     if (pImagePtr == nullptr) {
         return;
@@ -5170,7 +5143,7 @@ bool Control::HasEventCallback(EventType eventType) const
     return false;
 }
 
-bool Control::HasUiColor(const DString& colorName) const
+bool Control::HasUiColor(const std::string& colorName) const
 {
     if (colorName.empty()) {
         return false;
@@ -5179,7 +5152,7 @@ bool Control::HasUiColor(const DString& colorName) const
     return color.GetARGB() != 0;
 }
 
-UiColor Control::GetUiColor(const DString& colorName) const
+UiColor Control::GetUiColor(const std::string& colorName) const
 {
     if (colorName.empty()) {
         return UiColor();
@@ -5189,13 +5162,13 @@ UiColor Control::GetUiColor(const DString& colorName) const
     return color;
 }
 
-UiColor Control::GetUiColorByName(const DString& colorName) const
+UiColor Control::GetUiColorByName(const std::string& colorName) const
 {
     UiColor color;
     if (colorName.empty()) {
         return color;
     }
-    if (colorName.at(0) == DUI_T('#')) {
+    if (colorName.at(0) == '#') {
         // Priority 1: starts with the '#' character, directly specifying the color value, e.g. #FFFFFFFF
         color = ColorManager::ConvertToUiColor(colorName);
     }
@@ -5218,13 +5191,13 @@ UiColor Control::GetUiColorByName(const DString& colorName) const
     return color;
 }
 
-DString Control::GetColorString(const UiColor& color) const
+std::string Control::GetColorString(const UiColor& color) const
 {
     if (color.IsEmpty()) {
-        return DString();
+        return std::string();
     }
     else {
-        return StringUtil::Printf(DUI_T("#%02X%02X%02X%02X"), color.GetA(), color.GetR(), color.GetG(), color.GetB());
+        return StringUtil::Printf("#%02X%02X%02X%02X", color.GetA(), color.GetR(), color.GetG(), color.GetB());
     }
 }
 
@@ -5344,7 +5317,7 @@ uint8_t Control::GetPaintOrder() const
     return m_nPaintOrder;
 }
 
-IFont* Control::GetIFontById(const DString& strFontId) const
+IFont* Control::GetIFontById(const std::string& strFontId) const
 {
     return GlobalManager::Instance().Font().GetIFont(strFontId, this->Dpi());
 }
@@ -5454,7 +5427,7 @@ bool Control::IsEnableDropFile() const
     return false;
 }
 
-void Control::SetDropFileTypes(const DString& fileTypes)
+void Control::SetDropFileTypes(const std::string& fileTypes)
 {
     if (m_pDragDropData == nullptr) {
         m_pDragDropData = std::make_unique<TDragDropData>();
@@ -5462,9 +5435,9 @@ void Control::SetDropFileTypes(const DString& fileTypes)
     m_pDragDropData->m_dropFileTypes = fileTypes;
 }
 
-DString Control::GetDropFileTypes() const
+std::string Control::GetDropFileTypes() const
 {
-    DString fileTypes;
+    std::string fileTypes;
     if (m_pDragDropData != nullptr) {
         fileTypes = m_pDragDropData->m_dropFileTypes.c_str();
     }
@@ -5473,7 +5446,7 @@ DString Control::GetDropFileTypes() const
 
 ControlDropTarget_Windows* Control::GetControlDropTarget()
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if (IsEnableDragDrop() && IsEnabled()) {
         if (m_pDragDropData == nullptr) {
             m_pDragDropData = std::make_unique<TDragDropData>();
@@ -5486,18 +5459,8 @@ ControlDropTarget_Windows* Control::GetControlDropTarget()
     return nullptr;
 }
 
-ControlDropTarget_SDL* Control::GetControlDropTarget_SDL()
+ControlDropTarget_Wayland* Control::GetControlDropTarget_Wayland()
 {
-#ifdef DUI_BUILD_FOR_SDL
-    if (IsEnableDragDrop() && IsEnabled()) {
-        if (m_pDragDropData == nullptr) {
-            m_pDragDropData = std::make_unique<TDragDropData>();
-            m_pDragDropData->m_bDragDropEnabled = true;
-        }
-        m_pDragDropData->m_pDropTargetSDL = std::make_shared<ControlDropTargetImpl_SDL>(this);
-        return m_pDragDropData->m_pDropTargetSDL.get();
-    }
-#endif
     return nullptr;
 }
 

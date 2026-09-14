@@ -47,7 +47,6 @@ private:
 
 void CCheckComboWnd::InitComboWnd(CheckCombo* pOwner)
 {
-    ASSERT(pOwner != nullptr);
     if (pOwner == nullptr) {
         return;
     }
@@ -319,46 +318,45 @@ CheckCombo::CheckCombo(Window* pWindow) :
 
 CheckCombo::~CheckCombo()
 {
-    SetAutoDestroyChild(false);
-    Box::RemoveItem(m_pList.get());
-    SetAutoDestroyChild(true);
+    //Detach the drop-down list from this container; m_pList owns it and destroys it below
+    ReleaseItem(m_pList.get());
     m_pList.reset();
     m_pDropList.reset();
 }
 
-DString CheckCombo::GetType() const { return DUI_CTR_CHECK_COMBO; }
+std::string CheckCombo::GetType() const { return DUI_CTR_CHECK_COMBO; }
 
-void CheckCombo::SetAttribute(const DString& strName, const DString& strValue)
+void CheckCombo::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("dropbox")) {
+    if (strName == "dropbox") {
         SetDropBoxAttributeList(strValue);
     }
-    else if (strName == DUI_T("dropbox_item_class")) {
+    else if (strName == "dropbox_item_class") {
         SetDropboxItemClass(strValue);
     }
-    else if (strName == DUI_T("selected_item_class")) {
+    else if (strName == "selected_item_class") {
         SetSelectedItemClass(strValue);
     }
-    else if (strName == DUI_T("vscrollbar")) {
+    else if (strName == "vscrollbar") {
     }
-    else if ((strName == DUI_T("dropbox_size")) || (strName == DUI_T("dropboxsize"))) {
+    else if ((strName == "dropbox_size") || (strName == "dropboxsize")) {
         UiSize szDropBoxSize;
         AttributeUtil::ParseSizeValue(strValue.c_str(), szDropBoxSize);
         SetDropBoxSize(szDropBoxSize, true);
     }
-    else if ((strName == DUI_T("popup_top")) || (strName == DUI_T("popuptop"))) {
-        SetPopupTop(strValue == DUI_T("true"));
+    else if ((strName == "popup_top") || (strName == "popuptop")) {
+        SetPopupTop(strValue == "true");
     }
-    else if (strName == DUI_T("height")) {
+    else if (strName == "height") {
         BaseClass::SetAttribute(strName, strValue);
-        if (strValue != DUI_T("stretch") && strValue != DUI_T("auto")) {
+        if (strValue != "stretch" && strValue != "auto") {
             m_iOrgHeight = StringUtil::StringToInt32(strValue);
             ASSERT(m_iOrgHeight >= 0);
             SetMaxHeight(m_iOrgHeight * 3, true);
             SetMinHeight(m_iOrgHeight, true);
         }
     }
-    else if (strName == DUI_T("shadow_type")) {
+    else if (strName == "shadow_type") {
         //Set the shadow type of the drop-down window
         Shadow::ShadowType nShadowType = Shadow::ShadowType::kShadowCount;
         if (Shadow::GetShadowType(strValue, nShadowType)) {
@@ -447,7 +445,7 @@ size_t CheckCombo::GetItemCount() const
     return m_pDropList->GetItemCount();
 }
 
-bool CheckCombo::AddTextItem(const DString& itemText)
+bool CheckCombo::AddTextItem(const std::string& itemText)
 {
     if (itemText.empty()) {
         return false;
@@ -469,7 +467,7 @@ bool CheckCombo::AddTextItem(const DString& itemText)
     return AddItem(item);
 }
 
-bool CheckCombo::AddTextIdItem(const DString& itemTextId)
+bool CheckCombo::AddTextIdItem(const std::string& itemTextId)
 {
     if (itemTextId.empty()) {
         return false;
@@ -544,17 +542,17 @@ void CheckCombo::ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale)
     BaseClass::ChangeDpiScale(nOldDpiScale, nNewDpiScale);
 }
 
-void CheckCombo::SetDropBoxAttributeList(const DString& pstrList)
+void CheckCombo::SetDropBoxAttributeList(const std::string& pstrList)
 {
     SetAttributeList(m_pDropList.get(), pstrList);
 }
 
-void CheckCombo::SetDropboxItemClass(const DString& classValue)
+void CheckCombo::SetDropboxItemClass(const std::string& classValue)
 {
     m_dropboxItemClass = classValue;
 }
 
-void CheckCombo::SetSelectedItemClass(const DString& classValue)
+void CheckCombo::SetSelectedItemClass(const std::string& classValue)
 {
     m_selectedItemClass = classValue;
 }
@@ -584,31 +582,30 @@ Shadow::ShadowType CheckCombo::GetComboWndShadowType() const
     return m_nShadowType;
 }
 
-void CheckCombo::ParseAttributeList(const DString& strList,
-                                    std::vector<std::pair<DString, DString>>& attributeList) const
+void CheckCombo::ParseAttributeList(const std::string& strList,
+                                    std::vector<std::pair<std::string, std::string>>& attributeList) const
 {
     if (strList.empty()) {
         return;
     }
-    DString strValue = strList;
+    std::string strValue = strList;
     //These attributes are written manually, using curly braces {} instead of double quotes, so escape characters are not needed when writing;
-    StringUtil::ReplaceAll(DUI_T("{"), DUI_T("\""), strValue);
-    StringUtil::ReplaceAll(DUI_T("}"), DUI_T("\""), strValue);
-    if (strValue.find(DUI_T("\"")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, DUI_T('\"'), attributeList);
+    StringUtil::ReplaceAll("{", "\"", strValue);
+    StringUtil::ReplaceAll("}", "\"", strValue);
+    if (strValue.find("\"") != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strValue, '\"', attributeList);
     }
-    else if (strValue.find(DUI_T("\'")) != DString::npos) {
-        AttributeUtil::ParseAttributeList(strValue, DUI_T('\''), attributeList);
+    else if (strValue.find("\'") != std::string::npos) {
+        AttributeUtil::ParseAttributeList(strValue, '\'', attributeList);
     }
 }
 
-void CheckCombo::SetAttributeList(Control* pControl, const DString& classValue)
+void CheckCombo::SetAttributeList(Control* pControl, const std::string& classValue)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return;
     }
-    std::vector<std::pair<DString, DString>> attributeList;
+    std::vector<std::pair<std::string, std::string>> attributeList;
     ParseAttributeList(classValue, attributeList);
     if (!attributeList.empty()) {
         //Set according to the attribute list
@@ -649,7 +646,7 @@ bool CheckCombo::OnSelectItem(const ui::EventArgs& args)
     if (pCheckBox == nullptr) {
         return true;
     }
-    DString itemText = pCheckBox->GetText();
+    std::string itemText = pCheckBox->GetText();
     if (itemText.empty()) {
         return true;
     }
@@ -673,7 +670,7 @@ bool CheckCombo::OnUnSelectItem(const ui::EventArgs& args)
     if (pCheckBox == nullptr) {
         return true;
     }
-    DString itemText = pCheckBox->GetText();
+    std::string itemText = pCheckBox->GetText();
     if (itemText.empty()) {
         return true;
     }
@@ -709,7 +706,7 @@ void CheckCombo::UpdateSelectedListHeight()
     }
 }
 
-void CheckCombo::GetSelectedText(std::vector<DString>& selectedText) const
+void CheckCombo::GetSelectedText(std::vector<std::string>& selectedText) const
 {
     size_t itemCount = m_pList->GetItemCount();
     for (size_t index = 0; index < itemCount; ++index) {

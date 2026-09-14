@@ -25,13 +25,13 @@ public:
     * @param [in] strImageString The image parameter string
     * @param [in] dpi The DPI scaling interface
     */
-    void InitByImageString(const DString& strImageString, const DpiManager& dpi);
+    void InitByImageString(const std::string& strImageString, const DpiManager& dpi);
 
     /** Modify the attribute values according to the image parameters (only the newly set image attributes are updated; the attributes not included are not updated)
     * @param [in] strImageString The image parameter string
     * @param [in] dpi The DPI scaling interface
     */
-    void ModifyAttribute(const DString& strImageString, const DpiManager& dpi);
+    void ModifyAttribute(const std::string& strImageString, const DpiManager& dpi);
 
 public:
     /** Determine whether the rcDest area contains valid values
@@ -49,8 +49,8 @@ public:
      */
     static UiRect CalculateAdaptiveRect(int32_t nImageWidth, int32_t nImageHeight,
                                         const UiRect& targetRect,
-                                        const DString& hAlign,
-                                        const DString& vAlign);
+                                        const std::string& hAlign,
+                                        const std::string& vAlign);
 
 public:
     /** Get rcSource (without DPI scaling)
@@ -103,7 +103,7 @@ public:
 
     /** Get the name of the image (can be used as the unique ID of the image)
     */
-    DString GetImageName() const;
+    std::string GetImageName() const;
 
 public:
     //Image file attribute string

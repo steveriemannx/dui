@@ -4,17 +4,13 @@
 #include "dui/Utils/StringUtil.h"
 #include "dui/Core/WindowMessage.h"
 
-#if defined (DUI_BUILD_FOR_SDL)
-    #include <SDL3/SDL.h>
-#elif defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_WAYLAND)
     #include "dui/Core/WindowMessage.h"
 #endif
 
 /** Custom message
 */
-#if defined (DUI_BUILD_FOR_SDL)
-    #define WM_USER_DEFINED_TIMER   (SDL_EVENT_USER + 2)
-#elif defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_WAYLAND)
     #define WM_USER_DEFINED_TIMER   (kWM_USER + 2)
 #else
     #define WM_USER_DEFINED_TIMER   (kWM_USER + 567)
@@ -161,7 +157,7 @@ void TimerManager::OnTimerMessage(uint32_t msgId, WPARAM /*wParam*/, LPARAM /*lP
 {
     ASSERT(msgId == WM_USER_DEFINED_TIMER);
     if (msgId == WM_USER_DEFINED_TIMER) {
-        //LogUtil::OutputLine(StringUtil::Printf(DUI_T("TimerManager::OnTimerMessage: received timer event")));
+        //LogUtil::OutputLine(StringUtil::Printf("TimerManager::OnTimerMessage: received timer event"));
         m_threadMsg.RemoveDuplicateMsg(WM_USER_DEFINED_TIMER);
         Poll();
     }    
@@ -186,7 +182,7 @@ void TimerManager::Poll()
                 // Call the callback function of the timer
                 taskGuard.unlock();
                 timerTask.timerCallback();
-                //LogUtil::OutputLine(StringUtil::Printf(DUI_T("timerTask.timerCallback(): exec. TimerId: %u, ElapseMs: %u"), timerTask.m_nTimerId, timerTask.uElapseMs));
+                //LogUtil::OutputLine(StringUtil::Printf("timerTask.timerCallback(): exec. TimerId: %u, ElapseMs: %u", timerTask.m_nTimerId, timerTask.uElapseMs));
                 taskGuard.lock();
             }
             if (timerTask.uRepeatTime > 0) {
@@ -249,7 +245,7 @@ void TimerManager::WorkerThreadProc()
 
             if (nDetaTimeMs > 0) {
                 // Wait for the timeout with a delay
-                //LogUtil::OutputLine(StringUtil::Printf(DUI_T("condition_variable: wait_for timer event(%u ms)"), nDetaTimeMs));
+                //LogUtil::OutputLine(StringUtil::Printf("condition_variable: wait_for timer event(%u ms)", nDetaTimeMs));
                 // The accuracy of this function is about 10ms
                 // Note: it was found that both the gcc version and the glibc version have problems with wait_for (they use system time); only gcc >= 10 and glibc >= 2.30 have no impact on program behavior.
                 m_cv.wait_for(taskGuard, std::chrono::milliseconds(nDetaTimeMs));
@@ -261,7 +257,7 @@ void TimerManager::WorkerThreadProc()
 
             uint32_t nErrorCode = 0;
             bool bRet = m_threadMsg.PostMsg(WM_USER_DEFINED_TIMER, 0, 0, &nErrorCode);
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
             if (!bRet) {
                 if ((nErrorCode == ERROR_NOT_ENOUGH_QUOTA) && !GlobalManager::Instance().IsInUIThread()) {
                     // When the program starts, posting a message to the main thread from a child thread will encounter this error
@@ -295,7 +291,7 @@ void TimerManager::WorkerThreadProc()
             if (m_bRunning) {
                 ASSERT_UNUSED_VARIABLE(bRet);
             }            
-            //LogUtil::OutputLine(StringUtil::Printf(DUI_T("PostMessage: send timer event")));
+            //LogUtil::OutputLine(StringUtil::Printf("PostMessage: send timer event"));
 
             if (m_bRunning && m_bHasPenddingPoll) {
                 m_cv.wait(taskGuard, [this]() { return !m_bRunning || !m_bHasPenddingPoll; });

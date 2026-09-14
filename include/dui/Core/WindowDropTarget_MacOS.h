@@ -30,13 +30,13 @@ public:
     /** DROP_TEXT
     *@param [in] utf8Text Text content; each call provides one line of text
     */
-    void OnDropText(const DStringA& utf8Text);
+    void OnDropText(const std::string& utf8Text);
 
     /** DROP_FILE
     *@param [in] utf8Source Drag and drop source
     *@param [in] utf8File File path; each call provides one file
     */
-    void OnDropFile(const DStringA& utf8Source, const DStringA& utf8File);
+    void OnDropFile(const std::string& utf8Source, const std::string& utf8File);
     
     // DROP_COMPLETE
     void OnDropComplete();
@@ -45,7 +45,7 @@ protected:
     /** Find the control interface corresponding to a point coordinate
     * @param [in] clientPt Client area coordinate point
     */
-    ControlPtrT<ControlDropTarget_SDL> GetControlDropTarget(const UiPoint& clientPt) const;
+    ControlPtrT<ControlDropTarget_Wayland> GetControlDropTarget(const UiPoint& clientPt) const;
 
     /** Clean up the state when the drag operation is complete
     */
@@ -54,7 +54,7 @@ protected:
 private:
     /** The control interface currently in the Hover state
     */
-    ControlPtrT<ControlDropTarget_SDL> m_pHoverDropTarget;
+    ControlPtrT<ControlDropTarget_Wayland> m_pHoverDropTarget;
 
     /** The associated Native window implementation
     */
@@ -66,15 +66,15 @@ private:
 
     /** Text data
     */
-    std::vector<DString> m_textList;
+    std::vector<std::string> m_textList;
 
     /** File data
     */
-    std::vector<DString> m_fileList;
+    std::vector<std::string> m_fileList;
 
     /** The source of the files
     */
-    DString m_fileSource;
+    std::string m_fileSource;
 };
 
 } // namespace ui

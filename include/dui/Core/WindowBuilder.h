@@ -23,7 +23,7 @@ class WindowCreateAttributes;
 
 /** The callback function for creating controls
 */
-typedef std::function<Control* (const DString&)> CreateControlCallback;
+typedef std::function<Control* (const std::string&)> CreateControlCallback;
 
 /** The attribute list used to support XML preview; some attributes need to be removed from the associated window object after preview to restore the original state
 */
@@ -31,19 +31,19 @@ struct XmlPreviewAttributes
 {
     /** The attribute list of the window tag (Window) in the XML
     */
-    std::map<DString, DString> m_windowAttributes;
+    std::map<std::string, std::string> m_windowAttributes;
 
     /** The list of Class attributes added under the window during this parsing
     */
-    std::vector<DString> m_windowClassList;
+    std::vector<std::string> m_windowClassList;
 
     /** The list of TextColor attributes added under the window during this parsing
     */
-    std::vector<DString> m_windowTextColorList;
+    std::vector<std::string> m_windowTextColorList;
 
     /** The list of FontId attributes added to the global attributes during this parsing
     */
-    std::vector<DString> m_globalFontIdList;
+    std::vector<std::string> m_globalFontIdList;
 };
 
 /** Parse XML files and create controls and layouts
@@ -63,7 +63,7 @@ public:
     * @param [in] xmlFilePath Optional parameter providing the XML file path; when the XML data contains an Include tag, the included XML file will be looked up by the XML path
     * @return Returns true on success, otherwise false
     */
-    bool ParseXmlData(const DString& xmlFileData, const FilePath& xmlFilePath = FilePath());
+    bool ParseXmlData(const std::string& xmlFileData, const FilePath& xmlFilePath = FilePath());
     bool ParseXmlData(const std::vector<unsigned char>& xmlFileData, const FilePath& xmlFilePath = FilePath());
 
     /** Parse the XML file content
@@ -97,26 +97,26 @@ public:
 public:
     /** Parse the window attributes (attribute names are stored in the Map keys, and attribute values are stored in the attribute values)
     */
-    bool ParseWindowAttributes(std::map<DString, DString>& windowAttributes) const;
+    bool ParseWindowAttributes(std::map<std::string, std::string>& windowAttributes) const;
 
     /** Get the list of Class attributes added under the window during this parsing
     */
-    const std::vector<DString>& GetWindowClassList() const;
+    const std::vector<std::string>& GetWindowClassList() const;
 
     /** Get the list of TextColor attributes added under the window during this parsing
     */
-    const std::vector<DString>& GetWindowTextColorList() const;
+    const std::vector<std::string>& GetWindowTextColorList() const;
 
     /** Get the list of FontId attributes added to the global attributes during this parsing
     */
-    const std::vector<DString>& GetGlobalFontIdList() const;
+    const std::vector<std::string>& GetGlobalFontIdList() const;
 
 public:
     /** Parse the formatted text content and set it on the RichText Control object
     * @param [in] xmlText The formatted text content
     * @param [in] pControl The interface of the RichText control
     */
-    static bool ParseRichTextXmlText(const DString& xmlText, Control* pControl);
+    static bool ParseRichTextXmlText(const std::string& xmlText, Control* pControl);
     
     /** Parse the formatted text content and set it on the RichText Control object
     * @param [in] xmlNode The XML node corresponding to the formatted text content
@@ -155,7 +155,7 @@ private:
 
     /** Create a control (or container) based on the Class name of the control
     */
-    Control* CreateControlByClass(const DString& strControlClass, Window* pWindow);
+    Control* CreateControlByClass(const std::string& strControlClass, Window* pWindow);
 
     /** Create XML events (the XML nodes are <Event> or <BubbledEvent>)
     *   Example:
@@ -190,15 +190,15 @@ private:
 private:
     /** The list of Class attributes added under the window during this parsing
     */
-    std::vector<DString> m_windowClassList;
+    std::vector<std::string> m_windowClassList;
 
     /** The list of TextColor attributes added under the window during this parsing
     */
-    std::vector<DString> m_windowTextColorList;
+    std::vector<std::string> m_windowTextColorList;
 
     /** The list of FontId attributes added to the global attributes during this parsing
     */
-    std::vector<DString> m_globalFontIdList;
+    std::vector<std::string> m_globalFontIdList;
 };
 
 } // namespace ui

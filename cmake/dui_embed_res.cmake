@@ -8,7 +8,7 @@
 # In your code (exactly one .cpp of the executable):
 #   #include "embedded_resources.inc"
 #   ui::GlobalManager::Instance().Startup(
-#       ui::MemoryResParam(GetEmbeddedResourcesData(), GetEmbeddedResourcesSize()));
+#       ui::MemoryResParam(EmbeddedResources()));
 #
 # Note: the resource files are collected with file(GLOB_RECURSE) at configure
 # time; after adding new files to the resources directory, re-run cmake.
@@ -113,5 +113,6 @@ add_custom_command(
 add_custom_target("${PROJECT_NAME}_embed_res" DEPENDS "${GENERATED_INC}")
 list(APPEND DUI_GENERATED_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 
-# Stash for dui_bin_*.cmake to add the dependency
+# Kept for callers that still read it; dui_finalize_app() wires the dependency onto the
+# application target by name, so nothing has to consume this any more.
 set(DUI_EMBED_RES_SRC "${GENERATED_INC}" CACHE INTERNAL "")

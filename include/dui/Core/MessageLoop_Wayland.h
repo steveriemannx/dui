@@ -19,7 +19,7 @@ struct xdg_wm_base;
 
 namespace ui {
 
-class NativeWindow_SDL;
+class NativeWindow_Wayland;
 
 /** Custom message callback prototype: void FunctionName(uint32_t msgID, WPARAM wParam, LPARAM lParam);
 */
@@ -53,7 +53,7 @@ public:
     * @param [in] bCloseByEsc Close window on ESC key
     * @param [in] bCloseByEnter Close window on ENTER key
     */
-    void RunDoModal(NativeWindow_SDL& nativeWindow, bool bCloseByEsc = true, bool bCloseByEnter = false);
+    void RunDoModal(NativeWindow_Wayland& nativeWindow, bool bCloseByEsc = true, bool bCloseByEnter = false);
 
     /** Run a user message loop until exit condition is met
     * @param [in,out] bTerminate Set to true to exit the loop
@@ -107,7 +107,7 @@ public:
 
     /** Get the current video driver name
     */
-    static DString GetCurrentVideoDriverName();
+    static std::string GetCurrentVideoDriverName();
 
     /** Get primary display content scale
     */
@@ -144,8 +144,8 @@ public:
 
     /** Register/unregister a window for idle painting
     */
-    static void RegisterPaintWindow(NativeWindow_SDL* window);
-    static void UnregisterPaintWindow(NativeWindow_SDL* window);
+    static void RegisterPaintWindow(NativeWindow_Wayland* window);
+    static void UnregisterPaintWindow(NativeWindow_Wayland* window);
 
     /** Paint all registered windows (called during idle)
     */
@@ -220,7 +220,7 @@ private:
 
 // Input-related functions (implemented in Input_Wayland.cpp)
 namespace ui {
-    void RegisterWaylandSurface(struct wl_surface* surface, class NativeWindow_SDL* window);
+    void RegisterWaylandSurface(struct wl_surface* surface, class NativeWindow_Wayland* window);
     void UnregisterWaylandSurface(struct wl_surface* surface);
 }
 

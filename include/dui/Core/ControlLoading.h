@@ -47,7 +47,7 @@ public:
     /** Set the loading attributes, create the display UI according to the XML file specified in the attributes, and set the UI attributes
     * @param [in] loadingAttribute The attribute string of loading
     */
-    bool SetLoadingAttribute(const DString& loadingAttribute);
+    bool SetLoadingAttribute(const std::string& loadingAttribute);
 
     /** Draw the "loading" status
     */
@@ -83,7 +83,7 @@ private:
 
     /** Parse the loading attributes
     */
-    bool InitAttribute(LoadingAttribute& loadingAttribute, const DString& loadingString);
+    bool InitAttribute(LoadingAttribute& loadingAttribute, const std::string& loadingString);
 
 private:
     //Loading attributes

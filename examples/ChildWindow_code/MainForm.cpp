@@ -34,80 +34,84 @@ void MainForm::SetupWindow()
 #endif
 
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
     SetSizeBox(ui::UiRect(4, 4, 4, 4), true);
     SetCaptionRect(ui::UiRect(0, 0, 0, 36), true);
-    SetWindowIcon(DUI_T("public/caption/logo.ico"));
+    SetWindowIcon("public/caption/logo.ico");
     CenterWindow();
 }
 
 void MainForm::BuildUI()
 {
-    auto* pRoot = ui::Create<ui::VBox>(this, {{DUI_T("bkcolor"), DUI_T("bk_wnd_darkcolor")}, {DUI_T("visible"), DUI_T("true")}});
+    auto* pRoot = ui::Create<ui::VBox>(this, {{"bkcolor", "bk_wnd_darkcolor"}, {"visible", "true"}});
 
-    auto* pCaption = ui::Create<ui::HBox>(this, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}});
+    auto* pCaption = ui::Create<ui::HBox>(this, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
     ui::Attach(pRoot, pCaption);
 
-    auto* pCaptionLeft = ui::Create<ui::HBox>(this, {{DUI_T("margin"), DUI_T("0,0,30,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+    auto* pCaptionLeft = ui::Create<ui::HBox>(this, {{"margin", "0,0,30,0"}, {"valign", "center"}, {"width", "auto"}, {"height", "auto"}, {"mouse_enabled", "false"}});
     ui::Attach(pCaption, pCaptionLeft);
 
-    auto* pLogo = ui::Create<ui::Control>(this, {{DUI_T("width"), DUI_T("18")}, {DUI_T("height"), DUI_T("18")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}, {DUI_T("bkimage"), DUI_T("public/caption/logo.svg")}});
+    auto* pLogo = ui::Create<ui::Control>(this, {{"width", "18"}, {"height", "18"}, {"valign", "center"}, {"margin", "8,0,0,0"}, {"bkimage", "public/caption/logo.svg"}});
     ui::Attach(pCaptionLeft, pLogo);
 
-    auto* pTitle = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("ChildWindow Control Test Program")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+    auto* pTitle = ui::Create<ui::Label>(this, {{"text", "ChildWindow Control Test Program"}, {"valign", "center"}, {"margin", "8,0,0,0"}, {"mouse_enabled", "false"}});
     ui::Attach(pCaptionLeft, pTitle);
 
-    auto* pSpacer = ui::Create<ui::Control>(this, {{DUI_T("mouse_enabled"), DUI_T("false")}});
+    auto* pSpacer = ui::Create<ui::Control>(this, {{"mouse_enabled", "false"}});
     ui::Attach(pCaption, pSpacer);
 
-    auto* pCaptionRight = ui::Create<ui::HBox>(this, {{DUI_T("margin"), DUI_T("0,0,0,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("height"), DUI_T("36")}});
+    auto* pCaptionRight = ui::Create<ui::HBox>(this, {{"margin", "0,0,0,0"}, {"valign", "center"}, {"width", "auto"}, {"height", "36"}});
     ui::Attach(pCaption, pCaptionRight);
 
-    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_fullscreen_11")}, {DUI_T("name"), DUI_T("fullscreenbtn")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Fullscreen, press ESC to exit fullscreen")}});
+    auto* pFullscreenBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_fullscreen_11"}, {"name", "fullscreenbtn"}, {"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Fullscreen, press ESC to exit fullscreen"}});
     ui::Attach(pCaptionRight, pFullscreenBtn);
 
-    auto* pMinBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("Minimize")}});
+    auto* pMinBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_min_11"}, {"name", "minbtn"}, {"height", "32"}, {"width", "40"}, {"margin", "0,2,0,2"}, {"tooltip_text", "Minimize"}});
     ui::Attach(pCaptionRight, pMinBtn);
 
-    auto* pMaxBox = ui::Create<ui::Box>(this, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
+    auto* pMaxBox = ui::Create<ui::Box>(this, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
     ui::Attach(pCaptionRight, pMaxBox);
 
-    auto* pMaxBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_max_11")}, {DUI_T("name"), DUI_T("maxbtn")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("tooltip_text"), DUI_T("Maximize")}});
+    auto* pMaxBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_max_11"}, {"name", "maxbtn"}, {"height", "32"}, {"width", "stretch"}, {"tooltip_text", "Maximize"}});
     ui::Attach(pMaxBox, pMaxBtn);
 
-    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_restore_11")}, {DUI_T("name"), DUI_T("restorebtn")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("visible"), DUI_T("false")}, {DUI_T("tooltip_text"), DUI_T("Restore")}});
+    auto* pRestoreBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_restore_11"}, {"name", "restorebtn"}, {"height", "32"}, {"width", "stretch"}, {"visible", "false"}, {"tooltip_text", "Restore"}});
     ui::Attach(pMaxBox, pRestoreBtn);
 
-    auto* pCloseBtn = ui::Create<ui::Button>(this, {{DUI_T("class"), DUI_T("btn_wnd_close_11")}, {DUI_T("name"), DUI_T("closebtn")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,0,0,2")}, {DUI_T("tooltip_text"), DUI_T("Close")}});
+    auto* pCloseBtn = ui::Create<ui::Button>(this, {{"class", "btn_wnd_close_11"}, {"name", "closebtn"}, {"height", "stretch"}, {"width", "40"}, {"margin", "0,0,0,2"}, {"tooltip_text", "Close"}});
     ui::Attach(pCaptionRight, pCloseBtn);
 
     auto* pContent = ui::Create<ui::Box>(this, {});
     ui::Attach(pRoot, pContent);
 
-    auto* pGridBox = ui::Create<ui::GridBox>(this, {{DUI_T("name"), DUI_T("child_window_box")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("rows"), DUI_T("3")}, {DUI_T("columns"), DUI_T("3")}, {DUI_T("bkcolor"), DUI_T("#FFF0F0F0")}});
+    auto* pGridBox = ui::Create<ui::GridBox>(this, {{"name", "child_window_box"}, {"valign", "center"}, {"rows", "3"}, {"columns", "3"}, {"bkcolor", "#FFF0F0F0"}});
     ui::Attach(pContent, pGridBox);
 
     for (int32_t i = 0; i < 9; ++i) {
-        auto* pChild = ui::Create<ui::ChildWindow>(this, {{DUI_T("valign"), DUI_T("center")}, {DUI_T("halign"), DUI_T("center")}, {DUI_T("child_window_margin"), DUI_T("12,36,12,12")}});
-        auto* pChildCaption = ui::Create<ui::HBox>(this, {{DUI_T("padding"), DUI_T("12,0,0,0")}, {DUI_T("valign"), DUI_T("top")}, {DUI_T("height"), DUI_T("36")}});
+        auto* pChild = ui::Create<ui::ChildWindow>(this, {{"valign", "center"}, {"halign", "center"}, {"child_window_margin", "12,36,12,12"}});
+        auto* pChildCaption = ui::Create<ui::HBox>(this, {{"padding", "12,0,0,0"}, {"valign", "top"}, {"height", "36"}});
         ui::Attach(pChild, pChildCaption);
 
-        auto* pChildName = ui::Create<ui::Label>(this, {{DUI_T("name"), DUI_T("child_window_name")}, {DUI_T("text"), ui::StringUtil::Printf(DUI_T("ChildWindow%d"), i + 1)}, {DUI_T("margin"), DUI_T("2,0,2,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+        auto* pChildName = ui::Create<ui::Label>(this, {{"name", "child_window_name"}, {"text", ui::StringUtil::Printf("ChildWindow%d", i + 1)}, {"margin", "2,0,2,0"}, {"valign", "center"}, {"mouse_enabled", "false"}});
         ui::Attach(pChildCaption, pChildName);
 
-        auto* pFpsText = ui::Create<ui::Label>(this, {{DUI_T("text"), DUI_T("Frame Rate FPS:")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+        auto* pFpsText = ui::Create<ui::Label>(this, {{"text", "Frame Rate FPS:"}, {"valign", "center"}, {"mouse_enabled", "false"}});
         ui::Attach(pChildCaption, pFpsText);
 
-        auto* pFpsValue = ui::Create<ui::Label>(this, {{DUI_T("name"), DUI_T("label_fps")}, {DUI_T("text"), DUI_T("0000")}, {DUI_T("width"), DUI_T("42")}, {DUI_T("margin"), DUI_T("4,0,4,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
+        auto* pFpsValue = ui::Create<ui::Label>(this, {{"name", "label_fps"}, {"text", "0000"}, {"width", "42"}, {"margin", "4,0,4,0"}, {"valign", "center"}, {"mouse_enabled", "false"}});
         ui::Attach(pChildCaption, pFpsValue);
 
-        auto* pFpsPaint = ui::Create<ui::CheckBox>(this, {{DUI_T("class"), DUI_T("checkbox_1")}, {DUI_T("name"), DUI_T("fps_paint")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("text"), DUI_T("Draw")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("selected"), DUI_T("true")}});
+        auto* pFpsPaint = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "fps_paint"}, {"height", "28"}, {"width", "auto"}, {"text", "Draw"}, {"valign", "center"}, {"selected", "true"}});
         ui::Attach(pChildCaption, pFpsPaint);
 
-        auto* pFullscreen = ui::Create<ui::CheckBox>(this, {{DUI_T("class"), DUI_T("checkbox_1")}, {DUI_T("name"), DUI_T("child_fullscreen")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("text"), DUI_T("Fullscreen")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}, {DUI_T("selected"), DUI_T("false")}});
+        auto* pFullscreen = ui::Create<ui::CheckBox>(this, {{"class", "checkbox_1"}, {"name", "child_fullscreen"}, {"height", "28"}, {"width", "auto"}, {"text", "Fullscreen"}, {"valign", "center"}, {"margin", "8,0,0,0"}, {"selected", "false"}});
         ui::Attach(pChildCaption, pFullscreen);
         ui::Attach(pGridBox, pChild);
     }
@@ -156,7 +160,7 @@ void MainForm::OnLayeredWindowChanged()
 
 void MainForm::CreateChildWindows()
 {
-    ui::GridBox* pChildWindowBox = ui::Find<ui::GridBox>(this, DUI_T("child_window_box"));
+    ui::GridBox* pChildWindowBox = ui::Find<ui::GridBox>(this, "child_window_box");
     if (pChildWindowBox != nullptr) {
         size_t nCount = pChildWindowBox->GetItemCount();
         for (size_t nItem = 0; nItem < nCount; ++nItem) {

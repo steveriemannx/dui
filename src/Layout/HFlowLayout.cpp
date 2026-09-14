@@ -273,7 +273,6 @@ UiSize64 HFlowLayout::ArrangeChildInternal(const std::vector<Control*>& items, U
     if (!bEstimateOnly) {
         // Adjust the layout of the child controls (non-floating controls)
         for (TRowControls& control : rowControlList) {
-            ASSERT(control.m_pControlRects.size() == control.m_pControlList.size());
             if (control.m_pControlRects.size() != control.m_pControlList.size()) {
                 // Error
                 return szChildren;

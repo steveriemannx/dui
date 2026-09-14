@@ -42,7 +42,7 @@ FILETIME FileTime::ToFileTime() const
     return ft;
 }
 
-DString FileTime::ToString() const
+std::string FileTime::ToString() const
 {
     FILETIME ft = ToFileTime();
 
@@ -55,7 +55,7 @@ DString FileTime::ToString() const
     ::SystemTimeToTzSpecificLocalTime(nullptr, &stUTC, &stLocal);
 
     // Format as a string
-    return StringUtil::Printf(DUI_T("%04d-%02d-%02d %02d:%02d:%02d"),
+    return StringUtil::Printf("%04d-%02d-%02d %02d:%02d:%02d",
                               stLocal.wYear, stLocal.wMonth, stLocal.wDay,
                               stLocal.wHour, stLocal.wMinute, stLocal.wSecond);
 }
@@ -72,7 +72,7 @@ uint64_t FileTime::ToSecondsSinceEpoch() const
     return m_uFileTime;
 }
 
-DString FileTime::ToString() const
+std::string FileTime::ToString() const
 {
     uint64_t secondsSinceEpoch = ToSecondsSinceEpoch();
     

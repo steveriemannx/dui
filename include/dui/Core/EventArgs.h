@@ -180,11 +180,11 @@ public:
 
     /** Convert a string to an event type
     */
-    static EventType StringToEventType(const DString& eventName);
+    static EventType StringToEventType(const std::string& eventName);
 
     /** Convert an event type to a string
     */
-    static DString EventTypeToString(EventType eventType);
+    static std::string EventTypeToString(EventType eventType);
 };
 
 }// namespace ui

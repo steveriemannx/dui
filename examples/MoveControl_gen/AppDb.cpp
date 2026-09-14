@@ -18,89 +18,89 @@ bool AppDb::LoadFromDb(std::vector<AppItem>& app_list)
     {
         AppItem item;
         item.m_id = "1";
-        item.m_icon = DUI_T("1.png");
+        item.m_icon = "1.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("City Services");
+        item.m_name = "City Services";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "2";
-        item.m_icon = DUI_T("2.png");
+        item.m_icon = "2.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("Weather Forecast");
+        item.m_name = "Weather Forecast";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "3";
-        item.m_icon = DUI_T("3.png");
+        item.m_icon = "3.png";
         item.m_isFrequent = true;
-        item.m_name = DUI_T("Attendance");
+        item.m_name = "Attendance";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "4";
-        item.m_icon = DUI_T("4.png");
+        item.m_icon = "4.png";
         item.m_isFrequent = true;
-        item.m_name = DUI_T("Payroll");
+        item.m_name = "Payroll";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "5";
-        item.m_icon = DUI_T("5.png");
+        item.m_icon = "5.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("Test 5");
+        item.m_name = "Test 5";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "6";
-        item.m_icon = DUI_T("5.png");
+        item.m_icon = "5.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("Test 6");
+        item.m_name = "Test 6";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "7";
-        item.m_icon = DUI_T("5.png");
+        item.m_icon = "5.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("Test 7");
+        item.m_name = "Test 7";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "8";
-        item.m_icon = DUI_T("5.png");
+        item.m_icon = "5.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("Test 8");
+        item.m_name = "Test 8";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "9";
-        item.m_icon = DUI_T("5.png");
+        item.m_icon = "5.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("Test 9");
+        item.m_name = "Test 9";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "10";
-        item.m_icon = DUI_T("5.png");
+        item.m_icon = "5.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("Test 10");
+        item.m_name = "Test 10";
         app_list.emplace_back(item);
     }
     {
         AppItem item;
         item.m_id = "11";
-        item.m_icon = DUI_T("5.png");
+        item.m_icon = "5.png";
         item.m_isFrequent = false;
-        item.m_name = DUI_T("Test 11");
+        item.m_name = "Test 11";
         app_list.emplace_back(item);
     }
     

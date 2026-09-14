@@ -1,6 +1,6 @@
 #include "BrowserManager.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     #include "Windows/BrowserForm_Windows.h"
 #else
     #include "BrowserForm.h"
@@ -22,14 +22,14 @@ BrowserManager* BrowserManager::GetInstance()
 
 BrowserForm* BrowserManager::CreateBrowserForm()
 {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     return new BrowserForm_Windows;
 #else
     return new BrowserForm;
 #endif
 }
 
-BrowserBox* BrowserManager::CreateBorwserBox(BrowserForm* pBrowserForm, std::string browserId, const DString& url)
+BrowserBox* BrowserManager::CreateBorwserBox(BrowserForm* pBrowserForm, std::string browserId, const std::string& url)
 {
     if (browserId.empty()) {
         browserId = CreateBrowserID();
@@ -38,7 +38,7 @@ BrowserBox* BrowserManager::CreateBorwserBox(BrowserForm* pBrowserForm, std::str
     //Multi-tab mode: multiple tabs are allowed in one window
     if (pBrowserForm == nullptr) {
         pBrowserForm = BrowserManager::GetInstance()->CreateBrowserForm();
-        if (!pBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam(DUI_T("CefBrowser"), true))) {
+        if (!pBrowserForm->CreateWnd(nullptr, ui::WindowCreateParam("CefBrowser", true))) {
             pBrowserForm = nullptr;
             return nullptr;
         }

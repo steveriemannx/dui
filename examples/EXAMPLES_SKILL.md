@@ -62,8 +62,7 @@ int main()
 {
     return ui::RunMemory<MainForm>(
         "Example Title",
-        GetEmbeddedResourcesData(),
-        GetEmbeddedResourcesSize());
+        EmbeddedResources());
 }
 ```
 
@@ -73,8 +72,7 @@ work, such as `ChildWindow` painting:
 ```cpp
 return ui::RunMemory<MainForm>(
     "Example Title",
-    GetEmbeddedResourcesData(),
-    GetEmbeddedResourcesSize(),
+    EmbeddedResources(),
     [](MainForm* window) {
         window->PaintNextChildWindow();
     });
@@ -96,8 +94,8 @@ public:
     MainForm() = default;
     virtual ~MainForm() override = default;
 
-    virtual DString GetSkinFolder() override;
-    virtual DString GetSkinFile() override;
+    virtual std::string GetSkinFolder() override;
+    virtual std::string GetSkinFile() override;
     virtual void OnInitWindow() override;
 
 private:
@@ -136,8 +134,8 @@ It should not add an empty `SetupWindow()` merely to match the other modes.
 The XML version is the design and runtime layout version:
 
 ```cpp
-virtual DString GetSkinFolder() override { return "hello"; }
-virtual DString GetSkinFile() override { return "hello.xml"; }
+virtual std::string GetSkinFolder() override { return "hello"; }
+virtual std::string GetSkinFile() override { return "hello.xml"; }
 ```
 
 Its `OnInitWindow()` normally only binds application events and calls the base
@@ -168,8 +166,8 @@ The code version does not load a layout XML. Both skin methods return empty
 strings:
 
 ```cpp
-virtual DString GetSkinFolder() override { return ""; }
-virtual DString GetSkinFile() override { return ""; }
+virtual std::string GetSkinFolder() override { return ""; }
+virtual std::string GetSkinFile() override { return ""; }
 ```
 
 `SetupWindow()` contains window-level configuration:
@@ -334,9 +332,20 @@ attributes identical across XML / generated / pure-code variants.
 Use the common and binary resource CMake modules:
 
 ```cmake
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_common.cmake")
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")
+include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
+
+add_executable(<name>
+    MainForm.cpp
+    main.cpp
+)
+target_link_libraries(<name> PRIVATE dui::app)
+dui_finalize_app(<name>)
 ```
+
+`dui_app.cmake` includes `dui_common.cmake` itself. The application owns its target and
+lists its sources — do not glob them. `dui_finalize_app` sets the output directory, the
+Windows entry point, the macOS `.app` bundle and its code signature, and the build-order
+dependencies. `examples/hello/CMakeLists.txt` is the smallest complete example.
 
 The runtime resource directory is copied beside the executable.
 
@@ -361,7 +370,10 @@ set(EMBED_RES_PATHS
     "fonts"
     "lang")
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_embed_res.cmake")
-include("${DUI_SRC_ROOT_DIR}/cmake/dui_bin.cmake")
+
+add_executable(<name> ...)
+target_link_libraries(<name> PRIVATE dui::app)
+dui_finalize_app(<name>)
 ```
 
 Every image referenced by an embedded layout must be present in the active
@@ -378,7 +390,7 @@ The generated archive must be rebuilt after changing `EMBED_RES_PATHS` or
 adding resource files. A successful compile alone does not prove that an image
 can be loaded; verify the generated archive contains the referenced assets.
 
-For gen mode, also configure generation before `dui_bin.cmake`:
+For gen mode, also configure generation before `dui_finalize_app()`:
 
 ```cmake
 set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${EXAMPLE_THEME}/<name>/<name>.xml")

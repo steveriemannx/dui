@@ -24,30 +24,30 @@ CircleProgress::~CircleProgress()
     }
 }
 
-DString CircleProgress::GetType() const { return DUI_CTR_CIRCLEPROGRESS; }
+std::string CircleProgress::GetType() const { return DUI_CTR_CIRCLEPROGRESS; }
 
-void CircleProgress::SetAttribute(const DString& srName, const DString& strValue)
+void CircleProgress::SetAttribute(const std::string& srName, const std::string& strValue)
 {
-    if (srName == DUI_T("circular")) {
-        SetCircular(strValue == DUI_T("true"));
+    if (srName == "circular") {
+        SetCircular(strValue == "true");
     }
-    else if ((srName == DUI_T("circle_width")) || (srName == DUI_T("circlewidth"))) {
+    else if ((srName == "circle_width") || (srName == "circlewidth")) {
         int32_t iValue = StringUtil::StringToInt32(strValue);
         SetCircleWidth((float)iValue, true);
     }
-    else if (srName == DUI_T("indicator")) {
+    else if (srName == "indicator") {
         SetIndicator(strValue);
     }
-    else if (srName == DUI_T("clockwise")) {
-        SetClockwiseRotation(strValue == DUI_T("true"));
+    else if (srName == "clockwise") {
+        SetClockwiseRotation(strValue == "true");
     }
-    else if (srName == DUI_T("bgcolor")) {
+    else if (srName == "bgcolor") {
         SetBackgroudColor(strValue);
     }
-    else if (srName == DUI_T("fgcolor")) {
+    else if (srName == "fgcolor") {
         SetForegroudColor(strValue);
     }
-    else if ((srName == DUI_T("gradient_color")) || (srName == DUI_T("gradientcolor"))) {
+    else if ((srName == "gradient_color") || (srName == "gradientcolor")) {
         SetCircleGradientColor(strValue);
     }
     else {
@@ -68,7 +68,6 @@ void CircleProgress::ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale
 
 void CircleProgress::PaintStateImages(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -96,19 +95,16 @@ void CircleProgress::PaintStateImages(IRender* pRender)
     }
 
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return;
     }
     IPen* bgPen = pRenderFactory->CreatePen(m_dwBackgroundColor, m_fCircleWidth);
     std::unique_ptr<IPen> spBgPen(bgPen);
-    ASSERT(bgPen != nullptr);
     if (bgPen == nullptr) {
         return;
     }
     IPen* fgPen = pRenderFactory->CreatePen(m_dwForegroundColor, m_fCircleWidth);
     std::unique_ptr<IPen> spFgPen(fgPen);
-    ASSERT(fgPen != nullptr);
     if (fgPen == nullptr) {
         return;
     }
@@ -179,7 +175,7 @@ void CircleProgress::PaintStateImages(IRender* pRender)
         imageRect.right = imageRect.left + pIndicatorImageInfo->GetWidth();
         imageRect.bottom = imageRect.top + pIndicatorImageInfo->GetHeight();
         imageRect.Offset(-GetRect().left, -GetRect().top);
-        DString imageModify = StringUtil::Printf(DUI_T("destscale='false' dest='%d,%d,%d,%d'"), 
+        std::string imageModify = StringUtil::Printf("destscale='false' dest='%d,%d,%d,%d'", 
             imageRect.left, imageRect.top, imageRect.right, imageRect.bottom);
         PaintImage(pRender, m_pIndicatorImage, imageModify, -1, spMatrix.get());
     }
@@ -223,21 +219,21 @@ float CircleProgress::GetCircleWidth() const
     return m_fCircleWidth;
 }
 
-void CircleProgress::SetBackgroudColor(const DString& strColor)
+void CircleProgress::SetBackgroudColor(const std::string& strColor)
 {
     m_dwBackgroundColor = GlobalManager::Instance().Color().GetColor(strColor);
     ASSERT(m_dwBackgroundColor.GetARGB() != 0);
     Invalidate();
 }
 
-void CircleProgress::SetForegroudColor(const DString& strColor)
+void CircleProgress::SetForegroudColor(const std::string& strColor)
 {
     m_dwForegroundColor = GlobalManager::Instance().Color().GetColor(strColor);
     ASSERT(m_dwForegroundColor.GetARGB() != 0);
     Invalidate();
 }
 
-void CircleProgress::SetIndicator(const DString& sIndicatorImage)
+void CircleProgress::SetIndicator(const std::string& sIndicatorImage)
 {
     if (m_pIndicatorImage == nullptr) {
         m_pIndicatorImage = new Image;
@@ -249,7 +245,7 @@ void CircleProgress::SetIndicator(const DString& sIndicatorImage)
     }
 }
 
-void CircleProgress::SetCircleGradientColor(const DString& strColor)
+void CircleProgress::SetCircleGradientColor(const std::string& strColor)
 {
     m_dwGradientColor = GlobalManager::Instance().Color().GetColor(strColor);
     ASSERT(m_dwGradientColor.GetARGB() != 0);

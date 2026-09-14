@@ -5,7 +5,7 @@ namespace
 {
 /** Show the WeChat window behind the login window (does not take focus).
  */
-void OpenWindow(const DString& title, const DString& layoutXml)
+void OpenWindow(const std::string& title, const std::string& layoutXml)
 {
     MainForm* window = new MainForm(layoutXml, false);
     window->CreateWnd(nullptr, ui::WindowCreateParam(title, true));
@@ -21,10 +21,19 @@ void MainForm::OnInitWindow()
     // The login window is the entry window; it spawns the WeChat window
     // behind it. The WeChat window does not spawn anything (avoids recursion).
     if (m_isLogin) {
-        OpenWindow(DUI_T("wechat"), DUI_T("wechat.xml"));
+        OpenWindow("wechat", "wechat.xml");
     }
 
     BaseClass::OnInitWindow();
+}
+
+void MainForm::OnInitLayout()
+{
+    BaseClass::OnInitLayout();
+    if (m_isLogin) {
+        // Center after XML auto sizing and control arrangement are complete.
+        CenterWindow();
+    }
 }
 
 void MainForm::BindEvents()

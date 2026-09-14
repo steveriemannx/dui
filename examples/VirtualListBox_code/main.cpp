@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>(DUI_T("VirtualListBox (Pure Code)"), GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("VirtualListBox (Pure Code)", EmbeddedResources());
 }

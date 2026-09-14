@@ -1,5 +1,5 @@
-#include "dui/Core/WindowDropTarget_SDL.h"
-#include "dui/Core/NativeWindow_SDL.h"
+#include "dui/Core/WindowDropTarget_Wayland.h"
+#include "dui/Core/NativeWindow_Wayland.h"
 #include "dui/Core/MessageLoop_Wayland.h"
 #include "dui/Render/IRender.h"
 #include "dui/Utils/MonitorUtil.h"
@@ -17,12 +17,12 @@
 
 namespace ui {
 
-// Helper class for paint context (same as NativeWindowRenderPaint in NativeWindow_SDL.cpp)
+// Helper class for paint context (same as NativeWindowRenderPaint in NativeWindow_Wayland.cpp)
 class NativeWindowRenderPaint :
     public IRenderPaint
 {
 public:
-    NativeWindow_SDL* m_pNativeWindow = nullptr;
+    NativeWindow_Wayland* m_pNativeWindow = nullptr;
     INativeWindow* m_pOwner = nullptr;
     NativeMsg m_nativeMsg;
     bool m_bHandled = false;
@@ -60,7 +60,7 @@ static const struct xdg_surface_listener xdg_surface_listener_impl = {
 // xdg_toplevel configure
 static void xdg_toplevel_configure_handler(void* data, struct xdg_toplevel* t,
     int32_t width, int32_t height, struct wl_array* states) {
-    NativeWindow_SDL* pWindow = (NativeWindow_SDL*)data;
+    NativeWindow_Wayland* pWindow = (NativeWindow_Wayland*)data;
     (void)t;
     if (!pWindow) return;
 
@@ -105,7 +105,7 @@ static void xdg_toplevel_configure_handler(void* data, struct xdg_toplevel* t,
     }
 }
 static void xdg_toplevel_close_handler(void* data, struct xdg_toplevel* t) {
-    NativeWindow_SDL* pWindow = (NativeWindow_SDL*)data;
+    NativeWindow_Wayland* pWindow = (NativeWindow_Wayland*)data;
     (void)t;
     if (pWindow) {
         pWindow->m_bWaylandVisible = false;
@@ -119,7 +119,7 @@ static const struct xdg_toplevel_listener xdg_toplevel_listener_impl = {
 
 // wl_buffer release listener
 static void buffer_release_handler(void* data, struct wl_buffer* buffer) {
-    NativeWindow_SDL* pWindow = (NativeWindow_SDL*)data;
+    NativeWindow_Wayland* pWindow = (NativeWindow_Wayland*)data;
     if (pWindow) {
         pWindow->m_bWaylandBufferBusy = false;
     }
@@ -130,9 +130,9 @@ static const struct wl_buffer_listener buffer_listener_impl = {
 };
 
 // Constructor
-NativeWindow_SDL::NativeWindow_SDL(INativeWindow* pOwner) {
+NativeWindow_Wayland::NativeWindow_Wayland(INativeWindow* pOwner) {
     m_pOwner = pOwner;
-    m_sdlWindow = nullptr;
+    m_nativeWindow = nullptr;
     m_pWaylandSurface = nullptr;
     m_pXdgSurface = nullptr;
     m_pXdgToplevel = nullptr;
@@ -161,7 +161,7 @@ NativeWindow_SDL::NativeWindow_SDL(INativeWindow* pOwner) {
 }
 
 // Destructor
-NativeWindow_SDL::~NativeWindow_SDL() {
+NativeWindow_Wayland::~NativeWindow_Wayland() {
     if (m_pEglWindow) { wl_egl_window_destroy(m_pEglWindow); m_pEglWindow = nullptr; }
     if (m_pXdgToplevel) { xdg_toplevel_destroy(m_pXdgToplevel); m_pXdgToplevel = nullptr; }
     if (m_pXdgSurface) { xdg_surface_destroy(m_pXdgSurface); m_pXdgSurface = nullptr; }
@@ -203,7 +203,7 @@ static wl_buffer* wayland_create_and_attach(wl_surface* surface, wl_shm* shm,
     return buffer;
 }
 
-bool NativeWindow_SDL::CreateWnd(NativeWindow_SDL* pParentWindow,
+bool NativeWindow_Wayland::CreateWnd(NativeWindow_Wayland* pParentWindow,
               const WindowCreateParam& createParam,
               const WindowCreateAttributes& createAttributes) {
     (void)pParentWindow;
@@ -260,7 +260,7 @@ bool NativeWindow_SDL::CreateWnd(NativeWindow_SDL* pParentWindow,
     return true;
 }
 
-bool NativeWindow_SDL::ShowWindow(ShowWindowCommands nCmdShow) {
+bool NativeWindow_Wayland::ShowWindow(ShowWindowCommands nCmdShow) {
     if (!m_pWaylandSurface) return false;
 
     switch (nCmdShow) {
@@ -303,31 +303,31 @@ bool NativeWindow_SDL::ShowWindow(ShowWindowCommands nCmdShow) {
     return true;
 }
 
-void* NativeWindow_SDL::GetWindowHandle() const {
+void* NativeWindow_Wayland::GetWindowHandle() const {
     return (void*)m_pWaylandSurface;
 }
 
-bool NativeWindow_SDL::IsWindow() const {
+bool NativeWindow_Wayland::IsWindow() const {
     return m_pWaylandSurface != nullptr;
 }
 
-bool NativeWindow_SDL::IsWindowVisible() const {
+bool NativeWindow_Wayland::IsWindowVisible() const {
     return m_bWaylandVisible;
 }
 
-DString NativeWindow_SDL::GetVideoDriverName() const {
-    return DUI_T("wayland");
+std::string NativeWindow_Wayland::GetVideoDriverName() const {
+    return "wayland";
 }
 
-DString NativeWindow_SDL::GetWindowRenderName() const {
-    return DUI_T("software");
+std::string NativeWindow_Wayland::GetWindowRenderName() const {
+    return "software";
 }
 
-bool NativeWindow_SDL::IsVideoDriverX11() const { return false; }
+bool NativeWindow_Wayland::IsVideoDriverX11() const { return false; }
 
-bool NativeWindow_SDL::IsVideoDriverWayland() const { return true; }
+bool NativeWindow_Wayland::IsVideoDriverWayland() const { return true; }
 
-void NativeWindow_SDL::CloseWnd(int32_t nRet) {
+void NativeWindow_Wayland::CloseWnd(int32_t nRet) {
     if (m_bCloseing) return; // Already closing
     m_bCloseing = true;
     m_closeParam = nRet;
@@ -337,7 +337,7 @@ void NativeWindow_SDL::CloseWnd(int32_t nRet) {
     }
 }
 
-void NativeWindow_SDL::Close() {
+void NativeWindow_Wayland::Close() {
     MessageLoop_Wayland::UnregisterPaintWindow(this);
     if (m_pWaylandSurface) UnregisterWaylandSurface(m_pWaylandSurface);
     if (m_pEglWindow) { wl_egl_window_destroy(m_pEglWindow); m_pEglWindow = nullptr; }
@@ -348,21 +348,21 @@ void NativeWindow_SDL::Close() {
     m_bWaylandVisible = false;
 }
 
-bool NativeWindow_SDL::IsClosingWnd() const { return m_bCloseing; }
+bool NativeWindow_Wayland::IsClosingWnd() const { return m_bCloseing; }
 
-int32_t NativeWindow_SDL::GetCloseParam() const { return m_closeParam; }
+int32_t NativeWindow_Wayland::GetCloseParam() const { return m_closeParam; }
 
-void NativeWindow_SDL::GetClientRect(UiRect& rc) const {
+void NativeWindow_Wayland::GetClientRect(UiRect& rc) const {
     rc.Clear();
     rc.right = m_nWaylandPendingWidth;
     rc.bottom = m_nWaylandPendingHeight;
 }
 
-void NativeWindow_SDL::GetWindowRect(UiRect& rc) const {
+void NativeWindow_Wayland::GetWindowRect(UiRect& rc) const {
     GetClientRect(rc);
 }
 
-void NativeWindow_SDL::Invalidate(const UiRect& rc) {
+void NativeWindow_Wayland::Invalidate(const UiRect& rc) {
     if (!rc.IsEmpty()) {
         m_rcUpdateRect.Union(rc);
     } else {
@@ -373,7 +373,7 @@ void NativeWindow_SDL::Invalidate(const UiRect& rc) {
     MessageLoop_Wayland::PostUserEvent(MessageLoop_Wayland::WM_PAINT_EVENT, 0, 0);
 }
 
-bool NativeWindow_SDL::UpdateWindow() const {
+bool NativeWindow_Wayland::UpdateWindow() const {
     if (m_pWaylandSurface) {
         wl_display_flush(MessageLoop_Wayland::GetDisplay());
         return true;
@@ -381,20 +381,20 @@ bool NativeWindow_SDL::UpdateWindow() const {
     return false;
 }
 
-bool NativeWindow_SDL::GetMonitorRect(UiRect& rc) const {
+bool NativeWindow_Wayland::GetMonitorRect(UiRect& rc) const {
     rc.Clear();
     rc.right = 1920;
     rc.bottom = 1080;
     return true;
 }
 
-bool NativeWindow_SDL::GetWindowSize(int32_t* w, int32_t* h) const {
+bool NativeWindow_Wayland::GetWindowSize(int32_t* w, int32_t* h) const {
     if (w) *w = m_nWaylandPendingWidth;
     if (h) *h = m_nWaylandPendingHeight;
     return true;
 }
 
-int32_t NativeWindow_SDL::DoModal(NativeWindow_SDL* p, const WindowCreateParam& cp,
+int32_t NativeWindow_Wayland::DoModal(NativeWindow_Wayland* p, const WindowCreateParam& cp,
     const WindowCreateAttributes& ca, bool esc, bool enter) {
     bool b = CreateWnd(p, cp, ca);
     if (b) ShowWindow(kSW_SHOW);
@@ -402,41 +402,41 @@ int32_t NativeWindow_SDL::DoModal(NativeWindow_SDL* p, const WindowCreateParam& 
     return b ? m_closeParam : -1;
 }
 
-bool NativeWindow_SDL::CreateChildWnd(NativeWindow_SDL* p, int32_t x, int32_t y, int32_t w, int32_t h) {
+bool NativeWindow_Wayland::CreateChildWnd(NativeWindow_Wayland* p, int32_t x, int32_t y, int32_t w, int32_t h) {
     (void)p; (void)x; (void)y;
     m_nWaylandPendingWidth = w;
     m_nWaylandPendingHeight = h;
     return true;
 }
 
-bool NativeWindow_SDL::SetParentWindow(NativeWindow_SDL* p) { (void)p; return true; }
-bool NativeWindow_SDL::IsChildWindow() const { return false; }
-bool NativeWindow_SDL::IsUseSystemCaption() const { return m_bUseSystemCaption; }
-void NativeWindow_SDL::SetUseSystemCaption(bool b) { m_bUseSystemCaption = b; }
-bool NativeWindow_SDL::IsLayeredWindow() const { return false; }
-bool NativeWindow_SDL::SetLayeredWindow(bool b, bool r) { (void)b; (void)r; return true; }
-void NativeWindow_SDL::SetLayeredWindowAlpha(int32_t n) { (void)n; }
-uint8_t NativeWindow_SDL::GetLayeredWindowAlpha() const { return 255; }
-void NativeWindow_SDL::SetLayeredWindowOpacity(int32_t n) { (void)n; }
-uint8_t NativeWindow_SDL::GetLayeredWindowOpacity() const { return 255; }
-void NativeWindow_SDL::CenterWindow() { }
-void NativeWindow_SDL::SetWindowAlwaysOnTop(bool b) { (void)b; }
-bool NativeWindow_SDL::IsWindowAlwaysOnTop() const { return false; }
-bool NativeWindow_SDL::SetWindowForeground() { return false; }
-bool NativeWindow_SDL::IsWindowForeground() const { return m_bWaylandVisible; }
-bool NativeWindow_SDL::SetWindowFocus() { return false; }
-bool NativeWindow_SDL::KillWindowFocus() { return false; }
-bool NativeWindow_SDL::IsWindowFocused() const { return false; }
-void NativeWindow_SDL::CheckSetWindowFocus() { }
-LRESULT NativeWindow_SDL::PostMsg(UINT u, WPARAM w, LPARAM l) {
+bool NativeWindow_Wayland::SetParentWindow(NativeWindow_Wayland* p) { (void)p; return true; }
+bool NativeWindow_Wayland::IsChildWindow() const { return false; }
+bool NativeWindow_Wayland::IsUseSystemCaption() const { return m_bUseSystemCaption; }
+void NativeWindow_Wayland::SetUseSystemCaption(bool b) { m_bUseSystemCaption = b; }
+bool NativeWindow_Wayland::IsLayeredWindow() const { return false; }
+bool NativeWindow_Wayland::SetLayeredWindow(bool b, bool r) { (void)b; (void)r; return true; }
+void NativeWindow_Wayland::SetLayeredWindowAlpha(int32_t n) { (void)n; }
+uint8_t NativeWindow_Wayland::GetLayeredWindowAlpha() const { return 255; }
+void NativeWindow_Wayland::SetLayeredWindowOpacity(int32_t n) { (void)n; }
+uint8_t NativeWindow_Wayland::GetLayeredWindowOpacity() const { return 255; }
+void NativeWindow_Wayland::CenterWindow() { }
+void NativeWindow_Wayland::SetWindowAlwaysOnTop(bool b) { (void)b; }
+bool NativeWindow_Wayland::IsWindowAlwaysOnTop() const { return false; }
+bool NativeWindow_Wayland::SetWindowForeground() { return false; }
+bool NativeWindow_Wayland::IsWindowForeground() const { return m_bWaylandVisible; }
+bool NativeWindow_Wayland::SetWindowFocus() { return false; }
+bool NativeWindow_Wayland::KillWindowFocus() { return false; }
+bool NativeWindow_Wayland::IsWindowFocused() const { return false; }
+void NativeWindow_Wayland::CheckSetWindowFocus() { }
+LRESULT NativeWindow_Wayland::PostMsg(UINT u, WPARAM w, LPARAM l) {
     MessageLoop_Wayland::PostUserEvent(u, w, l);
     return 0;
 }
-void NativeWindow_SDL::PostQuitMsg(int32_t n) {
+void NativeWindow_Wayland::PostQuitMsg(int32_t n) {
     MessageLoop_Wayland::PostQuitEvent();
     (void)n;
 }
-bool NativeWindow_SDL::EnterFullscreen() {
+bool NativeWindow_Wayland::EnterFullscreen() {
     if (m_pXdgToplevel) {
         xdg_toplevel_set_fullscreen(m_pXdgToplevel, nullptr);
         m_bWaylandFullscreen = true;
@@ -444,7 +444,7 @@ bool NativeWindow_SDL::EnterFullscreen() {
     }
     return false;
 }
-bool NativeWindow_SDL::ExitFullscreen() {
+bool NativeWindow_Wayland::ExitFullscreen() {
     if (m_pXdgToplevel) {
         xdg_toplevel_unset_fullscreen(m_pXdgToplevel);
         m_bWaylandFullscreen = false;
@@ -452,44 +452,58 @@ bool NativeWindow_SDL::ExitFullscreen() {
     }
     return false;
 }
-bool NativeWindow_SDL::IsWindowMaximized() const { return m_bWaylandMaximized; }
-bool NativeWindow_SDL::IsWindowMinimized() const { return !m_bWaylandVisible; }
-bool NativeWindow_SDL::IsWindowFullscreen() const { return m_bWaylandFullscreen; }
-bool NativeWindow_SDL::EnableWindow(bool b) { (void)b; return true; }
-bool NativeWindow_SDL::IsWindowEnabled() const { return true; }
-void NativeWindow_SDL::ShowModalFake(NativeWindow_SDL* p) { (void)p; }
-void NativeWindow_SDL::OnCloseModalFake(NativeWindow_SDL* p) { (void)p; }
-bool NativeWindow_SDL::IsFakeModal() const { return false; }
-bool NativeWindow_SDL::IsDoModal() const { return false; }
-bool NativeWindow_SDL::SetWindowPos(const NativeWindow_SDL* p, InsertAfterFlag f, int32_t X, int32_t Y, int32_t cx, int32_t cy, uint32_t u) { (void)p;(void)f;(void)X;(void)Y;(void)cx;(void)cy;(void)u; return true; }
-bool NativeWindow_SDL::MoveWindow(int32_t X, int32_t Y, int32_t nW, int32_t nH, bool bR) { (void)X;(void)Y;(void)nW;(void)nH;(void)bR; return true; }
-bool NativeWindow_SDL::SetWindowIcon(const FilePath& f) { (void)f; return false; }
-bool NativeWindow_SDL::SetWindowIcon(const std::vector<uint8_t>& d, const DString& n) { (void)d;(void)n; return false; }
-void NativeWindow_SDL::SetText(const DString& s) {
+bool NativeWindow_Wayland::IsWindowMaximized() const { return m_bWaylandMaximized; }
+bool NativeWindow_Wayland::IsWindowMinimized() const { return !m_bWaylandVisible; }
+bool NativeWindow_Wayland::IsWindowFullscreen() const { return m_bWaylandFullscreen; }
+bool NativeWindow_Wayland::EnableWindow(bool b) { (void)b; return true; }
+bool NativeWindow_Wayland::IsWindowEnabled() const { return true; }
+void NativeWindow_Wayland::ShowModalFake(NativeWindow_Wayland* p) { (void)p; }
+void NativeWindow_Wayland::OnCloseModalFake(NativeWindow_Wayland* p) { (void)p; }
+bool NativeWindow_Wayland::IsFakeModal() const { return false; }
+bool NativeWindow_Wayland::IsDoModal() const { return false; }
+bool NativeWindow_Wayland::SetWindowPos(const NativeWindow_Wayland* p, InsertAfterFlag f, int32_t X, int32_t Y, int32_t cx, int32_t cy, uint32_t u) { (void)p;(void)f;(void)X;(void)Y;(void)cx;(void)cy;(void)u; return true; }
+bool NativeWindow_Wayland::MoveWindow(int32_t X, int32_t Y, int32_t nW, int32_t nH, bool bR) { (void)X;(void)Y;(void)nW;(void)nH;(void)bR; return true; }
+bool NativeWindow_Wayland::SetWindowIcon(const FilePath& f) { (void)f; return false; }
+bool NativeWindow_Wayland::SetWindowIcon(const std::vector<uint8_t>& d, const std::string& n) { (void)d;(void)n; return false; }
+void NativeWindow_Wayland::SetText(const std::string& s) {
     if (m_pXdgToplevel && !s.empty()) {
         std::string title = StringConvert::TToUTF8(s);
         xdg_toplevel_set_title(m_pXdgToplevel, title.c_str());
     }
 }
-DString NativeWindow_SDL::GetText() const { return DUI_T(""); }
-void NativeWindow_SDL::SetWindowMaximumSize(const UiSize& s) { (void)s; }
-const UiSize& NativeWindow_SDL::GetWindowMaximumSize() const { static UiSize s; return s; }
-void NativeWindow_SDL::SetWindowMinimumSize(const UiSize& s) { (void)s; }
-const UiSize& NativeWindow_SDL::GetWindowMinimumSize() const { static UiSize s; return s; }
-void NativeWindow_SDL::SetCapture() { }
-void NativeWindow_SDL::ReleaseCapture() { }
-bool NativeWindow_SDL::IsCaptured() const { return false; }
-bool NativeWindow_SDL::SetWindowRoundRectRgn(const UiRect& r, float rx, float ry, bool b) { (void)r;(void)rx;(void)ry;(void)b; return false; }
-bool NativeWindow_SDL::SetWindowRectRgn(const UiRect& r, bool b) { (void)r;(void)b; return false; }
-void NativeWindow_SDL::ClearWindowRgn(bool b) { (void)b; }
-void NativeWindow_SDL::KeepParentActive() { }
-void NativeWindow_SDL::ScreenToClient(UiPoint& p) const { (void)p; }
-void NativeWindow_SDL::ClientToScreen(UiPoint& p) const { (void)p; }
-void NativeWindow_SDL::GetCursorPos(UiPoint& p) const { (void)p; }
-const UiPoint& NativeWindow_SDL::GetLastMousePos() const { static UiPoint p; return p; }
-void NativeWindow_SDL::SetLastMousePos(const UiPoint& p) { (void)p; }
-INativeWindow* NativeWindow_SDL::WindowBaseFromPoint(const UiPoint& p, bool b) { (void)p;(void)b; return m_pOwner; }
-void NativeWindow_SDL::PaintWindow(bool bPaintAll) {
+std::string NativeWindow_Wayland::GetText() const { return ""; }
+void NativeWindow_Wayland::SetWindowMaximumSize(const UiSize& s) { (void)s; }
+const UiSize& NativeWindow_Wayland::GetWindowMaximumSize() const { static UiSize s; return s; }
+void NativeWindow_Wayland::SetWindowMinimumSize(const UiSize& s) { (void)s; }
+const UiSize& NativeWindow_Wayland::GetWindowMinimumSize() const { static UiSize s; return s; }
+void NativeWindow_Wayland::SetCapture() { }
+void NativeWindow_Wayland::ReleaseCapture() { }
+bool NativeWindow_Wayland::IsCaptured() const { return false; }
+bool NativeWindow_Wayland::SetWindowRoundRectRgn(const UiRect& r, float rx, float ry, bool b) { (void)r;(void)rx;(void)ry;(void)b; return false; }
+bool NativeWindow_Wayland::SetWindowRectRgn(const UiRect& r, bool b) { (void)r;(void)b; return false; }
+void NativeWindow_Wayland::ClearWindowRgn(bool b) { (void)b; }
+bool NativeWindow_Wayland::IsSystemShadowSupported() const {
+    // xdg-shell has no system-shadow request for borderless toplevels. Keep
+    // this false so an explicit system shadow request safely falls back to
+    // the framework-drawn shadow instead of removing the shadow entirely.
+    return false;
+}
+bool NativeWindow_Wayland::SetSystemShadowType(NativeWindowShadowType t) {
+    (void)t;
+    m_systemShadowType = NativeWindowShadowType::kShadowSystemDisabled;
+    return false;
+}
+NativeWindowShadowType NativeWindow_Wayland::GetSystemShadowType() const { return m_systemShadowType; }
+void NativeWindow_Wayland::RefreshSystemShadow() { }
+void NativeWindow_Wayland::ClearWindowRgnForSystemShadow() { }
+void NativeWindow_Wayland::KeepParentActive() { }
+void NativeWindow_Wayland::ScreenToClient(UiPoint& p) const { (void)p; }
+void NativeWindow_Wayland::ClientToScreen(UiPoint& p) const { (void)p; }
+void NativeWindow_Wayland::GetCursorPos(UiPoint& p) const { (void)p; }
+const UiPoint& NativeWindow_Wayland::GetLastMousePos() const { static UiPoint p; return p; }
+void NativeWindow_Wayland::SetLastMousePos(const UiPoint& p) { (void)p; }
+INativeWindow* NativeWindow_Wayland::WindowBaseFromPoint(const UiPoint& p, bool b) { (void)p;(void)b; return m_pOwner; }
+void NativeWindow_Wayland::PaintWindow(bool bPaintAll) {
     INativeWindow* pOwner = m_pOwner;
     if (pOwner == nullptr) return;
     std::weak_ptr<WeakFlag> ownerFlag = pOwner->GetWeakFlag();
@@ -499,6 +513,9 @@ void NativeWindow_SDL::PaintWindow(bool bPaintAll) {
     if (bPaintAll) paintedRect.Clear();
 
     bool bPaint = pOwner->OnNativePreparePaint();
+    // The shadow is part of the buffer, but it must not be part of the
+    // window's input region. Otherwise it blocks clicks on windows behind it.
+    UpdateWaylandInputRegion();
     if (bPaint && !ownerFlag.expired()) {
         IRender* pRender = pOwner->OnNativeGetRender();
         if (pRender != nullptr && !ownerFlag.expired()) {
@@ -511,56 +528,87 @@ void NativeWindow_SDL::PaintWindow(bool bPaintAll) {
         }
     }
 }
-LRESULT NativeWindow_SDL::CallDefaultWindowProc(UINT u, WPARAM w, LPARAM l) { (void)u;(void)w;(void)l; return 0; }
-bool NativeWindow_SDL::CalculateCenterWindowPos(SDL_Window* p, int32_t& x, int32_t& y) const { (void)p; x=0; y=0; return false; }
-bool NativeWindow_SDL::GetMonitorWorkRect(UiRect& m) const { return GetMonitorRect(m); }
-bool NativeWindow_SDL::GetMonitorWorkRect(const UiPoint& pt, UiRect& m) const { (void)pt; return GetMonitorRect(m); }
-bool NativeWindow_SDL::GetPrimaryMonitorWorkRect(UiRect& m) { m.Clear(); m.right=1920; m.bottom=1080; return true; }
-bool NativeWindow_SDL::GetWindowSizeInPixels(int32_t* w, int32_t* h) const { return GetWindowSize(w, h); }
-float NativeWindow_SDL::GetDisplayContentScale() const { return 1.0f; }
-float NativeWindow_SDL::GetWindowDisplayScale() const { return 1.0f; }
-bool NativeWindow_SDL::OnSDLWindowEvent(const SDL_Event& e) { (void)e; return false; }
-SDL_WindowID NativeWindow_SDL::GetWindowIdFromEvent(const SDL_Event& e) { (void)e; return 0; }
-NativeWindow_SDL* NativeWindow_SDL::GetWindowFromID(SDL_WindowID id) { (void)id; return nullptr; }
-uint32_t NativeWindow_SDL::GetModifiers(SDL_Keymod k) { (void)k; return 0; }
-uint32_t NativeWindow_SDL::GetHoverMsgId() { return 4; }
-uint64_t NativeWindow_SDL::GetX11WindowNumber() const { return 0; }
-size_t NativeWindow_SDL::GetX11DisplayPointer() const { return 0; }
-size_t NativeWindow_SDL::GetWaylandDisplayPointer() const { return (size_t)MessageLoop_Wayland::GetDisplay(); }
-void NativeWindow_SDL::SetEnableSnapLayoutMenu(bool b) { (void)b; }
-bool NativeWindow_SDL::IsEnableSnapLayoutMenu() const { return false; }
-void NativeWindow_SDL::SetEnableSysMenu(bool b) { (void)b; }
-bool NativeWindow_SDL::IsEnableSysMenu() const { return true; }
-int32_t NativeWindow_SDL::SetWindowHotKey(uint8_t k, uint8_t m) { (void)k;(void)m; return -1; }
-bool NativeWindow_SDL::GetWindowHotKey(uint8_t& k, uint8_t& m) const { (void)k;(void)m; return false; }
-bool NativeWindow_SDL::RegisterHotKey(uint8_t k, uint8_t m, int32_t id) { (void)k;(void)m;(void)id; return false; }
-bool NativeWindow_SDL::UnregisterHotKey(int32_t id) { (void)id; return false; }
-void NativeWindow_SDL::SetEnableDragDrop(bool b) { (void)b; }
-bool NativeWindow_SDL::IsEnableDragDrop() const { return false; }
-bool NativeWindow_SDL::NeedCenterWindowAfterCreated() const { return false; }
-void NativeWindow_SDL::SetImeOpenStatus(bool bOpen) { (void)bOpen; }
-void NativeWindow_SDL::SetTextInputArea(const UiRect* rect, int32_t nCursor) { (void)rect; (void)nCursor; }
-void NativeWindow_SDL::ClearNativeWindow() { Close(); }
-void NativeWindow_SDL::OnFinalMessage() { }
-void NativeWindow_SDL::InitNativeWindow() { }
-bool NativeWindow_SDL::CreateWindowAndRender(NativeWindow_SDL* p, const WindowCreateAttributes& a) { (void)p;(void)a; return true; }
-void NativeWindow_SDL::SyncCreateWindowAttributes(const WindowCreateAttributes& a, bool b) { (void)a;(void)b; }
-void NativeWindow_SDL::SetCreateWindowProperties(SDL_PropertiesID props, NativeWindow_SDL* p, const WindowCreateAttributes& a, bool gl) { (void)props;(void)p;(void)a;(void)gl; }
-int32_t NativeWindow_SDL::SDL_HitTest(SDL_Window* win, const SDL_Point* area, void* data) { (void)win;(void)area;(void)data; return 0; }
-void NativeWindow_SDL::CheckWindowSnap(SDL_Window* window) { (void)window; }
-void NativeWindow_SDL::OnDropBegin() { }
-void NativeWindow_SDL::OnDropPosition(const UiPoint& pt, bool& h) { (void)pt; h=false; }
-void NativeWindow_SDL::OnDropTexts(const std::vector<DString>& t, const UiPoint& pt, bool& h) { (void)t;(void)pt; h=false; }
-void NativeWindow_SDL::OnDropFiles(const DString& s, const std::vector<DString>& f, const UiPoint& pt, bool& h) { (void)s;(void)f;(void)pt; h=false; }
-void NativeWindow_SDL::OnDropLeave() { }
-void NativeWindow_SDL::GetRenderNameList(const DString& n, std::vector<DString>& l) const { (void)n; l.clear(); }
-void NativeWindow_SDL::QueryRenderProperties(const DString& n, bool& gl, bool& es, bool& t) const { (void)n; gl=false; es=false; t=false; }
-bool NativeWindow_SDL::IsRenderSupportTransparent(const DString& n) const { (void)n; return false; }
+
+void NativeWindow_Wayland::UpdateWaylandInputRegion() {
+    if (m_pWaylandSurface == nullptr) {
+        return;
+    }
+
+    wl_compositor* compositor = MessageLoop_Wayland::GetCompositor();
+    if (compositor == nullptr) {
+        return;
+    }
+
+    UiRect inputRect;
+    GetClientRect(inputRect);
+    if (m_pOwner != nullptr && !IsWindowMaximized() && !IsWindowFullscreen()) {
+        UiPadding shadow;
+        m_pOwner->OnNativeGetShadowCorner(shadow);
+        inputRect.Deflate(shadow);
+    }
+
+    wl_region* region = wl_compositor_create_region(compositor);
+    if (region == nullptr) {
+        return;
+    }
+    if (!inputRect.IsEmpty()) {
+        wl_region_add(region, inputRect.left, inputRect.top,
+                      inputRect.Width(), inputRect.Height());
+    }
+    wl_surface_set_input_region(m_pWaylandSurface, region);
+    wl_region_destroy(region);
+}
+LRESULT NativeWindow_Wayland::CallDefaultWindowProc(UINT u, WPARAM w, LPARAM l) { (void)u;(void)w;(void)l; return 0; }
+bool NativeWindow_Wayland::CalculateCenterWindowPos(Wayland_Window* p, int32_t& x, int32_t& y) const { (void)p; x=0; y=0; return false; }
+bool NativeWindow_Wayland::GetMonitorWorkRect(UiRect& m) const { return GetMonitorRect(m); }
+bool NativeWindow_Wayland::GetMonitorWorkRect(const UiPoint& pt, UiRect& m) const { (void)pt; return GetMonitorRect(m); }
+bool NativeWindow_Wayland::GetPrimaryMonitorWorkRect(UiRect& m) { m.Clear(); m.right=1920; m.bottom=1080; return true; }
+bool NativeWindow_Wayland::GetWindowSizeInPixels(int32_t* w, int32_t* h) const { return GetWindowSize(w, h); }
+float NativeWindow_Wayland::GetDisplayContentScale() const { return 1.0f; }
+float NativeWindow_Wayland::GetWindowDisplayScale() const { return 1.0f; }
+float NativeWindow_Wayland::GetWindowPixelDensity() const { return 1.0f; }
+bool NativeWindow_Wayland::OnWaylandWindowEvent(const Wayland_Event& e) { (void)e; return false; }
+Wayland_WindowID NativeWindow_Wayland::GetWindowIdFromEvent(const Wayland_Event& e) { (void)e; return 0; }
+NativeWindow_Wayland* NativeWindow_Wayland::GetWindowFromID(Wayland_WindowID id) { (void)id; return nullptr; }
+uint32_t NativeWindow_Wayland::GetModifiers(Wayland_Keymod k) { (void)k; return 0; }
+uint32_t NativeWindow_Wayland::GetHoverMsgId() { return 4; }
+uint64_t NativeWindow_Wayland::GetX11WindowNumber() const { return 0; }
+size_t NativeWindow_Wayland::GetX11DisplayPointer() const { return 0; }
+size_t NativeWindow_Wayland::GetWaylandDisplayPointer() const { return (size_t)MessageLoop_Wayland::GetDisplay(); }
+void NativeWindow_Wayland::SetEnableSnapLayoutMenu(bool b) { (void)b; }
+bool NativeWindow_Wayland::IsEnableSnapLayoutMenu() const { return false; }
+void NativeWindow_Wayland::SetEnableSysMenu(bool b) { (void)b; }
+bool NativeWindow_Wayland::IsEnableSysMenu() const { return true; }
+int32_t NativeWindow_Wayland::SetWindowHotKey(uint8_t k, uint8_t m) { (void)k;(void)m; return -1; }
+bool NativeWindow_Wayland::GetWindowHotKey(uint8_t& k, uint8_t& m) const { (void)k;(void)m; return false; }
+bool NativeWindow_Wayland::RegisterHotKey(uint8_t k, uint8_t m, int32_t id) { (void)k;(void)m;(void)id; return false; }
+bool NativeWindow_Wayland::UnregisterHotKey(int32_t id) { (void)id; return false; }
+void NativeWindow_Wayland::SetEnableDragDrop(bool b) { (void)b; }
+bool NativeWindow_Wayland::IsEnableDragDrop() const { return false; }
+bool NativeWindow_Wayland::NeedCenterWindowAfterCreated() const { return false; }
+void NativeWindow_Wayland::SetImeOpenStatus(bool bOpen) { (void)bOpen; }
+void NativeWindow_Wayland::SetTextInputArea(const UiRect* rect, int32_t nCursor) { (void)rect; (void)nCursor; }
+void NativeWindow_Wayland::ClearNativeWindow() { Close(); }
+void NativeWindow_Wayland::OnFinalMessage() { }
+void NativeWindow_Wayland::InitNativeWindow() { }
+bool NativeWindow_Wayland::CreateWindowAndRender(NativeWindow_Wayland* p, const WindowCreateAttributes& a) { (void)p;(void)a; return true; }
+void NativeWindow_Wayland::SyncCreateWindowAttributes(const WindowCreateAttributes& a, bool b) { (void)a;(void)b; }
+void NativeWindow_Wayland::SetCreateWindowProperties(Wayland_PropertiesID props, NativeWindow_Wayland* p, const WindowCreateAttributes& a, bool gl) { (void)props;(void)p;(void)a;(void)gl; }
+int32_t NativeWindow_Wayland::Wayland_HitTest(Wayland_Window* win, const Wayland_Point* area, void* data) { (void)win;(void)area;(void)data; return 0; }
+void NativeWindow_Wayland::CheckWindowSnap(Wayland_Window* window) { (void)window; }
+void NativeWindow_Wayland::OnDropBegin() { }
+void NativeWindow_Wayland::OnDropPosition(const UiPoint& pt, bool& h) { (void)pt; h=false; }
+void NativeWindow_Wayland::OnDropTexts(const std::vector<std::string>& t, const UiPoint& pt, bool& h) { (void)t;(void)pt; h=false; }
+void NativeWindow_Wayland::OnDropFiles(const std::string& s, const std::vector<std::string>& f, const UiPoint& pt, bool& h) { (void)s;(void)f;(void)pt; h=false; }
+void NativeWindow_Wayland::OnDropLeave() { }
+void NativeWindow_Wayland::GetRenderNameList(const std::string& n, std::vector<std::string>& l) const { (void)n; l.clear(); }
+void NativeWindow_Wayland::QueryRenderProperties(const std::string& n, bool& gl, bool& es, bool& t) const { (void)n; gl=false; es=false; t=false; }
+bool NativeWindow_Wayland::IsRenderSupportTransparent(const std::string& n) const { (void)n; return false; }
 float MonitorUtil::GetPrimaryMonitorDisplayScale() { return 1.0f; }
 float MonitorUtil::GetWindowDisplayScale(const WindowBase* b, float& d) { (void)b; d=1.0f; return 1.0f; }
 
 // ProcessWaylandMoveResize - start interactive move or resize
-void NativeWindow_SDL::ProcessWaylandMoveResize(const UiPoint& pt, uint32_t serial) {
+void NativeWindow_Wayland::ProcessWaylandMoveResize(const UiPoint& pt, uint32_t serial) {
     if (!m_pXdgToplevel || !m_pOwner) return;
     if (IsUseSystemCaption() || IsWindowFullscreen()) return;
 
@@ -569,6 +617,14 @@ void NativeWindow_SDL::ProcessWaylandMoveResize(const UiPoint& pt, uint32_t seri
 
     UiRect rcClient;
     GetClientRect(rcClient);
+
+    // Hit testing is done against the visible window, not the self-drawn
+    // shadow margin. This also keeps resize handles aligned with the frame.
+    if (!IsWindowMaximized()) {
+        UiPadding rcShadow;
+        m_pOwner->OnNativeGetShadowCorner(rcShadow);
+        rcClient.Deflate(rcShadow);
+    }
 
     // Check resize borders (only when not maximized)
     if (!IsWindowMaximized()) {
@@ -630,7 +686,7 @@ void NativeWindow_SDL::ProcessWaylandMoveResize(const UiPoint& pt, uint32_t seri
 }
 
 // GetUpdateRect - required by NativeWindowRenderPaint
-const UiRect& NativeWindow_SDL::GetUpdateRect() const {
+const UiRect& NativeWindow_Wayland::GetUpdateRect() const {
     return m_rcUpdateRect;
 }
 

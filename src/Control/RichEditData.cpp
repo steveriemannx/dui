@@ -158,15 +158,12 @@ void RichEditData::UnionRectF(UiRectF& rect, const UiRectF& r) const
 UiRect RichEditData::EstimateTextDisplayBounds(const UiRect& rcAvailable)
 {
     UiRect rect;
-    ASSERT(m_pRender != nullptr);
     if (m_pRender == nullptr) {
         return rect;
     }
-    ASSERT(m_pRenderFactory != nullptr);
     if (m_pRenderFactory == nullptr) {
         return rect;
     }
-    ASSERT(m_pRichText != nullptr);
     if (m_pRichText == nullptr) {
         return rect;
     }
@@ -349,7 +346,7 @@ void RichEditData::CheckCalcTextRects()
 
 void RichEditData::CalcTextRects()
 {
-    PerformanceStat statPerformance(DUI_T("RichEditData::CalcTextRects"));
+    PerformanceStat statPerformance("RichEditData::CalcTextRects");
     //Clear the cache data of all rows
     for (RichTextLineInfoPtr& pLineInfo : m_lineTextInfo) {
         ASSERT(pLineInfo != nullptr);
@@ -357,15 +354,12 @@ void RichEditData::CalcTextRects()
     }
     m_rcTextRect.Clear();
 
-    ASSERT(m_pRender != nullptr);
     if (m_pRender == nullptr) {
         return;
     }
-    ASSERT(m_pRenderFactory != nullptr);
     if (m_pRenderFactory == nullptr) {
         return;
     }
-    ASSERT(m_pRichText != nullptr);
     if (m_pRichText == nullptr) {
         return;
     }
@@ -411,7 +405,7 @@ void RichEditData::CalcTextRects()
         ASSERT(richTextDataList.size() == 1);
         if (richTextDataList.size() == 1) {
             RichTextData& richTextData = richTextDataList.front();
-            DStringW text = GetText();
+            std::wstring text = GetText();
             m_pRichText->ReplacePasswordChar(text);
             ASSERT(!text.empty());
             richTextData.m_textView = text;
@@ -443,18 +437,16 @@ void RichEditData::CalcTextRects(size_t nStartLine,
                                  const std::vector<size_t>& deletedLines,
                                  size_t nDeletedRows)
 {
-    PerformanceStat statPerformance(DUI_T("RichEditData::CalcTextRects2"));
+    PerformanceStat statPerformance("RichEditData::CalcTextRects2");
     ASSERT(!m_pRichText->IsTextPasswordMode());//In password mode, this function should not be used
     if (nStartLine != (size_t)-1) {
         ASSERT(!modifiedLines.empty() || !deletedLines.empty());
         if (!modifiedLines.empty()) {
-            ASSERT(modifiedLines[0] == nStartLine);
             if (modifiedLines[0] != nStartLine) {
                 nStartLine = (size_t)-1;
             }
         }
         else if (!deletedLines.empty()) {
-            ASSERT(deletedLines[0] == nStartLine);
             if (deletedLines[0] != nStartLine) {
                 nStartLine = (size_t)-1;
             }
@@ -490,15 +482,12 @@ void RichEditData::CalcTextRects(size_t nStartLine,
         }
     }
 
-    ASSERT(m_pRender != nullptr);
     if (m_pRender == nullptr) {
         return;
     }
-    ASSERT(m_pRenderFactory != nullptr);
     if (m_pRenderFactory == nullptr) {
         return;
     }
-    ASSERT(m_pRichText != nullptr);
     if (m_pRichText == nullptr) {
         return;
     }
@@ -670,22 +659,22 @@ void RichEditData::CalcTextRects(size_t nStartLine,
 #endif
 }
 
-bool RichEditData::SetText(const DStringW& text)
+bool RichEditData::SetText(const std::wstring& text)
 {
-    PerformanceStat statPerformance(DUI_T("RichEditData::SetText"));
+    PerformanceStat statPerformance("RichEditData::SetText");
     if (text.empty()) {
         Clear();
         return true;
     }
 
-    DStringW textLimit;
-    DStringW validText;
+    std::wstring textLimit;
+    std::wstring validText;
     std::vector<std::wstring_view> lineTextViewList;
     int32_t nLimitLength = m_pRichText->GetTextLimitLength();
     if ((nLimitLength > 0) && ((int32_t)text.size() > nLimitLength)){
         //Truncate the string
         textLimit = text;
-        if (text.find(L'\0') != DStringW::npos) {
+        if (text.find(L'\0') != std::wstring::npos) {
             //If it contains the L'\0' character, it needs to be truncated
             textLimit = text.c_str();
         }
@@ -694,7 +683,7 @@ bool RichEditData::SetText(const DStringW& text)
         SplitLines(textView, lineTextViewList);
     }
     else {
-        if (text.find(L'\0') != DStringW::npos) {
+        if (text.find(L'\0') != std::wstring::npos) {
             //If it contains the L'\0' character, it needs to be truncated
             validText = text.c_str();
             std::wstring_view textView = validText;
@@ -852,9 +841,9 @@ bool RichEditData::IsEmpty() const
     return bEmpty;
 }
 
-DStringW RichEditData::GetText() const
+std::wstring RichEditData::GetText() const
 {
-    DStringW text;
+    std::wstring text;
     text.reserve(GetTextLength() + 2);
     std::vector<std::wstring_view> textViewList;
     GetTextView(textViewList);
@@ -937,9 +926,9 @@ bool RichEditData::FindLineTextPos(int32_t nStartChar, int32_t nEndChar,
     return false;
 }
 
-bool RichEditData::ReplaceText(int32_t nStartChar, int32_t nEndChar, const DStringW& text, bool bCanUndo, bool bClearRedo)
+bool RichEditData::ReplaceText(int32_t nStartChar, int32_t nEndChar, const std::wstring& text, bool bCanUndo, bool bClearRedo)
 {
-    PerformanceStat statPerformance(DUI_T("RichEditData::ReplaceText"));
+    PerformanceStat statPerformance("RichEditData::ReplaceText");
     ASSERT((nStartChar >= 0) && (nEndChar >= 0) && (nEndChar >= nStartChar));
     if ((nStartChar < 0) || (nEndChar < 0) || (nStartChar > nEndChar)) {
         return false;
@@ -968,7 +957,7 @@ bool RichEditData::ReplaceText(int32_t nStartChar, int32_t nEndChar, const DStri
         return false;
     }
 
-    DStringW oldText; //The old text content
+    std::wstring oldText; //The old text content
 
     //Whether the undo operation needs to be recorded
     if (m_nUndoLimit == 0) {
@@ -1015,7 +1004,7 @@ bool RichEditData::ReplaceText(int32_t nStartChar, int32_t nEndChar, const DStri
     }
 
     //Concatenate the changed new text and split into lines again
-    DStringW newText;
+    std::wstring newText;
     newText.reserve(startLineTextView.size() + text.size() + endLineTextView.size() + 1);
     newText = startLineTextView;
     newText += text;
@@ -1082,10 +1071,10 @@ bool RichEditData::ReplaceText(int32_t nStartChar, int32_t nEndChar, const DStri
     return true;
 }
 
-DStringW RichEditData::GetTextRange(int32_t nStartChar, int32_t nEndChar) const
+std::wstring RichEditData::GetTextRange(int32_t nStartChar, int32_t nEndChar) const
 {
     if ((nStartChar < 0) || (nEndChar < 0) || (nStartChar >= nEndChar)) {
-        return DStringW();
+        return std::wstring();
     }
 
     constexpr const size_t nNotFound = (size_t)-1;
@@ -1094,14 +1083,14 @@ DStringW RichEditData::GetTextRange(int32_t nStartChar, int32_t nEndChar) const
     size_t nStartCharLineOffset = nNotFound;    //The offset of the start character in the start line
     size_t nEndCharLineOffset = nNotFound;      //The offset of the end character in the end line
     if (!FindLineTextPos(nStartChar, nEndChar, nStartLine, nEndLine, nStartCharLineOffset, nEndCharLineOffset)) {
-        return DStringW();
+        return std::wstring();
     }
 
-    DStringW selText; //The text content
+    std::wstring selText; //The text content
     if (nStartLine == nEndLine) {
         //In the same line
         const RichTextLineInfo& lineText = *m_lineTextInfo[nStartLine];
-        DStringW newText = lineText.m_lineText.c_str();
+        std::wstring newText = lineText.m_lineText.c_str();
         if (nEndCharLineOffset > nStartCharLineOffset) {
             //There is selected text
             size_t nCharCount = nEndCharLineOffset - nStartCharLineOffset;
@@ -1110,7 +1099,7 @@ DStringW RichEditData::GetTextRange(int32_t nStartChar, int32_t nEndChar) const
     }
     else if (nEndLine > nStartLine) {
         //In different lines
-        DStringW newText;
+        std::wstring newText;
         for (size_t nIndex = nStartLine; nIndex <= nEndLine; ++nIndex) {
             const RichTextLineInfo& lineText = *m_lineTextInfo[nIndex];
             newText = lineText.m_lineText.c_str();
@@ -1167,7 +1156,7 @@ void RichEditData::SetSingleLineMode(bool bSingleLineMode)
         SetCacheDirty(true);
 
         //Switch between single-line mode and multi-line mode
-        DStringW text = GetText();
+        std::wstring text = GetText();
         SetText(text);
     }
 }
@@ -1354,14 +1343,12 @@ void RichEditData::UpdateRowInfo(size_t nDrawStartLineIndex)
     float fLastRowHeight = 0.0f;   //The row height of this row
     float fLastBottomValue = 0.0f; //The bottom value of the previous row
     for (; nLineIndex < nLineCount; ++nLineIndex) {
-        ASSERT(lineTextInfoList[nLineIndex] != nullptr);
         if (lineTextInfoList[nLineIndex] == nullptr) {
             continue;
         }
         const size_t nLineRowCount = lineTextInfoList[nLineIndex]->m_rowInfo.size();
         ASSERT(nLineRowCount > 0);
         for (size_t nLineRowIndex = 0; nLineRowIndex < nLineRowCount; ++nLineRowIndex) {
-            ASSERT(lineTextInfoList[nLineIndex]->m_rowInfo[nLineRowIndex] != nullptr);
             if (lineTextInfoList[nLineIndex]->m_rowInfo[nLineRowIndex] == nullptr) {
                 continue;
             }
@@ -1846,10 +1833,10 @@ int32_t RichEditData::GetPrevValidCharIndex(int32_t nCharIndex)
     return nNewCharIndex;
 }
 
-bool RichEditData::IsSeperatorChar(DStringW::value_type ch) const
+bool RichEditData::IsSeperatorChar(std::wstring::value_type ch) const
 {
-    static const DStringW sep = L"`~!@#$%^&*()-=+\t[]{}|\\;:'\"\r\n,<.>/?·！￥…、，。《》？“”；：‘’（）【】";
-    return sep.find(ch) != DStringW::npos;
+    static const std::wstring sep = L"`~!@#$%^&*()-=+\t[]{}|\\;:'\"\r\n,<.>/?·！￥…、，。《》？“”；：‘’（）【】";
+    return sep.find(ch) != std::wstring::npos;
 }
 
 int32_t RichEditData::GetNextValidWordIndex(int32_t nCharIndex)
@@ -2477,7 +2464,7 @@ void RichEditData::EmptyUndoBuffer()
     ClearUndoList();
 }
 
-void RichEditData::AddToUndoList(int32_t nStartChar, const DStringW& newText, const DStringW& oldText)
+void RichEditData::AddToUndoList(int32_t nStartChar, const std::wstring& newText, const std::wstring& oldText)
 {
     ASSERT(nStartChar >= 0);
     if (nStartChar < 0) {
@@ -2595,12 +2582,12 @@ int32_t RichEditData::GetRowCount()
     return nRowIndex;
 }
 
-DStringW RichEditData::GetRowText(int32_t nRowIndex)
+std::wstring RichEditData::GetRowText(int32_t nRowIndex)
 {
     //Check and calculate the character positions
     CheckCalcTextRects();
 
-    DStringW rowText;
+    std::wstring rowText;
     bool bFound = false;
     int32_t nRows = 0; //Logical row number
     const size_t nLineCount = m_lineTextInfo.size();
@@ -2744,13 +2731,13 @@ int32_t RichEditData::RowFromChar(int32_t nCharIndex)
     return nRowIndex;
 }
 
-void RichEditData::TruncateLimitText(DStringW& text, int32_t nLimitLen) const
+void RichEditData::TruncateLimitText(std::wstring& text, int32_t nLimitLen) const
 {
     if (nLimitLen <= 0) {
         return;
     }
     if ((int32_t)text.size() > nLimitLen) {
-        DStringW::value_type ch = text.at(nLimitLen);
+        std::wstring::value_type ch = text.at(nLimitLen);
         text.resize((size_t)nLimitLen);
         if ((ch == L'\n') && (text.back() == L'\r')) {
             text.pop_back();
@@ -2760,7 +2747,7 @@ void RichEditData::TruncateLimitText(DStringW& text, int32_t nLimitLen) const
 
 bool RichEditData::FindRichText(bool bMatchCase, bool bMatchWholeWord, bool bFindDown,
                                 int32_t nFindStartChar, int32_t nFindEndChar,
-                                const DStringW& findText,
+                                const std::wstring& findText,
                                 int32_t& nFoundStartChar, int32_t& nFoundEndChar) const
 {
     if (findText.empty() || (nFindStartChar == nFindEndChar) || (nFindStartChar < 0) || (nFindEndChar < 0)){
@@ -2781,8 +2768,8 @@ bool RichEditData::FindRichText(bool bMatchCase, bool bMatchWholeWord, bool bFin
         nEndChar = nFindStartChar;
     }
 
-    DStringW text = GetTextRange(nStartChar, nEndChar);
-    DStringW findTextW = findText;
+    std::wstring text = GetTextRange(nStartChar, nEndChar);
+    std::wstring findTextW = findText;
     if (!bMatchCase) {
         text = StringUtil::MakeLowerString(text);
         findTextW = StringUtil::MakeLowerString(findTextW);
@@ -2791,7 +2778,7 @@ bool RichEditData::FindRichText(bool bMatchCase, bool bMatchWholeWord, bool bFin
     size_t nPos = bFindDown ? text.find(findTextW) : text.rfind(findTextW);
     if (!bMatchWholeWord) {
         //Not a whole word match, return after one search
-        bool bFound = (nPos != DStringW::npos) ? true : false;
+        bool bFound = (nPos != std::wstring::npos) ? true : false;
         if (bFound) {
             nFoundStartChar = nStartChar + (int32_t)nPos;
             nFoundEndChar = nFoundStartChar + (int32_t)findTextW.size();
@@ -2801,15 +2788,15 @@ bool RichEditData::FindRichText(bool bMatchCase, bool bMatchWholeWord, bool bFin
 
     //Whole word match
     bool bFound = false;
-    while (nPos != DStringW::npos) {
+    while (nPos != std::wstring::npos) {
         bFound = true;
         if (iswalnum(findTextW[0])) {
             if (nPos == 0) {
                 //The first character
                 int32_t nStartCharIndex = nStartChar + (int32_t)nPos;
                 if (nStartCharIndex > 0) {
-                    DStringW::value_type charBeforeStart = 0;
-                    DStringW temp = GetTextRange(nStartCharIndex - 1, nStartCharIndex);
+                    std::wstring::value_type charBeforeStart = 0;
+                    std::wstring temp = GetTextRange(nStartCharIndex - 1, nStartCharIndex);
                     ASSERT(temp.size() == 1);
                     if (temp.size() == 1) {
                         charBeforeStart = temp[0];
@@ -2831,8 +2818,8 @@ bool RichEditData::FindRichText(bool bMatchCase, bool bMatchWholeWord, bool bFin
                 //The last character
                 int32_t nEndCharIndex = nStartChar + (int32_t)nPos + (int32_t)findTextW.size();
                 if (nEndCharIndex < nTextLen) {
-                    DStringW::value_type charAfterEnd = 0;
-                    DStringW temp = GetTextRange(nEndCharIndex, nEndCharIndex + 1);
+                    std::wstring::value_type charAfterEnd = 0;
+                    std::wstring temp = GetTextRange(nEndCharIndex, nEndCharIndex + 1);
                     ASSERT(temp.size() == 1);
                     if (temp.size() == 1) {
                         charAfterEnd = temp[0];
@@ -2862,7 +2849,6 @@ bool RichEditData::FindRichText(bool bMatchCase, bool bMatchWholeWord, bool bFin
             }
             size_t nLastPos = nPos;
             nPos = bFindDown ? text.find(findTextW, nPos + 1) : text.rfind(findTextW, nPos - 1);
-            ASSERT(nLastPos != nPos);
             if (nLastPos == nPos) {
                 //Avoid an infinite loop
                 break;

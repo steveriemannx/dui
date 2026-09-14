@@ -26,8 +26,13 @@ void MainForm::OnInitWindow()
     BuildUI();
 
     if (m_layoutType == kLogin) {
-        // Apply the full content size once the generated root exists.
-        SetWindowSize(304, 696);
+        // Let the generated root determine its natural height. A fixed height
+        // leaves an empty transparent area below the login panel on X11.
+        if (ui::Box* root = GetRoot()) {
+            const ui::UiEstSize size = root->EstimateSize(ui::UiSize(999999, 999999));
+            SetWindowSize(size.cx.GetInt32(), size.cy.GetInt32());
+        }
+        CenterWindow();
         // Also show the WeChat window behind the login window.
         ShowCustomWindow(kWechat);
     }
@@ -43,9 +48,9 @@ void MainForm::BindEvents()
 void MainForm::ShowCustomWindow(LayoutType layoutType)
 {
     MainForm* window = new MainForm(layoutType);
-    ui::WindowCreateParam createParam(DUI_T("chat (Generated Code)"), true);
+    ui::WindowCreateParam createParam("chat (Generated Code)", true);
     if (layoutType == kWechat) {
-        //Match wechat.xml: size=DUI_T("1024,768").
+        //Match wechat.xml: size="1024,768".
         createParam.m_nWidth = 1024;
         createParam.m_nHeight = 768;
     }

@@ -32,34 +32,34 @@ public:
     virtual int32_t Drop(void* pDataObj, uint32_t grfKeyState, const UiPoint& pt, uint32_t* pdwEffect) = 0;
 };
 
-/** The drag and drop support interface of the control (SDL)
+/** The drag and drop support interface of the control (native backend)
 */
-class DUI_API ControlDropTarget_SDL : public virtual SupportWeakCallback
+class DUI_API ControlDropTarget_Wayland : public virtual SupportWeakCallback
 {
 public:
-    /** SDL_EVENT_DROP_BEGIN
+    /** Native_EVENT_DROP_BEGIN
     * @param [in] pt The client area coordinate
     * @return Returns 0 on success, non-zero on failure
     */
     virtual int32_t OnDropBegin(const UiPoint& pt) = 0;
 
-    /** SDL_EVENT_DROP_POSITION
+    /** Native_EVENT_DROP_POSITION
     *@param [in] pt The client area coordinate
     */
     virtual void OnDropPosition(const UiPoint& pt) = 0;
 
-    /** SDL_EVENT_DROP_COMPLETE + SDL_EVENT_DROP_TEXT, OnDropLeave will not be called afterwards
+    /** Native_EVENT_DROP_COMPLETE + Native_EVENT_DROP_TEXT, OnDropLeave will not be called afterwards
     *@param [in] textList The text content, each element in the container represents one line of text
     */
-    virtual void OnDropTexts(const std::vector<DString>& textList, const UiPoint& pt) = 0;
+    virtual void OnDropTexts(const std::vector<std::string>& textList, const UiPoint& pt) = 0;
 
-    /** SDL_EVENT_DROP_COMPLETE + SDL_EVENT_DROP_FILE, OnDropLeave will not be called afterwards
+    /** Native_EVENT_DROP_COMPLETE + Native_EVENT_DROP_FILE, OnDropLeave will not be called afterwards
     *@param [in] source The drag and drop source
     *@param [in] fileList The file paths, each element in the container represents one file
     */
-    virtual void OnDropFiles(const DString& source, const std::vector<DString>& fileList, const UiPoint& pt) = 0;
+    virtual void OnDropFiles(const std::string& source, const std::vector<std::string>& fileList, const UiPoint& pt) = 0;
 
-    /** SDL_EVENT_DROP_COMPLETE or other messages that cause a leave
+    /** Native_EVENT_DROP_COMPLETE or other messages that cause a leave
     */
     virtual void OnDropLeave() = 0;
 };

@@ -28,7 +28,7 @@ bool CefClientApp::OnAlreadyRunningAppRelaunch(CefRefPtr<CefCommandLine> command
     // Another Browser process has been started; the process singleton mode needs to be maintained
     OnAlreadyRunningAppRelaunchEvent pfnAlreadyRunningAppRelaunch = CefManager::GetInstance()->GetAlreadyRunningAppRelaunch();
     if (pfnAlreadyRunningAppRelaunch != nullptr) {
-        std::vector<DString> argumentList;
+        std::vector<std::string> argumentList;
         if (command_line != nullptr) {
             CefCommandLine::ArgumentList arguments;
             command_line->GetArguments(arguments);

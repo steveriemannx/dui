@@ -3,7 +3,7 @@
 #include "dui/Utils/FileUtil.h"
 #include "dui/Core/GlobalManager.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Utils/ApiWrapper_Windows.h"
 #include "dui/Utils/InlineHook_Windows.h"
@@ -59,6 +59,13 @@ static bool UiIsWindows11OrGreater()
 
 //Timer ID for delayed display of the system menu
 #define UI_SYS_MEMU_TIMER_ID 711
+
+
+/** Side of the diagonal (corner) resize grip, DPI scaled.
+* It is intentionally larger than the border thickness reported by the window's
+* "size_box" attribute, which is what the corner zones used to be limited to.
+*/
+static constexpr int32_t kResizeCornerGrip = 10;
 
 NativeWindow_Windows::NativeWindow_Windows(INativeWindow* pOwner):
     m_pOwner(pOwner),
@@ -170,7 +177,7 @@ bool NativeWindow_Windows::SetSystemShadowType(NativeWindowShadowType nativeShad
     //Win11: DWM rounded corners (a harmless no-op on older Windows)
     ::DwmSetWindowAttribute(m_hWnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPreference, sizeof(cornerPreference));
     //Force DWM to re-render the frame so the drop shadow appears immediately
-    //(matches the SDL backend's ModifyDwmStyle: the shadow state is cached by
+    //(matches the native backend backend's ModifyDwmStyle: the shadow state is cached by
     //DWM until the frame is invalidated)
     ::SetWindowPos(m_hWnd, nullptr, 0, 0, 0, 0,
                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
@@ -206,18 +213,16 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
                                      const WindowCreateParam& createParam,
                                      const WindowCreateAttributes& createAttributes)
 {
-    ASSERT(m_hWnd == nullptr);
     if (m_hWnd != nullptr) {
         return false;
     }
-    ASSERT(!createParam.m_className.empty());
     if (createParam.m_className.empty()) {
         return false;
     }
 
     //Register the window class
     HMODULE hModule = GetResModuleHandle();
-    DString className = StringConvert::TToLocal(createParam.m_className);
+    std::wstring className = StringConvert::TToWString(createParam.m_className);
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = createParam.m_dwClassStyle;
@@ -283,7 +288,7 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
     m_hParentWnd = pParentWindow != nullptr ? pParentWindow->GetHWND() : nullptr;
 
     //Window title
-    DString windowTitle = StringConvert::TToLocal(m_createParam.m_windowTitle);
+    std::wstring windowTitle = StringConvert::TToWString(m_createParam.m_windowTitle);
     HWND hWnd = ::CreateWindowEx(m_createParam.m_dwExStyle,
                                  className.c_str(),
                                  windowTitle.c_str(),
@@ -291,11 +296,9 @@ bool NativeWindow_Windows::CreateWnd(NativeWindow_Windows* pParentWindow,
                                  m_createParam.m_nX, m_createParam.m_nY, m_createParam.m_nWidth, m_createParam.m_nHeight,
                                  m_hParentWnd, nullptr, GetResModuleHandle(), this);
     ASSERT(::IsWindow(hWnd));
-    ASSERT(hWnd == m_hWnd);
     if (hWnd != m_hWnd) {
         m_hWnd = hWnd;
     }
-    ASSERT(m_hWnd != nullptr);
     if (m_hWnd == nullptr) {
         m_hParentWnd = nullptr;
         return false;
@@ -380,7 +383,6 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
                                       const WindowCreateAttributes& createAttributes,
                                       bool bCloseByEsc, bool bCloseByEnter)
 {
-    ASSERT(m_hWnd == nullptr);
     if (m_hWnd != nullptr) {
         return -1;
     }
@@ -462,7 +464,7 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
     //Handle IsDialogMessage to support text input in RichEdit controls
     {
         FARPROC targetFunc = nullptr;
-        HMODULE hModule = ::GetModuleHandle(DUI_T("User32.dll"));
+        HMODULE hModule = ::GetModuleHandleW(L"User32.dll");
         if (hModule != nullptr) {
 #if defined(UNICODE) || defined(_UNICODE)
             targetFunc = ::GetProcAddress(hModule, "IsDialogMessageW");
@@ -495,18 +497,16 @@ int32_t NativeWindow_Windows::DoModal(NativeWindow_Windows* pParentWindow,
 
 bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, int32_t nX, int32_t nY, int32_t nWidth, int32_t nHeight)
 {
-    ASSERT(m_hWnd == nullptr);
     if (m_hWnd != nullptr) {
         return false;
     }
-    ASSERT(pParentWindow != nullptr);
     if (pParentWindow == nullptr) {
         return false;
     }
 
     //Register the window class
     HMODULE hModule = GetResModuleHandle();
-    DString className = StringConvert::TToLocal(pParentWindow->m_createParam.m_className);
+    std::wstring className = StringConvert::TToWString(pParentWindow->m_createParam.m_className);
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = pParentWindow->m_createParam.m_dwClassStyle;
@@ -523,7 +523,6 @@ bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, i
 
     ATOM ret = ::RegisterClassEx(&wc);
     bool bRet = (ret != 0 || ::GetLastError() == ERROR_CLASS_ALREADY_EXISTS);
-    ASSERT(bRet);
     if (!bRet) {
         return false;
     }
@@ -557,7 +556,7 @@ bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, i
     m_bChildWindow = true;
 
     //Window title
-    DString windowTitle = StringConvert::TToLocal(m_createParam.m_windowTitle);
+    std::wstring windowTitle = StringConvert::TToWString(m_createParam.m_windowTitle);
     HWND hWnd = ::CreateWindowEx(m_createParam.m_dwExStyle,
                                  className.c_str(),
                                  windowTitle.c_str(),
@@ -565,11 +564,9 @@ bool NativeWindow_Windows::CreateChildWnd(NativeWindow_Windows* pParentWindow, i
                                  m_createParam.m_nX, m_createParam.m_nY, m_createParam.m_nWidth, m_createParam.m_nHeight,
                                  m_hParentWnd, nullptr, GetResModuleHandle(), this);
     ASSERT(::IsWindow(hWnd));
-    ASSERT(hWnd == m_hWnd);
     if (hWnd != m_hWnd) {
         m_hWnd = hWnd;
     }
-    ASSERT(m_hWnd != nullptr);
     if (m_hWnd == nullptr) {
         m_hParentWnd = nullptr;
         return false;
@@ -590,7 +587,6 @@ bool NativeWindow_Windows::IsChildWindow() const
 
 bool NativeWindow_Windows::SetParentWindow(NativeWindow_Windows* pParentWindow)
 {
-    ASSERT((pParentWindow != nullptr) && pParentWindow->IsWindow());
     if ((pParentWindow == nullptr) || !pParentWindow->IsWindow()) {
         return false;
     }
@@ -734,7 +730,7 @@ void NativeWindow_Windows::InitNativeWindow()
     RegisterTouchWindowWrapper(hWnd, 0);
 
     if (!m_createParam.m_windowTitle.empty()) {
-        DString windowTitle = StringConvert::TToLocal(m_createParam.m_windowTitle);
+        std::wstring windowTitle = StringConvert::TToWString(m_createParam.m_windowTitle);
         ::SetWindowText(hWnd, windowTitle.c_str());
     }
 
@@ -812,7 +808,6 @@ void NativeWindow_Windows::CloseWnd(int32_t nRet)
 {
     StopSysMenuTimer();
     m_bCloseing = true;
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return;
     }
@@ -823,7 +818,6 @@ void NativeWindow_Windows::Close()
 {
     StopSysMenuTimer();
     m_bCloseing = true;
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return;
     }
@@ -964,7 +958,6 @@ uint8_t NativeWindow_Windows::GetLayeredWindowOpacity() const
 
 void NativeWindow_Windows::SetUseSystemCaption(bool bUseSystemCaption)
 {
-    ASSERT(!IsChildWindow());
     if (IsChildWindow()) {
         return;
     }
@@ -1011,7 +1004,6 @@ bool NativeWindow_Windows::IsUseSystemCaption() const
 
 bool NativeWindow_Windows::ShowWindow(ShowWindowCommands nCmdShow)
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return false;
     }
@@ -1089,7 +1081,6 @@ bool NativeWindow_Windows::ShowWindow(ShowWindowCommands nCmdShow)
 void NativeWindow_Windows::ShowModalFake(NativeWindow_Windows* pParentWindow)
 {
     ASSERT(::IsWindow(m_hWnd));
-    ASSERT(!IsChildWindow());
     if (IsChildWindow()) {
         return;
     }
@@ -1132,7 +1123,6 @@ bool NativeWindow_Windows::IsDoModal() const
 
 void NativeWindow_Windows::CenterWindow()
 {
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return;
     }
@@ -1216,7 +1206,6 @@ bool NativeWindow_Windows::CalculateCenterWindowPos(HWND hCenterWindow, int32_t&
 
 void NativeWindow_Windows::SetWindowAlwaysOnTop(bool bOnTop)
 {
-    ASSERT(IsWindow() && !IsChildWindow());
     if (!IsWindow() || IsChildWindow()) {
         return;
     }
@@ -1230,7 +1219,6 @@ void NativeWindow_Windows::SetWindowAlwaysOnTop(bool bOnTop)
 
 bool NativeWindow_Windows::IsWindowAlwaysOnTop() const
 {
-    ASSERT(IsWindow());
     if (!IsWindow()) {
         return false;
     }
@@ -1305,7 +1293,6 @@ void NativeWindow_Windows::PostQuitMsg(int32_t nExitCode)
 
 bool NativeWindow_Windows::EnterFullscreen()
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return false;
     }
@@ -1340,7 +1327,6 @@ bool NativeWindow_Windows::EnterFullscreen()
 
 bool NativeWindow_Windows::ExitFullscreen()
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return false;
     }
@@ -1449,7 +1435,6 @@ bool NativeWindow_Windows::SetWindowIcon(const FilePath& iconFilePath)
 
 bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
 {
-    ASSERT(::IsWindow(m_hWnd));
     if (!::IsWindow(m_hWnd)) {
         return false;
     }
@@ -1460,8 +1445,11 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     //Large icon
     int32_t cxIcon = GetSystemMetricsForDpiWrapper(SM_CXICON, uDpi);
     int32_t cyIcon = GetSystemMetricsForDpiWrapper(SM_CYICON, uDpi);
-    HICON hIcon = (HICON)::LoadImage(nullptr, iconFilePath.NativePath().c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
-    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), DUI_T(".ico"))) {
+    // NativePath() is UTF-8 and LoadImageW wants UTF-16; converted at the boundary,
+    // like the other Win32 calls in this file.
+    const std::wstring iconFilePathW = StringConvert::UTF8ToWString(iconFilePath.NativePath());
+    HICON hIcon = (HICON)::LoadImageW(nullptr, iconFilePathW.c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
+    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), ".ico")) {
         ASSERT(hIcon != nullptr);
     }    
     if (hIcon != nullptr) {
@@ -1474,8 +1462,8 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     //Small icon
     cxIcon = GetSystemMetricsForDpiWrapper(SM_CXSMICON, uDpi);
     cyIcon = GetSystemMetricsForDpiWrapper(SM_CYSMICON, uDpi);
-    hIcon = (HICON)::LoadImage(nullptr, iconFilePath.NativePath().c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
-    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), DUI_T(".ico"))) {
+    hIcon = (HICON)::LoadImageW(nullptr, iconFilePathW.c_str(), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR | LR_LOADFROMFILE | LR_SHARED);
+    if (StringUtil::IsEqualNoCase(iconFilePath.GetFileExtension(), ".ico")) {
         ASSERT(hIcon != nullptr);
     }
     if (hIcon != nullptr) {
@@ -1487,7 +1475,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
     return true;
 }
 
-bool NativeWindow_Windows::SetWindowIcon(const std::vector<uint8_t>& iconFileData, const DString& iconFileName)
+bool NativeWindow_Windows::SetWindowIcon(const std::vector<uint8_t>& iconFileData, const std::string& iconFileName)
 {
     uint32_t uDpiScaleFactor = m_pOwner->OnNativeGetDpi().GetDisplayScaleFactor();
     HICON hSmallIcon = nullptr;
@@ -1500,30 +1488,27 @@ bool NativeWindow_Windows::SetWindowIcon(const std::vector<uint8_t>& iconFileDat
     return false;
 }
 
-void NativeWindow_Windows::SetText(const DString& strText)
+void NativeWindow_Windows::SetText(const std::string& strText)
 {
     ASSERT(::IsWindow(m_hWnd));
-#ifdef DUI_UNICODE
-    ::SetWindowText(m_hWnd, strText.c_str());
-#else
     //strText is UTF-8 encoded
-    DString localText = StringConvert::TToLocal(strText);
-    ::SetWindowText(m_hWnd, localText.c_str());
-#endif
+    const std::wstring wideText = StringConvert::TToWString(strText);
+    ::SetWindowText(m_hWnd, wideText.c_str());
 }
 
-DString NativeWindow_Windows::GetText() const
+std::string NativeWindow_Windows::GetText() const
 {
     ASSERT(::IsWindow(m_hWnd));
-    DString text;
+    std::string text;
     int nLen = ::GetWindowTextLength(m_hWnd);
     if (nLen > 0) {
-        std::vector<TCHAR> szText;
+        //With UNICODE defined, the unsuffixed GetWindowText is the -W variant, so
+        //the buffer holds UTF-16 and must be converted to the library's UTF-8.
+        std::vector<wchar_t> szText;
         szText.resize((size_t)nLen + 2);
-        memset(szText.data(), 0, szText.size() * sizeof(TCHAR));
+        memset(szText.data(), 0, szText.size() * sizeof(wchar_t));
         ::GetWindowText(m_hWnd, szText.data(), (int)szText.size() - 1);
-        DString localText = szText.data();
-        text = StringConvert::LocalToT(localText);
+        text = StringConvert::WStringToUTF8(std::wstring(szText.data()));
     }
     return text;
 }
@@ -1801,7 +1786,6 @@ bool NativeWindow_Windows::GetMonitorRect(HWND hWnd, UiRect& rcMonitor, UiRect& 
     else {
         hMonitor = ::MonitorFromWindow(hWnd, MONITOR_DEFAULTTOPRIMARY);
     }
-    ASSERT(hMonitor != nullptr);
     if (hMonitor == nullptr) {
         return false;
     }
@@ -1830,7 +1814,6 @@ bool NativeWindow_Windows::GetPrimaryMonitorWorkRect(UiRect& rcWork)
 {
     rcWork.Clear();
     HMONITOR hMonitor = ::MonitorFromPoint({ INT32_MIN, INT32_MIN }, MONITOR_DEFAULTTOPRIMARY);
-    ASSERT(hMonitor != nullptr);
     if (hMonitor == nullptr) {
         return false;
     }
@@ -1851,7 +1834,6 @@ bool NativeWindow_Windows::GetMonitorWorkRect(const UiPoint& pt, UiRect& rcWork)
 {
     rcWork.Clear();
     HMONITOR hMonitor = ::MonitorFromPoint({ pt.x, pt.y }, MONITOR_DEFAULTTONEAREST);
-    ASSERT(hMonitor != nullptr);
     if (hMonitor == nullptr) {
         return false;
     }
@@ -2028,8 +2010,8 @@ bool NativeWindow_Windows::UnregisterHotKey(int32_t id)
 
 /** The property name of the window handle
 */
-static const DStringW::value_type* sPropName  = L"DuiWindow";     // Property name (for pointer validation)
-static const DStringW::value_type* sPropName2 = L"DuiWindow2";    // Property name (process ID)
+static const std::wstring::value_type* sPropName  = L"DuiWindow";     // Property name (for pointer validation)
+static const std::wstring::value_type* sPropName2 = L"DuiWindow2";    // Property name (process ID)
 
 LRESULT CALLBACK NativeWindow_Windows::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -2416,9 +2398,38 @@ LRESULT NativeWindow_Windows::OnNcHitTestMsg(UINT uMsg, WPARAM /*wParam*/, LPARA
     m_pOwner->OnNativeGetShadowCorner(rcCorner);
     rcClient.Deflate(rcCorner);
 
+
+
     if (!IsWindowMaximized()) {
         //Not maximized state
         UiRect rcSizeBox = m_pOwner->OnNativeGetSizeBox();
+        //The diagonal corners are checked first, and are deliberately wider than the
+        //border bands: with the usual 4px size box the diagonal zone is only 4x4 px,
+        //so anything but a pixel-exact hit on the corner reports a horizontal or
+        //vertical resize (the cursor flips to the "left-right" arrow a few pixels
+        //away from the corner).
+        const int32_t nCornerGrip = m_pOwner->OnNativeGetDpi().GetScaleInt(kResizeCornerGrip);
+        const int32_t nCornerLeft = std::max(rcSizeBox.left, nCornerGrip);
+        const int32_t nCornerRight = std::max(rcSizeBox.right, nCornerGrip);
+        const int32_t nCornerTop = std::max(rcSizeBox.top, nCornerGrip);
+        const int32_t nCornerBottom = std::max(rcSizeBox.bottom, nCornerGrip);
+        if ((pt.x >= rcClient.left) && (pt.x < (rcClient.left + nCornerLeft))) {
+            if ((pt.y >= rcClient.top) && (pt.y < (rcClient.top + nCornerTop))) {
+                return HTTOPLEFT;//In the top-left corner of the window border
+            }
+            if ((pt.y <= rcClient.bottom) && (pt.y > (rcClient.bottom - nCornerBottom))) {
+                return HTBOTTOMLEFT;//In the bottom-left corner of the window border
+            }
+        }
+        if ((pt.x <= rcClient.right) && (pt.x > (rcClient.right - nCornerRight))) {
+            if ((pt.y >= rcClient.top) && (pt.y < (rcClient.top + nCornerTop))) {
+                return HTTOPRIGHT;//In the top-right corner of the window border
+            }
+            if ((pt.y <= rcClient.bottom) && (pt.y > (rcClient.bottom - nCornerBottom))) {
+                return HTBOTTOMRIGHT;//In the bottom-right corner of the window border
+            }
+        }
+
         if (pt.y < rcClient.top + rcSizeBox.top) {
             if (pt.y >= rcClient.top) {
                 if (pt.x < (rcClient.left + rcSizeBox.left) && pt.x >= rcClient.left) {
@@ -3332,7 +3343,6 @@ void NativeWindow_Windows::SetImeOpenStatus(bool bOpen)
 
 void NativeWindow_Windows::EnableIME(HWND hwnd, bool bEnable)
 {
-    ASSERT(::IsWindow(hwnd));
     if (!::IsWindow(hwnd)) {
         return;
     }

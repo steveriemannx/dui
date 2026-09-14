@@ -6,7 +6,7 @@
 
 /** String identifying the "Computer" virtual node
 */
-#define TREE_NODE_MYCOMPUTER DUI_T("MyComputer")
+#define TREE_NODE_MYCOMPUTER "MyComputer"
 
 namespace ui
 {
@@ -53,22 +53,22 @@ void DirectoryTree::DeleteFolderStatus(FolderStatus* pFolderStatus)
     }
 }
 
-DString DirectoryTree::GetType() const { return DUI_CTR_DIRECTORY_TREE; }
+std::string DirectoryTree::GetType() const { return DUI_CTR_DIRECTORY_TREE; }
 
-void DirectoryTree::SetAttribute(const DString& strName, const DString& strValue)
+void DirectoryTree::SetAttribute(const std::string& strName, const std::string& strValue)
 {
     //Supported attribute list: attributes implemented by the base class are forwarded directly
-    if (strName == DUI_T("small_icon_size")) {
+    if (strName == "small_icon_size") {
         SetSmallIconSize(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("large_icon_size")) {
+    else if (strName == "large_icon_size") {
         SetLargeIconSize(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("show_hiden_files")) {
-        SetShowHidenFiles(strValue == DUI_T("true"));
+    else if (strName == "show_hiden_files") {
+        SetShowHidenFiles(strValue == "true");
     }
-    else if (strName == DUI_T("show_system_files")) {
-        SetShowSystemFiles(strValue == DUI_T("true"));
+    else if (strName == "show_system_files") {
+        SetShowSystemFiles(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -174,10 +174,10 @@ void DirectoryTree::AttachShowMyComputerContents(ShowMyComputerContentsEvent cal
     }
 }
 
-TreeNode* DirectoryTree::ShowVirtualDirectoryNode(VirtualDirectoryType type, const DString& displayName, bool bDisplayNameIsID)
+TreeNode* DirectoryTree::ShowVirtualDirectoryNode(VirtualDirectoryType type, const std::string& displayName, bool bDisplayNameIsID)
 {
     FilePath filePath;
-    DString folderName;
+    std::string folderName;
     uint32_t nIconID = 0;
     if (!m_impl->GetVirtualDirectoryInfo(type, filePath, folderName, nIconID)) {
         return nullptr;
@@ -191,7 +191,7 @@ TreeNode* DirectoryTree::ShowVirtualDirectoryNode(VirtualDirectoryType type, con
     return InsertTreeNode(nullptr, folderName, bDisplayNameIsID, filePath, true, false, nIconID, false);
 }
 
-TreeNode* DirectoryTree::ShowAllDiskNodes(const DString& computerName, const DString& fileSystemName)
+TreeNode* DirectoryTree::ShowAllDiskNodes(const std::string& computerName, const std::string& fileSystemName)
 {
     //Basic structure:
     //  -Computer
@@ -211,9 +211,9 @@ TreeNode* DirectoryTree::ShowAllDiskNodes(const DString& computerName, const DSt
         if (pathInfo.m_filePath.IsEmpty()) {
             continue;
         }
-        DString displayName = pathInfo.m_displayName;
+        std::string displayName = pathInfo.m_displayName;
 #ifndef DUI_BUILD_FOR_WIN
-        if (bFirstNode && (displayName == DUI_T("/")) && !fileSystemName.empty()) {
+        if (bFirstNode && (displayName == "/") && !fileSystemName.empty()) {
             //Replace with the file system
             bFirstNode = false;
             displayName = fileSystemName;
@@ -229,7 +229,7 @@ TreeNode* DirectoryTree::ShowAllDiskNodes(const DString& computerName, const DSt
     return pFirstNode;
 }
 
-bool DirectoryTree::InsertLineBeforeNode(TreeNode* pNode, const DString& lineClassName)
+bool DirectoryTree::InsertLineBeforeNode(TreeNode* pNode, const std::string& lineClassName)
 {
     bool bRet = false;
     if (pNode != nullptr) {
@@ -238,7 +238,7 @@ bool DirectoryTree::InsertLineBeforeNode(TreeNode* pNode, const DString& lineCla
             pLineControl->SetClass(lineClassName);
         }
         else {
-            pLineControl->SetClass(DUI_T("splitline_hor_level1"));
+            pLineControl->SetClass("splitline_hor_level1");
             pLineControl->SetMargin(UiMargin(12, 8, 12, 8), true);
         }
         bRet = InsertControlBeforeNode(pNode, pLineControl);
@@ -247,7 +247,7 @@ bool DirectoryTree::InsertLineBeforeNode(TreeNode* pNode, const DString& lineCla
 }
 
 TreeNode* DirectoryTree::InsertTreeNode(TreeNode* pParentTreeNode,
-                                        const DString& displayName,
+                                        const std::string& displayName,
                                         bool bDisplayNameIsID,
                                         const FilePath& path,
                                         bool isFolder,
@@ -256,7 +256,7 @@ TreeNode* DirectoryTree::InsertTreeNode(TreeNode* pParentTreeNode,
                                         bool bIconShared)
 {
     TreeNode* node = new TreeNode(GetWindow());
-    node->SetClass(DUI_T("tree_node"));//defined in "global.xml"
+    node->SetClass("tree_node");//defined in "global.xml"
     if (bDisplayNameIsID) {
         node->SetTextId(displayName);
     }
@@ -484,7 +484,6 @@ bool DirectoryTree::OnShowSubFoldersEx(TreeNode* pTreeNode, const std::vector<Fi
     if (!Box::IsValidItemIndex(itemIndex)) {
         return false;
     }
-    ASSERT(filePathList.size() == folderListArray.size());
     if (filePathList.size() != folderListArray.size()) {
         return false;
     }
@@ -514,7 +513,6 @@ bool DirectoryTree::OnShowSubFoldersEx(TreeNode* pTreeNode, const std::vector<Fi
             }
         }
         if (!bLastNode) {
-            ASSERT(pNextParentTreeNode != nullptr);
             if (pNextParentTreeNode == nullptr) {
                 break;
             }
@@ -665,7 +663,6 @@ bool DirectoryTree::SelectSubPath(TreeNode* pTreeNode, FilePath subPath, StdClos
     }
     //Check whether it is in the directory
     FolderStatus* pFolderStatus = GetFolderData(pTreeNode);
-    ASSERT(pFolderStatus != nullptr);
     if (pFolderStatus == nullptr) {
         return false;
     }
@@ -793,13 +790,11 @@ bool DirectoryTree::SelectPath(FilePath filePath, StdClosure finishCallback)
 
 bool DirectoryTree::OnSelectSubPath(TreeNode* pTreeNode, std::vector<FilePath> filePathList, StdClosure finishCallback)
 {
-    ASSERT(pTreeNode != nullptr);
     if (pTreeNode == nullptr) {
         return false;
     }
     //Remove redundant directories (filter out paths that are not subdirectories of the tree node)
     FolderStatus* pFolder = GetFolderData(pTreeNode);
-    ASSERT(pFolder != nullptr);
     if (pFolder == nullptr) {
         return false;
     }
@@ -827,7 +822,6 @@ bool DirectoryTree::OnSelectSubPath(TreeNode* pTreeNode, std::vector<FilePath> f
             }
         }
     }
-    ASSERT(!filePathList.empty());
     if (filePathList.empty()) {
         return false;
     }
@@ -1065,7 +1059,7 @@ void DirectoryTree::RefreshPathInfo(std::vector<std::shared_ptr<RefreshNodeData>
             std::vector<DirectoryTree::PathInfo> pathInfoList;
             m_impl->GetRootPathInfoList(false, pathInfoList);
 
-            std::vector<DString> oldPathList;
+            std::vector<std::string> oldPathList;
             std::vector<TreeNode*> childNodes;
             pNodeData->m_pTreeNode->GetChildNodes(childNodes);
             for (TreeNode* pChildNode : childNodes) {
@@ -1078,7 +1072,7 @@ void DirectoryTree::RefreshPathInfo(std::vector<std::shared_ptr<RefreshNodeData>
             auto iter = pathInfoList.begin();
             while (iter != pathInfoList.end()) {
                 bool bFound = false;
-                for (const DString& oldPath : oldPathList) {
+                for (const std::string& oldPath : oldPathList) {
                     FilePath checkPath = iter->m_filePath;
                     checkPath.NormalizeDirectoryPath();
                     if (IsSamePath(oldPath.c_str(), checkPath.ToString().c_str())) {
@@ -1116,9 +1110,9 @@ void DirectoryTree::RefreshPathInfo(std::vector<std::shared_ptr<RefreshNodeData>
         std::vector<DirectoryTree::PathInfo> folderList;
         m_impl->GetFolderContents(pNodeData->m_dirPath, pNodeData->m_weakFlag, false, folderList, nullptr);
         if (!folderList.empty()) {
-            std::set<DString> dirSet;
+            std::set<std::string> dirSet;
             for (const FilePath& dirPath : pNodeData->m_childPaths) {
-                DString dirPathString = dirPath.ToString();
+                std::string dirPathString = dirPath.ToString();
 #if !defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_FREEBSD)
                 dirPathString = StringUtil::MakeLowerString(dirPathString);
 #endif
@@ -1132,7 +1126,7 @@ void DirectoryTree::RefreshPathInfo(std::vector<std::shared_ptr<RefreshNodeData>
             }
 
             for (const DirectoryTree::PathInfo& pathInfo : folderList) {
-                DString filePath = pathInfo.m_filePath.ToString();
+                std::string filePath = pathInfo.m_filePath.ToString();
 #if !defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_FREEBSD)
                 filePath = StringUtil::MakeLowerString(filePath);
 #endif

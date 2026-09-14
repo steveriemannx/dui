@@ -20,11 +20,9 @@ IRender* BitmapHelper::CreateRenderObject(int srcRenderWidth, int srcRenderHeigh
         pRender = pRenderFactory->CreateRender(nullptr);
         bitmap.reset(pRenderFactory->CreateBitmap());
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return nullptr;
     }
-    ASSERT(bitmap != nullptr);
     if (bitmap == nullptr) {
         delete pRender;
         return nullptr;
@@ -71,7 +69,6 @@ IRender* BitmapHelper::CreateRenderObject(int srcRenderWidth, int srcRenderHeigh
 
 IRender* BitmapHelper::CreateRenderObject(IBitmap* pBitmap)
 {
-    ASSERT(pBitmap != nullptr);
     if (pBitmap == nullptr) {
         return nullptr;
     }
@@ -81,7 +78,6 @@ IRender* BitmapHelper::CreateRenderObject(IBitmap* pBitmap)
     if (pRenderFactory != nullptr) {
         pRender = pRenderFactory->CreateRender(nullptr);
     }
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return nullptr;
     }

@@ -15,75 +15,75 @@ Item::Item(ui::Window* pWindow):
     //Build the subtree bottom-up, matching how item.xml is loaded: a container is
     //attached only after its children are populated, and the item root's own
     //class/height attributes are applied last.
-    auto* pRow = ui::Create<ui::HBox>(pWindow, {{DUI_T("mouse_enabled"), DUI_T("false")}, {DUI_T("padding"), DUI_T("10,5,10,5")}});
+    auto* pRow = ui::Create<ui::HBox>(pWindow, {{"mouse_enabled", "false"}, {"padding", "10,5,10,5"}});
 
     // Build the child controls, but keep the member pointers null until
     // InitSubControls() finds them, exactly like the item.xml-loaded Item:
     // this is what triggers the one-time icon/progress/delete binding setup.
     ui::Control* pImageControl = new ui::Control(pWindow);
-    pImageControl->SetName(DUI_T("control_img"));
-    pImageControl->SetAttribute(DUI_T("width"), DUI_T("auto"));
-    pImageControl->SetAttribute(DUI_T("height"), DUI_T("auto"));
-    pImageControl->SetAttribute(DUI_T("margin"), DUI_T("0,0,10,0"));
-    pImageControl->SetAttribute(DUI_T("mouse_enabled"), DUI_T("false"));
+    pImageControl->SetName("control_img");
+    pImageControl->SetAttribute("width", "auto");
+    pImageControl->SetAttribute("height", "auto");
+    pImageControl->SetAttribute("margin", "0,0,10,0");
+    pImageControl->SetAttribute("mouse_enabled", "false");
     pRow->AddItem(pImageControl);
 
     ui::VBox* pRight = new ui::VBox(pWindow);
-    pRight->SetAttribute(DUI_T("margin"), DUI_T("0,3,0,5"));
-    pRight->SetAttribute(DUI_T("mouse_enabled"), DUI_T("false"));
+    pRight->SetAttribute("margin", "0,3,0,5");
+    pRight->SetAttribute("mouse_enabled", "false");
 
     ui::HBox* pTitleRow = new ui::HBox(pWindow);
-    pTitleRow->SetAttribute(DUI_T("height"), DUI_T("auto"));
-    pTitleRow->SetAttribute(DUI_T("mouse_enabled"), DUI_T("false"));
+    pTitleRow->SetAttribute("height", "auto");
+    pTitleRow->SetAttribute("mouse_enabled", "false");
 
     ui::Label* pTitleLabel = new ui::Label(pWindow);
-    pTitleLabel->SetName(DUI_T("label_title"));
-    pTitleLabel->SetAttribute(DUI_T("width"), DUI_T("stretch"));
-    pTitleLabel->SetAttribute(DUI_T("mouse_enabled"), DUI_T("false"));
+    pTitleLabel->SetName("label_title");
+    pTitleLabel->SetAttribute("width", "stretch");
+    pTitleLabel->SetAttribute("mouse_enabled", "false");
     pTitleRow->AddItem(pTitleLabel);
 
     ui::Button* pDelBtn = new ui::Button(pWindow);
-    pDelBtn->SetClass(DUI_T("btn_recycle"));
-    pDelBtn->SetName(DUI_T("btn_del"));
-    pDelBtn->SetAttribute(DUI_T("width"), DUI_T("auto"));
-    pDelBtn->SetAttribute(DUI_T("height"), DUI_T("auto"));
-    pDelBtn->SetToolTipText(DUI_T("Delete"));
+    pDelBtn->SetClass("btn_recycle");
+    pDelBtn->SetName("btn_del");
+    pDelBtn->SetAttribute("width", "auto");
+    pDelBtn->SetAttribute("height", "auto");
+    pDelBtn->SetToolTipText("Delete");
     pTitleRow->AddItem(pDelBtn);
 
     pRight->AddItem(pTitleRow);
 
     ui::Control* pStretch = new ui::Control(pWindow);
-    pStretch->SetAttribute(DUI_T("height"), DUI_T("stretch"));
-    pStretch->SetAttribute(DUI_T("mouse_enabled"), DUI_T("false"));
+    pStretch->SetAttribute("height", "stretch");
+    pStretch->SetAttribute("mouse_enabled", "false");
     pRight->AddItem(pStretch);
 
     ui::Progress* pProgressControl = new ui::Progress(pWindow);
-    pProgressControl->SetClass(DUI_T("progress_horizontal_blue"));
-    pProgressControl->SetName(DUI_T("progress"));
-    pProgressControl->SetAttribute(DUI_T("value"), DUI_T("30"));
-    pProgressControl->SetAttribute(DUI_T("mouse_enabled"), DUI_T("false"));
+    pProgressControl->SetClass("progress_horizontal_blue");
+    pProgressControl->SetName("progress");
+    pProgressControl->SetAttribute("value", "30");
+    pProgressControl->SetAttribute("mouse_enabled", "false");
     pRight->AddItem(pProgressControl);
 
     // Attach the completed right column and row, then apply the root item style.
     pRow->AddItem(pRight);
     AddItem(pRow);
 
-    SetClass(DUI_T("listitem"));
-    SetAttribute(DUI_T("height"), DUI_T("auto"));
+    SetClass("listitem");
+    SetAttribute("height", "auto");
 }
 
 
 Item::~Item()
 = default;
 
-void Item::InitSubControls(const DString& img, const DString& title, size_t nDataIndex)
+void Item::InitSubControls(const std::string& img, const std::string& title, size_t nDataIndex)
 {
     // Find the controls under Item
     if (m_pImageControl == nullptr) {
-        m_pImageControl = dynamic_cast<ui::Control*>(FindSubControl(DUI_T("control_img")));
-        m_pTitleLabel = dynamic_cast<ui::Label*>(FindSubControl(DUI_T("label_title")));
-        m_pProgressControl = dynamic_cast<ui::Progress*>(FindSubControl(DUI_T("progress")));
-        m_pDelBtn = dynamic_cast<ui::Button*>(FindSubControl(DUI_T("btn_del")));
+        m_pImageControl = dynamic_cast<ui::Control*>(FindSubControl("control_img"));
+        m_pTitleLabel = dynamic_cast<ui::Label*>(FindSubControl("label_title"));
+        m_pProgressControl = dynamic_cast<ui::Progress*>(FindSubControl("progress"));
+        m_pDelBtn = dynamic_cast<ui::Button*>(FindSubControl("btn_del"));
         // Simulate the progress bar value
         t_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1000;
         m_pProgressControl->SetValue((double)(t_time % 100));
@@ -92,7 +92,7 @@ void Item::InitSubControls(const DString& img, const DString& title, size_t nDat
         // Bind the delete-task handler
         m_pDelBtn->AttachClick(UiBind(&Item::OnRemove, this, std::placeholders::_1));
     }
-    m_pTitleLabel->SetText(ui::StringUtil::Printf(DUI_T("%s %d%%"), title.c_str(), t_time % 100));
+    m_pTitleLabel->SetText(ui::StringUtil::Printf("%s %d%%", title.c_str(), t_time % 100));
     m_nDataIndex = nDataIndex;
 }
 

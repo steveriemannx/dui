@@ -15,8 +15,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path of the window to be drawn
      * The GetSkinFile interface sets the xml description file of the window to be drawn
      */
-    virtual DString GetSkinFolder() override { return DUI_T("controls"); }
-    virtual DString GetSkinFile() override { return DUI_T(""); }
+    virtual std::string GetSkinFolder() override { return "controls"; }
+    virtual std::string GetSkinFile() override { return ""; }
 
     /** Called after the window is created, for subclasses to do some initialization work
      */
@@ -48,7 +48,7 @@ private:
     /**
      * Interface used to update the UI content after the worker thread finishes reading the xml
      */
-    void OnResourceFileLoaded(const DString& xml);
+    void OnResourceFileLoaded(const std::string& xml);
 
     /**
      * Interface for dynamically updating the progress bar

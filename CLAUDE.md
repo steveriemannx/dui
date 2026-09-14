@@ -10,12 +10,14 @@ dui is a cross-platform C++ UI framework based on the Skia rendering engine, usi
 - **Supported platforms**: Windows (7/10/11+), Linux, macOS (12+), FreeBSD
 - **Rendering engine**: Skia (CPU/OpenGL)
 - **Build tools**: CMake + Visual Studio / GCC / Clang
-- **C++ standard**: C++17+
+- **C++ standard**: C++20 (`CMAKE_CXX_STANDARD 20`, and `CMAKE_CXX_EXTENSIONS OFF` so it
+  is strict `-std=c++20`, not `gnu++20`; pass `-DCMAKE_CXX_EXTENSIONS=ON` to get the GNU
+  dialect back)
 
 ## Project Structure
 ```
 dui/
-├── dui/                 # core library source code
+├── include/dui/         # public headers (one directory per module)
 │   ├── Core/            # window, control base classes, events, managers
 │   ├── Control/         # UI controls (Button, Label, RichEdit, TreeView...)
 │   ├── Box/             # container controls (VBox, HBox, ListBox, TabBox...)
@@ -25,21 +27,27 @@ dui/
 │   ├── Render/          # rendering interfaces
 │   ├── RenderSkia/      # Skia rendering implementation
 │   ├── Utils/           # utility classes (WindowImplBase, FilePath...)
+│   ├── Binding/         # optional data-binding module (DUI_ENABLE_MVVM; see docs/Binding.md)
 │   ├── CEFControl/      # CEF browser integration
 │   └── WebView2/        # WebView2 control
-├── examples/            # 21 example programs
+├── src/                 # implementation only (.cpp/.mm); module layout mirrors include/dui/
+├── examples/            # example programs (XML, _gen and _code variants of each)
 ├── docs/                # full documentation
-├── bin/                 # build output (example programs; resources synced from resources/)
-├── resources/           # theme resources (XML layouts, images, fonts; synced into bin/ at configure time)
-├── scripts/             # build scripts and solutions
-└── cmake/               # CMake configuration
+├── resources/           # theme resources (XML layouts, images, fonts)
+├── tests/               # test suite (plain assert(); registered with CTest)
+├── tools/               # xml_to_code generator
+├── third_party/         # vendored dependencies (Skia, pugixml, libpng, libjpeg-turbo, ...)
+├── cmake/               # CMake configuration
+├── scripts/             # helper scripts
+├── build/               # build tree (build/bin holds the example programs and the synced resources)
+└── lib/                 # built libraries
 ```
 
 ## Development Modes (XML + C++)
 
 ### XML Layout Files
 - Edit location: `resources/themes/default/<skin_folder>/<skin_file>.xml` (repo root — the single source of truth)
-- Runtime location: `bin/resources/themes/default/<skin_folder>/<skin_file>.xml` — an automatic copy synced at configure time; never edit files under `bin/` (changes are overwritten at the next configure)
+- Runtime location: copied into the build output at configure time — `<build>/bin/resources/themes/default/<skin_folder>/<skin_file>.xml` (`DUI_BIN_PATH`, set in `cmake/dui_common.cmake`); on macOS each `.app` bundle links to the source tree instead. Never edit any copy: `resources/` is the single source of truth and the copies are regenerated at the next configure
 - Global resources: `resources/themes/default/global.xml` (fonts, colors, common styles)
 - Encoding: UTF-8
 
@@ -54,21 +62,21 @@ Each window usually requires three files:
 **Initialize global resources:**
 ```cpp
 ui::FilePath resourcePath = ui::FilePathUtil::GetCurrentModuleDirectory();
-resourcePath += _T("resources\\");
+resourcePath += "resources\\";
 ui::GlobalManager::Instance().Startup(ui::LocalFilesResParam(resourcePath));
 ```
 
 **Create a window:**
 ```cpp
 MainForm* window = new MainForm();
-window->CreateWnd(nullptr, ui::WindowCreateParam(_T("WindowTitle"), true));
+window->CreateWnd(nullptr, ui::WindowCreateParam("WindowTitle", true));
 window->PostQuitMsgWhenClosed(true);
 window->ShowWindow(ui::kSW_SHOW_NORMAL);
 ```
 
 **Find a control:**
 ```cpp
-ui::Button* btn = dynamic_cast<ui::Button*>(FindControl(_T("btn_name")));
+ui::Button* btn = dynamic_cast<ui::Button*>(FindControl("btn_name"));
 ```
 
 **Event binding:**
@@ -90,7 +98,7 @@ DUI_APP_ENTRY(TestApplication)        // AppClass must provide void Run();
 ```
 
 - Invoke the macro exactly once per executable, at global scope, in one `.cpp` file (never in a header)
-- Exceptions: `cef`/`CefBrowser` keep `main_macos.mm` (Objective-C++ for CEF) and guard the macro with `#if !defined(__APPLE__)`; `controls` has a custom `main.cpp` (SDL video driver argument)
+- Exceptions: `cef`/`CefBrowser` keep `main_macos.mm` (Objective-C++ for CEF) and guard the macro with `#if !defined(__APPLE__)`; `controls` has a custom `main.cpp` (native backend video driver argument)
 
 ## Documentation References
 - Full documentation: `docs/Summary.md` (documentation index)
@@ -100,19 +108,36 @@ DUI_APP_ENTRY(TestApplication)        // AppClass must provide void Run();
 - Window properties: `docs/Window.md`
 - Event system: `docs/Events.md`
 - XML events: `docs/XmlEvents.md`
+- Data binding / MVVM (optional module, `DUI_ENABLE_MVVM`): `docs/Binding.md`
 - XML node names: `docs/XmlNode.md`
 - Detailed LLM reference: `.claude/docs/dui-llm-reference.md`
 
 ## Coding Standards
-- Strings use the `DString` type; literals are wrapped with the `_T("...")` macro
-- Control lookup uses `FindControl(_T("name"))` and requires `dynamic_cast` to the concrete type
+- Strings are `std::string` holding UTF-8, on every platform; text literals are plain `"..."`
+- Control lookup uses `FindControl("name")` and requires `dynamic_cast` to the concrete type
+- Text handed to a native Windows API must be converted at that boundary (`ui::StringConvert`); see [`docs/StringEncoding.md`](docs/StringEncoding.md)
 - Event callbacks return `true` to indicate the event was handled
 - Embedded quotes in XML attribute values use single quotes `'` or curly braces `{}` instead of double quotes
 - Control classes support template variants: `Label` (Control-based), `LabelBox` (Box-based), `LabelHBox` (HBox-based), `LabelVBox` (VBox-based)
 - Window destruction is managed by the framework; create with `new`, no manual `delete` needed
 
 ## Build
-- Windows: open `scripts/examples.sln`, select Debug|x64 or Release|x64
-- Cross-platform: `scripts/build_dui_all_in_one.sh` or `scripts/build_dui_all_in_one.bat`
-- Dependencies: Skia must be compiled first (see `scripts/build.md`)
+The build is CMake-only. The old `scripts/examples.sln` and
+`scripts/build_dui_all_in_one.sh|.bat` are gone; use the presets.
+
+- **CMake 4.0 or newer** (`cmake_minimum_required(VERSION 4.0)`). The distro packages
+  are usually older — Ubuntu 24.04 ships 3.28 — so install a current one from Kitware
+- Configure and build: `cmake --preset release` (or `debug`), then
+  `cmake --build build-presets/release --target <target>`
+- Dependencies: Skia is built automatically by the `dui_skia` target on a tree's first
+  configure (gn + ninja, into `<build>/lib/<config>/`), so a fresh tree costs a full
+  Skia build. See `docs/Build.md`
+- Everything is a target: `dui` (the library), `dui_core_tests` / `dui_behaviour_tests`,
+  one target per example. **Do not build the `all` target** — it builds 55 example apps
+- Tests: `ctest --test-dir build-presets/debug --output-on-failure`
+- Sanitizers: `cmake --preset sanitize` — builds Skia with ASan too, into
+  `lib/<config>-asan`, and that is required, not optional (see the preset description)
+- Useful options: `-DDUI_ENABLE_CEF=OFF` (default) skips the ~200 MB CEF download,
+  `-DDUI_BUILD_CEF_EXAMPLES=OFF` skips the CEF examples, `-DDUI_ENABLE_MVVM=ON` adds the
+  binding module
 - Example mode selection (CMake): `-DDUI_EXAMPLES_MODE=ALL|XML|GEN|CODE` — builds only the examples of one development mode (XML / XML-to-code generation / pure code); default `ALL`

@@ -1,6 +1,6 @@
 #include "BrowserBox_Windows.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "Windows/taskbar/TaskbarManager.h"
 
@@ -12,7 +12,7 @@ BrowserBox_Windows::BrowserBox_Windows(ui::Window* pWindow, std::string id):
 {
 }
 
-void BrowserBox_Windows::InitBrowserBox(const DString& url)
+void BrowserBox_Windows::InitBrowserBox(const std::string& url)
 {
     BaseClass::InitBrowserBox(url);
     // Initialize the taskbar thumbnail
@@ -55,7 +55,7 @@ void BrowserBox_Windows::SetPos(UiRect rc)
     }
 }
 
-void BrowserBox_Windows::OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title)
+void BrowserBox_Windows::OnTitleChange(CefRefPtr<CefBrowser> browser, const std::string& title)
 {
     BaseClass::OnTitleChange(browser, title);
     if (m_pTaskBarItem) {
@@ -134,4 +134,4 @@ HICON BrowserBox_Windows::ConvertCefImageToHICON(CefImage& cefImage) const
     return hIcon;
 }
 
-#endif // defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif // defined (DUI_BUILD_FOR_WIN)

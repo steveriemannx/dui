@@ -88,7 +88,7 @@ public:
 
     /** Return the current video driver name
     */
-    static DString GetCurrentVideoDriverName();
+    static std::string GetCurrentVideoDriverName();
 
     /** Get the content display scale of the primary display
     */

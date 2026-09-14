@@ -190,7 +190,7 @@ ImageAttribute::~ImageAttribute()
     m_pTiledDrawParam.reset();
 }
 
-void ImageAttribute::InitByImageString(const DString& strImageString, const DpiManager& dpi)
+void ImageAttribute::InitByImageString(const std::string& strImageString, const DpiManager& dpi)
 {
     Init();
     m_sImageString = strImageString;
@@ -198,42 +198,42 @@ void ImageAttribute::InitByImageString(const DString& strImageString, const DpiM
     ModifyAttribute(strImageString, dpi);
 }
 
-void ImageAttribute::ModifyAttribute(const DString& strImageString, const DpiManager& dpi)
+void ImageAttribute::ModifyAttribute(const std::string& strImageString, const DpiManager& dpi)
 {
     // Note: the image attribute documentation (docs/Global.md) contains detailed descriptions of each attribute
-    if (strImageString.find(DUI_T('=')) == DString::npos) {
+    if (strImageString.find('=') == std::string::npos) {
         //No equals sign, which means there are no attributes, return directly
         return;
     }
-    std::vector<std::pair<DString, DString>> attributeList;
-    AttributeUtil::ParseAttributeList(strImageString, DUI_T('\''), attributeList);
+    std::vector<std::pair<std::string, std::string>> attributeList;
+    AttributeUtil::ParseAttributeList(strImageString, '\'', attributeList);
 
     ImageAttribute& imageAttribute = *this;
     imageAttribute.m_bImageDpiScaleEnabled = true;
     imageAttribute.m_bDestDpiScaleEnabled = true;
     for (const auto& attribute : attributeList) {
-        const DString& name = attribute.first;
-        const DString& value = attribute.second;
+        const std::string& name = attribute.first;
+        const std::string& value = attribute.second;
         if (name.empty() || value.empty()) {
             continue;
         }
-        if (name == DUI_T("file") || name == DUI_T("res")) {
+        if (name == "file" || name == "res") {
             //Image resource file name, used to load the image resource according to this setting
             imageAttribute.m_sImagePath = value;
         }
-        else if (name == DUI_T("name")) {
+        else if (name == "name") {
             //Image resource name
             imageAttribute.m_sImageName = value;
         }
-        else if (name == DUI_T("width")) {
+        else if (name == "width") {
             //Set the image width, can enlarge or shrink the image: pixels or percentage %, e.g., 300, or 30%
             imageAttribute.m_srcWidth = value;
         }
-        else if (name == DUI_T("height")) {
+        else if (name == "height") {
             //Set the image height, can enlarge or shrink the image: pixels or percentage %, e.g., 200, or 30%
             imageAttribute.m_srcHeight = value;
         }
-        else if ((name == DUI_T("src")) || (name == DUI_T("source"))) {
+        else if ((name == "src") || (name == "source")) {
             //Image source area setting: can be used to include only part of the source image content (for example, through this mechanism, the state images of a button can be combined into one large image, making it convenient to manage image resources)
             if (imageAttribute.m_rcSource == nullptr) {
                 imageAttribute.m_rcSource = new UiRect;
@@ -242,7 +242,7 @@ void ImageAttribute::ModifyAttribute(const DString& strImageString, const DpiMan
             imageAttribute.m_rcSource->left = std::max(imageAttribute.m_rcSource->left, 0);
             imageAttribute.m_rcSource->top = std::max(imageAttribute.m_rcSource->top, 0);
         }
-        else if (name == DUI_T("corner")) {
+        else if (name == "corner") {
             //The rounded corner attributes of the image; if this attribute is set, the image is drawn in nine-patch mode when drawing:
             //    The four corners are not stretched, the four edges are stretched, and the middle part can be stretched or tiled according to the xtiled and ytiled attributes
             if (imageAttribute.m_rcCorner == nullptr) {
@@ -254,95 +254,95 @@ void ImageAttribute::ModifyAttribute(const DString& strImageString, const DpiMan
             imageAttribute.m_rcCorner->right = std::max(imageAttribute.m_rcCorner->right, 0);
             imageAttribute.m_rcCorner->bottom = std::max(imageAttribute.m_rcCorner->bottom, 0);
         }
-        else if (name == DUI_T("window_shadow_mode")) {
+        else if (name == "window_shadow_mode") {
             //When drawing in nine-patch mode, the middle part is not drawn (e.g., for window shadows, only the border needs to be drawn, not the middle part)
-            imageAttribute.m_bWindowShadowMode = (value == DUI_T("true"));
+            imageAttribute.m_bWindowShadowMode = (value == "true");
         }
-        else if ((name == DUI_T("dpi_scale")) || (name == DUI_T("dpiscale"))) {
+        else if ((name == "dpi_scale") || (name == "dpiscale")) {
             //When loading the image, scale the image size according to the DPI
-            imageAttribute.m_bImageDpiScaleEnabled = (value == DUI_T("true"));
+            imageAttribute.m_bImageDpiScaleEnabled = (value == "true");
         }
-        else if ((name == DUI_T("dest_scale")) || (name == DUI_T("destscale"))) {
+        else if ((name == "dest_scale") || (name == "destscale")) {
             //When loading, scale the dest attribute according to the DPI, only valid when the dest attribute is set (it will affect the dest attribute)
             //When drawing (used internally), controls whether DPI scaling is performed on the dest attribute
-            imageAttribute.m_bDestDpiScaleEnabled = (value == DUI_T("true"));
+            imageAttribute.m_bDestDpiScaleEnabled = (value == "true");
         }
-        else if (name == DUI_T("dest")) {
+        else if (name == "dest") {
             //Set the destination area, which is relative to the Rect area of the owning control
             if (!value.empty()) {
                 if (imageAttribute.m_rcDest == nullptr) {
                     imageAttribute.m_rcDest = new UiRect;
                 }
                 UiRect& rect = *imageAttribute.m_rcDest;
-                DString::value_type* pstr = nullptr;
+                std::string::value_type* pstr = nullptr;
                 rect.left = StringUtil::StringToInt32(value.c_str(), &pstr, 10); ASSERT(pstr);
                 AttributeUtil::SkipSepChar(pstr);
-                if (*pstr != DUI_T('\0')) {
+                if (*pstr != '\0') {
                     rect.top = StringUtil::StringToInt32(pstr, &pstr, 10); ASSERT(pstr);
                     AttributeUtil::SkipSepChar(pstr);
                 }
-                if (*pstr != DUI_T('\0')) {
+                if (*pstr != '\0') {
                     rect.right = StringUtil::StringToInt32(pstr, &pstr, 10); ASSERT(pstr);
                     AttributeUtil::SkipSepChar(pstr);
                 }
-                if (*pstr != DUI_T('\0')) {
+                if (*pstr != '\0') {
                     rect.bottom = StringUtil::StringToInt32(pstr, &pstr, 10); ASSERT(pstr);
                 }
             }
         }
-        else if ((name == DUI_T("margin") || (name == DUI_T("padding")))) {
+        else if ((name == "margin" || (name == "padding"))) {
             //Set the outer margin of the image in the destination area (the old name "padding" is kept for compatibility)
             UiMargin margin;
             AttributeUtil::ParseMarginValue(value.c_str(), margin);
             imageAttribute.SetImageMargin(margin, true, dpi);
         }
-        else if (name == DUI_T("halign")) {
+        else if (name == "halign") {
             //Set the horizontal alignment in the destination area
-            ASSERT((value == DUI_T("left")) || (value == DUI_T("center")) || (value == DUI_T("right")));
-            if ((value == DUI_T("left")) || (value == DUI_T("center")) || (value == DUI_T("right"))) {
+            ASSERT((value == "left") || (value == "center") || (value == "right"));
+            if ((value == "left") || (value == "center") || (value == "right")) {
                 imageAttribute.m_hAlign = value;
             }
         }
-        else if (name == DUI_T("valign")) {
+        else if (name == "valign") {
             //Set the vertical alignment in the destination area
-            ASSERT((value == DUI_T("top")) || (value == DUI_T("center")) || (value == DUI_T("bottom")));
-            if ((value == DUI_T("top")) || (value == DUI_T("center")) || (value == DUI_T("bottom"))) {
+            ASSERT((value == "top") || (value == "center") || (value == "bottom"));
+            if ((value == "top") || (value == "center") || (value == "bottom")) {
                 imageAttribute.m_vAlign = value;
             }
         }
-        else if (name == DUI_T("fade")) {
+        else if (name == "fade") {
             //The opacity of the image
             imageAttribute.m_bFade = (uint8_t)StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("xtiled")) {
+        else if (name == "xtiled") {
             //Horizontal tiling
             if (m_pTiledDrawParam == nullptr) {
                 m_pTiledDrawParam = std::make_unique<TiledDrawParam>();
             }
-            imageAttribute.m_pTiledDrawParam->m_bTiledX = (value == DUI_T("true"));
+            imageAttribute.m_pTiledDrawParam->m_bTiledX = (value == "true");
         }
-        else if ((name == DUI_T("full_xtiled")) || (name == DUI_T("fullxtiled"))) {
+        else if ((name == "full_xtiled") || (name == "fullxtiled")) {
             //When tiling horizontally, ensure the whole image is drawn
             if (m_pTiledDrawParam == nullptr) {
                 m_pTiledDrawParam = std::make_unique<TiledDrawParam>();
             }
-            imageAttribute.m_pTiledDrawParam->m_bFullTiledX = (value == DUI_T("true"));
+            imageAttribute.m_pTiledDrawParam->m_bFullTiledX = (value == "true");
         }
-        else if (name == DUI_T("ytiled")) {
+        else if (name == "ytiled") {
             //Vertical tiling
             if (m_pTiledDrawParam == nullptr) {
                 m_pTiledDrawParam = std::make_unique<TiledDrawParam>();
             }
-            imageAttribute.m_pTiledDrawParam->m_bTiledY = (value == DUI_T("true"));
+            imageAttribute.m_pTiledDrawParam->m_bTiledY = (value == "true");
         }
-        else if ((name == DUI_T("full_ytiled")) || (name == DUI_T("fullytiled"))) {
+        else if ((name == "full_ytiled") || (name == "fullytiled")) {
             //When tiling vertically, ensure the whole image is drawn
             if (m_pTiledDrawParam == nullptr) {
                 m_pTiledDrawParam = std::make_unique<TiledDrawParam>();
             }
-            imageAttribute.m_pTiledDrawParam->m_bFullTiledY = (value == DUI_T("true"));
+            imageAttribute.m_pTiledDrawParam->m_bFullTiledY = (value == "true");
         }
-        else if ((name == DUI_T("tiled_margin")) || (name == DUI_T("tiledmargin"))) {
+        else if ((name == "tiled_margin") || (name == "tiledmargin")) {
             //When drawing tiled, the interval between each tiled image, including horizontal tiling and vertical tiling
             if (m_pTiledDrawParam == nullptr) {
                 m_pTiledDrawParam = std::make_unique<TiledDrawParam>();
@@ -350,21 +350,21 @@ void ImageAttribute::ModifyAttribute(const DString& strImageString, const DpiMan
             imageAttribute.m_pTiledDrawParam->m_nTiledMarginX = StringUtil::StringToInt32(value);
             imageAttribute.m_pTiledDrawParam->m_nTiledMarginY = imageAttribute.m_pTiledDrawParam->m_nTiledMarginX;
         }
-        else if (name == DUI_T("tiled_margin_x")) {
+        else if (name == "tiled_margin_x") {
             //When drawing tiled, the interval between each tiled image, horizontal tiling
             if (m_pTiledDrawParam == nullptr) {
                 m_pTiledDrawParam = std::make_unique<TiledDrawParam>();
             }
             imageAttribute.m_pTiledDrawParam->m_nTiledMarginX = StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("tiled_margin_y")) {
+        else if (name == "tiled_margin_y") {
             //When drawing tiled, the interval between each tiled image, vertical tiling
             if (m_pTiledDrawParam == nullptr) {
                 m_pTiledDrawParam = std::make_unique<TiledDrawParam>();
             }
             imageAttribute.m_pTiledDrawParam->m_nTiledMarginY = StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("tiled_padding")) {
+        else if (name == "tiled_padding") {
             if (m_pTiledDrawParam == nullptr) {
                 m_pTiledDrawParam = std::make_unique<TiledDrawParam>();
             }
@@ -372,26 +372,26 @@ void ImageAttribute::ModifyAttribute(const DString& strImageString, const DpiMan
             AttributeUtil::ParsePaddingValue(value.c_str(), rcPadding);
             m_pTiledDrawParam->m_rcTiledPadding = rcPadding;
         }
-        else if ((name == DUI_T("icon_size")) || (name == DUI_T("iconsize"))) {
+        else if ((name == "icon_size") || (name == "iconsize")) {
             //Specify the image size of the ICO file to load (only valid when the image file is an ICO file)
             imageAttribute.m_nIconSize = (uint32_t)StringUtil::StringToInt32(value);
         }
-        else if (name == DUI_T("icon_as_animation")) {
+        else if (name == "icon_as_animation") {
             //If it is an ICO file, specify whether to load as a multi-frame image (displayed as an animation image)
-            imageAttribute.m_bIconAsAnimation = (value == DUI_T("true"));
+            imageAttribute.m_bIconAsAnimation = (value == "true");
         }
-        else if (name == DUI_T("icon_frame_delay")) {
+        else if (name == "icon_frame_delay") {
             //If it is an ICO file, when displayed as a multi-frame image, the playback time interval of each frame, milliseconds
             imageAttribute.m_nIconFrameDelayMs = StringUtil::StringToInt32(value);
             if (imageAttribute.m_nIconFrameDelayMs <= 0) {
                 imageAttribute.m_nIconFrameDelayMs = 1000;
             }
         }
-        else if (name == DUI_T("pag_max_frame_rate")) {
+        else if (name == "pag_max_frame_rate") {
             //If it is a PAG file, used to specify the frame rate of the animation, the default is 30.0f
             imageAttribute.m_fPagMaxFrameRate = (float)StringUtil::StringToInt32(value);
         }
-        else if ((name == DUI_T("play_count")) || (name == DUI_T("playcount"))) {
+        else if ((name == "play_count") || (name == "playcount")) {
             //If it is an animation image, the meaning of the value
             //  -1: Play forever
             //  0 : No valid play count; use the default value of the image
@@ -401,21 +401,21 @@ void ImageAttribute::ModifyAttribute(const DString& strImageString, const DpiMan
                 imageAttribute.m_nPlayCount = -1;
             }
         }
-        else if (name == DUI_T("auto_play")) {
+        else if (name == "auto_play") {
             //If it is an animation image, whether to auto-play
-            imageAttribute.m_bAutoPlay = (value == DUI_T("true"));
+            imageAttribute.m_bAutoPlay = (value == "true");
         }
-        else if (name == DUI_T("async_load")) {
+        else if (name == "async_load") {
             //Whether the image supports asynchronous loading (i.e., load the image data in a worker thread to avoid the main interface stuttering)
-            imageAttribute.m_bAsyncLoad = (value == DUI_T("true"));
+            imageAttribute.m_bAsyncLoad = (value == "true");
         }
-        else if (name == DUI_T("adaptive_dest_rect")) {
+        else if (name == "adaptive_dest_rect") {
             //Automatically adapt to the destination area (scale the image proportionally)
-            imageAttribute.m_bAdaptiveDestRect = (value == DUI_T("true"));
+            imageAttribute.m_bAdaptiveDestRect = (value == "true");
         }
-        else if (name == DUI_T("assert")) {
+        else if (name == "assert") {
             //The code assertion setting when image loading fails (enabled in debug builds, used to diagnose errors during image loading, especially failures caused by incorrect image data)
-            imageAttribute.m_bAssertEnabled = (value == DUI_T("true"));
+            imageAttribute.m_bAssertEnabled = (value == "true");
         }
         else {
             ASSERT(!"ImageAttribute::ModifyAttribute: fount unknown attribute!");
@@ -428,7 +428,7 @@ bool ImageAttribute::IsAssertEnabled() const
     return m_bAssertEnabled;
 }
 
-DString ImageAttribute::GetImageName() const
+std::string ImageAttribute::GetImageName() const
 {
     return m_sImageName.c_str();
 }
@@ -579,8 +579,8 @@ static UiSize CalculateAdaptiveSize(int32_t nImageWidth, int32_t nImageHeight, c
 
 UiRect ImageAttribute::CalculateAdaptiveRect(int32_t nImageWidth, int32_t nImageHeight,
                                              const UiRect& targetRect,
-                                             const DString& hAlign,
-                                             const DString& vAlign)
+                                             const std::string& hAlign,
+                                             const std::string& vAlign)
 {
     int32_t targetWidth = targetRect.Width();
     int32_t targetHeight = targetRect.Height();
@@ -589,20 +589,20 @@ UiRect ImageAttribute::CalculateAdaptiveRect(int32_t nImageWidth, int32_t nImage
 
     // Calculate the horizontal position
     int32_t newLeft = targetRect.left;
-    if (hAlign == DUI_T("center")) {
+    if (hAlign == "center") {
         newLeft = targetRect.left + (targetWidth - newSize.cx) / 2;
     }
-    else if (hAlign == DUI_T("right")) {
+    else if (hAlign == "right") {
         newLeft = targetRect.left + targetWidth - newSize.cx;
     }
     // LEFT alignment needs no adjustment
 
     // Calculate the vertical position
     int32_t newTop = targetRect.top;
-    if (vAlign == DUI_T("center")) {
+    if (vAlign == "center") {
         newTop = targetRect.top + (targetHeight - newSize.cy) / 2;
     }
-    else if (vAlign == DUI_T("bottom")) {
+    else if (vAlign == "bottom") {
         newTop = targetRect.top + targetHeight - newSize.cy;
     }
     // TOP alignment needs no adjustment

@@ -17,8 +17,8 @@ public:
      * The GetSkinFolder interface sets the skin resource path for the window to be drawn
      * The GetSkinFile interface sets the xml description file for the window to be drawn
      */
-    virtual DString GetSkinFolder() override { return DUI_T("virtual_list_box"); }
-    virtual DString GetSkinFile() override { return DUI_T("main.xml"); }
+    virtual std::string GetSkinFolder() override { return "virtual_list_box"; }
+    virtual std::string GetSkinFile() override { return "main.xml"; }
 
     /** Called after the window is created, for subclasses to do some initialization work
     */
@@ -35,11 +35,11 @@ private:
 
     /** Get the basic information of the message (used to display the log)
     */
-    DString GetEventDisplayInfo(const ui::EventArgs& args, ui::VirtualListBox* pListBox);
+    std::string GetEventDisplayInfo(const ui::EventArgs& args, ui::VirtualListBox* pListBox);
 
     /** Output the test log
     */
-    void OutputDebugLog(const DString& logMsg);
+    void OutputDebugLog(const std::string& logMsg);
 
 private:
     ui::VirtualListBox* m_pTileList;

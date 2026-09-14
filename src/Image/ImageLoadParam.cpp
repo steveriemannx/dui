@@ -18,8 +18,8 @@ ImageLoadParam::ImageLoadParam():
 {
 }
 
-ImageLoadParam::ImageLoadParam(DString srcWidth,
-                               DString srcHeight,
+ImageLoadParam::ImageLoadParam(std::string srcWidth,
+                               std::string srcHeight,
                                bool bImageDpiScaleEnabled,
                                uint32_t nLoadDpiScale,
                                bool bAsyncDecode,
@@ -60,29 +60,29 @@ bool ImageLoadParam::IsSvgImageFile() const
     if (m_srcImageLoadPath.m_imageFullPath.IsEmpty()) {
         return false;
     }
-    DString fileExt = FilePathUtil::GetFileExtension(m_srcImageLoadPath.m_imageFullPath.ToString());
+    std::string fileExt = FilePathUtil::GetFileExtension(m_srcImageLoadPath.m_imageFullPath.ToString());
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == DUI_T("SVG")) {
+    if (fileExt == "SVG") {
         return true;
     }
     return false;
 }
 
-DString ImageLoadParam::GetLoadKey(uint32_t nLoadDpiScale) const
+std::string ImageLoadParam::GetLoadKey(uint32_t nLoadDpiScale) const
 {
     //The format is (the content in brackets is optional): <image path>[@nLoadDpiScale]#IsImageDpiScaleEnabled()[$srcWidth:srcHeight]
     ASSERT(!m_srcImageLoadPath.m_imageFullPath.IsEmpty());
-    DString fullPath = m_srcImageLoadPath.m_imageFullPath.ToString();
+    std::string fullPath = m_srcImageLoadPath.m_imageFullPath.ToString();
     if ((nLoadDpiScale != 0) && (nLoadDpiScale != 100)) {
         //Append the scaling percentage
-        fullPath += DUI_T("@");
+        fullPath += "@";
         fullPath += StringUtil::UInt32ToString(nLoadDpiScale);
     }
-    fullPath += IsImageDpiScaleEnabled() ? DUI_T("#1") : DUI_T("#0");
+    fullPath += IsImageDpiScaleEnabled() ? "#1" : "#0";
     if (!m_srcWidth.empty() || !m_srcHeight.empty()) {
-        fullPath += DUI_T("$");
+        fullPath += "$";
         fullPath += m_srcWidth.c_str();
-        fullPath += DUI_T(":");
+        fullPath += ":";
         fullPath += m_srcHeight.c_str();
     }
     return fullPath;
@@ -159,11 +159,11 @@ bool ImageLoadParam::GetImageFixedSize(uint32_t& nImageWidth, uint32_t& nImageHe
     return (nImageHeight > 0) || (nImageWidth > 0);
 }
 
-bool ImageLoadParam::GetScaledFixedSize(const DString& srcSize, uint32_t& nScaledSize) const
+bool ImageLoadParam::GetScaledFixedSize(const std::string& srcSize, uint32_t& nScaledSize) const
 {
     nScaledSize = 0;
     if (!srcSize.empty()) {
-        if (srcSize.back() == DUI_T('%')) {
+        if (srcSize.back() == '%') {
             //Scale according to the percentage
             nScaledSize = 0;
         }
@@ -204,12 +204,12 @@ bool ImageLoadParam::GetImageFixedPercent(float& fImageWidthPercent, float& fIma
     return bRetWidth || bRetHeight;
 }
 
-bool ImageLoadParam::GetScaledFixedPercent(const DString& srcSize, float& fScaledPercent) const
+bool ImageLoadParam::GetScaledFixedPercent(const std::string& srcSize, float& fScaledPercent) const
 {
     bool bRet = false;
     fScaledPercent = 1.0f;
     if (!srcSize.empty()) {
-        if (srcSize.back() == DUI_T('%')) {
+        if (srcSize.back() == '%') {
             //Scale according to the percentage (the actual value needs to be divided by 100)
             double fRatio = StringUtil::StringToDouble(srcSize);            
             if (fRatio > 1) {//The minimum value is 1%

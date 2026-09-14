@@ -30,7 +30,7 @@ public:
     * @param[in] url the initial URL
     * @return BorwserBox*  the browser box pointer
     */
-    BrowserBox* CreateBorwserBox(BrowserForm* pBrowserForm, std::string browserId, const DString& url);
+    BrowserBox* CreateBorwserBox(BrowserForm* pBrowserForm, std::string browserId, const std::string& url);
 
     /** Determine whether a browser box is active
     * @param[in] browserId the unique identifier of a browser box

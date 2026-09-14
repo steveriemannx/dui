@@ -142,13 +142,11 @@ static size_t CalculateHookLengthWithUdis86(void* target_addr, size_t min_hook_b
 
 bool InlineHook::DoInstall()
 {
-    ASSERT((m_target != nullptr) && (m_hook != nullptr));
     if ((m_target == nullptr) || (m_hook == nullptr)) {
         return false;
     }
     //Generate the jump instructions
     GenerateJump();
-    ASSERT(!m_jumpCode.empty());
     if (m_jumpCode.empty()) {
         return false;
     }
@@ -194,7 +192,6 @@ bool InlineHook::DoUninstall()
     if (m_original.size() != m_replaceLen) {
         return false;
     }
-    ASSERT(!m_jumpCode.empty());
     if (m_jumpCode.empty()) {
         return false;
     }

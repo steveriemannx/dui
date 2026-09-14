@@ -146,16 +146,13 @@ Control* VirtualListBox::CreateElement()
 
 void VirtualListBox::FillElementData(Control* pControl, size_t nElementIndex)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return;
     }
     IListBoxItem* pListBoxItem = dynamic_cast<IListBoxItem*>(pControl);
-    ASSERT(pListBoxItem != nullptr);
     if (pListBoxItem == nullptr) {
         return;
     }
-    ASSERT(m_pDataProvider != nullptr);
     if (m_pDataProvider == nullptr) {
         return;
     }
@@ -290,7 +287,6 @@ void VirtualListBox::SetSelectedElements(const std::vector<size_t>& selectedInde
                                          std::vector<size_t>& refreshIndexs)
 {
     refreshIndexs.clear();
-    ASSERT(m_pDataProvider != nullptr);
     if (m_pDataProvider == nullptr) {
         return;
     }
@@ -349,7 +345,6 @@ void VirtualListBox::GetSelectedElements(std::vector<size_t>& selectedIndexs) co
 
 bool VirtualListBox::SetSelectAll()
 {
-    ASSERT(m_pDataProvider != nullptr);
     if (m_pDataProvider == nullptr) {
         return false;
     }
@@ -390,7 +385,6 @@ void VirtualListBox::SetSelectNoneExclude(const std::vector<size_t>& excludeInde
                                           std::vector<size_t>& refreshIndexs)
 {
     refreshIndexs.clear();
-    ASSERT(m_pDataProvider != nullptr);
     if (m_pDataProvider == nullptr) {
         return;
     }
@@ -924,7 +918,6 @@ bool VirtualListBox::OnFindSelectable(size_t nCurSel, SelectableMode mode,
                 break;
             }
         }
-        ASSERT(bCheckOk);
         if (!bCheckOk) {
             bLoaded = false;
         }
@@ -1062,7 +1055,6 @@ bool VirtualListBox::OnFrameSelection(int64_t left, int64_t right, int64_t top, 
         return false;
     }
     VirtualListBoxElement* pDataProvider = GetDataProvider();
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return false;
     }
@@ -1071,7 +1063,6 @@ bool VirtualListBox::OnFrameSelection(int64_t left, int64_t right, int64_t top, 
         return false;
     }
     Layout* pLayout = GetLayout();
-    ASSERT(pLayout != nullptr);
     if (pLayout == nullptr) {
         return false;
     }
@@ -1083,7 +1074,6 @@ bool VirtualListBox::OnFrameSelection(int64_t left, int64_t right, int64_t top, 
 
     bool bHLayout = (pHTileLayout != nullptr) || (pHLayout != nullptr);
     bool bVLayout = (pVTileLayout != nullptr) || (pVLayout != nullptr);
-    ASSERT(bHLayout || bVLayout);
     if (!bHLayout && !bVLayout) {
         return false;
     }
@@ -1346,7 +1336,7 @@ bool VirtualListBox::OnListCtrlKeyDown(const EventArgs& msg)
 {
     ASSERT(msg.eventType == kEventKeyDown);
     bool bHandled = false;
-    bool bCtrlADown = (msg.eventType == kEventKeyDown) && ((msg.vkCode == DUI_T('A')) || (msg.vkCode == DUI_T('a')));
+    bool bCtrlADown = (msg.eventType == kEventKeyDown) && ((msg.vkCode == 'A') || (msg.vkCode == 'a'));
     if (bCtrlADown) {
         //Ctrl + A select all operation
         bHandled = true;

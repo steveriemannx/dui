@@ -55,7 +55,6 @@ namespace NanoSvgDecoder
     bool ImageSizeFromMemory(const std::vector<uint8_t>& data, int32_t& nSvgImageWidth, int32_t& nSvgImageHeight)
     {
         std::vector<uint8_t> fileData = data;//The data needs to be copied here, because the original data will be corrupted during parsing
-        ASSERT(!fileData.empty());
         if (fileData.empty()) {
             return false;
         }
@@ -126,12 +125,10 @@ public:
 
         //Generate the bitmap, vector-scaled
         IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-        ASSERT(pRenderFactory != nullptr);
         if (pRenderFactory == nullptr) {
             return nullptr;
         }
         std::shared_ptr<IBitmap> pBitmap(pRenderFactory->CreateBitmap());
-        ASSERT(pBitmap != nullptr);
         if (pBitmap == nullptr) {
             return nullptr;
         }
@@ -189,16 +186,16 @@ ImageDecoder_SVG::~ImageDecoder_SVG()
 {
 }
 
-DString ImageDecoder_SVG::GetFormatName() const
+std::string ImageDecoder_SVG::GetFormatName() const
 {
-    return DUI_T("SVG");
+    return "SVG";
 }
 
-bool ImageDecoder_SVG::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_SVG::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
-    if (fileExt == DUI_T("SVG")) {
+    if (fileExt == "SVG") {
         return true;
     }
     return false;
@@ -238,7 +235,6 @@ std::unique_ptr<IImage> ImageDecoder_SVG::LoadImageData(const ImageDecodeParam& 
         return nullptr;
     }
     std::unique_ptr<SkMemoryStream> spMemStream = SkMemoryStream::MakeCopy(fileData.data(), fileData.size());
-    ASSERT(spMemStream != nullptr);
     if (spMemStream == nullptr) {
         return nullptr;
     }

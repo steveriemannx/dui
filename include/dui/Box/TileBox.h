@@ -18,7 +18,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_VTILE_BOX; }
+    virtual std::string GetType() const override { return DUI_CTR_VTILE_BOX; }
 };
 
 /** Box with tile layout (horizontal layout)
@@ -31,7 +31,7 @@ public:
     {
     }
 
-    virtual DString GetType() const override { return DUI_CTR_HTILE_BOX; }
+    virtual std::string GetType() const override { return DUI_CTR_HTILE_BOX; }
 };
 
 }

@@ -18,17 +18,17 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
 public:
     /** Set the name of the bound TabBox control
     */
-    void SetTabBoxName(const DString& tabBoxName);
+    void SetTabBoxName(const std::string& tabBoxName);
 
     /** Get the name of the bound TabBox control
     */
-    DString GetTabBoxName() const;
+    std::string GetTabBoxName() const;
 
     /** Set the bound TabBox interface
     */
@@ -120,20 +120,20 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
-    virtual DString GetToolTipText() const override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
+    virtual std::string GetToolTipText() const override;
 
 public:
     /** Set the icon
     * @param [in] iconImageString icon resource string
     */
-    void SetIcon(const DString& iconImageString);
+    void SetIcon(const std::string& iconImageString);
 
     /** Get the icon
     * @return the icon resource string
     */
-    DString GetIcon() const;
+    std::string GetIcon() const;
 
     /** Set the bitmap data of the icon (data format: ARGB, alpha type is kPremul_SkAlphaType)
     * @param [in] nWidth width
@@ -149,19 +149,19 @@ public:
 
     /** Set the text content
     */
-    void SetTitle(const DString& title);
+    void SetTitle(const std::string& title);
 
     /** Get the text content
     */
-    DString GetTitle() const;
+    std::string GetTitle() const;
 
     /** Set the text content ID (supports multilingual versions)
     */
-    void SetTitleId(const DString& titleId);
+    void SetTitleId(const std::string& titleId);
 
     /** Get the text content (supports multilingual versions)
     */
-    DString GetTitleId() const;
+    std::string GetTitleId() const;
 
 public:
     /** Set the index of the bound TabBox item
@@ -192,23 +192,23 @@ public:
 public:
     /** Class of the icon control
     */
-    void SetIconClass(const DString& iconClass);
-    DString GetIconClass() const;
+    void SetIconClass(const std::string& iconClass);
+    std::string GetIconClass() const;
 
     /** Class of the text control
     */
-    void SetTitleClass(const DString& titleClass);
-    DString GetTitleClass() const;
+    void SetTitleClass(const std::string& titleClass);
+    std::string GetTitleClass() const;
 
     /** Class of the close button control
     */
-    void SetCloseButtonClass(const DString& closeButtonClass);
-    DString GetCloseButtonClass() const;
+    void SetCloseButtonClass(const std::string& closeButtonClass);
+    std::string GetCloseButtonClass() const;
 
     /** Class of the separator line control
     */
-    void SetLineClass(const DString& lineClass);
-    DString GetLineClass() const;
+    void SetLineClass(const std::string& lineClass);
+    std::string GetLineClass() const;
 
 public:
     /** Set the corner radius of the selected tab

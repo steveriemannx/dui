@@ -1,10 +1,11 @@
 #include "MainForm.h"
+#include "dui/Utils/StringConvert.h"
 #include "FindForm.h"
 #include "ReplaceForm.h"
 #include "dui/Utils/UiBuilder.h"
 #include <fstream>
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 #include <ShellApi.h>
 #include <commdlg.h>
 #endif
@@ -29,8 +30,12 @@ void MainForm::SetupWindow()
     SetWindowSize((int32_t)(rcWork.Width() * 0.90f), (int32_t)(rcWork.Height() * 0.80f));
     CenterWindow();
     SetShadowAttached(true);
+#if defined(DUI_BUILD_FOR_LINUX)
+    SetShadowType(ui::Shadow::ShadowType::kShadowDrawDefault);
+#else
     SetShadowType(ui::Shadow::ShadowType::kShadowSystemDefault);
     SetLayeredWindow(false, false);
+#endif
     SetEnableShadowSnap(true);
     SetShadowBorderSize(0);
     SetSizeBox(ui::UiRect(4, 4, 4, 4), false);
@@ -42,25 +47,25 @@ void MainForm::OnInitWindow()
     SetupWindow();
     BuildRichEditUI(this);
 
-    m_pRichEdit = ui::Find<ui::RichEdit>(this, DUI_T("rich_edit"));
+    m_pRichEdit = ui::Find<ui::RichEdit>(this, "rich_edit");
     ASSERT(m_pRichEdit != nullptr);
     m_findReplace.SetRichEdit(m_pRichEdit);
     LoadRichEditData();
 
     // Initialize font information
-    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_name"));
+    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, "combo_font_name");
     if (pFontNameCombo != nullptr) {
         m_fontList.clear();
         ui::GlobalManager::Instance().Font().GetFontNameList(m_fontList);
         for (size_t nIndex = 0; nIndex < m_fontList.size(); ++nIndex) {
-            const DString& fontName = m_fontList[nIndex];
+            const std::string& fontName = m_fontList[nIndex];
             size_t nItemIndex = pFontNameCombo->AddTextItem(fontName);
             if (ui::Box::IsValidItemIndex(nItemIndex)) {
                 pFontNameCombo->SetItemData(nItemIndex, nIndex);
             }
         }
     }
-    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_size"));
+    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, "combo_font_size");
     if (pFontSizeCombo != nullptr) {
         ui::GlobalManager::Instance().Font().GetFontSizeList(Dpi(), m_fontSizeList);
         for (size_t nIndex = 0; nIndex < m_fontSizeList.size(); ++nIndex) {
@@ -74,9 +79,9 @@ void MainForm::OnInitWindow()
 
     // Set color
     InitColorCombo();
-    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
+    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
     if (pColorComboBtn != nullptr) {
-        DString textColor;
+        std::string textColor;
         if (m_pRichEdit != nullptr) {
             textColor = m_pRichEdit->GetTextColor();
         }
@@ -89,24 +94,24 @@ void MainForm::OnInitWindow()
     UpdateZoomValue();
 
     // Whether to wrap text automatically
-    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_word_wrap"));
+    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, "btn_word_wrap");
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
         pCheckBox->SetSelected(m_pRichEdit->IsWordWrap());
     }
 
     // Whether rich text format is supported
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_rich_text"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_rich_text");
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
         pCheckBox->SetSelected(m_pRichEdit->IsRichText());
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 #else
-        // Rich text format is not supported in the SDL implementation
+        // Rich text format is not supported in the native backend implementation
         pCheckBox->SetEnabled(false);
 #endif
     }
 
-#ifdef DUI_BUILD_FOR_SDL
-    ui::Control* pRowSpacingTips = ui::Find<ui::Control>(this, DUI_T("row_spacing_tips"));
+#ifdef DUI_BUILD_FOR_WAYLAND
+    ui::Control* pRowSpacingTips = ui::Find<ui::Control>(this, "row_spacing_tips");
     if (pRowSpacingTips != nullptr) {
         pRowSpacingTips->SetVisible(false);
     }
@@ -122,13 +127,13 @@ void MainForm::OnInitWindow()
 void MainForm::BindEvents()
 {
     // Hyperlink clicked in the test URL display
-    ui::RichEdit* pTestUrl = ui::Find<ui::RichEdit>(this, DUI_T("test_url"));
+    ui::RichEdit* pTestUrl = ui::Find<ui::RichEdit>(this, "test_url");
     if (pTestUrl != nullptr) {
         pTestUrl->AttachLinkClick([this, pTestUrl](const ui::EventArgs& args) {
                 if (args.GetSender() == pTestUrl) {
-                    const DString::value_type* pUrl = (const DString::value_type*)args.wParam;
+                    const std::string::value_type* pUrl = (const std::string::value_type*)args.wParam;
                     if (pUrl != nullptr) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
                         ::ShellExecuteW(NativeWnd()->GetHWND(), L"open", ui::StringConvert::TToWString(pUrl).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 #endif
                     }
@@ -138,7 +143,7 @@ void MainForm::BindEvents()
     }
 
     // File operations: open, save, save as
-    ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("open_file"));
+    ui::Button* pButton = ui::Find<ui::Button>(this, "open_file");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -147,7 +152,7 @@ void MainForm::BindEvents()
                 return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("save_file"));
+    pButton = ui::Find<ui::Button>(this, "save_file");
     if (pButton != nullptr) {
         m_saveBtnText = pButton->GetText();
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
@@ -157,7 +162,7 @@ void MainForm::BindEvents()
                 return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("save_as_file"));
+    pButton = ui::Find<ui::Button>(this, "save_as_file");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
                 if (args.GetSender() == pButton) {
@@ -168,7 +173,7 @@ void MainForm::BindEvents()
     }
 
     // Edit operations
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_copy"));
+    pButton = ui::Find<ui::Button>(this, "btn_copy");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -180,7 +185,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_cut"));
+    pButton = ui::Find<ui::Button>(this, "btn_cut");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -192,7 +197,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_paste"));
+    pButton = ui::Find<ui::Button>(this, "btn_paste");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -204,7 +209,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_delete"));
+    pButton = ui::Find<ui::Button>(this, "btn_delete");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -216,7 +221,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_sel_all"));
+    pButton = ui::Find<ui::Button>(this, "btn_sel_all");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -228,7 +233,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_sel_none"));
+    pButton = ui::Find<ui::Button>(this, "btn_sel_none");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -240,7 +245,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_undo"));
+    pButton = ui::Find<ui::Button>(this, "btn_undo");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -252,7 +257,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_redo"));
+    pButton = ui::Find<ui::Button>(this, "btn_redo");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -266,7 +271,7 @@ void MainForm::BindEvents()
     }
 
     // Find operations
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_find_text"));
+    pButton = ui::Find<ui::Button>(this, "btn_find_text");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -275,7 +280,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_find_next"));
+    pButton = ui::Find<ui::Button>(this, "btn_find_next");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -284,7 +289,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pButton = ui::Find<ui::Button>(this, DUI_T("btn_replace_text"));
+    pButton = ui::Find<ui::Button>(this, "btn_replace_text");
     if (pButton != nullptr) {
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
@@ -295,9 +300,9 @@ void MainForm::BindEvents()
     }
 
     // Set font
-    pButton = ui::Find<ui::Button>(this, DUI_T("set_font"));
+    pButton = ui::Find<ui::Button>(this, "set_font");
     if (pButton != nullptr) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
         pButton->AttachClick([this, pButton](const ui::EventArgs& args) {
             if (args.GetSender() == pButton) {
                 OnSetFont();
@@ -310,35 +315,35 @@ void MainForm::BindEvents()
     }
 
     // Font name combo
-    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_name"));
+    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, "combo_font_name");
     if (pFontNameCombo != nullptr) {
         pFontNameCombo->AttachSelect([this, pFontNameCombo](const ui::EventArgs& args) {
-            DString fontName = pFontNameCombo->GetText();
+            std::string fontName = pFontNameCombo->GetText();
             SetFontName(fontName);
             return true;
             });
         pFontNameCombo->AttachWindowClose([this, pFontNameCombo](const ui::EventArgs& args) {
-            DString fontName = pFontNameCombo->GetText();
+            std::string fontName = pFontNameCombo->GetText();
             SetFontName(fontName);
             return true;
             });
     }
-    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_size"));
+    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, "combo_font_size");
     if (pFontSizeCombo != nullptr) {
         pFontSizeCombo->AttachSelect([this, pFontSizeCombo](const ui::EventArgs& args) {
-            DString fontName = pFontSizeCombo->GetText();
+            std::string fontName = pFontSizeCombo->GetText();
             SetFontSize(fontName);
             return true;
             });
         pFontSizeCombo->AttachWindowClose([this, pFontSizeCombo](const ui::EventArgs& args) {
-            DString fontName = pFontSizeCombo->GetText();
+            std::string fontName = pFontSizeCombo->GetText();
             SetFontSize(fontName);
             return true;
             });
     }
 
     // Font style: bold
-    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_bold"));
+    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_bold");
     if (pCheckBox != nullptr) {
         pCheckBox->AttachSelect([this, pCheckBox](const ui::EventArgs& args) {
             SetFontBold(pCheckBox->IsSelected());
@@ -350,7 +355,7 @@ void MainForm::BindEvents()
             });
     }
     // Font style: italic
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_italic"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_italic");
     if (pCheckBox != nullptr) {
         pCheckBox->AttachSelect([this, pCheckBox](const ui::EventArgs& args) {
             SetFontItalic(pCheckBox->IsSelected());
@@ -362,7 +367,7 @@ void MainForm::BindEvents()
             });
     }
     // Font style: underline
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_underline"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_underline");
     if (pCheckBox != nullptr) {
         pCheckBox->AttachSelect([this, pCheckBox](const ui::EventArgs& args) {
             SetFontUnderline(pCheckBox->IsSelected());
@@ -374,7 +379,7 @@ void MainForm::BindEvents()
             });
     }
     // Font style: strikethrough
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_strikeout"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_strikeout");
     if (pCheckBox != nullptr) {
         pCheckBox->AttachSelect([this, pCheckBox](const ui::EventArgs& args) {
             SetFontStrikeOut(pCheckBox->IsSelected());
@@ -387,14 +392,14 @@ void MainForm::BindEvents()
     }
 
     // Increase/decrease font size
-    ui::Button* pFontButton = ui::Find<ui::Button>(this, DUI_T("btn_font_size_increase"));
+    ui::Button* pFontButton = ui::Find<ui::Button>(this, "btn_font_size_increase");
     if (pFontButton != nullptr) {
         pFontButton->AttachClick([this](const ui::EventArgs& args) {
             AdjustFontSize(true);
             return true;
             });
     }
-    pFontButton = ui::Find<ui::Button>(this, DUI_T("btn_font_size_decrease"));
+    pFontButton = ui::Find<ui::Button>(this, "btn_font_size_decrease");
     if (pFontButton != nullptr) {
         pFontButton->AttachClick([this](const ui::EventArgs& args) {
             AdjustFontSize(false);
@@ -403,7 +408,7 @@ void MainForm::BindEvents()
     }
 
     // Color: left button click
-    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
+    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
     if (pColorComboBtn != nullptr) {
         pColorComboBtn->AttachClick([this, pColorComboBtn](const ui::EventArgs& args) {
             ui::Label* pLeftColorLabel = pColorComboBtn->GetLabelBottom();
@@ -423,7 +428,7 @@ void MainForm::BindEvents()
     }
 
     // Zoom buttons
-    ui::Button* pZoomButtom = ui::Find<ui::Button>(this, DUI_T("btn_zoom_in"));
+    ui::Button* pZoomButtom = ui::Find<ui::Button>(this, "btn_zoom_in");
     if (pZoomButtom != nullptr) {
         pZoomButtom->AttachClick([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
@@ -434,7 +439,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pZoomButtom = ui::Find<ui::Button>(this, DUI_T("btn_zoom_out"));
+    pZoomButtom = ui::Find<ui::Button>(this, "btn_zoom_out");
     if (pZoomButtom != nullptr) {
         pZoomButtom->AttachClick([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
@@ -445,7 +450,7 @@ void MainForm::BindEvents()
             return true;
             });
     }
-    pZoomButtom = ui::Find<ui::Button>(this, DUI_T("btn_zoom_off"));
+    pZoomButtom = ui::Find<ui::Button>(this, "btn_zoom_off");
     if (pZoomButtom != nullptr) {
         pZoomButtom->AttachClick([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
@@ -457,28 +462,28 @@ void MainForm::BindEvents()
     }
 
     // Word wrap
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_word_wrap"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_word_wrap");
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
         pCheckBox->AttachSelect([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
                 m_pRichEdit->SetWordWrap(true);
-                m_pRichEdit->SetAttribute(DUI_T("hscrollbar"), DUI_T("false"));
+                m_pRichEdit->SetAttribute("hscrollbar", "false");
             }
             return true;
             });
         pCheckBox->AttachUnSelect([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
                 m_pRichEdit->SetWordWrap(false);
-                m_pRichEdit->SetAttribute(DUI_T("hscrollbar"), DUI_T("true"));
+                m_pRichEdit->SetAttribute("hscrollbar", "true");
             }
             return true;
             });
     }
 
     // Rich text format
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_rich_text"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_rich_text");
     if ((pCheckBox != nullptr) && (m_pRichEdit != nullptr)) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
         pCheckBox->AttachSelect([this](const ui::EventArgs& args) {
             if (m_pRichEdit != nullptr) {
                 m_pRichEdit->SetRichText(true);
@@ -497,9 +502,9 @@ void MainForm::BindEvents()
     // Hyperlink (rich edit)
     if (m_pRichEdit != nullptr) {
         m_pRichEdit->AttachLinkClick([this](const ui::EventArgs& args) {
-            const DString::value_type* url = (const DString::value_type*)args.wParam;
+            const std::string::value_type* url = (const std::string::value_type*)args.wParam;
             if (url != nullptr) {
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
                 ::MessageBoxW(NativeWnd()->GetHWND(), ui::StringConvert::TToWString(url).c_str(), L"RichEdit Click HyperLink", MB_OK);
 #endif
             }
@@ -602,7 +607,7 @@ uint32_t MainForm::GetNextZoomPercent(uint32_t nOldZoomPercent, bool bZoomIn) co
 
 void MainForm::InitColorCombo()
 {
-    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
+    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
     if (pColorComboBtn == nullptr) {
         return;
     }
@@ -612,8 +617,8 @@ void MainForm::InitColorCombo()
         return;
     }
     pComboBox->SetWindow(this);
-    ui::GlobalManager::Instance().FillBoxWithCache(pComboBox, ui::FilePath(DUI_T("rich_edit/color_combox.xml")));
-    ui::ColorPickerRegular* pColorPicker = dynamic_cast<ui::ColorPickerRegular*>(pComboBox->FindSubControl(DUI_T("color_combo_picker")));
+    ui::GlobalManager::Instance().FillBoxWithCache(pComboBox, ui::FilePath("rich_edit/color_combox.xml"));
+    ui::ColorPickerRegular* pColorPicker = dynamic_cast<ui::ColorPickerRegular*>(pComboBox->FindSubControl("color_combo_picker"));
     if (pColorPicker != nullptr) {
         // Respond to the color selection event
         pColorPicker->AttachSelectColor([this, pColorComboBtn](const ui::EventArgs& args) {
@@ -628,7 +633,7 @@ void MainForm::InitColorCombo()
             });
     }
 
-    ui::Button* pMoreColorButton = dynamic_cast<ui::Button*>(pComboBox->FindSubControl(DUI_T("color_combo_picker_more")));
+    ui::Button* pMoreColorButton = dynamic_cast<ui::Button*>(pComboBox->FindSubControl("color_combo_picker_more"));
     if (pMoreColorButton != nullptr) {
         pMoreColorButton->AttachClick([this](const ui::EventArgs& args) {
             ShowColorPicker();
@@ -639,7 +644,7 @@ void MainForm::InitColorCombo()
 
 void MainForm::ShowColorPicker()
 {
-    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
+    ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
     if (pColorComboBtn == nullptr) {
         return;
     }
@@ -647,13 +652,13 @@ void MainForm::ShowColorPicker()
     if (pLeftColorLabel == nullptr) {
         return;
     }
-    DString oldTextColor = pLeftColorLabel->GetBkColor();
+    std::string oldTextColor = pLeftColorLabel->GetBkColor();
 
     ui::ColorPicker* pColorPicker = new ui::ColorPicker;
     ui::WindowCreateParam createParam;
     createParam.m_dwStyle = ui::kWS_POPUP;
     createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-    createParam.m_windowTitle = DUI_T("ColorPicker");
+    createParam.m_windowTitle = "ColorPicker";
     createParam.m_bCenterWindow = true;
 #ifdef DUI_BUILD_FOR_WIN
     pColorPicker->CreateWnd(nullptr, createParam);
@@ -704,7 +709,7 @@ void MainForm::UpdateFontStatus()
     const ui::UiFont fontInfo = pRichEdit->GetFontInfo();
 
     // Update the font name
-    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_name"));
+    ui::Combo* pFontNameCombo = ui::Find<ui::Combo>(this, "combo_font_name");
     if (pFontNameCombo != nullptr) {
         pFontNameCombo->SelectTextItem(fontInfo.m_fontName.c_str(), false);
     }
@@ -713,25 +718,25 @@ void MainForm::UpdateFontStatus()
     UpdateFontSizeStatus();
 
     // Update bold state
-    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_bold"));
+    ui::CheckBox* pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_bold");
     if (pCheckBox != nullptr) {
         pCheckBox->SetSelected(fontInfo.m_bBold);
     }
 
     // Update italic state
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_italic"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_italic");
     if (pCheckBox != nullptr) {
         pCheckBox->SetSelected(fontInfo.m_bItalic);
     }
 
     // Update underline state
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_underline"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_underline");
     if (pCheckBox != nullptr) {
         pCheckBox->SetSelected(fontInfo.m_bUnderline);
     }
 
     // Update strikethrough state
-    pCheckBox = ui::Find<ui::CheckBox>(this, DUI_T("btn_font_strikeout"));
+    pCheckBox = ui::Find<ui::CheckBox>(this, "btn_font_strikeout");
     if (pCheckBox != nullptr) {
         pCheckBox->SetSelected(fontInfo.m_bStrikeOut);
     }
@@ -743,7 +748,7 @@ void MainForm::UpdateFontSizeStatus()
     if (pRichEdit == nullptr) {
         return;
     }
-    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, DUI_T("combo_font_size"));
+    ui::Combo* pFontSizeCombo = ui::Find<ui::Combo>(this, "combo_font_size");
     if (pFontSizeCombo == nullptr) {
         return;
     }
@@ -803,7 +808,7 @@ void MainForm::UpdateFontSizeStatus()
     }
 }
 
-void MainForm::SetFontName(const DString& fontName)
+void MainForm::SetFontName(const std::string& fontName)
 {
     if (m_pRichEdit != nullptr) {
         ui::UiFont fontInfo = m_pRichEdit->GetFontInfo();
@@ -812,7 +817,7 @@ void MainForm::SetFontName(const DString& fontName)
     }
 }
 
-void MainForm::SetFontSize(const DString& fontSize)
+void MainForm::SetFontSize(const std::string& fontSize)
 {
     for (const ui::FontSizeInfo& fontSizeInfo : m_fontSizeList) {
         if (fontSize == fontSizeInfo.fontSizeName) {
@@ -939,7 +944,7 @@ void MainForm::SetFontStrikeOut(bool bStrikeOut)
     }
 }
 
-void MainForm::SetTextColor(const DString& newColor)
+void MainForm::SetTextColor(const std::string& newColor)
 {
     if (m_pRichEdit != nullptr) {
         if (m_pRichEdit->IsRichText()) {
@@ -1005,10 +1010,10 @@ LRESULT MainForm::OnKeyUpMsg(ui::VirtualKeyCode vkCode, uint32_t modifierKey, co
 void MainForm::UpdateSaveStatus()
 {
     if (m_pRichEdit != nullptr) {
-        ui::Button* pButton = ui::Find<ui::Button>(this, DUI_T("save_file"));
+        ui::Button* pButton = ui::Find<ui::Button>(this, "save_file");
         if (m_pRichEdit->GetModify()) {
             if (pButton != nullptr) {
-                pButton->SetText(m_saveBtnText + DUI_T("*"));
+                pButton->SetText(m_saveBtnText + "*");
             }
         }
         else {
@@ -1023,7 +1028,7 @@ void MainForm::LoadRichEditData()
 {
     std::string xml;
     ui::FilePath controls_xml = ui::GlobalManager::Instance().GetResourcePath();
-    controls_xml += DUI_T("rich_edit/rich_edit.xml");
+    controls_xml += "rich_edit/rich_edit.xml";
 
     // Try embedded resources first (code/gen versions)
     std::vector<unsigned char> fileData;
@@ -1041,7 +1046,7 @@ void MainForm::LoadRichEditData()
             ifs.close();
         }
     }
-    DString xmlU = ui::StringConvert::UTF8ToT(xml);
+    std::string xmlU = ui::StringConvert::UTF8ToT(xml);
 
     if (m_pRichEdit != nullptr) {
         m_pRichEdit->SetText(xmlU);
@@ -1059,7 +1064,7 @@ void MainForm::OnFindText()
         ui::WindowCreateParam createParam;
         createParam.m_dwStyle = ui::kWS_POPUP;
         createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-        createParam.m_windowTitle = DUI_T("FindForm");
+        createParam.m_windowTitle = "FindForm";
         createParam.m_bCenterWindow = true;
         m_pFindForm->CreateWnd(this, createParam);
         m_pFindForm->ShowWindow(ui::kSW_SHOW);
@@ -1090,7 +1095,7 @@ void MainForm::OnReplaceText()
         ui::WindowCreateParam createParam;
         createParam.m_dwStyle = ui::kWS_POPUP;
         createParam.m_dwExStyle = ui::kWS_EX_LAYERED;
-        createParam.m_windowTitle = DUI_T("ReplaceForm");
+        createParam.m_windowTitle = "ReplaceForm";
         createParam.m_bCenterWindow = true;
         m_pReplaceForm->CreateWnd(this, createParam);
         m_pReplaceForm->ShowWindow(ui::kSW_SHOW);
@@ -1109,12 +1114,12 @@ void MainForm::OnReplaceText()
     }
 }
 
-void MainForm::FindRichText(const DString& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
+void MainForm::FindRichText(const std::string& findText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
 {
     m_findReplace.FindRichText(findText, bFindDown, bMatchCase, bMatchWholeWord, pWndDialog);
 }
 
-void MainForm::ReplaceRichText(const DString& findText, const DString& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
+void MainForm::ReplaceRichText(const std::string& findText, const std::string& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
 {
     if (m_findReplace.ReplaceRichText(findText, replaceText, bFindDown, bMatchCase, bMatchWholeWord, pWndDialog)) {
         if (m_pRichEdit != nullptr) {
@@ -1124,7 +1129,7 @@ void MainForm::ReplaceRichText(const DString& findText, const DString& replaceTe
     }
 }
 
-void MainForm::ReplaceAllRichText(const DString& findText, const DString& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
+void MainForm::ReplaceAllRichText(const std::string& findText, const std::string& replaceText, bool bFindDown, bool bMatchCase, bool bMatchWholeWord, ui::Window* pWndDialog)
 {
     if (m_findReplace.ReplaceAllRichText(findText, replaceText, bFindDown, bMatchCase, bMatchWholeWord, pWndDialog)) {
         if (m_pRichEdit != nullptr) {
@@ -1146,10 +1151,10 @@ void MainForm::UpdateZoomValue()
         return;
     }
 
-    ui::Label* pZoomLabel = ui::Find<ui::Label>(this, DUI_T("lavel_zoom_value"));
+    ui::Label* pZoomLabel = ui::Find<ui::Label>(this, "lavel_zoom_value");
     if (pZoomLabel != nullptr) {
         uint32_t nZoomPercent = pRichEdit->GetZoomPercent();
-        DString strZoom = ui::StringUtil::Printf(DUI_T("%u%%"), nZoomPercent);
+        std::string strZoom = ui::StringUtil::Printf("%u%%", nZoomPercent);
         pZoomLabel->SetText(strZoom);
     }
 }
@@ -1157,20 +1162,20 @@ void MainForm::UpdateZoomValue()
 void MainForm::OnOpenFile()
 {
     std::vector<ui::FileDialog::FileType> fileTypes;
-    fileTypes.push_back({ DUI_T("All Files (*.*)"), DUI_T("*.*")});
-    fileTypes.push_back({ DUI_T("Text Files (*.txt)"), DUI_T("*.txt") });
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
-    fileTypes.push_back({ DUI_T("RTF Files (*.rtf)"), DUI_T("*.rtf") });
+    fileTypes.push_back({ "All Files (*.*)", "*.*"});
+    fileTypes.push_back({ "Text Files (*.txt)", "*.txt" });
+#if defined (DUI_BUILD_FOR_WIN)
+    fileTypes.push_back({ "RTF Files (*.rtf)", "*.rtf" });
 #endif
 
-    DString defaultExt;
+    std::string defaultExt;
     int32_t nFileTypeIndex = 1;
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if ((m_pRichEdit != nullptr) && m_pRichEdit->IsRichText()) {
         nFileTypeIndex = 2;
     }
 #endif
-    DString fileName = m_filePath.GetFileName();
+    std::string fileName = m_filePath.GetFileName();
 
     ui::FilePath filePath;
     ui::FileDialog openFileDlg;
@@ -1200,20 +1205,20 @@ void MainForm::OnSaveFile()
 void MainForm::OnSaveAsFile()
 {
     std::vector<ui::FileDialog::FileType> fileTypes;
-    fileTypes.push_back({ DUI_T("All Files (*.*)"), DUI_T("*.*") });
-    fileTypes.push_back({ DUI_T("Text Files (*.txt)"), DUI_T("*.txt") });
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
-    fileTypes.push_back({ DUI_T("RTF Files (*.rtf)"), DUI_T("*.rtf") });
+    fileTypes.push_back({ "All Files (*.*)", "*.*" });
+    fileTypes.push_back({ "Text Files (*.txt)", "*.txt" });
+#if defined (DUI_BUILD_FOR_WIN)
+    fileTypes.push_back({ "RTF Files (*.rtf)", "*.rtf" });
 #endif
 
-    DString defaultExt;
+    std::string defaultExt;
     int32_t nFileTypeIndex = 1;
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
     if ((m_pRichEdit != nullptr) && m_pRichEdit->IsRichText()) {
         nFileTypeIndex = 2;
     }
 #endif
-    DString fileName = m_filePath.GetFileName();
+    std::string fileName = m_filePath.GetFileName();
 
     ui::FilePath filePath;
     ui::FileDialog openFileDlg;
@@ -1228,15 +1233,19 @@ void MainForm::OnSaveAsFile()
     }
 }
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 bool MainForm::LoadFile(const ui::FilePath& filePath)
 {
     if (m_pRichEdit == nullptr) {
         return false;
     }
-    DString filePathLocal = filePath.NativePath();
-    HANDLE hFile = ::CreateFile(filePathLocal.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+    // CreateFile is CreateFileW under UNICODE and NativePath() is UTF-8, so the wide
+    // spelling is converted at the boundary. The UTF-8 one stays: IsRtfFile below
+    // takes it, and so does the rest of the file.
+    const std::string filePathLocal = filePath.NativePath();
+    const std::wstring filePathLocalW = ui::StringConvert::UTF8ToWString(filePathLocal);
+    HANDLE hFile = ::CreateFileW(filePathLocalW.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
@@ -1259,8 +1268,12 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
     if (m_pRichEdit == nullptr) {
         return false;
     }
-    DString filePathLocal = filePath.NativePath();
-    HANDLE hFile = ::CreateFile(filePathLocal.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+    // CreateFile is CreateFileW under UNICODE and NativePath() is UTF-8, so the wide
+    // spelling is converted at the boundary. The UTF-8 one stays: IsRtfFile below
+    // takes it, and so does the rest of the file.
+    const std::string filePathLocal = filePath.NativePath();
+    const std::wstring filePathLocalW = ui::StringConvert::UTF8ToWString(filePathLocal);
+    HANDLE hFile = ::CreateFileW(filePathLocalW.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
@@ -1278,15 +1291,15 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
     return !(BOOL)es.dwError;
 }
 
-bool MainForm::IsRtfFile(const DString& filePath) const
+bool MainForm::IsRtfFile(const std::string& filePath) const
 {
-    DString fileExt;
-    size_t pos = filePath.find_last_of(DUI_T("."));
-    if (pos != DString::npos) {
+    std::string fileExt;
+    size_t pos = filePath.find_last_of(".");
+    if (pos != std::string::npos) {
         fileExt = filePath.substr(pos);
         fileExt = ui::StringUtil::MakeLowerString(fileExt);
     }
-    return fileExt == DUI_T(".rtf");
+    return fileExt == ".rtf";
 }
 
 DWORD MainForm::StreamReadCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG FAR* pcb)
@@ -1359,7 +1372,7 @@ bool MainForm::GetRichEditLogFont(LOGFONTW& lf) const
         lf.lfPitchAndFamily = cf.bPitchAndFamily;
 
         // Replace with the system font name
-        DStringW fontName = cf.szFaceName;
+        std::wstring fontName = cf.szFaceName;
         ui::StringUtil::StringCopy(lf.lfFaceName, fontName.c_str());
     }
     return true;
@@ -1463,7 +1476,7 @@ void MainForm::OnSetFont()
         SetCharFormat(charFormat);
 
         // Update color
-        ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, DUI_T("color_combo_button"));
+        ui::ComboButton* pColorComboBtn = ui::Find<ui::ComboButton>(this, "color_combo_button");
         if (pColorComboBtn != nullptr) {
             if (pColorComboBtn->GetLabelBottom() != nullptr) {
                 ui::UiColor textColor;
@@ -1507,7 +1520,7 @@ void MainForm::SetCharFormat(CHARFORMAT2W& charFormat)
     }
 }
 
-#else //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#else //defined (DUI_BUILD_FOR_WIN)
 
 bool MainForm::LoadFile(const ui::FilePath& filePath)
 {
@@ -1519,7 +1532,7 @@ bool MainForm::LoadFile(const ui::FilePath& filePath)
     std::vector<uint8_t> fileData;
     ui::FileUtil::ReadFileData(filePath, fileData);
     if (!fileData.empty()) {
-        DStringW text;
+        std::wstring text;
         if (ui::StringCharset::GetDataAsString((const char*)fileData.data(), (uint32_t)fileData.size(), text)) {
             m_pRichEdit->SetText(text);
             bRet = true;
@@ -1534,7 +1547,7 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
     if (m_pRichEdit == nullptr) {
         return false;
     }    
-    DStringW text = m_pRichEdit->GetTextW();
+    std::wstring text = m_pRichEdit->GetTextW();
     if (text.empty()) {
         return false;
     }
@@ -1556,167 +1569,167 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
     }
     else if (charsetType == ui::CharsetType::ANSI) {
 #ifdef DUI_BUILD_FOR_WIN
-        DStringA textA = ui::StringConvert::UnicodeToMBCS(text);
+        std::string textA = ui::StringConvert::UnicodeToMBCS(text);
         bRet = ui::FileUtil::WriteFileData(filePath, textA);
 #else
         // Save as UTF-8
-        DStringA textA = ui::StringConvert::WStringToUTF8(text);
+        std::string textA = ui::StringConvert::WStringToUTF8(text);
         bRet = ui::FileUtil::WriteFileData(filePath, textA);
 #endif        
     }
     else {
         // Save as UTF-8
-        DStringA textA = ui::StringConvert::WStringToUTF8(text);
+        std::string textA = ui::StringConvert::WStringToUTF8(text);
         bRet = ui::FileUtil::WriteFileData(filePath, textA);
     }
     return bRet;
 }
 
-#endif //defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif //defined (DUI_BUILD_FOR_WIN)
 
 // Simplified pure-code UI built with ui::Create / ui::Attach.
 static void BuildRichEditUI(ui::Window* pWindow)
 {
-    auto* p0 = ui::Create<ui::VBox>(pWindow, {{DUI_T("bkcolor"), DUI_T("bk_wnd_darkcolor")}});
-    auto* p1 = ui::Attach<ui::HBox>(p0, {{DUI_T("name"), DUI_T("window_caption_bar")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("height"), DUI_T("36")}, {DUI_T("bkcolor"), DUI_T("bk_wnd_lightcolor")}});
-    auto* p2 = ui::Attach<ui::HBox>(p1, {{DUI_T("margin"), DUI_T("0,0,30,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
-    auto* p3 = ui::Attach<ui::Control>(p2, {{DUI_T("width"), DUI_T("18")}, {DUI_T("height"), DUI_T("18")}, {DUI_T("bkimage"), DUI_T("public/caption/logo.svg")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}});
-    auto* p4 = ui::Attach<ui::Label>(p2, {{DUI_T("text"), DUI_T("RichEdit控件测试程序")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,0,0")}, {DUI_T("mouse_enabled"), DUI_T("false")}});
-    auto* p5 = ui::Attach<ui::Control>(p1, {{DUI_T("mouse_enabled"), DUI_T("false")}});
-    auto* p6 = ui::Attach<ui::HBox>(p1, {{DUI_T("margin"), DUI_T("0,0,0,0")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("width"), DUI_T("auto")}, {DUI_T("height"), DUI_T("36")}});
-    auto* p7 = ui::Attach<ui::Button>(p6, {{DUI_T("class"), DUI_T("btn_wnd_min_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("minbtn")}, {DUI_T("margin"), DUI_T("0,2,0,2")}, {DUI_T("tooltip_text"), DUI_T("最小化")}});
-    auto* p8 = ui::Attach<ui::Box>(p6, {{DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("margin"), DUI_T("0,2,0,2")}});
-    auto* p9 = ui::Attach<ui::Button>(p8, {{DUI_T("class"), DUI_T("btn_wnd_max_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("name"), DUI_T("maxbtn")}, {DUI_T("tooltip_text"), DUI_T("最大化")}});
-    auto* p10 = ui::Attach<ui::Button>(p8, {{DUI_T("class"), DUI_T("btn_wnd_restore_11")}, {DUI_T("height"), DUI_T("32")}, {DUI_T("width"), DUI_T("stretch")}, {DUI_T("name"), DUI_T("restorebtn")}, {DUI_T("visible"), DUI_T("false")}, {DUI_T("tooltip_text"), DUI_T("还原")}});
-    auto* p11 = ui::Attach<ui::Button>(p6, {{DUI_T("class"), DUI_T("btn_wnd_close_11")}, {DUI_T("height"), DUI_T("stretch")}, {DUI_T("width"), DUI_T("40")}, {DUI_T("name"), DUI_T("closebtn")}, {DUI_T("margin"), DUI_T("0,0,0,2")}, {DUI_T("tooltip_text"), DUI_T("关闭")}});
+    auto* p0 = ui::Create<ui::VBox>(pWindow, {{"bkcolor", "bk_wnd_darkcolor"}});
+    auto* p1 = ui::Attach<ui::HBox>(p0, {{"name", "window_caption_bar"}, {"width", "stretch"}, {"height", "36"}, {"bkcolor", "bk_wnd_lightcolor"}});
+    auto* p2 = ui::Attach<ui::HBox>(p1, {{"margin", "0,0,30,0"}, {"valign", "center"}, {"width", "auto"}, {"height", "auto"}, {"mouse_enabled", "false"}});
+    auto* p3 = ui::Attach<ui::Control>(p2, {{"width", "18"}, {"height", "18"}, {"bkimage", "public/caption/logo.svg"}, {"valign", "center"}, {"margin", "8,0,0,0"}});
+    auto* p4 = ui::Attach<ui::Label>(p2, {{"text", "RichEdit控件测试程序"}, {"valign", "center"}, {"margin", "8,0,0,0"}, {"mouse_enabled", "false"}});
+    auto* p5 = ui::Attach<ui::Control>(p1, {{"mouse_enabled", "false"}});
+    auto* p6 = ui::Attach<ui::HBox>(p1, {{"margin", "0,0,0,0"}, {"valign", "center"}, {"width", "auto"}, {"height", "36"}});
+    auto* p7 = ui::Attach<ui::Button>(p6, {{"class", "btn_wnd_min_11"}, {"height", "32"}, {"width", "40"}, {"name", "minbtn"}, {"margin", "0,2,0,2"}, {"tooltip_text", "最小化"}});
+    auto* p8 = ui::Attach<ui::Box>(p6, {{"height", "stretch"}, {"width", "40"}, {"margin", "0,2,0,2"}});
+    auto* p9 = ui::Attach<ui::Button>(p8, {{"class", "btn_wnd_max_11"}, {"height", "32"}, {"width", "stretch"}, {"name", "maxbtn"}, {"tooltip_text", "最大化"}});
+    auto* p10 = ui::Attach<ui::Button>(p8, {{"class", "btn_wnd_restore_11"}, {"height", "32"}, {"width", "stretch"}, {"name", "restorebtn"}, {"visible", "false"}, {"tooltip_text", "还原"}});
+    auto* p11 = ui::Attach<ui::Button>(p6, {{"class", "btn_wnd_close_11"}, {"height", "stretch"}, {"width", "40"}, {"name", "closebtn"}, {"margin", "0,0,0,2"}, {"tooltip_text", "关闭"}});
     auto* p12 = ui::Attach<ui::HBox>(p0, {});
-    auto* p13 = ui::Attach<ui::VScrollBox>(p12, {{DUI_T("width"), DUI_T("360")}, {DUI_T("vscrollbar"), DUI_T("true")}, {DUI_T("minwidth"), DUI_T("60")}, {DUI_T("bkcolor"), DUI_T("SeaShell")}, {DUI_T("border_size"), DUI_T("1,1,0,1")}, {DUI_T("border_color"), DUI_T("blue")}});
-    auto* p14 = ui::Attach<ui::GroupVBox>(p13, {{DUI_T("margin"), DUI_T("6,6,6,6")}, {DUI_T("text"), DUI_T("密码相关功能")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("corner_size"), DUI_T("4,4")}});
-    auto* p15 = ui::Attach<ui::HBox>(p14, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,16,8,0")}});
-    auto* p16 = ui::Attach<ui::Label>(p15, {{DUI_T("text"), DUI_T("密码输入:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p17 = ui::Attach<ui::RichEdit>(p15, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("This is password!")}, {DUI_T("password"), DUI_T("true")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p18 = ui::Attach<ui::HBox>(p14, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p19 = ui::Attach<ui::Label>(p18, {{DUI_T("text"), DUI_T("显示密码:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p20 = ui::Attach<ui::RichEdit>(p18, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("This is password!")}, {DUI_T("password"), DUI_T("true")}, {DUI_T("show_password"), DUI_T("true")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p21 = ui::Attach<ui::HBox>(p14, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p22 = ui::Attach<ui::Label>(p21, {{DUI_T("text"), DUI_T("闪现密码字符:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p23 = ui::Attach<ui::RichEdit>(p21, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("This is password!")}, {DUI_T("password"), DUI_T("true")}, {DUI_T("flash_password_char"), DUI_T("true")}, {DUI_T("show_password"), DUI_T("false")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p24 = ui::Attach<ui::HBox>(p14, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,8")}});
-    auto* p25 = ui::Attach<ui::Label>(p24, {{DUI_T("text"), DUI_T("密码字符为#:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p26 = ui::Attach<ui::RichEdit>(p24, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("This is password!")}, {DUI_T("password"), DUI_T("true")}, {DUI_T("password_char"), DUI_T("#")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p27 = ui::Attach<ui::GroupVBox>(p13, {{DUI_T("margin"), DUI_T("6,6,6,6")}, {DUI_T("text"), DUI_T("基本功能")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("corner_size"), DUI_T("4,4")}});
-    auto* p28 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,16,8,0")}});
-    auto* p29 = ui::Attach<ui::Label>(p28, {{DUI_T("text"), DUI_T("单行编辑:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p30 = ui::Attach<ui::RichEdit>(p28, {{DUI_T("class"), DUI_T("simple simple_border")}, {DUI_T("text"), DUI_T("RichEdit: simple")}, {DUI_T("default_context_menu"), DUI_T("true")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("text_padding"), DUI_T("2,0,0,0")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p31 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("44")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p32 = ui::Attach<ui::Label>(p31, {{DUI_T("text"), DUI_T("单行编辑:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p33 = ui::Attach<ui::RichEdit>(p31, {{DUI_T("class"), DUI_T("simple simple_border")}, {DUI_T("text"), DUI_T("RichEdit: edit")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("text_padding"), DUI_T("4,4,4,4")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p34 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p35 = ui::Attach<ui::Label>(p34, {{DUI_T("text"), DUI_T("提示模式:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p36 = ui::Attach<ui::RichEdit>(p34, {{DUI_T("class"), DUI_T("prompt simple simple_border_bottom")}, {DUI_T("prompttext"), DUI_T("在这里可以输入文字")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p37 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p38 = ui::Attach<ui::Label>(p37, {{DUI_T("text"), DUI_T("数字模式:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p39 = ui::Attach<ui::RichEdit>(p37, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("0123456789")}, {DUI_T("number"), DUI_T("true")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p40 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p41 = ui::Attach<ui::Label>(p40, {{DUI_T("text"), DUI_T("只读模式:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p42 = ui::Attach<ui::RichEdit>(p40, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("RichEdit: readonly")}, {DUI_T("readonly"), DUI_T("true")}, {DUI_T("no_caret_readonly"), DUI_T("true")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p43 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p44 = ui::Attach<ui::Label>(p43, {{DUI_T("text"), DUI_T("禁用模式:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p45 = ui::Attach<ui::RichEdit>(p43, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("enabled"), DUI_T("false")}, {DUI_T("text"), DUI_T("RichEdit: disabled")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p46 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p47 = ui::Attach<ui::Label>(p46, {{DUI_T("text"), DUI_T("超级链接:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p48 = ui::Attach<ui::RichEdit>(p46, {{DUI_T("name"), DUI_T("test_url")}, {DUI_T("auto_detect_url"), DUI_T("true")}, {DUI_T("text"), DUI_T("访问网址：http://www.baidu.com")}, {DUI_T("readonly"), DUI_T("true")}, {DUI_T("no_caret_readonly"), DUI_T("true")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("text_padding"), DUI_T("2,0,0,0")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p49 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p50 = ui::Attach<ui::Label>(p49, {{DUI_T("text"), DUI_T("文本颜色:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p51 = ui::Attach<ui::RichEdit>(p49, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("RichEdit: 文本颜色为红色")}, {DUI_T("normal_text_color"), DUI_T("red")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p52 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p53 = ui::Attach<ui::Label>(p52, {{DUI_T("text"), DUI_T("光标颜色:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p54 = ui::Attach<ui::RichEdit>(p52, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("RichEdit: 光标颜色为红色")}, {DUI_T("caret_color"), DUI_T("red")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p55 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("48")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p56 = ui::Attach<ui::Label>(p55, {{DUI_T("text"), DUI_T("文本对齐:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p57 = ui::Attach<ui::RichEdit>(p55, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("text_align={left/hcenter/right,top/vcenter/bottom}")}, {DUI_T("text_align"), DUI_T("hcenter,vcenter")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p58 = ui::Attach<ui::HBox>(p27, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,8")}});
-    auto* p59 = ui::Attach<ui::Label>(p58, {{DUI_T("text"), DUI_T("最大字符数为8:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p60 = ui::Attach<ui::RichEdit>(p58, {{DUI_T("class"), DUI_T("simple")}, {DUI_T("text"), DUI_T("最大字符数为8")}, {DUI_T("max_char"), DUI_T("8")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p61 = ui::Attach<ui::GroupVBox>(p13, {{DUI_T("margin"), DUI_T("6,6,6,6")}, {DUI_T("text"), DUI_T("常用功能")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("corner_size"), DUI_T("4,4")}});
-    auto* p62 = ui::Attach<ui::HBox>(p61, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,16,8,0")}});
-    auto* p63 = ui::Attach<ui::Label>(p62, {{DUI_T("text"), DUI_T("Spin功能:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p64 = ui::Attach<ui::RichEdit>(p62, {{DUI_T("class"), DUI_T("simple simple_border rich_edit_spin")}, {DUI_T("min_number"), DUI_T("-64")}, {DUI_T("max_number"), DUI_T("64")}, {DUI_T("limit_text"), DUI_T("3")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p65 = ui::Attach<ui::Label>(p62, {{DUI_T("text"), DUI_T("(数字范围: -64 - 64)")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p66 = ui::Attach<ui::HBox>(p61, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p67 = ui::Attach<ui::Label>(p66, {{DUI_T("text"), DUI_T("清除文本:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p68 = ui::Attach<ui::RichEdit>(p66, {{DUI_T("class"), DUI_T("simple simple_border rich_edit_clear_btn")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p69 = ui::Attach<ui::HBox>(p61, {{DUI_T("height"), DUI_T("36")}, {DUI_T("margin"), DUI_T("8,0,8,8")}});
-    auto* p70 = ui::Attach<ui::Label>(p69, {{DUI_T("text"), DUI_T("显示密码:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p71 = ui::Attach<ui::RichEdit>(p69, {{DUI_T("class"), DUI_T("simple simple_border rich_edit_show_password_btn")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p72 = ui::Attach<ui::GroupVBox>(p13, {{DUI_T("margin"), DUI_T("6,6,6,6")}, {DUI_T("text"), DUI_T("滚动条相关")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("corner_size"), DUI_T("4,4")}});
-    auto* p73 = ui::Attach<ui::HBox>(p72, {{DUI_T("height"), DUI_T("48")}, {DUI_T("margin"), DUI_T("8,16,8,0")}});
-    auto* p74 = ui::Attach<ui::Label>(p73, {{DUI_T("text"), DUI_T("横向滚动条:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p75 = ui::Attach<ui::RichEdit>(p73, {{DUI_T("text"), DUI_T("横向测试0横向测试1横向测试2横向测试3横向测试4横向测试5横向测试6横向测试7横向测试8")}, {DUI_T("multi_line"), DUI_T("true")}, {DUI_T("word_wrap"), DUI_T("false")}, {DUI_T("hscrollbar"), DUI_T("true")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p76 = ui::Attach<ui::HBox>(p72, {{DUI_T("height"), DUI_T("48")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p77 = ui::Attach<ui::Label>(p76, {{DUI_T("text"), DUI_T("纵向滚动条:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p78 = ui::Attach<ui::RichEdit>(p76, {{DUI_T("text"), DUI_T("纵向测试0纵向测试1纵向测试2纵向测试3纵向测试4纵向测试5纵向测试6纵向测试7纵向测试8纵向测试9纵向测试10纵向测试11纵向测试12纵向测试13纵向测试14")}, {DUI_T("multi_line"), DUI_T("true")}, {DUI_T("want_return"), DUI_T("true")}, {DUI_T("word_wrap"), DUI_T("true")}, {DUI_T("vscrollbar"), DUI_T("true")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p79 = ui::Attach<ui::HBox>(p72, {{DUI_T("height"), DUI_T("48")}, {DUI_T("margin"), DUI_T("8,0,8,8")}});
-    auto* p80 = ui::Attach<ui::Label>(p79, {{DUI_T("text"), DUI_T("同时横向与纵向滚动条:  ")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p81 = ui::Attach<ui::RichEdit>(p79, {{DUI_T("text"), DUI_T("纵向测试0纵向测试1纵向测试2纵向测试3纵向测试4纵向测试5纵向测试6纵向测试7纵向测试8纵向测试9纵向测试10纵向测试11纵向测试12纵向测试13纵向测试14")}, {DUI_T("multi_line"), DUI_T("true")}, {DUI_T("want_return"), DUI_T("true")}, {DUI_T("word_wrap"), DUI_T("false")}, {DUI_T("vscrollbar"), DUI_T("true")}, {DUI_T("hscrollbar"), DUI_T("true")}, {DUI_T("bkcolor"), DUI_T("white")}, {DUI_T("margin"), DUI_T("4,6,4,4")}});
-    auto* p82 = ui::Attach<ui::Split>(p12, {{DUI_T("bkcolor"), DUI_T("splitline_level1")}, {DUI_T("width"), DUI_T("2")}});
+    auto* p13 = ui::Attach<ui::VScrollBox>(p12, {{"width", "360"}, {"vscrollbar", "true"}, {"minwidth", "60"}, {"bkcolor", "SeaShell"}, {"border_size", "1,1,0,1"}, {"border_color", "blue"}});
+    auto* p14 = ui::Attach<ui::GroupVBox>(p13, {{"margin", "6,6,6,6"}, {"text", "密码相关功能"}, {"height", "auto"}, {"corner_size", "4,4"}});
+    auto* p15 = ui::Attach<ui::HBox>(p14, {{"height", "36"}, {"margin", "8,16,8,0"}});
+    auto* p16 = ui::Attach<ui::Label>(p15, {{"text", "密码输入:  "}, {"valign", "center"}});
+    auto* p17 = ui::Attach<ui::RichEdit>(p15, {{"class", "simple"}, {"text", "This is password!"}, {"password", "true"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p18 = ui::Attach<ui::HBox>(p14, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p19 = ui::Attach<ui::Label>(p18, {{"text", "显示密码:  "}, {"valign", "center"}});
+    auto* p20 = ui::Attach<ui::RichEdit>(p18, {{"class", "simple"}, {"text", "This is password!"}, {"password", "true"}, {"show_password", "true"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p21 = ui::Attach<ui::HBox>(p14, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p22 = ui::Attach<ui::Label>(p21, {{"text", "闪现密码字符:  "}, {"valign", "center"}});
+    auto* p23 = ui::Attach<ui::RichEdit>(p21, {{"class", "simple"}, {"text", "This is password!"}, {"password", "true"}, {"flash_password_char", "true"}, {"show_password", "false"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p24 = ui::Attach<ui::HBox>(p14, {{"height", "36"}, {"margin", "8,0,8,8"}});
+    auto* p25 = ui::Attach<ui::Label>(p24, {{"text", "密码字符为#:  "}, {"valign", "center"}});
+    auto* p26 = ui::Attach<ui::RichEdit>(p24, {{"class", "simple"}, {"text", "This is password!"}, {"password", "true"}, {"password_char", "#"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p27 = ui::Attach<ui::GroupVBox>(p13, {{"margin", "6,6,6,6"}, {"text", "基本功能"}, {"height", "auto"}, {"corner_size", "4,4"}});
+    auto* p28 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,16,8,0"}});
+    auto* p29 = ui::Attach<ui::Label>(p28, {{"text", "单行编辑:  "}, {"valign", "center"}});
+    auto* p30 = ui::Attach<ui::RichEdit>(p28, {{"class", "simple simple_border"}, {"text", "RichEdit: simple"}, {"default_context_menu", "true"}, {"valign", "center"}, {"text_align", "vcenter"}, {"text_padding", "2,0,0,0"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p31 = ui::Attach<ui::HBox>(p27, {{"height", "44"}, {"margin", "8,0,8,0"}});
+    auto* p32 = ui::Attach<ui::Label>(p31, {{"text", "单行编辑:  "}, {"valign", "center"}});
+    auto* p33 = ui::Attach<ui::RichEdit>(p31, {{"class", "simple simple_border"}, {"text", "RichEdit: edit"}, {"valign", "center"}, {"text_align", "vcenter"}, {"text_padding", "4,4,4,4"}, {"margin", "4,6,4,4"}});
+    auto* p34 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p35 = ui::Attach<ui::Label>(p34, {{"text", "提示模式:  "}, {"valign", "center"}});
+    auto* p36 = ui::Attach<ui::RichEdit>(p34, {{"class", "prompt simple simple_border_bottom"}, {"prompttext", "在这里可以输入文字"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p37 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p38 = ui::Attach<ui::Label>(p37, {{"text", "数字模式:  "}, {"valign", "center"}});
+    auto* p39 = ui::Attach<ui::RichEdit>(p37, {{"class", "simple"}, {"text", "0123456789"}, {"number", "true"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p40 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p41 = ui::Attach<ui::Label>(p40, {{"text", "只读模式:  "}, {"valign", "center"}});
+    auto* p42 = ui::Attach<ui::RichEdit>(p40, {{"class", "simple"}, {"text", "RichEdit: readonly"}, {"readonly", "true"}, {"no_caret_readonly", "true"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p43 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p44 = ui::Attach<ui::Label>(p43, {{"text", "禁用模式:  "}, {"valign", "center"}});
+    auto* p45 = ui::Attach<ui::RichEdit>(p43, {{"class", "simple"}, {"enabled", "false"}, {"text", "RichEdit: disabled"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p46 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p47 = ui::Attach<ui::Label>(p46, {{"text", "超级链接:  "}, {"valign", "center"}});
+    auto* p48 = ui::Attach<ui::RichEdit>(p46, {{"name", "test_url"}, {"auto_detect_url", "true"}, {"text", "访问网址：http://www.baidu.com"}, {"readonly", "true"}, {"no_caret_readonly", "true"}, {"valign", "center"}, {"text_align", "vcenter"}, {"text_padding", "2,0,0,0"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p49 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p50 = ui::Attach<ui::Label>(p49, {{"text", "文本颜色:  "}, {"valign", "center"}});
+    auto* p51 = ui::Attach<ui::RichEdit>(p49, {{"class", "simple"}, {"text", "RichEdit: 文本颜色为红色"}, {"normal_text_color", "red"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p52 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p53 = ui::Attach<ui::Label>(p52, {{"text", "光标颜色:  "}, {"valign", "center"}});
+    auto* p54 = ui::Attach<ui::RichEdit>(p52, {{"class", "simple"}, {"text", "RichEdit: 光标颜色为红色"}, {"caret_color", "red"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p55 = ui::Attach<ui::HBox>(p27, {{"height", "48"}, {"margin", "8,0,8,0"}});
+    auto* p56 = ui::Attach<ui::Label>(p55, {{"text", "文本对齐:  "}, {"valign", "center"}});
+    auto* p57 = ui::Attach<ui::RichEdit>(p55, {{"class", "simple"}, {"text", "text_align={left/hcenter/right,top/vcenter/bottom}"}, {"text_align", "hcenter,vcenter"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p58 = ui::Attach<ui::HBox>(p27, {{"height", "36"}, {"margin", "8,0,8,8"}});
+    auto* p59 = ui::Attach<ui::Label>(p58, {{"text", "最大字符数为8:  "}, {"valign", "center"}});
+    auto* p60 = ui::Attach<ui::RichEdit>(p58, {{"class", "simple"}, {"text", "最大字符数为8"}, {"max_char", "8"}, {"valign", "center"}, {"text_align", "vcenter"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p61 = ui::Attach<ui::GroupVBox>(p13, {{"margin", "6,6,6,6"}, {"text", "常用功能"}, {"height", "auto"}, {"corner_size", "4,4"}});
+    auto* p62 = ui::Attach<ui::HBox>(p61, {{"height", "36"}, {"margin", "8,16,8,0"}});
+    auto* p63 = ui::Attach<ui::Label>(p62, {{"text", "Spin功能:  "}, {"valign", "center"}});
+    auto* p64 = ui::Attach<ui::RichEdit>(p62, {{"class", "simple simple_border rich_edit_spin"}, {"min_number", "-64"}, {"max_number", "64"}, {"limit_text", "3"}, {"margin", "4,6,4,4"}});
+    auto* p65 = ui::Attach<ui::Label>(p62, {{"text", "(数字范围: -64 - 64)"}, {"valign", "center"}});
+    auto* p66 = ui::Attach<ui::HBox>(p61, {{"height", "36"}, {"margin", "8,0,8,0"}});
+    auto* p67 = ui::Attach<ui::Label>(p66, {{"text", "清除文本:  "}, {"valign", "center"}});
+    auto* p68 = ui::Attach<ui::RichEdit>(p66, {{"class", "simple simple_border rich_edit_clear_btn"}, {"margin", "4,6,4,4"}});
+    auto* p69 = ui::Attach<ui::HBox>(p61, {{"height", "36"}, {"margin", "8,0,8,8"}});
+    auto* p70 = ui::Attach<ui::Label>(p69, {{"text", "显示密码:  "}, {"valign", "center"}});
+    auto* p71 = ui::Attach<ui::RichEdit>(p69, {{"class", "simple simple_border rich_edit_show_password_btn"}, {"margin", "4,6,4,4"}});
+    auto* p72 = ui::Attach<ui::GroupVBox>(p13, {{"margin", "6,6,6,6"}, {"text", "滚动条相关"}, {"height", "auto"}, {"corner_size", "4,4"}});
+    auto* p73 = ui::Attach<ui::HBox>(p72, {{"height", "48"}, {"margin", "8,16,8,0"}});
+    auto* p74 = ui::Attach<ui::Label>(p73, {{"text", "横向滚动条:  "}, {"valign", "center"}});
+    auto* p75 = ui::Attach<ui::RichEdit>(p73, {{"text", "横向测试0横向测试1横向测试2横向测试3横向测试4横向测试5横向测试6横向测试7横向测试8"}, {"multi_line", "true"}, {"word_wrap", "false"}, {"hscrollbar", "true"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p76 = ui::Attach<ui::HBox>(p72, {{"height", "48"}, {"margin", "8,0,8,0"}});
+    auto* p77 = ui::Attach<ui::Label>(p76, {{"text", "纵向滚动条:  "}, {"valign", "center"}});
+    auto* p78 = ui::Attach<ui::RichEdit>(p76, {{"text", "纵向测试0纵向测试1纵向测试2纵向测试3纵向测试4纵向测试5纵向测试6纵向测试7纵向测试8纵向测试9纵向测试10纵向测试11纵向测试12纵向测试13纵向测试14"}, {"multi_line", "true"}, {"want_return", "true"}, {"word_wrap", "true"}, {"vscrollbar", "true"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p79 = ui::Attach<ui::HBox>(p72, {{"height", "48"}, {"margin", "8,0,8,8"}});
+    auto* p80 = ui::Attach<ui::Label>(p79, {{"text", "同时横向与纵向滚动条:  "}, {"valign", "center"}});
+    auto* p81 = ui::Attach<ui::RichEdit>(p79, {{"text", "纵向测试0纵向测试1纵向测试2纵向测试3纵向测试4纵向测试5纵向测试6纵向测试7纵向测试8纵向测试9纵向测试10纵向测试11纵向测试12纵向测试13纵向测试14"}, {"multi_line", "true"}, {"want_return", "true"}, {"word_wrap", "false"}, {"vscrollbar", "true"}, {"hscrollbar", "true"}, {"bkcolor", "white"}, {"margin", "4,6,4,4"}});
+    auto* p82 = ui::Attach<ui::Split>(p12, {{"bkcolor", "splitline_level1"}, {"width", "2"}});
     auto* p83 = ui::Attach<ui::VBox>(p12, {});
-    auto* p84 = ui::Attach<ui::VBox>(p83, {{DUI_T("bkcolor"), DUI_T("bk_wnd_darkcolor")}, {DUI_T("height"), DUI_T("auto")}, {DUI_T("minheight"), DUI_T("40")}});
-    auto* p85 = ui::Attach<ui::HBox>(p84, {{DUI_T("height"), DUI_T("auto")}, {DUI_T("margin"), DUI_T("0,2,2,0")}});
-    auto* p86 = ui::Attach<ui::Label>(p85, {{DUI_T("text"), DUI_T("文件：")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p87 = ui::Attach<ui::Button>(p85, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("open_file")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("打开(Ctrl+O)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p88 = ui::Attach<ui::Button>(p85, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("save_file")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("保存(Ctrl+S)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p89 = ui::Attach<ui::Button>(p85, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("save_as_file")}, {DUI_T("width"), DUI_T("160")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("另存为(Ctrl+Shift+S)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p90 = ui::Attach<ui::HBox>(p84, {{DUI_T("height"), DUI_T("auto")}, {DUI_T("margin"), DUI_T("0,2,2,0")}});
-    auto* p91 = ui::Attach<ui::Label>(p90, {{DUI_T("text"), DUI_T("编辑：")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p92 = ui::Attach<ui::Button>(p90, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_copy")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("复制(Ctrl+C)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p93 = ui::Attach<ui::Button>(p90, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_cut")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("剪切(Ctrl+X)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p94 = ui::Attach<ui::Button>(p90, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_paste")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("粘贴(Ctrl+V)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p95 = ui::Attach<ui::Button>(p90, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_delete")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("删除(Del)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p96 = ui::Attach<ui::Button>(p90, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_sel_all")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("全选(Ctrl+A)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,8,0")}});
-    auto* p97 = ui::Attach<ui::Button>(p90, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_sel_none")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("取消选择")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,8,0")}});
-    auto* p98 = ui::Attach<ui::Button>(p90, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_undo")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("撤销(Ctrl+Z)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p99 = ui::Attach<ui::Button>(p90, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_redo")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("重做(Ctrl+Y)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p100 = ui::Attach<ui::HBox>(p84, {{DUI_T("height"), DUI_T("auto")}, {DUI_T("margin"), DUI_T("0,2,2,0")}});
-    auto* p101 = ui::Attach<ui::Label>(p100, {{DUI_T("text"), DUI_T("查找：")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p102 = ui::Attach<ui::Button>(p100, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_find_text")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("查找(Ctrl+F)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p103 = ui::Attach<ui::Button>(p100, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_find_next")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("查找下一个(F3)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p104 = ui::Attach<ui::Button>(p100, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("btn_replace_text")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("替换(Ctrl+H)")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,0")}});
-    auto* p105 = ui::Attach<ui::HBox>(p84, {{DUI_T("height"), DUI_T("auto")}, {DUI_T("margin"), DUI_T("0,2,2,0")}});
-    auto* p106 = ui::Attach<ui::Label>(p105, {{DUI_T("text"), DUI_T("字体：")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p107 = ui::Attach<ui::Button>(p105, {{DUI_T("class"), DUI_T("btn_global_gray_80x30")}, {DUI_T("name"), DUI_T("set_font")}, {DUI_T("width"), DUI_T("100")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("text"), DUI_T("设置字体")}, {DUI_T("borderround"), DUI_T("2,2")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,4,2")}});
-    auto* p108 = ui::Attach<ui::Combo>(p105, {{DUI_T("class"), DUI_T("combo")}, {DUI_T("name"), DUI_T("combo_font_name")}, {DUI_T("combo_type"), DUI_T("drop_down")}, {DUI_T("dropbox_size"), DUI_T("0,300")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("width"), DUI_T("160")}, {DUI_T("tooltiptext"), DUI_T("选择字体")}, {DUI_T("margin"), DUI_T("2,0,2,2")}});
-    auto* p109 = ui::Attach<ui::Combo>(p105, {{DUI_T("class"), DUI_T("combo")}, {DUI_T("name"), DUI_T("combo_font_size")}, {DUI_T("combo_type"), DUI_T("drop_down")}, {DUI_T("dropbox_size"), DUI_T("0,300")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("width"), DUI_T("60")}, {DUI_T("margin"), DUI_T("2,0,2,0")}, {DUI_T("tooltiptext"), DUI_T("选择字体")}});
-    auto* p110 = ui::Attach<ui::CheckBox>(p105, {{DUI_T("class"), DUI_T("checkbox_font_class")}, {DUI_T("name"), DUI_T("btn_font_bold")}, {DUI_T("width"), DUI_T("28")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("B")}, {DUI_T("font"), DUI_T("btn_font_bold_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("2,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("粗体：改为较粗的字体")}});
-    auto* p111 = ui::Attach<ui::CheckBox>(p105, {{DUI_T("class"), DUI_T("checkbox_font_class")}, {DUI_T("name"), DUI_T("btn_font_italic")}, {DUI_T("width"), DUI_T("28")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("I")}, {DUI_T("font"), DUI_T("btn_font_italic_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("1,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("斜体：改为倾斜的字体")}});
-    auto* p112 = ui::Attach<ui::CheckBox>(p105, {{DUI_T("class"), DUI_T("checkbox_font_class")}, {DUI_T("name"), DUI_T("btn_font_underline")}, {DUI_T("width"), DUI_T("28")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("U")}, {DUI_T("font"), DUI_T("system_underline_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("1,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("下划线：在文本下面画一条线")}});
-    auto* p113 = ui::Attach<ui::CheckBox>(p105, {{DUI_T("class"), DUI_T("checkbox_font_class")}, {DUI_T("name"), DUI_T("btn_font_strikeout")}, {DUI_T("width"), DUI_T("28")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("abc")}, {DUI_T("font"), DUI_T("system_strikeout_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("1,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("删除线：在文本上画一条线")}});
-    auto* p114 = ui::Attach<ui::Button>(p105, {{DUI_T("class"), DUI_T("btn_font_class")}, {DUI_T("name"), DUI_T("btn_font_size_increase")}, {DUI_T("width"), DUI_T("32")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("A+")}, {DUI_T("font"), DUI_T("btn_font_bold_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("1,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("增加字体的大小")}});
-    auto* p115 = ui::Attach<ui::Button>(p105, {{DUI_T("class"), DUI_T("btn_font_class")}, {DUI_T("name"), DUI_T("btn_font_size_decrease")}, {DUI_T("width"), DUI_T("32")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("A-")}, {DUI_T("font"), DUI_T("btn_font_bold_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("1,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("减小字体的大小")}});
-    auto* p116 = ui::Attach<ui::ComboButton>(p105, {{DUI_T("class"), DUI_T("combo_button")}, {DUI_T("name"), DUI_T("color_combo_button")}, {DUI_T("height"), DUI_T("28")}, {DUI_T("width"), DUI_T("48")}, {DUI_T("dropbox_size"), DUI_T("240,300")}, {DUI_T("left_button_top_label_text"), DUI_T("A")}, {DUI_T("left_button_bottom_label_bkcolor"), DUI_T("skyblue")}});
-    auto* p117 = ui::Attach<ui::Label>(p105, {{DUI_T("text"), DUI_T("(富文本模式为设置当前选择文本的格式)")}, {DUI_T("font"), DUI_T("system_12")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("2,0,2,0")}, {DUI_T("tooltiptext"), DUI_T("富文本模式为设置当前选择文本的格式;纯文本模式为设置所有文本的格式。")}});
-    auto* p118 = ui::Attach<ui::HBox>(p84, {{DUI_T("height"), DUI_T("auto")}, {DUI_T("margin"), DUI_T("0,2,2,0")}});
-    auto* p119 = ui::Attach<ui::Label>(p118, {{DUI_T("text"), DUI_T("缩放：")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p120 = ui::Attach<ui::Label>(p118, {{DUI_T("text"), DUI_T("当前缩放比例：")}, {DUI_T("valign"), DUI_T("center")}});
-    auto* p121 = ui::Attach<ui::Label>(p118, {{DUI_T("name"), DUI_T("lavel_zoom_value")}, {DUI_T("text"), DUI_T("100.0%")}, {DUI_T("font"), DUI_T("system_bold_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("0,0,12,0")}});
-    auto* p122 = ui::Attach<ui::Button>(p118, {{DUI_T("class"), DUI_T("btn_font_class")}, {DUI_T("name"), DUI_T("btn_zoom_in")}, {DUI_T("width"), DUI_T("64")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("放大+")}, {DUI_T("font"), DUI_T("system_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("1,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("增加字体的大小")}});
-    auto* p123 = ui::Attach<ui::Button>(p118, {{DUI_T("class"), DUI_T("btn_font_class")}, {DUI_T("name"), DUI_T("btn_zoom_out")}, {DUI_T("width"), DUI_T("64")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("缩小-")}, {DUI_T("font"), DUI_T("system_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("1,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("减小字体的大小")}});
-    auto* p124 = ui::Attach<ui::Button>(p118, {{DUI_T("class"), DUI_T("btn_font_class")}, {DUI_T("name"), DUI_T("btn_zoom_off")}, {DUI_T("width"), DUI_T("120")}, {DUI_T("height"), DUI_T("26")}, {DUI_T("text"), DUI_T("复原到100%")}, {DUI_T("font"), DUI_T("system_14")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("1,1,1,3")}, {DUI_T("tooltiptext"), DUI_T("字体大小复原到100%")}});
-    auto* p125 = ui::Attach<ui::HBox>(p84, {{DUI_T("height"), DUI_T("auto")}, {DUI_T("margin"), DUI_T("0,2,2,2")}});
-    auto* p126 = ui::Attach<ui::Label>(p125, {{DUI_T("text"), DUI_T("其他：")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("8,0,8,0")}});
-    auto* p127 = ui::Attach<ui::CheckBox>(p125, {{DUI_T("class"), DUI_T("checkbox_1")}, {DUI_T("name"), DUI_T("btn_word_wrap")}, {DUI_T("text"), DUI_T("自动换行")}, {DUI_T("margin"), DUI_T("4,0,0,0")}, {DUI_T("selected"), DUI_T("true")}, {DUI_T("tooltiptext"), DUI_T("是否自动换行")}});
-    auto* p128 = ui::Attach<ui::CheckBox>(p125, {{DUI_T("class"), DUI_T("checkbox_1")}, {DUI_T("name"), DUI_T("btn_rich_text")}, {DUI_T("text"), DUI_T("富文本模式")}, {DUI_T("margin"), DUI_T("12,0,0,0")}, {DUI_T("selected"), DUI_T("true")}, {DUI_T("tooltiptext"), DUI_T("是否支持富文本格式")}});
-    auto* p129 = ui::Attach<ui::Label>(p125, {{DUI_T("text"), DUI_T("行间距：")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("12,0,0,0")}});
-    auto* p130 = ui::Attach<ui::Option>(p125, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("richedit_row_spacing_group")}, {DUI_T("text"), DUI_T("1.0")}, {DUI_T("margin"), DUI_T("6,0,0,0")}, {DUI_T("text_align"), DUI_T("vcenter")}, {DUI_T("selected"), DUI_T("true")}});
-    auto* p131 = ui::Attach<ui::Option>(p125, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("richedit_row_spacing_group")}, {DUI_T("text"), DUI_T("1.15")}, {DUI_T("margin"), DUI_T("6,0,0,0")}, {DUI_T("text_align"), DUI_T("vcenter")}});
-    auto* p132 = ui::Attach<ui::Option>(p125, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("richedit_row_spacing_group")}, {DUI_T("text"), DUI_T("1.5")}, {DUI_T("margin"), DUI_T("6,0,0,0")}, {DUI_T("text_align"), DUI_T("vcenter")}});
-    auto* p133 = ui::Attach<ui::Option>(p125, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("richedit_row_spacing_group")}, {DUI_T("text"), DUI_T("2.0")}, {DUI_T("margin"), DUI_T("6,0,0,0")}, {DUI_T("text_align"), DUI_T("vcenter")}});
-    auto* p134 = ui::Attach<ui::Option>(p125, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("richedit_row_spacing_group")}, {DUI_T("text"), DUI_T("2.5")}, {DUI_T("margin"), DUI_T("6,0,0,0")}, {DUI_T("text_align"), DUI_T("vcenter")}});
-    auto* p135 = ui::Attach<ui::Option>(p125, {{DUI_T("class"), DUI_T("option_1")}, {DUI_T("group"), DUI_T("richedit_row_spacing_group")}, {DUI_T("text"), DUI_T("3.0")}, {DUI_T("margin"), DUI_T("6,0,0,0")}, {DUI_T("text_align"), DUI_T("vcenter")}});
-    auto* p136 = ui::Attach<ui::Label>(p125, {{DUI_T("name"), DUI_T("row_spacing_tips")}, {DUI_T("text"), DUI_T("（行间距：仅在富文本模式下有效）")}, {DUI_T("valign"), DUI_T("center")}, {DUI_T("margin"), DUI_T("4,0,0,0")}});
-    auto* p137 = ui::Attach<ui::Split>(p83, {{DUI_T("bkcolor"), DUI_T("splitline_level1")}, {DUI_T("height"), DUI_T("2")}});
-    auto* p138 = ui::Attach<ui::HBox>(p83, {{DUI_T("bkcolor"), DUI_T("Pink")}, {DUI_T("border_size"), DUI_T("1")}, {DUI_T("border_color"), DUI_T("blue")}, {DUI_T("minwidth"), DUI_T("60")}});
-    auto* p139 = ui::Attach<ui::RichEdit>(p138, {{DUI_T("name"), DUI_T("rich_edit")}, {DUI_T("enable_drag_drop"), DUI_T("true")}, {DUI_T("zoom"), DUI_T("0,0")}, {DUI_T("wheel_zoom"), DUI_T("true")}, {DUI_T("multi_line"), DUI_T("true")}, {DUI_T("want_return"), DUI_T("true")}, {DUI_T("word_wrap"), DUI_T("true")}, {DUI_T("rich_text"), DUI_T("false")}, {DUI_T("default_context_menu"), DUI_T("true")}, {DUI_T("save_selection"), DUI_T("true")}, {DUI_T("hide_selection"), DUI_T("false")}, {DUI_T("word_wrap"), DUI_T("true")}, {DUI_T("vscrollbar"), DUI_T("true")}, {DUI_T("auto_vscroll"), DUI_T("true")}, {DUI_T("bkcolor"), DUI_T("white")}});
+    auto* p84 = ui::Attach<ui::VBox>(p83, {{"bkcolor", "bk_wnd_darkcolor"}, {"height", "auto"}, {"minheight", "40"}});
+    auto* p85 = ui::Attach<ui::HBox>(p84, {{"height", "auto"}, {"margin", "0,2,2,0"}});
+    auto* p86 = ui::Attach<ui::Label>(p85, {{"text", "文件："}, {"valign", "center"}, {"margin", "8,0,8,0"}});
+    auto* p87 = ui::Attach<ui::Button>(p85, {{"class", "btn_global_gray_80x30"}, {"name", "open_file"}, {"width", "100"}, {"height", "28"}, {"text", "打开(Ctrl+O)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p88 = ui::Attach<ui::Button>(p85, {{"class", "btn_global_gray_80x30"}, {"name", "save_file"}, {"width", "100"}, {"height", "28"}, {"text", "保存(Ctrl+S)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p89 = ui::Attach<ui::Button>(p85, {{"class", "btn_global_gray_80x30"}, {"name", "save_as_file"}, {"width", "160"}, {"height", "28"}, {"text", "另存为(Ctrl+Shift+S)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p90 = ui::Attach<ui::HBox>(p84, {{"height", "auto"}, {"margin", "0,2,2,0"}});
+    auto* p91 = ui::Attach<ui::Label>(p90, {{"text", "编辑："}, {"valign", "center"}, {"margin", "8,0,8,0"}});
+    auto* p92 = ui::Attach<ui::Button>(p90, {{"class", "btn_global_gray_80x30"}, {"name", "btn_copy"}, {"width", "100"}, {"height", "28"}, {"text", "复制(Ctrl+C)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p93 = ui::Attach<ui::Button>(p90, {{"class", "btn_global_gray_80x30"}, {"name", "btn_cut"}, {"width", "100"}, {"height", "28"}, {"text", "剪切(Ctrl+X)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p94 = ui::Attach<ui::Button>(p90, {{"class", "btn_global_gray_80x30"}, {"name", "btn_paste"}, {"width", "100"}, {"height", "28"}, {"text", "粘贴(Ctrl+V)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p95 = ui::Attach<ui::Button>(p90, {{"class", "btn_global_gray_80x30"}, {"name", "btn_delete"}, {"width", "100"}, {"height", "28"}, {"text", "删除(Del)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p96 = ui::Attach<ui::Button>(p90, {{"class", "btn_global_gray_80x30"}, {"name", "btn_sel_all"}, {"width", "100"}, {"height", "28"}, {"text", "全选(Ctrl+A)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,8,0"}});
+    auto* p97 = ui::Attach<ui::Button>(p90, {{"class", "btn_global_gray_80x30"}, {"name", "btn_sel_none"}, {"width", "100"}, {"height", "28"}, {"text", "取消选择"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,8,0"}});
+    auto* p98 = ui::Attach<ui::Button>(p90, {{"class", "btn_global_gray_80x30"}, {"name", "btn_undo"}, {"width", "100"}, {"height", "28"}, {"text", "撤销(Ctrl+Z)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p99 = ui::Attach<ui::Button>(p90, {{"class", "btn_global_gray_80x30"}, {"name", "btn_redo"}, {"width", "100"}, {"height", "28"}, {"text", "重做(Ctrl+Y)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p100 = ui::Attach<ui::HBox>(p84, {{"height", "auto"}, {"margin", "0,2,2,0"}});
+    auto* p101 = ui::Attach<ui::Label>(p100, {{"text", "查找："}, {"valign", "center"}, {"margin", "8,0,8,0"}});
+    auto* p102 = ui::Attach<ui::Button>(p100, {{"class", "btn_global_gray_80x30"}, {"name", "btn_find_text"}, {"width", "100"}, {"height", "28"}, {"text", "查找(Ctrl+F)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p103 = ui::Attach<ui::Button>(p100, {{"class", "btn_global_gray_80x30"}, {"name", "btn_find_next"}, {"width", "100"}, {"height", "28"}, {"text", "查找下一个(F3)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p104 = ui::Attach<ui::Button>(p100, {{"class", "btn_global_gray_80x30"}, {"name", "btn_replace_text"}, {"width", "100"}, {"height", "28"}, {"text", "替换(Ctrl+H)"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,0"}});
+    auto* p105 = ui::Attach<ui::HBox>(p84, {{"height", "auto"}, {"margin", "0,2,2,0"}});
+    auto* p106 = ui::Attach<ui::Label>(p105, {{"text", "字体："}, {"valign", "center"}, {"margin", "8,0,8,0"}});
+    auto* p107 = ui::Attach<ui::Button>(p105, {{"class", "btn_global_gray_80x30"}, {"name", "set_font"}, {"width", "100"}, {"height", "28"}, {"text", "设置字体"}, {"borderround", "2,2"}, {"valign", "center"}, {"margin", "4,0,4,2"}});
+    auto* p108 = ui::Attach<ui::Combo>(p105, {{"class", "combo"}, {"name", "combo_font_name"}, {"combo_type", "drop_down"}, {"dropbox_size", "0,300"}, {"height", "28"}, {"width", "160"}, {"tooltiptext", "选择字体"}, {"margin", "2,0,2,2"}});
+    auto* p109 = ui::Attach<ui::Combo>(p105, {{"class", "combo"}, {"name", "combo_font_size"}, {"combo_type", "drop_down"}, {"dropbox_size", "0,300"}, {"height", "28"}, {"width", "60"}, {"margin", "2,0,2,0"}, {"tooltiptext", "选择字体"}});
+    auto* p110 = ui::Attach<ui::CheckBox>(p105, {{"class", "checkbox_font_class"}, {"name", "btn_font_bold"}, {"width", "28"}, {"height", "26"}, {"text", "B"}, {"font", "btn_font_bold_14"}, {"valign", "center"}, {"margin", "2,1,1,3"}, {"tooltiptext", "粗体：改为较粗的字体"}});
+    auto* p111 = ui::Attach<ui::CheckBox>(p105, {{"class", "checkbox_font_class"}, {"name", "btn_font_italic"}, {"width", "28"}, {"height", "26"}, {"text", "I"}, {"font", "btn_font_italic_14"}, {"valign", "center"}, {"margin", "1,1,1,3"}, {"tooltiptext", "斜体：改为倾斜的字体"}});
+    auto* p112 = ui::Attach<ui::CheckBox>(p105, {{"class", "checkbox_font_class"}, {"name", "btn_font_underline"}, {"width", "28"}, {"height", "26"}, {"text", "U"}, {"font", "system_underline_14"}, {"valign", "center"}, {"margin", "1,1,1,3"}, {"tooltiptext", "下划线：在文本下面画一条线"}});
+    auto* p113 = ui::Attach<ui::CheckBox>(p105, {{"class", "checkbox_font_class"}, {"name", "btn_font_strikeout"}, {"width", "28"}, {"height", "26"}, {"text", "abc"}, {"font", "system_strikeout_14"}, {"valign", "center"}, {"margin", "1,1,1,3"}, {"tooltiptext", "删除线：在文本上画一条线"}});
+    auto* p114 = ui::Attach<ui::Button>(p105, {{"class", "btn_font_class"}, {"name", "btn_font_size_increase"}, {"width", "32"}, {"height", "26"}, {"text", "A+"}, {"font", "btn_font_bold_14"}, {"valign", "center"}, {"margin", "1,1,1,3"}, {"tooltiptext", "增加字体的大小"}});
+    auto* p115 = ui::Attach<ui::Button>(p105, {{"class", "btn_font_class"}, {"name", "btn_font_size_decrease"}, {"width", "32"}, {"height", "26"}, {"text", "A-"}, {"font", "btn_font_bold_14"}, {"valign", "center"}, {"margin", "1,1,1,3"}, {"tooltiptext", "减小字体的大小"}});
+    auto* p116 = ui::Attach<ui::ComboButton>(p105, {{"class", "combo_button"}, {"name", "color_combo_button"}, {"height", "28"}, {"width", "48"}, {"dropbox_size", "240,300"}, {"left_button_top_label_text", "A"}, {"left_button_bottom_label_bkcolor", "skyblue"}});
+    auto* p117 = ui::Attach<ui::Label>(p105, {{"text", "(富文本模式为设置当前选择文本的格式)"}, {"font", "system_12"}, {"valign", "center"}, {"margin", "2,0,2,0"}, {"tooltiptext", "富文本模式为设置当前选择文本的格式;纯文本模式为设置所有文本的格式。"}});
+    auto* p118 = ui::Attach<ui::HBox>(p84, {{"height", "auto"}, {"margin", "0,2,2,0"}});
+    auto* p119 = ui::Attach<ui::Label>(p118, {{"text", "缩放："}, {"valign", "center"}, {"margin", "8,0,8,0"}});
+    auto* p120 = ui::Attach<ui::Label>(p118, {{"text", "当前缩放比例："}, {"valign", "center"}});
+    auto* p121 = ui::Attach<ui::Label>(p118, {{"name", "lavel_zoom_value"}, {"text", "100.0%"}, {"font", "system_bold_14"}, {"valign", "center"}, {"margin", "0,0,12,0"}});
+    auto* p122 = ui::Attach<ui::Button>(p118, {{"class", "btn_font_class"}, {"name", "btn_zoom_in"}, {"width", "64"}, {"height", "26"}, {"text", "放大+"}, {"font", "system_14"}, {"valign", "center"}, {"margin", "1,1,1,3"}, {"tooltiptext", "增加字体的大小"}});
+    auto* p123 = ui::Attach<ui::Button>(p118, {{"class", "btn_font_class"}, {"name", "btn_zoom_out"}, {"width", "64"}, {"height", "26"}, {"text", "缩小-"}, {"font", "system_14"}, {"valign", "center"}, {"margin", "1,1,1,3"}, {"tooltiptext", "减小字体的大小"}});
+    auto* p124 = ui::Attach<ui::Button>(p118, {{"class", "btn_font_class"}, {"name", "btn_zoom_off"}, {"width", "120"}, {"height", "26"}, {"text", "复原到100%"}, {"font", "system_14"}, {"valign", "center"}, {"margin", "1,1,1,3"}, {"tooltiptext", "字体大小复原到100%"}});
+    auto* p125 = ui::Attach<ui::HBox>(p84, {{"height", "auto"}, {"margin", "0,2,2,2"}});
+    auto* p126 = ui::Attach<ui::Label>(p125, {{"text", "其他："}, {"valign", "center"}, {"margin", "8,0,8,0"}});
+    auto* p127 = ui::Attach<ui::CheckBox>(p125, {{"class", "checkbox_1"}, {"name", "btn_word_wrap"}, {"text", "自动换行"}, {"margin", "4,0,0,0"}, {"selected", "true"}, {"tooltiptext", "是否自动换行"}});
+    auto* p128 = ui::Attach<ui::CheckBox>(p125, {{"class", "checkbox_1"}, {"name", "btn_rich_text"}, {"text", "富文本模式"}, {"margin", "12,0,0,0"}, {"selected", "true"}, {"tooltiptext", "是否支持富文本格式"}});
+    auto* p129 = ui::Attach<ui::Label>(p125, {{"text", "行间距："}, {"valign", "center"}, {"margin", "12,0,0,0"}});
+    auto* p130 = ui::Attach<ui::Option>(p125, {{"class", "option_1"}, {"group", "richedit_row_spacing_group"}, {"text", "1.0"}, {"margin", "6,0,0,0"}, {"text_align", "vcenter"}, {"selected", "true"}});
+    auto* p131 = ui::Attach<ui::Option>(p125, {{"class", "option_1"}, {"group", "richedit_row_spacing_group"}, {"text", "1.15"}, {"margin", "6,0,0,0"}, {"text_align", "vcenter"}});
+    auto* p132 = ui::Attach<ui::Option>(p125, {{"class", "option_1"}, {"group", "richedit_row_spacing_group"}, {"text", "1.5"}, {"margin", "6,0,0,0"}, {"text_align", "vcenter"}});
+    auto* p133 = ui::Attach<ui::Option>(p125, {{"class", "option_1"}, {"group", "richedit_row_spacing_group"}, {"text", "2.0"}, {"margin", "6,0,0,0"}, {"text_align", "vcenter"}});
+    auto* p134 = ui::Attach<ui::Option>(p125, {{"class", "option_1"}, {"group", "richedit_row_spacing_group"}, {"text", "2.5"}, {"margin", "6,0,0,0"}, {"text_align", "vcenter"}});
+    auto* p135 = ui::Attach<ui::Option>(p125, {{"class", "option_1"}, {"group", "richedit_row_spacing_group"}, {"text", "3.0"}, {"margin", "6,0,0,0"}, {"text_align", "vcenter"}});
+    auto* p136 = ui::Attach<ui::Label>(p125, {{"name", "row_spacing_tips"}, {"text", "（行间距：仅在富文本模式下有效）"}, {"valign", "center"}, {"margin", "4,0,0,0"}});
+    auto* p137 = ui::Attach<ui::Split>(p83, {{"bkcolor", "splitline_level1"}, {"height", "2"}});
+    auto* p138 = ui::Attach<ui::HBox>(p83, {{"bkcolor", "Pink"}, {"border_size", "1"}, {"border_color", "blue"}, {"minwidth", "60"}});
+    auto* p139 = ui::Attach<ui::RichEdit>(p138, {{"name", "rich_edit"}, {"enable_drag_drop", "true"}, {"zoom", "0,0"}, {"wheel_zoom", "true"}, {"multi_line", "true"}, {"want_return", "true"}, {"word_wrap", "true"}, {"rich_text", "false"}, {"default_context_menu", "true"}, {"save_selection", "true"}, {"hide_selection", "false"}, {"word_wrap", "true"}, {"vscrollbar", "true"}, {"auto_vscroll", "true"}, {"bkcolor", "white"}});
 
     ui::Attach(pWindow, p0);
 }

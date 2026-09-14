@@ -11,8 +11,8 @@
 #include "dui/Utils/StringUtil.h"
 #include "dui/Core/WindowCreateParam.h"
 
-#ifdef DUI_BUILD_FOR_SDL
-    #include "dui/Core/DragWindowFilter_SDL.h"
+#ifdef DUI_BUILD_FOR_WAYLAND
+#include "dui/Core/DragWindowFilter_Wayland.h"
 #endif
 
 // The shortest pixel distance for a drag operation
@@ -31,8 +31,8 @@ public:
     virtual ~ControlDragableT() override;
 
     /// Override the parent class methods to provide customized functionality; please refer to the parent class declarations
-    virtual DString GetType() const override;    
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;    
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** Set whether dragging to change the control order is supported
     */
@@ -242,7 +242,7 @@ private:
     */
     DragWindow* m_pDragWindow;
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
     /** The message filter of the drag window
     */
     std::unique_ptr<IUIMessageFilter> m_pDragWindowFilter;
@@ -285,30 +285,30 @@ ControlDragableT<T>::~ControlDragableT()
 }
 
 template<typename T>
-inline DString ControlDragableT<T>::GetType() const { return DUI_CTR_CONTROL_DRAGABLE; }
+inline std::string ControlDragableT<T>::GetType() const { return DUI_CTR_CONTROL_DRAGABLE; }
 
 template<>
-inline DString ControlDragableT<Box>::GetType() const { return DUI_CTR_BOX_DRAGABLE; }
+inline std::string ControlDragableT<Box>::GetType() const { return DUI_CTR_BOX_DRAGABLE; }
 
 template<>
-inline DString ControlDragableT<HBox>::GetType() const { return DUI_CTR_HBOX_DRAGABLE; }
+inline std::string ControlDragableT<HBox>::GetType() const { return DUI_CTR_HBOX_DRAGABLE; }
 
 template<>
-inline DString ControlDragableT<VBox>::GetType() const { return DUI_CTR_VBOX_DRAGABLE; }
+inline std::string ControlDragableT<VBox>::GetType() const { return DUI_CTR_VBOX_DRAGABLE; }
 
 template<typename T>
-void ControlDragableT<T>::SetAttribute(const DString& strName, const DString& strValue)
+void ControlDragableT<T>::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("drag_order")) {
+    if (strName == "drag_order") {
         // Whether dragging to adjust the order is supported (within the same container)
-        SetEnableDragOrder(strValue == DUI_T("true"));
+        SetEnableDragOrder(strValue == "true");
     }
-    else if (strName == DUI_T("drag_alpha")) {
+    else if (strName == "drag_alpha") {
         SetDragAlpha((uint8_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("drag_out")) {
+    else if (strName == "drag_out") {
         // Whether the drag-out operation is supported (between different containers in the same window)
-        SetEnableDragOut(strValue == DUI_T("true"));
+        SetEnableDragOut(strValue == "true");
     }
     else {
         BaseClass::SetAttribute(strName, strValue);
@@ -450,7 +450,6 @@ template<typename T>
 bool ControlDragableT<T>::GetItemsValidRect(UiRect& itemsValidRect) const
 {
     const Box* pParent = this->GetParent();
-    ASSERT(pParent != nullptr);
     if (pParent == nullptr) {
         return false;
     }
@@ -645,7 +644,7 @@ void ControlDragableT<T>::ClearDragStatus()
         }
     }
     if (m_pDragWindow != nullptr) {
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
         if (m_pDragWindowFilter != nullptr) {
             m_pDragWindow->RemoveMessageFilter(m_pDragWindowFilter.get());
         }
@@ -657,7 +656,7 @@ void ControlDragableT<T>::ClearDragStatus()
         m_pDragWindow->Release();
         m_pDragWindow = nullptr;
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
         m_pDragWindowFilter.reset();
 #endif
     }
@@ -738,10 +737,8 @@ bool ControlDragableT<T>::DragOutMouseUp(const EventArgs& msg)
         Box* pNewBox = m_pTargetBox;
         size_t nNewItemIndex = nIndex;
 
-        bool bAutoDestroyChild = pParent->IsAutoDestroyChild();
-        pParent->SetAutoDestroyChild(false);
-        pParent->RemoveItem(this);
-        pParent->SetAutoDestroyChild(bAutoDestroyChild);
+        //Detach it from the original container; the ownership is handed over to us
+        pParent->ReleaseItem(this);
 
         this->SetVisible(true);
         m_pTargetBox->AddItem(this);
@@ -896,9 +893,9 @@ template<typename T>
 Control* ControlDragableT<T>::CreateDestControl(Box* pTargetBox)
 {
     Control* pDestControl = new Control(this->GetWindow());
-    pDestControl->SetAttribute(DUI_T("bkcolor"), DUI_T("#FF5D6B99"));
-    pDestControl->SetAttribute(DUI_T("valign"), DUI_T("center"));
-    pDestControl->SetAttribute(DUI_T("halign"), DUI_T("center"));
+    pDestControl->SetAttribute("bkcolor", "#FF5D6B99");
+    pDestControl->SetAttribute("valign", "center");
+    pDestControl->SetAttribute("halign", "center");
 
     Layout* pLayout = nullptr;
     if (pTargetBox != nullptr) {
@@ -918,12 +915,12 @@ Control* ControlDragableT<T>::CreateDestControl(Box* pTargetBox)
     }
     if (!bInited) {        
         if ((pLayout != nullptr) && pLayout->IsVLayout()) {
-            pDestControl->SetAttribute(DUI_T("height"), DUI_T("4"));
-            pDestControl->SetAttribute(DUI_T("width"), DUI_T("80%"));
+            pDestControl->SetAttribute("height", "4");
+            pDestControl->SetAttribute("width", "80%");
         }
         else {
-            pDestControl->SetAttribute(DUI_T("width"), DUI_T("4"));
-            pDestControl->SetAttribute(DUI_T("height"), DUI_T("80%"));
+            pDestControl->SetAttribute("width", "4");
+            pDestControl->SetAttribute("height", "80%");
         }
     }
     return pDestControl;
@@ -947,7 +944,6 @@ std::shared_ptr<IBitmap> ControlDragableT<T>::CreateDragoutImage()
         }
         render.reset(pRenderFactory->CreateRender(spRenderDpi));
     }
-    ASSERT(render != nullptr);
     if(render == nullptr) {
         return nullptr;
     }
@@ -1203,7 +1199,7 @@ bool ControlDragableT<T>::DragOutMouseMove(const EventArgs& msg)
     // Drag out of the parent container
     if ((m_pDragWindow == nullptr) || m_pDragWindow->IsClosingWnd()) {
         if (m_pDragWindow != nullptr) {
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
             if (m_pDragWindowFilter != nullptr) {
                 m_pDragWindow->RemoveMessageFilter(m_pDragWindowFilter.get());
             }
@@ -1211,7 +1207,7 @@ bool ControlDragableT<T>::DragOutMouseMove(const EventArgs& msg)
             m_pDragWindow->Release();
             m_pDragWindow = nullptr;
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
             m_pDragWindowFilter.reset();
 #endif
         }
@@ -1231,7 +1227,7 @@ bool ControlDragableT<T>::DragOutMouseMove(const EventArgs& msg)
             m_pDragWindow->SetDragImage(pDragImage);
             m_pDragWindow->ShowWindow(kSW_SHOW_NA);
 
-#ifdef DUI_BUILD_FOR_SDL
+#ifdef DUI_BUILD_FOR_WAYLAND
             m_pDragWindowFilter = std::make_unique<DragWindowFilter>(this->GetWindow(), m_pDragWindow);
             m_pDragWindow->AddMessageFilter(m_pDragWindowFilter.get());
             // Alleviate the black screen phenomenon during display

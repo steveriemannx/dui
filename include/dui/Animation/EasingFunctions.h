@@ -66,7 +66,7 @@ public:
     /** Get the easing function type according to the string name of the easing function
     * @param [in] easingFunctionName The name of the easing function; the string name is exactly the same as the enum value definition of EasingFunctionType
     */
-    static EasingFunctionType GetEasingFunctionType(DString easingFunctionName);
+    static EasingFunctionType GetEasingFunctionType(std::string easingFunctionName);
 
 public:
     /** Constructor

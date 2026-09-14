@@ -16,12 +16,12 @@ class Window;
 enum class TrayIconMessageType
 {
     kLeftClick,        // Left button click
-    kLeftDoubleClick,  // Left button double-click      (not available on non-Windows platforms using SDL)
+    kLeftDoubleClick,  // Left button double-click      (not available on non-Windows platforms using native backend)
     kRightClick,       // Right button click
-    kRightDoubleClick, // Right button double-click      (not available on non-Windows platforms using SDL)
+    kRightDoubleClick, // Right button double-click      (not available on non-Windows platforms using native backend)
     kMiddleClick,      // Middle button click
-    kMouseMove,        // Mouse move      (not available on non-Windows platforms using SDL)
-    kShowBalloon,      // Balloon notification clicked (not available on non-Windows platforms using SDL)
+    kMouseMove,        // Mouse move      (not available on non-Windows platforms using native backend)
+    kShowBalloon,      // Balloon notification clicked (not available on non-Windows platforms using native backend)
 };
 
 /** Tray icon message callback function
@@ -49,7 +49,7 @@ public:
     * @param [in] tooltip Tray tooltip text
     * @return Pointer to the tray icon instance, or nullptr if creation fails
     */
-    static std::unique_ptr<TrayIcon> Create(const Window* pWindow, const DString& iconFilePath, const DString& tooltip = DUI_T(""));
+    static std::unique_ptr<TrayIcon> Create(const Window* pWindow, const std::string& iconFilePath, const std::string& tooltip = "");
 
 public:
     /** Set the tray icon
@@ -57,13 +57,13 @@ public:
     * @param [in] iconFilePath Icon file path (*.ico format supported; other formats are also supported, but ICO is recommended)
     * @return Returns true on success, false on failure
     */
-    virtual bool SetIcon(const Window* pWindow, const DString& iconFilePath) = 0;
+    virtual bool SetIcon(const Window* pWindow, const std::string& iconFilePath) = 0;
 
     /** Set the tray tooltip text
     * @param [in] tooltip The tooltip text
     * @return Returns true on success, false on failure
     */
-    virtual bool SetTooltip(const DString& tooltip) = 0;
+    virtual bool SetTooltip(const std::string& tooltip) = 0;
 
     /** Show a balloon notification
     * @param [in] title The balloon title
@@ -71,7 +71,7 @@ public:
     * @param [in] timeoutMs Display timeout in milliseconds, 3000ms by default
     * @return Returns true on success, false on failure
     */
-    virtual bool ShowBalloon(const DString& title, const DString& content, uint32_t timeoutMs = 3000) = 0;
+    virtual bool ShowBalloon(const std::string& title, const std::string& content, uint32_t timeoutMs = 3000) = 0;
 
     /** Hide the tray icon
     * @return Returns true if hidden successfully, false on failure
@@ -94,7 +94,7 @@ public:
     virtual bool Remove() = 0;
 
     /** Get the tray handle of the internal implementation
-    *@return Returns an SDL_Tray* in the SDL implementation, and the tray window handle HWND in the Windows SDK implementation
+    *@return Returns an Native_Tray* in the native backend implementation, and the tray window handle HWND in the Windows SDK implementation
     */
     virtual void* GetTrayHandle() const = 0;
 

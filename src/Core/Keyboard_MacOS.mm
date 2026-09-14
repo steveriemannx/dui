@@ -50,45 +50,41 @@ bool Keyboard::IsCapsLockOn()
     return ([NSEvent modifierFlags] & NSEventModifierFlagCapsLock) != 0;
 }
 
-DString Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
+std::string Keyboard::GetKeyName(VirtualKeyCode nVirtKey, bool /*fExtended*/)
 {
     switch (nVirtKey) {
-    case kVK_RETURN: return DUI_T("Enter");
-    case kVK_ESCAPE: return DUI_T("Esc");
-    case kVK_TAB:    return DUI_T("Tab");
-    case kVK_SPACE:  return DUI_T("Space");
-    case kVK_BACK:   return DUI_T("Backspace");
-    case kVK_DELETE: return DUI_T("Del");
-    case kVK_LEFT:   return DUI_T("Left");
-    case kVK_RIGHT:  return DUI_T("Right");
-    case kVK_UP:     return DUI_T("Up");
-    case kVK_DOWN:   return DUI_T("Down");
-    case kVK_HOME:   return DUI_T("Home");
-    case kVK_END:    return DUI_T("End");
-    case kVK_PRIOR:  return DUI_T("PageUp");
-    case kVK_NEXT:   return DUI_T("PageDown");
-    case kVK_SHIFT:  return DUI_T("Shift");
-    case kVK_CONTROL:return DUI_T("Ctrl");
-    case kVK_MENU:   return DUI_T("Alt");
-    case kVK_LWIN:   return DUI_T("Cmd");
+    case kVK_RETURN: return "Enter";
+    case kVK_ESCAPE: return "Esc";
+    case kVK_TAB:    return "Tab";
+    case kVK_SPACE:  return "Space";
+    case kVK_BACK:   return "Backspace";
+    case kVK_DELETE: return "Del";
+    case kVK_LEFT:   return "Left";
+    case kVK_RIGHT:  return "Right";
+    case kVK_UP:     return "Up";
+    case kVK_DOWN:   return "Down";
+    case kVK_HOME:   return "Home";
+    case kVK_END:    return "End";
+    case kVK_PRIOR:  return "PageUp";
+    case kVK_NEXT:   return "PageDown";
+    case kVK_SHIFT:  return "Shift";
+    case kVK_CONTROL:return "Ctrl";
+    case kVK_MENU:   return "Alt";
+    case kVK_LWIN:   return "Cmd";
     default: break;
     }
     if ((nVirtKey >= kVK_A) && (nVirtKey <= kVK_Z)) {
-        return DString(1, (wchar_t)('A' + (nVirtKey - kVK_A)));
+        return std::string(1, (wchar_t)('A' + (nVirtKey - kVK_A)));
     }
     if ((nVirtKey >= kVK_0) && (nVirtKey <= kVK_9)) {
-        return DString(1, (wchar_t)('0' + (nVirtKey - kVK_0)));
+        return std::string(1, (wchar_t)('0' + (nVirtKey - kVK_0)));
     }
     if ((nVirtKey >= kVK_F1) && (nVirtKey <= kVK_F24)) {
-        DString str = DUI_T("F");
-#ifdef DUI_UNICODE
-        str += std::to_wstring((int32_t)(nVirtKey - kVK_F1 + 1));
-#else
+        std::string str = "F";
         str += std::to_string((int32_t)(nVirtKey - kVK_F1 + 1));
-#endif
         return str;
     }
-    return DString();
+    return std::string();
 }
 
 } // namespace ui

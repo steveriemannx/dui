@@ -42,8 +42,8 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** When the DPI changes, update the control size and layout
     * @param [in] nOldDpiScale The old DPI scale percentage
@@ -55,8 +55,8 @@ public:
     /** Set whether to display the header
     */
     void SetEnableHeaderCtrl(bool bEnable,
-                             const DString& sLeftColumn = DUI_T(""), 
-                             const DString& sRightColumn = DUI_T(""));
+                             const std::string& sLeftColumn = "", 
+                             const std::string& sRightColumn = "");
     /** Determine whether the header is currently displayed
     */
     bool IsEnableHeaderCtrl() const { return m_bHeaderCtrl; }
@@ -84,8 +84,8 @@ public:
     * @param [in] nGroupData User-defined data
     * @return Returns the interface of the group, which can be used to add properties
     */
-    PropertyGridGroup* AddGroup(const DString& groupName, 
-                                const DString& description = DUI_T(""),
+    PropertyGridGroup* AddGroup(const std::string& groupName, 
+                                const std::string& description = "",
                                 size_t nGroupData = 0);
 
     /** Get all groups
@@ -117,9 +117,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridTextProperty* AddTextProperty(PropertyGridGroup* pGroup,
-                                              const DString& propertyName, 
-                                              const DString& propertyValue,
-                                              const DString& description = DUI_T(""),
+                                              const std::string& propertyName, 
+                                              const std::string& propertyValue,
+                                              const std::string& description = "",
                                               size_t nPropertyData = 0);
 
     /** Add a property (combo box)
@@ -131,9 +131,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridComboProperty* AddComboProperty(PropertyGridGroup* pGroup,
-                                                const DString& propertyName, 
-                                                const DString& propertyValue,
-                                                const DString& description = DUI_T(""),
+                                                const std::string& propertyName, 
+                                                const std::string& propertyValue,
+                                                const std::string& description = "",
                                                 size_t nPropertyData = 0);
 
     /** Add a property (font name)
@@ -145,9 +145,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridFontProperty* AddFontProperty(PropertyGridGroup* pGroup,
-                                              const DString& propertyName, 
-                                              const DString& propertyValue,
-                                              const DString& description = DUI_T(""),
+                                              const std::string& propertyName, 
+                                              const std::string& propertyValue,
+                                              const std::string& description = "",
                                               size_t nPropertyData = 0);
 
     /** Add a property (font size)
@@ -159,9 +159,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridFontSizeProperty* AddFontSizeProperty(PropertyGridGroup* pGroup,
-                                                      const DString& propertyName, 
-                                                      const DString& propertyValue,
-                                                      const DString& description = DUI_T(""),
+                                                      const std::string& propertyName, 
+                                                      const std::string& propertyValue,
+                                                      const std::string& description = "",
                                                       size_t nPropertyData = 0);
 
     /** Add a property (color)
@@ -173,9 +173,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridColorProperty* AddColorProperty(PropertyGridGroup* pGroup,
-                                                const DString& propertyName, 
-                                                const DString& propertyValue,
-                                                const DString& description = DUI_T(""),
+                                                const std::string& propertyName, 
+                                                const std::string& propertyValue,
+                                                const std::string& description = "",
                                                 size_t nPropertyData = 0);
 
     /** Add a property (date and time)
@@ -188,9 +188,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridDateTimeProperty* AddDateTimeProperty(PropertyGridGroup* pGroup,
-                                                      const DString& propertyName, 
-                                                      const DString& dateTimeValue,                                                      
-                                                      const DString& description = DUI_T(""),
+                                                      const std::string& propertyName, 
+                                                      const std::string& dateTimeValue,                                                      
+                                                      const std::string& description = "",
                                                       size_t nPropertyData = 0,
                                                       DateTime::EditFormat editFormat = DateTime::EditFormat::kDateCalendar);
    
@@ -203,9 +203,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridIPAddressProperty* AddIPAddressProperty(PropertyGridGroup* pGroup,
-                                                        const DString& propertyName, 
-                                                        const DString& propertyValue,
-                                                        const DString& description = DUI_T(""),
+                                                        const std::string& propertyName, 
+                                                        const std::string& propertyValue,
+                                                        const std::string& description = "",
                                                         size_t nPropertyData = 0);
 
     /** Add a property (hot key)
@@ -217,9 +217,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridHotKeyProperty* AddHotKeyProperty(PropertyGridGroup* pGroup,
-                                                  const DString& propertyName, 
-                                                  const DString& propertyValue,
-                                                  const DString& description = DUI_T(""),
+                                                  const std::string& propertyName, 
+                                                  const std::string& propertyValue,
+                                                  const std::string& description = "",
                                                   size_t nPropertyData = 0);
 
     /** Add a property (file path)
@@ -235,14 +235,14 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridFileProperty* AddFileProperty(PropertyGridGroup* pGroup,
-                                              const DString& propertyName, 
-                                              const DString& propertyValue,                                              
-                                              const DString& description = DUI_T(""),
+                                              const std::string& propertyName, 
+                                              const std::string& propertyValue,                                              
+                                              const std::string& description = "",
                                               size_t nPropertyData = 0,
                                               bool bOpenFileDialog = true,
                                               const std::vector<FileDialog::FileType>& fileTypes = std::vector<FileDialog::FileType>(),
                                               int32_t nFileTypeIndex = -1,
-                                              const DString& defaultExt = DUI_T(""));
+                                              const std::string& defaultExt = "");
 
     /** Add a property (folder)
     * @param [in] pGroup The group to which the property belongs
@@ -253,9 +253,9 @@ public:
     * @return Returns the interface of the property
     */
     PropertyGridDirectoryProperty* AddDirectoryProperty(PropertyGridGroup* pGroup,
-                                                        const DString& propertyName, 
-                                                        const DString& propertyValue,
-                                                        const DString& description = DUI_T(""),
+                                                        const std::string& propertyName, 
+                                                        const std::string& propertyValue,
+                                                        const std::string& description = "",
                                                         size_t nPropertyData = 0);
 
     /** Set the width of the left column
@@ -310,8 +310,8 @@ public:
     /** The color of the horizontal grid lines
     * @param [in] color The color of the horizontal grid lines
     */
-    void SetRowGridLineColor(const DString& color);
-    DString GetRowGridLineColor() const;
+    void SetRowGridLineColor(const std::string& color);
+    std::string GetRowGridLineColor() const;
 
     /** The width of the vertical grid lines
     * @param [in] nLineWidth The width of the grid lines; if it is 0, the vertical grid lines are not displayed
@@ -323,23 +323,23 @@ public:
     /** The color of the vertical grid lines
     * @param [in] color The color of the vertical grid lines
     */
-    void SetColumnGridLineColor(const DString& color);
-    DString GetColumnGridLineColor() const;
+    void SetColumnGridLineColor(const std::string& color);
+    std::string GetColumnGridLineColor() const;
 
     /** The Class of the header
     */
-    void SetHeaderClass(const DString& headerClass);
-    DString GetHeaderClass() const;
+    void SetHeaderClass(const std::string& headerClass);
+    std::string GetHeaderClass() const;
 
     /** The Class of the group
     */
-    void SetGroupClass(const DString& groupClass);
-    DString GetGroupClass() const;
+    void SetGroupClass(const std::string& groupClass);
+    std::string GetGroupClass() const;
 
     /** The Class of the property
     */
-    void SetPropertyClass(const DString& propertyClass);
-    DString GetPropertyClass() const;
+    void SetPropertyClass(const std::string& propertyClass);
+    std::string GetPropertyClass() const;
 
 protected:
     /** Initialization function
@@ -462,18 +462,18 @@ public:
     * @param [in] nGroupData User-defined data
     */
     explicit PropertyGridGroup(Window* pWindow,
-                               const DString& groupName,
-                               const DString& description = DUI_T(""),
+                               const std::string& groupName,
+                               const std::string& description = "",
                                size_t nGroupData = 0);
 
 public:
     /** Get the property name
     */
-    DString GetGroupName() const { return m_groupName.c_str(); }
+    std::string GetGroupName() const { return m_groupName.c_str(); }
 
     /** Get the description of the group
     */
-    DString GetDescriptiion() const { return m_description.c_str(); }
+    std::string GetDescriptiion() const { return m_description.c_str(); }
 
     /** Get user-defined data
     */
@@ -561,9 +561,9 @@ public:
     * @param [in] nPropertyData User-defined data
     */
     PropertyGridProperty(Window* pWindow, 
-                         const DString& propertyName,
-                         const DString& propertyValue,
-                         const DString& description = DUI_T(""),
+                         const std::string& propertyName,
+                         const std::string& propertyValue,
+                         const std::string& description = "",
                          size_t nPropertyData = 0);
 
 public:
@@ -576,15 +576,15 @@ public:
 
     /** Get the property name
     */
-    DString GetPropertyName() const { return m_propertyName.c_str(); }
+    std::string GetPropertyName() const { return m_propertyName.c_str(); }
 
     /** Get the property value (original value)
     */
-    DString GetPropertyValue() const { return m_propertyValue.c_str(); }
+    std::string GetPropertyValue() const { return m_propertyValue.c_str(); }
 
     /** Get the description of the property
     */
-    DString GetDescriptiion() const { return m_description.c_str(); }
+    std::string GetDescriptiion() const { return m_description.c_str(); }
 
     /** Get user-defined data
     */
@@ -616,7 +616,7 @@ public:
 
     /** Get the new property value (the modified property value; if unmodified, the original value is returned)
     */
-    virtual DString GetPropertyNewValue() const;
+    virtual std::string GetPropertyNewValue() const;
 
 protected:
     /** Initialization function
@@ -647,16 +647,16 @@ protected:
     * @param [in] text The text content
     * @param [in] bChanged Whether to mark as changed
     */
-    void SetPropertyText(const DString& text, bool bChanged);
+    void SetPropertyText(const std::string& text, bool bChanged);
 
     /** Get the text of the property value (display control)
     */
-    DString GetPropertyText() const;
+    std::string GetPropertyText() const;
 
     /** Set the text color of the property value (display control)
     * @param [in] text The text content
     */
-    void SetPropertyTextColor(const DString& textColor);
+    void SetPropertyTextColor(const std::string& textColor);
 
     /** Set the focus to the property value text display control
     */
@@ -720,9 +720,9 @@ public:
     * @param [in] nPropertyData User-defined data
     */
     PropertyGridTextProperty(Window* pWindow,
-                             const DString& propertyName,
-                             const DString& propertyValue,
-                             const DString& description = DUI_T(""),
+                             const std::string& propertyName,
+                             const std::string& propertyValue,
+                             const std::string& description = "",
                              size_t nPropertyData = 0);
 
 public:
@@ -735,7 +735,7 @@ public:
 
     /** Get the new property value (the modified property value; if unmodified, the original value is returned)
     */
-    virtual DString GetPropertyNewValue() const override;
+    virtual std::string GetPropertyNewValue() const override;
 
     /** Get the edit control
     */
@@ -744,7 +744,7 @@ public:
     /** Set new text
     * @param [in] newText The new text content
     */
-    void SetNewTextValue(const DString& newText);
+    void SetNewTextValue(const std::string& newText);
 
     /** Set password mode (display ***)
      * @param[in] bPasswordMode Set to true to make the control display content as ***, false to display normal content
@@ -795,9 +795,9 @@ public:
     * @param [in] nPropertyData User-defined data
     */
     PropertyGridComboProperty(Window* pWindow, 
-                              const DString& propertyName,
-                              const DString& propertyValue,
-                              const DString& description = DUI_T(""),
+                              const std::string& propertyName,
+                              const std::string& propertyValue,
+                              const std::string& description = "",
                               size_t nPropertyData = 0);
 
 public:
@@ -810,13 +810,13 @@ public:
 
     /** Get the new property value (the modified property value; if unmodified, the original value is returned)
     */
-    virtual DString GetPropertyNewValue() const override;
+    virtual std::string GetPropertyNewValue() const override;
 
     /** Add a combo box option
     * @param [in] optionText The content of the combo box list item
     * @return Returns the index value of the item
     */
-    size_t AddOption(const DString& optionText);
+    size_t AddOption(const std::string& optionText);
 
     /** Get the format of the combo box options
     */
@@ -825,7 +825,7 @@ public:
     /** Get the text of the dropdown list item
     * @param [in] nIndex The index value of the item, valid range: [0, GetOptionCount())
     */
-    DString GetOption(size_t nIndex) const;
+    std::string GetOption(size_t nIndex) const;
 
     /** Set the data associated with the item
     * @param [in] nIndex The index value of the item, valid range: [0, GetOptionCount())
@@ -901,9 +901,9 @@ public:
     * @param [in] nPropertyData User-defined data
     */
     PropertyGridFontProperty(Window* pWindow,
-                             const DString& propertyName,
-                             const DString& propertyValue,
-                             const DString& description = DUI_T(""),
+                             const std::string& propertyName,
+                             const std::string& propertyValue,
+                             const std::string& description = "",
                              size_t nPropertyData = 0);
 
 public:
@@ -916,7 +916,7 @@ public:
 
     /** Get the new font value (the modified property value; if unmodified, the original value is returned)
     */
-    virtual DString GetPropertyNewValue() const override;
+    virtual std::string GetPropertyNewValue() const override;
 
 protected:
 
@@ -938,9 +938,9 @@ public:
     * @param [in] nPropertyData User-defined data
     */
     PropertyGridFontSizeProperty(Window* pWindow, 
-                                 const DString& propertyName,
-                                 const DString& propertyValue,
-                                 const DString& description = DUI_T(""),
+                                 const std::string& propertyName,
+                                 const std::string& propertyValue,
+                                 const std::string& description = "",
                                  size_t nPropertyData = 0);
 
 public:
@@ -953,27 +953,27 @@ public:
 
     /** Get the new font size value, the display value (the modified property value; if unmodified, the original value is returned)
     */
-    virtual DString GetPropertyNewValue() const override;
+    virtual std::string GetPropertyNewValue() const override;
 
     /** Get the font size value, a floating point number, without DPI adaptation
     * @return If selected from the list, the return value is non-empty; if not selected from the list, an empty value is returned
     */
-    DString GetFontSize() const;
+    std::string GetFontSize() const;
 
     /** Get the font size value, a floating point number, with DPI adaptation
     * @return If selected from the list, the return value is non-empty; if not selected from the list, an empty value is returned
     */
-    DString GetDpiFontSize() const;
+    std::string GetDpiFontSize() const;
 
     /** Get the font size value corresponding to the font size display name, a floating point number, without DPI adaptation
     * @param [in] fontSizeName For example: "No.5"
     */
-    DString GetFontSize(const DString& fontSizeName) const;
+    std::string GetFontSize(const std::string& fontSizeName) const;
 
     /** Get the font size value corresponding to the font size display name, a floating point number, with DPI adaptation
     * @param [in] fontSizeName For example: "No.5"
     */
-    DString GetDpiFontSize(const DString& fontSizeName) const;
+    std::string GetDpiFontSize(const std::string& fontSizeName) const;
 
 protected:
 
@@ -999,9 +999,9 @@ public:
     * @param [in] nPropertyData User-defined data
     */
     PropertyGridColorProperty(Window* pWindow, 
-                              const DString& propertyName,
-                              const DString& propertyValue,
-                              const DString& description = DUI_T(""),
+                              const std::string& propertyName,
+                              const std::string& propertyValue,
+                              const std::string& description = "",
                               size_t nPropertyData = 0);
 
 
@@ -1043,7 +1043,7 @@ private:
 
     /** Set the selected color
     */
-    void OnSelectColor(const DString& color);
+    void OnSelectColor(const std::string& color);
 
 private:
     /** Color selection control
@@ -1064,9 +1064,9 @@ public:
     * @param [in] editFormat The format of the date and time
     */
     PropertyGridDateTimeProperty(Window* pWindow, 
-                                 const DString& propertyName,
-                                 const DString& dateTimeValue,
-                                 const DString& description = DUI_T(""),
+                                 const std::string& propertyName,
+                                 const std::string& dateTimeValue,
+                                 const std::string& description = "",
                                  size_t nPropertyData = 0,
                                  DateTime::EditFormat editFormat = DateTime::EditFormat::kDateCalendar);
 
@@ -1120,9 +1120,9 @@ public:
     * @param [in] nPropertyData User-defined data
     */
     PropertyGridIPAddressProperty(Window* pWindow, 
-                                  const DString& propertyName,
-                                  const DString& propertyValue,
-                                  const DString& description = DUI_T(""),
+                                  const std::string& propertyName,
+                                  const std::string& propertyValue,
+                                  const std::string& description = "",
                                   size_t nPropertyData = 0);
 
 
@@ -1141,7 +1141,7 @@ public:
     /** Set a new IP address
     * @param [in] newIP The new IP address
     */
-    void SetNewIPAddressValue(const DString& newIP);
+    void SetNewIPAddressValue(const std::string& newIP);
 
 protected:
     /** Set whether an edit control is allowed to exist
@@ -1172,9 +1172,9 @@ public:
     @param [in] nPropertyData User-defined data
     */
     PropertyGridHotKeyProperty(Window* pWindow, 
-                               const DString& propertyName,
-                               const DString& propertyValue,
-                               const DString& description = DUI_T(""),
+                               const std::string& propertyName,
+                               const std::string& propertyValue,
+                               const std::string& description = "",
                                size_t nPropertyData = 0);
 
 
@@ -1224,14 +1224,14 @@ public:
     * @param [in] defaultExt The default file type, for example: "doc;docx"
     */
     PropertyGridFileProperty(Window* pWindow, 
-                             const DString& propertyName,
-                             const DString& propertyValue,
-                             const DString& description = DUI_T(""),
+                             const std::string& propertyName,
+                             const std::string& propertyValue,
+                             const std::string& description = "",
                              size_t nPropertyData = 0,
                              bool bOpenFileDialog = true,
                              const std::vector<FileDialog::FileType>& fileTypes = std::vector<FileDialog::FileType>(),
                              int32_t nFileTypeIndex = -1,
-                             const DString& defaultExt = DUI_T(""));
+                             const std::string& defaultExt = "");
 
 
 protected:
@@ -1270,7 +1270,7 @@ private:
 
     /** The default file type
     */
-    DString m_defaultExt;
+    std::string m_defaultExt;
 };
 
 /** Property for setting the folder
@@ -1286,9 +1286,9 @@ public:
     * @param [in] nPropertyData User-defined data
     */
     PropertyGridDirectoryProperty(Window* pWindow, 
-                                  const DString& propertyName,
-                                  const DString& propertyValue,
-                                  const DString& description = DUI_T(""),
+                                  const std::string& propertyName,
+                                  const std::string& propertyValue,
+                                  const std::string& description = "",
                                   size_t nPropertyData = 0);
 
 

@@ -94,8 +94,8 @@ public:
     virtual void FillPath(const IPath* path, const IBrush* brush) override;
     virtual void FillPath(const IPath* path, const UiRectF& rc, UiColor dwColor, UiColor dwColor2, int8_t nColor2Direction) override;
 
-    virtual UiRect MeasureString(const DString& strText, const MeasureStringParam& measureParam) override;
-    virtual void DrawString(const DString& strText, const DrawStringParam& drawParam) override;
+    virtual UiRect MeasureString(const std::string& strText, const MeasureStringParam& measureParam) override;
+    virtual void DrawString(const std::string& strText, const DrawStringParam& drawParam) override;
 
     virtual void MeasureRichText(const UiRect& textRect,
                                  const UiSize& szScrollOffset,
@@ -193,7 +193,7 @@ private:
 
     /** Get the number of UTF16 characters occupied by the current glyph (1 or 2)
     */
-    size_t GetUTF16CharCount(const DStringW::value_type* srcPtr, size_t textStartIndex) const;
+    size_t GetUTF16CharCount(const std::wstring::value_type* srcPtr, size_t textStartIndex) const;
 
     /** Set the drawing attributes for the color gradient
     */

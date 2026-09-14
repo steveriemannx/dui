@@ -222,7 +222,7 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
 {
     [m_markedText setString:@""];
     if (m_pNativeWindow != nullptr) {
-        m_pNativeWindow->OnNativeMarkedText(DStringW());
+        m_pNativeWindow->OnNativeMarkedText(std::wstring());
     }
 }
 
@@ -355,7 +355,7 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
     //Files first, then plain text
     NSArray<NSURL*>* fileURLs = [sender.draggingPasteboard readObjectsForClasses:@[[NSURL class]] options:nil];
     if (fileURLs.count > 0) {
-        std::vector<DString> fileList;
+        std::vector<std::string> fileList;
         for (NSURL* url in fileURLs) {
             if (url.path != nil) {
                 fileList.push_back(ui::StringConvert::UTF8ToT(std::string(url.path.UTF8String)));
@@ -363,15 +363,15 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
         }
         if (!fileList.empty()) {
             bool bHandled = false;
-            m_pNativeWindow->OnDropFiles(DString(), fileList, pt, bHandled);
+            m_pNativeWindow->OnDropFiles(std::string(), fileList, pt, bHandled);
             return YES;
         }
     }
 
     NSString* text = [sender.draggingPasteboard stringForType:NSPasteboardTypeString];
     if (text != nil) {
-        std::vector<DString> textList;
-        //One element per line, matching the dui/SDL behavior
+        std::vector<std::string> textList;
+        //One element per line, matching the dui/native backend behavior
         NSArray<NSString*>* lines = [text componentsSeparatedByString:@"\n"];
         for (NSString* line in lines) {
             textList.push_back(ui::StringConvert::UTF8ToT(std::string(line.UTF8String)));
@@ -477,7 +477,7 @@ void RestoreWindowShadowAfterFullscreen(void* pNSWindow, NativeWindowShadowType 
 @end
 
 // ---------------------------------------------------------------------------
-// Window hit-testing (mirrors the SDL hit-test in NativeWindow_SDL.cpp):
+// Window hit-testing (mirrors the native backend hit-test in NativeWindow_Wayland.cpp):
 // returns where a client point falls - resize borders, draggable caption, or
 // the normal client area. Used to drive title-bar dragging and edge resizing
 // on borderless dui windows.
@@ -643,7 +643,7 @@ void MacBeginResizeDrag(NativeWindow_MacOS* pNativeWindow, MacHitTestResult hitT
 } // namespace ui
 
 // ---------------------------------------------------------------------------
-// Drawing helper class (same role as NativeWindowRenderPaint in the SDL version)
+// Drawing helper class (same role as NativeWindowRenderPaint in the native backend version)
 // ---------------------------------------------------------------------------
 namespace ui {
 
@@ -768,14 +768,14 @@ bool NativeWindow_MacOS::SetParentWindow(NativeWindow_MacOS* pParentWindow)
     return true;
 }
 
-DString NativeWindow_MacOS::GetVideoDriverName() const
+std::string NativeWindow_MacOS::GetVideoDriverName() const
 {
-    return DUI_T("cocoa");
+    return "cocoa";
 }
 
-DString NativeWindow_MacOS::GetWindowRenderName() const
+std::string NativeWindow_MacOS::GetWindowRenderName() const
 {
-    return DUI_T("skia");
+    return "skia";
 }
 
 // ---------------------------------------------------------------------------
@@ -786,7 +786,6 @@ bool NativeWindow_MacOS::CreateWnd(NativeWindow_MacOS* pParentWindow,
                                    const WindowCreateAttributes& createAttributes)
 {
     UNUSED_VARIABLE(pParentWindow);
-    ASSERT(m_nsWindow == nullptr);
     if (m_nsWindow != nullptr) {
         return false;
     }
@@ -1224,7 +1223,7 @@ bool NativeWindow_MacOS::EnterFullscreen()
     //Borderless windows cannot reliably use -toggleFullScreen (it requires
     //NSWindowStyleMaskFullScreen, and the Spaces transition does not track the
     //attached child windows dui uses). Cover the screen with this same window
-    //instead (SDL parity); the frame change produces a resize notification,
+    //instead (native backend parity); the frame change produces a resize notification,
     //which triggers a complete re-layout of the controls.
     GetWindowRect(m_rcBeforeFullscreen);
     m_levelBeforeFullscreen = (int32_t)[window level];
@@ -1250,7 +1249,7 @@ bool NativeWindow_MacOS::EnterFullscreen()
     }
 
     if (m_pOwner != nullptr) {
-        //Synchronous notification (like the SDL implementation): sends
+        //Synchronous notification (like the native backend implementation): sends
         //kWindowEnterFullscreenMsg and applies the fullscreen margins
         m_pOwner->OnNativeWindowEnterFullscreen();
     }
@@ -1282,7 +1281,7 @@ bool NativeWindow_MacOS::ExitFullscreen()
     }
 
     if (m_pOwner != nullptr) {
-        //Synchronous notification (like the SDL implementation): sends
+        //Synchronous notification (like the native backend implementation): sends
         //kWindowExitFullscreenMsg so listeners refresh their state
         m_pOwner->OnNativeWindowExitFullscreen();
     }
@@ -1430,7 +1429,7 @@ void NativeWindow_MacOS::OnNativeWindowWillClose()
     bool bHandled = false;
     m_pOwner->OnNativeWindowCloseMsg(m_closeParam, NativeMsg(0, 0, 0), bHandled);
 
-    //Run the same pre-close cleanup as the Windows/SDL backends before the
+    //Run the same pre-close cleanup as the Windows/native backend backends before the
     //post-close sequence. This lets applications detach child-window event
     //handlers and close native child windows before the owning control tree is
     //destroyed (important when the window is closed from fullscreen).
@@ -1438,7 +1437,7 @@ void NativeWindow_MacOS::OnNativeWindowWillClose()
 
     //The window has been closed: run the framework close sequence
     //(PostCloseWindow -> PostQuitMsg so "quit when last window closes" works,
-    //matching the SDL/Windows backends).
+    //matching the native backend/Windows backends).
     m_pOwner->OnNativePostCloseWindow();
 
     //Defer the destruction out of the [NSWindow close] call stack: the owner's
@@ -1568,12 +1567,11 @@ void NativeWindow_MacOS::PaintWindow(bool bPaintAll)
     m_bPainting = true;
     m_bPendingPaint = false;
 
-    PerformanceStat statPerformance(DUI_T("PaintWindow, NativeWindow_MacOS::PaintWindow(Total)"));
+    PerformanceStat statPerformance("PaintWindow, NativeWindow_MacOS::PaintWindow(Total)");
     if (bPaintAll) {
         m_rcUpdateRect.Clear();
     }
     INativeWindow* pOwner = m_pOwner;
-    ASSERT(pOwner != nullptr);
     if (pOwner == nullptr) {
         return;
     }
@@ -1672,7 +1670,7 @@ void NativeWindow_MacOS::GetClientRect(UiRect& rcClient) const
     }
     NSView* view = (__bridge NSView*)m_nsView;
     NSRect rc = view.bounds;
-    //Mirror the SDL implementation: when the dui pixel density is enabled the
+    //Mirror the native backend implementation: when the dui pixel density is enabled the
     //client rect is reported in pixels (points x backing scale), which is the
     //space dui lays the UI out in (mouse coordinates are converted the same
     //way via DpiManager::WindowSizeToClientSize).
@@ -1806,7 +1804,7 @@ bool NativeWindow_MacOS::SetWindowPos(const NativeWindow_MacOS* /*pInsertAfterWi
         [window setLevel:NSNormalWindowLevel];
     }
 
-    //Respect kSWP_NOMOVE / kSWP_NOSIZE like the SDL backend does. Callers such as
+    //Respect kSWP_NOMOVE / kSWP_NOSIZE like the native backend backend does. Callers such as
     //WindowBase::Resize pass placeholder 0,0 with kSWP_NOMOVE; moving the window
     //there would yank it to the top-left corner.
     if ((uFlags & kSWP_NOMOVE) && (uFlags & kSWP_NOSIZE)) {
@@ -2018,7 +2016,7 @@ void NativeWindow_MacOS::ClearWindowRgnForSystemShadow()
 // ---------------------------------------------------------------------------
 // Title / icon
 // ---------------------------------------------------------------------------
-void NativeWindow_MacOS::SetText(const DString& strText)
+void NativeWindow_MacOS::SetText(const std::string& strText)
 {
     if (m_nsWindow == nullptr) {
         return;
@@ -2028,14 +2026,14 @@ void NativeWindow_MacOS::SetText(const DString& strText)
     [(__bridge NSWindow*)m_nsWindow setTitle:nsTitle];
 }
 
-DString NativeWindow_MacOS::GetText() const
+std::string NativeWindow_MacOS::GetText() const
 {
     if (m_nsWindow == nullptr) {
-        return DString();
+        return std::string();
     }
     NSString* nsTitle = [(__bridge NSWindow*)m_nsWindow title];
     if (nsTitle == nil) {
-        return DString();
+        return std::string();
     }
     return StringConvert::UTF8ToT(std::string([nsTitle UTF8String]));
 }
@@ -2045,7 +2043,7 @@ bool NativeWindow_MacOS::SetWindowIcon(const FilePath& /*iconFilePath*/)
     return false;
 }
 
-bool NativeWindow_MacOS::SetWindowIcon(const std::vector<uint8_t>& /*iconFileData*/, const DString& /*iconFileName*/)
+bool NativeWindow_MacOS::SetWindowIcon(const std::vector<uint8_t>& /*iconFileData*/, const std::string& /*iconFileName*/)
 {
     return false;
 }
@@ -2073,7 +2071,6 @@ int32_t NativeWindow_MacOS::DoModal(NativeWindow_MacOS* pParentWindow,
                                     bool bCloseByEsc,
                                     bool bCloseByEnter)
 {
-    ASSERT(m_nsWindow == nullptr);
     if (m_nsWindow != nullptr) {
         return -1;
     }
@@ -2165,11 +2162,9 @@ bool NativeWindow_MacOS::UnregisterHotKey(int32_t /*id*/)
 // ---------------------------------------------------------------------------
 bool NativeWindow_MacOS::CreateChildWnd(NativeWindow_MacOS* pParentWindow, int32_t nX, int32_t nY, int32_t nWidth, int32_t nHeight)
 {
-    ASSERT(m_nsWindow == nullptr);
     if (m_nsWindow != nullptr) {
         return false;
     }
-    ASSERT(pParentWindow != nullptr);
     if (pParentWindow == nullptr) {
         return false;
     }
@@ -2404,20 +2399,20 @@ bool NativeWindow_MacOS::IsEnableSysMenu() const
 // ---------------------------------------------------------------------------
 // Text input (NSTextInputClient bridge)
 // ---------------------------------------------------------------------------
-void NativeWindow_MacOS::OnNativeInsertText(const DStringW& text)
+void NativeWindow_MacOS::OnNativeInsertText(const std::wstring& text)
 {
     INativeWindow* pOwner = m_pOwner;
     if ((pOwner == nullptr) || text.empty()) {
         return;
     }
-    //Equivalent to the SDL SDL_EVENT_TEXT_INPUT / Windows WM_CHAR message:
+    //Equivalent to the native backend Native_EVENT_TEXT_INPUT / Windows WM_CHAR message:
     //wParam = the address of the whole string, lParam = the character count
     NativeMsg nativeMsg(kWM_USER, (WPARAM)text.c_str(), (LPARAM)text.size());
     bool bHandled = false;
     pOwner->OnNativeCharMsg(VirtualKeyCode::kVK_None, 0, nativeMsg, bHandled);
 }
 
-void NativeWindow_MacOS::OnNativeMarkedText(const DStringW& text)
+void NativeWindow_MacOS::OnNativeMarkedText(const std::wstring& text)
 {
     INativeWindow* pOwner = m_pOwner;
     if (pOwner == nullptr) {
@@ -2438,7 +2433,7 @@ void NativeWindow_MacOS::OnNativeMarkedText(const DStringW& text)
 }
 
 // ---------------------------------------------------------------------------
-// Drag & drop (NSDraggingDestination bridge, reusing the shared ControlDropData_SDL)
+// Drag & drop (NSDraggingDestination bridge, reusing the shared ControlDropData_Wayland)
 // ---------------------------------------------------------------------------
 void NativeWindow_MacOS::OnDropBegin()
 {
@@ -2446,12 +2441,12 @@ void NativeWindow_MacOS::OnDropBegin()
     if (pOwner == nullptr) {
         return;
     }
-    ControlDropData_SDL data;
+    ControlDropData_Wayland data;
     data.m_bHandled = false;
     data.m_ptClientX = 0;
     data.m_ptClientY = 0;
     data.m_bTextData = false;
-    pOwner->OnNativeDropEnterMsg(kControlDropTypeSDL, &data);
+    pOwner->OnNativeDropEnterMsg(kControlDropTypeWayland, &data);
 }
 
 void NativeWindow_MacOS::OnDropPosition(const UiPoint& pt, bool& bHandled)
@@ -2463,16 +2458,16 @@ void NativeWindow_MacOS::OnDropPosition(const UiPoint& pt, bool& bHandled)
     }
     UiPoint clientPt = pt;
     pOwner->OnNativeGetDpi().WindowSizeToClientSize(clientPt);
-    ControlDropData_SDL data;
+    ControlDropData_Wayland data;
     data.m_bHandled = false;
     data.m_ptClientX = clientPt.x;
     data.m_ptClientY = clientPt.y;
     data.m_bTextData = false;
-    pOwner->OnNativeDropOverMsg(kControlDropTypeSDL, &data);
+    pOwner->OnNativeDropOverMsg(kControlDropTypeWayland, &data);
     bHandled = data.m_bHandled;
 }
 
-void NativeWindow_MacOS::OnDropTexts(const std::vector<DString>& textList, const UiPoint& pt, bool& bHandled)
+void NativeWindow_MacOS::OnDropTexts(const std::vector<std::string>& textList, const UiPoint& pt, bool& bHandled)
 {
     INativeWindow* pOwner = m_pOwner;
     if (pOwner == nullptr) {
@@ -2481,17 +2476,17 @@ void NativeWindow_MacOS::OnDropTexts(const std::vector<DString>& textList, const
     }
     UiPoint clientPt = pt;
     pOwner->OnNativeGetDpi().WindowSizeToClientSize(clientPt);
-    ControlDropData_SDL data;
+    ControlDropData_Wayland data;
     data.m_bHandled = false;
     data.m_ptClientX = clientPt.x;
     data.m_ptClientY = clientPt.y;
     data.m_bTextData = true;
     data.m_textList = textList;
-    pOwner->OnNativeDropMsg(kControlDropTypeSDL, &data);
+    pOwner->OnNativeDropMsg(kControlDropTypeWayland, &data);
     bHandled = data.m_bHandled;
 }
 
-void NativeWindow_MacOS::OnDropFiles(const DString& source, const std::vector<DString>& fileList, const UiPoint& pt, bool& bHandled)
+void NativeWindow_MacOS::OnDropFiles(const std::string& source, const std::vector<std::string>& fileList, const UiPoint& pt, bool& bHandled)
 {
     INativeWindow* pOwner = m_pOwner;
     if (pOwner == nullptr) {
@@ -2500,14 +2495,14 @@ void NativeWindow_MacOS::OnDropFiles(const DString& source, const std::vector<DS
     }
     UiPoint clientPt = pt;
     pOwner->OnNativeGetDpi().WindowSizeToClientSize(clientPt);
-    ControlDropData_SDL data;
+    ControlDropData_Wayland data;
     data.m_bHandled = false;
     data.m_ptClientX = clientPt.x;
     data.m_ptClientY = clientPt.y;
     data.m_bTextData = false;
     data.m_source = source;
     data.m_fileList = fileList;
-    pOwner->OnNativeDropMsg(kControlDropTypeSDL, &data);
+    pOwner->OnNativeDropMsg(kControlDropTypeWayland, &data);
     bHandled = data.m_bHandled;
 }
 
@@ -2539,7 +2534,7 @@ bool NativeWindow_MacOS::OnNativeEvent(void* pEvent)
     const NSEventType type = event.type;
     NSPoint locationInWindow = event.locationInWindow;
 
-    //Convert to dui client coordinates (top-left origin). Mirror the SDL
+    //Convert to dui client coordinates (top-left origin). Mirror the native backend
     //implementation: the event arrives in window (point) coordinates and is
     //converted to client (pixel) coordinates via the DpiManager - that is the
     //space dui lays the UI out in and dispatches control hit-testing with.

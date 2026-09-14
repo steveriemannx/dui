@@ -25,7 +25,7 @@ public:
     * @param [out] nIconID Icon associated with the virtual directory (the return value of GlobalManager::Instance().Icon().AddIcon; the icon needs to be added to the manager by the implementing class)
     * @return Returns true on success, false on failure
     */
-    bool GetVirtualDirectoryInfo(VirtualDirectoryType type, FilePath& filePath, DString& displayName, uint32_t& nIconID);
+    bool GetVirtualDirectoryInfo(VirtualDirectoryType type, FilePath& filePath, std::string& displayName, uint32_t& nIconID);
 
     /** Show the list of path nodes under all root directories (on Windows, returns all disk node data)
     * @param [in] bLargeIcon Whether to get the large icon

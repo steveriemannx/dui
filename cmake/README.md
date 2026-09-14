@@ -7,14 +7,23 @@ This document describes in detail the purpose and usage of the CMake configurati
 ```
 cmake/
 ├── dui_common.cmake        # Common configuration (OS/compiler/CPU detection, path setup)
-├── dui_bin.cmake           # Executable base configuration (C++ standard, path setup)
-├── dui_bin_windows.cmake   # Windows platform-specific configuration
-├── dui_bin_linux.cmake     # Linux platform-specific configuration
-├── dui_bin_macos.cmake     # macOS platform-specific configuration
-├── dui_bin_freebsd.cmake   # FreeBSD platform-specific configuration
+├── dui_app.cmake           # Application entry point: dui::app and dui_finalize_app()
+├── dui_app_windows.cmake   # Windows platform-specific configuration
+├── dui_app_linux.cmake     # Linux platform-specific configuration
+├── dui_app_macos.cmake     # macOS platform-specific configuration
+├── dui_app_freebsd.cmake   # FreeBSD platform-specific configuration
+├── dui_app_install.cmake.in # The same layer, packaged: the consumer-side dui::app
 ├── dui_compiles.cmake      # Compile-option detection (AVX/AVX2)
-└── dui_cef_macos.cmake     # macOS CEF special configuration
+├── dui_cef_macos.cmake     # macOS CEF packaging (CEF's own cefclient template)
+├── dui_deps.cmake          # External deps: Skia zip + patch, CEF download, gn
+├── dui_gen_code.cmake      # XML → C++ code generation target
+├── dui_embed_res.cmake     # Resources embedded into the executable
+└── dui_install.cmake       # install() rules and the exported package
 ```
+
+`dui_bin.cmake` and its four `dui_bin_<platform>.cmake` files were the previous
+application layer — the helper created the executable itself. They have been replaced by
+`dui_app*.cmake`; see "Basic Usage" below for the contract that replaces them.
 
 ---
 
@@ -59,9 +68,10 @@ DUI_BUILD_TYPE        # "debug" or "release"
 |----------|--------|------|
 | `DUI_LOG` | OFF | Print dui debug logs |
 | `DUI_SKIA_LIB_SUBPATH` | OFF | Skia library subdirectory (OFF = auto-composed) |
-| `DUI_ENABLE_SDL` | Windows: always OFF (removed), others=ON | Enable SDL input support (Linux/macOS) |
 | `DUI_ENABLE_CEF` | OFF | Enable CEF browser support |
 | `DUI_CEF_109` | OFF | Use CEF 109 (supports Win7) |
+| `DUI_ENABLE_SANITIZERS` | OFF | Build dui with AddressSanitizer + UndefinedBehaviorSanitizer (development only; applied to the `dui` target as PUBLIC compile/link options, see src/CMakeLists.txt) |
+| `DUI_ENABLE_MVVM` | OFF | Compile the optional data-binding module into the library |
 | `DUI_WEBVIEW2_EXE` | OFF | WebView2 executable (Windows only) |
 | `DUI_MINGW_STATIC` | ON | MinGW static linking |
 
@@ -74,8 +84,6 @@ DUI_BUILD_TYPE        # "debug" or "release"
 | `DUI_BIN_PATH` | dui executable output directory |
 | `DUI_SKIA_SRC_ROOT_DIR` | Skia source directory |
 | `DUI_SKIA_LIB_PATH` | Skia library directory |
-| `DUI_SDL_SRC_ROOT_DIR` | SDL3 source directory |
-| `DUI_SDL_LIB_PATH` | SDL3 library directory |
 | `DUI_CEF_SRC_ROOT_DIR` | libCEF source directory |
 | `DUI_CEF_LIB_PATH` | libCEF library directory |
 
@@ -85,7 +93,6 @@ DUI_BUILD_TYPE        # "debug" or "release"
 |--------|------|
 | `DUI_LIBS` | dui base library list |
 | `DUI_SKIA_LIBS` | Skia library list (svg, skshaper, skottie, sksg, jsonreader, skia) |
-| `DUI_SDL_LIBS` | SDL3 library list |
 | `DUI_CEF_LIBS` | libCEF library list |
 
 **Skia path composition rule:**
@@ -103,62 +110,81 @@ ${DUI_LIB_PATH}/Release
 
 ---
 
-### 2. dui_bin.cmake (Executable Base Configuration)
+### 2. dui_app.cmake (Application Entry Point)
 
-**Purpose:** Common CMake configuration for executables, applicable to all platforms.
+**Purpose:** the one file an application includes. It includes `dui_common.cmake`, creates
+the `dui::app` interface target, and defines `dui_finalize_app()`.
 
-**Main configuration items:**
+#### 2.1 What an application writes
 
-#### 2.1 C++ standard
 ```cmake
-set(CMAKE_CXX_STANDARD 20)             # C++20
-set(CMAKE_CXX_STANDARD_REQUIRED ON)    # C++20 required
+include("${DUI_ROOT}/cmake/dui_app.cmake")
+add_executable(my_app main.cpp MainForm.cpp)
+target_link_libraries(my_app PRIVATE dui::app)
+dui_finalize_app(my_app)
 ```
 
-#### 2.2 Target-local configuration
-```cmake
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${DUI_ROOT} ${DUI_ROOT}/include ${DUI_PROJECT_SRC_DIR}
-)
-target_link_libraries(${PROJECT_NAME} PRIVATE dui dui_skia_libs)
-```
+The target belongs to the application, and its sources are listed rather than globbed:
+`file(GLOB ... CONFIGURE_DEPENDS)` is not reliable on the multi-config generators
+(Visual Studio, Xcode) this project targets, and its failure mode is a source file
+quietly not being compiled.
 
-Native targets use target-level include, definition, and link settings. Global
-directory-wide include/link configuration is intentionally avoided.
+#### 2.2 `dui::app` — everything that is a usage requirement
 
-#### 2.3 Output directory
-```cmake
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${DUI_BIN_PATH}")
-```
+| Property | Contents |
+|---|---|
+| `INTERFACE_INCLUDE_DIRECTORIES` | `DUI_ROOT`, `DUI_ROOT/include`, and the platform's CEF include root |
+| `INTERFACE_COMPILE_FEATURES` | `cxx_std_20` |
+| `INTERFACE_COMPILE_DEFINITIONS` | `UNICODE` / `_UNICODE` (Windows), `DUI_CEF=1\|0`, `DUI_WEBVIEW2=1`, `DUI_WAYLAND=1` |
+| `INTERFACE_COMPILE_OPTIONS` | the platform's warning and ABI flags |
+| `INTERFACE_LINK_OPTIONS` | `-Wl,--no-as-needed` (Linux/FreeBSD), `/DELAYLOAD:libcef.dll`, `-mwindows` (MinGW) |
+| `INTERFACE_LINK_DIRECTORIES` | Skia's library directory on Linux/FreeBSD (which link Skia by bare name), the CEF and WebView2 directories |
+| `INTERFACE_LINK_LIBRARIES` | `dui`, the vendored image libraries, `dui_skia_libs`, the platform libraries and frameworks |
 
-#### 2.4 Source collection
-```cmake
-file(GLOB SRC_FILES CONFIGURE_DEPENDS
-    "${DUI_PROJECT_SRC_DIR}/*.c"
-    "${DUI_PROJECT_SRC_DIR}/*.cc"
-    "${DUI_PROJECT_SRC_DIR}/*.cpp"
-    "${DUI_PROJECT_SRC_DIR}/*.mm"
-)
-# Subdirectories are collected with the same CONFIGURE_DEPENDS patterns.
-```
+#### 2.3 `dui_finalize_app(target)` — everything that cannot travel
 
-#### 2.5 Platform dispatch
-The matching platform configuration file is included automatically based on the OS:
+A function rather than an interface property, because none of this has an interface form:
+`RUNTIME_OUTPUT_DIRECTORY` is not an interface property, a `POST_BUILD` step has no
+interface equivalent, and `add_dependencies` has to name a concrete target.
+
+It sets the runtime output directory (and the per-config variants on MSVC) and the
+`MSVC_RUNTIME_LIBRARY`, the Windows subsystem/entry point and `.rc`/manifest sources,
+assembles and ad-hoc signs the macOS `.app` bundle, stages the CEF and WebView2 runtimes,
+and wires the build-order edges onto Skia and onto the targets created by
+`dui_gen_code.cmake` / `dui_embed_res.cmake`.
+
+Per-application switches — CEF and WebView2 — are applied here rather than on the shared
+`dui::app`, because `dui::app` is created once, by whichever application includes it first.
+An application that sets `DUI_ENABLE_CEF` would otherwise either leak that setting into
+every other application or not get it itself. The platform files handle this with a
+per-application interface target that names `dui::app` first, which also keeps the CEF
+libraries after dui's on the link line.
+
+#### 2.4 Platform dispatch
+
+The platform file sets `dui::app`'s usage requirements and defines
+`dui_finalize_app_platform()`:
 ```cmake
 if(DUI_OS_WINDOWS)
-    include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_windows.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/dui_app_windows.cmake")
 elseif(DUI_OS_LINUX)
-    include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_linux.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/dui_app_linux.cmake")
 elseif(DUI_OS_MACOS)
-    include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_macos.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/dui_app_macos.cmake")
 elseif(DUI_OS_FREEBSD)
-    include("${CMAKE_CURRENT_LIST_DIR}/dui_bin_freebsd.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/dui_app_freebsd.cmake")
 endif()
 ```
 
 ---
 
-### 3. dui_bin_windows.cmake (Windows Platform Configuration)
+### 3. dui_app_windows.cmake (Windows Platform Configuration)
+
+Each of the platform files below has two halves, following §2.2 and §2.3: the
+`dui::app` usage requirements (`target_*(dui_app INTERFACE ...)`), and a
+`dui_finalize_app_platform(_target)` function for the per-target work. Code snippets
+below that show `${PROJECT_NAME}` are from the previous layer and now appear as either
+the interface target or `${_target}` -- read them for intent, not verbatim.
 
 **Purpose:** Windows-specific compile and link configuration.
 
@@ -230,12 +256,18 @@ endif()
 #### 3.9 Windows system dependency libraries
 ```cmake
 set(DUI_WINDOWS_LIBS Comctl32 Imm32 Opengl32 User32 shlwapi)
-# Optional: Version.lib Winmm.lib Setupapi.lib (SDL dependencies)
+# Optional: Version.lib Winmm.lib Setupapi.lib (native backend dependencies)
 ```
 
 ---
 
-### 4. dui_bin_linux.cmake (Linux Platform Configuration)
+### 4. dui_app_linux.cmake (Linux Platform Configuration)
+
+Each of the platform files below has two halves, following §2.2 and §2.3: the
+`dui::app` usage requirements (`target_*(dui_app INTERFACE ...)`), and a
+`dui_finalize_app_platform(_target)` function for the per-target work. Code snippets
+below that show `${PROJECT_NAME}` are from the previous layer and now appear as either
+the interface target or `${_target}` -- read them for intent, not verbatim.
 
 **Purpose:** Linux-specific compile and link configuration.
 
@@ -252,12 +284,18 @@ endif()
 set(DUI_LINUX_LIBS X11 freetype fontconfig pthread dl)
 
 # Link command
-target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_LINUX_LIBS})
+ target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS} ${DUI_LINUX_LIBS})
 ```
 
 ---
 
-### 5. dui_bin_macos.cmake (macOS Platform Configuration)
+### 5. dui_app_macos.cmake (macOS Platform Configuration)
+
+Each of the platform files below has two halves, following §2.2 and §2.3: the
+`dui::app` usage requirements (`target_*(dui_app INTERFACE ...)`), and a
+`dui_finalize_app_platform(_target)` function for the per-target work. Code snippets
+below that show `${PROJECT_NAME}` are from the previous layer and now appear as either
+the interface target or `${_target}` -- read them for intent, not verbatim.
 
 **Purpose:** macOS-specific compile and link configuration.
 
@@ -294,7 +332,7 @@ set(DUI_CXX_COMPILER_FLAGS
 #### 5.3 Link command
 ```cmake
 target_link_libraries(${PROJECT_NAME}
-    ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS}
+    ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_CEF_LIBS}
     ${ACCELERATE} ${COREFOUNDATION} ${CORETEXT} ${COREGRAPHICS} ${DUI_MACOS_LIBS}
     "-framework AppKit" "-framework Foundation" "-framework Metal" "-framework Cocoa"
 )
@@ -302,7 +340,13 @@ target_link_libraries(${PROJECT_NAME}
 
 ---
 
-### 6. dui_bin_freebsd.cmake (FreeBSD Platform Configuration)
+### 6. dui_app_freebsd.cmake (FreeBSD Platform Configuration)
+
+Each of the platform files below has two halves, following §2.2 and §2.3: the
+`dui::app` usage requirements (`target_*(dui_app INTERFACE ...)`), and a
+`dui_finalize_app_platform(_target)` function for the per-target work. Code snippets
+below that show `${PROJECT_NAME}` are from the previous layer and now appear as either
+the interface target or `${_target}` -- read them for intent, not verbatim.
 
 **Purpose:** FreeBSD-specific compile and link configuration.
 
@@ -316,7 +360,7 @@ find_package(Freetype REQUIRED)
 find_package(Fontconfig REQUIRED)
 find_package(X11 REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SDL_LIBS} ${DUI_SKIA_LIBS} ${DUI_FREEBSD_LIBS} ${X11_LIBRARIES} Freetype::Freetype Fontconfig::Fontconfig)
+ target_link_libraries(${PROJECT_NAME} ${DUI_LIBS} ${DUI_SKIA_LIBS} ${DUI_FREEBSD_LIBS} ${X11_LIBRARIES} Freetype::Freetype Fontconfig::Fontconfig)
 ```
 
 ---
@@ -369,18 +413,68 @@ check_cxx_source_compiles("
 
 #### 1. Create CMakeLists.txt
 
-Create `CMakeLists.txt` in the project root:
+There are two entry points, and they lead to the same three lines. **Inside dui's source
+tree** (an example, or an application built alongside the library) you locate the module
+by path:
 
 ```cmake
-cmake_minimum_required(VERSION 3.21)
-project(my_dui_app)
+cmake_minimum_required(VERSION 4.0)
+project(my_dui_app CXX)
 
-# Set the project source directory
-set(DUI_PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-
-# Include the dui CMake configuration
-include(${DUI_ROOT}/cmake/dui_bin.cmake)
+get_filename_component(DUI_ROOT "<path to dui>" ABSOLUTE)
+include("${DUI_ROOT}/cmake/dui_app.cmake")
 ```
+
+**Against an installed dui**, `find_package` loads the same target and function from the
+package, and the rest of the file is identical:
+
+```cmake
+cmake_minimum_required(VERSION 4.0)
+project(my_dui_app CXX)
+
+find_package(dui CONFIG REQUIRED)      # provides dui::app and dui_finalize_app()
+```
+
+The consumer's `dui::app` is a thinner thing than the build tree's — it is created by
+`dui_app.cmake` inside the package rather than by `dui_common.cmake`, so it does not
+trigger dependency configuration, and it does not carry dui's own warning flags onto your
+translation units. It also does not offer the CEF/WebView2 staging or the code-generation
+targets, which are build-tree capabilities. The linking line and the finalize call are the
+same either way:
+
+```cmake
+add_executable(my_dui_app
+    MainForm.cpp
+    main.cpp
+)
+target_link_libraries(my_dui_app PRIVATE dui::app)
+dui_finalize_app(my_dui_app)
+```
+
+Four things to know about this shape:
+
+- **You own the target.** `add_executable` is yours to write, and its sources are listed
+  rather than globbed — a glob is not reliable on the multi-config generators
+  (Visual Studio, Xcode) this project targets. `examples/hello/CMakeLists.txt` is the
+  smallest complete example.
+- **`dui::app`** is an INTERFACE target carrying the include directories, the C++ standard,
+  the compile definitions and options, the link options and directories, and the libraries.
+  Linking it is the whole of the configuration.
+- **`dui_finalize_app(target)`** does what an INTERFACE target cannot: the runtime output
+  directory, the Windows entry point, the macOS `.app` assembly and ad-hoc code signature,
+  and — in the build tree — the manifest, the build-order edges onto Skia and any generated
+  code, and the CEF/WebView2 runtime staging. Call it once, after the target exists.
+- **In the build tree**, `dui_app.cmake` includes `dui_common.cmake` itself. You do not
+  include it separately, and you do not set `DUI_PROJECT_SRC_DIR`. The packaged copy does
+  not include it, deliberately — see above.
+
+**Migrating from the previous contract** (`include(.../dui_bin.cmake)` with no
+`add_executable`): that helper created the executable for you, and it has been replaced.
+The conversion is mechanical — list the sources the helper used to glob, add the two calls
+above, and delete the `DUI_PROJECT_SRC_DIR` line. The one case that is *not* mechanical is
+the macOS CEF packaging path: `cmake/dui_cef_macos.cmake` creates and assembles the target
+itself, so on that path do not call `add_executable` and call `dui_finalize_app()` with no
+argument. `examples/cef/CMakeLists.txt` shows both branches.
 
 #### 2. Build commands
 
@@ -400,19 +494,13 @@ cmake --build . --config Release
 
 ### Advanced Examples
 
-#### 1. Enable SDL support (Linux/macOS)
-
-```bash
-cmake -S .. -B . -DDUI_ENABLE_SDL=ON -DCMAKE_BUILD_TYPE=Release
-```
-
-#### 2. Enable CEF support
+#### 1. Enable CEF support
 
 ```bash
 cmake -S .. -B . -DDUI_ENABLE_CEF=ON -DCMAKE_BUILD_TYPE=Release
 ```
 
-#### 3. Use CEF 109 (supports Win7)
+#### 2. Use CEF 109 (supports Win7)
 
 ```bash
 cmake -S .. -B . -DDUI_ENABLE_CEF=ON -DDUI_CEF_109=ON -DCMAKE_BUILD_TYPE=Release
@@ -470,7 +558,6 @@ cmake --build ./build_llvm
 |----------|------|--------|------|
 | `DUI_LOG` | BOOL | OFF | Print debug logs |
 | `DUI_SKIA_LIB_SUBPATH` | STRING | OFF | Skia library subdirectory |
-| `DUI_ENABLE_SDL` | BOOL | Windows: always OFF (removed), others=ON | Enable SDL support |
 | `DUI_ENABLE_CEF` | BOOL | OFF | Enable CEF support |
 | `DUI_CEF_109` | BOOL | OFF | CEF 109 version (Win7) |
 | `DUI_WEBVIEW2_EXE` | BOOL | OFF | WebView2 executable |
@@ -488,9 +575,9 @@ cmake --build ./build_llvm
 | C++ standard | C++20 | C++20 | C++20 | C++20 |
 | Encoding | Unicode | UTF-8 | UTF-8 | UTF-8 |
 | Graphics | Skia + GDI | Skia + X11 | Skia + Metal | Skia + X11 |
-| Input support | Win32/SDL | X11/SDL | Cocoa/SDL | X11/SDL |
+| Input support | Win32/native backend | X11/native backend | Cocoa/native backend | X11/native backend |
 | Browser | CEF/WebView2 | CEF | CEF | ❌ |
-| SDL default | OFF | ON | ON | ON |
+| native backend default | OFF | ON | ON | ON |
 
 ### MSVC vs MinGW-w64
 
@@ -603,4 +690,4 @@ Make sure the following dependencies are available before building:
 
 **Solution:**
 1. Make sure Xcode (or a compiler with framework support) is used
-2. Check the framework configuration in `dui_bin_macos.cmake`
+2. Check the framework configuration in `dui_app_macos.cmake`

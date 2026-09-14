@@ -36,7 +36,7 @@ void CefControlNative::Init()
         HWND hWnd = GetWindow()->NativeWnd()->GetHWND();
         LONG style = ::GetWindowLong(hWnd, GWL_STYLE);
         ::SetWindowLong(hWnd, GWL_STYLE, style | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-        ASSERT((::GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_LAYERED) == 0 && DUI_T("CefControlNative: cannot be used in a layered window"));
+        ASSERT((::GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_LAYERED) == 0 && "CefControlNative: cannot be used in a layered window");
 #endif
         m_pBrowserHandler = new CefBrowserHandler;
         m_pBrowserHandler->SetHostWindow(GetWindow());
@@ -56,12 +56,10 @@ void CefControlNative::ReCreateBrowser()
 {
     GlobalManager::Instance().AssertUIThread();
     Window* pWindow = GetWindow();
-    ASSERT(pWindow != nullptr);
     if (pWindow == nullptr) {
         return;
     }
     ASSERT(pWindow->IsWindow());
-    ASSERT(m_pBrowserHandler != nullptr);
     if (m_pBrowserHandler == nullptr) {
         return;
     }
@@ -131,7 +129,7 @@ void CefControlNative::OnGotFocus()
 
     Window* pWindow = GetWindow();
     if (pWindow != nullptr) {
-        //When the page gains focus, disable text input on the main UI (fixes: on macOS, typing in the page triggers multiple inputs per key press; the input is likely triggered again internally by SDL)
+        //When the page gains focus, disable text input on the main UI (fixes: on macOS, typing in the page triggers multiple inputs per key press; the input is likely triggered again internally by native backend)
         pWindow->NativeWnd()->SetImeOpenStatus(false);
         pWindow->NativeWnd()->SetTextInputArea(nullptr, 0);
     }

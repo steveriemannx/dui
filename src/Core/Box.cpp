@@ -35,21 +35,21 @@ Box::~Box()
     }
 }
 
-DString Box::GetType() const { return DUI_CTR_BOX; }
+std::string Box::GetType() const { return DUI_CTR_BOX; }
 
-void Box::SetAttribute(const DString& strName, const DString& strValue)
+void Box::SetAttribute(const std::string& strName, const std::string& strValue)
 {
     if (m_pLayout->SetAttribute(strName, strValue, Dpi())) {
         return;
     }
-    else if ((strName == DUI_T("mouse_child")) || (strName == DUI_T("mousechild"))) {
-        SetMouseChildEnabled(strValue == DUI_T("true"));
+    else if ((strName == "mouse_child") || (strName == "mousechild")) {
+        SetMouseChildEnabled(strValue == "true");
     }
-    else if (strName == DUI_T("drag_out_id")) {
+    else if (strName == "drag_out_id") {
         uint8_t nValue = ui::TruncateToUInt8(StringUtil::StringToInt32(strValue));
         SetDragOutId(nValue);
     }
-    else if (strName == DUI_T("drop_in_id")) {
+    else if (strName == "drop_in_id") {
         uint8_t nValue = ui::TruncateToUInt8(StringUtil::StringToInt32(strValue));
         SetDropInId(nValue);
     }
@@ -348,7 +348,7 @@ Control* Box::FindControlInItems(const std::vector<Control*>& items,
     return pResult;
 }
 
-Control* Box::FindSubControl(const DString& pstrSubControlName)
+Control* Box::FindSubControl(const std::string& pstrSubControlName)
 {
     Control* pSubControl = GetWindow()->FindSubControlByName(this, pstrSubControlName);
     return pSubControl;
@@ -454,7 +454,6 @@ bool Box::AddItemAt(Control* pControl, size_t iIndex)
 
 bool Box::DoAddItemAt(Control* pControl, size_t iIndex)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return false;
     }
@@ -462,6 +461,12 @@ bool Box::DoAddItemAt(Control* pControl, size_t iIndex)
         ASSERT(0);
         return false;
     }
+    //A control can only be adopted by one container at a time. Adding one that is still
+    //attached elsewhere is only legal for a container that does not own its children:
+    //the menu/combo popups borrow controls from their owner (SetAutoDestroyChild(false))
+    //and hand them back when they close. In every other case the control must be
+    //detached first - see ReleaseItem - or two containers would destroy it.
+    ASSERT((pControl->GetParent() == nullptr) || (pControl->GetParent() == this) || !m_bAutoDestroyChild);
     m_items.insert(m_items.begin() + iIndex, pControl);
     Window* pWindow = GetWindow();
     if (pWindow != nullptr) {
@@ -497,7 +502,6 @@ bool Box::RemoveItemAt(size_t iIndex)
 
 bool Box::DoRemoveItem(Control* pControl)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return false;
     }
@@ -510,7 +514,14 @@ bool Box::DoRemoveItem(Control* pControl)
                         pControl->SendEvent(kEventDestroy);
                     }
                     delete pControl;
-                }                
+                }
+            }
+            else {
+                //The control lives on, but it no longer belongs to a container. Keeping
+                //the back-pointer would leave it pointing at a box that can be gone
+                //(PlaceHolder::SetRect, GetScrollOffsetInScrollBox and IsControlRelated
+                //all walk GetParent()).
+                pControl->SetParent(nullptr);
             }
             Arrange();
             return true;
@@ -528,9 +539,46 @@ void Box::RemoveAllItems()
             delete pControl;
         }
     }
+    else {
+        //The controls live on, but they no longer belong to this container
+        for (Control* pControl : items) {
+            if (pControl != nullptr) {
+                pControl->SetParent(nullptr);
+            }
+        }
+    }
     if (!items.empty()) {
         Arrange();
-    }    
+    }
+}
+
+Control* Box::ReleaseItem(Control* pControl)
+{
+    if (pControl == nullptr) {
+        return nullptr;
+    }
+    if (std::find(m_items.begin(), m_items.end(), pControl) == m_items.end()) {
+        //Not one of this container's child controls: nothing to release
+        return nullptr;
+    }
+
+    //Detach it without destroying it. This is the flag dance the reparenting call sites
+    //used to hand-roll: clear the flag, remove the item, restore the flag.
+    const bool bOldAutoDestroyChild = m_bAutoDestroyChild;
+    m_bAutoDestroyChild = false;
+    //RemoveItem is virtual so that subclasses keep their own bookkeeping (a ListBox
+    //renumbers the items it keeps, for example). A subclass can forward the removal to
+    //another container though (CheckCombo hands it to its drop list); in that case the
+    //control is still ours and is detached directly.
+    if (!RemoveItem(pControl) ||
+        (std::find(m_items.begin(), m_items.end(), pControl) != m_items.end())) {
+        DoRemoveItem(pControl);
+    }
+    m_bAutoDestroyChild = bOldAutoDestroyChild;
+
+    //Ownership has been handed over: the control no longer belongs to a container
+    pControl->SetParent(nullptr);
+    return pControl;
 }
 
 Layout* Box::ResetLayout(Layout* pNewLayout)

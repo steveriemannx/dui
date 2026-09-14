@@ -17,9 +17,8 @@ void TextDrawer::SetTextChanged()
     m_bRichTextChanged = true;
 }
 
-void TextDrawer::UpdateTextDrawProps(uint32_t uFormat, float fSpacingMul, float fSpacingAdd, const DString& fontId)
+void TextDrawer::UpdateTextDrawProps(uint32_t uFormat, float fSpacingMul, float fSpacingAdd, const std::string& fontId)
 {
-    ASSERT(m_pRichText != nullptr);
     if (m_pRichText == nullptr) {
         return;
     }
@@ -49,9 +48,9 @@ void TextDrawer::UpdateTextDrawProps(uint32_t uFormat, float fSpacingMul, float 
 }
 
 UiRect TextDrawer::MeasureString(IRender* pRender,
-                                 const DString& strText,
+                                 const std::string& strText,
                                  const MeasureStringParam& measureParam,
-                                 const DString& fontId,
+                                 const std::string& fontId,
                                  bool bRichText,
                                  Control* pOwner)
 {
@@ -68,7 +67,7 @@ UiRect TextDrawer::MeasureString(IRender* pRender,
         //RichText text
         if (m_pRichText == nullptr) {
             m_pRichText = std::make_unique<RichText>(pOwner->GetWindow());
-            m_pRichText->SetAttribute(DUI_T("trim_policy"), DUI_T("none")); //Do not perform trim operations on spaces
+            m_pRichText->SetAttribute("trim_policy", "none"); //Do not perform trim operations on spaces
         }
         m_pRichText->SetEnableRedraw(false);
         m_pRichText->SetWindow(nullptr); //Do not set the associated window, to avoid Invalidate calls
@@ -96,9 +95,9 @@ UiRect TextDrawer::MeasureString(IRender* pRender,
 }
 
 void TextDrawer::DrawString(IRender* pRender,
-                            const DString& strText,
+                            const std::string& strText,
                             const DrawStringParam& drawParam,
-                            const DString& fontId,
+                            const std::string& fontId,
                             bool bRichText,
                             Control* pOwner)
 {
@@ -114,7 +113,7 @@ void TextDrawer::DrawString(IRender* pRender,
         //RichText text
         if (m_pRichText == nullptr) {
             m_pRichText = std::make_unique<RichText>(pOwner->GetWindow());
-            m_pRichText->SetAttribute(DUI_T("trim_policy"), DUI_T("none")); //Do not perform trim operations on spaces
+            m_pRichText->SetAttribute("trim_policy", "none"); //Do not perform trim operations on spaces
         }
         m_pRichText->SetEnableRedraw(false);
         m_pRichText->SetWindow(nullptr); //Do not set the associated window, to avoid Invalidate calls

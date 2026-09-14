@@ -15,22 +15,22 @@ ImageDecoder_Common::~ImageDecoder_Common()
 {
 }
 
-DString ImageDecoder_Common::GetFormatName() const
+std::string ImageDecoder_Common::GetFormatName() const
 {
     return ImageDecoderUtil::GetSupportedFileExtentions();
 }
 
-bool ImageDecoder_Common::CanDecode(const DString& imageFilePath) const
+bool ImageDecoder_Common::CanDecode(const std::string& imageFilePath) const
 {
-    DString fileExtentions = ImageDecoderUtil::GetSupportedFileExtentions();
+    std::string fileExtentions = ImageDecoderUtil::GetSupportedFileExtentions();
     if (fileExtentions.empty()) {
         return false;
     }
-    DString fileExt = FilePathUtil::GetFileExtension(imageFilePath);
+    std::string fileExt = FilePathUtil::GetFileExtension(imageFilePath);
     StringUtil::MakeUpperString(fileExt);
 
-    std::list<DString> fileExtList = StringUtil::Split(fileExtentions, DUI_T(";"));
-    for (DString& ext : fileExtList) {
+    std::list<std::string> fileExtList = StringUtil::Split(fileExtentions, ";");
+    for (std::string& ext : fileExtList) {
         StringUtil::MakeUpperString(ext);
         if (fileExt == ext) {
             return true;

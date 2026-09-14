@@ -77,54 +77,44 @@ public:
 
     /** Get the path separator (character)
     */
-    static DString::value_type GetPathSeparator();
+    static std::string::value_type GetPathSeparator();
 
     /** Get the path separator (string)
     */
-    static DString GetPathSeparatorStr();
+    static std::string GetPathSeparatorStr();
 
     /** Get the native path as a string
-    * @return If DString is the Unicode version, a UTF16 string is returned
-    *         If DString is not the Unicode version: on Windows platforms, an Ansi-encoded string (MBCS) is returned; on other platforms, a UTF8-encoded string is returned
+    * @return If std::string is the Unicode version, a UTF16 string is returned
+    *         If std::string is not the Unicode version: on Windows platforms, an Ansi-encoded string (MBCS) is returned; on other platforms, a UTF8-encoded string is returned
     */
-#ifdef DUI_UNICODE
-    const DString& NativePath() const;
-#else
-    DString NativePath() const;
-#endif
+    std::string NativePath() const;
 
     /** Get the native path as a string
     * @return On Windows platforms, an Ansi-encoded string (MBCS) is returned; on other platforms, a UTF8-encoded string is returned
     */
-    DStringA NativePathA() const;
+    std::string NativePathA() const;
 
-#ifdef DUI_UNICODE
-    /** Convert to a string (UTF16 or UTF8 encoded)
-    */
-    const DString& ToString() const;
-#else
 #ifdef DUI_BUILD_FOR_WIN
-    DString ToString() const;
+    std::string ToString() const;
 #else
-    const DString& ToString() const;
-#endif
+    const std::string& ToString() const;
 #endif
 
     /** Convert to a string (UTF16 encoded)
     */
-    DStringW ToStringW() const;
+    std::wstring ToStringW() const;
 
     /** Convert to a string (UTF8 encoded)
     */
-    DStringA ToStringA() const;
+    std::string ToStringA() const;
 
     /** Get the file name part of the current path (UTF16/UTF8 encoded)
     */
-    DString GetFileName() const;
+    std::string GetFileName() const;
 
     /** Get the extension part of the file name in the current path (UTF16/UTF8 encoded)
     */
-    DString GetFileExtension() const;
+    std::string GetFileExtension() const;
 
     /** Get the parent path
     */
@@ -169,9 +159,9 @@ public:
     void GetParentPathList(std::vector<FilePath>& parentPathList) const;
 
     /** Assign a path
-    * @param [in] rightPath Follows the DString encoding: the path is UTF8 or UTF16 encoded
+    * @param [in] rightPath Follows the std::string encoding: the path is UTF8 or UTF16 encoded
     */
-    FilePath& operator = (const DString& rightPath);
+    FilePath& operator = (const std::string& rightPath);
 
     /** Join paths: joins the current path with the path on the right to produce a new path
     */
@@ -187,9 +177,9 @@ public:
     FilePath& operator += (const FilePath& rightPath);
 
     /** Concatenate two paths into one path (concatenated as strings; no path separator is inserted between the two paths)
-    * @param [in] rightPath Follows the DString encoding: the path is UTF8 or UTF16 encoded
+    * @param [in] rightPath Follows the std::string encoding: the path is UTF8 or UTF16 encoded
     */
-    FilePath& operator += (const DString& rightPath);
+    FilePath& operator += (const std::string& rightPath);
 
     /** Comparison operators
     */

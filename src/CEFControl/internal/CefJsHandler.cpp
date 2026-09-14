@@ -20,19 +20,16 @@ bool CefJSHandler::Execute(const CefString& name, CefRefPtr<CefV8Value> /*object
     }
 
     CefRefPtr<CefV8Context> context = CefV8Context::GetCurrentContext();
-    ASSERT(context != nullptr);
     if (context == nullptr) {
         return false;
     }
 
     CefRefPtr<CefFrame> frame = context->GetFrame();
-    ASSERT(frame != nullptr);
     if (frame == nullptr) {
         return false;
     }
 
     CefRefPtr<CefBrowser> browser = context->GetBrowser();
-    ASSERT(browser != nullptr);
     if (browser == nullptr) {
         return false;
     }

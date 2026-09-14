@@ -12,7 +12,7 @@ ColorPickerStatard::ColorPickerStatard(Window* pWindow):
     InitColorMap();
 }
 
-DString ColorPickerStatard::GetType() const { return DUI_CTR_COLOR_PICKER_STANDARD; }
+std::string ColorPickerStatard::GetType() const { return DUI_CTR_COLOR_PICKER_STANDARD; }
 
 void ColorPickerStatard::SelectColor(const UiColor& color)
 {
@@ -23,12 +23,10 @@ void ColorPickerStatard::SelectColor(const UiColor& color)
 void ColorPickerStatard::Paint(IRender* pRender, const UiRect& rcPaint)
 {
     BaseClass::Paint(pRender, rcPaint);
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return;
     }
@@ -103,12 +101,10 @@ void ColorPickerStatard::DrawColorMap(IRender* pRender, const UiRect& rect)
 bool ColorPickerStatard::DrawRegularHexagon(IRender* pRender, const UiPointF& centerPt, int32_t radius,
                                             const UiColor& penColor, float penWidth, const UiColor& brushColor)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return false;
     }
     IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-    ASSERT(pRenderFactory != nullptr);
     if (pRenderFactory == nullptr) {
         return false;
     }
@@ -152,11 +148,11 @@ bool ColorPickerStatard::MouseMove(const EventArgs& msg)
     if (GetRect().ContainsPt(msg.ptMouse)) {
         UiColor color;
         if (GetColorInfo(msg.ptMouse, color)) {
-            DString colorString = StringUtil::Printf(DUI_T("#%02X%02X%02X%02X"), color.GetA(), color.GetR(), color.GetG(), color.GetB());
+            std::string colorString = StringUtil::Printf("#%02X%02X%02X%02X", color.GetA(), color.GetR(), color.GetG(), color.GetB());
             SetToolTipText(colorString);
         }
         else {
-            SetToolTipText(DUI_T(""));
+            SetToolTipText("");
         }
     }
     return BaseClass::MouseMove(msg);

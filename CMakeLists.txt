@@ -1,16 +1,24 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 4.0)
 
 # Top-level CMake management (following the develop2 branch pattern):
 #   cmake -S . -B build      # configure the whole repository at once (dui + third-party libraries + all examples)
 #   cmake --build build      # build everything at once (--target <name> builds only one example)
 # Standalone per-example builds are also kept (each example directory is an independent CMake project; see scripts/*.sh --standalone)
-project(dui)
+# The VERSION is the single source of truth for the packaged version: it becomes
+# PROJECT_VERSION here and is what dui_install_package() feeds to
+# write_basic_package_version_file(), so bumping it is the only edit a release needs.
+project(dui VERSION 0.1.0)
 
 # Default to Release when no build type is explicitly specified (e.g. mkdir build && cd build && cmake .. && make)
 # Note: with an empty build type there is no optimization, and some inline symbols won't be inlined, causing link failures
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type (Debug/Release)" FORCE)
 endif()
+
+# Emit compile_commands.json for clang-tidy and other tooling. Single-config
+# generators (Unix Makefiles / Ninja) honour this; multi-config generators
+# (Visual Studio / Xcode) have no single command line per file and ignore it.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Dependency management (Skia build targets + CEF download) must be in place
 # BEFORE src/CMakeLists.txt, which compiles Skia's tools/window sources into the dui library.
@@ -46,7 +54,9 @@ if(DUI_BUILD_TESTS)
 endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/dui_install.cmake")
-dui_install_package(VERSION 0.1.0)
+# No VERSION argument: dui_install_package() defaults to PROJECT_VERSION, declared
+# once in the project() call above.
+dui_install_package()
 
 add_subdirectory(examples)
 

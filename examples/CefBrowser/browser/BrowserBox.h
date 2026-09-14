@@ -46,12 +46,12 @@ public:
 
     /** Get the web page title
     */
-    const DString& GetTitle() const;
+    const std::string& GetTitle() const;
 
     /** Initialize the browser box
     * @param [in] url the initial URL
     */
-    virtual void InitBrowserBox(const DString& url);
+    virtual void InitBrowserBox(const std::string& url);
 
     /** Uninitialize the browser box
     */
@@ -62,7 +62,7 @@ public:
 public:
     /** Control type
     */
-    virtual DString GetType() const override { return DUI_T("BrowserBox"); }
+    virtual std::string GetType() const override { return "BrowserBox"; }
 
     /**
     * Override the base class virtual function to specify the form this control belongs to
@@ -106,15 +106,15 @@ protected:
 
     /** Title changed (callback thread: UI thread of the main process)
     */
-    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title);
+    virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const std::string& title);
     
     /** URL changed (callback thread: UI thread of the main process)
     */
-    void OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const DString& url);
+    void OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const std::string& url);
     
     /** URL change of the main frame (callback thread: UI thread of the main process)
     */
-    void OnMainUrlChange(const DString& oldUrl, const DString& newUrl);
+    void OnMainUrlChange(const std::string& oldUrl, const std::string& newUrl);
     
     /** Favicon URL change (callback thread: UI thread of the main process)
     */
@@ -126,7 +126,7 @@ protected:
     
     /** Status message change (callback thread: UI thread of the main process)
     */
-    void OnStatusMessage(CefRefPtr<CefBrowser> browser, const DString& value);
+    void OnStatusMessage(CefRefPtr<CefBrowser> browser, const std::string& value);
     
     /** Loading progress change (callback thread: UI thread of the main process)
     */
@@ -224,8 +224,8 @@ protected:
     void OnLoadError(CefRefPtr<CefBrowser> browser,
                      CefRefPtr<CefFrame> frame,
                      cef_errorcode_t errorCode,
-                     const DString& errorText,
-                     const DString& failedUrl);
+                     const std::string& errorText,
+                     const std::string& failedUrl);
 
     /** The visibility of the developer tools changed (callback thread: UI thread of the main process)
     */
@@ -276,8 +276,8 @@ private:
     ui::CefControl* m_pCefControl;
     BrowserForm* m_pBrowserForm;
     std::string m_browserId;
-    DString m_url;
-    DString m_title;
+    std::string m_url;
+    std::string m_title;
 };
 
 #endif //EXAMPLES_BROWSER_BOX_H_

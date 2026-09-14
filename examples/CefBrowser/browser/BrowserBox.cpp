@@ -22,14 +22,14 @@ ui::CefControl* BrowserBox::GetCefControl()
     return m_pCefControl;
 }
 
-const DString& BrowserBox::GetTitle() const
+const std::string& BrowserBox::GetTitle() const
 {
     return m_title;
 }
 
-void BrowserBox::InitBrowserBox(const DString& url)
+void BrowserBox::InitBrowserBox(const std::string& url)
 {
-    m_pCefControl = static_cast<ui::CefControl*>(FindSubControl(DUI_T("cef_control")));
+    m_pCefControl = static_cast<ui::CefControl*>(FindSubControl("cef_control"));
     ASSERT(m_pCefControl != nullptr);
     if (m_pCefControl == nullptr) {
         return;
@@ -81,14 +81,14 @@ void BrowserBox::InitBrowserBox(const DString& url)
     m_pCefControl->AttachDownloadFavIconFinished(ui::UiBind(&BrowserBox::OnDownloadFavIconFinished, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
     // Load the default web page
-    DString html_path = url;
+    std::string html_path = url;
     if (html_path.empty()) {
         // The resource root already includes the active theme (default/windows11)
         ui::FilePath resourcePath = ui::GlobalManager::Instance().GetResourcePath();
         resourcePath.NormalizeDirectoryPath();
-        resourcePath += DUI_T("cef_browser/cef.html");
+        resourcePath += "cef_browser/cef.html";
         html_path = resourcePath.ToString();
-        html_path = DUI_T("file:///") + html_path;
+        html_path = "file:///" + html_path;
     }
     m_pCefControl->LoadURL(html_path);
 }
@@ -181,7 +181,7 @@ bool BrowserBox::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
             CefString url = params->GetLinkUrl();
             if (!url.empty()) {
                 //Copy the link
-                DStringW urlW = url;
+                std::wstring urlW = url;
                 ui::Clipboard::SetClipboardText(urlW);
             }
             return true;
@@ -195,21 +195,21 @@ void BrowserBox::OnContextMenuDismissed(CefRefPtr<CefBrowser> browser, CefRefPtr
     ASSERT(CefCurrentlyOn(TID_UI));
 }
 
-void BrowserBox::OnTitleChange(CefRefPtr<CefBrowser> browser, const DString& title)
+void BrowserBox::OnTitleChange(CefRefPtr<CefBrowser> browser, const std::string& title)
 {
     ui::GlobalManager::Instance().AssertUIThread();
     m_title = title;
     m_pBrowserForm->SetTabItemName(ui::StringConvert::UTF8ToT(m_browserId), title);
 }
 
-void BrowserBox::OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const DString& url)
+void BrowserBox::OnUrlChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const std::string& url)
 {
     ui::GlobalManager::Instance().AssertUIThread();
     m_url = url;
     m_pBrowserForm->SetURL(m_browserId, url);
 }
 
-void BrowserBox::OnMainUrlChange(const DString& oldUrl, const DString& newUrl)
+void BrowserBox::OnMainUrlChange(const std::string& oldUrl, const std::string& newUrl)
 {
     ui::GlobalManager::Instance().AssertUIThread();
 }
@@ -224,7 +224,7 @@ void BrowserBox::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool bFul
     ui::GlobalManager::Instance().AssertUIThread();
 }
 
-void BrowserBox::OnStatusMessage(CefRefPtr<CefBrowser> browser, const DString& value)
+void BrowserBox::OnStatusMessage(CefRefPtr<CefBrowser> browser, const std::string& value)
 {
     ui::GlobalManager::Instance().AssertUIThread();
 }
@@ -299,7 +299,7 @@ bool BrowserBox::OnBeforePopup(CefRefPtr<CefBrowser> browser,
         }
         if (bCreateNewTab) {
             //Open in a new tab (needs to be done on the UI thread)
-            DString url = ui::StringConvert::WStringToT(target_url);
+            std::string url = ui::StringConvert::WStringToT(target_url);
             ui::GlobalManager::Instance().Thread().PostTask(ui::kThreadUI, this->ToWeakCallback([this, url]() {
                 BrowserManager::GetInstance()->CreateBorwserBox(GetBrowserForm(), "", url);
                 return true;
@@ -396,14 +396,14 @@ void BrowserBox::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> fr
 {
     ui::GlobalManager::Instance().AssertUIThread();
     // Register a method for the frontend to call
-    m_pCefControl->RegisterCppFunc(DUI_T("ShowMessageBox"), ToWeakCallback([this](const std::string& params, ui::ReportResultFunction callback) {
-        DString value = ui::StringConvert::UTF8ToT(params);
-        ui::SystemUtil::ShowMessageBox(GetWindow(), value.c_str(), DUI_T("C++ received a message from JavaScript"));
+    m_pCefControl->RegisterCppFunc("ShowMessageBox", ToWeakCallback([this](const std::string& params, ui::ReportResultFunction callback) {
+        std::string value = ui::StringConvert::UTF8ToT(params);
+        ui::SystemUtil::ShowMessageBox(GetWindow(), value.c_str(), "C++ received a message from JavaScript");
         callback(false, R"({ "message": "Success." })");
     }));
 }
 
-void BrowserBox::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, cef_errorcode_t errorCode, const DString& errorText, const DString& failedUrl)
+void BrowserBox::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, cef_errorcode_t errorCode, const std::string& errorText, const std::string& failedUrl)
 {
     ui::GlobalManager::Instance().AssertUIThread();
 }

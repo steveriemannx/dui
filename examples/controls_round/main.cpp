@@ -4,5 +4,5 @@
 
 int main()
 {
-    return ui::Run<ControlForm>(DUI_T("controls_round"));
+    return ui::Run<ControlForm>("controls_round");
 }

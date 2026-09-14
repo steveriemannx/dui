@@ -140,7 +140,6 @@ void ListCtrlReportView::AjustItemCount()
 int32_t ListCtrlReportView::GetListCtrlWidth() const
 {
     int32_t nToltalWidth = 0;
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return nToltalWidth;
     }
@@ -202,7 +201,6 @@ bool ListCtrlReportView::EnsureDataItemVisible(size_t itemIndex, bool bToTop)
 
 size_t ListCtrlReportView::GetTopDataItemIndex(int64_t nScrollPosY) const
 {
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return 0;
     }
@@ -211,7 +209,6 @@ size_t ListCtrlReportView::GetTopDataItemIndex(int64_t nScrollPosY) const
         return itemIndex;
     }
     ListCtrlData* pDataProvider = m_pData;
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return itemIndex;
     }
@@ -242,13 +239,11 @@ size_t ListCtrlReportView::GetTopDataItemIndex(int64_t nScrollPosY) const
 int32_t ListCtrlReportView::GetDataItemHeight(size_t itemIndex) const
 {
     int32_t nItemHeight = 0;
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return 0;
     }
     nItemHeight = m_pListCtrl->GetDataItemHeight();
     ListCtrlData* pDataProvider = m_pData;
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return 0;
     }
@@ -270,7 +265,6 @@ void ListCtrlReportView::GetDataItemsToShow(int64_t nScrollPosY, size_t maxCount
     nPrevItemHeights = 0;
     itemIndexList.clear();
     atTopItemIndexList.clear();
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return;
     }
@@ -283,7 +277,6 @@ void ListCtrlReportView::GetDataItemsToShow(int64_t nScrollPosY, size_t maxCount
         return;
     }
     ListCtrlData* pDataProvider = m_pData;
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return;
     }
@@ -363,7 +356,6 @@ int32_t ListCtrlReportView::GetMaxDataItemsToShow(int64_t nScrollPosY, int32_t n
     if (pItemIndexList) {
         pItemIndexList->clear();
     }
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return 0;
     }
@@ -376,7 +368,6 @@ int32_t ListCtrlReportView::GetMaxDataItemsToShow(int64_t nScrollPosY, int32_t n
         return 0;
     }
     ListCtrlData* pDataProvider = m_pData;
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return 0;
     }
@@ -475,12 +466,10 @@ int32_t ListCtrlReportView::GetMaxDataItemsToShow(int64_t nScrollPosY, int32_t n
 
 int64_t ListCtrlReportView::GetDataItemTotalHeights(size_t itemIndex, bool bIncludeAtTops) const
 {
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return 0;
     }
     ListCtrlData* pDataProvider = m_pData;
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return 0;
     }
@@ -566,7 +555,6 @@ void ListCtrlReportView::MoveTopItemsToLast(std::vector<Control*>& items, std::v
 void ListCtrlReportView::PaintChild(IRender* pRender, const UiRect& rcPaint)
 {
     //Override the VirtualListBox::PaintChild / ScrollBox::PaintChild functions to ensure the Header is drawn correctly
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -582,7 +570,6 @@ void ListCtrlReportView::PaintChild(IRender* pRender, const UiRect& rcPaint)
         return;
     }
     ListCtrlHeader* pHeaderCtrl = dynamic_cast<ListCtrlHeader*>(GetItemAt(0));
-    ASSERT(pHeaderCtrl != nullptr);
     if (pHeaderCtrl == nullptr) {
         BaseClass::PaintChild(pRender, rcPaint);
         return;
@@ -665,7 +652,6 @@ void ListCtrlReportView::PaintChild(IRender* pRender, const UiRect& rcPaint)
 
 void ListCtrlReportView::PaintGridLines(IRender* pRender)
 {
-    ASSERT(pRender != nullptr);
     if (pRender == nullptr) {
         return;
     }
@@ -681,7 +667,7 @@ void ListCtrlReportView::PaintGridLines(IRender* pRender)
     int32_t nRowLineWidth = GetRowGridLineWidth();   //Horizontal border line width
     UiColor columnLineColor;
     UiColor rowLineColor;
-    DString color = GetColumnGridLineColor();
+    std::string color = GetColumnGridLineColor();
     if (!color.empty()) {
         columnLineColor = GetUiColor(color);
     }
@@ -837,7 +823,6 @@ Control* ListCtrlReportView::FindControl(FINDCONTROLPROC Proc, void* pProcData,
 
 Control* ListCtrlReportView::CreateDataItem()
 {
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return nullptr;
     }
@@ -854,18 +839,15 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
                                      const std::vector<ListCtrlSubItemData2Pair>& subItemList)
 {
     //This function controls the display of the data element data and UI, and controls the display width of each column
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return false;
     }
     ListCtrlHeader* pHeaderCtrl = m_pListCtrl->GetHeaderCtrl();
-    ASSERT(pHeaderCtrl != nullptr);
     if (pHeaderCtrl == nullptr) {
         return false;
     }
 
     ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(pControl);
-    ASSERT(pItem != nullptr);
     if (pItem == nullptr) {
         return false;
     }
@@ -944,7 +926,6 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
         elementDataList.push_back(data);
     }
     
-    ASSERT(!elementDataList.empty());
     if (elementDataList.empty()) {
         return false;
     }
@@ -959,7 +940,7 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
     }
 
     //Default attributes
-    DString defaultSubItemClass = m_pListCtrl->GetDataSubItemClass();
+    std::string defaultSubItemClass = m_pListCtrl->GetDataSubItemClass();
     ListCtrlSubItem defaultSubItem(m_pListCtrl->GetWindow());
     defaultSubItem.SetClass(defaultSubItemClass);
 
@@ -969,7 +950,6 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
         ListCtrlSubItem* pSubItem = nullptr;
         if (nColumn < pItem->GetItemCount()) {
             pSubItem = dynamic_cast<ListCtrlSubItem*>(pItem->GetItemAt(nColumn));
-            ASSERT(pSubItem != nullptr);
             if (pSubItem == nullptr) {
                 return false;
             }
@@ -1132,7 +1112,7 @@ int32_t ListCtrlReportView::GetMaxDataItemWidth(const std::vector<ListCtrlSubIte
     defaultItem.SetListCtrl(m_pListCtrl);
     defaultItem.SetClass(m_pListCtrl->GetDataItemClass());
 
-    DString defaultSubItemClass = m_pListCtrl->GetDataSubItemClass();
+    std::string defaultSubItemClass = m_pListCtrl->GetDataSubItemClass();
     ListCtrlSubItem defaultSubItem(m_pListCtrl->GetWindow());
     defaultSubItem.SetClass(defaultSubItemClass);
     defaultSubItem.SetListCtrlItem(&defaultItem);
@@ -1248,7 +1228,6 @@ bool ListCtrlReportView::IsSelectableElement(size_t nElementIndex) const
 size_t ListCtrlReportView::FindSelectableElement(size_t nElementIndex, bool bForward) const
 {
     ListCtrlData* pDataProvider = m_pData;
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return nElementIndex;
     }
@@ -1309,12 +1288,10 @@ bool ListCtrlReportView::OnFrameSelection(int64_t left, int64_t /*right*/, int64
     if (top > bottom) {
         return false;
     }
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return false;
     }
     ListCtrlData* pDataProvider = m_pData;
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return false;
     }
@@ -1399,7 +1376,6 @@ void ListCtrlReportView::OnItemCheckedChanged(size_t /*iIndex*/, IListBoxItem* p
     if (!IsEnableUpdateProvider()) {
         return;
     }
-    ASSERT(pListBoxItem != nullptr);
     if (pListBoxItem == nullptr) {
         return;
     }
@@ -1409,7 +1385,6 @@ void ListCtrlReportView::OnItemCheckedChanged(size_t /*iIndex*/, IListBoxItem* p
     }
 
     ListCtrlData* pDataProvider = m_pData;
-    ASSERT(pDataProvider != nullptr);
     if (pDataProvider == nullptr) {
         return;
     }
@@ -1452,7 +1427,7 @@ int32_t ListCtrlReportView::GetRowGridLineWidth() const
     return m_nRowGridLineWidth;
 }
 
-void ListCtrlReportView::SetRowGridLineColor(const DString& color)
+void ListCtrlReportView::SetRowGridLineColor(const std::string& color)
 {
     if (m_rowGridLineColor != color) {
         m_rowGridLineColor = color;
@@ -1460,7 +1435,7 @@ void ListCtrlReportView::SetRowGridLineColor(const DString& color)
     }
 }
 
-DString ListCtrlReportView::GetRowGridLineColor() const
+std::string ListCtrlReportView::GetRowGridLineColor() const
 {
     return m_rowGridLineColor.c_str();
 }
@@ -1484,7 +1459,7 @@ int32_t ListCtrlReportView::GetColumnGridLineWidth() const
     return m_nColumnGridLineWidth;
 }
 
-void ListCtrlReportView::SetColumnGridLineColor(const DString& color)
+void ListCtrlReportView::SetColumnGridLineColor(const std::string& color)
 {
     if (m_columnGridLineColor != color) {
         m_columnGridLineColor = color;
@@ -1492,7 +1467,7 @@ void ListCtrlReportView::SetColumnGridLineColor(const DString& color)
     }
 }
 
-DString ListCtrlReportView::GetColumnGridLineColor() const
+std::string ListCtrlReportView::GetColumnGridLineColor() const
 {
     return m_columnGridLineColor.c_str();
 }

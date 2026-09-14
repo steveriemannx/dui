@@ -31,7 +31,7 @@ ImageInfo::~ImageInfo()
 void ImageInfo::ReleaseImage()
 {
     if (m_pImageData != nullptr) {
-        DString imageFullPath = m_loadParam.GetImageLoadPath().m_imageFullPath.ToString();
+        std::string imageFullPath = m_loadParam.GetImageLoadPath().m_imageFullPath.ToString();
         GlobalManager::Instance().Image().ReleaseImage(m_pImageData, imageFullPath);
         m_pImageData.reset();
     }
@@ -45,7 +45,6 @@ bool ImageInfo::IsSvgImage() const
 std::shared_ptr<IBitmap> ImageInfo::GetSvgBitmap(const UiRect& rcDest, UiRect& rcSource)
 {
     std::shared_ptr<IImage> pImageData = m_pImageData;
-    ASSERT(pImageData != nullptr);
     if (pImageData == nullptr) {
         return nullptr;
     }
@@ -53,7 +52,6 @@ std::shared_ptr<IBitmap> ImageInfo::GetSvgBitmap(const UiRect& rcDest, UiRect& r
     if (m_imageType == ImageType::kImageSvg) {
         pSvgImage = pImageData->GetImageSvg();        
     }
-    ASSERT(pSvgImage != nullptr);
     if (pSvgImage == nullptr) {
         return nullptr;
     }
@@ -82,7 +80,6 @@ std::shared_ptr<IBitmap> ImageInfo::GetSvgBitmap(float fImageSizeScale)
     GlobalManager::Instance().AssertUIThread();
     //SVG image, no cache
     std::shared_ptr<IImage> pImageData = m_pImageData;
-    ASSERT(pImageData != nullptr);
     if (pImageData == nullptr) {
         return nullptr;
     }
@@ -94,7 +91,6 @@ std::shared_ptr<IBitmap> ImageInfo::GetSvgBitmap(float fImageSizeScale)
     std::shared_ptr<IBitmap> pBitmap;
     if (m_imageType == ImageType::kImageSvg) {
         std::shared_ptr<ISvgImage> pSvgImage = pImageData->GetImageSvg();
-        ASSERT(pSvgImage != nullptr);
         if (pSvgImage == nullptr) {
             return nullptr;
         }
@@ -134,7 +130,6 @@ std::shared_ptr<IBitmap> ImageInfo::GetBitmap(bool* bDecodeError)
 
     //Set the internal data of the image (delayed decoding)
     std::shared_ptr<IImage> pImageData = m_pImageData;
-    ASSERT(pImageData != nullptr);
     if (pImageData == nullptr) {
         if (bDecodeError != nullptr) {
             *bDecodeError = true;
@@ -145,7 +140,6 @@ std::shared_ptr<IBitmap> ImageInfo::GetBitmap(bool* bDecodeError)
     ImageType imageType = pImageData->GetImageType();
     if (imageType == ImageType::kImageBitmap) {
         std::shared_ptr<IBitmapImage> pBitmapImage = pImageData->GetImageBitmap();
-        ASSERT(pBitmapImage != nullptr);
         if (pBitmapImage == nullptr) {
             if (bDecodeError != nullptr) {
                 *bDecodeError = true;
@@ -185,7 +179,6 @@ std::shared_ptr<IBitmap> ImageInfo::GetBitmap(bool* bDecodeError)
 std::shared_ptr<IAnimationImage> ImageInfo::GetAnimationImage(uint32_t nFrameIndex) const
 {
     GlobalManager::Instance().AssertUIThread();
-    ASSERT(m_imageType == ImageType::kImageAnimation);
     if (m_imageType != ImageType::kImageAnimation) {
         //Animation image
         return nullptr;
@@ -200,7 +193,6 @@ std::shared_ptr<IAnimationImage> ImageInfo::GetAnimationImage(uint32_t nFrameInd
         return nullptr;
     }
     std::shared_ptr<IImage> pImageData = m_pImageData;
-    ASSERT(pImageData != nullptr);
     if (pImageData == nullptr) {
         return nullptr;
     }
@@ -216,10 +208,9 @@ std::shared_ptr<IAnimationImage> ImageInfo::GetAnimationImage(uint32_t nFrameInd
 
 AnimationFramePtr ImageInfo::GetFrame(uint32_t nFrameIndex, const UiSize& szDestRectSize)
 {
-    PerformanceStat statPerformance(DUI_T("ImageInfo::GetFrame"));
+    PerformanceStat statPerformance("ImageInfo::GetFrame");
     GlobalManager::Instance().AssertUIThread();
     std::shared_ptr<IAnimationImage> pAnimationImage = GetAnimationImage(nFrameIndex);
-    ASSERT(pAnimationImage != nullptr);
     if (pAnimationImage == nullptr) {
         //Abnormal animation image interface
         return nullptr;
@@ -275,7 +266,6 @@ bool ImageInfo::SetImageData(const ImageLoadParam& loadParam,
                              uint32_t nImageFileDpiScale)
 {
     GlobalManager::Instance().AssertUIThread();
-    ASSERT(pImageData != nullptr);
     if (pImageData == nullptr) {
         return false;
     }
@@ -336,13 +326,11 @@ bool ImageInfo::SetImageData(const ImageLoadParam& loadParam,
     }
     else if (imageType == ImageType::kImageAnimation) {
         std::shared_ptr<IAnimationImage> pAnimationImage = pImageData->GetImageAnimation();
-        ASSERT(pAnimationImage != nullptr);
         if (pAnimationImage == nullptr) {
             return false;
         }
         m_nFrameCount = pAnimationImage->GetFrameCount();
         m_nLoopCount = pAnimationImage->GetLoopCount();
-        ASSERT(m_nFrameCount != 0);
         if (m_nFrameCount == 0) {
             return false;
         }
@@ -366,7 +354,6 @@ void ImageInfo::CalcImageInfoSize(const ImageLoadParam& loadParam,
 {
     nImageInfoWidth = 0;
     nImageInfoHeight = 0;
-    ASSERT(pImageData != nullptr);
     if (pImageData == nullptr) {
         return;
     }
@@ -375,7 +362,6 @@ void ImageInfo::CalcImageInfoSize(const ImageLoadParam& loadParam,
         return;
     }
     if (!bImageDpiScaleEnabled) {
-        ASSERT(nImageFileDpiScale == 100);
         if (nImageFileDpiScale != 100) {
             return;
         }
@@ -555,7 +541,7 @@ int32_t ImageInfo::GetLoopCount() const
     return m_nLoopCount;
 }
 
-DString ImageInfo::GetLoadKey() const
+std::string ImageInfo::GetLoadKey() const
 {
     return m_loadParam.GetLoadKey(m_loadParam.GetLoadDpiScale());
 }
@@ -570,12 +556,12 @@ uint32_t ImageInfo::GetImageFileDpiScale() const
     return m_nImageFileDpiScale;
 }
 
-void ImageInfo::SetImageKey(const DString& imageKey)
+void ImageInfo::SetImageKey(const std::string& imageKey)
 {
     m_imageKey = imageKey;
 }
 
-DString ImageInfo::GetImageKey() const
+std::string ImageInfo::GetImageKey() const
 {
     return m_imageKey.c_str();
 }

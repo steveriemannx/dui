@@ -162,7 +162,6 @@ namespace CxImageLoader
                                     uint32_t iconSize,
                                     std::vector<UiImageData>& imageData)
     {
-        ASSERT(!fileData.empty());
         if (fileData.empty()) {
             return false;
         }
@@ -325,10 +324,10 @@ namespace CxImageLoader
     }
 }//CxImageLoader
 
-DString ImageDecoderUtil::GetSupportedFileExtentions()
+std::string ImageDecoderUtil::GetSupportedFileExtentions()
 {
     //Bitmap format extensions: BMP;DIB
-    return DString(DUI_T("BMP;DIB"));
+    return std::string("BMP;DIB");
 }
 
 bool ImageDecoderUtil::CanDecode(const uint8_t* data, size_t dataLen)

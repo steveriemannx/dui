@@ -50,23 +50,23 @@ public:
     /** Get the resource string of an ICON (can be used as an image file path)
     * @return Returns the resource string, for example: "icon:1"
     */
-    DString GetIconString(uint32_t id) const;
+    std::string GetIconString(uint32_t id) const;
 
     /** Determine whether it is an ICON resource string
     *@param [in] str Resource string, the correct form is for example: "icon:1"
     */
-    bool IsIconString(const DString& str) const;
+    bool IsIconString(const std::string& str) const;
 
     /** Parse the icon ID from the ICON resource string
     *@param [in] str Resource string, the correct form is for example: "icon:1"
     */
-    uint32_t GetIconID(const DString& str) const;
+    uint32_t GetIconID(const std::string& str) const;
 
     /** Get the size of the icon corresponding to the ICON resource string
     *@param [in] str Resource string, the correct form is for example: "icon:1"
     *@return Returns the size of the icon, or empty on failure
     */
-    UiSize GetIconSize(const DString& str) const;
+    UiSize GetIconSize(const std::string& str) const;
 
 public:
 
@@ -103,7 +103,7 @@ public:
     * @param [in] imageString Image resource string, the format is the same as setting an image in XML
     * @return Returns the ID corresponding to the icon, or 0 on failure
     */
-    uint32_t AddIcon(const DString& imageString);
+    uint32_t AddIcon(const std::string& imageString);
 
     /** Determine whether it is a resource string in ImageString format
     *@param [in] id Icon ID (the ID returned by AddIcon)
@@ -114,7 +114,7 @@ public:
     * @param [in] id Icon ID (the ID returned by AddIcon)
     * @return Returns the resource string, for example: "public/shadow/test.png"
     */
-    DString GetImageString(uint32_t id) const;
+    std::string GetImageString(uint32_t id) const;
 
     /** Set the callback function used to receive the delete icon event
     * @param [in] callback Callback function
@@ -151,7 +151,7 @@ private:
 
     /** ICON resource string prefix
     */
-    const DString m_prefix;
+    const std::string m_prefix;
 
     /** Callback function used to receive the delete icon event
     */

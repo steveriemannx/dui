@@ -177,42 +177,39 @@ void AttributeUtil::ParseRectValue(const char* strValue, UiRect& rect, bool bChe
     }
 }
 
-void AttributeUtil::ParseAttributeList(const DString& strList,
-                                       DString::value_type seperateChar,
-                                       std::vector<std::pair<DString, DString>>& attributeList)
+void AttributeUtil::ParseAttributeList(const std::string& strList,
+                                       std::string::value_type seperateChar,
+                                       std::vector<std::pair<std::string, std::string>>& attributeList)
 {
     // Example: normal_image="file='public/button/window-minimize.svg' width='24' height='24' valign='center' halign='center'" hot_color="AliceBlue" pushed_color="Lavender"
-    DString sName;
-    DString sValue;
-    const DString::value_type* pstrList = strList.c_str();
+    std::string sName;
+    std::string sValue;
+    const std::string::value_type* pstrList = strList.c_str();
     if (pstrList == nullptr) {
         return;
     }
-    while (*pstrList != DUI_T('\0')) {
+    while (*pstrList != '\0') {
         sName.clear();
         sValue.clear();
         // Read the content before the equals sign as the Name
-        while (*pstrList != DUI_T('\0') && *pstrList != DUI_T('=')) {
+        while (*pstrList != '\0' && *pstrList != '=') {
             sName += *pstrList++;
         }
         // The current character should be an equals sign
-        ASSERT(*pstrList == DUI_T('='));
-        if (*pstrList != DUI_T('=')) {
+        if (*pstrList != '=') {
             return;
         }
         // Skip to the character after the equals sign; this character should be a separator character
         pstrList++;
-        ASSERT(*pstrList == seperateChar);
         if (*pstrList != seperateChar) {
             return;
         }
 
         // Skip to the character after the first separator character and read the attribute value
         pstrList++;
-        while (*pstrList != DUI_T('\0') && *pstrList != seperateChar) {
+        while (*pstrList != '\0' && *pstrList != seperateChar) {
             sValue += *pstrList++;
         }
-        ASSERT(*pstrList == seperateChar);
         if (*pstrList != seperateChar) {
             return;
         }
@@ -223,7 +220,7 @@ void AttributeUtil::ParseAttributeList(const DString& strList,
 
         // Skip to the character after the separator character; it should be a space. If it is not a space, the parsing is considered finished
         pstrList++;
-        if (*pstrList != DUI_T(' ')) {
+        if (*pstrList != ' ') {
             return;
         }
 
@@ -288,7 +285,7 @@ std::tuple<int32_t, float> AttributeUtil::ParseString(const char* strValue, char
     return std::tuple<int32_t, float>(xValue, xPercent);
 }
 
-void AttributeUtil::ParseWindowSize(const Window* pWindow, const DString::value_type* strValue,
+void AttributeUtil::ParseWindowSize(const Window* pWindow, const std::string::value_type* strValue,
                                     UiSize& size,
                                     bool* pScaledCX, bool* pScaledCY,
                                     bool* pPercentCX, bool* pPercentCY)
@@ -303,7 +300,7 @@ void AttributeUtil::ParseWindowSize(const Window* pWindow, const DString::value_
         WindowBase::GetPrimaryMonitorWorkRect(rcWork);
     }
     
-    DString::value_type* pstr = nullptr;
+    std::string::value_type* pstr = nullptr;
     std::tuple<int32_t, float> x = ParseString(strValue, &pstr);
     AttributeUtil::SkipSepChar(pstr);
     std::tuple<int32_t, float> y = ParseString(pstr, &pstr);

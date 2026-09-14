@@ -12,13 +12,13 @@ namespace ui
 */
 struct MenuBarItem
 {
-    DString m_menuItemId;               //ID of this menu item, used in the callback function to identify which menu's command was activated
-    DString m_menuText;                 //Menu text
-    DString m_menuTextId;               //Menu text ID, used to support the multilingual version
-    DString m_menuXmlPath;              //XML path of the menu resource (relative path in the resource directory)
+    std::string m_menuItemId;               //ID of this menu item, used in the callback function to identify which menu's command was activated
+    std::string m_menuText;                 //Menu text
+    std::string m_menuTextId;               //Menu text ID, used to support the multilingual version
+    std::string m_menuXmlPath;              //XML path of the menu resource (relative path in the resource directory)
 
-    DString m_menuTextButtonClass;      //Class name of the Button attribute of the control that displays the menu text; if empty, the default style is used (the "menu_bar_button" attribute in global.xml)
-    DString m_menuTextButtonAttributes; //Additional attribute list of the Button attribute of the control that displays the menu text; can be empty    
+    std::string m_menuTextButtonClass;      //Class name of the Button attribute of the control that displays the menu text; if empty, the default style is used (the "menu_bar_button" attribute in global.xml)
+    std::string m_menuTextButtonAttributes; //Additional attribute list of the Button attribute of the control that displays the menu text; can be empty    
 };
 
 /** Prototype of the callback function for selecting a menu item in the top-level menu: after the menu disappears, it is used to get which menu item the user clicked (activated by mouse click or keyboard Enter)
@@ -28,9 +28,9 @@ struct MenuBarItem
 * @param [in] itemName Name of the menu item, equivalent to the command ID (i.e., the name attribute in XML, which represents the ID of the menu item)
 * @param [in] nItemIndex Index number of the menu item (the index starts from 0)
 */
-typedef std::function<void (const DString& menuItemId,
-                            const DString& menuName, int32_t nMenuLevel,
-                            const DString& itemName, size_t nItemIndex)> MenuBarItemActivatedEvent;
+typedef std::function<void (const std::string& menuItemId,
+                            const std::string& menuName, int32_t nMenuLevel,
+                            const std::string& itemName, size_t nItemIndex)> MenuBarItemActivatedEvent;
 
 //Text button on the MenuBar
 class MenuBarButton;
@@ -45,7 +45,7 @@ public:
 
 public:
     /// Override the parent class interface to provide personalized functionality. For specific method descriptions, please refer to the Control control
-    virtual DString GetType() const override;
+    virtual std::string GetType() const override;
     virtual void OnInit() override;
 
 public:
@@ -58,12 +58,12 @@ public:
     * @param [in] menuTextButtonAttributes Additional attribute list of the Button attribute of the control that displays the top-level menu text
     * @return Returns the index number on success, or -1 on failure
     */
-    int32_t AddTopMenu(const DString& menuItemId,
-                       const DString& menuText,
-                       const DString& menuTextId,
-                       const DString& menuXmlPath,
-                       const DString& menuTextButtonClass = DUI_T(""),
-                       const DString& menuTextButtonAttributes = DUI_T(""));
+    int32_t AddTopMenu(const std::string& menuItemId,
+                       const std::string& menuText,
+                       const std::string& menuTextId,
+                       const std::string& menuXmlPath,
+                       const std::string& menuTextButtonClass = "",
+                       const std::string& menuTextButtonAttributes = "");
 
     /** Add a top-level menu and return its index number
     * @param [in] menuBarItem The related data of the top-level menu
@@ -79,11 +79,11 @@ public:
     * @param [in] menuTextButtonAttributes Additional attribute list of the Button attribute of the control that displays the top-level menu text
     * @return Returns the index number on success, or -1 on failure
     */
-    int32_t AddTopMenu(const DString& menuItemId,
-                       const DString& menuText,
+    int32_t AddTopMenu(const std::string& menuItemId,
+                       const std::string& menuText,
                        const std::function<void(Menu*)>& menuBuilder,
-                       const DString& menuTextButtonClass = DUI_T(""),
-                       const DString& menuTextButtonAttributes = DUI_T(""));
+                       const std::string& menuTextButtonClass = "",
+                       const std::string& menuTextButtonAttributes = "");
 
     /** Add a top-level menu at the specified position and return its index number
     * @param [in] nMenuIndex The specified index number
@@ -94,12 +94,12 @@ public:
     * @return Returns the index number on success, or -1 on failure
     */
     int32_t InsertTopMenu(int32_t nMenuIndex,
-                          const DString& menuItemId,
-                          const DString& menuText,
-                          const DString& menuTextId,
-                          const DString& menuXmlPath,
-                          const DString& menuTextButtonClass = DUI_T(""),
-                          const DString& menuTextButtonAttributes = DUI_T(""));
+                          const std::string& menuItemId,
+                          const std::string& menuText,
+                          const std::string& menuTextId,
+                          const std::string& menuXmlPath,
+                          const std::string& menuTextButtonClass = "",
+                          const std::string& menuTextButtonAttributes = "");
 
     /** Add a top-level menu at the specified position and return its index number
     * @param [in] menuBarItem The related data of the top-level menu

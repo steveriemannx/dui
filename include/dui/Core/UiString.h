@@ -6,7 +6,7 @@
 namespace ui
 {
 
-/** String used by controls, to replace DString and reduce the memory usage of controls
+/** String used by controls, to replace std::string and reduce the memory usage of controls
 *   This class is suitable for storing strings with lower memory usage; in terms of performance, due to more string copies, the performance is weaker
 */
 template<typename T>
@@ -214,22 +214,22 @@ private:
 };
 
 template <>
-inline const DStringW::value_type* UiStringT<DStringW::value_type>::c_str() const
+inline const std::wstring::value_type* UiStringT<std::wstring::value_type>::c_str() const
 {
     return (m_pData != nullptr) ? m_pData : L"";
 }
 
 template <>
-inline const DStringA::value_type* UiStringT<DStringA::value_type>::c_str() const
+inline const std::string::value_type* UiStringT<std::string::value_type>::c_str() const
 {
     return (m_pData != nullptr) ? m_pData : "";
 }
 
 /** Template type definitions
 */
-typedef UiStringT<DString::value_type> UiString;
-typedef UiStringT<DStringA::value_type> UiStringA;
-typedef UiStringT<DStringW::value_type> UiStringW;
+typedef UiStringT<std::string::value_type> UiString;
+typedef UiStringT<std::string::value_type> UiStringA;
+typedef UiStringT<std::wstring::value_type> UiStringW;
 
 }//namespace ui
 

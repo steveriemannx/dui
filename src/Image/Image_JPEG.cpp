@@ -161,7 +161,6 @@ static bool FindClosestScale2(const std::vector<tjscalingfactor>& scalingFactorL
         scalingFactor.value = factor.num * 1.0f / factor.denom;
         scales.push_back(scalingFactor);
     }
-    ASSERT(!scales.empty());
     if (scales.empty()) {
         return false;
     }
@@ -194,7 +193,6 @@ bool Image_JPEG::LoadImageFile(std::vector<uint8_t>& fileData,
                                const UiSize& rcMaxDestRectSize,
                                bool bAssertEnabled)
 {
-    ASSERT(!fileData.empty() || !imageFilePath.IsEmpty());
     if (fileData.empty() && imageFilePath.IsEmpty()) {
         return false;
     }
@@ -233,7 +231,6 @@ bool Image_JPEG::LoadImageFile(std::vector<uint8_t>& fileData,
 
     // Initialize the turbojpeg decoder
     tjhandle tjInstance = tjInitDecompress();
-    ASSERT(tjInstance != nullptr);
     if (tjInstance == nullptr) {
         return false;
     }
@@ -367,12 +364,10 @@ std::shared_ptr<IBitmap> Image_JPEG::DecodeBitmap() const
         (impl.m_nWidth > 0) &&
         (impl.m_nHeight > 0)) {
         IRenderFactory* pRenderFactory = GlobalManager::Instance().GetRenderFactory();
-        ASSERT(pRenderFactory != nullptr);
         if (pRenderFactory == nullptr) {
             return nullptr;
         }
         IBitmap* pBitmap = pRenderFactory->CreateBitmap();
-        ASSERT(pBitmap != nullptr);
         if (pBitmap == nullptr) {
             return nullptr;
         }

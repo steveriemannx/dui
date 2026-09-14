@@ -18,11 +18,11 @@ ListCtrlHeader::~ListCtrlHeader()
 {
 }
 
-DString ListCtrlHeader::GetType() const { return DUI_T("ListCtrlHeader"); }
+std::string ListCtrlHeader::GetType() const { return "ListCtrlHeader"; }
 
-void ListCtrlHeader::SetAttribute(const DString& strName, const DString& strValue)
+void ListCtrlHeader::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("icon_spacing")) {
+    if (strName == "icon_spacing") {
         SetIconSpacing(StringUtil::StringToInt32(strValue), true);
     }
     else {
@@ -72,7 +72,6 @@ bool ListCtrlHeader::IsSelectableType() const
 ListCtrlHeaderItem* ListCtrlHeader::InsertColumn(int32_t columnIndex, const ListCtrlColumn& columnInfo)
 {
     int32_t nColumnWidth = columnInfo.nColumnWidth;
-    ASSERT(m_pListCtrl != nullptr);
     if (m_pListCtrl == nullptr) {
         return nullptr;
     }
@@ -187,7 +186,6 @@ size_t ListCtrlHeader::GetColumnCount() const
     if (nItemCount == 0) {
         return 0;
     }
-    ASSERT((nItemCount % 2) == 0);
     if ((nItemCount % 2) != 0) {
         return 0;
     }
@@ -402,7 +400,6 @@ void ListCtrlHeader::OnHeaderColumnSorted(ListCtrlHeaderItem* pHeaderItem)
     }
     size_t nColumnId = pHeaderItem->GetColumnId();
     ListCtrlHeaderItem::SortMode sortMode = pHeaderItem->GetSortMode();
-    ASSERT(sortMode != ListCtrlHeaderItem::SortMode::kNone);
     if (sortMode == ListCtrlHeaderItem::SortMode::kNone) {
         return;
     }
@@ -482,7 +479,7 @@ bool ListCtrlHeader::SetShowCheckBox(bool bShow)
     if (bShow) {
         ListCtrl* pListCtrl = GetListCtrl();
         if (pListCtrl != nullptr) {
-            DString checkBoxClass = pListCtrl->GetCheckBoxClass();
+            std::string checkBoxClass = pListCtrl->GetCheckBoxClass();
             if (!checkBoxClass.empty()) {
                 SetClass(checkBoxClass);
                 bRet = IsShowCheckBox();
@@ -580,7 +577,6 @@ void ListCtrlHeader::GetHeaderSplitControlRect(std::vector<UiRect>& rcSplitContr
     if (nItemCount == 0) {
         return;
     }
-    ASSERT((nItemCount % 2) == 0);
     if ((nItemCount % 2) != 0) {
         return;
     }

@@ -15,8 +15,8 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** The DPI has changed, update the control size and layout
     * @param [in] nOldDpiScale The old DPI scale percentage
@@ -44,19 +44,19 @@ public:
 
     /** Set the line color
     */
-    void SetLineColor(const DString& lineColor);
+    void SetLineColor(const std::string& lineColor);
 
     /** Get the line color
     */
-    DString GetLineColor() const;
+    std::string GetLineColor() const;
 
     /** Set the line dash style
     */
-    void SetLineDashStyle(const DString& dashStyle);
+    void SetLineDashStyle(const std::string& dashStyle);
 
     /** Get the line dash style
     */
-    DString GetLineDashStyle() const;
+    std::string GetLineDashStyle() const;
 
 protected:
     /** Entry function for drawing the control

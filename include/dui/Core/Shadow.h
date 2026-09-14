@@ -24,15 +24,15 @@ public:
     {
         kShadowFirst        = 0,            //The starting value of valid values
 
-        kShadowBig          = 0,            //Large shadow, square corners (suitable for normal windows)
-        kShadowBigRound     = 1,            //Large shadow, rounded corners (suitable for normal windows)
-        kShadowSmall        = 2,            //Small shadow, square corners (suitable for normal windows)
-        kShadowSmallRound   = 3,            //Small shadow, rounded corners (suitable for normal windows)
-        kShadowMenu         = 4,            //Small shadow, square corners (suitable for popup windows, such as menus)
-        kShadowMenuRound    = 5,            //Small shadow, rounded corners (suitable for popup windows, such as menus)
-        kShadowNone         = 6,            //No shadow, with border, square corners
-        kShadowNoneRound    = 7,            //No shadow, with border, rounded corners
-        kShadowCustom       = 8,                //User-defined shadow (setting it clears the default shadow properties; subsequently call SetShadowImage, SetShadowCorner, SetShadowBorderRound to set the shadow properties)
+        kShadowDrawBig          = 0,            //Large shadow, square corners (suitable for normal windows)
+        kShadowDrawBigRound     = 1,            //Large shadow, rounded corners (suitable for normal windows)
+        kShadowDrawSmall        = 2,            //Small shadow, square corners (suitable for normal windows)
+        kShadowDrawSmallRound   = 3,            //Small shadow, rounded corners (suitable for normal windows)
+        kShadowDrawMenu         = 4,            //Small shadow, square corners (suitable for popup windows, such as menus)
+        kShadowDrawMenuRound    = 5,            //Small shadow, rounded corners (suitable for popup windows, such as menus)
+        kShadowDrawNone         = 6,            //No shadow, with border, square corners
+        kShadowDrawNoneRound    = 7,            //No shadow, with border, rounded corners
+        kShadowDrawCustom       = 8,                //User-defined shadow (setting it clears the default shadow properties; subsequently call SetShadowImage, SetShadowCorner, SetShadowBorderRound to set the shadow properties)
 
         //System shadows (provided by the OS, e.g. macOS NSWindow / Windows DWM).
         //When one of these is selected the window must be non-layered
@@ -43,12 +43,12 @@ public:
         kShadowSystemSmallRound = 12,            //OS shadow, small rounded corners
         kShadowCount,                           //The maximum value of valid values
 
-        kShadowDefault      = kShadowBigRound   //Default shadow (used by default when not set)
+        kShadowDrawDefault  = kShadowDrawBigRound   //Default self-drawn shadow (used by default when not set)
     };
 
     /** Get the corresponding shadow type from a string
     */
-    static bool GetShadowType(const DString& typeString, ShadowType& nShadowType);
+    static bool GetShadowType(const std::string& typeString, ShadowType& nShadowType);
 
     /** True when the type is one of the OS-provided shadow types
      * (kShadowSystemDefault / DoNotRound / Round / SmallRound).
@@ -56,11 +56,11 @@ public:
     static bool IsSystemShadowType(ShadowType nShadowType);
 
     /** Whether the type requires a layered window (self-drawn shadows do;
-     *  system shadows and kShadowNone do not).
+     *  system shadows and kShadowDrawNone do not).
     */
     static bool IsShadowTypeNeedLayeredWindow(ShadowType nShadowType);
 
-    /** Resolve kShadowDefault to a concrete type based on the window and the
+    /** Resolve kShadowDrawDefault to a concrete type based on the window and the
      *  platform (layered window -> self-drawn; macOS -> system shadow).
     */
     static ShadowType GetDefaultShadowType(const Window* pWindow);
@@ -80,7 +80,7 @@ public:
     static bool GetShadowParam(ShadowType nShadowType,
                                UiSize& szBorderRound,
                                UiPadding& rcShadowCorner,
-                               DString& shadowImage,
+                               std::string& shadowImage,
                                Shadow* pShadowObj = nullptr);
 
 public:
@@ -88,6 +88,15 @@ public:
      @param [in] pWindow The associated window
     */
     explicit Shadow(Window* pWindow);
+
+    /** Apply the default shadow type of the current platform
+    * The constructor deliberately leaves this to the owner: applying the type calls
+    * back into the window (a self-drawn shadow switches the window to a layered
+    * window, an OS shadow re-positions it), and the window answers those callbacks
+    * by asking for its shadow - which only exists once the owner has stored the
+    * shadow (see Window::PreInitWindow).
+    */
+    void InitDefaultShadowType();
 
     /** Set whether the shadow effect is supported
      * @param[in] bShadowAttached Set true to support the shadow effect, false to not support the shadow effect
@@ -147,11 +156,11 @@ public:
 
     /** Set the shadow image properties
      */
-    void SetShadowImage(const DString& shadowImage);
+    void SetShadowImage(const std::string& shadowImage);
 
     /** Get the shadow image properties
      */
-    const DString& GetShadowImage() const;
+    const std::string& GetShadowImage() const;
 
     /** Set the border size of the shadow (not DPI-scaled)
     */
@@ -163,11 +172,11 @@ public:
 
     /** Set the border color of the shadow
     */
-    void SetShadowBorderColor(const DString& shadowBorderColor);
+    void SetShadowBorderColor(const std::string& shadowBorderColor);
 
     /** Get the border color of the shadow
     */
-    const DString& GetShadowBorderColor() const;
+    const std::string& GetShadowBorderColor() const;
 
 public:
     /** Attach the shadow to the top-level container of the window
@@ -272,7 +281,7 @@ private:
     bool m_bBottomSnap;
 
     //The shadow image properties
-    DString m_shadowImage;
+    std::string m_shadowImage;
 
     //The shadow nine-grid properties (not DPI-scaled)
     UiPadding m_rcShadowCorner;
@@ -286,7 +295,7 @@ private:
 
     /** The border color of the shadow
     */
-    DString m_shadowBorderColor;
+    std::string m_shadowBorderColor;
 
     //The shadow container interface
     Box* m_pShadowBox;

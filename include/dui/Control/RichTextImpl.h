@@ -17,7 +17,7 @@ public:
 
     /** Text content (UTF16 encoded)
     */
-    DStringW m_text;
+    std::wstring m_text;
 
     /** URL of the hyperlink: "href"
     */
@@ -51,7 +51,7 @@ public:
     RichTextImpl& operator=(const RichTextImpl& r) = delete;
     ~RichTextImpl();
 
-    bool SetAttribute(const DString& strName, const DString& strValue);
+    bool SetAttribute(const std::string& strName, const std::string& strValue);
     void PaintText(IRender* pRender);
 
     /** The bound window has changed
@@ -84,20 +84,20 @@ public:
     /** Get the current font ID
      * @return the font ID, which is identified in global.xml
      */
-    DString GetFontId() const;
+    std::string GetFontId() const;
 
     /** Set the current font ID
      * @param [in] strFontId the font ID to set, which can exist in global.xml
      */
-    void SetFontId(const DString& strFontId);
+    void SetFontId(const std::string& strFontId);
 
     /** Get the default text color
      */
-    DString GetTextColor() const;
+    std::string GetTextColor() const;
 
     /** Set the default text color
      */
-    void SetTextColor(const DString& sTextColor);
+    void SetTextColor(const std::string& sTextColor);
 
     /** Get the row spacing multiplier
     */
@@ -146,13 +146,13 @@ public:
     * @param [in] richText the text content with format
     * @param [in] bRedraw true means triggering a redraw, false means not triggering a redraw
     */
-    bool SetText(const DString& richText, bool bRedraw = true);
+    bool SetText(const std::string& richText, bool bRedraw = true);
 
     /** Set the formatted text ID
     * @param [in] richTextId the ID of the text content with format
     * @param [in] bRedraw true means triggering a redraw, false means not triggering a redraw
     */
-    bool SetTextId(const DString& richTextId, bool bRedraw = true);
+    bool SetTextId(const std::string& richTextId, bool bRedraw = true);
 
     /** Clear the original formatted text
     */
@@ -170,13 +170,13 @@ public:
     * @param [in,out] text the text to process as input, and the processed text as output
     * @return the reference of text
     */
-    const DString& TrimText(DString& text);
+    const std::string& TrimText(std::string& text);
 
     /** Trim the text according to the Trim policy, removing extra spaces
     * @param [in] text the text to process
     * @return the processed string
     */
-    DString TrimText(const DString::value_type* text);
+    std::string TrimText(const std::string::value_type* text);
 
     /** Set whether redraw is allowed
     * @param [in] bEnable true means redraw is allowed, false means redraw is prohibited
@@ -190,7 +190,7 @@ public:
 public:
     /** Output the formatted text
     */
-    DString ToString() const;
+    std::string ToString() const;
 
 public:
     /** Redraw
@@ -237,7 +237,7 @@ private:
     /** Set formatted text, but do not redraw
     * @param [in] richText the text content with format
     */
-    bool DoSetText(const DString& richText);
+    bool DoSetText(const std::string& richText);
 
     /** Parse the formatted text and generate the parsed data structure
     */
@@ -258,7 +258,7 @@ private:
 
     /** Output the formatted text
     */
-    DString ToString(const RichTextSlice& textSlice, const DString& indent) const;
+    std::string ToString(const RichTextSlice& textSlice, const std::string& indent) const;
 
     /** Get the attributes of the currently drawn text
     */

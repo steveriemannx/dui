@@ -10,8 +10,8 @@ class MainForm : public ui::WindowImplBase
 public:
     // The default (entry) window is the login window; it spawns the WeChat
     // window behind it so the login interface stays in front.
-    MainForm() : m_layoutXml(DUI_T("login.xml")), m_isLogin(true) {}
-    explicit MainForm(const DString& layoutXml, bool isLogin = false)
+    MainForm() : m_layoutXml("login.xml"), m_isLogin(true) {}
+    explicit MainForm(const std::string& layoutXml, bool isLogin = false)
         : m_layoutXml(layoutXml), m_isLogin(isLogin) {}
     virtual ~MainForm() override = default;
 
@@ -19,17 +19,18 @@ public:
      * GetSkinFolder sets the skin resource path of the window to be drawn
      * GetSkinFile sets the XML description file of the window to be drawn
      */
-    virtual DString GetSkinFolder() override { return DUI_T("chat"); }
-    virtual DString GetSkinFile() override { return m_layoutXml; }
+    virtual std::string GetSkinFolder() override { return "chat"; }
+    virtual std::string GetSkinFile() override { return m_layoutXml; }
 
     /** Called after the window is created, for subclasses to do some initialization work
      */
     virtual void OnInitWindow() override;
+    virtual void OnInitLayout() override;
 
 private:
     void BindEvents();
 
-    DString m_layoutXml;
+    std::string m_layoutXml;
     bool m_isLogin = false;
 };
 

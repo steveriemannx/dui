@@ -4,7 +4,7 @@
 #include "dui/Core/UiTypes.h"
 #include <ctime>
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 namespace ui
 {
@@ -34,7 +34,7 @@ private:
     bool RegisterSuperClass();
 
     //The window class name
-    DString GetWindowClassName() const;
+    std::string GetWindowClassName() const;
 
     //The window procedure function
     static LRESULT CALLBACK __ControlProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -62,6 +62,6 @@ private:
 
 } //namespace ui
 
-#endif // (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#endif // (DUI_BUILD_FOR_WIN)
 
 #endif // _UI_CONTROL_DATETIME_WND_WINDOWS_H_

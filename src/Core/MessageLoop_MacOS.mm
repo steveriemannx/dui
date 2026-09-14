@@ -97,7 +97,7 @@ bool MessageLoop_MacOS::RunOneEventLoopIterationWithWait(double waitSeconds)
     //Do NOT service the run loop via runMode:beforeDate: here - in a custom
     //(non-[NSApp run]) loop that call dequeues NSEvents without dispatching them
     //(they never reach the windows). Block briefly on nextEventMatchingMask and
-    //dispatch explicitly, exactly like SDL's macOS event pump / [NSApp run] do.
+    //dispatch explicitly, exactly like native backend's macOS event pump / [NSApp run] do.
     NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                         untilDate:[NSDate dateWithTimeIntervalSinceNow:waitSeconds]
                                            inMode:NSDefaultRunLoopMode
@@ -231,9 +231,9 @@ bool MessageLoop_MacOS::CheckInitMacOS()
     return true;
 }
 
-DString MessageLoop_MacOS::GetCurrentVideoDriverName()
+std::string MessageLoop_MacOS::GetCurrentVideoDriverName()
 {
-    return DUI_T("cocoa");
+    return "cocoa";
 }
 
 float MessageLoop_MacOS::GetPrimaryDisplayContentScale()

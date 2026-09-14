@@ -11,7 +11,7 @@ class DUI_API ImageDecoderUtil
 public:
     /** Query which types of images are supported (by extension; the extension does not contain the '.' character, e.g., "BMP;JPG", etc.)
     */
-    static DString GetSupportedFileExtentions();
+    static std::string GetSupportedFileExtentions();
 
     /** Check whether this decoder supports the given data stream
     * @param [in] data The start address of the data

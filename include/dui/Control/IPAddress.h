@@ -16,8 +16,8 @@ public:
 
     /** Get the control type
     */
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& strName, const DString& strValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
 
     /** Let the control get focus
      */
@@ -25,11 +25,11 @@ public:
 
     /** Set the IP address
     */
-    void SetIPAddress(const DString& ipAddress);
+    void SetIPAddress(const std::string& ipAddress);
 
     /** Get the IP address
     */
-    DString GetIPAddress() const;
+    std::string GetIPAddress() const;
 
 protected:
 

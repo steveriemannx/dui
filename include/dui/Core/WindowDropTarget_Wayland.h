@@ -7,14 +7,14 @@
 
 namespace ui {
 
-class NativeWindow_SDL;
+class NativeWindow_Wayland;
 class Control;
 class ControlDropTarget;
 
 class WindowDropTarget
 {
 public:
-    explicit WindowDropTarget(NativeWindow_SDL* pWindow);
+    explicit WindowDropTarget(NativeWindow_Wayland* pWindow);
     ~WindowDropTarget();
 
     void OnDropBegin(void* data);
@@ -24,7 +24,7 @@ public:
     void OnDropComplete();
 
 private:
-    NativeWindow_SDL* m_pWindow;
+    NativeWindow_Wayland* m_pWindow;
 };
 
 } // namespace ui

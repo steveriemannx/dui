@@ -3,6 +3,8 @@
 
 #include "dui/Utils/FilePath.h"
 #include <cstdint>
+#include <cstddef>
+#include <span>
 
 namespace ui
 {
@@ -21,16 +23,18 @@ enum class ResourceType
 
 /** Select the default theme directory for the current platform.
  *  Windows uses the Windows 11 theme, macOS uses the native macOS light theme,
- *  and the other platforms use the generic default theme.
+ *  Linux uses the GNOME theme, while other platforms use the generic default theme.
  */
 inline FilePath GetDefaultThemePath()
 {
 #if defined (DUI_BUILD_FOR_WIN)
-    return FilePath(DUI_T("themes\\windows11"));
+    return FilePath("themes\\windows11");
 #elif defined (DUI_BUILD_FOR_MACOS)
-    return FilePath(DUI_T("themes/macos26"));
+    return FilePath("themes/macos26");
+#elif defined (DUI_BUILD_FOR_LINUX)
+    return FilePath("themes/gnome");
 #else
-    return FilePath(DUI_T("themes/default"));
+    return FilePath("themes/default");
 #endif
 }
 
@@ -65,21 +69,21 @@ public:
 
     /** The path where the external font files reside
     */
-    FilePath fontFilePath = FilePath(DUI_T("fonts"));
+    FilePath fontFilePath = FilePath("fonts");
 
     /** The path where the language files reside; can be a relative path or an absolute path (in the multilingual version, all language files are placed in this directory)
     *   If it is an absolute path, the language files are looked up in this absolute path
     *   If it is a relative path, the resource files are looked up by the relative path under the resource path determined by resType and resourcePath
     */
-    FilePath languagePath = FilePath(DUI_T("lang"));
+    FilePath languagePath = FilePath("lang");
 
     /** The file name of the currently used language file (without the path)
     */
-    DString languageFileName = DUI_T("zh_CN.txt");
+    std::string languageFileName = "zh_CN.txt";
 
     /** The file name of the global resource description XML file; default: "global.xml"
     */
-    DString globalXmlFileName = DUI_T("global.xml");
+    std::string globalXmlFileName = "global.xml";
 };
 
 /** Parameters required to load global resources (local file form, corresponding to resource type: kLocalFiles)
@@ -113,23 +117,18 @@ public:
     }
 
     /** Constructor with the embedded resource data
-     * @param[in] data Pointer to the embedded resource data (must remain valid for the lifetime of
-     *                 the application, e.g. a static array embedded in the executable)
-     * @param[in] size Size of the embedded resource data
+     * @param[in] resources The embedded resources; the data it points at must remain valid for the
+     *                      lifetime of the application (e.g. a static array embedded in the executable)
      */
-    MemoryResParam(const uint8_t* data, size_t size) :
-        ResourceParam(ResourceType::kMemoryRes), pData(data), nSize(size)
+    explicit MemoryResParam(std::span<const uint8_t> resources) :
+        ResourceParam(ResourceType::kMemoryRes), spData(resources)
     {
     }
 
-    /** The pointer to the embedded resource data (must remain valid for the lifetime of the application,
+    /** The embedded resource data (must remain valid for the lifetime of the application,
      *  e.g. a static array embedded in the executable)
     */
-    const uint8_t* pData = nullptr;
-
-    /** The size of the embedded resource data
-    */
-    size_t nSize = 0;
+    std::span<const uint8_t> spData;
 };
 
 

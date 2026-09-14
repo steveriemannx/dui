@@ -31,24 +31,24 @@ public:
     * @param [out] fontName Returns the font name
     * @return Returns true on success, false on failure
     */
-    virtual bool GetFontName(uint32_t nIndex, DString& fontName) const override;
+    virtual bool GetFontName(uint32_t nIndex, std::string& fontName) const override;
 
     /** Determine whether the font exists
     * @param [int] fontName The font name
     * @return Returns true if a font matching the font name exists, otherwise false
     */
-    virtual bool HasFontName(const DString& fontName) const override;
+    virtual bool HasFontName(const std::string& fontName) const override;
 
     /** Set the default font name (used when the font to be loaded does not exist)
     * @param [in] fontName The default font name
     */
-    virtual void SetDefaultFontName(const DString& fontName) override;
+    virtual void SetDefaultFontName(const std::string& fontName) override;
 
     /** Load the specified font file
     * @param [in] fontFilePath The path of the font file (local absolute path)
     * @return Returns true on success, false on failure
     */
-    virtual bool LoadFontFile(const DString& fontFilePath) override;
+    virtual bool LoadFontFile(const std::string& fontFilePath) override;
 
     /** Load the specified font data
     * @param [in] data The in-memory data of the font file

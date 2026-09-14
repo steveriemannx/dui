@@ -272,7 +272,6 @@ UiSize64 VFlowLayout::ArrangeChildInternal(const std::vector<Control*>& items, U
     if (!bEstimateOnly) {
         // Adjust the layout of the child controls (non-floating controls)
         for (TColumnControls& control : columnControlList) {
-            ASSERT(control.m_pControlRects.size() == control.m_pControlList.size());
             if (control.m_pControlRects.size() != control.m_pControlList.size()) {
                 // Error
                 return szChildren;

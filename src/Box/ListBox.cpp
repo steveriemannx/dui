@@ -42,47 +42,47 @@ ListBox::~ListBox()
     }
 }
 
-DString ListBox::GetType() const { return DUI_T("ListBox"); }
+std::string ListBox::GetType() const { return "ListBox"; }
 
-void ListBox::SetAttribute(const DString& strName, const DString& strValue)
+void ListBox::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if (strName == DUI_T("multi_select")) {
-        SetMultiSelect(strValue == DUI_T("true"));
+    if (strName == "multi_select") {
+        SetMultiSelect(strValue == "true");
     }
-    else if (strName == DUI_T("paint_selected_colors")) {
-        if (strValue == DUI_T("true")) {
+    else if (strName == "paint_selected_colors") {
+        if (strValue == "true") {
             m_uPaintSelectedColors = PAINT_SELECTED_COLORS_YES;
         }
         else {
             m_uPaintSelectedColors = PAINT_SELECTED_COLORS_NO;
         }
     }
-    else if ((strName == DUI_T("scroll_select")) || (strName == DUI_T("scrollselect"))) {
-        SetScrollSelect(strValue == DUI_T("true"));
+    else if ((strName == "scroll_select") || (strName == "scrollselect")) {
+        SetScrollSelect(strValue == "true");
     }
-    else if (strName == DUI_T("select_next_when_active_removed")) {
-        SetSelectNextWhenActiveRemoved(strValue == DUI_T("true"));
+    else if (strName == "select_next_when_active_removed") {
+        SetSelectNextWhenActiveRemoved(strValue == "true");
     }
-    else if (strName == DUI_T("frame_selection")) {
-        SetEnableFrameSelection(strValue == DUI_T("true"));
+    else if (strName == "frame_selection") {
+        SetEnableFrameSelection(strValue == "true");
     }
-    else if (strName == DUI_T("frame_selection_color")) {
+    else if (strName == "frame_selection_color") {
         SetFrameSelectionColor(strValue);
     }
-    else if (strName == DUI_T("frame_selection_alpha")) {
+    else if (strName == "frame_selection_alpha") {
         SetframeSelectionAlpha((uint8_t)StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("frame_selection_border_size")) {
+    else if (strName == "frame_selection_border_size") {
         SetFrameSelectionBorderSize(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("frame_selection_border_color")) {
+    else if (strName == "frame_selection_border_color") {
         SetFrameSelectionBorderColor(strValue);
     }
-    else if (strName == DUI_T("select_none_when_click_blank")) {
-        SetSelectNoneWhenClickBlank(strValue == DUI_T("true"));
+    else if (strName == "select_none_when_click_blank") {
+        SetSelectNoneWhenClickBlank(strValue == "true");
     }
-    else if (strName == DUI_T("select_like_list_ctrl")) {
-        SetSelectLikeListCtrl(strValue == DUI_T("true"));
+    else if (strName == "select_like_list_ctrl") {
+        SetSelectLikeListCtrl(strValue == "true");
     }
     else {
         ScrollBox::SetAttribute(strName, strValue);
@@ -105,7 +105,7 @@ bool ListBox::IsEnableFrameSelection() const
     return false;
 }
 
-void ListBox::SetFrameSelectionColor(const DString& frameSelectionColor)
+void ListBox::SetFrameSelectionColor(const std::string& frameSelectionColor)
 {
     if (m_pHelper == nullptr) {
         m_pHelper = std::make_unique<ListBoxHelper>(this);
@@ -113,12 +113,12 @@ void ListBox::SetFrameSelectionColor(const DString& frameSelectionColor)
     m_pHelper->SetFrameSelectionColor(frameSelectionColor);
 }
 
-DString ListBox::GetFrameSelectionColor() const
+std::string ListBox::GetFrameSelectionColor() const
 {
     if (m_pHelper != nullptr) {
         return m_pHelper->GetFrameSelectionColor();
     }
-    return DString();
+    return std::string();
 }
 
 void ListBox::SetframeSelectionAlpha(uint8_t frameSelectionAlpha)
@@ -137,7 +137,7 @@ uint8_t ListBox::GetFrameSelectionAlpha() const
     return 255;
 }
 
-void ListBox::SetFrameSelectionBorderColor(const DString& frameSelectionBorderColor)
+void ListBox::SetFrameSelectionBorderColor(const std::string& frameSelectionBorderColor)
 {
     if (m_pHelper == nullptr) {
         m_pHelper = std::make_unique<ListBoxHelper>(this);
@@ -145,12 +145,12 @@ void ListBox::SetFrameSelectionBorderColor(const DString& frameSelectionBorderCo
     m_pHelper->SetFrameSelectionBorderColor(frameSelectionBorderColor);
 }
 
-DString ListBox::GetFrameSelectionBorderColor() const
+std::string ListBox::GetFrameSelectionBorderColor() const
 {
     if (m_pHelper != nullptr) {
         return m_pHelper->GetFrameSelectionBorderColor();
     }
-    return DString();
+    return std::string();
 }
 
 void ListBox::SetFrameSelectionBorderSize(int32_t nBorderSize)
@@ -406,7 +406,7 @@ bool ListBox::OnListCtrlKeyDown(const EventArgs& msg)
     //This function only implements the shortcut key logic for the non-virtual-list case; the corresponding logic for virtual list mode is implemented in the subclass
     ASSERT(msg.eventType == kEventKeyDown);
     bool bHandled = false;
-    bool bCtrlADown = (msg.eventType == kEventKeyDown) && ((msg.vkCode == DUI_T('A')) || (msg.vkCode == DUI_T('a')));
+    bool bCtrlADown = (msg.eventType == kEventKeyDown) && ((msg.vkCode == 'A') || (msg.vkCode == 'a'));
     if (bCtrlADown) {
         //Ctrl + A select all operation
         bHandled = true;
@@ -1914,7 +1914,7 @@ bool ListBox::ScrollItemToTop(size_t iIndex)
     return false;
 }
 
-bool ListBox::ScrollItemToTop(const DString& itemName)
+bool ListBox::ScrollItemToTop(const std::string& itemName)
 {
     const size_t itemCount = m_items.size();
     for (size_t iIndex = 0; iIndex < itemCount; ++iIndex) {

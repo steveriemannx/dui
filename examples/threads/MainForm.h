@@ -20,8 +20,8 @@ public:
      * GetSkinFolder sets the skin resource path of the window to be drawn
      * GetSkinFile sets the XML description file of the window to be drawn
      */
-    virtual DString GetSkinFolder() override { return DUI_T("threads"); }
-    virtual DString GetSkinFile() override { return DUI_T("threads.xml"); }
+    virtual std::string GetSkinFolder() override { return "threads"; }
+    virtual std::string GetSkinFile() override { return "threads.xml"; }
 
     /** Called after the window is created, for subclasses to do some initialization work
      */
@@ -53,7 +53,7 @@ private:
     /** Output a log (can be called from the worker thread)
      */
 public:
-    void PrintLog(const DString& log);
+    void PrintLog(const std::string& log);
 
     /** Execute a task in the worker thread
      * @param [in] nThreadIdentifier Thread identifier

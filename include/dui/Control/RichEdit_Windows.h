@@ -4,9 +4,12 @@
 #include "dui/Box/ScrollBox.h"
 #include "dui/Image/Image.h"
 
-#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
+#if defined (DUI_BUILD_FOR_WIN)
 
 #include "dui/Control/RichEditCtrl_Windows.h"
+//m_pControlDropTarget is a std::unique_ptr, so the complete type is required
+//wherever a RichEdit is destroyed (the forward declaration below is not enough)
+#include "dui/Core/ControlDropTarget.h"
 
 /** Define a macro switch that determines whether the RichText feature is supported (enabled by default)
 */
@@ -31,7 +34,7 @@ struct FindTextParam
     bool bMatchWholeWord = true; //Whether to match whole words when searching
     bool bFindDown = true;       //Whether to search forward, true means forward, false means backward
     TextCharRange chrg;          //The range of characters to search
-    DString findText;            //The text to search for
+    std::string findText;            //The text to search for
 };
 
 class RichEditHost;
@@ -47,8 +50,8 @@ public:
     virtual ~RichEdit() override;
 public:
     //Overrides of base class virtual functions
-    virtual DString GetType() const override;
-    virtual void SetAttribute(const DString& pstrName, const DString& pstrValue) override;
+    virtual std::string GetType() const override;
+    virtual void SetAttribute(const std::string& pstrName, const std::string& pstrValue) override;
     virtual void ChangeDpiScale(uint32_t nOldDpiScale, uint32_t nNewDpiScale) override;
     virtual void SetPos(UiRect rc) override;
     virtual void SetScrollPos(UiSize64 szPos) override;
@@ -62,23 +65,23 @@ public:
     /** Set the control's text, which triggers a text change event
      * @param [in] strText The text content to set
      */
-    void SetText(const DStringW& strText);
-    void SetText(const DStringA& strText);
+    void SetText(const std::wstring& strText);
+    void SetText(const std::string& strText);
 
     /** Set the control's text without triggering a text change event
      * @param [in] strText The text content to set
      */
-    void SetTextNoEvent(const DString& strText);
+    void SetTextNoEvent(const std::string& strText);
 
     /** Set the text ID of the control
      * @param[in] strTextId The ID to set, which must exist in the loaded language file
      */
-    void SetTextId(const DString& strTextId);
+    void SetTextId(const std::string& strTextId);
 
     /** Get the text in the control
      * @return Returns the text content in the control
      */
-    DString GetText() const;
+    std::string GetText() const;
 
     /** Get the length of the content (Unicode encoding, number of characters)
      * @return Returns the content length
@@ -88,12 +91,12 @@ public:
     /** Get the currently set font index
      * @return Returns the font index (corresponding to the font order in global.xml)
      */
-    DString GetFontId() const;
+    std::string GetFontId() const;
 
     /** Set the font index
      * @param[in] index The font index to set (corresponding to the font order in global.xml)
      */
-    void SetFontId(const DString& strFontId);
+    void SetFontId(const std::string& strFontId);
 
     /** Get the font information (the font size has been DPI scaled)
     * @return RichText mode: returns the font information of the currently selected text, otherwise returns the default font information
@@ -108,34 +111,34 @@ public:
     /** Get the currently used font ID
     * @return The return value is the same as the GetFontId() function
     */
-    DString GetCurrentFontId() const;
+    std::string GetCurrentFontId() const;
 
     /** Set the normal text color
      * @param[in] dwTextColor The text color to set
      */
-    void SetTextColor(const DString& dwTextColor);
+    void SetTextColor(const std::string& dwTextColor);
 
     /** Get the normal text color
      */
-    DString GetTextColor() const;
+    std::string GetTextColor() const;
 
     /** Get the color of the selected text (only valid in rich text mode)
     */
-    DString GetSelectionTextColor() const;
+    std::string GetSelectionTextColor() const;
 
     /** Set the color of the selected text (only valid in rich text mode)
      * @param[in] textColor The text color to set
      */
-    void SetSelectionTextColor(const DString& textColor);
+    void SetSelectionTextColor(const std::string& textColor);
 
     /** Set the text color in the Disabled state
      * @param[in] dwTextColor The text color to set
      */
-    void SetDisabledTextColor(const DString& dwTextColor);
+    void SetDisabledTextColor(const std::string& dwTextColor);
 
     /** Get the text color in the Disabled state
      */
-    DString GetDisabledTextColor() const;
+    std::string GetDisabledTextColor() const;
 
 public:
     /** Set whether to show the prompt text
@@ -145,7 +148,7 @@ public:
 
     /** Get the prompt text
      */
-    DString GetPromptText() const;
+    std::string GetPromptText() const;
 
     /** Get the prompt text
      * @return Returns the prompt text in UTF8 format
@@ -155,7 +158,7 @@ public:
     /** Set the prompt text
      * @param[in] strText The prompt text to set
      */
-    void SetPromptText(const DString& strText);
+    void SetPromptText(const std::string& strText);
 
     /** Set the prompt text
      * @param[in] strText The prompt text in UTF8 format to set
@@ -165,7 +168,7 @@ public:
     /** Set the prompt text ID
      * @param[in] strText The prompt text ID to set, which must exist in the loaded language file
      */
-    void SetPromptTextId(const DString& strTextId);
+    void SetPromptTextId(const std::string& strTextId);
 
     /** Set the prompt text ID
      * @param[in] strText The prompt text ID in UTF8 format to set, which must exist in the loaded language file
@@ -261,7 +264,7 @@ public:
 
     /** Set the password character
     */
-    void SetPasswordChar(DStringW::value_type ch);
+    void SetPasswordChar(std::wstring::value_type ch);
 
     /** Set whether to briefly show input characters then hide them (only valid when IsShowPassword() is true, i.e. in password mode)
     */
@@ -297,11 +300,11 @@ public:
 
     /** Get the number format (the format of a 64-bit signed integer, e.g. "I64d")
     */
-    void SetNumberFormat64(const DString& numberFormat);
+    void SetNumberFormat64(const std::string& numberFormat);
 
     /** Get the number format (the format of a 64-bit signed integer)
     */
-    DString GetNumberFormat64() const;
+    std::string GetNumberFormat64() const;
 
     /** Get the limit of the number of characters
      * @return Returns the limit of the number of characters
@@ -315,22 +318,22 @@ public:
 
     /** Get which characters are allowed to be entered
     */
-    DString GetLimitChars() const;
+    std::string GetLimitChars() const;
 
     /** Set which characters are allowed to be entered, e.g. for color values: limit_chars="#0123456789ABCDEFabcdef"
     * @param [in] limitChars The list of allowed characters
     */
-    void SetLimitChars(const DString& limitChars);
+    void SetLimitChars(const std::string& limitChars);
 
     /** Get the image in the focused state
     * @return Returns the image in the focused state
     */
-    DString GetFocusedImage();
+    std::string GetFocusedImage();
 
     /** Set the image in the focused state
      * @param[in] strImage The image location to set
      */
-    void SetFocusedImage(const DString& strImage);
+    void SetFocusedImage(const std::string& strImage);
 
     /** Set whether to allow adjusting the zoom ratio via Ctrl + mouse wheel
     */
@@ -355,7 +358,7 @@ public:
     * @param [in] nMin Sets the minimum value of the number
     * @param [in] nMax Sets the maximum value of the number; if both nMin and nMax are 0, the minimum and maximum values of the number are not set
     */
-    bool SetEnableSpin(bool bEnable, const DString& spinClass, int32_t nMin = 0, int32_t nMax = 0);
+    bool SetEnableSpin(bool bEnable, const std::string& spinClass, int32_t nMin = 0, int32_t nMax = 0);
 
 public:
     /** Create the caret
@@ -376,12 +379,12 @@ public:
     /** Set the caret color
      * @param[in] dwColor The color value to set, which must exist in global.xml
      */
-    void SetCaretColor(const DString& dwColor);
+    void SetCaretColor(const std::string& dwColor);
 
     /** Get the caret color
      * @return Returns the caret color
      */
-    DString GetCaretColor() const;
+    std::string GetCaretColor() const;
 
     /** Get the caret rectangle position
      * @return Returns the caret rectangle position
@@ -506,19 +509,19 @@ public:
      * @param[in] lpszNewText The text to replace with
      * @param[in] bCanUndo Whether it can be undone, true for yes, otherwise false
      */
-    void ReplaceSel(const DString& lpszNewText, bool bCanUndo);
+    void ReplaceSel(const std::string& lpszNewText, bool bCanUndo);
 
     /** Get the selected text content
      * @return Returns the selected text content
      */
-    DString GetSelText() const;
+    std::string GetSelText() const;
 
     /** Get the content of the specified range
      * @param[in] nStartChar The start position
      * @param[in] nEndChar The end position
      * @return Returns the content of the specified position
      */
-    DString GetTextRange(int32_t nStartChar, int32_t nEndChar) const;
+    std::string GetTextRange(int32_t nStartChar, int32_t nEndChar) const;
 
     /** Set whether to hide or show the selected text
      * @param [in] bHide Whether to show, true to hide, false to show
@@ -574,7 +577,7 @@ public:
      * @param[in] nMaxLength The maximum data length of the current line to get
      * @return Returns the obtained line of data
      */
-    DString GetLine(int32_t nIndex, int32_t nMaxLength) const;
+    std::string GetLine(int32_t nIndex, int32_t nMaxLength) const;
 
     /** Get the index of the first character of the specified line
      * @param[in] nLine The line number to get, defaults to -1, meaning the line of the current insertion point
@@ -727,11 +730,11 @@ public:
 
     /** Set the color of the bottom border in the focused state
     */
-    void SetFocusBottomBorderColor(const DString& bottomBorderColor);
+    void SetFocusBottomBorderColor(const std::string& bottomBorderColor);
 
     /** Get the color of the bottom border in the focused state
     */
-    DString GetFocusBottomBorderColor() const;
+    std::string GetFocusBottomBorderColor() const;
 
     /** Set whether to enable drag and drop
     */
@@ -746,10 +749,10 @@ public:
     */
     virtual ControlDropTarget_Windows* GetControlDropTarget() override;
 
-    /** Get the drag and drop interface (SDL)
+    /** Get the drag and drop interface (native backend)
     * @return Returns the drag and drop target interface; if nullptr is returned, drag and drop is not supported
     */
-    virtual ControlDropTarget_SDL* GetControlDropTarget_SDL() override;
+    virtual ControlDropTarget_Wayland* GetControlDropTarget_Wayland() override;
 
 #ifdef DUI_RICHEDIT_SUPPORT_RICHTEXT
 public:
@@ -840,7 +843,7 @@ public:
      * @param[in] bCanUndo Whether it can be undone, true for yes, otherwise false, defaults to false
      * @return Returns the text position after insertion
      */
-    int32_t InsertText(int32_t nInsertAfterChar, const DString& text, bool bCanUndo = false);
+    int32_t InsertText(int32_t nInsertAfterChar, const std::string& text, bool bCanUndo = false);
 
     /** Append text
      * @param [in] text The text to append
@@ -848,7 +851,7 @@ public:
      * @param [in] bScrollBottom Whether to scroll the view to the bottom
      * @return Returns the text position after appending
      */
-    int32_t AppendText(const DString& text, bool bCanUndo = false, bool bScrollBottom = true);
+    int32_t AppendText(const std::string& text, bool bCanUndo = false, bool bScrollBottom = true);
 
     /** Get the character format
      * @param[out] cf Returns the obtained character format
@@ -928,7 +931,7 @@ public:
      * @param[in] str The text content
      * @param[in] color The color value, which must exist in global.xml
      */
-    void AddColorText(const DString& str, const DString& color);
+    void AddColorText(const std::string& str, const std::string& color);
 
     /** Add a hyperlink with a specified font and text color
      * @param[in] str The text content
@@ -936,7 +939,7 @@ public:
      * @param[in] linkInfo The link address
      * @param[in] font The font index
      */
-    void AddLinkColorTextEx(const DString& str, const DString& color, const DString& linkInfo = DUI_T(""), const DString& strFontId = DUI_T(""));
+    void AddLinkColorTextEx(const std::string& str, const std::string& color, const std::string& linkInfo = "", const std::string& strFontId = "");
 
 #endif
 
@@ -977,7 +980,7 @@ private:
 
     /** Determine whether a character is in the list of restricted characters
     */
-    bool IsInLimitChars(DStringW::value_type charValue) const;
+    bool IsInLimitChars(std::wstring::value_type charValue) const;
 
     /** Determine whether pasting is allowed (determine whether there are character restrictions or number restrictions)
     * @return If true is returned, pasting is not allowed
@@ -991,7 +994,7 @@ private:
 
     /** Set the Class name of the Spin function
     */
-    bool SetSpinClass(const DString& spinClass);
+    bool SetSpinClass(const std::string& spinClass);
 
     /** Start the timer for adjusting the text number value
     */
@@ -1008,15 +1011,15 @@ private:
 private:
     /** Set the Class name of the clear button function
     */
-    void SetClearBtnClass(const DString& btnClass);
+    void SetClearBtnClass(const std::string& btnClass);
 
     /** Set the Class name of the show-password button function
     */
-    void SetShowPasswordBtnClass(const DString& btnClass);
+    void SetShowPasswordBtnClass(const std::string& btnClass);
 
     /** Set the font ID
     */
-    void SetFontIdInternal(const DString& fontId);
+    void SetFontIdInternal(const std::string& fontId);
 
     /** Set the font color
     */
@@ -1024,7 +1027,7 @@ private:
 
     /** Get the format corresponding to the font
     */
-    void GetCharFormat(const DString& fontId, CHARFORMAT2W& cf) const;
+    void GetCharFormat(const std::string& fontId, CHARFORMAT2W& cf) const;
 
     //Text horizontal and vertical alignment
     void SetTextHAlignType(HorAlignType alignType);
@@ -1055,7 +1058,7 @@ private:
 
     /** Get the clipboard string
     */
-    static void GetClipboardText(DStringW& out);
+    static void GetClipboardText(std::wstring& out);
 
 private:
     //A set of functions used by RichEditHost
@@ -1192,7 +1195,7 @@ private:
 
     /** The list of allowed characters
     */
-    std::unique_ptr<DStringW::value_type[]> m_pLimitChars;
+    std::unique_ptr<std::wstring::value_type[]> m_pLimitChars;
 
     /** Spin function container
     */
@@ -1204,7 +1207,7 @@ private:
 
     /** The image shown when gaining focus
     */
-    Image* m_pFocusedImage;
+    std::unique_ptr<Image> m_pFocusedImage;
 
     /** The clear button (only valid in non-read-only mode)
     */
@@ -1263,7 +1266,6 @@ private:
     std::unique_ptr<FastBytes> m_pAlphaValues;
 
 private:
-#ifndef DUI_UNICODE
     /** MBCS: input characters
     */
     std::vector<BYTE> m_pendingChars;
@@ -1271,11 +1273,10 @@ private:
     /** The time of the last input
     */
     DWORD m_dwLastCharTime = 0;
-#endif
 
     /** The implementation interface of the drag and drop feature; if not null, the feature is enabled
     */
-    ControlDropTarget_Windows* m_pControlDropTarget;
+    std::unique_ptr<ControlDropTarget_Windows> m_pControlDropTarget;
 };
 
 } // namespace ui

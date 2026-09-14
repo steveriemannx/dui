@@ -28,7 +28,7 @@ void Image::InitImageAttribute()
     m_imageAttribute.Init();
 }
 
-void Image::SetImageString(const DString& strImageString, const DpiManager& dpi)
+void Image::SetImageString(const std::string& strImageString, const DpiManager& dpi)
 {
     SetImageError(false);
     SetDecodeEventFired(false);
@@ -36,25 +36,25 @@ void Image::SetImageString(const DString& strImageString, const DpiManager& dpi)
     m_imageAttribute.InitByImageString(strImageString, dpi);
 }
 
-void Image::UpdateImageAttribute(const DString& strImageString, const DpiManager& dpi)
+void Image::UpdateImageAttribute(const std::string& strImageString, const DpiManager& dpi)
 {
     //Only modify the attributes, not the image resource path
-    DString sImagePath = m_imageAttribute.m_sImagePath.c_str();
+    std::string sImagePath = m_imageAttribute.m_sImagePath.c_str();
     m_imageAttribute.ModifyAttribute(strImageString, dpi);
     m_imageAttribute.m_sImagePath = sImagePath;
 }
 
-DString Image::GetImageString() const
+std::string Image::GetImageString() const
 {
     return m_imageAttribute.m_sImageString.c_str();
 }
 
-bool Image::EqualToImageString(const DString& imageString) const
+bool Image::EqualToImageString(const std::string& imageString) const
 {
     return m_imageAttribute.m_sImageString == imageString;
 }
 
-DString Image::GetImagePath() const
+std::string Image::GetImagePath() const
 {
     return m_imageAttribute.m_sImagePath.c_str();
 }
@@ -178,7 +178,7 @@ bool Image::IsMultiFrameImage() const
 
 AnimationFramePtr Image::GetCurrentFrame(const UiRect& rcDest, UiRect& rcSource, UiRect& rcSourceCorners) const
 {
-    PerformanceStat statPerformance(DUI_T("Image::GetCurrentFrame"));
+    PerformanceStat statPerformance("Image::GetCurrentFrame");
     ASSERT((m_imageInfo != nullptr) && m_imageInfo->IsMultiFrameImage());
     if (!m_imageInfo || !m_imageInfo->IsMultiFrameImage()) {
         return nullptr;
@@ -203,7 +203,7 @@ AnimationFramePtr Image::GetCurrentFrame(const UiRect& rcDest, UiRect& rcSource,
 
 std::shared_ptr<IBitmap> Image::GetBitmapData(UiRect& rcSource, UiRect& rcSourceCorners, bool* bDecodeError) const
 {
-    PerformanceStat statPerformance(DUI_T("Image::GetBitmapData"));
+    PerformanceStat statPerformance("Image::GetBitmapData");
     ASSERT((m_imageInfo != nullptr) && !m_imageInfo->IsMultiFrameImage());
     if (!m_imageInfo || m_imageInfo->IsMultiFrameImage()) {
         return nullptr;
@@ -288,7 +288,6 @@ std::shared_ptr<IBitmap> Image::GetCurrentBitmap(bool bImageStretch,
     if (!m_imageInfo || m_imageInfo->IsMultiFrameImage()) {
         return nullptr;
     }
-    ASSERT(!rcDest.IsEmpty() && !rcSource.IsEmpty());
     if (rcDest.IsEmpty() || rcSource.IsEmpty()) {
         return nullptr;
     }
@@ -417,7 +416,7 @@ void Image::StopImageAnimation(AnimationImagePos nStopFrame, bool bTriggerEvent)
     }
 }
 
-DString Image::GetImageName() const
+std::string Image::GetImageName() const
 {
     return GetImageAttribute().GetImageName();
 }

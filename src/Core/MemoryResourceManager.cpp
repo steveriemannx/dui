@@ -64,7 +64,7 @@ bool MemoryResourceManager::Open(const uint8_t* pData, size_t nSize)
         return false;
     }
 
-    std::map<DStringW, MemoryResData> index;
+    std::map<std::wstring, MemoryResData> index;
     for (uint32_t i = 0; i < count; ++i) {
         uint32_t pathLen = 0;
         uint64_t dataOffset = 0;
@@ -77,7 +77,7 @@ bool MemoryResourceManager::Open(const uint8_t* pData, size_t nSize)
         if (!readU64(dataOffset) || !readU64(dataLen) || (dataOffset + dataLen > nSize)) {
             return false;
         }
-        DStringW key = StringConvert::UTF8ToWString(pathA);
+        std::wstring key = StringConvert::UTF8ToWString(pathA);
         key = StringUtil::MakeLowerString(key);
     NormalizePath(key);
         index[key] = { static_cast<size_t>(dataOffset), static_cast<size_t>(dataLen) };
@@ -95,7 +95,7 @@ bool MemoryResourceManager::GetData(const FilePath& path, std::vector<unsigned c
     fileData.clear();
     GlobalManager::Instance().AssertUIThread();
     if (m_bUseMemory) {
-        const DStringW key = NormalizeMemoryPath(path);
+        const std::wstring key = NormalizeMemoryPath(path);
         auto it = m_memoryIndex.find(key);
         if (it == m_memoryIndex.end()) {
             return false;
@@ -114,7 +114,7 @@ bool MemoryResourceManager::IsDataExist(const FilePath& path) const
         return false;
     }
     if (m_bUseMemory) {
-        const DStringW key = NormalizeMemoryPath(path);
+        const std::wstring key = NormalizeMemoryPath(path);
         return m_memoryIndex.find(key) != m_memoryIndex.end();
     }
     return false;
@@ -128,39 +128,39 @@ void MemoryResourceManager::Close()
     m_memoryIndex.clear();
 }
 
-DStringW MemoryResourceManager::NormalizeMemoryPath(const FilePath& path) const
+std::wstring MemoryResourceManager::NormalizeMemoryPath(const FilePath& path) const
 {
     const FilePath normalizePath = FilePathUtil::NormalizeFilePath(path);
-    DStringW innerFilePath = normalizePath.ToStringW();
+    std::wstring innerFilePath = normalizePath.ToStringW();
     innerFilePath = StringUtil::MakeLowerString(innerFilePath);
     NormalizePath(innerFilePath);
     return innerFilePath;
 }
 
-bool MemoryResourceManager::GetFileList(const FilePath& dirPath, std::vector<DString>& fileList) const
+bool MemoryResourceManager::GetFileList(const FilePath& dirPath, std::vector<std::string>& fileList) const
 {
     fileList.clear();
     GlobalManager::Instance().AssertUIThread();
-    DString filePath = dirPath.NativePath();
+    std::string filePath = dirPath.NativePath();
     if (!filePath.empty() &&
-        (filePath[filePath.size() - 1] != DUI_T('\\')) &&
-        (filePath[filePath.size() - 1] != DUI_T('/'))) {
-        filePath += DUI_T("/");
+        (filePath[filePath.size() - 1] != '\\') &&
+        (filePath[filePath.size() - 1] != '/')) {
+        filePath += "/";
     }
-    DString innerPath = FilePathUtil::NormalizeFilePath(filePath);
+    std::string innerPath = FilePathUtil::NormalizeFilePath(filePath);
     if (innerPath.empty()) {
         return false;
     }
     NormalizePath(innerPath);
 
     if (m_bUseMemory) {
-        DStringW prefix = StringUtil::MakeLowerString(FilePath(innerPath).ToStringW());
+        std::wstring prefix = StringUtil::MakeLowerString(FilePath(innerPath).ToStringW());
         NormalizePath(prefix);
         for (const auto& kv : m_memoryIndex) {
-            const DStringW& key = kv.first;
+            const std::wstring& key = kv.first;
             if ((key.size() > prefix.size()) && (key.compare(0, prefix.size(), prefix) == 0)) {
-                DStringW remainder = key.substr(prefix.size());
-                if (remainder.find(L'/') == DStringW::npos) {
+                std::wstring remainder = key.substr(prefix.size());
+                if (remainder.find(L'/') == std::wstring::npos) {
                     fileList.push_back(StringConvert::WStringToT(remainder));
                 }
             }

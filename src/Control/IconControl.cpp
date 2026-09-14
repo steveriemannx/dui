@@ -15,7 +15,7 @@ IconControl::~IconControl()
     m_pBitmap.reset();
 }
 
-DString IconControl::GetType() const { return DUI_CTR_ICON_CONTROL; }
+std::string IconControl::GetType() const { return DUI_CTR_ICON_CONTROL; }
 
 bool IconControl::SetIconData(int32_t nWidth, int32_t nHeight, const uint8_t* pPixelBits, int32_t nPixelBitsSize)
 {
@@ -24,7 +24,6 @@ bool IconControl::SetIconData(int32_t nWidth, int32_t nHeight, const uint8_t* pP
     if ((pPixelBits == nullptr) || (nPixelBitsSize <= 0) || (nWidth <= 0) || (nHeight <= 0)) {
         return false;
     }
-    ASSERT(nPixelBitsSize == nHeight * nWidth * (int32_t)sizeof(uint32_t));
     if (nPixelBitsSize != nHeight * nWidth * (int32_t)sizeof(uint32_t)) {
         return false;
     }
@@ -35,7 +34,6 @@ bool IconControl::SetIconData(int32_t nWidth, int32_t nHeight, const uint8_t* pP
             m_pBitmap.reset(pRenderFactory->CreateBitmap());
         }
     }
-    ASSERT(m_pBitmap != nullptr);
     if (m_pBitmap == nullptr) {
         return false;
     }

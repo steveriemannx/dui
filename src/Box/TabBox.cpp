@@ -17,11 +17,11 @@ TabBox::TabBox(Window* pWindow, Layout* pLayout):
 {
 }
 
-DString TabBox::GetType() const { return DUI_CTR_TABBOX; }
+std::string TabBox::GetType() const { return DUI_CTR_TABBOX; }
 
-void TabBox::SetAttribute(const DString& strName, const DString& strValue)
+void TabBox::SetAttribute(const std::string& strName, const std::string& strValue)
 {
-    if ((strName == DUI_T("selected_id")) || (strName == DUI_T("selectedid"))) {
+    if ((strName == "selected_id") || (strName == "selectedid")) {
         size_t iSel = (size_t)StringUtil::StringToInt32(strValue);
         if (IsInited()) {
             SelectItem(iSel);
@@ -30,27 +30,27 @@ void TabBox::SetAttribute(const DString& strName, const DString& strValue)
             m_nInitSel = iSel;
         }
     }
-    else if ((strName == DUI_T("fade_switch")) || (strName == DUI_T("fadeswitch"))) {
-        if (strValue == DUI_T("true")) {
+    else if ((strName == "fade_switch") || (strName == "fadeswitch")) {
+        if (strValue == "true") {
             SetFadeSwitch(true);
         }
-        else if (strValue == DUI_T("false")) {
+        else if (strValue == "false") {
             SetFadeSwitch(false);
         }
         else {
             SetFadeSwitchTypeByString(strValue);
         }
     }
-    else if (strName == DUI_T("fade_switch_type")) {
+    else if (strName == "fade_switch_type") {
         SetFadeSwitchTypeByString(strValue);
     }
-    else if (strName == DUI_T("fade_switch_frame_interval_ms")) {
+    else if (strName == "fade_switch_frame_interval_ms") {
         SetFadeSwitchFrameIntervalMillSeconds(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("fade_switch_total_ms")) {
+    else if (strName == "fade_switch_total_ms") {
         SetFadeSwitchTotalMillSeconds(StringUtil::StringToInt32(strValue));
     }
-    else if (strName == DUI_T("fade_switch_easing_function")) {
+    else if (strName == "fade_switch_easing_function") {
         SetFadeSwitchEasingFunctionType(EasingFunctions::GetEasingFunctionType(strValue));
     }
     else {
@@ -103,7 +103,6 @@ bool TabBox::AddItem(Control* pControl)
 
 bool TabBox::AddItemAt(Control* pControl, size_t iIndex)
 {
-    ASSERT(pControl != nullptr);
     if (pControl == nullptr) {
         return false;
     }
@@ -267,7 +266,6 @@ void TabBox::OnHideTabItem(size_t index)
         return;
     }
     Control* pContol = m_items.at(index);
-    ASSERT(pContol != nullptr);
     if (pContol == nullptr) {
         return;
     }
@@ -285,7 +283,6 @@ void TabBox::OnShowTabItem(size_t index)
         return;
     }
     Control* pContol = m_items.at(index);
-    ASSERT(pContol != nullptr);
     if (pContol == nullptr) {
         return;
     }
@@ -312,7 +309,7 @@ bool TabBox::SelectItem(Control* pControl)
     }
 }
 
-bool TabBox::SelectItem(const DString& pControlName)
+bool TabBox::SelectItem(const std::string& pControlName)
 {
     Control* pControl = FindSubControl(pControlName);
     ASSERT(pControl != nullptr);
@@ -347,12 +344,12 @@ TabBox::FadeSwitchType TabBox::GetFadeSwitchType() const
     return m_fadeSwithType;
 }
 
-void TabBox::SetFadeSwitchTypeByString(const DString& fadeSwitchType)
+void TabBox::SetFadeSwitchTypeByString(const std::string& fadeSwitchType)
 {
-    if (fadeSwitchType == DUI_T("FadeInOutX")) {
+    if (fadeSwitchType == "FadeInOutX") {
         SetFadeSwitchType(FadeSwitchType::kFadeInOutX);
     }
-    else if (fadeSwitchType == DUI_T("FadeInOut")) {
+    else if (fadeSwitchType == "FadeInOut") {
         SetFadeSwitchType(FadeSwitchType::kFadeInOut);
     }
 }

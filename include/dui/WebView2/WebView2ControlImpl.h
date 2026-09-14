@@ -24,24 +24,24 @@ public:
     ~Impl();
 
     // Initialization and lifecycle management
-    HRESULT InitializeAsync(const DString& userDataFolder, InitializeCompletedCallback callback);
+    HRESULT InitializeAsync(const std::string& userDataFolder, InitializeCompletedCallback callback);
     void Cleanup();
 
     // Navigation control
-    HRESULT Navigate(const DString& url);
+    HRESULT Navigate(const std::string& url);
     HRESULT NavigateBack();
     HRESULT NavigateForward();
     HRESULT Refresh();
     HRESULT Stop();
 
     // JavaScript interaction
-    HRESULT ExecuteScript(const DString& script, std::function<void(const DString& result, HRESULT hr)> callback);
-    HRESULT PostWebMessageAsJson(const DString& json);
-    HRESULT PostWebMessageAsString(const DString& message);
+    HRESULT ExecuteScript(const std::string& script, std::function<void(const std::string& result, HRESULT hr)> callback);
+    HRESULT PostWebMessageAsJson(const std::string& json);
+    HRESULT PostWebMessageAsString(const std::string& message);
 
     // Settings related
-    HRESULT SetUserAgent(const DString& userAgent);
-    DString GetUserAgent() const;
+    HRESULT SetUserAgent(const std::string& userAgent);
+    std::string GetUserAgent() const;
 
     HRESULT SetZoomFactor(double zoomFactor);
     double GetZoomFactor() const;
@@ -82,14 +82,14 @@ public:
     void SetFavIconChangedCallback(FavIconChangedCallback callback);
 
     // Content management
-    HRESULT CapturePreview(const DString& filePath,
-                           std::function<void(const DString& filePath, HRESULT hr)> callback);
+    HRESULT CapturePreview(const std::string& filePath,
+                           std::function<void(const std::string& filePath, HRESULT hr)> callback);
 
     // Accessors
     bool IsInitializing() const;
     bool IsInitialized() const;
-    DString GetUrl() const;
-    DString GetTitle() const;
+    std::string GetUrl() const;
+    std::string GetTitle() const;
     bool IsNavigating() const;
     bool CanGoBack() const;
     bool CanGoForward() const;
@@ -212,15 +212,15 @@ private:
     FavIconChangedCallback m_favIconChangedCallback = nullptr;
 
     // The initial URL
-    DString m_navigateUrl;
+    std::string m_navigateUrl;
 
     // The URL of the website icon (favicon)
-    DStringW m_favIconImageUrl;
+    std::wstring m_favIconImageUrl;
 
     // State variables
     Control* m_pControl;
-    DString m_userDataFolder;
-    DString m_userAgent;
+    std::string m_userDataFolder;
+    std::string m_userAgent;
 
     HRESULT m_lastError;
     bool m_bInitializing;

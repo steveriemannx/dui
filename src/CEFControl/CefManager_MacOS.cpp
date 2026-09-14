@@ -18,7 +18,7 @@ CefManager_MacOS::~CefManager_MacOS()
 }
 
 bool CefManager_MacOS::Initialize(bool bEnableOffScreenRendering,
-                                  const DString& appName,
+                                  const std::string& appName,
                                   int argc,
                                   char** argv,
                                   OnCefSettingsEvent callback,

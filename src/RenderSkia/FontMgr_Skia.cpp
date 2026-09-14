@@ -34,7 +34,7 @@ namespace ui
 struct FontFromFile
 {
     //Font name
-    DString m_fontFamilyName;
+    std::string m_fontFamilyName;
 
     //Font style -> font data
     std::vector<sk_sp<SkTypeface>> m_fontTypefaceList;
@@ -49,7 +49,6 @@ public:
     */
     bool AddFontTypeface(const sk_sp<SkTypeface>& spTypeface)
     {
-        ASSERT(spTypeface != nullptr);
         if (spTypeface == nullptr) {
             return false;
         }
@@ -57,13 +56,11 @@ public:
         //After a successful load, add it to the manager for centralized management
         SkString fontName;
         spTypeface->getFamilyName(&fontName);
-        ASSERT(!fontName.isEmpty());
         if (fontName.isEmpty()) {
             return false;
         }
 
-        DString fontFamilyName = StringConvert::UTF8ToT(fontName.c_str());
-        ASSERT(!fontFamilyName.empty());
+        std::string fontFamilyName = StringConvert::UTF8ToT(fontName.c_str());
         if (fontFamilyName.empty()) {
             return false;
         }
@@ -104,7 +101,7 @@ public:
 
     /** Create a font
     */
-    sk_sp<SkTypeface> MakeTypeface(const DString& fontName, SkFontStyle style)
+    sk_sp<SkTypeface> MakeTypeface(const std::string& fontName, SkFontStyle style)
     {
         sk_sp<SkTypeface> skTypeface;
         if (m_fontFamilies.empty()) {
@@ -133,9 +130,9 @@ public:
 
     /** Get the font name
     */
-    DString GetFontName(uint32_t nIndex) const
+    std::string GetFontName(uint32_t nIndex) const
     {
-        DString fontName;
+        std::string fontName;
         if (nIndex < m_fontFamilies.size()) {
             const FontFromFile& fontFromFile = m_fontFamilies[nIndex];
             fontName = fontFromFile.m_fontFamilyName;
@@ -145,7 +142,7 @@ public:
 
     /** Whether the font is included
     */
-    bool HasFontName(const DString& fontName) const
+    bool HasFontName(const std::string& fontName) const
     {
         for (const FontFromFile& fontFromFile : m_fontFamilies) {
             if (fontName == fontFromFile.m_fontFamilyName) {
@@ -181,7 +178,7 @@ public:
 
     /** The default font name
     */
-    DString m_defaultFontName;
+    std::string m_defaultFontName;
 
     /** FontStyleSet cache for font names (some Linux systems create fonts very slowly; a single call takes tens of milliseconds, so caching is necessary)
     */
@@ -225,10 +222,9 @@ uint32_t FontMgr_Skia::GetFontCount() const
     return nFontCount;
 }
 
-bool FontMgr_Skia::GetFontName(uint32_t nIndex, DString& fontName) const
+bool FontMgr_Skia::GetFontName(uint32_t nIndex, std::string& fontName) const
 {
     fontName.clear();
-    ASSERT(m_impl->m_pSkFontMgr != nullptr);
     if (m_impl->m_pSkFontMgr == nullptr) {
         return false;
     }
@@ -251,13 +247,12 @@ bool FontMgr_Skia::GetFontName(uint32_t nIndex, DString& fontName) const
     return !fontName.empty();
 }
 
-bool FontMgr_Skia::HasFontName(const DString& fontName) const
+bool FontMgr_Skia::HasFontName(const std::string& fontName) const
 {
     if (fontName.empty()) {
         return false;
     }
 
-    ASSERT(m_impl->m_pSkFontMgr != nullptr);
     if (m_impl->m_pSkFontMgr == nullptr) {
         return false;
     }
@@ -278,7 +273,7 @@ bool FontMgr_Skia::HasFontName(const DString& fontName) const
     return bFound;
 }
 
-void FontMgr_Skia::SetDefaultFontName(const DString& fontName)
+void FontMgr_Skia::SetDefaultFontName(const std::string& fontName)
 {
     if (HasFontName(fontName)) {
         //The font must exist
@@ -289,20 +284,17 @@ void FontMgr_Skia::SetDefaultFontName(const DString& fontName)
     }
 }
 
-bool FontMgr_Skia::LoadFontFile(const DString& fontFilePath)
+bool FontMgr_Skia::LoadFontFile(const std::string& fontFilePath)
 {
-    ASSERT(!fontFilePath.empty());
     if (fontFilePath.empty()) {
         return false;
     }
 
-    ASSERT(m_impl->m_pSkFontMgr != nullptr);
     if (m_impl->m_pSkFontMgr == nullptr) {
         return false;
     }
 
     std::string fontFile = StringConvert::TToUTF8(fontFilePath); //Convert to a UTF8-format path
-    ASSERT(!fontFile.empty());
     if (fontFile.empty()) {
         return false;
     }
@@ -318,7 +310,6 @@ bool FontMgr_Skia::LoadFontFileData(const void* data, size_t length)
         return false;
     }
     sk_sp<SkData> skData = SkData::MakeWithCopy(data, length);
-    ASSERT(skData != nullptr);
     if (skData == nullptr) {
         return false;
     }
@@ -338,13 +329,11 @@ void FontMgr_Skia::ClearFontCache()
 
 SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
 {
-    PerformanceStat statPerformance(DUI_T("FontMgr_Skia::CreateSkFont"));
-    ASSERT(!fontInfo.m_fontName.empty());
+    PerformanceStat statPerformance("FontMgr_Skia::CreateSkFont");
     if (fontInfo.m_fontName.empty()) {
         return nullptr;
     }
 
-    ASSERT(fontInfo.m_fontSize != 0);
     if (fontInfo.m_fontSize == 0) {
         return nullptr;
     }
@@ -360,13 +349,12 @@ SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
         fontStyle = SkFontStyle::Italic();
     }
     sk_sp<SkFontMgr> pSkFontMgr = m_impl->m_pSkFontMgr;
-    ASSERT(pSkFontMgr != nullptr);
     if (pSkFontMgr == nullptr) {
         return nullptr;
     }
 
     //The list of fonts to be created (including the default font)
-    std::vector<DString> fontNameList;
+    std::vector<std::string> fontNameList;
     if (!fontInfo.m_fontName.empty() && HasFontName(fontInfo.m_fontName.c_str())) {
         fontNameList.push_back(fontInfo.m_fontName.c_str());
     }
@@ -375,7 +363,7 @@ SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
     }
 
     sk_sp<SkTypeface> spTypeface;
-    for (const DString& inFontName : fontNameList) {
+    for (const std::string& inFontName : fontNameList) {
         //First check whether the externally loaded fonts meet the requirements; if no match, create via the system fonts
         spTypeface = m_impl->m_fontFileMgr.MakeTypeface(inFontName.c_str(), fontStyle);
         if (spTypeface != nullptr) {
@@ -384,7 +372,6 @@ SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
 
         //Create the font using the FontMgr interface
         std::string fontName = StringConvert::TToUTF8(inFontName);
-        ASSERT(!fontName.empty());
         if (fontName.empty()) {
             continue;
         }
@@ -411,7 +398,6 @@ SkFont* FontMgr_Skia::CreateSkFont(const UiFont& fontInfo)
         //Use the system default font (but correctness is not guaranteed; for example, on Windows, the font created by this interface cannot display Chinese)
         spTypeface = pSkFontMgr->legacyMakeTypeface(nullptr, fontStyle);
     }
-    ASSERT(spTypeface != nullptr);
     if (spTypeface == nullptr) {
         return nullptr;
     }

@@ -9,7 +9,7 @@
 
 namespace ui
 {
-bool SystemUtil::OpenUrl(const DString& url)
+bool SystemUtil::OpenUrl(const std::string& url)
 {
     if (url.empty()) {
         return false;
@@ -37,7 +37,7 @@ bool SystemUtil::OpenUrl(const DString& url)
     return [[NSWorkspace sharedWorkspace] openURL:parsedUrl] ? true : false;
 }
 
-bool SystemUtil::ShowMessageBox(const Window* pWindow, const DString& content, const DString& title)
+bool SystemUtil::ShowMessageBox(const Window* pWindow, const std::string& content, const std::string& title)
 {
     NSString* nsContent = [NSString stringWithUTF8String:StringConvert::TToUTF8(content).c_str()];
     NSString* nsTitle = [NSString stringWithUTF8String:StringConvert::TToUTF8(title).c_str()];

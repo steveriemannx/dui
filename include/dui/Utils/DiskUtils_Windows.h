@@ -19,15 +19,15 @@ public:
     { 
         /** The volume label of the partition
         */
-        DString m_volumeName;
+        std::string m_volumeName;
         
         /** The partition type
         */
-        DString m_volumeType;
+        std::string m_volumeType;
         
         /** The file system type, such as NTFS, etc.
         */
-        DString m_fileSystem;
+        std::string m_fileSystem;
         
         /** The cluster size
         */
@@ -52,31 +52,31 @@ public:
     @param [out] Returns the list of local disks; the disk format is like: "C:\\", etc.
     @return Returns true on success, otherwise returns false
     */
-    static bool GetLogicalDriveList(std::vector<DString>& driveList);
+    static bool GetLogicalDriveList(std::vector<std::string>& driveList);
     
     /** Get the partition information
     @param [in] driveString The drive name, in a format like: "C:\\"
     @param [out] diskInfo Returns the corresponding disk information
     @return Returns true on success, otherwise returns false
     */
-    static bool GetLogicalDriveInfo(const DString& driveString, DiskInfo& diskInfo);
+    static bool GetLogicalDriveInfo(const std::string& driveString, DiskInfo& diskInfo);
 
     /** Get the current drive letter from a path
     @param [in] path The current path
     @return The drive letter name
     */
-    static DString GetDriveFromDirectoryPath(const DString& path);
+    static std::string GetDriveFromDirectoryPath(const std::string& path);
 
     /** Get the drive letter of the local disk with the largest free space
     @return Returns the drive letter of the disk, e.g.: "C:\\"
     */
-    static DString GetMaxFreeSpaceLocalDisk();
+    static std::string GetMaxFreeSpaceLocalDisk();
 
     /** Get the remaining disk space of the specified directory
     @param[in] fullDirectory The file directory
     @return The remaining disk space size (in BYTEs)
     */
-    static uint64_t GetFreeDiskSpace(const DString& fullDirectory);
+    static uint64_t GetFreeDiskSpace(const std::string& fullDirectory);
 };
 
 #endif //DUI_BUILD_FOR_WIN

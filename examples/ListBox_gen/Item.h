@@ -13,7 +13,7 @@ public:
 
     /** Provides an external call to initialize the item data
     */
-    void InitSubControls(const DString& img, const DString& title);
+    void InitSubControls(const std::string& img, const std::string& title);
 
 private:
     /** Delete event
