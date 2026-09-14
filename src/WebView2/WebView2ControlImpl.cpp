@@ -102,7 +102,8 @@ HRESULT WebView2Control::Impl::CallCreateCoreWebView2EnvironmentWithOptions(PCWS
         runPath.NormalizeDirectoryPath();
         runPath += "WebView2Loader.dll";
         if (runPath.IsExistsFile()) {
-            m_hWebView2Loader = ::LoadLibrary(runPath.NativePath().c_str());
+            // NativePath() is UTF-8 and LoadLibraryW wants UTF-16; converted at the boundary.
+            m_hWebView2Loader = ::LoadLibraryW(StringConvert::UTF8ToWString(runPath.NativePath()).c_str());
         }        
     }
     if (m_hWebView2Loader == nullptr) {
