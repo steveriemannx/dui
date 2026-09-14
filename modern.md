@@ -1,8 +1,8 @@
 # dui Modernization Assessment
 
-**Status:** assessment complete; the string-model work (§1.3) has since been started
-**Baseline:** assessed at `a353844b`; status updated at `574e59a7` / `eaa70572`
-**Date:** 2026-09-13 (revised)
+**Status:** assessment complete; Tier 1 and most of Tier 2 of Part 4 executed (see Part 4)
+**Baseline:** assessed at `a353844b`; status updated at `eaa70572` and 2026-09-14
+**Date:** 2026-09-14 (revised)
 **Scope:** C++ language modernization, pointer/ownership model, CMake modernization
 **Companion documents:** [`production.md`](production.md) — production readiness;
 [`string.md`](string.md) — the string-encoding question in full
@@ -45,10 +45,19 @@ rather than quietly edited out:
 CXX_FLAGS = -O3 -DNDEBUG -std=gnu++20 -arch arm64 ...
 ```
 
-Two caveats:
+Two caveats, both since fixed:
 
-- `CMAKE_CXX_EXTENSIONS` is never set, so the default `ON` applies — the build is **`gnu++20`, not `c++20`**. GNU extensions are enabled.
-- `dui` and `dui_entry` never call `target_compile_features(dui PUBLIC cxx_std_20)`, so **consumers of the installed package are not told the headers require C++20**. That is a real defect in the install package.
+- ~~`CMAKE_CXX_EXTENSIONS` is never set, so the default `ON` applies — the build is **`gnu++20`, not `c++20`**.~~
+  **Fixed 2026-09-14.** `CMAKE_CXX_EXTENSIONS OFF` is set in `cmake/dui_common.cmake`, which
+  every module includes, so library, tests and examples all compile as strict C++ 20. Verified
+  by building them that way — not by assuming, because the flags could have been relying on
+  GNU extensions and there was no way to know without compiling.
+- ~~`dui` and `dui_entry` never call `target_compile_features(dui PUBLIC cxx_std_20)`, so
+  **consumers of the installed package are not told the headers require C++20**.~~
+  **Fixed 2026-09-14**, on both targets.
+  **And the surrounding install package turned out to be worse than this caveat described** —
+  see P0-10 in `production.md`: `find_package(dui)` failed outright for any consumer, because
+  the config file never resolved the dependencies the exported targets name.
 
 ### 1.2 Adoption is layered, and the layers diverge sharply
 
@@ -118,6 +127,8 @@ That guarantee is load-bearing here, because the codebase has:
 So "it's effectively single-threaded" is not available as a defence.
 
 The flag looks inherited from Chromium/Skia build conventions, where such trade-offs are made knowingly. It is cheap to fix: either drop the flag from the `dui` target, or convert the ~10 non-trivial function-local statics to `std::call_once` + `std::once_flag`. The repo already contains a correct example to copy: `src/Core/NativeWindow_MacOS.mm:1448`.
+
+**Fixed 2026-09-14, by the first option** — the flag is gone rather than worked around, so the C++11 guarantee is restored for every static in the library, including ones added later. The removal carries a comment naming the statics that depend on it, so the next person to consider re-adding it for build speed finds the reason not to.
 
 ### 1.5 Low-cost, high-value language cleanups
 
@@ -285,6 +296,19 @@ Instead, in priority order:
 4. **Name the ownership protocol.** Add `Control* Box::ReleaseItem(Control*)` encapsulating the four-line dance, and add a duplicate-parent assertion in `Box::DoAddItemAt`. Replaces six duplicated sites with one well-named operation. ~20 lines.
 5. **Restore asserts and add sanitizers** (see `production.md` P0-1/P1-2). Until this is done, any ownership-model change is unverifiable — `ControlPtr::operator->` (`include/dui/Core/ControlPtrT.h:94-99`) is a raw dereference whenever `ASSERT` is compiled out.
 
+**All five are done as of 2026-09-14** — item 3 in the targeted form described above, not
+the whole-tree conversion. The order was right, and item 5 turned out to be the
+load-bearing one: reviving the asserts found a live abort (P0-8 in `production.md`), and
+the sanitizer configuration turned out to have been unsound — see the false-positive
+section there, which is the most useful thing this pass produced for whoever runs the
+sanitizers next.
+
+**One correction to this section.** It presents the deferred-deletion queue (item 2) as
+the answer to the "destroyed during dispatch" bug class. That held. What it did not
+anticipate is that the class had a second member, in the same file, with nothing to do
+with ownership: `EventSource::operator()` threw `std::out_of_range` when a callback
+removed a callback mid-dispatch. Fixed — P0-6.
+
 ---
 
 ## Part 3 — CMake
@@ -296,7 +320,7 @@ Roughly "2018-2020 era modern CMake," not current toolchain practice.
 | Dimension | Score | Basis |
 |---|---|---|
 | Target-based configuration | 6/10 | `include`/`definitions`/`compile_options` fully keyword-qualified; but **16 legacy `target_link_libraries()` with no keyword**, 7 of them on the `dui` library itself |
-| Source collection | 4/10 | **88% via `file(GLOB)`**; `CONFIGURE_DEPENDS` is used (better than `aux_source_directory`), but unreliable on VS/Xcode — and this repo leans on multi-config generators |
+| Source collection | ~~4/10~~ → **fixed** | It was 88% `file(GLOB)` with `CONFIGURE_DEPENDS`, which is unreliable on VS/Xcode — and this repo leans on multi-config generators. Both the library and every example now list their sources explicitly; the acceptance test was that the compiled object set and the compile-command stream were unchanged, not that it built |
 | Dependency management | 2/10 | **Zero `FetchContent`, zero `ExternalProject`.** Skia, CEF, gn, WebView2 all fetched via `file(DOWNLOAD)` plus 200 lines of hand-rolled retry/checksum/shell-extract |
 | Packaging and export | **7/10** | `install(EXPORT)` + `Config.cmake.in` + `write_basic_package_version_file` + `GNUInstallDirs` — the strongest area |
 | Build quality | 5/10 | Real investment in multi-config and dual Skia builds; but no `/W4` on MSVC, no `-Werror`, no `CMAKE_EXPORT_COMPILE_COMMANDS`, `CXX_EXTENSIONS` left on, warning flags entirely absent on the Windows and Linux example paths |
@@ -316,9 +340,16 @@ Roughly "2018-2020 era modern CMake," not current toolchain practice.
 
 The second obstacle is CEF: the repo `add_subdirectory`s the CEF distribution's own CMake (`third_party/CMakeLists.txt:40`), so CEF's older idioms leak into dui's own files — `SET_EXECUTABLE_TARGET_PROPERTIES`, directory-level `CMAKE_RUNTIME_OUTPUT_DIRECTORY` rewrites, and an `unset(CMAKE_OSX_DEPLOYMENT_TARGET)`.
 
-The third is architectural: **55 examples each call `project()` and re-include the same modules** (`examples/basic/CMakeLists.txt:16-18`). That is the structural reason directory-level commands survive — `add_link_options` at `cmake/dui_common.cmake:54` executes once per example, because there is no shared target to hang it on.
+The third was architectural: **55 examples each called `project()` and re-included the same modules** (`examples/basic/CMakeLists.txt:16-18`). That was the structural reason directory-level commands survived — `add_link_options` at `cmake/dui_common.cmake:54` ran once per example, because there was no shared target to hang it on.
+
+**That is now fixed**, and it is the item this document would have been wrong to leave alone. Applications link `dui::app`, an INTERFACE target carrying the include directories, the C++ standard, the compile definitions and options, the link options and directories, and the libraries; the two remaining directory-scoped commands (both Linux/FreeBSD-only) moved onto targets. What could not move is handled by `dui_finalize_app(target)`, a function, because `RUNTIME_OUTPUT_DIRECTORY` is not an interface property, a POST_BUILD step has no interface form, and `add_dependencies` has to name a concrete target. **So the sentence above — "fully target-based is unreachable" — was right about Skia and wrong about the examples.** Skia stays a gn/ninja black box; the 55-project structure did not have to.
 
 ### 3.3 Cheap wins, in order
+
+**All seven are done as of 2026-09-14** (items 1–3, 5–7 on that date; item 4 — presets and
+`COMPILE_COMMANDS` — slightly earlier). Item 2 is the one whose prediction above came true
+most literally: the aliases made the application layer expressible as INTERFACE properties,
+which is now what `cmake/dui_app.cmake` does.
 
 1. **`add_library(dui::dui ALIAS dui)`** plus aliases for `dui_entry` and the dependency targets. The `dui::` namespace currently exists **only in the install export** (`cmake/dui_install.cmake:104`), so the documented `target_link_libraries(app PRIVATE dui::dui)` does not work inside the source tree. One line, and it makes the whole `dui_bin*.cmake` layer expressible as `INTERFACE` properties on a real target.
 2. **`target_compile_features(dui PUBLIC cxx_std_20)`** — fixes the install-package defect noted in §1.1.
@@ -326,7 +357,13 @@ The third is architectural: **55 examples each call `project()` and re-include t
 4. **`CMakePresets.json`** — the repo has 15 options, 4 example modes, and multi-platform/multi-generator combinations, all currently documented only in prose (`Progress.md:131-143`).
 5. **`CMAKE_EXPORT_COMPILE_COMMANDS ON`** and a `.clang-format` — zero cost, immediate tooling payoff.
 6. **`/W4` and `/permissive-` on MSVC** — currently the MSVC path sets only `/utf-8` and `/MP`.
-7. **Fix the duplicated `dui-png` / `png_static` naming** — the same library is referenced by two different names (`tests/CMakeLists.txt:43` and `dui_install.cmake:90` use `png_static`; the example paths use the `dui-png` alias).
+7. **Fix the duplicated `dui-png` / `png_static` naming** — ✅ **fixed 2026-09-14.** The
+   library is referenced by two names in-tree, and that is now deliberate rather than
+   drift: `png_static` is libpng's own target name and stays it (`tests/CMakeLists.txt`
+   and the install list refer to it), while `dui-png` is the alias dui's own code links
+   and the name the target exports, via `EXPORT_NAME`. What is gone is the leak into
+   the published interface: the installed package used to export `dui::png_static`, the
+   one name in the `dui::` namespace that meant nothing to a consumer.
 
 ---
 
@@ -334,30 +371,51 @@ The third is architectural: **55 examples each call `project()` and re-include t
 
 Ordered by value per unit of risk. Note that the top items are small.
 
-**As of this revision, none of Tiers 1–2 has been started.** The work that has been
-done — the render path, and the string model in Tier 3 — was done because it was a
-prerequisite for a decision, not because it was next in line. **The small items at the
-top of this list are still the ones with the best ratio of value to effort, and they
-have been available since the assessment was written.**
+**As of this revision, Tier 1 is complete and Tier 2 is half done.** The prediction this
+paragraph used to make — that the small items at the top have the best ratio of value to
+effort — held: the Tier 1 items took hours, each was verified by building, and item 1
+paid for itself immediately by exposing a defect (P0-8 in `production.md`) that no amount
+of reading had found. What did *not* hold is the assumption that the list is the whole
+job: five further defects surfaced from touching this code, none of them on this list.
 
-**Tier 1 — small, safe, real payoff**
+**Tier 1 — small, safe, real payoff** — complete
 
-| # | Change | Scale |
-|---|---|---|
-| 1 | Fix the dispatch UAF (`EventArgs.cpp:246-260`) | ~3 lines |
-| 2 | Remove `-fno-threadsafe-statics`, or convert ~10 statics to `std::call_once` | 1 line or ~10 sites |
-| 3 | `add_library(dui::dui ALIAS dui)` + `target_compile_features(... cxx_std_20)` | ~3 lines |
-| 4 | `CMakePresets.json` + `CMAKE_EXPORT_COMPILE_COMMANDS` + `.clang-format` | new files |
-| 5 | Deferred-deletion queue (`Window.cpp:498-500`) | ~50 lines |
-| 6 | `Control* Box::ReleaseItem(Control*)` + duplicate-parent assert | ~20 lines |
+| # | Change | Scale | State |
+|---|---|---|---|
+| 1 | Fix the dispatch UAF (`EventArgs.cpp:246-260`) | ~3 lines | ✅ `2812c547` |
+| 2 | Remove `-fno-threadsafe-statics`, or convert ~10 statics to `std::call_once` | 1 line or ~10 sites | ✅ flag removed |
+| 3 | `add_library(dui::dui ALIAS dui)` + `target_compile_features(... cxx_std_20)` | ~3 lines | ✅ both targets |
+| 4 | `CMakePresets.json` + `CMAKE_EXPORT_COMPILE_COMMANDS` + `.clang-format` | new files | ✅ + `.editorconfig` |
+| 5 | Deferred-deletion queue (`Window.cpp:498-500`) | ~50 lines | ✅ flush at message, paint and teardown entry |
+| 6 | `Control* Box::ReleaseItem(Control*)` + duplicate-parent assert | ~20 lines | ✅ 4 of the 6 cited sites; 2 are the borrow half, not the dance |
 
 **Tier 2 — mechanical, reviewable in batches**
 
-7. `typedef` → `using` (370), `std::size` (3), value-type `constexpr` accessors.
-8. C-style casts → `static_cast` (~1,200, numeric first).
-9. `inline constexpr` for constant macros (~140 colours, 77 in `Macros_Windows.h`).
-10. Keyword-qualify the remaining legacy `target_link_libraries`; add `/W4`.
-11. Convert the ~15-20 exclusive sub-control members to `unique_ptr` (§2.6 item 3).
+7. ☐ `typedef` → `using` (370), `std::size` (3), value-type `constexpr` accessors.
+   **Not started.** Still the cheapest remaining mechanical item, and the least urgent:
+   it changes no behaviour, and this pass found behaviour to fix.
+8. ☐ C-style casts → `static_cast` (~1,200, numeric first). **Not started.**
+9. ☐ `inline constexpr` for constant macros (~140 colours, 77 in `Macros_Windows.h`).
+   **Not started.**
+10. ✅ Keyword-qualify the remaining legacy `target_link_libraries`; add `/W4`.
+    **One correction to this item's premise:** for a *static* library, `PRIVATE` does not
+    remove system libraries from consumers' link lines — CMake re-emits them as
+    `$<LINK_ONLY:…>` because the symbols still have to resolve. What it stops is the
+    interface leaking usage requirements. The comment in `src/CMakeLists.txt` says that,
+    not this line. `/permissive-` was deliberately *not* added: `/std:c++20` already
+    implies it on current MSVC, so it would be unverifiable noise on older toolchains.
+11. ◐ Convert the ~15-20 exclusive sub-control members to `unique_ptr` (§2.6 item 3).
+    Six converted, all in `RichEdit`'s three platform variants (`m_pFocusedImage`,
+    `m_pTextData` × 2, `m_pControlDropTarget` on Windows); thirteen examined and
+    **deliberately left alone**, each with recorded evidence. Two would have been
+    double-frees: `Shadow::m_pShadowBox` is owned by the Window, not the Shadow
+    (`Window::ClearWindow` deletes it, and `m_shadow.reset()` runs first), and
+    `SplitTemplate::m_pLeftTop`/`m_pRightBottom` are the sibling controls on either side
+    of the split bar, not sub-controls at all. The rest are `AddItem`ed into a parent —
+    the ambiguity §2.6 warns about, confirmed rather than assumed. Note that the
+    sub-controls this item named for `ListCtrlIcon` and `TabCtrl` turned out not to be
+    candidates at all: every one of them is `AddItem`ed, so that scope yields zero
+    conversions.
 
 **Tier 3 — large, needs a decision and a budget**
 

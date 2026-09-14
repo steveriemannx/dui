@@ -10,7 +10,9 @@ dui is a cross-platform C++ UI framework based on the Skia rendering engine, usi
 - **Supported platforms**: Windows (7/10/11+), Linux, macOS (12+), FreeBSD
 - **Rendering engine**: Skia (CPU/OpenGL)
 - **Build tools**: CMake + Visual Studio / GCC / Clang
-- **C++ standard**: C++17+
+- **C++ standard**: C++20 (`CMAKE_CXX_STANDARD 20`, and `CMAKE_CXX_EXTENSIONS OFF` so it
+  is strict `-std=c++20`, not `gnu++20`; pass `-DCMAKE_CXX_EXTENSIONS=ON` to get the GNU
+  dialect back)
 
 ## Project Structure
 ```
@@ -120,7 +122,22 @@ DUI_APP_ENTRY(TestApplication)        // AppClass must provide void Run();
 - Window destruction is managed by the framework; create with `new`, no manual `delete` needed
 
 ## Build
-- Windows: open `scripts/examples.sln`, select Debug|x64 or Release|x64
-- Cross-platform: `scripts/build_dui_all_in_one.sh` or `scripts/build_dui_all_in_one.bat`
-- Dependencies: Skia must be compiled first (see `scripts/build.md`)
+The build is CMake-only. The old `scripts/examples.sln` and
+`scripts/build_dui_all_in_one.sh|.bat` are gone; use the presets.
+
+- **CMake 4.0 or newer** (`cmake_minimum_required(VERSION 4.0)`). The distro packages
+  are usually older — Ubuntu 24.04 ships 3.28 — so install a current one from Kitware
+- Configure and build: `cmake --preset release` (or `debug`), then
+  `cmake --build build-presets/release --target <target>`
+- Dependencies: Skia is built automatically by the `dui_skia` target on a tree's first
+  configure (gn + ninja, into `<build>/lib/<config>/`), so a fresh tree costs a full
+  Skia build. See `docs/Build.md`
+- Everything is a target: `dui` (the library), `dui_core_tests` / `dui_behaviour_tests`,
+  one target per example. **Do not build the `all` target** — it builds 55 example apps
+- Tests: `ctest --test-dir build-presets/debug --output-on-failure`
+- Sanitizers: `cmake --preset sanitize` — builds Skia with ASan too, into
+  `lib/<config>-asan`, and that is required, not optional (see the preset description)
+- Useful options: `-DDUI_ENABLE_CEF=OFF` (default) skips the ~200 MB CEF download,
+  `-DDUI_BUILD_CEF_EXAMPLES=OFF` skips the CEF examples, `-DDUI_ENABLE_MVVM=ON` adds the
+  binding module
 - Example mode selection (CMake): `-DDUI_EXAMPLES_MODE=ALL|XML|GEN|CODE` — builds only the examples of one development mode (XML / XML-to-code generation / pure code); default `ALL`

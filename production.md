@@ -1,8 +1,8 @@
 # dui Production Readiness
 
-**Status:** assessment complete; Wave 1 partially done (see below)
-**Baseline:** assessed at `a353844b`; status updated at `574e59a7`
-**Date:** 2026-09-13 (revised)
+**Status:** assessment complete; Wave 1 complete, Wave 2 mostly complete (see below)
+**Baseline:** assessed at `a353844b`; status updated at `574e59a7` and 2026-09-14
+**Date:** 2026-09-14 (revised)
 **Companion documents:** [`modern.md`](modern.md) — language and build modernization;
 [`string.md`](string.md) — the string-encoding question
 
@@ -46,15 +46,24 @@ Wave 1 was partially executed after this assessment was written. The rest is unt
 | `StringConvert` fixed 8192-element buffer (8–32 KB alloc+zero per call) | **done** | `574e59a7` |
 | Unit test covering the UTF-16 decode branch | **done** | `574e59a7` |
 | `DString`/`DUI_T`/`DUI_UNICODE` removed — strings are UTF-8 `std::string` everywhere | **done on a branch, Windows-unverified** | `eaa70572` (`utf8string`) |
-| P0-1 `ASSERT` guard | **open** | — |
-| P0-2 dispatch use-after-free | **open** | — |
-| P0-3 stray `fprintf` | **open** | — |
-| P0-4 Wayland `ScreenCapture` missing return | **open** | — |
-| CI | **open** | — |
-| Sanitizers | **open** | — |
+| P0-1 `ASSERT` guard | **done** | `2812c547` |
+| P0-2 dispatch use-after-free | **done** | `2812c547` |
+| P0-3 stray `fprintf` | **done** | `2812c547` |
+| P0-4 Wayland `ScreenCapture` missing return | **done** | `2812c547` |
+| CI — macOS, Linux, Windows, plus a sanitizer job | **written; macOS job executed locally, Linux and Windows never run** | working tree, 2026-09-14 |
+| Sanitizers (`DUI_ENABLE_SANITIZERS`, `sanitize` preset) | **done** | working tree, 2026-09-14 |
+| P0-6 `EventSource` throws when a callback is removed during dispatch | **done** | working tree, 2026-09-14 |
+| P0-7 detached child kept its parent pointer | **done** | working tree, 2026-09-14 |
+| P0-8 `SharePtr` aborts on every last release in a Debug build | **done** | working tree, 2026-09-14 |
+| P0-9 default configuration does not compile CEF-free | **done** | working tree, 2026-09-14 |
+| P0-10 installed package is unusable by consumers | **done** | working tree, 2026-09-14 |
+| P0-11 installed package carried no Skia, so nothing could link against it | **done** | working tree, 2026-09-14 |
 
-**None of the four original P0 items have been fixed.** They are all still ~1–3 line
-changes, and they remain the cheapest correctness work available in this repository.
+**All four original P0 items are fixed.** They were, as predicted, ~1–3 lines each.
+
+Rows marked "working tree, 2026-09-14" are complete and verified but not yet committed.
+P0-6 through P0-11 were all found by doing the work above, not by re-reading this
+document — see "Defects this document did not predict" below.
 
 ---
 
@@ -73,9 +82,14 @@ Worth recording, so remediation effort goes where it is actually needed.
   `kEventImageDecode` carry an error flag (`src/Core/Control.cpp:4706-4735`).
 - **PNG decoding uses `setjmp`/`longjmp` correctly**, including cleanup on the
   error path (`src/Image/Image_PNG.cpp:116-120,220-226`).
-- **The install package works.** `find_package(dui CONFIG REQUIRED)` plus
-  `dui::dui` is implemented and verified (`cmake/dui_install.cmake`,
-  `cmake/duiConfig.cmake.in`, `Progress.md:60-92`).
+- **The install package works** — `cmake/dui_install.cmake`, `cmake/duiConfig.cmake.in`.
+  `find_package(dui CONFIG REQUIRED)` plus `dui::dui` now builds **and runs** a real
+  application. It did not before 2026-09-14: the package carried no Skia, so a consumer's
+  link failed on `sk_*`/`Sk*` symbols. The reason this entry claimed otherwise for so long
+  is worth recording — it was "verified" by *configuring* the package and linking a
+  program that called nothing, which exercises neither the dependencies nor the link. The
+  verification is now an external project built against an installed prefix, running the
+  hello example's own sources; see P0-11 below.
 - **Dependency versions and licenses are tracked** (`third_party/README.md`,
   `licenses/`, `docs/ThirdParty.md`).
 - **GCC/Clang warning levels are configured** — `-Wall -Wextra` and friends
@@ -206,19 +220,103 @@ project currently has. The only reason it is fixed is that a human read the code
 
 ---
 
+### P0-6 … P0-11 — found by doing the work, not by this assessment
+
+None of these were predicted above. All five were found within a day of someone
+touching the code the previous items touch, which is the same pattern as P0-5.
+
+- **P0-6. `EventSource::operator()` threw `std::out_of_range` when a callback removed a
+  callback during dispatch** (`src/Core/EventArgs.cpp`). The loop snapshotted the
+  callback count before dispatch but advanced the index unconditionally, so removing a
+  callback shifted the list under it: with `[A, B]`, A removing itself left the exit
+  guard testing `0 >= 1`, and the next turn ran `m_callbackList.at(1)` on a one-element
+  vector. This is the semantics the removal guard's own comment claims to support. Fixed
+  allocation-free — the next position depends on whether the callback that just ran is
+  still in the list — because this runs on every event of every control.
+- **P0-7. A detached child kept its parent pointer** (`Box::DoRemoveItem`,
+  `Box::RemoveAllItems`). With `SetAutoDestroyChild(false)` — the documented "the caller
+  still owns it" mode — a live control held a back-pointer to a box that could be
+  destroyed first, and `PlaceHolder::SetRect`, `GetScrollOffsetInScrollBox()` and
+  `IsControlRelated()` all walk it.
+- **P0-8. `SharePtr` aborted on every last release in a Debug build**
+  (`include/dui/Core/SharePtr.h`). `~NVRefCount` asserts the count is 1, but the
+  `store(1)` that satisfies the assert was `#ifdef _DEBUG` — and `_DEBUG` is an MSVC
+  macro that this CMake never defines on macOS or Linux. Reviving the asserts (P0-1)
+  turned a dormant wrong gate into a live abort on a core facility.
+- **P0-9. The default configuration did not compile on a clean checkout**
+  (`src/dui.cpp`, `include/dui/dui_config.h:75`). `DUI_BUILD_FOR_CEF` was defined
+  unconditionally on non-Windows and `dui.cpp` included `dui_cef.h` unconditionally, but
+  the CEF distribution is only downloaded when CEF is enabled — so
+  `include/cef_app.h` was not found in the default `-DDUI_ENABLE_CEF=OFF` build. It was
+  invisible on any machine that had ever built with CEF on, which is every machine that
+  has run the examples.
+- **P0-10. The installed package could not be used by a consumer**
+  (`cmake/duiConfig.cmake.in`). The exported targets reference `Freetype::Freetype`,
+  `Fontconfig::Fontconfig` and `ZLIB::ZLIB` — for a static library CMake records even
+  private dependencies as `$<LINK_ONLY:…>`, which is still a target reference — but the
+  config file never called `find_dependency`, so `find_package(dui)` failed at generate
+  time with "imported targets are referenced, but are missing". This contradicts
+  "the install package works" in §What is already solid above; that entry was verified
+  by configuring the package, not by consuming it.
+- **P0-11. The installed package carried no Skia, so nothing could link against it.**
+  Found immediately after P0-10 was fixed, by pointing a real consumer at the package: a
+  program made of the `hello` example's own sources failed with `sk_malloc_flags`,
+  `SkFontMgr_New_CoreText`, `SkDebugf`, `sk_abort_no_print` and more undefined. dui is a
+  **static** library, so it resolves nothing itself — Skia's symbols are satisfied when
+  the final executable links, from archives that the build tree's `dui_skia_libs`
+  INTERFACE target points at. That target is not exported and the archives were never
+  installed. `find_package(dui)` therefore succeeded, `dui::dui` resolved, and every
+  program that actually called into dui failed to link.
+
+  Fixed by installing the six archives in `DUI_SKIA_LIBS` (which is exactly the set the
+  in-tree applications link, checked against a generated `link.txt`) and recreating the
+  import as `dui::skia` in the package config, appended to `dui::dui`'s interface. The
+  install now fails outright if no Skia archives are found, because a package without them
+  is a package nobody can link against.
+
+  **This is the same failure mode as P0-10 and the same lesson**: the previous "verified"
+  claim came from a check that could not fail — a consumer whose `main()` returned 0
+  without calling anything. The replacement is an external CMake project, built against
+  an installed prefix, that compiles the example's real sources and runs the result.
+
+### Sanitizers find a false positive before they find a bug
+
+Worth recording, because it is convincing and wrong: with `DUI_ENABLE_SANITIZERS=ON`,
+ASan reports a deterministic heap-buffer-overflow in `ImageDecoder_SVG.cpp` — a 20-byte
+read at the end of an 840-byte allocation made by Skia's SVG DOM builder. It is an
+artifact of the sanitizer configuration, not a defect in dui.
+
+`SkASAN.h` defines `SK_SANITIZE_ADDRESS` whenever a translation unit is compiled with
+`-fsanitize=address`, and `SkTArray` has a member under it. `SkSVGContainer::fChildren`
+is a `TArray`, so an instrumented dui and an uninstrumented Skia disagree about the
+layout of every type containing one. Measured: `sizeof(SkSVGSVG)` is **848** in dui's
+translation units and **840** in Skia's; the read lands 8 bytes past the end of the
+object Skia allocated.
+
+The fix is structural rather than in the decoder: `DUI_ENABLE_SANITIZERS` now builds
+Skia with `sanitize = "ASAN"` into `lib/<config>-asan`, so the two can never be mixed
+and switching the option on an existing tree cannot silently reuse the uninstrumented
+archives. The cost is a full Skia build per sanitizer tree.
+
+**The lesson is the one this document keeps relearning.** A sanitizer configuration that
+instruments half the program does not give partial coverage — it gives *unsound* results,
+and the first thing a new user of it sees is a fabricated bug in a file that is fine.
+
+---
+
 ## P1 — Engineering infrastructure (entirely absent)
 
 | Item | Current state | Impact |
 |---|---|---|
-| **CI** | **None.** `.github/` contains only templates; no workflow files anywhere | The 4 CTest cases have never been run automatically |
-| **Sanitizers** | Zero matches repo-wide | The P0-2 use-after-free would have been caught by ASan |
-| **Logging** | `src/Utils/LogUtil.cpp:34-38` has `#ifdef DUI_BUILD_FOR_WIN` and `DUI_BUILD_FOR_WAYLAND` branches with **no `else`** | **Log output is silently dropped on macOS and X11.** No INFO/WARN/ERROR levels. Only 8 call sites in the whole library |
-| **Error reporting** | Errors are return values plus `ASSERT` | With asserts dead, resource-load failures are silent. An unknown XML node name (`src/Core/WindowBuilder.cpp:1206`) means a missing piece of UI with no diagnostic |
-| **Thread contract** | UI-thread ownership enforced only by the ~100 dead asserts | `GlobalManager`, `ImageManager`, `FontManager`, `WindowManager` are **unsynchronized**. Fetching an image or font from a worker thread is a data race with no Release-mode diagnostic |
+| **CI** | **Written, never run.** `.github/workflows/ci.yml` covers macOS, Linux, Windows and a sanitizer job; the macOS job's commands were executed locally, the other two are written from the CMake files and have never executed anywhere | The regression net now exists on paper. Until the workflow has actually run, treat every platform claim below as unverified |
+| **Sanitizers** | `DUI_ENABLE_SANITIZERS` + the `sanitize` preset, which builds Skia with ASan too | Working, and the P0-2 use-after-free is reproduced and cleared under it |
+| **Logging** | **Fixed.** Five levels, a sink on every platform (macOS gets `stderr` *and* the unified log), default WARN, `DUI_LOG_LEVEL` to raise it, and 24 call sites | The silent-drop on macOS and X11 is gone. Most valuable call site: an unknown XML node name used to mean a missing piece of UI with no diagnostic at all |
+| **Error reporting** | Partly. The load failures that mattered (XML, resource, font, image) are logged now | The return-value scheme itself is unchanged; there is still no error-code type |
+| **Thread contract** | UI-thread ownership is still enforced only by asserts | `GlobalManager`, `ImageManager`, `FontManager`, `WindowManager` are **unsynchronized**. Fetching an image or font from a worker thread is a data race — now at least a *diagnosed* one in Debug, since the asserts are live again |
 | **Crash handling** | No `set_terminate`, no minidump, no reporting | No post-mortem data from production crashes |
-| **Layout/render tests** | Tests cover utilities and strings only | Layout engine, rendering, hit-testing, event dispatch: **zero coverage** |
+| **Layout/render tests** | **Fixed for layout, dispatch and hit-testing.** `tests/behaviour_tests.cpp`: 21 test functions in 7 CTest entries covering event dispatch, weak references, the control tree, layout geometry and hit-testing | Rendering itself still needs a paint target and is untested |
 | **Benchmarks** | `PerformanceUtil` exists but has **zero call sites** in the library | No way to measure render or layout performance |
-| **Cross-platform build** | **No CI, and no Windows machine reachable** | Windows is a first-class target that is never compiled. Demonstrated below. |
+| **Cross-platform build** | **No CI run yet, and no Windows machine was reachable during this work either** | Windows is a first-class target that has still never been compiled. The Windows jobs and the ~8 Windows-only edits made in this pass are all unverified — see below. |
 
 ### The Windows gap is not theoretical
 
@@ -320,32 +418,38 @@ Ordered so each stage makes the next one cheaper. Items marked ✅ are done.
 
 **Wave 1 — half a day, low risk, immediate payoff**
 
-1. ☐ Change the `ASSERT` guard to `#if !defined(NDEBUG)` (P0-1). **One line**; revives
-   ~2,700 checks in Debug. Still the highest ratio of value to effort in this document.
-2. ☐ Delete the five `fprintf` calls (P0-3).
-3. ☐ Fix `EventSource::operator()` to snapshot before dispatch (P0-2).
-4. ☐ Add the missing `return` in the Wayland `ScreenCapture` path (P0-4).
-5. ☐ Stand up a minimal CI: configure, build, `ctest`, **on Windows as well as macOS**.
-   The regression net comes first — and the Windows job is the one that has been
-   missing for the project's whole life.
+1. ✅ Change the `ASSERT` guard to `#if !defined(NDEBUG)` (P0-1). It was one line, and it
+   immediately found P0-8 — a false assert that aborted on every last `SharePtr`
+   release. This item earned its billing.
+2. ✅ Delete the five `fprintf` calls (P0-3).
+3. ✅ Fix `EventSource::operator()` to snapshot before dispatch (P0-2).
+4. ✅ Add the missing `return` in the Wayland `ScreenCapture` path (P0-4).
+5. ✅ Stand up a minimal CI: configure, build, `ctest`, **on Windows as well as macOS**.
+   Written. The macOS job has been executed locally; the Windows and Linux jobs have
+   not run anywhere yet, which is the one part of this wave that is not discharged.
 
 **Wave 2 — once CI exists**
 
-6. ☐ Add ASan/UBSan CMake options and run them in CI. Expect more findings beyond
-   P0-2; the crash in P0-5 was in territory these would have covered.
-7. ☐ Give `LogUtil` severity levels and a macOS/X11 sink, so resource-load failures
+6. ✅ Add ASan/UBSan CMake options and run them in CI. One finding (P0-2, reproduced and
+   cleared) and one false positive, which is documented in full above because it is
+   convincing enough to waste a day on.
+7. ✅ Give `LogUtil` severity levels and a macOS/X11 sink, so resource-load failures
    stop being silent.
 8. ✅ (done ahead of schedule) The render path no longer transcodes; see `string.md`
    for why this was a prerequisite for both remaining encoding choices.
 
 **Wave 3 — needs design decisions**
 
-9. ☐ Shared library, version number, SOVERSION — requires solving `DUI_API` symbol
-   export first. **Decide the string encoding before this**, because it is an ABI
-   break and becomes a Qt5→Qt6-scale event once a SONAME exists (`string.md`).
+9. ◐ Version number done as a single source of truth (`project(dui VERSION 0.1.0)`).
+   Shared library and SOVERSION still require solving `DUI_API` symbol export first.
+   **Decide the string encoding before this**, because it is an ABI break and becomes a
+   Qt5→Qt6-scale event once a SONAME exists (`string.md`).
 10. ☐ An error-code scheme to replace "return false + dead assert".
 11. ☐ Linux/FreeBSD IME and font fallback. High effort, requires real-hardware
     verification.
+
+**Before any of that: run the CI.** Every platform claim made in this document is a
+claim about macOS, because macOS is the only platform anyone has built on.
 
 ---
 
