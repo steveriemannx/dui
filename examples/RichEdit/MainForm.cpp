@@ -1,4 +1,5 @@
 #include "MainForm.h"
+#include "dui/Utils/StringConvert.h"
 #include "FindForm.h"
 #include "ReplaceForm.h"
 #include "dui/Utils/UiBuilder.h"
@@ -1211,8 +1212,10 @@ bool MainForm::LoadFile(const ui::FilePath& filePath)
     if (m_pRichEdit == nullptr) {
         return false;
     }
-    std::string filePathLocal = filePath.NativePath();
-    HANDLE hFile = ::CreateFile(filePathLocal.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+    // NativePath() is UTF-8 and CreateFile is CreateFileW under UNICODE;
+    // converted at the boundary.
+    std::wstring filePathLocal = StringConvert::UTF8ToWString(filePath.NativePath());
+    HANDLE hFile = ::CreateFileW(filePathLocal.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
@@ -1235,8 +1238,10 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
     if (m_pRichEdit == nullptr) {
         return false;
     }
-    std::string filePathLocal = filePath.NativePath();
-    HANDLE hFile = ::CreateFile(filePathLocal.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+    // NativePath() is UTF-8 and CreateFile is CreateFileW under UNICODE;
+    // converted at the boundary.
+    std::wstring filePathLocal = StringConvert::UTF8ToWString(filePath.NativePath());
+    HANDLE hFile = ::CreateFileW(filePathLocal.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }

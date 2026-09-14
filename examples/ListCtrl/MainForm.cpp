@@ -436,7 +436,8 @@ void MainForm::InitListCtrlEvents(ui::ListCtrl* pListCtrl)
     if (pHeaderCtrl != nullptr) {
         pHeaderCtrl->AttachRClick([this](const ui::EventArgs&) {
 #if defined (DUI_BUILD_FOR_WIN)
-            if (::MessageBox(nullptr, "ListCtrlHeader RClick! Run function test?", "", MB_YESNO) == IDYES) {
+            // Wide literals: MessageBox is MessageBoxW under UNICODE, which this block is.
+            if (::MessageBoxW(nullptr, L"ListCtrlHeader RClick! Run function test?", L"", MB_YESNO) == IDYES) {
                 RunListCtrlTest();
             }
 #else
