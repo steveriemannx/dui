@@ -89,6 +89,15 @@ public:
     */
     explicit Shadow(Window* pWindow);
 
+    /** Apply the default shadow type of the current platform
+    * The constructor deliberately leaves this to the owner: applying the type calls
+    * back into the window (a self-drawn shadow switches the window to a layered
+    * window, an OS shadow re-positions it), and the window answers those callbacks
+    * by asking for its shadow - which only exists once the owner has stored the
+    * shadow (see Window::PreInitWindow).
+    */
+    void InitDefaultShadowType();
+
     /** Set whether the shadow effect is supported
      * @param[in] bShadowAttached Set true to support the shadow effect, false to not support the shadow effect
      */

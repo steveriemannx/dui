@@ -214,6 +214,7 @@ Shadow::Shadow(Window* pWindow):
     m_isMaximized(false),
     m_pShadowBox(nullptr),
     m_pWindow(pWindow),
+    m_nShadowType(ShadowType::kShadowDrawDefault),
     m_bEnableClickThroughWindow(true),
     m_bEnableShadowSnap(true),
     m_bLeftSnap(false),
@@ -222,6 +223,12 @@ Shadow::Shadow(Window* pWindow):
     m_bBottomSnap(false),
     m_nShadowBorderSize(2),
     m_shadowBorderColor("#FFA3A3A3")
+{
+    //The default shadow type is applied by InitDefaultShadowType, not here: see the
+    //declaration for why the constructor must not touch the window.
+}
+
+void Shadow::InitDefaultShadowType()
 {
 #if defined(DUI_BUILD_FOR_MACOS)
     //macOS native: the OS provides the window shadow (rounded corners + system

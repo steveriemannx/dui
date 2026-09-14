@@ -321,6 +321,9 @@ void Window::PreInitWindow()
 
     //Creates the window shadow
     m_shadow = std::make_unique<Shadow>(this);
+    //Only now is the shadow reachable through GetShadow(), which the callbacks it
+    //triggers on the window (OnLayeredWindowChanged, OnWindowPosSnapped) rely on.
+    m_shadow->InitDefaultShadowType();
     if (m_shadow->IsUseDefaultShadowAttached()) {
 #if defined(DUI_BUILD_FOR_MACOS)
         // macOS provides the shadow through NSWindow even for non-layered
