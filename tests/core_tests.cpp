@@ -256,7 +256,16 @@ void TestFilePathAndXml()
     assert(global.IsExistsFile() && global.GetFileExtension() == ".xml");
     assert(global.GetFileName() == "global.xml");
     assert(global.GetParentPath().IsExistsDirectory());
+    // Normalized, in the platform's own separator spelling: lexically_normal() returns
+    // native(), which is "a/c" on POSIX and "a\c" on Windows. FilePath stores native
+    // paths on Windows (that is why NativeWindow_Windows.cpp compares against "A:\\"),
+    // so the backslash form is the contract there, not a POSIX spelling with separators
+    // swapped.
+#ifdef DUI_BUILD_FOR_WIN
+    assert(ui::FilePathUtil::NormalizeFilePath("a/./b/../c") == "a\\c");
+#else
     assert(ui::FilePathUtil::NormalizeFilePath("a/./b/../c") == "a/c");
+#endif
     assert(ui::FilePathUtil::GetFileExtension("icon.PNG") == "PNG");
 
     ui::WindowBuilder builder;
