@@ -100,22 +100,27 @@
 name: CI
 
 # Manual runs only (Actions tab -> CI -> Run workflow): pushes and PRs no longer
-# trigger anything. The platform input picks which job(s) to run; "all" keeps the
+# trigger anything. The checkboxes pick which job(s) to run; the defaults keep the
 # full matrix. Switch `on:` back to push/pull_request to restore auto-runs.
 on:
   workflow_dispatch:
     inputs:
-      platform:
-        description: "Platform / job to build"
-        type: choice
-        required: true
-        default: all
-        options:
-          - all
-          - macOS
-          - Linux
-          - Windows
-          - sanitizers
+      macos:
+        description: "macOS build"
+        type: boolean
+        default: true
+      linux:
+        description: "Linux build"
+        type: boolean
+        default: true
+      windows:
+        description: "Windows build"
+        type: boolean
+        default: true
+      sanitizers:
+        description: "Sanitizers (ASan + UBSan, macOS)"
+        type: boolean
+        default: true
 
 # A new run on the same ref cancels the previous one: a cold Skia build (the most
 # expensive thing here) is not worth running twice over.
@@ -126,10 +131,12 @@ concurrency:
 jobs:
 
   # ------------------------------------------------------------------------------------
-  # Resolve the manual "platform" input into the matrix legs to build. Job-level `if`
+  # Resolve the manual checkboxes into the matrix legs to build. Job-level `if`
   # cannot see the matrix context, so the selection happens here: each leg is emitted
-  # as JSON and the build job consumes it with fromJSON. "all" (the default) keeps
-  # the full matrix.
+  # as JSON and the build job consumes it with fromJSON. Nothing checked = everything
+  # (keeps the old "all" behavior when the defaults are untouched... and when a caller
+  # unchecks everything by accident, the full matrix still runs — the conservative
+  # reading of "user unchecked nothing meaningful" is to build it all).
   # ------------------------------------------------------------------------------------
   select:
     name: select platform(s)
@@ -140,7 +147,9 @@ jobs:
     steps:
       - id: pick
         env:
-          PLATFORM: ${{ inputs.platform }}
+          MACOS: ${{ inputs.macos }}
+          LINUX: ${{ inputs.linux }}
+          WINDOWS: ${{ inputs.windows }}
         shell: bash
         run: |
           # Extra arguments per platform (configure_args is spliced into the cmake
@@ -153,19 +162,22 @@ jobs:
           linux_min='{"name":"Linux (Debug, CMake 4.0.0 - the declared minimum)","os":"ubuntu-24.04","preset":"debug","cmake":"4.0.0","configure_args":"","build_args":"","ctest_args":""}'
           linux='{"name":"Linux (Debug)","os":"ubuntu-24.04","preset":"debug","cmake":"4.3.2","configure_args":"","build_args":"","ctest_args":""}'
           win='{"name":"Windows (Debug, MSVC)","os":"windows-2022","preset":"debug","cmake":"4.3.2","configure_args":"-G \"Visual Studio 17 2022\" -A x64","build_args":"--config Debug","ctest_args":"-C Debug"}'
-          case "$PLATFORM" in
-            macOS)   legs="[$mac]" ;;
-            Linux)   legs="[$linux_min,$linux]" ;;
-            Windows) legs="[$win]" ;;
-            *)       legs="[$mac,$linux_min,$linux,$win]" ;;  # all
-          esac
+          parts=()
+          [ "$MACOS" = "true" ] && parts+=("$mac")
+          [ "$LINUX" = "true" ] && parts+=("$linux_min" "$linux")
+          [ "$WINDOWS" = "true" ] && parts+=("$win")
+          if [ ${#parts[@]} -eq 0 ]; then
+            parts=("$mac" "$linux_min" "$linux" "$win")
+            echo "nothing selected - building everything" >&2
+          fi
+          legs="[$(IFS=,; echo "${parts[*]}")]"
           echo "legs=$legs" >> "$GITHUB_OUTPUT"
 
   # ------------------------------------------------------------------------------------
   # macOS / Linux / Windows: configure, build the library and the tests, run ctest.
   # ------------------------------------------------------------------------------------
   build:
-    if: inputs.platform != 'sanitizers'
+    if: inputs.macos || inputs.linux || inputs.windows || !inputs.sanitizers
     name: build / ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     needs: select
@@ -386,7 +398,7 @@ jobs:
   # same).
   # ------------------------------------------------------------------------------------
   sanitizers:
-    if: inputs.platform == 'all' || inputs.platform == 'sanitizers'
+    if: inputs.sanitizers || !(inputs.macos || inputs.linux || inputs.windows)
     name: sanitizers / macOS (ASan + UBSan)
     runs-on: macos-14
     timeout-minutes: 90
