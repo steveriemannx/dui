@@ -14,10 +14,16 @@
 #ifndef HEADER_PUGICONFIG_HPP
 #define HEADER_PUGICONFIG_HPP
 
-// Uncomment this to enable wchar_t mode
-#if defined(UNICODE) || defined(_UNICODE)
-    #define PUGIXML_WCHAR_MODE
-#endif
+// wchar_t mode is off, deliberately, on every platform.
+//
+// It used to be enabled when UNICODE was defined -- that is, on Windows -- because the
+// library's string type was std::wstring there. The string model is UTF-8 std::string
+// everywhere now, so pugixml has to be narrow everywhere too: with this on, pugi::char_t
+// is wchar_t and every assignment of a parsed value to a std::string fails to compile.
+// That is what a Windows build of src/Core/WindowBuilder.cpp reported, 57 times, and the
+// file compiles cleanly on macOS and Linux either way because UNICODE is not defined.
+//
+// #define PUGIXML_WCHAR_MODE
 
 // Uncomment this to enable compact mode
 // #define PUGIXML_COMPACT
