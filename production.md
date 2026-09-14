@@ -45,7 +45,7 @@ Wave 1 was partially executed after this assessment was written. The rest is unt
 | Non-BMP text crash in Skia glyph lookup (P0-5) | **done** | `574e59a7` |
 | `StringConvert` fixed 8192-element buffer (8–32 KB alloc+zero per call) | **done** | `574e59a7` |
 | Unit test covering the UTF-16 decode branch | **done** | `574e59a7` |
-| `DString`/`DUI_T`/`DUI_UNICODE` removed — strings are UTF-8 `std::string` everywhere | **done on a branch, Windows-unverified** | `eaa70572` (`utf8string`) |
+| `DString`/`DUI_T`/`DUI_UNICODE` removed — strings are UTF-8 `std::string` everywhere | **done, and now Windows-verified** | `eaa70572` (`utf8string`); verified on Windows 2026-09-14 |
 | P0-1 `ASSERT` guard | **done** | `2812c547` |
 | P0-2 dispatch use-after-free | **done** | `2812c547` |
 | P0-3 stray `fprintf` | **done** | `2812c547` |
@@ -316,7 +316,7 @@ and the first thing a new user of it sees is a fabricated bug in a file that is 
 | **Crash handling** | No `set_terminate`, no minidump, no reporting | No post-mortem data from production crashes |
 | **Layout/render tests** | **Fixed for layout, dispatch and hit-testing.** `tests/behaviour_tests.cpp`: 21 test functions in 7 CTest entries covering event dispatch, weak references, the control tree, layout geometry and hit-testing | Rendering itself still needs a paint target and is untested |
 | **Benchmarks** | `PerformanceUtil` exists but has **zero call sites** in the library | No way to measure render or layout performance |
-| **Cross-platform build** | **No CI run yet, and no Windows machine was reachable during this work either** | Windows is a first-class target that has still never been compiled. The Windows jobs and the ~8 Windows-only edits made in this pass are all unverified — see below. |
+| **Cross-platform build** | **Windows now builds — on a host reached on 2026-09-14, not through CI** | The library, the tests and all 21 examples compile and the tests pass there. The CI Windows job itself has still never run; see below for what the first Windows build cost. |
 
 ### The Windows gap is not theoretical
 
@@ -333,6 +333,41 @@ is provably a no-op while on Windows it changes the string type.
 This is the shape of the problem: **the platform that breaks is the platform that is
 never built.** A CI job that compiles the library and runs `ctest` on Windows is worth
 more than any amount of care on the development machine.
+
+### What the prediction cost, measured
+
+A Windows host was reachable on 2026-09-14 (`steve@192.168.137.184`, a machine that had
+previously run FreeBSD at the same address). The branch was synced to it and built. The
+prediction above was not merely correct — it understated the number of places involved.
+
+The library did not compile, and the errors arrived in seven rounds, because MSBuild
+abandons a project on a fatal error:
+
+| Round | Errors | Cause |
+|---|---|---|
+| configure | — | Windows fell into the X11 branch of the platform link section and looked for Freetype |
+| 1 | 24 | `LPCTSTR` given a narrow literal; four Win32 `W` calls given UTF-8 paths; a `WCHAR[260]` assigned to `std::string`; `<X11/Xlib.h>` included above its guard |
+| 2 | 13 | two more of the same, plus Skia's `tools/window/unix/RasterWindowContext_unix.cpp` compiled on Windows, where it cannot be |
+| 3 | 13 | three more of the same |
+| 4 | **57** | `PUGIXML_WCHAR_MODE` — the whole XML layer, because pugixml was configured wide to match the old `std::wstring` |
+| 5 | 5 | one more Win32 boundary conversion |
+| 6 | 0 | — |
+| tests | 1 | a test asserting a POSIX separator spelling that `native()` does not produce on Windows |
+
+**Fifteen boundary conversions and six platform-guard defects**, where this document
+predicted "roughly ten, and more remain". Every one of them was invisible on macOS for a
+stated reason: Homebrew provides X11, Freetype and Fontconfig, so the same translation
+unit compiles; the Windows-only files are not compiled elsewhere at all; and
+`PUGIXML_WCHAR_MODE` is off wherever `UNICODE` is undefined.
+
+Two of the fifteen were found by reading rather than by the compiler — a sweep for the
+`LoadLibrary`/`LoadImage`/`GetModuleHandle` family, and one for `TCHAR` — which is the
+only reason rounds 5 and 6 were short. Nine had already been written by hand, before this
+host was reachable, and every one of those nine was wrong or incomplete.
+
+The tests now pass on Windows: 10/10 in Debug and in Release, with all 21 examples
+building in Release. That is the first time this branch's Windows half has ever been
+compiled.
 
 ### A cheap way to keep Windows honest
 
@@ -476,6 +511,13 @@ Two things this assessment got wrong, recorded so they are not re-derived:
   that concrete — a change that is pixel-identical on macOS and expected to fail on
   Windows, with no way to check.
 
-Known limitation, unchanged: **no Windows host was available.** All Windows-platform
-claims here are from reading code, not from building or running. `Progress.md:145-160`
-records the same gap independently.
+Known limitation, lifted on 2026-09-14: **a Windows host was reached**, the branch was
+built on it, and what that produced is recorded above. The Windows claims in this document
+were, until then, readings rather than builds — and fifteen boundary conversions plus six
+platform-guard defects is what that gap was worth. `Progress.md:145-160` records the same
+gap independently.
+
+**What is still not verified** is the CI job for Windows, which has never run, and the
+Windows-only lines that only a CEF or WebView2 build reaches: CEF is off in the
+configuration used, so `CefManager_Windows.cpp`'s three conversions in this work are
+written from the same pattern and compiled by nobody.

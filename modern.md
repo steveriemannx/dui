@@ -193,11 +193,13 @@ work is the fallout, and the fallout is **platform-specific**.
 The macOS result is verified, not assumed: full build clean, `ctest` 4/4, and a
 screenshot of the render example identical to the pre-change build **pixel for pixel**.
 
-**Windows: partially done, unverified.** No Windows host was reachable. Roughly ten
-boundary sites were found by reading (`TToLocal` sites that had silently become
-real ANSI conversions, two `TCHAR`-to-`std::string` assignments, one `DTM_SETFORMAT`
-passed a narrow format string) and fixed. Not one was compiled. More remain, and the
-only way to enumerate them is a Windows build.
+**Windows: done, and the estimate was low.** No Windows host was reachable when this
+was written; one was reached on 2026-09-14 and the branch was built on it. Roughly ten
+boundary sites had been found by reading and "not one was compiled" — of those, every
+one turned out to be wrong or incomplete, and **fifteen** conversions plus six
+platform-guard defects were needed in total, arriving over seven build rounds. The
+enumeration is in `production.md`. The prediction that "the only way to enumerate them
+is a Windows build" was exactly right; the count was not.
 
 **The transferable lesson:** the mechanical size of a refactor is a poor guide to its
 risk. This one touched 685 files and was safe; it also introduced a Windows regression
@@ -467,5 +469,7 @@ before acting on one.** The figures that were checked against the compiler — t
 `-fno-threadsafe-statics` flag, the `-std=` level, the absence of `_DEBUG` — are the
 ones to trust.
 
-Known limitation, unchanged: **no Windows host was available.** All Windows-specific
-claims are from reading code, not from building or running.
+Known limitation, lifted 2026-09-14: **a Windows host was reached and the branch was
+built on it** — see the measurement in `production.md`. It no longer stands as a
+caveat on §1.6: the Windows half of the string migration is compiled and its tests
+pass, and the fifteen boundary conversions it needed are recorded there.
