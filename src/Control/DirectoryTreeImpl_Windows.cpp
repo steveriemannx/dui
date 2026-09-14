@@ -60,7 +60,7 @@ bool DirectoryTreeImpl::GetVirtualDirectoryInfo(VirtualDirectoryType type, FileP
     nIconID = 0;
 
     if (m_impl->m_hShell32Dll == nullptr) {
-        m_impl->m_hShell32Dll = ::LoadLibrary("Shell32.dll");
+        m_impl->m_hShell32Dll = ::LoadLibraryW(L"Shell32.dll");
     }
     if (m_impl->m_hShell32Dll == nullptr) {
         return false;
@@ -187,13 +187,16 @@ void DirectoryTreeImpl::GetRootPathInfoList(bool bLargeIcon, std::vector<Directo
     DiskUtils::GetLogicalDriveList(driveList);
     for (auto iter = driveList.begin(); iter != driveList.end(); ++iter) {
         std::string driverName = *iter;
+        // The drive list is UTF-8; the Win32 calls below want UTF-16. Converted once,
+        // here at the boundary, rather than at each call.
+        const std::wstring driverNameW = StringConvert::UTF8ToWString(driverName);
         // Filter out the A: and B: drives
         if (StringUtil::IsEqualNoCase(driverName, "A:\\") ||
             StringUtil::IsEqualNoCase(driverName, "B:\\")) {
             continue;
         }
 
-        uint32_t type = ::GetDriveType(driverName.c_str());
+        uint32_t type = ::GetDriveTypeW(driverNameW.c_str());
         if ((type != DRIVE_FIXED) && (type != DRIVE_REMOVABLE)) {
             continue;
         }
@@ -212,11 +215,11 @@ void DirectoryTreeImpl::GetRootPathInfoList(bool bLargeIcon, std::vector<Directo
         else {
             uFlags |= SHGFI_SMALLICON;
         }
-        if (::SHGetFileInfo(driverName.c_str(), 0, &shFileInfo, sizeof(SHFILEINFO), uFlags)) {
+        if (::SHGetFileInfoW(driverNameW.c_str(), 0, &shFileInfo, sizeof(SHFILEINFO), uFlags)) {
             DirectoryTree::PathInfo pathInfo;
             pathInfo.m_filePath = driverPath;
             pathInfo.m_bFolder = true;
-            pathInfo.m_displayName = shFileInfo.szDisplayName;
+            pathInfo.m_displayName = StringConvert::WStringToUTF8(shFileInfo.szDisplayName);
             pathInfo.m_nIconID = GlobalManager::Instance().Icon().AddIcon(shFileInfo.hIcon);
             pathInfo.m_bIconShared = false;
             pathInfoList.push_back(pathInfo);
@@ -438,7 +441,7 @@ static HICON GetMyComputerIcon_Windows()
     ILFree(pidl);
     if (hMyComputerIcon == nullptr) {
         SHFILEINFO sfi = { 0 };
-        if (::SHGetFileInfo("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",
+        if (::SHGetFileInfoW(L"::{20D04FE0-3AEA-1069-A2D8-08002B30309D}",
             FILE_ATTRIBUTE_DIRECTORY, &sfi, sizeof(sfi),
             SHGFI_ICON | SHGFI_USEFILEATTRIBUTES | SHGFI_LARGEICON)) {
             hMyComputerIcon = sfi.hIcon;

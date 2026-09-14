@@ -5,9 +5,10 @@
 #include "dui/Core/WindowCreateParam.h"
 #include "dui/Core/WindowCreateAttributes.h"
 #include "dui/Utils/FilePath.h"
-#include <X11/Xlib.h>
 
 #if defined(DUI_BUILD_FOR_X11)
+
+#include <X11/Xlib.h>
 
 #include <unordered_map>
 

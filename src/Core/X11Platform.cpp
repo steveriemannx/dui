@@ -1,18 +1,26 @@
 #include "dui/Core/ThreadMessage.h"
-#include "dui/Core/MessageLoop_X11.h"
 #include "dui/Core/Keyboard.h"
 #include "dui/Core/CursorManager.h"
 #include "dui/Core/DpiAwareness.h"
 #include "dui/Core/ToolTip.h"
-#include "dui/Core/NativeWindow_X11.h"
 #include "dui/Utils/MonitorUtil.h"
 #include "dui/Utils/Clipboard.h"
 #include "dui/Utils/FileDialog.h"
 #include "dui/Utils/SystemUtil.h"
 #include "dui/Utils/StringConvert.h"
+
+// The X11 headers belong inside the guard. This file is compiled on every non-Wayland
+// platform -- its name does not match the `_X11.` pattern the backend filter uses -- so
+// outside the guard a Windows or macOS build has to have X11 installed to compile a
+// translation unit whose entire body is switched off. That is exactly what happened on
+// Windows: "cannot open include file: 'X11/Xlib.h'".
+#ifdef DUI_BUILD_FOR_X11
+
+#include "dui/Core/MessageLoop_X11.h"
+#include "dui/Core/NativeWindow_X11.h"
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
-#ifdef DUI_BUILD_FOR_X11
+
 namespace ui {
 class ThreadMessage::TImpl { public: uint32_t id = 0; bool stopped = false; };
 ThreadMessage::ThreadMessage() : m_impl(new TImpl) {}

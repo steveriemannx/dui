@@ -42,10 +42,13 @@ public:
 
     static LPCTSTR GetLibraryName()
     {
+        // LPCTSTR is LPCWSTR under UNICODE, so these have to be wide. They were DUI_T()
+        // literals before the string model was unified; the migration made them narrow
+        // and this is a Windows-only header, so nothing on macOS or Linux noticed.
 #if (_RICHEDIT_VER >= 0x0500)
-        return "MSFTEDIT.DLL";
+        return L"MSFTEDIT.DLL";
 #else
-        return "RICHED20.DLL";
+        return L"RICHED20.DLL";
 #endif
     }
 
