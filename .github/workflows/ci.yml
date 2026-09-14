@@ -126,51 +126,54 @@ concurrency:
 jobs:
 
   # ------------------------------------------------------------------------------------
-  # macOS / Linux / Windows: configure, build the library and the tests, run ctest.
+  # Resolve the manual "platform" input into the matrix legs to build. Job-level `if`
+  # cannot see the matrix context, so the selection happens here: each leg is emitted
+  # as JSON and the build job consumes it with fromJSON. "all" (the default) keeps
+  # the full matrix.
   # ------------------------------------------------------------------------------------
-  build:
-    if: inputs.platform == 'all' || contains(matrix.name, inputs.platform)
-    name: build / ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: macOS (Debug)
-            os: macos-14
-            preset: debug
-            cmake: 4.3.2
-            # Extra arguments per platform (quoted YAML strings, spliced into the
-            # command lines below).
-            configure_args: ""
-            build_args: ""
-            ctest_args: ""
+  select:
+    name: select platform(s)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      legs: ${{ steps.pick.outputs.legs }}
+    steps:
+      - id: pick
+        env:
+          PLATFORM: ${{ inputs.platform }}
+        shell: bash
+        run: |
+          # Extra arguments per platform (configure_args is spliced into the cmake
+          # configure command line below).
+          mac='{"name":"macOS (Debug)","os":"macos-14","preset":"debug","cmake":"4.3.2","configure_args":"","build_args":"","ctest_args":""}'
           # The declared floor, exercised on purpose. CMakeLists.txt requires 4.0, and a
           # minimum nobody builds with is a claim rather than a requirement: this entry is
           # what catches a 4.1+ API creeping into the CMake files. The runners' own CMake
           # is 3.x, so every entry installs the version it needs (see "Install CMake").
-          - name: Linux (Debug, CMake 4.0.0 - the declared minimum)
-            os: ubuntu-24.04
-            preset: debug
-            cmake: 4.0.0
-            configure_args: ""
-            build_args: ""
-            ctest_args: ""
-          - name: Linux (Debug)
-            os: ubuntu-24.04
-            preset: debug
-            cmake: 4.3.2
-            configure_args: ""
-            build_args: ""
-            ctest_args: ""
-          - name: Windows (Debug, MSVC)
-            os: windows-2022
-            preset: debug
-            cmake: 4.3.2
-            configure_args: '-G "Visual Studio 17 2022" -A x64'
-            build_args: "--config Debug"
-            ctest_args: "-C Debug"
+          linux_min='{"name":"Linux (Debug, CMake 4.0.0 - the declared minimum)","os":"ubuntu-24.04","preset":"debug","cmake":"4.0.0","configure_args":"","build_args":"","ctest_args":""}'
+          linux='{"name":"Linux (Debug)","os":"ubuntu-24.04","preset":"debug","cmake":"4.3.2","configure_args":"","build_args":"","ctest_args":""}'
+          win='{"name":"Windows (Debug, MSVC)","os":"windows-2022","preset":"debug","cmake":"4.3.2","configure_args":"-G \"Visual Studio 17 2022\" -A x64","build_args":"--config Debug","ctest_args":"-C Debug"}'
+          case "$PLATFORM" in
+            macOS)   legs="[$mac]" ;;
+            Linux)   legs="[$linux_min,$linux]" ;;
+            Windows) legs="[$win]" ;;
+            *)       legs="[$mac,$linux_min,$linux,$win]" ;;  # all
+          esac
+          echo "legs=$legs" >> "$GITHUB_OUTPUT"
+
+  # ------------------------------------------------------------------------------------
+  # macOS / Linux / Windows: configure, build the library and the tests, run ctest.
+  # ------------------------------------------------------------------------------------
+  build:
+    if: inputs.platform != 'sanitizers'
+    name: build / ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    needs: select
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.select.outputs.legs) }}
 
     steps:
       - uses: actions/checkout@v4
