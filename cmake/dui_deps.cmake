@@ -44,8 +44,8 @@ function(dui_deps_configure)
             "The automatic download failed. Retry cmake configure, or build the tree by\n"
             "hand: fetch\n"
             "  https://github.com/google/skia/archive/34aa71b8bee4648a442b7125680232d803374f19.zip\n"
-            "extract it into ${DUI_SKIA_SRC_ROOT_DIR}, then apply\n"
-            "  third_party/skia-patches/dui.patch  (patch -p1 -N -f)\n"
+            "extract it into ${DUI_SKIA_SRC_ROOT_DIR}, then apply every patch in\n"
+            "  third_party/skia-patches/  in name order  (patch -p1 -N -f)\n"
             "(or set -DDUI_BUILD_SKIA_FROM_SOURCE=OFF and provide Skia yourself)")
     endif()
 
@@ -479,7 +479,7 @@ function(dui_deps_download_skia)
     # produced it -- so changing either one has to re-extract, or it would be
     # silently ignored.
     set(_skia_upstream_commit "34aa71b8bee4648a442b7125680232d803374f19")
-    set(_skia_patch_revision   "dui.1")  # bump whenever the patch file changes
+    set(_skia_patch_revision   "dui.2")  # bump whenever the patch set changes
     set(_skia_version "skia-${_skia_upstream_commit}+${_skia_patch_revision}")
     if(EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version")
         file(READ "${DUI_SKIA_SRC_ROOT_DIR}/.dui_skia_version" _skia_have_version)
@@ -549,40 +549,66 @@ function(dui_deps_download_skia)
     # file, applied to the freshly extracted upstream tree. The post-condition is not
     # the exit code alone: a patch that matched nothing can still exit 0 with -N, so
     # the sentinel is a file the patch is known to add.
-    set(_skia_patch "${DUI_ROOT}/third_party/skia-patches/dui.patch")
-    if(NOT EXISTS "${_skia_patch}")
-        message(FATAL_ERROR "Skia customization patch is missing: ${_skia_patch}")
-    endif()
-    find_program(_dui_patch_tool NAMES patch)
-    if(_dui_patch_tool)
-        # -N + -f keep it non-interactive; a mismatch still has to fail, which the
-        # sentinel check below is for.
-        set(_dui_apply_cmd "${_dui_patch_tool}" -p1 -N -f -i "${_skia_patch}")
-    else()
-        find_program(_dui_git_tool NAMES git)
-        if(NOT _dui_git_tool)
-            message(FATAL_ERROR
-                "Applying ${_skia_patch} needs either 'patch' or 'git' on PATH. Both ship "
-                "with Git for Windows; or apply the patch by hand into "
-                "${DUI_SKIA_SRC_ROOT_DIR} and re-run configure.")
-        endif()
-        set(_dui_apply_cmd "${_dui_git_tool}" apply -p1 --whitespace=nowarn "${_skia_patch}")
-    endif()
-    message(STATUS "Applying dui's Skia customizations (${_skia_patch_revision})...")
-    execute_process(
-        COMMAND ${_dui_apply_cmd}
-        WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
-        RESULT_VARIABLE _skia_patch_result
-        OUTPUT_VARIABLE _skia_patch_out
-        ERROR_VARIABLE _skia_patch_err
+    # Applied in order. The list is explicit rather than a glob over the directory: the
+    # order is part of the patch set, and a glob would impose an alphabetical one that
+    # happens to be right today.
+    set(_skia_patches
+        "${DUI_ROOT}/third_party/skia-patches/010-mingw-and-msvc.patch"
+        "${DUI_ROOT}/third_party/skia-patches/020-freebsd.patch"
+        "${DUI_ROOT}/third_party/skia-patches/030-text-shaping.patch"
+        "${DUI_ROOT}/third_party/skia-patches/040-viewer-imgui.patch"
+        "${DUI_ROOT}/third_party/skia-patches/050-expat-vendored.patch"
     )
+    foreach(_skia_patch ${_skia_patches})
+        if(NOT EXISTS "${_skia_patch}")
+            message(FATAL_ERROR "Skia customization patch is missing: ${_skia_patch}")
+        endif()
+    endforeach()
+
+    find_program(_dui_patch_tool NAMES patch)
+    find_program(_dui_git_tool NAMES git)
+    if(NOT _dui_patch_tool AND NOT _dui_git_tool)
+        message(FATAL_ERROR
+            "Applying the Skia customization patches needs either 'patch' or 'git' on "
+            "PATH. Both ship with Git for Windows; or apply ${_skia_patches} by hand "
+            "(-p1) into ${DUI_SKIA_SRC_ROOT_DIR} and re-run configure.")
+    endif()
+
+    list(LENGTH _skia_patches _skia_patch_count)
+    message(STATUS "Applying dui's Skia customizations (${_skia_patch_revision}, ${_skia_patch_count} patches)...")
+    set(_skia_patch_result 0)
+    set(_skia_patch_report "")
+    foreach(_skia_patch ${_skia_patches})
+        get_filename_component(_skia_patch_name "${_skia_patch}" NAME)
+        if(_dui_patch_tool)
+            # -N + -f keep it non-interactive; a mismatch still has to fail, which the
+            # sentinel check below is for.
+            set(_dui_apply_cmd "${_dui_patch_tool}" -p1 -N -f -i "${_skia_patch}")
+        else()
+            set(_dui_apply_cmd "${_dui_git_tool}" apply -p1 --whitespace=nowarn "${_skia_patch}")
+        endif()
+        execute_process(
+            COMMAND ${_dui_apply_cmd}
+            WORKING_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}"
+            RESULT_VARIABLE _skia_one_result
+            OUTPUT_VARIABLE _skia_patch_out
+            ERROR_VARIABLE _skia_patch_err
+        )
+        if(NOT _skia_one_result EQUAL 0)
+            set(_skia_patch_result ${_skia_one_result})
+            string(APPEND _skia_patch_report
+                "\n  ${_skia_patch_name} (exit ${_skia_one_result})\n${_skia_patch_out}${_skia_patch_err}")
+            break()
+        endif()
+    endforeach()
+
     if(NOT _skia_patch_result EQUAL 0 OR NOT EXISTS "${DUI_SKIA_SRC_ROOT_DIR}/gn/is_mingw.py")
-        string(REPLACE "\n" "\n    " _skia_patch_report "${_skia_patch_out}${_skia_patch_err}")
+        string(REPLACE "\n" "\n    " _skia_patch_report "${_skia_patch_report}")
         file(REMOVE_RECURSE "${DUI_SKIA_SRC_ROOT_DIR}")  # never leave a half-patched tree
         message(FATAL_ERROR
-            "Applying the Skia customization patch failed (exit ${_skia_patch_result}).\n"
-            "The tree has been removed rather than left half-patched; fix the patch or\n"
-            "regenerate it (see third_party/skia-patches/README.md) and re-run configure.\n"
+            "Applying the Skia customization patches failed.\n"
+            "The tree has been removed rather than left half-patched; fix the patches or\n"
+            "regenerate them (see third_party/skia-patches/README.md) and re-run configure.\n"
             "    ${_skia_patch_report}")
     endif()
 
