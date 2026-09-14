@@ -630,6 +630,19 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
     target_link_libraries(${PROJECT_NAME} PRIVATE Freetype::Freetype Fontconfig::Fontconfig)
     target_include_directories(${PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Windows takes none of what the branch below looks for. The libraries its binaries
+    # link -- user32, gdi32, shell32, dwmapi and the rest -- are attached in
+    # cmake/dui_install.cmake, and the CEF and WebView2 integration is attached to the
+    # application target by cmake/dui_app_windows.cmake.
+    #
+    # This branch did not exist until the first Windows configure of this branch failed
+    # on it: Windows fell into the else() below, which is the X11 one, and
+    # find_package(Freetype REQUIRED) stopped the configure. The Linux and FreeBSD work
+    # that added those lookups had no way to notice -- on macOS the same branch finds
+    # them (a Mac with Homebrew installed has all three), so the only platform that could
+    # have caught it was the one nobody built on.
+    add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
 else()
     # Create the library with the filtered sources
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
