@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<MainForm>("TreeView (Code Generation)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<MainForm>("TreeView (Code Generation)", EmbeddedResources());
 }

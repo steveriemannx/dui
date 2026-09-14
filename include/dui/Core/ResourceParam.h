@@ -3,6 +3,8 @@
 
 #include "dui/Utils/FilePath.h"
 #include <cstdint>
+#include <cstddef>
+#include <span>
 
 namespace ui
 {
@@ -115,23 +117,18 @@ public:
     }
 
     /** Constructor with the embedded resource data
-     * @param[in] data Pointer to the embedded resource data (must remain valid for the lifetime of
-     *                 the application, e.g. a static array embedded in the executable)
-     * @param[in] size Size of the embedded resource data
+     * @param[in] resources The embedded resources; the data it points at must remain valid for the
+     *                      lifetime of the application (e.g. a static array embedded in the executable)
      */
-    MemoryResParam(const uint8_t* data, size_t size) :
-        ResourceParam(ResourceType::kMemoryRes), pData(data), nSize(size)
+    explicit MemoryResParam(std::span<const uint8_t> resources) :
+        ResourceParam(ResourceType::kMemoryRes), spData(resources)
     {
     }
 
-    /** The pointer to the embedded resource data (must remain valid for the lifetime of the application,
+    /** The embedded resource data (must remain valid for the lifetime of the application,
      *  e.g. a static array embedded in the executable)
     */
-    const uint8_t* pData = nullptr;
-
-    /** The size of the embedded resource data
-    */
-    size_t nSize = 0;
+    std::span<const uint8_t> spData;
 };
 
 

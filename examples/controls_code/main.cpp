@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<ControlForm>("controls (Pure Code)", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<ControlForm>("controls (Pure Code)", EmbeddedResources());
 }

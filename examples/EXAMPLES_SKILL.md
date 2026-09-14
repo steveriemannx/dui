@@ -62,8 +62,7 @@ int main()
 {
     return ui::RunMemory<MainForm>(
         "Example Title",
-        GetEmbeddedResourcesData(),
-        GetEmbeddedResourcesSize());
+        EmbeddedResources());
 }
 ```
 
@@ -73,8 +72,7 @@ work, such as `ChildWindow` painting:
 ```cpp
 return ui::RunMemory<MainForm>(
     "Example Title",
-    GetEmbeddedResourcesData(),
-    GetEmbeddedResourcesSize(),
+    EmbeddedResources(),
     [](MainForm* window) {
         window->PaintNextChildWindow();
     });

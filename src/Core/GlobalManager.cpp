@@ -368,12 +368,12 @@ bool GlobalManager::ReloadResource(const ResourceParam& resParam, bool bInvalida
     else if (resParam.GetResType() == ResourceType::kMemoryRes) {
         //Embedded resources, accessed directly from memory.
         const MemoryResParam& param = static_cast<const MemoryResParam&>(resParam);
-        bool bResOpenOk = MemoryResources().Open(param.pData, param.nSize);
+        bool bResOpenOk = MemoryResources().Open(param.spData.data(), param.spData.size());
         if (!bResOpenOk) {
             //No assert: the check above is the contract, and a bad resource blob
             //is exactly what it exists to report.
             DUI_LOG_ERROR(StringUtil::Printf("the embedded resource data (%u bytes) could not be opened; no theme, font or image resource can be found",
-                                             (uint32_t)param.nSize));
+                                             (uint32_t)param.spData.size()));
             return false;
         }
     }

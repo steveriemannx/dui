@@ -14,8 +14,7 @@
 //
 // The generated .inc defines:
 //   static const unsigned char s_embedded_resources_data[] = { ... };
-//   inline const unsigned char* GetEmbeddedResourcesData() { return s_embedded_resources_data; }
-//   inline size_t GetEmbeddedResourcesSize() { return sizeof(s_embedded_resources_data); }
+//   inline std::span<const uint8_t> EmbeddedResources() { return {s_embedded_resources_data, sizeof(s_embedded_resources_data)}; }
 //
 // Deterministic output: entries are sorted by path and no timestamps are stored.
 
@@ -171,11 +170,15 @@ int main(int argc, char** argv)
     std::fprintf(fp, "//   Files: %zu, archive size: %zu bytes\n", entries.size(), archive.size());
     std::fprintf(fp, "//\n");
     std::fprintf(fp, "//   Include this file in exactly ONE .cpp of the executable, then call\n");
-    std::fprintf(fp, "//   GetEmbeddedResourcesData()/GetEmbeddedResourcesSize() and pass them to\n");
+    std::fprintf(fp, "//   EmbeddedResources() and pass it to ui::RunMemory(...) or\n");
     std::fprintf(fp, "//   ui::GlobalManager::Startup(ui::MemoryResParam(...)).\n");
     std::fprintf(fp, "///////////////////////////////////////////////////////////////////////////\n");
     std::fprintf(fp, "\n");
-    std::fprintf(fp, "static const unsigned char s_embedded_resources_data[] = {\n");
+    std::fprintf(fp, "#include <cstddef>\n");
+    std::fprintf(fp, "#include <cstdint>\n");
+    std::fprintf(fp, "#include <span>\n");
+    std::fprintf(fp, "\n");
+    std::fprintf(fp, "static const uint8_t s_embedded_resources_data[] = {\n");
     for (size_t i = 0; i < archive.size(); ++i) {
         if ((i % 16) == 0) {
             std::fprintf(fp, "    ");
@@ -190,14 +193,9 @@ int main(int argc, char** argv)
     }
     std::fprintf(fp, "};\n");
     std::fprintf(fp, "\n");
-    std::fprintf(fp, "inline const unsigned char* GetEmbeddedResourcesData()\n");
+    std::fprintf(fp, "inline std::span<const uint8_t> EmbeddedResources()\n");
     std::fprintf(fp, "{\n");
-    std::fprintf(fp, "    return s_embedded_resources_data;\n");
-    std::fprintf(fp, "}\n");
-    std::fprintf(fp, "\n");
-    std::fprintf(fp, "inline size_t GetEmbeddedResourcesSize()\n");
-    std::fprintf(fp, "{\n");
-    std::fprintf(fp, "    return sizeof(s_embedded_resources_data);\n");
+    std::fprintf(fp, "    return std::span<const uint8_t>(s_embedded_resources_data, sizeof(s_embedded_resources_data));\n");
     std::fprintf(fp, "}\n");
     std::fclose(fp);
 

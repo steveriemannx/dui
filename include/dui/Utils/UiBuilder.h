@@ -20,6 +20,7 @@
 #include <type_traits>
 #include <utility>
 #include <functional>
+#include <span>
 
 namespace ui
 {
@@ -550,21 +551,21 @@ int Run(const std::string& title, const std::function<void(WindowT*)>& idleCallb
  *  Used by *_code / *_gen examples that embed resources in the executable.
  */
 template <class WindowT>
-int RunMemory(const std::string& title, const uint8_t* data, size_t size,
+int RunMemory(const std::string& title, std::span<const uint8_t> resources,
               const std::function<void(WindowT*)>& idleCallback = nullptr)
 {
     class MemoryApp : public FrameworkThread
     {
     public:
-        MemoryApp(const std::string& t, const uint8_t* d, size_t s,
+        MemoryApp(const std::string& t, std::span<const uint8_t> resources,
                   const std::function<void(WindowT*)>& callback)
-            : FrameworkThread("App", kThreadUI), m_title(t), m_data(d), m_size(s),
+            : FrameworkThread("App", kThreadUI), m_title(t), m_resources(resources),
               m_idleCallback(callback) {}
         void Run() { RunMessageLoop(m_idleCallback != nullptr); }
     protected:
         void OnInit() override
         {
-            if (!GlobalManager::Instance().Startup(MemoryResParam(m_data, m_size))) {
+            if (!GlobalManager::Instance().Startup(MemoryResParam(m_resources))) {
                 SystemUtil::ShowMessageBox(nullptr, "Failed to load embedded resources.", "dui");
                 return;
             }
@@ -602,23 +603,22 @@ int RunMemory(const std::string& title, const uint8_t* data, size_t size,
         }
     private:
         std::string m_title;
-        const uint8_t* m_data;
-        size_t m_size;
+        std::span<const uint8_t> m_resources;
         WindowT* m_window = nullptr;
         std::function<void(WindowT*)> m_idleCallback;
     };
 
-    MemoryApp app(title, data, size, idleCallback);
+    MemoryApp app(title, resources, idleCallback);
     app.Run();
     return 0;
 }
 
 /** Narrow-string overload of RunMemory (UTF-8 title). */
 template <class WindowT>
-int RunMemory(const char* title, const uint8_t* data, size_t size,
+int RunMemory(const char* title, std::span<const uint8_t> resources,
               const std::function<void(WindowT*)>& idleCallback = nullptr)
 {
-    return RunMemory<WindowT>(StringConvert::UTF8ToT(title ? title : ""), data, size, idleCallback);
+    return RunMemory<WindowT>(StringConvert::UTF8ToT(title ? title : ""), resources, idleCallback);
 }
 
 } // namespace ui

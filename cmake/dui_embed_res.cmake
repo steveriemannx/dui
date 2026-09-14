@@ -8,7 +8,7 @@
 # In your code (exactly one .cpp of the executable):
 #   #include "embedded_resources.inc"
 #   ui::GlobalManager::Instance().Startup(
-#       ui::MemoryResParam(GetEmbeddedResourcesData(), GetEmbeddedResourcesSize()));
+#       ui::MemoryResParam(EmbeddedResources()));
 #
 # Note: the resource files are collected with file(GLOB_RECURSE) at configure
 # time; after adding new files to the resources directory, re-run cmake.

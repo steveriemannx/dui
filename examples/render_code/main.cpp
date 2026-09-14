@@ -5,5 +5,5 @@
 
 int main()
 {
-    return ui::RunMemory<RenderForm>("Render Code Test", GetEmbeddedResourcesData(), GetEmbeddedResourcesSize());
+    return ui::RunMemory<RenderForm>("Render Code Test", EmbeddedResources());
 }
