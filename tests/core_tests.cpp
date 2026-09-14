@@ -36,6 +36,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <span>
 #include <thread>
 #include <vector>
 
@@ -379,7 +380,7 @@ void TestGlobalManager(bool failure)
     }
     else {
         uint8_t badData[16] = {};
-        ui::MemoryResParam bad(badData, sizeof(badData));
+        ui::MemoryResParam bad(std::span<const uint8_t>(badData, sizeof(badData)));
         assert(!global.Startup(bad));
         assert(global.GetRenderFactory() == nullptr);
     }
