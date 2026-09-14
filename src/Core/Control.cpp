@@ -1179,9 +1179,11 @@ void Control::SetStateColor(ControlStateType stateType, const std::string& strCo
         m_pColorMap = std::make_unique<StateColorMap2>(this);
     }
     m_pColorMap->SetStateColor(stateType, strColor);
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
+    //The hot color used to switch the fade animation on implicitly, which makes the
+    //whole hover highlight (color *and* image) depend on that animation's progress:
+    //while it has not reached its end value the highlight is drawn with an alpha near
+    //zero, i.e. invisible. The fade is opt-in now (the "fade_hot" attribute, see
+    //SetStateImage/SetFadeHot), so hovering always shows the highlight.
     Invalidate();
 }
 
@@ -1199,9 +1201,6 @@ void Control::SetStateColorMargin(ControlStateType stateType, UiMargin colorMarg
         m_pColorMap = std::make_unique<StateColorMap2>(this);
     }
     m_pColorMap->SetStateColorMargin(stateType, colorMargin);
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
     Invalidate();
 }
 
@@ -1219,9 +1218,6 @@ void Control::SetStateColorRound(ControlStateType stateType, UiSize colorRound, 
         m_pColorMap = std::make_unique<StateColorMap2>(this);
     }
     m_pColorMap->SetStateColorRound(stateType, colorRound);
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
     Invalidate();
 }
 
@@ -1414,9 +1410,6 @@ std::string Control::GetStateImage(ControlStateType stateType) const
 
 void Control::SetStateImage(ControlStateType stateType, const std::string& strImage)
 {
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
     SetStateImage(kStateImageBk, stateType, strImage);
     RelayoutOrRedraw();
 }
@@ -1428,9 +1421,6 @@ std::string Control::GetForeStateImage(ControlStateType stateType) const
 
 void Control::SetForeStateImage(ControlStateType stateType, const std::string& strImage)
 {
-    if (stateType == kControlStateHot) {
-        SetFadeHot(true);
-    }
     SetStateImage(kStateImageFore, stateType, strImage);
     Invalidate();
 }
