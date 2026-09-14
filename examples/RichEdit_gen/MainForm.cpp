@@ -1,4 +1,5 @@
 #include "MainForm.h"
+#include "dui/Utils/StringConvert.h"
 #include "generated_ui.inc"  // Build-time generated pure C++ UI code (from rich_edit.xml)
 #include "FindForm.h"
 #include "ReplaceForm.h"
@@ -1219,8 +1220,12 @@ bool MainForm::LoadFile(const ui::FilePath& filePath)
     if (m_pRichEdit == nullptr) {
         return false;
     }
-    std::string filePathLocal = filePath.NativePath();
-    HANDLE hFile = ::CreateFile(filePathLocal.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+    // CreateFile is CreateFileW under UNICODE and NativePath() is UTF-8, so the wide
+    // spelling is converted at the boundary. The UTF-8 one stays: IsRtfFile below
+    // takes it, and so does the rest of the file.
+    const std::string filePathLocal = filePath.NativePath();
+    const std::wstring filePathLocalW = ui::StringConvert::UTF8ToWString(filePathLocal);
+    HANDLE hFile = ::CreateFileW(filePathLocalW.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
@@ -1243,8 +1248,12 @@ bool MainForm::SaveFile(const ui::FilePath& filePath)
     if (m_pRichEdit == nullptr) {
         return false;
     }
-    std::string filePathLocal = filePath.NativePath();
-    HANDLE hFile = ::CreateFile(filePathLocal.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+    // CreateFile is CreateFileW under UNICODE and NativePath() is UTF-8, so the wide
+    // spelling is converted at the boundary. The UTF-8 one stays: IsRtfFile below
+    // takes it, and so does the rest of the file.
+    const std::string filePathLocal = filePath.NativePath();
+    const std::wstring filePathLocalW = ui::StringConvert::UTF8ToWString(filePathLocal);
+    HANDLE hFile = ::CreateFileW(filePathLocalW.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
