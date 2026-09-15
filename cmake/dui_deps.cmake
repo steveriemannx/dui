@@ -425,9 +425,29 @@ endfunction()
 #   _url  - download URL
 #   _file - archive path in third_party/downloads/
 #   _kind - "zip" (unzip -t) or "tarbz2" (tar -tjf); Windows uses tar -tf for both
+
+# ---- Which tar to invoke ----
+# On Windows, reach for Windows' own tar.exe (bsdtar, in System32) by absolute path
+# instead of a bare `tar`. Configure runs under `shell: bash`, which on Windows is Git
+# bash, and the PATH it hands to the cmake process it launches puts Git's /usr/bin ahead
+# of System32 -- so a bare `tar` is GNU tar there. GNU tar reads the "D:" of a path like
+# D:/a/dui/... as a *remote host* and fails with "Cannot connect to D: resolve failed",
+# which is what killed the first real Windows CI run (in a way that looked like a broken
+# download, because the integrity check is what calls it). bsdtar also understands the
+# --strip-components the Skia extraction below relies on. Elsewhere the PATH tar is
+# already the right one, so nothing there changes.
+function(dui_deps_tar _out)
+    if(WIN32 AND EXISTS "$ENV{SystemRoot}/System32/tar.exe")
+        set(${_out} "$ENV{SystemRoot}/System32/tar.exe" PARENT_SCOPE)
+    else()
+        set(${_out} "tar" PARENT_SCOPE)
+    endif()
+endfunction()
+
 function(dui_deps_download_retry _url _file _kind)
     if(WIN32)
-        set(_test_command tar -tf "${_file}")  # bsdtar reads zip and tar.bz2
+        dui_deps_tar(_dui_tar)
+        set(_test_command "${_dui_tar}" -tf "${_file}")  # bsdtar reads zip and tar.bz2
     elseif(_kind STREQUAL "zip")
         set(_test_command unzip -tq "${_file}")
     else()
@@ -445,24 +465,34 @@ function(dui_deps_download_retry _url _file _kind)
     endif()
 
     set(_attempt 0)
+    # Carried into the FATAL_ERROR below. Without it the final message said "Download
+    # failed" for both ways this loop can lose, and a failed *integrity check* -- the
+    # archive arrives fine and the checker is what is broken -- read as a network
+    # problem. That cost a full CI round trip on Windows once.
+    set(_last_failure "no attempt was made")
     while(_attempt LESS 3)
         math(EXPR _attempt "${_attempt}+1")
         message(STATUS "Downloading (attempt ${_attempt}/3): ${_url}")
         file(DOWNLOAD "${_url}" "${_file}" STATUS _dl_status)
         list(GET _dl_status 0 _dl_code)
+        list(GET _dl_status 1 _dl_message)
         if(_dl_code EQUAL 0)
             execute_process(COMMAND ${_test_command} RESULT_VARIABLE _test_result OUTPUT_QUIET ERROR_QUIET)
             if(_test_result EQUAL 0)
                 return()
             endif()
+            set(_last_failure "the download succeeded, but the archive failed the integrity "
+                              "check: ${_test_command} exited ${_test_result}")
             message(WARNING "Downloaded archive failed the integrity check; retrying")
         else()
+            set(_last_failure "the transfer failed: ${_dl_code} ${_dl_message}")
             message(WARNING "Download failed (HTTP ${_dl_code}); retrying")
         endif()
         file(REMOVE "${_file}")  # never leave a partial file for the next configure
     endwhile()
     get_filename_component(_file_dir "${_file}" DIRECTORY)
-    message(FATAL_ERROR "Download failed after ${_attempt} attempts: ${_url}\n"
+    message(FATAL_ERROR "Could not obtain ${_url} after ${_attempt} attempts.\n"
+            "Last failure: ${_last_failure}\n"
             "Please retry cmake configure later, or download the file manually (see the URL\n"
             "above) and place it into ${_file_dir} keeping its original filename - the next\n"
             "configure re-extracts from the cache without downloading.")
@@ -518,10 +548,13 @@ function(dui_deps_download_skia)
     file(MAKE_DIRECTORY "${_skia_tmp_dir}")
     if(WIN32)
         # Windows 10 1803+ ships tar.exe (bsdtar), which reads zip archives.
-        # bsdtar -C requires the target dir to exist, so create it first.
+        # bsdtar -C requires the target dir to exist, so create it first. Resolved by
+        # absolute path -- see dui_deps_tar above for why a bare `tar` is GNU tar here
+        # and what that does to a D:/... path.
+        dui_deps_tar(_dui_tar)
         file(MAKE_DIRECTORY "${DUI_SKIA_SRC_ROOT_DIR}")
         execute_process(
-            COMMAND tar -xf "${_skia_archive}" --strip-components=1 -C "${DUI_SKIA_SRC_ROOT_DIR}"
+            COMMAND "${_dui_tar}" -xf "${_skia_archive}" --strip-components=1 -C "${DUI_SKIA_SRC_ROOT_DIR}"
             RESULT_VARIABLE _skia_extract_result
         )
     else()
