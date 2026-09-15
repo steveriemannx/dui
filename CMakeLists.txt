@@ -58,6 +58,13 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/dui_install.cmake")
 # once in the project() call above.
 dui_install_package()
 
-add_subdirectory(examples)
+# Consumers that only need the library -- the PolluxOS image build, say -- turn
+# this off instead of editing examples/CMakeLists.txt by hand.  A full example
+# build is 55 programs, and a local patch to that file gets in the way of
+# switching branches in the submodule.
+option(DUI_BUILD_EXAMPLES "Build the example programs" ON)
+if(DUI_BUILD_EXAMPLES)
+    add_subdirectory(examples)
 
-force_set_folder_recursive("${CMAKE_CURRENT_SOURCE_DIR}/examples" "examples")
+    force_set_folder_recursive("${CMAKE_CURRENT_SOURCE_DIR}/examples" "examples")
+endif()
