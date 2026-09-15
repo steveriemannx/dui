@@ -11,23 +11,41 @@
 #   build / Windows    Debug, same; Visual Studio generator, see the note below
 #   sanitizers         Debug + -DDUI_ENABLE_SANITIZERS=ON (ASan/UBSan), macOS
 #
-# ---- Why CEF is ON and the CEF/WebView2 examples are OFF ---------------------------
-# `-DDUI_ENABLE_CEF=ON -DDUI_BUILD_CEF_EXAMPLES=OFF` looks like a contradiction but is
-# the only configuration in which the library compiles from a fresh checkout:
-#   * `include/dui/dui_config.h` defines DUI_BUILD_FOR_CEF unconditionally on every
-#     non-Windows platform (line ~75), and `src/dui.cpp` includes `dui/dui_cef.h`
-#     unconditionally outside FreeBSD, so CEFControl headers are always compiled in.
-#   * `src/CMakeLists.txt` always adds `third_party/libcef/<CEF_LIB_DIR>/` as an include
-#     root, but only `cmake/dui_deps.cmake` *fetches* it (and `third_party/CMakeLists.txt`
-#     only calls that fetch) when DUI_ENABLE_CEF or DUI_BUILD_CEF_EXAMPLES is ON.
-# So with both OFF, a clean checkout fails on `#include "include/cef_app.h"` — verified
-# locally against a pristine `git archive HEAD` tree. Enabling CEF (but not the CEF
-# examples) downloads/extracts the binary distribution, which is what provides the
-# headers; the `libcef_dll_wrapper` target it also defines is not a dependency of `dui`
-# or `dui_core_tests`, so it is configured but never built. (A cleaner fix would be for
-# DUI_BUILD_FOR_CEF to follow the CMake option on all platforms; until then CI has to do
-# this.) WebView2 needs no such trick: the one header the library includes is tracked in
-# git.
+# ---- CEF and WebView2 are both OFF ---------------------------------------------------
+# Neither is needed to build the library or the tests.
+#
+# That was not always true, and the note here used to say the opposite: `src/dui.cpp`
+# included `dui/dui_cef.h` on a platform check alone, while the CEF include root only
+# appears once `cmake/dui_deps.cmake` has fetched the distribution -- so a clean checkout
+# with DUI_ENABLE_CEF=OFF died on `#include "include/cef_app.h"`, and CI turned CEF ON
+# purely to make those headers exist. `src/dui.cpp` now guards that include on
+# DUI_CEF_COMPILED, which `src/CMakeLists.txt` sets on exactly the condition that adds
+# the CEF sources, so CEF off means neither the sources nor the headers are ever
+# reached. (`DUI_BUILD_FOR_CEF` in `include/dui/dui_config.h` is still defined
+# unconditionally; it simply no longer has a consumer that needs CEF headers.)
+#
+# Verified 2026-09-15 on a tree with `third_party/libcef` deleted outright: the whole
+# `dui` target rebuilt from scratch and linked, both on the Wayland branch (which
+# disables CEF anyway) and on -DDUI_ENABLE_CEF=OFF with the X11 backend -- the branch
+# this workflow now takes.
+#
+# This is what makes a cold Linux or Windows runner viable. CEF is a ~250 MB download
+# plus ~700 MB extraction from cef-builds.spotifycdn.com, its only distributor (there is
+# no GitHub mirror), and on Windows it was slow enough to dominate the job and get
+# cancelled by hand.
+#
+# The cost, stated plainly: **CEFControl is no longer compiled anywhere in CI.**
+# `src/CEFControl/` is 9 .cpp files, 336 KB across 36 translation units, and it reaches
+# `libdui.a` through the same "DUI_ENABLE_CEF OR DUI_BUILD_CEF_EXAMPLES" condition that
+# pulls in the headers. With CEF on, all 36 were built on every run and so were at least
+# compile-checked; with it off, none are. This is the deliberate price of not spending
+# the first minutes of a cold job pulling 250-800 MB from a CDN, and it is worth knowing
+# before trusting a green CI run to have covered CEFControl.
+#
+# DUI_BUILD_CEF_EXAMPLES=OFF and DUI_BUILD_WEBVIEW2_EXAMPLES=OFF keep the example
+# executables out; this job builds the library and the tests. WebView2 was never the
+# problem here: its switch is DUI_WEBVIEW2_EXE, only the WebView2 examples set it, and
+# the one header the library includes is tracked in git.
 #
 # ---- Cost, honestly ----------------------------------------------------------------
 # A COLD run (no caches) per platform is dominated by the dependencies. Numbers measured
@@ -354,15 +372,16 @@ jobs:
         shell: bash
         run: echo "${GITHUB_WORKSPACE}/third_party/skia/bin" >> "$GITHUB_PATH"
 
-      # DUI_ENABLE_CEF=ON is required for the library to compile at all — see the note at
-      # the top of this file. DUI_BUILD_CEF_EXAMPLES=OFF keeps the CEF example
-      # executables (and WebView2's) out of the build; they are the only consumers that
-      # link libcef, and this job builds the library and the tests.
+      # CEF is OFF, and that is what makes a cold runner practical: the library does not
+      # need it, and fetching it is a ~250 MB download from cef-builds.spotifycdn.com --
+      # its only distributor, there is no mirror. See the note at the top of this file
+      # for why this used to be ON and no longer is. The example executables stay out of
+      # the build; this job builds the library and the tests.
       - name: Configure
         shell: bash
         run: |
           cmake --preset ${{ matrix.preset }} \
-            -DDUI_ENABLE_CEF=ON \
+            -DDUI_ENABLE_CEF=OFF \
             -DDUI_BUILD_CEF_EXAMPLES=OFF \
             -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF \
             ${{ matrix.configure_args }}
@@ -508,11 +527,16 @@ jobs:
         shell: bash
         run: echo "${GITHUB_WORKSPACE}/third_party/skia/bin" >> "$GITHUB_PATH"
 
+      # CEF off here too, for the same reason as the build job: the library does not need
+      # it, and this job already builds Skia twice under ASan+UBSan. The verification
+      # behind that claim ran on Linux (see the note at the top of this file); the macOS
+      # path is the same guarded include in `src/dui.cpp`, but it has not been exercised
+      # on macOS specifically.
       - name: Configure (DUI_ENABLE_SANITIZERS=ON)
         shell: bash
         run: |
           cmake --preset sanitize \
-            -DDUI_ENABLE_CEF=ON \
+            -DDUI_ENABLE_CEF=OFF \
             -DDUI_BUILD_CEF_EXAMPLES=OFF \
             -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF
 
