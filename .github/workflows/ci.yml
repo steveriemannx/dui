@@ -214,8 +214,20 @@ jobs:
           url="https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-${asset}"
           mkdir -p "$RUNNER_TEMP/cmake"
           curl -fsSL -o "$RUNNER_TEMP/$asset" "$url"
-          # tar (bsdtar on the Windows runners) reads both the .tar.gz and the .zip.
-          tar -xf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP/cmake" --strip-components=1
+          # Use the OS's own tar, never the one `shell: bash` puts on PATH. On Windows
+          # that shell is Git bash, whose tar is GNU tar -- and GNU tar reads the leading
+          # "D:" of a runner path like D:\a\_temp\... as a remote *host*, so this step
+          # died with "Cannot connect to D: resolve failed" and exit 128 before CMake was
+          # ever installed. Windows' own tar (bsdtar, in System32) takes the path as it
+          # comes, and supports --strip-components (verified against libarchive 3.7).
+          # On Linux and macOS SYSTEMROOT is unset and the PATH tar is already the right
+          # one: POSIX paths never carry a colon, so GNU tar there has nothing to mistake
+          # for a host.
+          tar_cmd="tar"
+          if [ -n "${SYSTEMROOT:-}" ]; then
+            tar_cmd="${SYSTEMROOT}/System32/tar.exe"
+          fi
+          "$tar_cmd" -xf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP/cmake" --strip-components=1
           # macOS nests the binaries under CMake.app/Contents/bin; Linux and Windows use
           # bin/ directly. GITHUB_PATH only affects later steps, so nothing here verifies
           # the version -- the "Check the toolchain" step below does that.
