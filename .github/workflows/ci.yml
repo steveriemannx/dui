@@ -265,11 +265,21 @@ jobs:
 
       # Only what the library actually asks for on the default (X11) backend:
       # src/CMakeLists.txt does find_package(X11 REQUIRED), Freetype and Fontconfig, and
-      # cmake/dui_bin_linux.cmake links X11/freetype/fontconfig/pthread/dl. No GL/EGL/
-      # Vulkan packages: Skia binds GL through its own function tables (no system GL
-      # headers) and those pkg_check_modules calls are inside the DUI_ENABLE_WAYLAND
-      # branch, which is off. unzip is required — cmake/dui_deps.cmake extracts the Skia
-      # zip with it on every non-Windows platform.
+      # cmake/dui_bin_linux.cmake links X11/freetype/fontconfig/pthread/dl. unzip is
+      # required — cmake/dui_deps.cmake extracts the Skia zip with it on every
+      # non-Windows platform.
+      #
+      # libgl1-mesa-dev is NOT optional, despite what an earlier version of this comment
+      # claimed ("Skia binds GL through its own function tables, no system GL headers").
+      # That is false for the GLX interface: the gn args here leave skia_use_gl=true
+      # (gn/skia.gni:55), and src/gpu/ganesh/gl/glx/GrGLMakeGLXInterface.cpp
+      # opens with `#include <GL/gl.h>`. Without the package the Skia build dies at
+      # [540/1078] with "fatal error: GL/gl.h: No such file or directory" and takes the
+      # whole `dui` target with it. libgl1-mesa-dev pulls libgl-dev + libglvnd-dev, which
+      # is what supplies GL/gl.h and GL/glx.h. EGL/GLES/Vulkan stay out: skia_use_egl and
+      # skia_use_vulkan are both false by default, so nothing compiles against them, and
+      # the pkg_check_modules calls for dbus/ibus live in the DUI_ENABLE_WAYLAND branch,
+      # which is off.
       - name: Install build dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -277,6 +287,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             ninja-build unzip bzip2 pkg-config \
             libfontconfig-dev libfreetype-dev \
+            libgl1-mesa-dev \
             libx11-dev libxext-dev libxcursor-dev libxi-dev libxrandr-dev
 
       # MSVC environment for the whole job. The Skia build runs `ninja`, which spawns
