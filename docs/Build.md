@@ -243,30 +243,26 @@ The compiled example programs are in the bin directory.
 
 ## D. Continuous integration
 
-`.github/workflows/ci.yml` configures, builds and tests the library on macOS (Debug),
-Linux (Debug) and Windows (Debug, MSVC), plus a macOS job that builds with
-`-DDUI_ENABLE_SANITIZERS=ON` (ASan + UBSan). Each job builds only the `dui` target and
-`dui_core_tests` and then runs `ctest --output-on-failure` — the 55 examples are
-configured but not built, to keep the run short.
+`.github/workflows/ci.yml` is **manual**: a dispatch from the Actions tab picks the jobs
+with checkboxes, and pushes and pull requests start nothing. It configures, builds and
+tests the library on macOS (Debug), Linux (Debug, twice — one leg pinned to CMake 4.0.0,
+the floor `CMakeLists.txt` declares, so that a 4.1+ API cannot creep into the CMake files)
+and Windows (Debug, MSVC), plus a macOS job that builds with
+`-DDUI_ENABLE_SANITIZERS=ON` (ASan + UBSan). Each job builds the `dui` target and whatever
+test binaries it finds — `dui_core_tests` and `dui_behaviour_tests` — and then runs
+`ctest --no-tests=error`; the examples are configured but not built, to keep the run short.
 
-The CEF examples are switched off, but CEF itself is switched **on**
-(`-DDUI_ENABLE_CEF=ON -DDUI_BUILD_CEF_EXAMPLES=OFF`). That is not a typo: the library
-compiles the CEFControl code on every platform — `include/dui/dui_config.h` defines
-`DUI_BUILD_FOR_CEF` unconditionally outside Windows, and `src/CMakeLists.txt` always adds
-the CEF distribution's directory to the include path — while only
-`cmake/dui_deps.cmake` downloads that distribution, and it only does so when CEF or the
-CEF examples are enabled. With CEF off, a clean checkout fails on
-`#include "include/cef_app.h"`. Enabling CEF gets the headers; the `libcef_dll_wrapper`
-target it also defines is not a dependency of the library or of the tests, so it is
-configured but never built.
+CEF and WebView2 are off (`-DDUI_ENABLE_CEF=OFF -DDUI_BUILD_CEF_EXAMPLES=OFF
+-DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF`): the library compiles without them, so nothing downloads
+the CEF or WebView2 archives.
 
 Reproducing a job locally, on macOS or Linux (the presets in `CMakePresets.json` are what
 the workflow uses):
 
 ```
-cmake --preset debug -DDUI_ENABLE_CEF=ON -DDUI_BUILD_CEF_EXAMPLES=OFF -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF
-cmake --build --preset debug --target dui dui_core_tests
-ctest --test-dir build-presets/debug --output-on-failure
+cmake --preset debug -DDUI_ENABLE_CEF=OFF -DDUI_BUILD_CEF_EXAMPLES=OFF -DDUI_BUILD_WEBVIEW2_EXAMPLES=OFF
+cmake --build --preset debug --target dui dui_core_tests dui_behaviour_tests
+ctest --test-dir build-presets/debug --output-on-failure --no-tests=error
 ```
 
 and for the sanitizer job, `cmake --preset sanitize` instead of `debug`.
@@ -274,11 +270,9 @@ and for the sanitizer job, `cmake --preset sanitize` instead of `debug`.
 Three things dominate the first run, and CI caches the downloads and the Skia build
 output, keyed on the Skia and CEF versions `cmake/dui_deps.cmake` pins:
 
-* the downloads — a 70 MB Skia zip and a ~200-260 MB CEF archive per platform (both kept
-  in `third_party/downloads/`, which is what the cache stores along with the extracted
-  Skia source). The CEF distribution itself (~700 MB extracted, larger on Windows) is
-  deliberately not cached: re-extracting it from the cached archive is cheaper than
-  moving that much through the cache, and the script integrity-checks the archive first;
+* the downloads — a 70 MB Skia zip, kept in `third_party/downloads/`, which is what the
+  cache stores along with the extracted Skia source. (The CEF and WebView2 archives are no
+  longer fetched at all: nothing in the job needs them);
 * the Skia build — `gn gen` plus `ninja` over the whole Skia `all` target, roughly 900
   compile steps, run by the `dui_skia` custom target in `<build>/lib/<config>/`, whose
   output is cached in its own entry (keyed additionally on the build type and on the hash
