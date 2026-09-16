@@ -197,6 +197,10 @@ brew update
 #### Software already included with the system (no installation needed)
 `git make unzip python3 patch`
 
+(`make` here is the GNU make that ships as `/usr/bin/make`. The build is driven by bmake
+instead — see the bmake section below — but GNU make remains useful, because it is one of the
+two ways to build the CEF examples.)
+
 #### Install cmake
 ```
 brew install cmake
@@ -206,6 +210,24 @@ The project requires **CMake 4.0 or newer**; check with `cmake --version` before
 ```
 brew install ninja
 ```
+#### Install bmake
+```
+brew install bmake
+```
+With the make generators CMake drives the build with **bmake**, not the GNU make that ships as `/usr/bin/make`; `cmake/dui_build_program.cmake` selects it at configure time and stops with an install hint when it is missing. Naming another program with `-DCMAKE_MAKE_PROGRAM=<program>` overrides the choice. On FreeBSD there is nothing to install here — bmake is part of the base system.
+
+**The CEF examples are the one thing bmake cannot build**, and the failure names neither cause. A CEF helper app bundle on macOS is named `<name> Helper` — CEF's own build files write that space in, so the name is not ours to change — and CMake's makefile generator can only write a space in a path the GNU make way, which bmake does not read. The build stops at `don't know how to make <dir>/bin_helper/cef`. Use a generator that handles spaces for those:
+
+```
+# Ninja (recommended; already installed for the Skia build)
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+# or the GNU make that ships with macOS
+cmake -S . -B build -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_BUILD_TYPE=Release
+```
+
+The library, the tests and every other example build with bmake. Leaving the CEF examples out entirely is also an option: `-DDUI_BUILD_CEF_EXAMPLES=OFF`.
+
 #### gn (no installation needed)
 CMake prefers a system gn if one is installed; otherwise it builds gn from source automatically at configure time (git clone + `build/gen.py` + `ninja -C out`, following the official gn README). The clone tries the Google source (2 attempts) and falls back to a GitHub mirror; slow or hung clones are aborted automatically (10s connect timeout, and under 200 KB/s for 30s triggers a source switch). If gn still cannot be obtained, the build prints a short manual-install hint listing the known package names (Debian/Ubuntu: `apt install generate-ninja` — the name `gn` is taken there; Fedora: `dnf install gn`; Arch: `pacman -S gn`; FreeBSD: `pkg install gn`; MSYS2: `pacman -S mingw-w64-x86_64-gn`; macOS: no package — build from source). Alternatives: download a prebuilt gn binary from CIPD (a zip; the version is pinned in `skia/bin/fetch-gn`, e.g. `https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/git_revision:b2afae122eeb6ce09c52d63f67dc53fc517dbdc8` for Windows x64, with `linux-amd64` / `mac-amd64` / `mac-arm64` / `linux-arm64` for other platforms) and unzip it into `third_party/skia/bin/gn` (`gn.exe` on Windows) — it is used directly; or clone the gn source yourself into `third_party/gn` (full history; `git clone https://gn.googlesource.com/gn third_party/gn`, or the GitHub mirror `https://github.com/ArthurSonzogni/gn`) — the build then compiles it automatically.
 

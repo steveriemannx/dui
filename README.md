@@ -62,6 +62,8 @@ cmake --build build
 
 (The `GEN`/`CODE` example modes, `-DDUI_EXAMPLES_MODE=GEN|CODE`, never include the CEF/WebView2 examples.)
 
+On macOS and FreeBSD the make generators run on **bmake**. The one thing bmake cannot build is the CEF examples — a CEF helper app bundle on macOS is named `<name> Helper`, and bmake has no syntax for the space in that path — so configure those with `-G Ninja` (recommended) or `-DCMAKE_MAKE_PROGRAM=/usr/bin/make` instead. The library, the tests and every other example build with bmake. Details: [docs/Build.md](docs/Build.md#install-bmake).
+
 ```
 # Release build (single-config generators: Makefiles/Ninja on Linux/macOS/FreeBSD)
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release

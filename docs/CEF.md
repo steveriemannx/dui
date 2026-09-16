@@ -98,6 +98,9 @@ locales (directory containing language packs such as zh-CN.pak and en-US.pak)
 
 ## 6. Usage of the CEF control (CefControl) (macOS platform)
 The basic steps are as follows (all directories are written as subdirectories relative to the dui root `${NIM_DUI_ROOT}`; the actual settings can be flexibly adjusted according to your own project structure):    
+
+**Build generator — read this before configuring.** The CEF examples cannot be built with bmake, which is the make program dui selects by default on macOS. A CEF helper app bundle is named `<name> Helper`: the name comes from CEF's own build files (`cef_binary/bazel/mac/app_helpers.bzl`, `cef_binary/cmake/cef_variables.cmake`) and is not ours to change. CMake's makefile generator can only write a space in a path the GNU make way, and bmake does not read that, so the build stops at `don't know how to make <dir>/bin_helper/cef` — a message that names neither the space nor CEF nor bmake. Configure with `-G Ninja` (recommended; ninja is already installed for the Skia build) or with `-DCMAKE_MAKE_PROGRAM=/usr/bin/make` (the GNU make that ships with macOS). Details and the exact commands: [Build.md](Build.md#install-bmake).    
+
 ### 1. Getting the libcef binaries and resource files (automatic with CMake)
 The CMake build downloads the complete binary distribution automatically at configure time when it is missing, and extracts it to the `${NIM_DUI_ROOT}/third_party/libcef/cef_binary` directory (it contains the framework binaries in the `Release/` directory).    
 Note: the wrapper sources and headers are no longer vendored per platform — they are built from the downloaded `cef_binary` distribution (see `third_party/CMakeLists.txt`), the same way as on Windows and Linux.    
