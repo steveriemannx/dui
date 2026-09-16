@@ -127,6 +127,14 @@ The build is CMake-only. The old `scripts/examples.sln` and
 
 - **CMake 4.0 or newer** (`cmake_minimum_required(VERSION 4.0)`). The distro packages
   are usually older — Ubuntu 24.04 ships 3.28 — so install a current one from Kitware
+- **macOS and FreeBSD build with bmake**, not GNU make: `cmake/dui_build_program.cmake`
+  selects it for the make generators at configure time and stops with an install hint when
+  it is missing (`brew install bmake`; on FreeBSD it is part of the base system). Naming
+  another program with `-DCMAKE_MAKE_PROGRAM=<program>` overrides the choice. **The CEF
+  examples are the one target bmake cannot build** — a CEF helper app bundle is named
+  `<name> Helper`, and CMake's makefile generator can only write a space in a path the GNU
+  make way, which bmake does not read — so those are configured with `-G Ninja`
+  (recommended) or, on macOS, `-DCMAKE_MAKE_PROGRAM=/usr/bin/make` instead
 - Configure and build: `cmake --preset release` (or `debug`), then
   `cmake --build build-presets/release --target <target>`
 - Dependencies: Skia is built automatically by the `dui_skia` target on a tree's first
@@ -138,6 +146,7 @@ The build is CMake-only. The old `scripts/examples.sln` and
 - Sanitizers: `cmake --preset sanitize` — builds Skia with ASan too, into
   `lib/<config>-asan`, and that is required, not optional (see the preset description)
 - Useful options: `-DDUI_ENABLE_CEF=OFF` (default) skips the ~200 MB CEF download,
-  `-DDUI_BUILD_CEF_EXAMPLES=OFF` skips the CEF examples, `-DDUI_ENABLE_MVVM=ON` adds the
-  binding module
+  `-DDUI_BUILD_CEF_EXAMPLES=OFF` skips the CEF examples (note it is **ON by default**, so a
+  default configure pulls the CEF examples in), `-DDUI_ENABLE_MVVM=ON` adds the binding
+  module
 - Example mode selection (CMake): `-DDUI_EXAMPLES_MODE=ALL|XML|GEN|CODE` — builds only the examples of one development mode (XML / XML-to-code generation / pure code); default `ALL`
