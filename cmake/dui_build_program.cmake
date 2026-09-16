@@ -31,7 +31,7 @@ if(CMAKE_GENERATOR MATCHES "Makefiles"
                 "bmake was not found, and macOS builds dui with it.\n"
                 "  install it with:  brew install bmake\n"
                 "Or name another program with -DCMAKE_MAKE_PROGRAM=<program>.")
-        else()
+        elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "FreeBSD")
             message(FATAL_ERROR
                 "bmake was not found, and FreeBSD builds dui with it.\n"
                 "  it is part of the base system, so check PATH\n"
