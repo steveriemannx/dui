@@ -24,10 +24,18 @@ if(CMAKE_GENERATOR MATCHES "Makefiles"
         set(CMAKE_MAKE_PROGRAM "${DUI_BMAKE_PROGRAM}" CACHE FILEPATH
             "Build program for the make generators" FORCE)
     else()
+        # One hint per host, not both: each platform has exactly one answer to "where do
+        # I get a bmake", and the other one's would only be noise.
+        if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+            set(_dui_host "macOS")
+            set(_dui_bmake_hint "  install it with:  brew install bmake")
+        else()
+            set(_dui_host "FreeBSD")
+            set(_dui_bmake_hint "  it is part of the base system, so check PATH")
+        endif()
         message(FATAL_ERROR
-            "bmake was not found, and ${CMAKE_HOST_SYSTEM_NAME} builds dui with it.\n"
-            "  macOS : brew install bmake\n"
-            "  FreeBSD: it is part of the base system, so check PATH\n"
+            "bmake was not found, and ${_dui_host} builds dui with it.\n"
+            "${_dui_bmake_hint}\n"
             "Or name another program with -DCMAKE_MAKE_PROGRAM=<program>.")
     endif()
 endif()
