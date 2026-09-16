@@ -24,7 +24,9 @@ namespace ui
     class AutoClip;
     class ControlDropTarget_Windows;
     class ControlDropTarget_Wayland;
+    class ControlDropTarget_SDL;
     class ControlDropTargetImpl_Windows;
+    class ControlDropTargetImpl_SDL;
 
     typedef Control* (* FINDCONTROLPROC)(Control*, void*);
 
@@ -1153,6 +1155,11 @@ public:
     */
     virtual ControlDropTarget_Windows* GetControlDropTarget();
 
+    /** Get the drag and drop interface (SDL)
+    * @return Returns the drag and drop target interface; nullptr means drag and drop is not supported
+    */
+    virtual ControlDropTarget_SDL* GetControlDropTarget_SDL();
+
     /** Get the drag and drop interface (native backend)
     * @return Returns the drag and drop target interface; nullptr means drag and drop is not supported
     */
@@ -1745,6 +1752,11 @@ private:
 
 #ifdef DUI_BUILD_FOR_WAYLAND
         //Drag and drop implementation: native backend
+#endif
+
+#ifdef DUI_BUILD_FOR_SDL
+        //Drag and drop implementation: SDL
+        std::shared_ptr<ControlDropTargetImpl_SDL> m_pDropTargetSDL;
 #endif
     };
 

@@ -207,7 +207,24 @@ enum VirtualKeyCode
     kVK_OEM_CLEAR           = 0xFE, //Clear key
 };
 
-#if defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_X11)
+#if defined(DUI_BUILD_FOR_SDL)
+
+    //Conversion between VirtualKeyCode and SDL's SDL_Keycode
+    typedef uint32_t SDL_Keycode;
+
+    class DUI_API Keycode
+    {
+    public:
+        /** Convert SDL_Keycode to ui::VirtualKeyCode (lossy, because SDL has more content than VirtualKeyCode)
+        */
+        static VirtualKeyCode GetVirtualKeyCode(SDL_Keycode sdlKeycode);
+
+        /** Convert ui::VirtualKeyCode to SDL_Keycode
+        */
+        static SDL_Keycode GetSDLKeyCode(VirtualKeyCode vkCode);
+    };
+
+#elif defined(DUI_BUILD_FOR_WAYLAND) || defined(DUI_BUILD_FOR_X11)
 
     //Conversion between VirtualKeyCode and native backend's Native_Keycode
     typedef uint32_t Native_Keycode;

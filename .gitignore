@@ -398,3 +398,8 @@ third_party/Microsoft.Web.WebView2/
 /tools/xml_to_code.exe
 /tools/xml_to_header.exe
 /tools/embed_resources.exe
+
+# SDL3 line: local build tree and the SDL3 source clone (build inputs, not source)
+/build-sdl-lab/
+/third_party/SDL3
+/third_party/skia

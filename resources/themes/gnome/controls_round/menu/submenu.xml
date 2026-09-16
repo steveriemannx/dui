@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Window shadow_type="draw_default" shadow_attached="true" round_corner="10,10" shadow_border_size="2" shadow_border_color="#FFEDEDED">
-  <MenuListBox class="menu" name="submenu" padding="0,4,0,4">
-   
-  </MenuListBox>
-</Window>

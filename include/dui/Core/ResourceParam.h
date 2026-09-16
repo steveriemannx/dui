@@ -34,7 +34,16 @@ enum class ResourceType
  */
 inline FilePath GetDefaultThemePath()
 {
-#if defined (DUI_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_SDL)
+    // The SDL build ships complete themes rather than platform overlays; which one
+    // is the default is a build choice (DUI_SDL_THEME). There is no fallback path
+    // to fall back to, so the theme named here must be complete.
+    #ifdef DUI_SDL_THEME_NAME
+        return FilePath("themes/" DUI_SDL_THEME_NAME);
+    #else
+        return FilePath("themes/default");
+    #endif
+#elif defined (DUI_BUILD_FOR_WIN)
     return FilePath("themes\\windows11");
 #elif defined (DUI_BUILD_FOR_MACOS)
     return FilePath("themes/macos26");

@@ -4,7 +4,7 @@
 #include "dui/Utils/FilePath.h"
 #include <numeric>
 
-#ifdef DUI_BUILD_FOR_WIN
+#ifdef DUI_BUILD_FOR_WIN  !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Utils/DiskUtils_Windows.h"
 #endif
 

@@ -17,8 +17,12 @@
 #include "dui/Utils/AttributeUtil.h"
 #include "dui/Utils/PerformanceUtil.h"
 
-#if defined (DUI_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/ControlDropTargetImpl_Windows.h"
+#endif
+
+#if defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Core/ControlDropTargetImpl_SDL.h"
 #endif
 
 namespace ui 
@@ -5461,6 +5465,21 @@ ControlDropTarget_Windows* Control::GetControlDropTarget()
 
 ControlDropTarget_Wayland* Control::GetControlDropTarget_Wayland()
 {
+    return nullptr;
+}
+
+ControlDropTarget_SDL* Control::GetControlDropTarget_SDL()
+{
+#if defined (DUI_BUILD_FOR_SDL)
+    if (IsEnableDragDrop() && IsEnabled()) {
+        if (m_pDragDropData == nullptr) {
+            m_pDragDropData = std::make_unique<TDragDropData>();
+            m_pDragDropData->m_bDragDropEnabled = true;
+        }
+        m_pDragDropData->m_pDropTargetSDL = std::make_shared<ControlDropTargetImpl_SDL>(this);
+        return m_pDragDropData->m_pDropTargetSDL.get();
+    }
+#endif
     return nullptr;
 }
 

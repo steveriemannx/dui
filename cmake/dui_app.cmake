@@ -83,6 +83,19 @@ if(NOT TARGET dui_app)
     else()
         message(FATAL_ERROR "Unknown OS!")
     endif()
+
+    # SDL3 window and input layer. The define has to reach the application's own
+    # translation units, not just the library: dui_config.h picks the backend from it,
+    # and an application compiled for a different backend than the library would
+    # disagree with it about every platform type.
+    if(DUI_ENABLE_SDL)
+        if(NOT DEFINED DUI_SDL3_ROOT)
+            message(FATAL_ERROR "DUI_ENABLE_SDL needs DUI_SDL3_ROOT (an SDL3 install prefix)")
+        endif()
+        target_compile_definitions(dui_app INTERFACE DUI_SDL=1)
+        target_include_directories(dui_app INTERFACE "${DUI_SDL3_ROOT}/include")
+        target_link_libraries(dui_app INTERFACE "${DUI_SDL3_ROOT}/lib/libSDL3.dylib")
+    endif()
 endif()
 
 # Per-target finishing work. Call it once, after the target exists and after any

@@ -17,6 +17,7 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 add_executable(ChildWindow
     ChildWindowPaint_MacOS.cpp
     ChildWindowPaint_Native.cpp
+    ChildWindowPaint_SDL.cpp
     ChildWindowPaint_Win.cpp
     MainForm.cpp
     MyChildWindowEvents.cpp

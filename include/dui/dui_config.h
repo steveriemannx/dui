@@ -62,7 +62,12 @@
     #endif
 #else
     // Non-Windows platforms
-    #if (DUI_WAYLAND)
+    #if (DUI_SDL)
+        //SDL3 provides the window and input layer for every platform, so this
+        //branch comes before the per-platform ones: it replaces them, rather
+        //than sitting beside them.
+        #define DUI_BUILD_FOR_SDL 1
+    #elif (DUI_WAYLAND)
         //Use the native Wayland window and input backend.
         #define DUI_BUILD_FOR_WAYLAND 1
     #elif defined(DUI_BUILD_FOR_MACOS)

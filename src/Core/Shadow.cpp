@@ -48,9 +48,10 @@ public:
         float fRoundWidth = (float)borderRound.cx;
         float fRoundHeight = (float)borderRound.cy;
         bool bRoundClip = (borderRound.cx > 0) && (borderRound.cy > 0);
-        if (rcPadding.IsEmpty()) {
-            bRoundClip = false;
-        }
+        // Rounding the client clip is about the window's own corners, not about
+        // reserving space for a shadow. Tying it to the shadow padding meant a
+        // theme that asks for rounded corners without a shadow (draw_none_round,
+        // whose padding is 0) got no rounding at all, whatever radius it named.
         // Set the rounded client area clip region to avoid covering the shadow
         AutoClip roundClip(pRender, rcRect, fRoundWidth, fRoundHeight, bRoundClip);
 
@@ -574,7 +575,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
     }
     else if (nShadowType == Shadow::ShadowType::kShadowDrawBigRound) {
         bRet = true;
-        szBorderRound = UiSize(6, 6);
+        szBorderRound = UiSize(1, 1);
         rcShadowCorner = UiPadding(30, 30, 34, 36);
         shadowImage = StringUtil::Printf("file='public/shadow/shadow_big_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                          rcShadowCorner.left + szBorderRound.cx,
@@ -594,7 +595,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
     }
     else if (nShadowType == Shadow::ShadowType::kShadowDrawSmallRound) {
         bRet = true;
-        szBorderRound = UiSize(6, 6);
+        szBorderRound = UiSize(1, 1);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
         shadowImage = StringUtil::Printf("file='public/shadow/shadow_small_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                          rcShadowCorner.left + szBorderRound.cx,
@@ -614,7 +615,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
     }
     else if (nShadowType == Shadow::ShadowType::kShadowDrawMenuRound) {
         bRet = true;
-        szBorderRound = UiSize(6, 6);
+        szBorderRound = UiSize(1, 1);
         rcShadowCorner = UiPadding(24, 24, 28, 30);
         shadowImage = StringUtil::Printf("file='public/shadow/shadow_menu_round.svg' window_shadow_mode='true' corner='%d,%d,%d,%d'",
                                          rcShadowCorner.left + szBorderRound.cx,
@@ -630,7 +631,7 @@ bool Shadow::GetShadowParam(ShadowType nShadowType,
     }
     else if (nShadowType == Shadow::ShadowType::kShadowDrawNoneRound) {
         bRet = true;
-        szBorderRound = UiSize(6, 6);
+        szBorderRound = UiSize(2, 2);
         rcShadowCorner = UiPadding(0, 0, 0, 0);// Set one pixel to accommodate the border line (see the following code)
         shadowImage.clear();
     }

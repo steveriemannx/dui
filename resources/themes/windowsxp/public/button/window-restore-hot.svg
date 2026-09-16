@@ -1,0 +1,11 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="xpblue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7DBBFF"/><stop offset="0.5" stop-color="#3E8DF5"/><stop offset="1" stop-color="#1F63D8"/>
+    </linearGradient>
+  </defs>
+  <rect x="1.5" y="1.5" width="21" height="21" rx="2" fill="url(#xpblue)" stroke="#FFFFFF" stroke-opacity="0.65" stroke-width="1"/>
+  <rect x="8" y="4.5" width="11" height="9" fill="none" stroke="#FFFFFF" stroke-width="1.6"/>
+  <rect x="5" y="8" width="11" height="9" fill="#3E8DF5" stroke="#FFFFFF" stroke-width="1.6"/>
+  <rect x="5" y="8" width="11" height="2.6" fill="#FFFFFF"/>
+</svg>

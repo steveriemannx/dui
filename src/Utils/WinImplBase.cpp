@@ -5,7 +5,7 @@
 #include "dui/Control/Label.h"
 #include "dui/Utils/FilePath.h"
 
-#ifdef DUI_BUILD_FOR_MACOS
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
 #include "dui/Control/MacTrafficLights.h"
 #include "dui/Control/Label.h"
 #endif
@@ -34,12 +34,30 @@ void WindowImplBase::BindCaptionButtons()
 {
 #if defined(DUI_BUILD_FOR_WIN)
     BindCaptionButtons_Windows();
-#elif defined(DUI_BUILD_FOR_MACOS)
+#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
     BindCaptionButtons_MacOS();
 #elif defined(DUI_BUILD_FOR_LINUX)
     BindCaptionButtons_Linux();
 #elif defined(DUI_BUILD_FOR_FREEBSD)
     BindCaptionButtons_FreeBSD();
+#elif defined(DUI_BUILD_FOR_SDL)
+    BindCaptionButtons_Default();
+    // The theme's caption bar carries a title label; fill it here as well as on
+    // change: the window text is set while the window is being created, before
+    // the controls the label lives among exist, so the change callback runs too
+    // early to find it.
+    if (!IsUseSystemCaption() && IsShowCaptionTitle()) {
+        if (Label* pTitle = dynamic_cast<Label*>(FindControl(DUI_CTR_CAPTION_TITLE))) {
+            const std::string strTitle = GetText();
+            pTitle->SetText(strTitle);
+            pTitle->SetVisible(!strTitle.empty());
+            // Framework defaults, then the theme class on top of them: a theme
+            // that paints its own caption bar also decides how the title reads
+            // (the XP theme wants white text on Luna blue).
+            pTitle->ApplyAttributeList("text_align='left,vcenter' font='system_14' normal_text_color='#FF000000' mouse_enabled='false'");
+            pTitle->SetClass("caption_title");
+        }
+    }
 #else
     BindCaptionButtons_Default();
 #endif
@@ -130,7 +148,7 @@ void WindowImplBase::BindCaptionButtons_Windows()
         }
     }
 }
-#elif defined(DUI_BUILD_FOR_MACOS)
+#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
 void WindowImplBase::BindCaptionButtons_MacOS()
 {
     BindCaptionButtons_Default();
@@ -300,7 +318,18 @@ void WindowImplBase::OnWindowTextChanged(const std::string& strText)
             pTitle->SetVisible(IsShowCaptionTitle() && !strText.empty());
         }
     }
-#elif defined(DUI_BUILD_FOR_MACOS)
+#elif defined(DUI_BUILD_FOR_SDL)
+    // The SDL backend draws its own caption bar, so the title goes into the
+    // theme's label control -- the same one the Windows branch writes to, found
+    // by the same name. Without this branch no one sets it: the macOS branch is
+    // the other writer and it is off in an SDL build.
+    if (!IsUseSystemCaption()) {
+        if (Label* pTitle = dynamic_cast<Label*>(FindControl(DUI_CTR_CAPTION_TITLE))) {
+            pTitle->SetText(IsShowCaptionTitle() ? strText : "");
+            pTitle->SetVisible(IsShowCaptionTitle() && !strText.empty());
+        }
+    }
+#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
     if (m_pMacTitleLabel != nullptr) {
         static_cast<Label*>(m_pMacTitleLabel)->SetText(strText);
         m_pMacTitleLabel->SetVisible(IsShowCaptionTitle() && !strText.empty());
@@ -512,7 +541,7 @@ bool WindowImplBase::IsPtInMaximizeRestoreButton(const UiPoint& pt) const
     return bInButton;
 }
 
-#ifdef DUI_BUILD_FOR_MACOS
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
 bool WindowImplBase::OnMacTrafficLightsClick(const EventArgs& args)
 {
     Control* pSender = args.GetSender();

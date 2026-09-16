@@ -4,7 +4,11 @@
 #undef NDEBUG
 
 #include "dui/Core/GlobalManager.h"
+#if defined(DUI_BUILD_FOR_SDL)
+#include "dui/Core/MessageLoop_SDL.h"
+#else
 #include "dui/Core/MessageLoop_MacOS.h"
+#endif
 #include "dui/Core/Window.h"
 
 #include <cassert>
@@ -40,7 +44,11 @@ int main()
 
     auto* window = new TestWindow();
     assert(window->CreateWnd(nullptr, ui::WindowCreateParam("dui GUI test", true)));
+#if defined(DUI_BUILD_FOR_SDL)
+    ui::MessageLoop_SDL loop;
+#else
     ui::MessageLoop_MacOS loop;
+#endif
     loop.Run(nullptr);
     ui::GlobalManager::Instance().Shutdown();
     return 0;

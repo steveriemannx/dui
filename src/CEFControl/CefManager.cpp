@@ -10,11 +10,11 @@
 #include "dui/Core/Window.h"
 #include "dui/Core/Box.h"
 
-#if defined (DUI_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/CEFControl/CefManager_Windows.h"
-#elif defined (DUI_BUILD_FOR_LINUX)
+#elif defined (DUI_BUILD_FOR_LINUX) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/CEFControl/CefManager_Linux.h"
-#elif defined (DUI_BUILD_FOR_MACOS)
+#elif defined (DUI_BUILD_FOR_MACOS) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/CEFControl/CefManager_MacOS.h"
 #endif
 

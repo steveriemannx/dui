@@ -3,13 +3,15 @@
 #include "dui/Core/WindowMessage.h"
 #include "dui/Core/ScopedLock.h"
 
-#if defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Core/MessageLoop_SDL.h"
+#elif defined (DUI_BUILD_FOR_WAYLAND) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/MessageLoop_Wayland.h"
-#elif defined (DUI_BUILD_FOR_X11)
+#elif defined (DUI_BUILD_FOR_X11) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/MessageLoop_X11.h"
-#elif defined (DUI_BUILD_FOR_WIN)
+#elif defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/MessageLoop_Windows.h"
-#elif defined (DUI_BUILD_FOR_MACOS)
+#elif defined (DUI_BUILD_FOR_MACOS) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/MessageLoop_MacOS.h"
 #endif
 
@@ -434,7 +436,9 @@ void FrameworkThread::OnInit()
 
 void FrameworkThread::OnRunMessageLoop()
 {
-#if defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_SDL)
+    MessageLoop_SDL msgLoop;
+#elif defined (DUI_BUILD_FOR_WAYLAND)
     MessageLoop_Wayland msgLoop;
     MessageLoop_Wayland::CheckInitWayland();
 #elif defined (DUI_BUILD_FOR_X11)

@@ -8,11 +8,13 @@
 // every in-repo includer happened to include something else first.
 #include "dui/dui_config.h"
 
-#if defined (DUI_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Control/RichEdit_SDL.h"
+#elif defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Control/RichEdit_Windows.h"
 #elif defined (DUI_BUILD_FOR_WAYLAND) || defined (DUI_BUILD_FOR_X11)
     #include "dui/Control/RichEdit_Native.h"
-#elif defined (DUI_BUILD_FOR_MACOS)
+#elif defined (DUI_BUILD_FOR_MACOS) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Control/RichEdit_MacOS.h"
 #endif
 

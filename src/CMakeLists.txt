@@ -170,13 +170,8 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Control/Combo.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ComboButton.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/DateTime.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/DateTimeWnd_MacOS.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/DateTimeWnd_Native.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/DateTimeWnd_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTree.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTreeImpl_Linux.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTreeImpl_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTreeImpl_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/FilterCombo.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/HotKey.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/IPAddress.cpp"
@@ -195,16 +190,12 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Control/ListCtrlReportView.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ListCtrlSubItem.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ListCtrlView.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/MacTrafficLights.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/Menu.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/MenuBar.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/Progress.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/PropertyGrid.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/RichEditData.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/RichEditHost_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/RichEdit_MacOS.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/RichEdit_Native.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/RichEdit_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/RichTextImpl.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/Slider.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/TabCtrl.cpp"
@@ -212,21 +203,13 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Control/TreeView.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/Box.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/BoxShadow.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ClickThrough_Linux.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ClickThrough_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/ColorManager.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/Control.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ControlDropTargetImpl_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ControlDropTargetImpl_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/ControlDropTargetUtils.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/ControlFinder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/ControlLoading.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/CursorManager_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/DpiAwareness_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/DpiAwareness_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/DpiManager.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/DragWindow.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/DragWindowFilter_MacOS.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/EventArgs.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/FontManager.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/FrameworkThread.cpp"
@@ -235,32 +218,21 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Core/IconManager.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/ImageList.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/ImageManager.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/Keyboard_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/Keycode_MacOS.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/LangManager.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/MemoryResourceManager.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/MessageLoop_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/NativeWindow_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/PlaceHolder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/ScrollBar.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/Shadow.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/StateColorMap.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/StateColorMap2.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/ThreadManager.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ThreadMessage_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ThreadMessage_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/TimerManager.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ToolTip_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ToolTip_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/UiColors.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/Window.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/WindowBase.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/WindowBuilder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/WindowCreateParam.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/WindowDropTarget_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/WindowDropTarget_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/WindowManager.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/X11Platform.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Image/APngDecoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Image/FrameSequence_gif.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Image/Image.cpp"
@@ -307,41 +279,22 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/Pen_Skia.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/RenderFactory_Skia.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/Render_Skia.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/Render_Skia_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkGLWindowContext_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkRasterWindowContext_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkTextBox.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkUtils.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/VerticalDrawText.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/WindowRgn_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/ApiWrapper_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/AttributeUtil.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/BitmapHelper_Native.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/BitmapHepler_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/BitmapHepler_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/Clipboard_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/DiskUtils_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/FileDialog_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/FilePath.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/FilePathUtil.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/FileTime.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/FileUtil.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/InlineHook_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/LogUtil.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/MonitorUtil_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/PerformanceUtil.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/ProcessSingleton.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/ScreenCapture_Linux.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/ScreenCapture_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/ShadowWnd_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/ShadowWnd_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/StringCharset.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/StringConvert.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/StringUtil.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/SystemUtil_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/WinImplBase.cpp"
 )
 
@@ -349,50 +302,48 @@ set(DUI_SRC_COMMON
 # macOS and Windows, where the file compiles to an empty TU. That is what happened
 # before this list existed too.
 set(DUI_SRC_BACKEND_X11
-    "${CMAKE_CURRENT_LIST_DIR}/Core/MessageLoop_X11.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/NativeWindow_X11.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/Render_Skia_X11.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/ScreenCapture_X11.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon_X11.cpp"
 )
 
 # Wayland native backend, appended only on a Wayland build.
 set(DUI_SRC_BACKEND_WAYLAND
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ControlDropTargetImpl_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/CursorManager_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/DpiAwareness_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/Input_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/Keyboard_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/MessageLoop_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/NativeWindow_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ThreadMessage_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ToolTip_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/WindowDropTarget_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/Render_Skia_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkRasterWindowContext_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/Clipboard_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/FileDialog_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/ScreenCapture_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/SystemUtil_Wayland.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon_Wayland.cpp"
+)
+
+# SDL3 backend, appended only on an SDL build. SDL3 is the whole window/input layer
+# here, so this list is wider than the native ones: the interfaces the native
+# backends split across Core/, Control/, RenderSkia/ and Utils/ all arrive through
+# SDL on this build.
+set(DUI_SRC_BACKEND_SDL
+    "${CMAKE_CURRENT_LIST_DIR}/Core/ClickThrough_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/ControlDropTargetImpl_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/CursorManager_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/DpiAwareness_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/DragWindowFilter_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/Keyboard_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/SDL_Linux.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/SDL_MacOS.mm"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/Keycode_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/MessageLoop_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/NativeWindow_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/ThreadMessage_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/ToolTip_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Core/WindowDropTarget_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/DateTimeWnd_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTreeImpl_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/RichEdit_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/Render_Skia_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkRasterWindowContext_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/BitmapHepler_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/Clipboard_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/FileDialog_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/MonitorUtil_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/ScreenCapture_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/ShadowWnd_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/SystemUtil_SDL.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon_SDL.cpp"
 )
 
 # Objective-C++, appended only on Darwin.
 set(DUI_SRC_MACOS_OBJCXX
-    "${CMAKE_CURRENT_LIST_DIR}/Core/ClickThrough_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/CursorManager_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/Keyboard_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/MessageLoop_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Core/NativeWindow_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/Render_Skia_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkGLWindowContext_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkMetalWindowContext_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/RenderSkia/SkRasterWindowContext_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/Clipboard_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/FileDialog_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/MonitorUtil_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/ScreenCapture_MacOS.mm"
-    "${CMAKE_CURRENT_LIST_DIR}/Utils/SystemUtil_MacOS.mm"
 )
 
 # CEF controls: compiled only when CEF is enabled (see below).
@@ -401,18 +352,12 @@ set(DUI_SRC_CEF
     "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefControlNative.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefControlOffScreen.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefManager.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefManager_Linux.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefManager_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefManager_Windows.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefWindowUtils_Linux.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefWindowUtils_Windows.cpp"
 )
 
 # Separate from DUI_SRC_CEF because it was previously filtered out on non-macOS
 # by list(REMOVE_ITEM); folding it in would compile it on every platform CEF is
 # enabled on.
 set(DUI_SRC_CEF_MACOS
-    "${CMAKE_CURRENT_LIST_DIR}/CEFControl/CefWindowUtils_MacOS.mm"
 )
 
 set(DUI_SRC_CEF_INTERNAL
@@ -477,7 +422,7 @@ set(SKIA_SRCS
 # library, and this one used to be listed unconditionally, so a Windows build tried to
 # compile X11 code. dui's own RenderSkia/SkRasterWindowContext_Windows.cpp is what the
 # Windows build uses; Skia's Windows variant is not referenced at all.
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows" AND NOT DUI_ENABLE_SDL)
     list(APPEND SKIA_SRCS
         ${SKIA_SRC_ROOT_DIR}/tools/window/unix/RasterWindowContext_unix.cpp
     )
@@ -518,10 +463,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     )
 endif()
 
-# Native backend, chosen once. The two backends are mutually exclusive; see the note on
-# the source lists above for why that is not interchangeable with "compile both".
+# Backend, chosen once. The backends are mutually exclusive; see the note on the
+# source lists above for why that is not interchangeable with "compile both".
 set(DUI_SRC_PLATFORM ${DUI_SRC_COMMON})
-if(DUI_ENABLE_WAYLAND)
+if(DUI_ENABLE_SDL)
+    list(APPEND DUI_SRC_PLATFORM ${DUI_SRC_BACKEND_SDL})
+elseif(DUI_ENABLE_WAYLAND)
     list(APPEND DUI_SRC_PLATFORM ${DUI_SRC_BACKEND_WAYLAND})
 else()
     list(APPEND DUI_SRC_PLATFORM ${DUI_SRC_BACKEND_X11})
@@ -598,7 +545,27 @@ else()
     message(STATUS "CEF support disabled (FreeBSD is not supported)")
 endif()
 
-if(DUI_ENABLE_WAYLAND)
+if(DUI_ENABLE_SDL)
+    # SDL3 supplies the window and input layer for every platform. It is attached the
+    # same way the Wayland branch attaches its own libraries: PRIVATE, because this
+    # archive is what references the SDL symbols.
+    if(NOT DEFINED DUI_SDL3_ROOT)
+        message(FATAL_ERROR "DUI_ENABLE_SDL needs DUI_SDL3_ROOT (an SDL3 install prefix)")
+    endif()
+    find_package(Freetype REQUIRED)
+    find_package(Fontconfig REQUIRED)
+    add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
+    # PUBLIC, not PRIVATE: every consumer has to agree with the library about which
+    # backend dui_config.h selects. A target that links `dui` directly -- tests do --
+    # gets nothing from dui::app, and compiled for the native backend while the library
+    # was built for SDL it would reach for headers this build does not have.
+    target_compile_definitions(${PROJECT_NAME} PUBLIC DUI_SDL=1)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+        "DUI_SDL_THEME_NAME=\"${DUI_SDL_THEME}\"")
+    target_include_directories(${PROJECT_NAME} PRIVATE "${DUI_SDL3_ROOT}/include")
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        "${DUI_SDL3_ROOT}/lib/libSDL3.dylib" Freetype::Freetype Fontconfig::Fontconfig)
+elseif(DUI_ENABLE_WAYLAND)
     list(APPEND LIBRARY_SOURCES "${WAYLAND_GEN_DIR}/xdg-shell-client-protocol.c")
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
     add_dependencies(${PROJECT_NAME} generate_wayland_protocols)

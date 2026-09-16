@@ -40,7 +40,9 @@
 #include <thread>
 #include <vector>
 
-#if defined(DUI_BUILD_FOR_MACOS)
+#if defined(DUI_BUILD_FOR_SDL)
+#include "dui/Core/MessageLoop_SDL.h"
+#elif defined(DUI_BUILD_FOR_MACOS)
 #include "dui/Core/MessageLoop_MacOS.h"
 #endif
 
@@ -400,9 +402,17 @@ void TestTimerMessageLoop()
     timers.AddTimer(owner.GetWeakFlag(), [&]() {
         ++calls;
         terminate = true;
+#if defined(DUI_BUILD_FOR_SDL)
+        ui::MessageLoop_SDL::PostNoneEvent();
+#else
         ui::MessageLoop_MacOS::PostNoneEvent();
+#endif
     }, 5, 1);
+#if defined(DUI_BUILD_FOR_SDL)
+    ui::MessageLoop_SDL loop;
+#else
     ui::MessageLoop_MacOS loop;
+#endif
     loop.RunUserLoop(terminate);
     assert(calls == 1);
     timers.Clear();

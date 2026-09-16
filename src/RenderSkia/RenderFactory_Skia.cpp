@@ -6,22 +6,18 @@
 #include "dui/RenderSkia/Pen_Skia.h"
 #include "dui/RenderSkia/Path_Skia.h"
 #include "dui/RenderSkia/Matrix_Skia.h"
-#if defined(DUI_BUILD_FOR_X11)
-#include "dui/RenderSkia/Render_Skia_X11.h"
-#include "dui/Core/MessageLoop_X11.h"
-#include <X11/Xlib.h>
-#endif
 
-#if defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_SDL)
+    #include "dui/RenderSkia/Render_Skia_SDL.h"
+    #include <SDL3/SDL.h>
+
+#elif defined (DUI_BUILD_FOR_WAYLAND)
     #include "dui/RenderSkia/Render_Skia_Wayland.h"
     #include "dui/Core/MessageLoop_Wayland.h"
     #include <wayland-client.h>
 
 #elif defined (DUI_BUILD_FOR_WIN)
     #include "dui/RenderSkia/Render_Skia_Windows.h"
-
-#elif defined (DUI_BUILD_FOR_MACOS)
-    #include "dui/RenderSkia/Render_Skia_MacOS.h"
 #endif
 
 namespace ui {
@@ -83,28 +79,16 @@ IBitmap* RenderFactory_Skia::CreateBitmap()
 
 IRender* RenderFactory_Skia::CreateRender(const IRenderDpiPtr& spRenderDpi, void* platformData, RenderBackendType backendType)
 {
-#if defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_SDL)
+    SDL_Window* sdlWindow = (SDL_Window*)platformData;
+    IRender* pRender = new Render_Skia_SDL(sdlWindow, backendType);
+#elif defined (DUI_BUILD_FOR_WAYLAND)
     wl_surface* wlSurface = (wl_surface*)platformData;
     wl_shm* shm = MessageLoop_Wayland::GetShm();
     IRender* pRender = new Render_Skia_Wayland(wlSurface, shm, backendType);
-#elif defined(DUI_BUILD_FOR_X11)
-    Display* display = MessageLoop_X11::GetDisplay();
-    Window xWindow = static_cast<Window>(reinterpret_cast<uintptr_t>(platformData));
-    XWindowAttributes attrs{};
-    if (display != nullptr && xWindow != 0) XGetWindowAttributes(display, xWindow, &attrs);
-    if (xWindow == 0 && display != nullptr) {
-        attrs.visual = DefaultVisual(display, DefaultScreen(display));
-        attrs.depth = DefaultDepth(display, DefaultScreen(display));
-        attrs.width = 1;
-        attrs.height = 1;
-    }
-    IRender* pRender = new Render_Skia_X11(display, xWindow, attrs.visual, attrs.depth, attrs.width, attrs.height, backendType);
 #elif defined(DUI_BUILD_FOR_WIN)
     HWND hWnd = (HWND)platformData;
     IRender* pRender = new Render_Skia_Windows(hWnd, backendType);
-#elif defined(DUI_BUILD_FOR_MACOS)
-    void* nsView = platformData;
-    IRender* pRender = new Render_Skia_MacOS(nsView, backendType);
 #else
     UNUSED_VARIABLE(platformData);
     UNUSED_VARIABLE(backendType);
@@ -124,3 +108,5 @@ IFontMgr* RenderFactory_Skia::GetFontMgr() const
 }
 
 } // namespace ui
+
+

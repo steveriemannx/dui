@@ -1,17 +1,31 @@
 #include "dui/Utils/ProcessSingleton.h"
-
-#if defined (DUI_BUILD_FOR_WIN)
-    #include "dui/Utils/ProcessSingleton_Windows.h"
-#elif defined (DUI_BUILD_FOR_LINUX) || defined (DUI_BUILD_FOR_FREEBSD)
-    #include "dui/Utils/ProcessSingleton_Linux.h"
-#elif defined (DUI_BUILD_FOR_MACOS)
-    #include "dui/Utils/ProcessSingleton_MacOS.h"
-#endif
-
+#include "dui/Utils/ProcessSingletonData.h"
 #include "dui/Utils/StringConvert.h"
+#include <chrono>
 
 namespace ui
 {
+
+// SDL-only stub: no cross-process singleton enforcement (always single instance check returns false)
+class ProcessSingletonImpl : public ProcessSingleton
+{
+public:
+    explicit ProcessSingletonImpl(const std::string& strAppName) : ProcessSingleton(strAppName) {}
+    virtual ~ProcessSingletonImpl() { m_bRunning = false; if (m_thListener.joinable()) m_thListener.join(); }
+protected:
+    void InitializePlatformComponents() override {}
+    void CleanupPlatformComponents() override {}
+    bool PlatformCheckInstance() override { return false; }
+    bool PlatformSendData(const std::string&) override { return false; }
+    void PlatformListen() override {
+        InitializePlatformComponents();
+        while (m_bRunning) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        CleanupPlatformComponents();
+    }
+};
+
 ProcessSingleton::ProcessSingleton(const std::string& strAppName):
     m_strAppName(strAppName), 
     m_bRunning(false) 
@@ -43,6 +57,7 @@ bool ProcessSingleton::SendArgumentsToExistingInstance(const std::vector<std::st
 
 void ProcessSingleton::StartListener(OnAlreadyRunningAppRelaunchEvent fnCallback)
 {
+    ASSERT(!m_bRunning);
     if (m_bRunning) {
         return;
     }
@@ -53,14 +68,13 @@ void ProcessSingleton::StartListener(OnAlreadyRunningAppRelaunchEvent fnCallback
 
 void ProcessSingleton::LogError(const std::string& /*strMessage*/)
 {
-    //std::cerr << "[ERROR] " << strMessage << std::endl;
 }
 
 void ProcessSingleton::OnAlreadyRunningAppRelaunch(const std::vector<std::string>& args)
 {
     if (m_fnCallback != nullptr) {
-        std::string line;
-        std::vector<std::string> argumentList;
+        U8String line;
+        std::vector<U8String> argumentList;
         for (const std::string& v : args) {
             line = StringConvert::UTF8ToT(v);
             if (!line.empty()) {
@@ -71,8 +85,9 @@ void ProcessSingleton::OnAlreadyRunningAppRelaunch(const std::vector<std::string
     }
 }
 
-std::unique_ptr<ProcessSingleton> ProcessSingleton::Create(const std::string& strAppName)
+std::unique_ptr<ProcessSingleton> ProcessSingleton::Create(const U8String& strAppName)
 {
+    ASSERT(!strAppName.empty());
     if (strAppName.empty()) {
         return nullptr;
     }

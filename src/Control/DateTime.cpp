@@ -3,11 +3,13 @@
 #include <sstream>
 #include <iomanip>
 
-#if defined (DUI_BUILD_FOR_WIN)
+#if defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Control/DateTimeWnd_SDL.h"
+#elif defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Control/DateTimeWnd_Windows.h"
 #elif defined (DUI_BUILD_FOR_WAYLAND) || defined (DUI_BUILD_FOR_X11)
     #include "dui/Control/DateTimeWnd_Native.h"
-#elif defined (DUI_BUILD_FOR_MACOS)
+#elif defined (DUI_BUILD_FOR_MACOS) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Control/DateTimeWnd_MacOS.h"
 #endif
 

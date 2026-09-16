@@ -262,6 +262,21 @@ namespace ui
     {
         kControlDropTypeWindows = 0, //Indicates an event from the ControlDropTarget_Windows interface
         kControlDropTypeWayland     = 1, //Indicates an event from the ControlDropTarget_Wayland interface
+        kControlDropTypeSDL         = 2, //Indicates an event from the ControlDropTarget_SDL interface
+    };
+
+    //SDL drag-and-drop data
+    struct ControlDropData_SDL
+    {
+        bool m_bHandled;                   //Whether the event has been fully handled; returning true means it was handled and is not dispatched to UI controls
+        bool m_bTextData;                  //true means m_textList holds the valid data; false means m_fileList does
+        int32_t m_ptClientX;               //The X coordinate of the mouse position, in client coordinates
+        int32_t m_ptClientY;               //The Y coordinate of the mouse position, in client coordinates
+
+        std::vector<U8String> m_textList;  //The text content included in the drag-and-drop operation; each element represents one line
+
+        U8String m_source;                 //Valid when m_bTextData is false
+        std::vector<U8String> m_fileList;  //The file paths included in the drag-and-drop operation; each element represents one file
     };
 
     //Windows platform drop data: for the related values, see the IDropTarget interface declaration

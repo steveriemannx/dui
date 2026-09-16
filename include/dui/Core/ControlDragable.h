@@ -11,7 +11,9 @@
 #include "dui/Utils/StringUtil.h"
 #include "dui/Core/WindowCreateParam.h"
 
-#ifdef DUI_BUILD_FOR_WAYLAND
+#if defined (DUI_BUILD_FOR_SDL)
+#include "dui/Core/DragWindowFilter_SDL.h"
+#elif defined (DUI_BUILD_FOR_WAYLAND) && !defined (DUI_BUILD_FOR_SDL)
 #include "dui/Core/DragWindowFilter_Wayland.h"
 #endif
 

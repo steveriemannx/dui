@@ -154,7 +154,7 @@ private:
 
 #if defined(DUI_BUILD_FOR_WIN)
     void BindCaptionButtons_Windows();
-#elif defined(DUI_BUILD_FOR_MACOS)
+#elif defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
     /** macOS version also inserts the self-drawn traffic lights.
      */
     void BindCaptionButtons_MacOS();
@@ -164,7 +164,7 @@ private:
     void BindCaptionButtons_FreeBSD();
 #endif
 
-#ifdef DUI_BUILD_FOR_MACOS
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
     /** Handle a click on the self-drawn macOS traffic lights
      *  (close/minimize/green-fullscreen).
      */
@@ -191,7 +191,7 @@ private:
      */
     bool m_bCaptionButtonsBound = false;
 
-#ifdef DUI_BUILD_FOR_MACOS
+#if defined(DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
     /** The self-drawn macOS traffic lights (macOS only; nullptr elsewhere).
      */
     class MacTrafficLights* m_pMacTrafficLights = nullptr;

@@ -6,13 +6,15 @@
 #include "dui/Utils/FilePath.h"
 #include "dui/Core/EventArgs.h"
 
-#if defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_SDL)
+    #include "dui/Core/NativeWindow_SDL.h"
+#elif defined (DUI_BUILD_FOR_WAYLAND) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/NativeWindow_Wayland.h"
-#elif defined (DUI_BUILD_FOR_X11)
+#elif defined (DUI_BUILD_FOR_X11) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/NativeWindow_X11.h"
-#elif defined (DUI_BUILD_FOR_WIN)
+#elif defined (DUI_BUILD_FOR_WIN) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/NativeWindow_Windows.h"
-#elif defined (DUI_BUILD_FOR_MACOS)
+#elif defined (DUI_BUILD_FOR_MACOS) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/NativeWindow_MacOS.h"
 #endif
 

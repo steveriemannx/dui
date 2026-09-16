@@ -93,7 +93,21 @@ if(DUI_OS_LINUX OR DUI_OS_FREEBSD)
     endif()
 endif()
 
-if(DUI_OS_LINUX)
+# SDL3 window and input backend. It replaces the per-platform native backends
+# rather than sitting beside them, so it is off unless asked for.
+option(DUI_ENABLE_SDL "Use the SDL3 window and input backend" OFF)
+
+# Which theme the SDL build ships as its default. The themes are complete
+# trees, so switching this switches the whole look; the name is what
+# GetDefaultThemePath() returns on this build.
+set(DUI_SDL_THEME "default" CACHE STRING "Theme name the SDL build uses")
+
+
+# This build ships one theme (themes/default); the platform themes the native
+# backends were dressed by are not in the tree.
+if(DUI_ENABLE_SDL)
+    set(DUI_EXAMPLE_THEME default CACHE STRING "Theme used by SDL examples" FORCE)
+elseif(DUI_OS_LINUX)
     set(DUI_EXAMPLE_THEME gnome CACHE STRING "Theme used by Linux examples" FORCE)
 elseif(DUI_OS_FREEBSD)
     set(DUI_EXAMPLE_THEME freebsd CACHE STRING "Theme used by FreeBSD examples" FORCE)

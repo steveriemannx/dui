@@ -1,6 +1,6 @@
 #include "ChildWindowPaint.h"
 
-#if defined (DUI_BUILD_FOR_MACOS)
+#if defined (DUI_BUILD_FOR_MACOS) && !defined(DUI_BUILD_FOR_SDL)
 
 #include <stdlib.h>
 #include <time.h>

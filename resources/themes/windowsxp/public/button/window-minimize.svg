@@ -1,0 +1,9 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="xpblue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3A93FF"/><stop offset="0.5" stop-color="#1C6FE8"/><stop offset="1" stop-color="#0B4BC8"/>
+    </linearGradient>
+  </defs>
+  <rect x="1.5" y="1.5" width="21" height="21" rx="2" fill="url(#xpblue)" stroke="#FFFFFF" stroke-opacity="0.65" stroke-width="1"/>
+  <rect x="6" y="16" width="9" height="3" fill="#FFFFFF"/>
+</svg>

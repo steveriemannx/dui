@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="1024,768" caption="0,0,0,35" use_system_caption="false" layered_window="false" shadow_snap="true" shadow_type="draw_none" shadow_border_size="0">
+  <VBox>
+    <!-- Title bar area -->
+    <HBox name="window_caption_bar" width="stretch" height="35" bkcolor="bk_caption_color">
+      <Control mouse_enabled="false"/>
+      <Button class="btn_wnd_min_11" height="32" width="26" name="minbtn" margin="0,2,0,2" tooltip_text="Minimize"/>
+      <Box height="stretch" width="26" margin="0,2,0,2">
+        <Button class="btn_wnd_max_11" height="32" width="stretch" name="maxbtn" tooltip_text="Maximize"/>
+        <Button class="btn_wnd_restore_11" height="32" width="stretch" name="restorebtn" visible="false" tooltip_text="Restore"/>
+      </Box>
+      <Button class="btn_wnd_close_11" height="32" width="26" name="closebtn" margin="0,2,6,2" tooltip_text="Close"/>
+    </HBox>
+    <!-- Left menu bar -->
+  <HBox>
+    <VBox width="60" bkcolor="darkcolor">
+      <Control bkimage="head.png" width="40" height="40" margin="10,10"/>
+    </VBox>
+    <!-- Friend list -->
+    <VBox width="270" bkcolor="light_gray">
+      <Box padding="10,8,10,8" height="auto">
+        <RichEdit class="simple simple_border prompt" name="nickname" width="stretch" height="35" font="system_14" text_align="vcenter" text_padding="25,8,8,8" borderround="5,5" prompttext="Search"/>
+        <Control width="auto" height="auto" margin="6,9" bkimage="search_icon.png"/>
+      </Box>
+      <VBox>
+        <!-- Firends -->
+      </VBox>
+    </VBox>
+    <!-- Chat area -->
+    <VBox>
+      <HBox height="80" bkcolor="bk_wnd_darkcolor">
+      </HBox>
+      <Control class="splitline_hor_level1"/>
+      <VBox bkcolor="bk_wnd_darkcolor">
+      </VBox>
+      <VBox height="150" bkcolor="bk_wnd_lightcolor">
+      </VBox>
+    </VBox>
+  </HBox>
+  </VBox>
+</Window>

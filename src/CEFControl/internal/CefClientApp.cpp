@@ -6,7 +6,7 @@
 #include "dui/Utils/StringUtil.h"
 #include "dui/Utils/StringConvert.h"
 
-#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_WAYLAND)
+#if defined (DUI_BUILD_FOR_LINUX) && defined (DUI_BUILD_FOR_WAYLAND) && !defined (DUI_BUILD_FOR_SDL)
     #include "dui/Core/MessageLoop_Wayland.h"
 #endif
 
