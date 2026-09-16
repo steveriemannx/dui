@@ -149,4 +149,8 @@ The build is CMake-only. The old `scripts/examples.sln` and
   `-DDUI_BUILD_CEF_EXAMPLES=OFF` skips the CEF examples (note it is **ON by default**, so a
   default configure pulls the CEF examples in), `-DDUI_ENABLE_MVVM=ON` adds the binding
   module
+- **Native backend (Linux/FreeBSD)**: the desktop session decides — a Wayland session selects
+  Wayland, an X11 session selects X11. With no session to ask (ssh, CI, a bare tty), each
+  platform falls back to the desktop stack it actually ships: **Wayland on FreeBSD, X11 on
+  Linux**. Override with `-DDUI_ENABLE_WAYLAND=ON|OFF`
 - Example mode selection (CMake): `-DDUI_EXAMPLES_MODE=ALL|XML|GEN|CODE` — builds only the examples of one development mode (XML / XML-to-code generation / pure code); default `ALL`

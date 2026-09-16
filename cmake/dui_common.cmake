@@ -52,22 +52,39 @@ endif()
 option(DUI_SKIA_LIB_SUBPATH "Skia lib sub path" OFF)
 
 # Linux and FreeBSD select the native backend from the desktop session unless
-# the caller explicitly provides DUI_ENABLE_WAYLAND.
+# the caller explicitly provides DUI_ENABLE_WAYLAND. With no session to ask, each
+# platform falls back to the desktop stack it actually ships -- Wayland on FreeBSD,
+# X11 on Linux -- so a configure over ssh does not silently pick the other one.
 if(DUI_OS_LINUX OR DUI_OS_FREEBSD)
     # -Wl,--no-as-needed is set on the targets that need it rather than directory-scoped:
     # on the dui target for in-tree consumers, and on dui::app for standalone application
     # builds that link dui by bare name.
     if(NOT DEFINED DUI_ENABLE_WAYLAND)
-        set(DUI_ENABLE_WAYLAND_DEFAULT OFF)
+        # The session decides when it says anything. Wayland is tested first because a
+        # Wayland session that runs XWayland exports DISPLAY as well, so a DISPLAY-only
+        # test would misread it. With no session to ask -- ssh, CI, a bare tty -- the
+        # platform's own desktop stack decides: FreeBSD's is Wayland, Linux's is still
+        # usually X11. This is the case a plain `cmake -S . -B build` over ssh lands in,
+        # which is why it cannot simply default to X11.
         if("$ENV{XDG_SESSION_TYPE}" STREQUAL "wayland" OR DEFINED ENV{WAYLAND_DISPLAY})
             set(DUI_ENABLE_WAYLAND_DEFAULT ON)
+            set(_dui_backend_reason "the session is Wayland")
+        elseif("$ENV{XDG_SESSION_TYPE}" STREQUAL "x11" OR DEFINED ENV{DISPLAY})
+            set(DUI_ENABLE_WAYLAND_DEFAULT OFF)
+            set(_dui_backend_reason "the session is X11")
+        elseif(DUI_OS_FREEBSD)
+            set(DUI_ENABLE_WAYLAND_DEFAULT ON)
+            set(_dui_backend_reason "there is no session, and FreeBSD's desktop stack is Wayland")
+        else()
+            set(DUI_ENABLE_WAYLAND_DEFAULT OFF)
+            set(_dui_backend_reason "there is no session, and Linux defaults to X11")
         endif()
         set(DUI_ENABLE_WAYLAND "${DUI_ENABLE_WAYLAND_DEFAULT}" CACHE BOOL
             "Enable the native Wayland backend (auto-detected from the desktop session)")
         if(DUI_ENABLE_WAYLAND)
-            message(STATUS "Desktop session detected as Wayland; enabling native Wayland backend")
+            message(STATUS "Enabling the native Wayland backend: ${_dui_backend_reason}")
         else()
-            message(STATUS "Desktop session detected as X11 or headless; enabling native X11 backend")
+            message(STATUS "Enabling the native X11 backend: ${_dui_backend_reason}")
         endif()
     else()
         set(DUI_ENABLE_WAYLAND "${DUI_ENABLE_WAYLAND}" CACHE BOOL

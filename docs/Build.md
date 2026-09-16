@@ -130,7 +130,7 @@ On different operating systems, install the required software following the list
 |Fedora                   |GNOME (Wayland)|`sudo dnf install -y gcc g++ gdb make git ninja-build gn python cmake llvm clang unzip fontconfig-devel mesa-libGL-devel mesa-libGLU-devel mesa-libGLES-devel mesa-libEGL-devel vulkan-devel libXext-devel libXcursor-devel libXi-devel libXrandr-devel dbus-devel ibus-devel wayland-devel libxkbcommon-devel`|
 |OpenSuse                 |KDE (X11)      |`sudo zypper install -y gcc gcc-c++ gdb make git ninja gn python cmake llvm clang unzip fontconfig-devel Mesa-libGL-devel Mesa-libEGL-devel Mesa-libGLESv3-devel glu-devel vulkan-devel libXext-devel libXcursor-devel libXi-devel libXrandr-devel dbus-1-devel ibus-devel`|
 
-dui uses native Linux window backends. X11 is the default for X11 or headless sessions; Wayland is selected automatically when the current session is Wayland. Override the selection explicitly during configuration:
+dui uses native Linux window backends. The desktop session decides which: a Wayland session selects Wayland, an X11 session selects X11. With no session to ask — ssh, CI, a bare tty — each platform falls back to the desktop stack it actually ships, so **FreeBSD gets Wayland and Linux gets X11**. (Wayland is tested first, because a Wayland session that runs XWayland exports `DISPLAY` too.) Override the selection explicitly during configuration:
 
     cmake -S . -B build-x11 -DDUI_ENABLE_WAYLAND=OFF
     cmake -S . -B build-wayland -DDUI_ENABLE_WAYLAND=ON
