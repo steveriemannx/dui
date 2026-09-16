@@ -28,6 +28,24 @@ endif()
 # CEF is not supported on FreeBSD (no official binary distribution; see src/CMakeLists.txt)
 # nor on MinGW (the MinGW build scripts exclude it)
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND NOT MINGW AND NOT DUI_ENABLE_WAYLAND AND DUI_BUILD_CEF_EXAMPLES)
+    # A space in a path is the one thing bmake cannot be told about. CEF's macOS
+    # helper app bundles are named "<name> Helper" -- CEF's own build files write
+    # the space in -- and CMake's makefile generator can only write such a path the
+    # GNU make way. bmake does not read that, so the build dies with "don't know how
+    # to make <dir>/bin_helper/cef", which names neither of the two real causes.
+    # Say it here instead: this is the point the examples are added, and the
+    # generator can still be changed. See cmake/dui_build_program.cmake.
+    if(CMAKE_MAKE_PROGRAM MATCHES "bmake")
+        message(WARNING
+            "The CEF examples are enabled, but bmake is driving this build and cannot\n"
+            "build them (a CEF helper app on macOS is named \"<name> Helper\", and a\n"
+            "space in a path is written by CMake's makefile generator the GNU make\n"
+            "way, which bmake does not read).\n"
+            "Configure again with one of:\n"
+            "  -G Ninja                              (recommended)\n"
+            "  -DCMAKE_MAKE_PROGRAM=/usr/bin/make    (GNU make, ships with macOS)\n"
+            "  -DDUI_BUILD_CEF_EXAMPLES=OFF          (leave the CEF examples out)")
+    endif()
     add_subdirectory(cef)
     add_subdirectory(CefBrowser)
 endif()

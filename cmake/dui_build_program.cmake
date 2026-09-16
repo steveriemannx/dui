@@ -32,7 +32,15 @@ if(CMAKE_GENERATOR MATCHES "Makefiles"
             message(FATAL_ERROR
                 "bmake was not found, and macOS builds dui with it.\n"
                 "  install it with:  brew install bmake\n"
-                "Or name another program with -DCMAKE_MAKE_PROGRAM=<program>.")
+                "Or name another program with -DCMAKE_MAKE_PROGRAM=<program>.\n"
+                "\n"
+                "Note that bmake cannot build the CEF examples on macOS: their helper\n"
+                "app bundles are named \"<name> Helper\", and CMake's makefile generator\n"
+                "can only write a space in a path the GNU make way, which bmake does not\n"
+                "read.  For a CEF build use one of these instead of bmake:\n"
+                "  -G Ninja                                (recommended; ninja is already\n"
+                "                                           installed for the Skia build)\n"
+                "  -DCMAKE_MAKE_PROGRAM=/usr/bin/make      (GNU make, ships with macOS)")
         elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "FreeBSD")
             message(FATAL_ERROR
                 "bmake was not found, and FreeBSD builds dui with it.\n"
