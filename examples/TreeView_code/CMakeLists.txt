@@ -9,11 +9,8 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 # Embed resources into the executable; embedded resources are accessed directly from memory.
 set(EMBED_RES_DIR "${DUI_ROOT}/resources")
-if(APPLE)
-    set(TREEVIEW_EMBED_THEME macos26)
-elseif(WIN32)
-    set(TREEVIEW_EMBED_THEME windows11)
-else()
+set(TREEVIEW_EMBED_THEME "${DUI_EXAMPLE_THEME}")
+if(TREEVIEW_EMBED_THEME STREQUAL "")
     set(TREEVIEW_EMBED_THEME default)
 endif()
 set(EMBED_RES_PATHS

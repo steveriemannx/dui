@@ -8,11 +8,8 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 # Mode 2 (XML-to-code generation): convert the platform layout.xml to pure C++ code.
-if(APPLE)
-    set(LAYOUT_THEME macos26)
-elseif(WIN32)
-    set(LAYOUT_THEME windows11)
-else()
+set(LAYOUT_THEME "${DUI_EXAMPLE_THEME}")
+if(LAYOUT_THEME STREQUAL "")
     set(LAYOUT_THEME default)
 endif()
 set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${LAYOUT_THEME}/layout/layout.xml")

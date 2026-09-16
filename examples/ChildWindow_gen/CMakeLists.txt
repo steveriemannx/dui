@@ -9,11 +9,8 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 # Mode 2 (XML-to-code generation): convert child_window.xml to pure C++ code at build time.
 # The XML source follows the platform-default theme used by the runtime resources.
-if(APPLE)
-    set(CHILD_WINDOW_THEME macos26)
-elseif(WIN32)
-    set(CHILD_WINDOW_THEME windows11)
-else()
+set(CHILD_WINDOW_THEME "${DUI_EXAMPLE_THEME}")
+if(CHILD_WINDOW_THEME STREQUAL "")
     set(CHILD_WINDOW_THEME default)
 endif()
 set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${CHILD_WINDOW_THEME}/child_window/child_window.xml")

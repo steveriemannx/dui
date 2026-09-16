@@ -8,11 +8,8 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 # Mode 2 (XML-to-code generation): convert threads.xml to pure C++ code at build time.
-if(APPLE)
-    set(THREADS_THEME macos26)
-elseif(WIN32)
-    set(THREADS_THEME windows11)
-else()
+set(THREADS_THEME "${DUI_EXAMPLE_THEME}")
+if(THREADS_THEME STREQUAL "")
     set(THREADS_THEME default)
 endif()
 set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${THREADS_THEME}/threads/threads.xml")

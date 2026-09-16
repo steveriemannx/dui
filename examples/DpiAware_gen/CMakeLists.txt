@@ -8,11 +8,8 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 # Mode 2 (XML-to-code generation): convert the platform DpiAware.xml to pure C++ code.
-if(APPLE)
-    set(DPI_AWARE_THEME macos26)
-elseif(WIN32)
-    set(DPI_AWARE_THEME windows11)
-else()
+set(DPI_AWARE_THEME "${DUI_EXAMPLE_THEME}")
+if(DPI_AWARE_THEME STREQUAL "")
     set(DPI_AWARE_THEME default)
 endif()
 set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${DPI_AWARE_THEME}/dpi_aware/DpiAware.xml")

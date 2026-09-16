@@ -9,11 +9,8 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 # Embed the common resources and this example's child window skin.
 set(EMBED_RES_DIR "${DUI_ROOT}/resources")
-if(APPLE)
-    set(CHILD_WINDOW_EMBED_THEME macos26)
-elseif(WIN32)
-    set(CHILD_WINDOW_EMBED_THEME windows11)
-else()
+set(CHILD_WINDOW_EMBED_THEME "${DUI_EXAMPLE_THEME}")
+if(CHILD_WINDOW_EMBED_THEME STREQUAL "")
     set(CHILD_WINDOW_EMBED_THEME default)
 endif()
 set(EMBED_RES_PATHS

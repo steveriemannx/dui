@@ -11,11 +11,8 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 # Only embed the common resources (active theme's global.xml + public assets, plus fonts and
 # lang) and this example's own skin (themes/<platform-theme>/list_box), not the whole tree.
 set(EMBED_RES_DIR "${DUI_ROOT}/resources")
-if(APPLE)
-    set(LISTBOX_EMBED_THEME macos26)
-elseif(WIN32)
-    set(LISTBOX_EMBED_THEME windows11)
-else()
+set(LISTBOX_EMBED_THEME "${DUI_EXAMPLE_THEME}")
+if(LISTBOX_EMBED_THEME STREQUAL "")
     set(LISTBOX_EMBED_THEME default)
 endif()
 set(EMBED_RES_PATHS

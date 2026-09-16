@@ -9,15 +9,9 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 # Mode 2 (XML-to-code generation): convert the window layouts to pure C++ code at build time.
 # The two menus (settings_menu.xml/tray_menu.xml) remain runtime menu resources.
-if(APPLE)
-    set(CONTROLS_THEME macos26)
-elseif(WIN32)
-    set(CONTROLS_THEME windows11)
-else()
-    set(CONTROLS_THEME "${DUI_EXAMPLE_THEME}")
-    if(CONTROLS_THEME STREQUAL "")
-        set(CONTROLS_THEME default)
-    endif()
+set(CONTROLS_THEME "${DUI_EXAMPLE_THEME}")
+if(CONTROLS_THEME STREQUAL "")
+    set(CONTROLS_THEME default)
 endif()
 set(GEN_XML_FILES
     "${DUI_ROOT}/resources/themes/${CONTROLS_THEME}/controls/controls.xml"

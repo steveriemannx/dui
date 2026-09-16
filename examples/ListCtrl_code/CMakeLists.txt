@@ -7,11 +7,8 @@ project(ListCtrl_code CXX)
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
-if(APPLE)
-    set(LISTCTRL_THEME macos26)
-elseif(WIN32)
-    set(LISTCTRL_THEME windows11)
-else()
+set(LISTCTRL_THEME "${DUI_EXAMPLE_THEME}")
+if(LISTCTRL_THEME STREQUAL "")
     set(LISTCTRL_THEME default)
 endif()
 

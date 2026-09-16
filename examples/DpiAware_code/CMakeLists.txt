@@ -8,11 +8,8 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 set(EMBED_RES_DIR "${DUI_ROOT}/resources")
-if(APPLE)
-    set(DPI_AWARE_THEME macos26)
-elseif(WIN32)
-    set(DPI_AWARE_THEME windows11)
-else()
+set(DPI_AWARE_THEME "${DUI_EXAMPLE_THEME}")
+if(DPI_AWARE_THEME STREQUAL "")
     set(DPI_AWARE_THEME default)
 endif()
 set(EMBED_RES_PATHS "themes/${DPI_AWARE_THEME}/global.xml" "themes/${DPI_AWARE_THEME}/public" "themes/${DPI_AWARE_THEME}/dpi_aware" "fonts" "lang")

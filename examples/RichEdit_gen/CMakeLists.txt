@@ -7,11 +7,8 @@ project(RichEdit_gen CXX)
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
-if(APPLE)
-    set(EMBED_THEME macos26)
-elseif(WIN32)
-    set(EMBED_THEME windows11)
-else()
+set(EMBED_THEME "${DUI_EXAMPLE_THEME}")
+if(EMBED_THEME STREQUAL "")
     set(EMBED_THEME default)
 endif()
 # Mode 2 (XML-to-code generation): convert the active theme's XML layouts to C++.

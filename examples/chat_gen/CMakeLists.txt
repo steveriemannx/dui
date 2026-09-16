@@ -8,17 +8,9 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 # Mode 2 (XML-to-code generation): convert wechat.xml/login.xml to pure C++ code at build time
-if(APPLE)
-    set(CHAT_THEME macos26)
-elseif(WIN32)
-    set(CHAT_THEME windows11)
-else()
-    # Keep Linux/X11 examples on the configured Linux theme (for example
-    # gnome), rather than silently generating code from the default theme.
-    set(CHAT_THEME "${DUI_EXAMPLE_THEME}")
-    if(CHAT_THEME STREQUAL "")
-        set(CHAT_THEME default)
-    endif()
+set(CHAT_THEME "${DUI_EXAMPLE_THEME}")
+if(CHAT_THEME STREQUAL "")
+    set(CHAT_THEME default)
 endif()
 set(GEN_XML_FILES
     "${DUI_ROOT}/resources/themes/${CHAT_THEME}/chat/wechat.xml"

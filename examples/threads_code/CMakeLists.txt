@@ -8,11 +8,8 @@ get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOL
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
 set(EMBED_RES_DIR "${DUI_ROOT}/resources")
-if(APPLE)
-    set(THREADS_EMBED_THEME macos26)
-elseif(WIN32)
-    set(THREADS_EMBED_THEME windows11)
-else()
+set(THREADS_EMBED_THEME "${DUI_EXAMPLE_THEME}")
+if(THREADS_EMBED_THEME STREQUAL "")
     set(THREADS_EMBED_THEME default)
 endif()
 set(EMBED_RES_PATHS

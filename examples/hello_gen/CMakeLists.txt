@@ -10,13 +10,11 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 # Mode 2 (XML-to-code generation): convert hello.xml to pure C++ code at build time.
 # The XML is the design-time format: write/debug the UI in XML, generate code at
 # build time, zero layout XML parsing at runtime.
-# The XML source follows the platform-default theme (same as the hello XML example,
-# see GetDefaultThemePath): Windows -> windows11, macOS -> macos26, others -> default.
-if(APPLE)
-    set(HELLO_THEME macos26)
-elseif(WIN32)
-    set(HELLO_THEME windows11)
-else()
+# The XML source follows the platform theme (cmake/dui_common.cmake sets
+# DUI_EXAMPLE_THEME): Windows -> windows11, macOS -> macos26, Linux -> gnome,
+# FreeBSD -> freebsd.
+set(HELLO_THEME "${DUI_EXAMPLE_THEME}")
+if(HELLO_THEME STREQUAL "")
     set(HELLO_THEME default)
 endif()
 set(GEN_XML_FILES "${DUI_ROOT}/resources/themes/${HELLO_THEME}/hello/hello.xml")

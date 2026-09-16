@@ -23,7 +23,14 @@ enum class ResourceType
 
 /** Select the default theme directory for the current platform.
  *  Windows uses the Windows 11 theme, macOS uses the native macOS light theme,
- *  Linux uses the GNOME theme, while other platforms use the generic default theme.
+ *  Linux uses the GNOME theme and FreeBSD the FreeBSD theme, while other platforms
+ *  use the generic default theme.
+ *
+ *  Every platform that has its own theme directory under resources/themes must be
+ *  named here (see cmake/dui_common.cmake's DUI_EXAMPLE_THEME for the same list):
+ *  the examples embed their resources under this same path at build time, so a
+ *  platform that falls through to "default" here while the build side names a
+ *  theme is a platform whose resources cannot be found at runtime.
  */
 inline FilePath GetDefaultThemePath()
 {
@@ -33,6 +40,8 @@ inline FilePath GetDefaultThemePath()
     return FilePath("themes/macos26");
 #elif defined (DUI_BUILD_FOR_LINUX)
     return FilePath("themes/gnome");
+#elif defined (DUI_BUILD_FOR_FREEBSD)
+    return FilePath("themes/freebsd");
 #else
     return FilePath("themes/default");
 #endif

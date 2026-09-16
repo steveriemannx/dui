@@ -7,11 +7,8 @@ project(MoveControl_gen CXX)
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
-if(APPLE)
-    set(MOVECONTROL_THEME macos26)
-elseif(WIN32)
-    set(MOVECONTROL_THEME windows11)
-else()
+set(MOVECONTROL_THEME "${DUI_EXAMPLE_THEME}")
+if(MOVECONTROL_THEME STREQUAL "")
     set(MOVECONTROL_THEME default)
 endif()
 

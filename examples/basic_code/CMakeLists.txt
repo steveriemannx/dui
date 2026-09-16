@@ -11,11 +11,8 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 # shared images, no default-theme fallback) plus this example's own skin
 # (themes/<platform-theme>/basic). Always: fonts + lang.
 set(EMBED_RES_DIR "${DUI_ROOT}/resources")
-if(APPLE)
-    set(BASIC_EMBED_THEME macos26)
-elseif(WIN32)
-    set(BASIC_EMBED_THEME windows11)
-else()
+set(BASIC_EMBED_THEME "${DUI_EXAMPLE_THEME}")
+if(BASIC_EMBED_THEME STREQUAL "")
     set(BASIC_EMBED_THEME default)
 endif()
 set(EMBED_RES_PATHS

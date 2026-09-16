@@ -14,11 +14,8 @@ include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 # Only embed the common resources (active theme's global.xml + public assets, plus fonts and
 # lang) and this example's own skin (themes/<platform-theme>/hello), not the whole tree.
 set(EMBED_RES_DIR "${DUI_ROOT}/resources")
-if(APPLE)
-    set(HELLO_EMBED_THEME macos26)
-elseif(WIN32)
-    set(HELLO_EMBED_THEME windows11)
-else()
+set(HELLO_EMBED_THEME "${DUI_EXAMPLE_THEME}")
+if(HELLO_EMBED_THEME STREQUAL "")
     set(HELLO_EMBED_THEME default)
 endif()
 # Embed only the platform theme (self-contained: macos26/public now carries all

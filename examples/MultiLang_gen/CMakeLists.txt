@@ -7,11 +7,8 @@ project(MultiLang_gen CXX)
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 include("${DUI_SRC_ROOT_DIR}/cmake/dui_app.cmake")
 
-if(APPLE)
-    set(MULTILANG_THEME macos26)
-elseif(WIN32)
-    set(MULTILANG_THEME windows11)
-else()
+set(MULTILANG_THEME "${DUI_EXAMPLE_THEME}")
+if(MULTILANG_THEME STREQUAL "")
     set(MULTILANG_THEME default)
 endif()
 set(GEN_XML_FILES
