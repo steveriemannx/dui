@@ -333,6 +333,15 @@ jobs:
         with:
           arch: x64
 
+      # On macOS the make generators run on bmake, and cmake/dui_build_program.cmake
+      # requires it rather than falling back to GNU make (see that file for why). The
+      # runner does not ship it -- it is a Homebrew formula -- so the configure stops with
+      # the install hint unless it is installed here first.
+      - name: Install bmake (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: brew install bmake
+
       # Deliberately after the steps above so that the versions printed are the ones the
       # build will actually use. The cmake floor is not cosmetic: CMakePresets.json is
       # schema version 6, which cmake refuses to read before 3.23 — and a clear failure
@@ -457,6 +466,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # Same reason as the build job: cmake/dui_build_program.cmake requires bmake on
+      # macOS, and the runner does not ship it (it is a Homebrew formula).
+      - name: Install bmake
+        shell: bash
+        run: brew install bmake
 
       - name: Install CMake 4.3.2
         shell: bash
