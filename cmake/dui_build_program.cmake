@@ -10,16 +10,19 @@
 # platform needs GNU make just to build dui.  It is required rather than merely
 # preferred: without bmake the configure stops and says how to install it.
 #
-# Included by the top-level CMakeLists.txt before project(), so it works for a
-# plain `cmake -S . -B build` as well as for a preset.
+# Included by the top-level CMakeLists.txt before project(), which is early enough
+# that CMAKE_MAKE_PROGRAM is empty unless the user named one, so it works for a
+# plain `cmake -S . -B build` as well as for a preset.  Two ways out:
 #
-# Build with the generator's own choice instead (GNU make, or whatever
-# -DCMAKE_MAKE_PROGRAM names) by configuring with -DDUI_USE_BMAKE=OFF.
+#   cmake -S . -B build -DCMAKE_MAKE_PROGRAM=<program>   name the program to use
+#   cmake -S . -B build -DDUI_USE_BMAKE=OFF              let the generator pick
+#
 option(DUI_USE_BMAKE "Drive the make generators with bmake (FreeBSD/macOS)" ON)
 
 if(DUI_USE_BMAKE AND CMAKE_GENERATOR MATCHES "Makefiles"
         AND (CMAKE_HOST_SYSTEM_NAME STREQUAL "FreeBSD"
-             OR CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin"))
+             OR CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+        AND NOT CMAKE_MAKE_PROGRAM)
     find_program(DUI_BMAKE_PROGRAM NAMES bmake)
     if(DUI_BMAKE_PROGRAM)
         set(CMAKE_MAKE_PROGRAM "${DUI_BMAKE_PROGRAM}" CACHE FILEPATH
@@ -29,6 +32,7 @@ if(DUI_USE_BMAKE AND CMAKE_GENERATOR MATCHES "Makefiles"
             "bmake was not found, and ${CMAKE_HOST_SYSTEM_NAME} builds dui with it.\n"
             "  macOS : brew install bmake\n"
             "  FreeBSD: it is part of the base system, so check PATH\n"
-            "Or configure with -DDUI_USE_BMAKE=OFF to use ${CMAKE_MAKE_PROGRAM} instead.")
+            "Or name another program with -DCMAKE_MAKE_PROGRAM=<program>, or let the\n"
+            "generator pick one with -DDUI_USE_BMAKE=OFF.")
     endif()
 endif()
