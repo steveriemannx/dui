@@ -7,7 +7,8 @@
 #
 # ---- What each job does -------------------------------------------------------------
 #   build / macOS      Debug, configure -> `--target dui dui_core_tests` -> ctest
-#   build / Linux      Debug, same
+#   build / Linux      Debug, same; two legs, one per native backend -- Wayland on the
+#                      current CMake, X11 on the 4.0.0 floor (see the matrix)
 #   build / Windows    Debug, same; Visual Studio generator, see the note below
 #   sanitizers         Debug + -DDUI_ENABLE_SANITIZERS=ON (ASan/UBSan), macOS
 #
@@ -26,8 +27,8 @@
 #
 # Verified 2026-09-15 on a tree with `third_party/libcef` deleted outright: the whole
 # `dui` target rebuilt from scratch and linked, both on the Wayland branch (which
-# disables CEF anyway) and on -DDUI_ENABLE_CEF=OFF with the X11 backend -- the branch
-# this workflow now takes.
+# disables CEF anyway) and on -DDUI_ENABLE_CEF=OFF with the X11 backend -- between them
+# the two backends the Linux legs build.
 #
 # This is what makes a cold Linux or Windows runner viable. CEF is a ~250 MB download
 # plus ~700 MB extraction from cef-builds.spotifycdn.com, its only distributor (there is
@@ -176,8 +177,15 @@ jobs:
           # minimum nobody builds with is a claim rather than a requirement: this entry is
           # what catches a 4.1+ API creeping into the CMake files. The runners' own CMake
           # is 3.x, so every entry installs the version it needs (see "Install CMake").
-          linux_min='{"name":"Linux (Debug, CMake 4.0.0 - the declared minimum)","os":"ubuntu-24.04","preset":"debug","cmake":"4.0.0","configure_args":"","build_args":"","ctest_args":""}'
-          linux='{"name":"Linux (Debug)","os":"ubuntu-24.04","preset":"debug","cmake":"4.3.2","configure_args":"","build_args":"","ctest_args":""}'
+          # The two Linux legs differ by CMake version *and* by native backend, so that
+          # both backends stay compiled: the Wayland sources (Core/MessageLoop_Wayland.cpp,
+          # Utils/ScreenCapture_Wayland.cpp, the generated wayland protocols, and the
+          # PkgConfig::* link interface) are only built when DUI_ENABLE_WAYLAND is on, and
+          # an uncovered backend is exactly how they rotted before. Wayland is the leg that
+          # carries the working CMake; the floor leg keeps X11, which stays the default for
+          # a Linux configure without a session to read (see cmake/dui_common.cmake).
+          linux_min='{"name":"Linux (Debug, CMake 4.0.0 - the declared minimum, X11 backend)","os":"ubuntu-24.04","preset":"debug","cmake":"4.0.0","configure_args":"","build_args":"","ctest_args":""}'
+          linux='{"name":"Linux (Debug, Wayland backend)","os":"ubuntu-24.04","preset":"debug","cmake":"4.3.2","configure_args":"-DDUI_ENABLE_WAYLAND=ON","build_args":"","ctest_args":""}'
           win='{"name":"Windows (Debug, MSVC)","os":"windows-2022","preset":"debug","cmake":"4.3.2","configure_args":"-G \"Visual Studio 17 2022\" -A x64","build_args":"--config Debug","ctest_args":"-C Debug"}'
           parts=()
           [ "$MACOS" = "true" ] && parts+=("$mac")
@@ -293,11 +301,15 @@ jobs:
           path: build-presets/${{ matrix.preset }}/lib
           key: skia-lib-${{ runner.os }}-${{ runner.arch }}-${{ matrix.preset }}-${{ steps.deps.outputs.skia }}-${{ hashFiles('cmake/dui_deps.cmake', 'cmake/dui_common.cmake') }}
 
-      # Only what the library actually asks for on the default (X11) backend:
-      # src/CMakeLists.txt does find_package(X11 REQUIRED), Freetype and Fontconfig, and
-      # cmake/dui_bin_linux.cmake links X11/freetype/fontconfig/pthread/dl. unzip is
-      # required — cmake/dui_deps.cmake extracts the Skia zip with it on every
-      # non-Windows platform.
+      # What the library asks for on the Linux backends, both of them, because one leg
+      # builds each. X11: src/CMakeLists.txt does find_package(X11 REQUIRED), Freetype and
+      # Fontconfig, and cmake/dui_bin_linux.cmake links X11/freetype/fontconfig/pthread/dl.
+      # Wayland: cmake/dui_common.cmake's pkg_check_modules calls want wayland-client,
+      # wayland-egl, wayland-cursor, xkbcommon, egl, glesv2 and wayland-protocols, and dui's
+      # own Linux sources additionally want dbus-1 and ibus-1.0. Every Linux leg installs
+      # both sets: apt is cheap next to the Skia build, and keeping which leg needs which out
+      # of this step means the matrix can change without it. unzip is required —
+      # cmake/dui_deps.cmake extracts the Skia zip with it on every non-Windows platform.
       #
       # libgl1-mesa-dev is NOT optional, despite what an earlier version of this comment
       # claimed ("Skia binds GL through its own function tables, no system GL headers").
@@ -306,10 +318,11 @@ jobs:
       # opens with `#include <GL/gl.h>`. Without the package the Skia build dies at
       # [540/1078] with "fatal error: GL/gl.h: No such file or directory" and takes the
       # whole `dui` target with it. libgl1-mesa-dev pulls libgl-dev + libglvnd-dev, which
-      # is what supplies GL/gl.h and GL/glx.h. EGL/GLES/Vulkan stay out: skia_use_egl and
-      # skia_use_vulkan are both false by default, so nothing compiles against them, and
-      # the pkg_check_modules calls for dbus/ibus live in the DUI_ENABLE_WAYLAND branch,
-      # which is off.
+      # is what supplies GL/gl.h and GL/glx.h. The EGL/GLES development packages are here
+      # for the Wayland leg, which links -lEGL and -lGLESv2 through pkg-config even though
+      # the Skia build compiles nothing against them (skia_use_egl is false). Vulkan stays
+      # out: skia_use_vulkan is false and no DUI_ENABLE_WAYLAND pkg_check_modules asks for
+      # it. The package names are the ones docs/Build.md lists for a Wayland session.
       - name: Install build dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -318,7 +331,10 @@ jobs:
             ninja-build unzip bzip2 pkg-config \
             libfontconfig-dev libfreetype-dev \
             libgl1-mesa-dev \
-            libx11-dev libxext-dev libxcursor-dev libxi-dev libxrandr-dev
+            libx11-dev libxext-dev libxcursor-dev libxi-dev libxrandr-dev \
+            libwayland-dev wayland-protocols libxkbcommon-dev \
+            libegl1-mesa-dev libgles2-mesa-dev \
+            libdbus-1-dev libibus-1.0-dev
 
       # MSVC environment for the whole job. The Skia build runs `ninja`, which spawns
       # cl.exe ~900 times; gn's generated build.ninja carries the include/lib paths
