@@ -241,46 +241,7 @@ chmod +x ./dui/scripts/build_dui_all_in_one.sh
 ```
 The compiled example programs are in the bin directory.    
 
-## D. Build Process (FreeBSD platform)
-### I. Prerequisites: Install the required software
-```
-sudo pkg install git unzip python3 patch cmake ninja gn llvm fontconfig freetype2
-```
-### II. Automated build with a script (recommended)
-The script automatically handles downloading and building the relevant source code.    
-Choose a working directory (note: the path must not contain spaces, or the build script will fail), create a script `build.sh`, copy the script below into it, and save the file.    
-Then in the console, add execute permission to the script file, and finally run the script: 
-```
-chmod +x build.sh
-./build.sh
-```
-
-The script content is as follows:    
-```
-#!/usr/bin/env bash
-
-# Retry clone dui
-while true; do
-    if [ ! -d "./dui/.git" ]; then
-        git clone https://github.com/steveriemannx/dui dui
-    else
-        git -C ./dui pull
-    fi
-    if [ $? -ne 0 ]; then
-        sleep 10
-        continue
-    fi
-    break
-done
-
-chmod +x ./dui/scripts/build_dui_all_in_one.sh
-./dui/scripts/build_dui_all_in_one.sh
-```
-The compiled example programs are in the bin directory.
-
-Note: CEF (Chromium Embedded Framework) is not supported on the FreeBSD platform.
-
-## E. Continuous integration
+## D. Continuous integration
 
 `.github/workflows/ci.yml` configures, builds and tests the library on macOS (Debug),
 Linux (Debug) and Windows (Debug, MSVC), plus a macOS job that builds with
