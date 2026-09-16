@@ -284,21 +284,28 @@ option(DUI_BUILD_SKIA_FROM_SOURCE "Build Skia from the downloaded source (gn + n
 # Native Wayland libraries (optional on Linux and FreeBSD).
 if(DUI_ENABLE_WAYLAND)
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(WAYLAND_CLIENT REQUIRED wayland-client)
-    pkg_check_modules(WAYLAND_EGL REQUIRED wayland-egl)
-    pkg_check_modules(WAYLAND_CURSOR REQUIRED wayland-cursor)
-    pkg_check_modules(XKBCOMMON REQUIRED xkbcommon)
-    pkg_check_modules(EGL REQUIRED egl)
-    pkg_check_modules(GLESV2 REQUIRED glesv2)
-    pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols)
-    
+    # IMPORTED_TARGET, not the bare form: __LIBRARIES holds bare -l names, and the -L
+    # search path that makes those names resolvable lives in __LIBRARY_DIRS -- which
+    # nothing links, so it never reaches the link line. That is invisible on Linux,
+    # where the stack sits in a default ld search directory, and fatal on FreeBSD,
+    # where it sits in /usr/local/lib and "ld: unable to find library -lwayland-client"
+    # is the result. The imported target carries name and path together, so linking it
+    # is enough: no consumer has to know where the distribution put its libraries.
+    pkg_check_modules(WAYLAND_CLIENT REQUIRED IMPORTED_TARGET wayland-client)
+    pkg_check_modules(WAYLAND_EGL REQUIRED IMPORTED_TARGET wayland-egl)
+    pkg_check_modules(WAYLAND_CURSOR REQUIRED IMPORTED_TARGET wayland-cursor)
+    pkg_check_modules(XKBCOMMON REQUIRED IMPORTED_TARGET xkbcommon)
+    pkg_check_modules(EGL REQUIRED IMPORTED_TARGET egl)
+    pkg_check_modules(GLESV2 REQUIRED IMPORTED_TARGET glesv2)
+    pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED IMPORTED_TARGET wayland-protocols)
+
     set(DUI_WAYLAND_LIBS
-        ${WAYLAND_CLIENT_LIBRARIES}
-        ${WAYLAND_EGL_LIBRARIES}
-        ${WAYLAND_CURSOR_LIBRARIES}
-        ${XKBCOMMON_LIBRARIES}
-        ${EGL_LIBRARIES}
-        ${GLESV2_LIBRARIES}
+        PkgConfig::WAYLAND_CLIENT
+        PkgConfig::WAYLAND_EGL
+        PkgConfig::WAYLAND_CURSOR
+        PkgConfig::XKBCOMMON
+        PkgConfig::EGL
+        PkgConfig::GLESV2
     )
     set(DUI_WAYLAND_INCLUDE_DIRS
         ${WAYLAND_CLIENT_INCLUDE_DIRS}
@@ -309,6 +316,27 @@ if(DUI_ENABLE_WAYLAND)
         ${GLESV2_INCLUDE_DIRS}
         ${WAYLAND_PROTOCOLS_INCLUDE_DIRS}
     )
+
+    # epoll-shim: the Wayland message loop is written against the Linux epoll/eventfd
+    # API. FreeBSD has eventfd in base, but epoll only via libepoll-shim (the same
+    # library the linuxulator uses). Prefer the shim over a kqueue rewrite so the
+    # event-loop code stays identical across platforms.
+    #
+    # Looked up here rather than in cmake/dui_app_freebsd.cmake because
+    # Core/MessageLoop_Wayland.cpp is compiled into libdui.a: the shim is a link
+    # dependency of the library, and applications are not the only targets that link
+    # the library -- tests link it directly and never see dui::app, which exists only
+    # once an example includes cmake/dui_app.cmake.
+    if(DUI_OS_FREEBSD)
+        find_path(EPOLL_SHIM_INCLUDE_DIR
+            NAMES sys/epoll.h
+            HINTS /usr/local/include/libepoll-shim
+            REQUIRED)
+        find_library(EPOLL_SHIM_LIBRARY
+            NAMES epoll-shim
+            HINTS /usr/local/lib
+            REQUIRED)
+    endif()
 endif()
 
 # Output logs: print variable data

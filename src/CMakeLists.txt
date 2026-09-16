@@ -60,34 +60,17 @@ endif()
 get_filename_component(DUI_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../" ABSOLUTE)
 get_filename_component(SKIA_SRC_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../third_party/skia/" ABSOLUTE)
 
-# Wayland library detection
+# The Wayland libraries themselves are detected in cmake/dui_common.cmake, included
+# above, which sets DUI_WAYLAND_INCLUDE_DIRS and DUI_WAYLAND_LIBS. This file used to
+# repeat that whole pkg_check_modules block -- and the copy here won, because it sits
+# in this directory scope and so overrode the shared definition for everything the dui
+# target links. Two copies meant the shared one could be corrected without changing
+# what the library actually linked, which is what happened when the pkg-config imports
+# were moved to IMPORTED_TARGET so the -L search path could travel with the library
+# name: the Wayland/GL stack is linked by bare -l name, and on FreeBSD, where it lives
+# in /usr/local/lib rather than a default ld directory, the link then failed with
+# "unable to find library -lwayland-client".
 if(DUI_ENABLE_WAYLAND)
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(WAYLAND_CLIENT REQUIRED wayland-client)
-    pkg_check_modules(WAYLAND_EGL REQUIRED wayland-egl)
-    pkg_check_modules(WAYLAND_CURSOR REQUIRED wayland-cursor)
-    pkg_check_modules(XKBCOMMON REQUIRED xkbcommon)
-    pkg_check_modules(EGL REQUIRED egl)
-    pkg_check_modules(GLESV2 REQUIRED glesv2)
-    pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols)
-    set(DUI_WAYLAND_INCLUDE_DIRS
-        ${WAYLAND_CLIENT_INCLUDE_DIRS}
-        ${WAYLAND_EGL_INCLUDE_DIRS}
-        ${WAYLAND_CURSOR_INCLUDE_DIRS}
-        ${XKBCOMMON_INCLUDE_DIRS}
-        ${EGL_INCLUDE_DIRS}
-        ${GLESV2_INCLUDE_DIRS}
-        ${WAYLAND_PROTOCOLS_INCLUDE_DIRS}
-    )
-    set(DUI_WAYLAND_LIBS
-        ${WAYLAND_CLIENT_LIBRARIES}
-        ${WAYLAND_EGL_LIBRARIES}
-        ${WAYLAND_CURSOR_LIBRARIES}
-        ${XKBCOMMON_LIBRARIES}
-        ${EGL_LIBRARIES}
-        ${GLESV2_LIBRARIES}
-    )
-    
     # Generate Wayland protocol headers
     find_program(WAYLAND_SCANNER wayland-scanner REQUIRED)
     pkg_get_variable(WAYLAND_PROTOCOLS_DIR wayland-protocols pkgdatadir)
@@ -629,16 +612,38 @@ if(DUI_ENABLE_WAYLAND)
     find_package(Freetype REQUIRED)
     find_package(Fontconfig REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE Freetype::Freetype Fontconfig::Fontconfig)
+    # Threads and the dynamic loader are this library's dependencies, not the
+    # application's: Core/ThreadManager.cpp and Core/FrameworkThread.cpp are compiled
+    # into the archive, and so are the Skia archives a consumer pulls in that reference
+    # pthread_create from SkExecutor.cpp. Naming them only on dui::app left every target
+    # that links dui directly -- tests/ -- with "undefined symbol: pthread_create".
+    target_link_libraries(${PROJECT_NAME} PRIVATE pthread dl)
     if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
         find_package(X11 REQUIRED)
         target_include_directories(${PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
+        # Core/MessageLoop_Wayland.cpp is compiled into this archive against the
+        # epoll-shim headers, so the shim is the library's dependency too. dui::app
+        # carries it as well, for standalone application builds that link dui by bare
+        # name; see cmake/dui_common.cmake for where it is found.
+        target_include_directories(${PROJECT_NAME} PRIVATE ${EPOLL_SHIM_INCLUDE_DIR})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${EPOLL_SHIM_LIBRARY})
     endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     find_package(Freetype REQUIRED)
     find_package(Fontconfig REQUIRED)
     find_package(X11 REQUIRED)
     add_library(${PROJECT_NAME} ${LIBRARY_SOURCES})
-    target_link_libraries(${PROJECT_NAME} PRIVATE Freetype::Freetype Fontconfig::Fontconfig)
+    # ${X11_LIBRARIES} belongs here, next to the include path that was already here:
+    # the X11 backend sources (MessageLoop_X11, NativeWindow_X11, Render_Skia_X11,
+    # ScreenCapture_X11, TrayIcon_X11, X11Platform) are compiled into this archive,
+    # so libdui.a is what references XCreateGC and friends. Without the libraries the
+    # symbols were resolved only by the applications, whose dui::app carries them --
+    # so an in-tree consumer that links dui directly (tests/) failed to link with
+    # "undefined symbol: XCreateGC" while every example built.
+    #
+    # pthread and dl are here for the same reason and by the same route: the archive
+    # references pthread_create itself, and named them nowhere.
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES} pthread dl Freetype::Freetype Fontconfig::Fontconfig)
     target_include_directories(${PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Windows takes none of what the branch below looks for. The libraries its binaries

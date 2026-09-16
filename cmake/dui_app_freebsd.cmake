@@ -25,13 +25,14 @@ else()
     target_link_directories(dui_app INTERFACE "${DUI_SKIA_LIB_PATH}")
 endif()
 
-# FreeBSD keeps third-party libs in /usr/local/lib; the Wayland/GL stack is
-# linked by bare -l name, so the target needs this search path explicitly.
-# target_link_directories() acts on the target itself and is therefore not
-# affected by directory-scope ordering the way link_directories() was.
-if(EXISTS "/usr/local/lib")
-    target_link_directories(dui_app INTERFACE /usr/local/lib)
-endif()
+# No /usr/local/lib link directory here. Everything this target links carries its own
+# search path: the Wayland/GL stack as pkg-config imported targets (see
+# cmake/dui_common.cmake), the Skia archives through DUI_SKIA_LIB_PATH above, and
+# epoll-shim, freetype, fontconfig and X11 as absolute paths from find_*; pthread and dl
+# come from the base system. The directory was needed only while the Wayland stack was
+# linked by bare -l name -- and because it sat on dui::app it never reached the targets
+# that link dui directly, which is how the FreeBSD link came to fail for tests/ while
+# every example built.
 # /usr/local/include stays on a *target* rather than a directory: a directory-scoped
 # include here also reaches dui_skia, where the system expat.h shadows Skia's bundled
 # copy. INTERFACE on dui_app reaches exactly the applications that link it, which is the
@@ -40,18 +41,11 @@ if(EXISTS "/usr/local/include")
     target_include_directories(dui_app INTERFACE /usr/local/include)
 endif()
 
-# epoll-shim: the Wayland message loop is written against the Linux epoll/eventfd
-# API. FreeBSD has eventfd in base, but epoll only via libepoll-shim (the same
-# library the linuxulator uses). Prefer the shim over a kqueue rewrite so the
-# event-loop code stays identical across platforms.
-find_path(EPOLL_SHIM_INCLUDE_DIR
-    NAMES sys/epoll.h
-    HINTS /usr/local/include/libepoll-shim
-    REQUIRED)
-find_library(EPOLL_SHIM_LIBRARY
-    NAMES epoll-shim
-    HINTS /usr/local/lib
-    REQUIRED)
+# epoll-shim is discovered in cmake/dui_common.cmake, next to the rest of the Wayland
+# stack: Core/MessageLoop_Wayland.cpp is compiled into libdui.a, so the shim is a link
+# dependency of the library rather than of the application, and dui::app is only one of
+# the targets that link the library. EPOLL_SHIM_INCLUDE_DIR and EPOLL_SHIM_LIBRARY are
+# already set here and are used below.
 
 # Platform standard libraries
 set(DUI_FREEBSD_LIBS pthread dl)
