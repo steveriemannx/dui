@@ -25,7 +25,9 @@ if(CMAKE_GENERATOR MATCHES "Makefiles"
             "Build program for the make generators" FORCE)
     else()
         # One message per host, not one message naming both: each platform has exactly
-        # one answer to where bmake comes from.
+        # one answer to where bmake comes from.  This branch list mirrors the guard
+        # above -- a host added there needs a branch here too, or its missing bmake
+        # passes in silence and CMake quietly falls back to its own make.
         if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
             message(FATAL_ERROR
                 "bmake was not found, and macOS builds dui with it.\n"
