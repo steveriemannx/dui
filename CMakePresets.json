@@ -14,8 +14,7 @@
       "cacheVariables": {
         "DUI_BUILD_TESTS": "ON",
         "DUI_EXAMPLES_MODE": "ALL",
-        "DUI_ENABLE_MVVM": "OFF",
-        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "${sourceDir}/cmake/dui_build_program.cmake"
+        "DUI_ENABLE_MVVM": "OFF"
       }
     },
     {

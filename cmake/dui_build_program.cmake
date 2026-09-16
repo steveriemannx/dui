@@ -1,30 +1,34 @@
-# Pick the program CMake drives its generated build files with.
+# Drive the make generators with bmake.
 #
-# CMAKE_MAKE_PROGRAM is the program itself, whatever the generator: under Ninja it
-# must be ninja -- CMake rejects anything else with "The detected version of Ninja
-# () is less than the version of Ninja required by CMake (1.3)" -- so this file
-# only touches the make generators.
+# CMAKE_MAKE_PROGRAM is the program CMake runs, whatever the generator is: under
+# Ninja it has to be ninja, and CMake rejects anything else ("The detected version
+# of Ninja () is less than the version of Ninja required by CMake (1.3)"), so this
+# only applies to the make generators.
 #
-# On FreeBSD bmake *is* the system make (/usr/bin/bmake is the same binary as
-# /usr/bin/make), and on macOS Homebrew installs the same command name.  Neither
-# platform then needs GNU make (gmake) just to build dui.  Linux and Windows keep
-# their defaults: Linux ships GNU make, Windows uses the Visual Studio generator,
-# which has no make program at all.
+# FreeBSD ships bmake as its system make (/usr/bin/bmake is the same binary as
+# /usr/bin/make) and macOS gets the same command name from Homebrew, so neither
+# platform needs GNU make just to build dui.  It is required rather than merely
+# preferred: without bmake the configure stops and says how to install it.
 #
-# Wired in through CMAKE_PROJECT_TOP_LEVEL_INCLUDES in CMakePresets.json, so it
-# runs before project() and can look at CMAKE_GENERATOR.
-if(CMAKE_GENERATOR MATCHES "Makefiles")
-    if(CMAKE_HOST_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-        find_program(DUI_BMAKE_PROGRAM NAMES bmake)
-        if(DUI_BMAKE_PROGRAM)
-            set(CMAKE_MAKE_PROGRAM "${DUI_BMAKE_PROGRAM}" CACHE FILEPATH
-                "Build program for the make generators" FORCE)
-        else()
-            # Not fatal: the system make still builds dui, it is just slower to
-            # depend on and, on FreeBSD, not installed by default.
-            message(WARNING
-                "bmake was not found, so CMake keeps \"${CMAKE_MAKE_PROGRAM}\". "
-                "On macOS: brew install bmake")
-        endif()
+# Included by the top-level CMakeLists.txt before project(), so it works for a
+# plain `cmake -S . -B build` as well as for a preset.
+#
+# Build with the generator's own choice instead (GNU make, or whatever
+# -DCMAKE_MAKE_PROGRAM names) by configuring with -DDUI_USE_BMAKE=OFF.
+option(DUI_USE_BMAKE "Drive the make generators with bmake (FreeBSD/macOS)" ON)
+
+if(DUI_USE_BMAKE AND CMAKE_GENERATOR MATCHES "Makefiles"
+        AND (CMAKE_HOST_SYSTEM_NAME STREQUAL "FreeBSD"
+             OR CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin"))
+    find_program(DUI_BMAKE_PROGRAM NAMES bmake)
+    if(DUI_BMAKE_PROGRAM)
+        set(CMAKE_MAKE_PROGRAM "${DUI_BMAKE_PROGRAM}" CACHE FILEPATH
+            "Build program for the make generators" FORCE)
+    else()
+        message(FATAL_ERROR
+            "bmake was not found, and ${CMAKE_HOST_SYSTEM_NAME} builds dui with it.\n"
+            "  macOS : brew install bmake\n"
+            "  FreeBSD: it is part of the base system, so check PATH\n"
+            "Or configure with -DDUI_USE_BMAKE=OFF to use ${CMAKE_MAKE_PROGRAM} instead.")
     endif()
 endif()

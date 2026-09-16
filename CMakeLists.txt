@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 4.0)
 
+# Before project(): on FreeBSD and macOS the make generators run on bmake rather
+# than GNU make. See the file for why, and for -DDUI_USE_BMAKE=OFF.
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dui_build_program.cmake)
+
 # Top-level CMake management (following the develop2 branch pattern):
 #   cmake -S . -B build      # configure the whole repository at once (dui + third-party libraries + all examples)
 #   cmake --build build      # build everything at once (--target <name> builds only one example)
