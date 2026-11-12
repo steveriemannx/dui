@@ -475,8 +475,22 @@ bool MessageLoop_Wayland::IsQuitEventReceived()
     return s_bQuitEventReceived;
 }
 
+namespace {
+thread_local int t_dispatchDepth = 0;
+}
+
+bool MessageLoop_Wayland::IsDispatching()
+{
+    return t_dispatchDepth > 0;
+}
+
 void MessageLoop_Wayland::DispatchUserEvents()
 {
+    ++t_dispatchDepth;
+    struct DepthScope {
+        ~DepthScope() { --t_dispatchDepth; }
+    } depthScope;
+
     std::vector<UserEvent> events;
     {
         std::lock_guard<std::mutex> lock(s_userEventMutex);

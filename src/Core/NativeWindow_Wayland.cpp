@@ -242,9 +242,14 @@ bool NativeWindow_Wayland::CreateWnd(NativeWindow_Wayland* pParentWindow,
         m_nWaylandPendingHeight = 600;
     }
 
-    // Commit to confirm role and trigger configure
+    // Commit to confirm role and trigger configure. A blocking roundtrip is
+    // only safe when called from outside the event dispatch: window creation
+    // from inside a handler (e.g. a button click opening the remote view) would
+    // deadlock waiting for events the running dispatch cannot deliver.
     wl_surface_commit(m_pWaylandSurface);
-    wl_display_roundtrip(display);
+    if (!MessageLoop_Wayland::IsDispatching()) {
+        wl_display_roundtrip(display);
+    }
     wl_display_flush(display);
 
     // Register for idle painting and input events
@@ -293,9 +298,12 @@ bool NativeWindow_Wayland::ShowWindow(ShowWindowCommands nCmdShow) {
         }
     }
 
-    // Dispatch to get configure events, then do initial paint
+    // Dispatch to get configure events, then do initial paint. Same rule as
+    // CreateWnd: never nested-roundtrip from inside an event handler. The
+    // configure event arrives through the running dispatch and repaints via
+    // the normal Invalidate path.
     wl_display* display = MessageLoop_Wayland::GetDisplay();
-    if (display) {
+    if (display && !MessageLoop_Wayland::IsDispatching()) {
         wl_display_roundtrip(display);
     }
     PaintWindow(true);

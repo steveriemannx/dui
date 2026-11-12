@@ -118,6 +118,12 @@ public:
     */
     static wl_display* GetDisplay();
 
+    /** True while this thread is dispatching Wayland events. Creating a window
+     *  from inside an event handler must not block on wl_display_roundtrip():
+     *  that would deadlock (the roundtrip waits for events that only the
+     *  already-running dispatch loop can deliver). */
+    static bool IsDispatching();
+
     /** Get the wl_compositor (for use by other components)
     */
     static wl_compositor* GetCompositor();
