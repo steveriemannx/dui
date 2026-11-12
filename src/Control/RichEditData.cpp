@@ -1676,7 +1676,16 @@ int32_t RichEditData::CharFromPos(UiPoint pt)
     }
     
     if (nCharPosIndex < 0) {
-        nCharPosIndex = 0;
+        // The click was to the right of the last character but still inside the
+        // (wider) text rect: point after the last character of that row. This is
+        // what allows clicking past the password bullets to move the caret to the
+        // end of the text; it used to clamp to 0, i.e. jump back to the start.
+        if (spDestRow != nullptr) {
+            nCharPosIndex = (int32_t)(GetRowInfoStartIndex(spDestRow) + spDestRow->m_charInfo.size());
+        }
+        else {
+            nCharPosIndex = 0;
+        }
     }
     else if (nCharPosIndex > nTextLength) {
         nCharPosIndex = nTextLength;
