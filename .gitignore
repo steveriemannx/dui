@@ -398,3 +398,7 @@ third_party/Microsoft.Web.WebView2/
 /tools/xml_to_code.exe
 /tools/xml_to_header.exe
 /tools/embed_resources.exe
+
+# local working copies / vendored build dependencies (not part of the repo)
+.worktrees/
+third_party/SDL3/
