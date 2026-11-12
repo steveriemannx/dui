@@ -19,6 +19,18 @@
 namespace ui
 {
 
+/** Thread-local dispatch depth: Wayland event callbacks, user events, timers
+ *  and painting all run from the loop iteration, so code executed from them
+ *  must not block on a nested wl_display_roundtrip() (it would deadlock). */
+namespace {
+thread_local int t_dispatchDepth = 0;
+
+struct DispatchScope {
+    DispatchScope() { ++t_dispatchDepth; }
+    ~DispatchScope() { --t_dispatchDepth; }
+};
+}
+
 // Static member initialization
 std::unordered_map<uint32_t, WaylandUserMessageCallback> MessageLoop_Wayland::s_userMsgCallbacks;
 wl_display* MessageLoop_Wayland::s_pDisplay = nullptr;
@@ -242,6 +254,7 @@ int32_t MessageLoop_Wayland::Run(MessageLoopIdleCallback idleCallback)
     if (idleCallback == nullptr) {
         // Simple message loop without idle
         while (!s_bQuitEventReceived) {
+            DispatchScope dispatchScope;
             // Prepare to read events
             while (wl_display_prepare_read(s_pDisplay) != 0) {
                 // Dispatch pending events
@@ -401,6 +414,7 @@ void MessageLoop_Wayland::RunUserLoop(bool& bTerminate)
     }
     // Process events until terminate is set
     while (!bTerminate) {
+        DispatchScope dispatchScope;
         if (s_pDisplay) {
             wl_display_dispatch_pending(s_pDisplay);
             wl_display_flush(s_pDisplay);
@@ -473,10 +487,6 @@ void MessageLoop_Wayland::PostQuitEvent()
 bool MessageLoop_Wayland::IsQuitEventReceived()
 {
     return s_bQuitEventReceived;
-}
-
-namespace {
-thread_local int t_dispatchDepth = 0;
 }
 
 bool MessageLoop_Wayland::IsDispatching()

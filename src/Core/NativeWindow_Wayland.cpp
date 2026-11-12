@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
+#include <mutex>
 
 namespace ui {
 
@@ -339,10 +340,38 @@ void NativeWindow_Wayland::CloseWnd(int32_t nRet) {
     if (m_bCloseing) return; // Already closing
     m_bCloseing = true;
     m_closeParam = nRet;
-    // Trigger the framework's close sequence (PostCloseWindow -> PostQuitMsg)
-    if (m_pOwner) {
+    // Run the same close sequence as the macOS/Windows backends:
+    // PreClose (application cleanup, e.g. stopping the remote session) ->
+    // framework close (PostCloseWindow, PostQuitMsg for the main window) ->
+    // native teardown, then finalize (delete the window) from a user message so
+    // the destruction does not happen inside an event callback.
+    if (m_pOwner != nullptr) {
+        m_pOwner->OnNativePreCloseWindow();
+    }
+    if (m_pOwner != nullptr) {
         m_pOwner->OnNativePostCloseWindow();
     }
+    Close();
+    static const uint32_t kWMUserFinalize = 0x8000 + 1001;
+    static std::once_flag s_finalizeHandlerFlag;
+    std::call_once(s_finalizeHandlerFlag, []() {
+        MessageLoop_Wayland::AddUserMessageCallback(kWMUserFinalize,
+            [](uint32_t /*msgId*/, WPARAM wParam, LPARAM /*lParam*/) {
+                NativeWindow_Wayland* pWindow = reinterpret_cast<NativeWindow_Wayland*>(wParam);
+                if (pWindow != nullptr) {
+                    pWindow->OnNativeFinalizeFromMessage();
+                }
+            });
+    });
+    MessageLoop_Wayland::PostUserEvent(kWMUserFinalize, (WPARAM)this, 0);
+}
+
+void NativeWindow_Wayland::OnNativeFinalizeFromMessage() {
+    if (m_bFinalized) {
+        return;
+    }
+    m_bFinalized = true;
+    OnFinalMessage();
 }
 
 void NativeWindow_Wayland::Close() {

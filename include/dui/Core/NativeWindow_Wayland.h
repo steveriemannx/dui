@@ -688,6 +688,7 @@ private:
     /** Called when the window is being destroyed; this is the last message for the window (the default implementation cleans up resources and calls OnDeleteSelf to destroy the window object)
     */
     void OnFinalMessage();
+    void OnNativeFinalizeFromMessage();
 
     /** Gets the monitor rectangle and work area rectangle of the monitor containing the specified window
     * @param [out] rcMonitor The monitor rectangle
@@ -816,6 +817,7 @@ private:
     /** The window has been scheduled for delayed close
     */
     bool m_bCloseing;
+    bool m_bFinalized = false;
 
     /** The window close parameter
     */
