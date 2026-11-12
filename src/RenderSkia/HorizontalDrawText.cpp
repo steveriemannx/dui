@@ -7,6 +7,8 @@
 #include "dui/RenderSkia/FontMgr_Skia.h"
 
 #include <map>
+#include <cstdio>
+#include <cstdlib>
 #include "dui/Utils/PerformanceUtil.h"
 
 #include "dui/RenderSkia/SkiaHeaderBegin.h"
@@ -211,6 +213,10 @@ SkRect HorizontalDrawText::CalculateHorizontalTextBounds(const std::vector<THori
 
     float currentX = 0.0f;       // The current X starting position (left to right)
     float maxX = 0.0f;           // The maximum X value
+    // Glyphs with a negative left bearing (common for CJK) are shifted right by
+    // -bounds.left when drawn; without counting that shift the measured width is
+    // a pixel short and an auto-sized label truncates its last character.
+    float maxLeftOverhang = 0.0f;
 
     // Row and column counting
     int32_t currentRow = 0;      // The current row index
@@ -231,6 +237,10 @@ SkRect HorizontalDrawText::CalculateHorizontalTextBounds(const std::vector<THori
             if (horizontalChar.bNewLine) {
                 continue;
             }
+        }
+
+        if (!horizontalChar.bNewLine && horizontalChar.bounds.left() < 0) {
+            maxLeftOverhang = std::max(maxLeftOverhang, -horizontalChar.bounds.left());
         }
 
         // Calculate the character position
@@ -345,6 +355,7 @@ SkRect HorizontalDrawText::CalculateHorizontalTextBounds(const std::vector<THori
         maxY += fHeight;
     }
     maxX = std::max(maxX, fDefaultCharWidth); //When there are only newline characters and no other characters, the default character width must be used
+    maxX += maxLeftOverhang;
 
     if (pRowColumns != nullptr) {
         pRowColumns->swap(rowColumns);
@@ -747,6 +758,18 @@ void HorizontalDrawText::DrawString(const std::string& strText, const DrawString
         skCanvas->clipRect(rcSkDest, true);
     }
 
+    if (std::getenv("STARDESK_DEBUG_ELLIPSIS") != nullptr) {
+        fprintf(stderr, "[draw] text=\"%s\" rect=(%d,%d)-(%d,%d) chars=%zu font=%.1f\n",
+                text.c_str(), drawParam.textRect.left, drawParam.textRect.top,
+                drawParam.textRect.right, drawParam.textRect.bottom, drawCharPos.size(),
+                (double)pSkFont->getSize());
+        for (const TDrawCharPos& cp : drawCharPos) {
+            fprintf(stderr, "  [char] row=%d col=%d x=%.1f y=%.1f w=%d\n", cp.nRowIndex,
+                    cp.nColumnIndex, (double)cp.xPos, (double)cp.yPos, cp.chWidth);
+        }
+        fflush(stderr);
+    }
+
     // Draw characters
     const size_t drawCharCount = drawCharPos.size();
     for (size_t charIndex = 0; charIndex < drawCharCount; ++charIndex) {
@@ -780,6 +803,12 @@ void HorizontalDrawText::DrawString(const std::string& strText, const DrawString
 
             if (bNeedDrawEllipsis) {
                 //Character out of bounds, draw "..."
+                if (std::getenv("STARDESK_DEBUG_ELLIPSIS") != nullptr) {
+                    fprintf(stderr, "[ellipsis] text=\"%s\" rect=%d x %d fontSize=%.1f xPos=%.1f\n",
+                            text.c_str(), drawParam.textRect.Width(), drawParam.textRect.Height(),
+                            (double)pSkFont->getSize(), (double)charPos.xPos);
+                    fflush(stderr);
+                }
                 std::string ellipsis = "...";
                 skCanvas->drawSimpleText(ellipsis.data(), ellipsis.size(), SkTextEncoding::kUTF8,
                                          charPos.xPos, charPos.yPos,
