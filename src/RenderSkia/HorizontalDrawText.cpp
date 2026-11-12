@@ -3,6 +3,10 @@
 #include "dui/RenderSkia/SkUtils.h"
 
 #include "dui/Utils/StringUtil.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/RenderSkia/FontMgr_Skia.h"
+
+#include <map>
 #include "dui/Utils/PerformanceUtil.h"
 
 #include "dui/RenderSkia/SkiaHeaderBegin.h"
@@ -10,6 +14,8 @@
 #include "include/core/SkPaint.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkFontMetrics.h"
+#include "include/core/SkFontMgr.h"
+#include "include/core/SkTypeface.h"
 #include "dui/RenderSkia/SkiaHeaderEnd.h"
 
 namespace ui {
@@ -37,6 +43,48 @@ std::string HorizontalDrawText::GetDrawStringText(const std::string& strText, bo
 
 /** Character attributes for horizontally drawn text
 */
+namespace {
+
+/** Per-character font fallback: the UI font (e.g. PingFang on macOS) does not
+ *  contain every script the app ships translations for (Hangul, Cyrillic, ...).
+ *  Missing code points are drawn with the platform's matching fallback
+ *  typeface instead of coming out blank. Cached per code point: the UI only
+ *  ever draws from the main thread.
+ */
+SkTypeface* FindFallbackTypeface(SkUnichar unichar)
+{
+    static SkFontMgr* s_fontMgr = []() -> SkFontMgr* {
+        IRenderFactory* pFactory = GlobalManager::Instance().GetRenderFactory();
+        if (pFactory == nullptr) {
+            return nullptr;
+        }
+        FontMgr_Skia* pSkiaFontMgr = dynamic_cast<FontMgr_Skia*>(pFactory->GetFontMgr());
+        if (pSkiaFontMgr == nullptr) {
+            return nullptr;
+        }
+        void* pSkiaMgrPtr = pSkiaFontMgr->GetSkiaFontMgrPtr();
+        if (pSkiaMgrPtr == nullptr) {
+            return nullptr;
+        }
+        return ((sk_sp<SkFontMgr>*)pSkiaMgrPtr)->get();
+    }();
+    static std::map<SkUnichar, sk_sp<SkTypeface>> s_cache;
+    if (s_fontMgr == nullptr) {
+        return nullptr;
+    }
+    const auto it = s_cache.find(unichar);
+    if (it != s_cache.end()) {
+        return it->second.get();
+    }
+    sk_sp<SkTypeface> typeface = s_fontMgr->matchFamilyStyleCharacter(
+        nullptr, SkFontStyle(), nullptr, 0, unichar);
+    SkTypeface* raw = typeface.get();
+    s_cache.emplace(unichar, std::move(typeface));
+    return raw;
+}
+
+} // namespace
+
 struct THorizontalChar
 {
     //The character is identified by its extent in the preprocessed draw string
@@ -46,12 +94,14 @@ struct THorizontalChar
     int32_t nTextOffset = 0;  //Byte offset of the character in the draw string
     int32_t nTextLen = 0;     //Length of the character in bytes
     bool bNewLine;            //Whether it is a newline character
+    int32_t nFontIndex = -1;  //Index into the fallback font list, -1 = the base font
     SkSize size;              //The width and height after drawing the character
     SkRect bounds;            //The bounding information after drawing the character
 };
 
 bool HorizontalDrawText::CalculateTextCharBounds(const std::string& text, const SkFont* pSkFont, const SkPaint* skPaint,
-                                                 float fFontHeight, std::vector<THorizontalChar>& charRects) const
+                                                 float fFontHeight, std::vector<THorizontalChar>& charRects,
+                                                 std::vector<SkFont>* pFallbackFonts) const
 {
     if (text.empty()) {
         return false;
@@ -94,7 +144,19 @@ bool HorizontalDrawText::CalculateTextCharBounds(const std::string& text, const 
         }
         else {
             horizontalChar.bNewLine = false;
-            SkScalar fTextWidth = pSkFont->measureText(codepoint.pText,
+            // Pick the font that actually has a glyph for this code point; the
+            // base UI font is missing several scripts (Hangul, Cyrillic, ...).
+            SkFont charFont(*pSkFont);
+            const SkFont* pCharFont = pSkFont;
+            if (pFallbackFonts != nullptr && pSkFont->unicharToGlyph(codepoint.unichar) == 0) {
+                if (SkTypeface* fallbackTypeface = FindFallbackTypeface(codepoint.unichar)) {
+                    charFont.setTypeface(sk_ref_sp(fallbackTypeface));
+                    horizontalChar.nFontIndex = (int32_t)pFallbackFonts->size();
+                    pFallbackFonts->push_back(charFont);
+                    pCharFont = &pFallbackFonts->back();
+                }
+            }
+            SkScalar fTextWidth = pCharFont->measureText(codepoint.pText,
                                                        (size_t)codepoint.nBytes,
                                                        textEncoding,
                                                        &horizontalChar.bounds,//For italic text, this width includes the extended width
@@ -104,7 +166,7 @@ bool HorizontalDrawText::CalculateTextCharBounds(const std::string& text, const 
                 //Note that only the measurement is substituted: what gets drawn is still the character
                 //at nTextOffset/nTextLen, which this branch never touches.
                 static constexpr const char kFallbackGlyph[] = "a";//ASCII, so the same code point in any encoding
-                fTextWidth = pSkFont->measureText(kFallbackGlyph,
+                fTextWidth = pCharFont->measureText(kFallbackGlyph,
                                                   sizeof(kFallbackGlyph) - 1,
                                                   SkTextEncoding::kUTF8,
                                                   &horizontalChar.bounds,//For italic text, this width includes the extended width
@@ -362,7 +424,9 @@ UiRect HorizontalDrawText::MeasureString(const std::string& strText, const Measu
     const std::string text = GetDrawStringText(strText, bSingleLineMode);
 
     std::vector<THorizontalChar> charRects;
-    if (!CalculateTextCharBounds(text, pSkFont, &skPaint, (float)fFontHeight, charRects)) {
+    std::vector<SkFont> fallbackFonts;
+    if (!CalculateTextCharBounds(text, pSkFont, &skPaint, (float)fFontHeight, charRects,
+                                 &fallbackFonts)) {
         return UiRect();
     }
 
@@ -460,7 +524,9 @@ void HorizontalDrawText::DrawString(const std::string& strText, const DrawString
     const SkTextEncoding textEncoding = GetDStringTextEncoding();
 
     std::vector<THorizontalChar> charRects;
-    if (!CalculateTextCharBounds(text, pSkFont, &skPaint, (float)fFontHeight, charRects)) {
+    std::vector<SkFont> fallbackFonts;
+    if (!CalculateTextCharBounds(text, pSkFont, &skPaint, (float)fFontHeight, charRects,
+                                 &fallbackFonts)) {
         return;
     }
 
@@ -489,6 +555,7 @@ void HorizontalDrawText::DrawString(const std::string& strText, const DrawString
         SkScalar xPos = 0;          //The X coordinate when drawing
         SkScalar yPos = 0;          //The Y coordinate when drawing
         int32_t chWidth = 0;        //Character width (used for drawing strikethrough and underline)
+        int32_t nFontIndex = -1;    //Fallback font for this character (-1 = base font)
         bool bDrew = false;         //Whether the character has been drawn (used for drawing strikethrough and underline)
     };
     std::vector<TDrawCharPos> drawCharPos;
@@ -524,6 +591,7 @@ void HorizontalDrawText::DrawString(const std::string& strText, const DrawString
             charPos.nRowIndex = (int32_t)nRowIndex;
             charPos.nColumnIndex = (int32_t)nColIndex;
             charPos.chWidth = (int32_t)horizontalChar.size.width();
+            charPos.nFontIndex = horizontalChar.nFontIndex;
 
             // Horizontal position
             charPos.xPos = xPos + (horizontalChar.bounds.left() < 0 ? -horizontalChar.bounds.left() : 0);
@@ -729,9 +797,13 @@ void HorizontalDrawText::DrawString(const std::string& strText, const DrawString
         charPos.bDrew = true;
         ASSERT((charPos.nTextOffset >= 0) && (charPos.nTextLen > 0) &&
                ((size_t)(charPos.nTextOffset + charPos.nTextLen) <= text.size() * sizeof(std::string::value_type)));
+        const SkFont& drawFont =
+            (charPos.nFontIndex >= 0 && (size_t)charPos.nFontIndex < fallbackFonts.size())
+                ? fallbackFonts[(size_t)charPos.nFontIndex]
+                : *pSkFont;
         skCanvas->drawSimpleText(text.data() + charPos.nTextOffset, (size_t)charPos.nTextLen,
                                  textEncoding, charPos.xPos, charPos.yPos,
-                                 *pSkFont, skPaint);
+                                 drawFont, skPaint);
     }
 
     // Draw underline/strikethrough

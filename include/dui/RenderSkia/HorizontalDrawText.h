@@ -51,7 +51,8 @@ private:
     * @param [in] fFontHeight The font height
     */
     bool CalculateTextCharBounds(const std::string& text, const SkFont* pSkFont, const SkPaint* skPaint,
-                                 float fFontHeight, std::vector<THorizontalChar>& charRects) const;
+                                 float fFontHeight, std::vector<THorizontalChar>& charRects,
+                                 std::vector<SkFont>* pFallbackFonts) const;
 
     /** Calculate the total rectangle of the drawing area for horizontal text (left to right, top to bottom)
      * @param [in] charRects The drawing rectangle of each character (a width or height of 0 means a newline)
