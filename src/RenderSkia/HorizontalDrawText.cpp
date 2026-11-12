@@ -790,7 +790,9 @@ void HorizontalDrawText::DrawString(const std::string& strText, const DrawString
             if (nextCharPos.nRowIndex == charPos.nRowIndex) {
                 SkScalar xPos = nextCharPos.xPos;
                 xPos += nextCharPos.chWidth;
-                if ((xPos > (SkScalar)rcSkDest.fRight) &&
+                // One pixel of tolerance: a right-aligned run whose advance lands
+                // exactly on the rect edge must not lose its last glyph ("...")
+                if ((xPos > (SkScalar)rcSkDest.fRight + 1.0f) &&
                     (bSingleLineMode || (charPos.yPos + fRowHeight) > (SkScalar)rcSkDest.fBottom)) {
                     //The next character cannot be displayed
                     bNeedDrawEllipsis = true;
