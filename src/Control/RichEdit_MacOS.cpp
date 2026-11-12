@@ -1854,13 +1854,27 @@ void RichEdit::Paint(IRender* pRender, const UiRect& rcPaint)
             }
             ASSERT(!dwClrColor.IsEmpty());
 
-            DrawStringParam drawParam;
-            drawParam.pFont = GetIFontInternal(fontId);
-            drawParam.uFormat = GetTextStyle();
-            drawParam.textRect = rcDrawRect;
-            drawParam.dwTextColor = dwClrColor;
-
-            pRender->DrawString(StringConvert::WStringToUTF8(passwordText), drawParam);
+            // Draw one mask character per text position instead of a single run:
+            // caret and hit-testing use the per-character metrics, and the mask
+            // glyph width differs from the real character width, so a single
+            // DrawString run drifts away from the caret (visible as a mismatch
+            // between the caret and the stars).
+            const std::string maskText = StringConvert::WStringToUTF8(passwordText);
+            const size_t nMaskLen = maskText.size();
+            for (size_t i = 0; i < nMaskLen; ++i) {
+                const UiPoint pt = m_pTextData->PosFromChar((int32_t)i);
+                int32_t width = m_pTextData->GetCharWidthValue((int32_t)i);
+                if (width <= 0) {
+                    width = m_nRowHeight;
+                }
+                DrawStringParam drawParam;
+                drawParam.pFont = GetIFontInternal(fontId);
+                drawParam.uFormat = TEXT_LEFT | TEXT_VCENTER | TEXT_SINGLELINE;
+                drawParam.textRect = UiRect(pt.x, pt.y, pt.x + width + 1,
+                                            pt.y + m_nRowHeight);
+                drawParam.dwTextColor = dwClrColor;
+                pRender->DrawString(maskText.substr(i, 1), drawParam);
+            }
             
         }
     }
