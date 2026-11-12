@@ -1474,21 +1474,35 @@ UiRect Render_Skia::MeasureString(const std::string& strText, const MeasureStrin
         //This is the case where the window size is 0; return empty without asserting
         return UiRect();
     }
+    // Some back-ends (macOS Metal) only have a valid SkCanvas while a frame is
+    // being painted, but labels are measured during layout - with a null canvas
+    // every auto-size label measured 0x0 and showed up as "...". Use a tiny
+    // raster canvas for measurement when the window canvas is not available.
+    SkCanvas* pMeasureCanvas = GetSkCanvas();
+    sk_sp<SkSurface> fallbackSurface;
+    if (pMeasureCanvas == nullptr) {
+        const SkImageInfo fallbackInfo = SkImageInfo::MakeN32Premul(1, 1);
+        fallbackSurface = SkSurfaces::Raster(fallbackInfo, nullptr);
+        if (fallbackSurface != nullptr) {
+            pMeasureCanvas = fallbackSurface->getCanvas();
+        }
+    }
+
     if (measureParam.uFormat & TEXT_VERTICAL) {
         //Draw text vertically
-        VerticalDrawText drawTextUtil(GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
+        VerticalDrawText drawTextUtil(pMeasureCanvas, m_pSkPaint, m_pSkPointOrg);
         return drawTextUtil.MeasureString(strText, measureParam);
     }
     else if ((measureParam.uFormat & TEXT_HJUSTIFY) || (measureParam.fWordSpacing > 0.0001f)) {
         //When horizontal text is set to justified alignment, or when word spacing is set, use this implementation (because modifying the SkTextBox implementation is difficult and hard to maintain)
-        HorizontalDrawText drawTextUtil(GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
+        HorizontalDrawText drawTextUtil(pMeasureCanvas, m_pSkPaint, m_pSkPointOrg);
         return drawTextUtil.MeasureString(strText, measureParam);
     }
 
     // Measure with the same implementation that draws: HorizontalDrawText
     // applies the per-glyph font fallback, so the width accounts for the
     // fallback font used for missing scripts.
-    HorizontalDrawText drawTextUtil(GetSkCanvas(), m_pSkPaint, m_pSkPointOrg);
+    HorizontalDrawText drawTextUtil(pMeasureCanvas, m_pSkPaint, m_pSkPointOrg);
     return drawTextUtil.MeasureString(strText, measureParam);
 }
 
