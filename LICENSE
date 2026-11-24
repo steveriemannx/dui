@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2023 rhett-lee
+Copyright (c) 2026 steveriemannx
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+-------------------------------------------------------------------------------
+Upstream licenses
+
+dui is an English fork of nim_duilib (https://github.com/rhett-lee/nim_duilib),
+which is itself MIT licensed. The upstream license is kept separately, verbatim
+and unmodified, in:
+
+    licenses/nim_duilib.LICENSE.txt
+
+dui and nim_duilib are both derived from NIM_Duilib_Framework, whose license is
+kept verbatim in:
+
+    licenses/NIM_Duilib_Framework.LICENSE.txt
+
+The licenses of the third-party libraries bundled with or built by this project
+are kept in the licenses/ directory; see docs/ThirdParty.md for the mapping
+between a component and its license file.
