@@ -9,6 +9,8 @@
 * [Box Styles](Box.md)
 * [Control Styles](Control.md)
 * [Menu Styles](Menu.md)
+* [Styled Message Box](MessageBox.md)
+* [Toast Notifications](Toast.md)
 * [Control Events/Messages](Events.md)
 * [XML Node Names of Controls](XmlNode.md)
 * [Responding to Control Events Directly in XML](XmlEvents.md)

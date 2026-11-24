@@ -24,7 +24,11 @@ See [docs/ThreeModes.md](docs/ThreeModes.md) for details.
 ## Features
 
  - **XML-driven layout**: UI structure is defined in XML, fully separating layout from business logic; no C++ changes needed to adjust control position, size, or style.
- - **Rich control system**: buttons, labels, list views (including virtual lists), tree controls, sliders, progress bars, menus, color pickers, property grids, tabs, rich text, and more; custom controls are supported.
+ - **Rich control system**: buttons, labels, list views (including virtual lists), tree controls, sliders, range sliders, progress bars, switches, badges, menus, color pickers, property grids, tabs, rich text, tag input, auto-complete and search boxes, spin boxes, calendars, charts, marquees, timelines, steppers, status bars, tool bars, navigation views, and more; custom controls are supported.
+- **Layout containers**: Box/VBox/HBox, flow and tile layouts, scroll containers, list containers, virtual lists, grid layouts, and the collapsible `Panel` container with accordion groups.
+- **List control upgrades**: report-view cell editing (text, number, date, drop-down candidate editors), cell selection, frozen columns, per-cell refresh, sortable columns, progress/rich-text cells, and skeleton loading placeholders.
+- **Styled dialogs**: a custom-drawn message box (`ui::MessageBoxWnd`) and toast notifications (`ui::ToastWnd`), both skinnable through theme XML.
+- **Context menus in one call**: `Control::AttachPopupMenu` binds a right-click menu (with dynamic adjustment) to any control.
  - **Efficient rendering**: Skia rendering engine, windowless control drawing, CPU or GPU backends.
  - **Event-driven**: message-mechanism-based event handling; event responses can also be configured directly in XML.
  - **Multiple image formats**: SVG/PNG/GIF/JPG/BMP/APNG/WEBP/ICO, plus GIF/APNG/WEBP/Lottie/PAG animations.
@@ -124,8 +128,8 @@ The compiled example programs are in `bin/`. Platform prerequisites and detailed
 3. Original project: [duilib](https://github.com/duilib/duilib)
 
 ## Upstream Baseline
-This repository is based on [nim_duilib](https://github.com/rhett-lee/nim_duilib), which is now (as of 2026-08-05) at commit
-[6f9fb44](https://github.com/rhett-lee/nim_duilib/commit/6f9fb44c53caadfe9f2a6f50385b11814205c624).
+This repository is based on [nim_duilib](https://github.com/rhett-lee/nim_duilib), which is now (as of 2026-10-19) at commit
+[9363b00e](https://github.com/rhett-lee/nim_duilib/commit/9363b00e530cc57742e74834f3e81511ac98f222).
 
 ## Note on commit signatures
 The `Co-Authored-By` trailer on commits is added automatically by the AI

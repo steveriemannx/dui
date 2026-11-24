@@ -172,7 +172,7 @@ chmod +x ./dui/scripts/build_dui_all_in_one.sh
 ./dui/scripts/build_dui_all_in_one.sh
 ```
 The compiled example programs are in the bin directory.    
-Note: on UOS systems, install the required development environment first, then install; see the document: [Compiling skia on UnionTech UOS](https://github.com/rhett-lee/skia_compile/blob/main/%E7%BB%9F%E4%BF%A1UOS%E4%B8%8B%E7%BC%96%E8%AF%91skia.md)。
+Note: on UOS systems, install the required development environment first, then install; see the document: [Compiling skia on UnionTech UOS](https://github.com/rhett-lee/skia_compile/blob/main/%E7%BB%9F%E4%BF%A1UOS%E4%B8%8B%E7%BC%96%E8%AF%91skia.md).
 
 ## C. Build Process (macOS platform)
 ### I. Prerequisites: Install the required software

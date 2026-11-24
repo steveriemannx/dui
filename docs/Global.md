@@ -265,3 +265,30 @@ When defining a common style, if an attribute value is enclosed in double quotes
 | ThreadManager | [include/dui/Core/ThreadManager.h](../include/dui/Core/ThreadManager.h) | Thread manager, used to support inter-thread communication |
 | CursorManager | [include/dui/Core/CursorManager.h](../include/dui/Core/CursorManager.h) | Cursor management class |
 | WindowManager | [include/dui/Core/WindowManager.h](../include/dui/Core/WindowManager.h) | Window management class |
+
+## 8. Resources added with the upstream update
+
+* **Font families**: besides the existing `system_*` sizes, every theme now defines the 13px and
+  15px families (`system_13`, `system_15`, and their `bold`, `underline`, `italic`, `strikeout`
+  and `fullstyle` variants), used by the controls ported from upstream.
+* **Semantic color palette**: every theme defines the semantic colors used by the new controls
+  (`bg_window_main`, `bg_window_card`, `bg_titlebar`, `text_default`, `text_muted`,
+  `text_disabled`, `text_badge`, `color_accent`, `bg_overlay`, `bg_progress`,
+  `bg_progress_track`, `bg_switch_track_off`, `bg_switch_track_on`, `bg_switch_thumb_off`,
+  `bg_richedit`, `border_window`, `border_richedit_normal`, `border_focus_ring`, ...). A control
+  that takes a semantic color name falls back gracefully when a theme does not define it, but
+  the shipped themes define the whole set.
+* **Control style classes**: `switch`/`switch_ios`/`switch_fluent`/`switch_material`,
+  `badge`/`badge_dot`, `mask`, `range_slider_horizontal`/`range_slider_vertical`,
+  `stepper_node`, `search_box*`, `tag_input*`, `auto_complete*`, `list_ctrl_combo_*`,
+  `list_ctrl_datetime`, `flyout*`, `calendar*` and `tab_ctrl_item_badge*`, all defined in each
+  theme's `global.xml`.
+* **`Include` nodes in `global.xml`**: a global XML file may reference another XML file in the
+  same directory whose root node is `<Global>`, registering the fonts, colors, classes and
+  further includes declared there:
+
+```xml
+<Global>
+    <Include src="global_controls.xml"/>
+</Global>
+```

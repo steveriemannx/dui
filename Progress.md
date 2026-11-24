@@ -164,3 +164,32 @@ D:\projects-main\dui
 
 The first SSH attempt was blocked by host-key verification. Remote testing has
 not started yet.
+
+### Upstream sync: nim_duilib 6f9fb44 -> 9363b00e
+
+The upstream project advanced by 244 commits between the fork point and commit
+`9363b00e` (2026-10-19); that update has been ported into dui on top of the local work:
+- new controls: Panel/PanelHBox/PanelVBox, RangeSlider, Switch, Badge, Mask, TagInput,
+  AutoComplete, SearchBox, SpinBox, Flyout, Calendar, CalendarFlyout, NavigationView,
+  Chart, Marquee, Timeline, Stepper, StatusBar, ToolBar
+- new windows/utilities: MessageBoxWnd, ToastWnd, and a single cross-platform DateTimeWnd
+- ListCtrl: cell editors (text/number/date/combo), cell selection, frozen columns, per-cell
+  refresh, column events, progress/rich-text cells, skeleton loading, rewritten data storage
+- Progress/Slider: value animation + easing, percent text with format callback, buffer value,
+  progress radius, `SetValueNoEvent`, runtime clamping, slider ticks and thumb state images
+- TabCtrl: vertical tabs, pinned tabs, overflow scrolling, tab badges
+- Control: `AttachPopupMenu`/`DetachPopupMenu` context-menu API, `EventArgs::pExtraData`
+- layouts: `HLayout`/`VLayout` padding-aware `EstimateLayoutSize`; VirtualListBox fixes
+- Windows backend: Enter-key passthrough to owner-drawn dialogs, non-activating topmost toggles
+- resources: new SVG assets and control style classes in every theme, the upstream semantic
+  color palette and 13px/15px font families, message box / toast skins, `Include` support in
+  `global.xml`
+- English documentation updated for all of the above (docs/Control.md, Box.md, Events.md,
+  XmlNode.md, Global.md, MessageBox.md, Toast.md, History.md), README upstream baseline moved
+  to `9363b00e`
+- licenses: the project LICENSE now carries the steveriemannx MIT notice; the upstream
+  nim_duilib license is kept verbatim in `licenses/nim_duilib.LICENSE.txt`
+
+Deliberately not ported (dui does not have the upstream subsystem): the color-theme engine
+(ThemeManager/ThemeGenerator, `ThemeColor`/`Var` nodes, `themes/color_light|color_dark`), the
+`WindowRoot` refactor and the SDL backend (dui uses native X11/Wayland/macOS backends).

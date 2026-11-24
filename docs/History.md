@@ -46,7 +46,7 @@
     <tr><td align="left">21. Control supports fullscreen display (implemented via the new Window::SetFullscreenControl function); CEF and WebView2 controls support F11 page fullscreen toggling</td></tr>
     <tr><td align="left">22. Improved control animation details and introduced easing functions; supports setting control animation properties, such as easing function type, total animation duration, and playback interval</td></tr>
     <tr>
-        <td rowspan="25">New controls/new containers</td>
+        <td rowspan="43">New controls/new containers</td>
         <td align="left">1. GroupBox: group container</td>
     </tr>
     <tr><td align="left">2. HotKey: hotkey control</td></tr>
@@ -73,6 +73,24 @@
     <tr><td align="left">23. ControlMovableT (template class, including the four standard controls ControlMovable/BoxMovable/HBoxMovable/VBoxMovable): supports adjusting a control's position by mouse dragging, and adjusting the parent container's position by dragging</td></tr>
     <tr><td align="left">24. ControlResizableT (template class, including the four standard controls ControlResizable/BoxResizable/HBoxResizable/VBoxResizable): supports resizing a control by mouse dragging, similar to resizing a window</td></tr>
     <tr><td align="left">25. XmlBox: a container that can load and preview XML files of the UI library, used to preview the display effects of controls defined in XML files</td></tr>
+    <tr><td align="left">26. Panel/PanelHBox/PanelVBox: titled containers with a collapsible content area, a configurable title bar (text/id/height/colors/font/alignment) and accordion groups, ported from the upstream 9363b00e update</td></tr>
+    <tr><td align="left">27. RangeSlider: dual-thumb range selection control derived from Progress, with a minimum gap, range color/radius and a range-changed callback</td></tr>
+    <tr><td align="left">28. Switch: Fluent/iOS/Material-style toggle switch with color-drawn or image-skinned track and thumb, ported from upstream</td></tr>
+    <tr><td align="left">29. Badge: unread-count/dot badge overlay, hidden automatically when the count is non-positive</td></tr>
+    <tr><td align="left">30. Mask: modal overlay with cut-out highlighting of a target control and click-through inside the cut-out area</td></tr>
+    <tr><td align="left">31. TagInput: tag input box (Enter/comma creates a tag, Backspace removes the last one) with duplicate/count limits</td></tr>
+    <tr><td align="left">32. AutoComplete/SearchBox: suggestion and search-history drop-down combo controls with debounce, filtering, keyboard navigation and a focus-less flyout</td></tr>
+    <tr><td align="left">33. SpinBox: numeric spin box</td></tr>
+    <tr><td align="left">34. Flyout: focus-less general popup window with 8-way anchor placement, automatic flipping/clamping and click-outside/Esc dismissal</td></tr>
+    <tr><td align="left">35. Calendar/CalendarFlyout: month/year/decade calendar panel and its date-picker flyout, with single/range selection</td></tr>
+    <tr><td align="left">36. NavigationView/NavigationViewItem: sidebar navigation with item/header/separator shapes, collapsible pane and badge support</td></tr>
+    <tr><td align="left">37. Chart: line/bar/pie chart control with grouped/stacked bars, animation, real-time monitoring and axis formatters</td></tr>
+    <tr><td align="left">38. Marquee: scrolling marquee text control</td></tr>
+    <tr><td align="left">39. Timeline: vertical timeline control with node states, empty hint and loading state</td></tr>
+    <tr><td align="left">40. Stepper: wizard step indicator control</td></tr>
+    <tr><td align="left">41. StatusBar: status bar with automatically drawn separators between panels, an optional size grip and a panel-index API</td></tr>
+    <tr><td align="left">42. ToolBar: tool bar that automatically hides tail children into an overflow "more" button with a popup list</td></tr>
+    <tr><td align="left">43. MessageBoxWnd/ToastWnd: owner-drawn styled message box and non-modal toast notification windows</td></tr>
     <tr>
         <td rowspan="3">Performance optimizations</td>
         <td align="left">1. Optimized the memory usage of Control and its child controls; memory footprint is greatly reduced when there are many UI elements</td>
@@ -109,3 +127,18 @@
  - Continue enriching the UI library's controls and improving its features
  - Continuous testing and refinement of the cross-platform (Windows/Linux/macOS/FreeBSD) native window engine.
  - Test the UI library, find and fix defects, and continuously improve the code
+
+## Additions Ported from the Upstream 9363b00e Update
+<table>
+    <tr>
+        <th>Area</th>
+        <th>Content</th>
+    </tr>
+    <tr><td>ListCtrl</td><td align="left">Report-view cell editing (text, number, date with a calendar popup, and drop-down candidate editors), cell selection model, frozen columns, per-cell refresh (`RefreshSubItem`), column width/order/visibility/sort events, progress and rich-text cells, skeleton loading placeholders, and a rewritten value storage layer (identity/position split, paged storage, batch delete)</td></tr>
+    <tr><td>Progress/Slider</td><td align="left">Value animation with a configurable easing curve, percent text with a custom format callback, buffer/secondary value, progress corner radius, `SetValueNoEvent` silent assignment, runtime min/max re-clamping, slider tick marks and hovered/pressed thumb images</td></tr>
+    <tr><td>TabCtrl</td><td align="left">Vertical tabs, pinned tabs, overflow scrolling and tab badges</td></tr>
+    <tr><td>Control</td><td align="left">`AttachPopupMenu`/`DetachPopupMenu` context-menu convenience API, `EventArgs::pExtraData`, per-window color-theme payload (not ported, dui has no color-theme subsystem)</td></tr>
+    <tr><td>Global resources</td><td align="left">`Include` nodes in `global.xml` to split global resources across files; new `system_13`/`system_15` font families and a semantic color palette used by the new controls</td></tr>
+    <tr><td>Layouts</td><td align="left">`HLayout`/`VLayout` now deflate the available size by the owner padding in `EstimateLayoutSize`, fixing auto-size layout</td></tr>
+    <tr><td>Windows backend</td><td align="left">Enter-key passthrough to owner-drawn dialogs, non-activating topmost toggling, icon updates through posted messages</td></tr>
+</table>

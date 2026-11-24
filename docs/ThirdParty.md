@@ -17,6 +17,7 @@ Skia is not vendored: `third_party/skia` is produced at configure time from upst
 |ConvertUTF|third_party/convert_utf| UTF-8/UTF-16 encoding conversion         |[llvm.LICENSE.txt](../licenses/llvm.LICENSE.txt)|Apache License Version 2.0 primarily,<br>supplemented by the LLVM exception terms,<br>with legacy license compatibility for historical versions|
 |skia      |third_party/skia (vendored, built automatically) | UI library rendering engine<br>SVG image format support<br>Lottie JSON animation support|[skia.LICENSE.txt](../licenses/skia.LICENSE.txt)|BSD 3-clause license|
 |duilib |                            | NIM_Duilib_Framework<br>is developed based on duilib  |[duilib.LICENSE.txt](../licenses/duilib.LICENSE.txt)|BSD 2-clause license|
+|nim_duilib|                            | nim_duilib, the upstream project<br>that dui is the English version of   |[nim_duilib.LICENSE.txt](../licenses/nim_duilib.LICENSE.txt)|MIT license|
 |NIM_Duilib<br>Framework|               | This project is developed based on<br>NIM_Duilib_Framework   |[NIM_Duilib_Framework.LICENSE.txt](../licenses/NIM_Duilib_Framework.LICENSE.txt)|MIT license|
 |libcef    |third_party/libcef   | Loads the CEF module|[libcef.LICENSE.txt](../licenses/libcef.LICENSE.txt)|BSD 3-clause license|
 |udis86    |third_party/libudis86| Computes the shortest instruction length for complete disassembly         |[udis86.LICENSE.txt](../licenses/udis86.LICENSE.txt)|BSD 2-clause license|

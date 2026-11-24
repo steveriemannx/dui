@@ -113,6 +113,23 @@
 | GroupBox/GroupVBox/GroupHBox | Box | Grouping container |
 | ColorControl/ColorPicker* | - | Color picker component |
 | DirectoryTree | TreeView | Directory tree |
+| Panel / PanelHBox / PanelVBox | Box / HBox / VBox | Titled panel container with collapse/expand and accordion groups |
+| RangeSlider | Progress | Dual-thumb range selection control |
+| Switch | CheckBox | Toggle switch (fluent/ios/material skins) |
+| Badge | Label | Count/dot badge overlay |
+| Mask | Box | Modal mask overlay with cut-out highlight |
+| TagInput | Box | Tag input box (Enter creates a tag) |
+| AutoComplete / SearchBox | Box | Suggestion/search-history drop-down controls |
+| SpinBox | Box | Numeric spin box |
+| Flyout | WindowImplBase | Focus-less anchored popup window |
+| Calendar / CalendarFlyout | Control / Flyout | Calendar panel and date-picker flyout |
+| NavigationView / NavigationViewItem | HBox / Control | Sidebar navigation |
+| Chart | Control | Line/bar/pie chart |
+| Marquee | Control | Scrolling marquee text |
+| Timeline | Control | Vertical timeline |
+| Stepper | Control | Wizard step indicator |
+| StatusBar | HBox | Status bar with panels and size grip |
+| ToolBar | HBox | Tool bar with overflow "more" menu |
 
 ### Control Common Attributes (inherited by all controls)
 | Attribute | Default | Type | Description |

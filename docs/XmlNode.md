@@ -92,3 +92,28 @@
 | Menu | "Menu" | [include/dui/Control/Menu.h](../include/dui/Control/Menu.h) | |
 | SubMenu | "SubMenu" | [include/dui/Control/Menu.h](../include/dui/Control/Menu.h) | |
 | MenuItem | "MenuItem" | [include/dui/Control/Menu.h](../include/dui/Control/Menu.h) | |
+
+## XML node names added by the upstream update
+| Class Name | XML Node Name |Associated Header File| Remarks |
+| :--- | :--- |:--- | :--- |
+| Panel | "Panel"| [include/dui/Box/Panel.h](../include/dui/Box/Panel.h) | |
+| PanelHBox | "PanelHBox"| [include/dui/Box/Panel.h](../include/dui/Box/Panel.h) | |
+| PanelVBox | "PanelVBox"| [include/dui/Box/Panel.h](../include/dui/Box/Panel.h) | |
+| StatusBar | "StatusBar"| [include/dui/Control/StatusBar.h](../include/dui/Control/StatusBar.h) | |
+| ToolBar | "ToolBar"| [include/dui/Control/ToolBar.h](../include/dui/Control/ToolBar.h) | |
+| SpinBox | "SpinBox"| [include/dui/Control/SpinBox.h](../include/dui/Control/SpinBox.h) | |
+| SearchBox | "SearchBox"| [include/dui/Control/SearchBox.h](../include/dui/Control/SearchBox.h) | |
+| Switch | "Switch"| [include/dui/Control/Switch.h](../include/dui/Control/Switch.h) | |
+| Badge | "Badge"| [include/dui/Control/Badge.h](../include/dui/Control/Badge.h) | |
+| TagInput | "TagInput"| [include/dui/Control/TagInput.h](../include/dui/Control/TagInput.h) | |
+| AutoComplete | "AutoComplete"| [include/dui/Control/AutoComplete.h](../include/dui/Control/AutoComplete.h) | |
+| Mask | "Mask"| [include/dui/Control/Mask.h](../include/dui/Control/Mask.h) | |
+| RangeSlider | "RangeSlider"| [include/dui/Control/RangeSlider.h](../include/dui/Control/RangeSlider.h) | |
+| Calendar | "Calendar"| [include/dui/Control/Calendar.h](../include/dui/Control/Calendar.h) | |
+| CalendarFlyout | "CalendarFlyout"| [include/dui/Control/CalendarFlyout.h](../include/dui/Control/CalendarFlyout.h) | |
+| NavigationView | "NavigationView"| [include/dui/Control/NavigationView.h](../include/dui/Control/NavigationView.h) | |
+| NavigationViewItem | "NavigationViewItem"| [include/dui/Control/NavigationView.h](../include/dui/Control/NavigationView.h) | |
+| Chart | "Chart"| [include/dui/Control/Chart.h](../include/dui/Control/Chart.h) | |
+| Marquee | "Marquee"| [include/dui/Control/Marquee.h](../include/dui/Control/Marquee.h) | |
+| Timeline | "Timeline"| [include/dui/Control/Timeline.h](../include/dui/Control/Timeline.h) | |
+| Stepper | "Stepper"| [include/dui/Control/Stepper.h](../include/dui/Control/Stepper.h) | |

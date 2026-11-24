@@ -78,3 +78,28 @@ The event-related content of controls is defined in the files [`include/dui/Core
 |kEventImageLoad            | wParam is a data pointer: ui::ImageDecodeResult*   |     |     |     |       |     |  No parameters   |
 |kEventImageDecode          | wParam is a data pointer: ui::ImageDecodeResult*   |     |     |     |       |     |  No parameters   |
 |kEventLast                 |     |     |     |     |       |     |  No parameters   |
+
+## Events added by the upstream update
+
+| Event (eventType) | Emitted by | Parameter (wParam) | Parameter (lParam) | Remarks |
+| :--- | :--- | :--- | :--- | :--- |
+|kEventPanelCollapsing      |Panel| | |Fired before a panel collapses; an event callback returning false cancels it|
+|kEventPanelExpanding       |Panel| | |Fired before a panel expands; an event callback returning false cancels it|
+|kEventNavigationItemClick  |NavigationView|Index of the clicked item| |Fired when a selectable navigation item is clicked (clicking the selected item also fires)|
+|kEventNavigationSelectionChanged|NavigationView|New index|Old index (`Box::InvalidIndex` when nothing is selected)|Fired when the selected navigation item changes|
+|kEventNavigationPaneToggling|NavigationView|Target state (1 = collapsed, 0 = expanded)| |Fired before the pane collapses/expands; an event callback returning false cancels the toggle|
+|kEventNavigationPaneToggled|NavigationView|Current state (1 = collapsed, 0 = expanded)| |Fired when the pane has finished collapsing/expanding|
+|kEventTimelineItemClick    |Timeline|Node index (from 0)| |Fired when a timeline node is clicked|
+|kEventTagAdded             |TagInput|Index of the new tag| |Fired after a tag is added|
+|kEventTagRemoved           |TagInput|Index of the removed tag| |Fired before a tag is removed; the tag text can still be read in the callback|
+|kEventTagClick             |TagInput|Index of the tag| |Fired when the body of a tag is clicked|
+|kEventAutoCompleteSelect   |AutoComplete / SearchBox|Index of the selected candidate in the current candidate list| |Fired after a suggestion is selected|
+|kEventProgressCompleted    |Progress| | |Fired when the progress value reaches the completion end point (max when increasing, min when decreasing)|
+|kEventColumnWidthChanged   |ListCtrl|Column ID (`size_t`)|Associated other column ID (`size_t`, may be `Box::InvalidIndex`)|Fired when the width of a column changes (used to persist column layout)|
+|kEventColumnOrderChanged   |ListCtrl| | |Fired when the display order of the columns changes|
+|kEventColumnVisibleChanged |ListCtrl|Column ID (`size_t`)|New state (1 = visible, 0 = hidden)|Fired when a column is shown/hidden|
+|kEventColumnSorted         |ListCtrl|Column ID (`size_t`)|New state (1 = ascending, 0 = descending)|Fired when the sort state of a column changes|
+|kEventCurrentCellChanged   |ListCtrl|Row display index (`size_t`)|Column ID (`size_t`)|Fired when the current cell changes (cell selection mode)|
+|kEventCellSelectionChanged |ListCtrl|Number of selected areas (`size_t`)|0|pEventData points to `std::vector<ui::ListCtrlCellRange>` (the merged selected-area list)|
+|kEventViewModeChanged      |Calendar|New view mode (0 = month, 1 = year, 2 = decade)|Old view mode|Fired when the calendar view mode changes|
+|kEventDisplayDateChanged   |Calendar| | |Fired when the displayed period (month/year/decade) changes|
