@@ -1,0 +1,923 @@
+#include "dui/Control/Stepper.h"
+#include "dui/Core/GlobalManager.h"
+#include "dui/Core/Window.h"
+#include "dui/Render/IRender.h"
+#include "dui/Render/AutoClip.h"
+#include "dui/Utils/StringUtil.h"
+#include <algorithm>
+#include <vector>
+
+namespace ui
+{
+
+Stepper::Stepper(Window* pWindow) :
+    BaseClass(pWindow),
+    m_nCurrentIndex(0),
+    m_bHorizontal(true),
+    m_nNodeSize(24),
+    m_bClickToJump(true),
+    m_bMuteStepEvent(false),
+    m_strConnectorColor("border_control_normal"),
+    m_strConnectorActiveColor("color_success"),
+    m_strDescColor("text_muted"),
+    m_strTitleFont("system_bold_14"),
+    m_strDescFont("system_regular_12"),
+    m_nodeStateImage(),
+    m_nHoverStep(-1),
+    m_nPressedStep(-1)
+{
+    // The node state images must be linked to the control interface, so that relative paths and the image cache are resolved correctly
+    m_nodeStateImage.SetControl(this);
+
+    // Default node colors for each status (semantic color names, indexed by StepStatus)
+    m_stateColors[static_cast<int>(StepStatus::kPending)] = "text_muted";
+    m_stateColors[static_cast<int>(StepStatus::kActive)] = "color_accent";
+    m_stateColors[static_cast<int>(StepStatus::kCompleted)] = "color_success";
+    m_stateColors[static_cast<int>(StepStatus::kDisabled)] = "border_control_normal";
+
+    // Default title colors for each status
+    m_titleColors[static_cast<int>(StepStatus::kPending)] = "text_muted";
+    m_titleColors[static_cast<int>(StepStatus::kActive)] = "text_default";
+    m_titleColors[static_cast<int>(StepStatus::kCompleted)] = "color_success";
+    m_titleColors[static_cast<int>(StepStatus::kDisabled)] = "text_muted";
+}
+
+Stepper::~Stepper()
+{
+}
+
+std::string Stepper::GetType() const
+{
+    return DUI_CTR_STEPPER;
+}
+
+void Stepper::SetAttribute(const std::string& strName, const std::string& strValue2)
+{
+    std::string strValue = strValue2;
+    if ((strName == "step_title") || (strName == "steptitle")) {
+        m_strItemTitleIds.clear();
+        ParseItemsField(strValue, 0);
+    }
+    else if ((strName == "step_title_id") || (strName == "steptitleid")) {
+        m_strItemTitleIds = strValue;
+        ParseItemsField(strValue, 0, true);
+    }
+    else if ((strName == "step_desc") || (strName == "stepdesc")) {
+        m_strItemDescIds.clear();
+        ParseItemsField(strValue, 1);
+    }
+    else if ((strName == "step_desc_id") || (strName == "stepdescid")) {
+        m_strItemDescIds = strValue;
+        ParseItemsField(strValue, 1, true);
+    }
+    else if ((strName == "current") || (strName == "current_index") || (strName == "currentindex")) {
+        int32_t nIndex = StringUtil::StringToInt32(strValue);
+        if (nIndex < 0) {
+            nIndex = 0;
+        }
+        m_nCurrentIndex = static_cast<size_t>(nIndex);
+        Invalidate();
+    }
+    else if ((strName == "direction") || (strName == "orientation")) {
+        SetHorizontal(!(strValue == "vertical"));
+    }
+    else if ((strName == "click_to_jump") || (strName == "clicktojump")) {
+        SetClickToJump((strValue == "true"));
+    }
+    else if ((strName == "node_size") || (strName == "nodesize")) {
+        SetNodeSize(StringUtil::StringToInt32(strValue));
+    }
+    else if ((strName == "disabled_steps") || (strName == "disabledsteps")) {
+        ParseDisabledSteps(strValue);
+    }
+    else if ((strName == "node_color_pending") || (strName == "nodecolorpending")) {
+        SetStateColor(StepStatus::kPending, strValue);
+    }
+    else if ((strName == "node_color_active") || (strName == "nodecoloractive")) {
+        SetStateColor(StepStatus::kActive, strValue);
+    }
+    else if ((strName == "node_color_completed") || (strName == "nodecolorcompleted")) {
+        SetStateColor(StepStatus::kCompleted, strValue);
+    }
+    else if ((strName == "node_color_disabled") || (strName == "nodecolordisabled")) {
+        SetStateColor(StepStatus::kDisabled, strValue);
+    }
+    else if ((strName == "connector_color") || (strName == "connectorcolor")) {
+        SetConnectorColor(strValue);
+    }
+    else if ((strName == "connector_active_color") || (strName == "connectoractivecolor")) {
+        SetConnectorActiveColor(strValue);
+    }
+    else if ((strName == "title_color_active") || (strName == "titlecoloractive")) {
+        SetTitleColor(StepStatus::kActive, strValue);
+    }
+    else if ((strName == "title_color_completed") || (strName == "titlecolorcompleted")) {
+        SetTitleColor(StepStatus::kCompleted, strValue);
+    }
+    else if ((strName == "title_color_pending") || (strName == "titlecolorpending")) {
+        SetTitleColor(StepStatus::kPending, strValue);
+    }
+    else if ((strName == "desc_color") || (strName == "desccolor")) {
+        SetDescColor(strValue);
+    }
+    else if ((strName == "title_font") || (strName == "titlefont")) {
+        SetTitleFont(strValue);
+    }
+    else if ((strName == "desc_font") || (strName == "descfont")) {
+        SetDescFont(strValue);
+    }
+    else if ((strName == "node_hovered_image") || (strName == "node_hot_image") || (strName == "nodehoveredimage")) {
+        SetNodeStateImage(kControlStateHot, strValue);
+    }
+    else if ((strName == "node_pressed_image") || (strName == "node_pushed_image") || (strName == "nodepressedimage")) {
+        SetNodeStateImage(kControlStatePushed, strValue);
+    }
+    else {
+        BaseClass::SetAttribute(strName, strValue);
+    }
+}
+
+void Stepper::OnLanguageChanged()
+{
+    BaseClass::OnLanguageChanged();
+    // When the language changes, re-resolve the multi-language data bindings (step_title_id / step_desc_id)
+    if (!m_strItemTitleIds.empty()) {
+        ParseItemsField(m_strItemTitleIds, 0, true);
+    }
+    if (!m_strItemDescIds.empty()) {
+        ParseItemsField(m_strItemDescIds, 1, true);
+    }
+}
+
+void Stepper::ParseItemsField(const std::string& strValue, int32_t nField, bool bTranslate)
+{
+    // Split the steps by '|' and fill the specified field one by one; missing steps are appended as empty steps
+    std::list<std::string> parts = StringUtil::Split(strValue, "|");
+    size_t nIndex = 0;
+    for (const std::string& part : parts) {
+        std::string s = part;
+        StringUtil::Trim(s);
+        if (bTranslate && !s.empty()) {
+            // Multi-language ID mode: fetch the actual text from the language file by STRID
+            s = GlobalManager::Instance().Lang().GetStringViaID(s);
+        }
+        if (nIndex >= m_steps.size()) {
+            m_steps.push_back(Step());
+        }
+        Step& step = m_steps[nIndex];
+        switch (nField) {
+        case 0: step.title = s; break;
+        case 1: step.description = s; break;
+        default: break;
+        }
+        ++nIndex;
+    }
+    Invalidate();
+}
+
+void Stepper::ParseDisabledSteps(const std::string& strValue)
+{
+    // Normalize the separators: replace commas with vertical bars, then split by '|'
+    std::string str = strValue;
+    std::replace(str.begin(), str.end(), ',', '|');
+    std::list<std::string> parts = StringUtil::Split(str, "|");
+    m_disabledSteps.clear();
+    for (const std::string& part : parts) {
+        std::string s = part;
+        StringUtil::Trim(s);
+        if (s.empty()) {
+            continue;
+        }
+        int32_t nIndex = StringUtil::StringToInt32(s);
+        if (nIndex >= 0) {
+            m_disabledSteps.push_back(static_cast<size_t>(nIndex));
+        }
+    }
+    Invalidate();
+}
+
+size_t Stepper::GetCurrentIndex() const
+{
+    if (m_steps.empty()) {
+        return 0;
+    }
+    if (m_nCurrentIndex >= m_steps.size()) {
+        return m_steps.size() - 1;
+    }
+    return m_nCurrentIndex;
+}
+
+void Stepper::SetCurrentIndex(size_t nIndex)
+{
+    if (m_steps.empty()) {
+        return;
+    }
+    const size_t nOld = GetCurrentIndex();
+    if (nIndex >= m_steps.size()) {
+        nIndex = m_steps.size() - 1;
+    }
+    if (nIndex == nOld) {
+        return;
+    }
+    m_nCurrentIndex = nIndex;
+    Invalidate();
+    EmitStepChanged(nOld);
+}
+
+void Stepper::SetCurrentIndexNoEvent(size_t nIndex)
+{
+    const bool bOldMute = m_bMuteStepEvent;
+    m_bMuteStepEvent = true;
+    SetCurrentIndex(nIndex);
+    m_bMuteStepEvent = bOldMute;
+}
+
+bool Stepper::Next()
+{
+    if (m_steps.empty()) {
+        return false;
+    }
+    size_t i = GetCurrentIndex();
+    while (i + 1 < m_steps.size()) {
+        ++i;
+        if (!IsStepDisabled(i)) {
+            return GoTo(i);
+        }
+    }
+    return false;
+}
+
+bool Stepper::NextNoEvent()
+{
+    const bool bOldMute = m_bMuteStepEvent;
+    m_bMuteStepEvent = true;
+    const bool bRet = Next();
+    m_bMuteStepEvent = bOldMute;
+    return bRet;
+}
+
+bool Stepper::Back()
+{
+    if (m_steps.empty()) {
+        return false;
+    }
+    size_t i = GetCurrentIndex();
+    while (i > 0) {
+        --i;
+        if (!IsStepDisabled(i)) {
+            return GoTo(i);
+        }
+    }
+    return false;
+}
+
+bool Stepper::BackNoEvent()
+{
+    const bool bOldMute = m_bMuteStepEvent;
+    m_bMuteStepEvent = true;
+    const bool bRet = Back();
+    m_bMuteStepEvent = bOldMute;
+    return bRet;
+}
+
+bool Stepper::GoTo(size_t nIndex)
+{
+    if (m_steps.empty()) {
+        return false;
+    }
+    if (nIndex >= m_steps.size()) {
+        return false;
+    }
+    if (IsStepDisabled(nIndex)) {
+        return false;
+    }
+    if (nIndex == GetCurrentIndex()) {
+        return false;
+    }
+    SetCurrentIndex(nIndex);
+    return true;
+}
+
+bool Stepper::GoToNoEvent(size_t nIndex)
+{
+    const bool bOldMute = m_bMuteStepEvent;
+    m_bMuteStepEvent = true;
+    const bool bRet = GoTo(nIndex);
+    m_bMuteStepEvent = bOldMute;
+    return bRet;
+}
+
+void Stepper::EmitStepChanged(size_t nOldIndex)
+{
+    if (m_bMuteStepEvent) {
+        return;
+    }
+    // The current step is carried in pEventData (a temporary stack object, valid only during this synchronous dispatch)
+    StepValue value;
+    value.currentIndex = GetCurrentIndex();
+    value.oldIndex = nOldIndex;
+    SendEvent(kEventValueChanged, (WPARAM)2, 0, static_cast<void*>(&value));
+}
+
+void Stepper::AddStep(const Step& step)
+{
+    m_steps.push_back(step);
+    Invalidate();
+}
+
+void Stepper::AddStep(const std::string& title, const std::string& description)
+{
+    Step step;
+    step.title = title;
+    step.description = description;
+    AddStep(step);
+}
+
+bool Stepper::InsertStep(size_t index, const Step& step)
+{
+    if (index > m_steps.size()) {
+        return false;
+    }
+    m_steps.insert(m_steps.begin() + index, step);
+    Invalidate();
+    return true;
+}
+
+bool Stepper::RemoveStepAt(size_t index)
+{
+    if (index >= m_steps.size()) {
+        return false;
+    }
+    m_steps.erase(m_steps.begin() + index);
+    if (m_nCurrentIndex >= m_steps.size() && !m_steps.empty()) {
+        m_nCurrentIndex = m_steps.size() - 1;
+    }
+    Invalidate();
+    return true;
+}
+
+void Stepper::ClearSteps()
+{
+    if (!m_steps.empty()) {
+        m_steps.clear();
+        m_nCurrentIndex = 0;
+        m_disabledSteps.clear();
+        Invalidate();
+    }
+}
+
+void Stepper::SetSteps(const std::vector<Step>& steps)
+{
+    m_steps = steps;
+    if (m_nCurrentIndex >= m_steps.size() && !m_steps.empty()) {
+        m_nCurrentIndex = m_steps.size() - 1;
+    }
+    Invalidate();
+}
+
+const Stepper::Step* Stepper::GetStepAt(size_t index) const
+{
+    if (index >= m_steps.size()) {
+        return nullptr;
+    }
+    return &m_steps[index];
+}
+
+void Stepper::SetStepDisabled(size_t index, bool bDisabled)
+{
+    if (index >= m_steps.size()) {
+        return;
+    }
+    auto it = std::find(m_disabledSteps.begin(), m_disabledSteps.end(), index);
+    const bool bExists = (it != m_disabledSteps.end());
+    if (bDisabled && !bExists) {
+        m_disabledSteps.push_back(index);
+        Invalidate();
+    }
+    else if (!bDisabled && bExists) {
+        m_disabledSteps.erase(it);
+        Invalidate();
+    }
+}
+
+bool Stepper::IsStepDisabled(size_t index) const
+{
+    return std::find(m_disabledSteps.begin(), m_disabledSteps.end(), index) != m_disabledSteps.end();
+}
+
+void Stepper::SetDisabledSteps(const std::vector<size_t>& disabledSteps)
+{
+    m_disabledSteps = disabledSteps;
+    Invalidate();
+}
+
+StepStatus Stepper::GetStepStatus(size_t index) const
+{
+    if (IsStepDisabled(index)) {
+        return StepStatus::kDisabled;
+    }
+    const size_t nCurrent = GetCurrentIndex();
+    if (index < nCurrent) {
+        return StepStatus::kCompleted;
+    }
+    if (index == nCurrent) {
+        return StepStatus::kActive;
+    }
+    return StepStatus::kPending;
+}
+
+void Stepper::SetHorizontal(bool bHorizontal)
+{
+    if (m_bHorizontal != bHorizontal) {
+        m_bHorizontal = bHorizontal;
+        Invalidate();
+    }
+}
+
+void Stepper::SetNodeSize(int32_t nSize)
+{
+    if (nSize < 12) {
+        nSize = 12;
+    }
+    if (nSize > 96) {
+        nSize = 96;
+    }
+    if (m_nNodeSize != nSize) {
+        m_nNodeSize = nSize;
+        Invalidate();
+    }
+}
+
+void Stepper::SetClickToJump(bool bEnable)
+{
+    m_bClickToJump = bEnable;
+}
+
+void Stepper::SetStateColor(StepStatus status, const std::string& strColor)
+{
+    const int32_t nIndex = static_cast<int>(status);
+    if ((nIndex >= 0) && (nIndex < 4)) {
+        m_stateColors[nIndex] = strColor;
+        Invalidate();
+    }
+}
+
+const std::string& Stepper::GetStateColor(StepStatus status) const
+{
+    const int32_t nIndex = static_cast<int>(status);
+    if ((nIndex >= 0) && (nIndex < 4)) {
+        return m_stateColors[nIndex];
+    }
+    static const std::string kEmpty;
+    return kEmpty;
+}
+
+void Stepper::SetTitleColor(StepStatus status, const std::string& strColor)
+{
+    const int32_t nIndex = static_cast<int>(status);
+    if ((nIndex >= 0) && (nIndex < 4)) {
+        m_titleColors[nIndex] = strColor;
+        Invalidate();
+    }
+}
+
+const std::string& Stepper::GetTitleColor(StepStatus status) const
+{
+    const int32_t nIndex = static_cast<int>(status);
+    if ((nIndex >= 0) && (nIndex < 4)) {
+        return m_titleColors[nIndex];
+    }
+    static const std::string kEmpty;
+    return kEmpty;
+}
+
+void Stepper::SetConnectorColor(const std::string& strColor)
+{
+    if (m_strConnectorColor != strColor) {
+        m_strConnectorColor = strColor;
+        Invalidate();
+    }
+}
+
+void Stepper::SetConnectorActiveColor(const std::string& strColor)
+{
+    if (m_strConnectorActiveColor != strColor) {
+        m_strConnectorActiveColor = strColor;
+        Invalidate();
+    }
+}
+
+void Stepper::SetDescColor(const std::string& strColor)
+{
+    if (m_strDescColor != strColor) {
+        m_strDescColor = strColor;
+        Invalidate();
+    }
+}
+
+void Stepper::SetTitleFont(const std::string& strFontId)
+{
+    if (m_strTitleFont != strFontId) {
+        m_strTitleFont = strFontId;
+        Invalidate();
+    }
+}
+
+void Stepper::SetDescFont(const std::string& strFontId)
+{
+    if (m_strDescFont != strFontId) {
+        m_strDescFont = strFontId;
+        Invalidate();
+    }
+}
+
+void Stepper::SetNodeStateImage(ControlStateType stateType, const std::string& strImage)
+{
+    m_nodeStateImage.SetImageString(stateType, strImage, Dpi());
+    Invalidate();
+}
+
+std::string Stepper::GetNodeStateImage(ControlStateType stateType) const
+{
+    return m_nodeStateImage.GetImageString(stateType);
+}
+
+void Stepper::ClearImageCache()
+{
+    BaseClass::ClearImageCache();
+    m_nodeStateImage.ClearImageCache();
+}
+
+UiRect Stepper::CalcStepSlotRect(const UiRect& rc, size_t nCount, size_t index) const
+{
+    if (nCount == 0) {
+        return UiRect();
+    }
+    if (m_bHorizontal) {
+        const double slotW = static_cast<double>(rc.Width()) / static_cast<double>(nCount);
+        const int32_t left = rc.left + static_cast<int32_t>(slotW * static_cast<double>(index));
+        const int32_t right = rc.left + static_cast<int32_t>(slotW * static_cast<double>(index + 1));
+        return UiRect(left, rc.top, right, rc.bottom);
+    }
+    const double slotH = static_cast<double>(rc.Height()) / static_cast<double>(nCount);
+    const int32_t top = rc.top + static_cast<int32_t>(slotH * static_cast<double>(index));
+    const int32_t bottom = rc.top + static_cast<int32_t>(slotH * static_cast<double>(index + 1));
+    return UiRect(rc.left, top, rc.right, bottom);
+}
+
+int32_t Stepper::HitTestStep(const UiRect& rc, size_t nCount, const UiPoint& ptMouse) const
+{
+    if (nCount == 0) {
+        return -1;
+    }
+    if (m_bHorizontal) {
+        const double slotW = static_cast<double>(rc.Width()) / static_cast<double>(nCount);
+        if (slotW <= 0) {
+            return -1;
+        }
+        int32_t nIndex = static_cast<int32_t>((ptMouse.x - rc.left) / slotW);
+        if ((nIndex < 0) || (nIndex >= static_cast<int32_t>(nCount))) {
+            return -1;
+        }
+        return nIndex;
+    }
+    const double slotH = static_cast<double>(rc.Height()) / static_cast<double>(nCount);
+    if (slotH <= 0) {
+        return -1;
+    }
+    int32_t nIndex = static_cast<int32_t>((ptMouse.y - rc.top) / slotH);
+    if ((nIndex < 0) || (nIndex >= static_cast<int32_t>(nCount))) {
+        return -1;
+    }
+    return nIndex;
+}
+
+bool Stepper::ButtonDown(const EventArgs& msg)
+{
+    if (!IsEnabled()) {
+        return BaseClass::ButtonDown(msg);
+    }
+    UiRect rc = GetRect();
+    rc.Deflate(GetControlPadding());
+    if (m_bClickToJump) {
+        const int32_t nHit = HitTestStep(rc, m_steps.size(), msg.ptMouse);
+        if ((nHit >= 0) && (GetStepStatus(static_cast<size_t>(nHit)) != StepStatus::kDisabled)) {
+            // Record the pushed state and take the mouse focus, so that mouse messages keep arriving and the pushed state can be released
+            m_nPressedStep = nHit;
+            SetMouseFocused(true);
+            Invalidate();
+            GoTo(static_cast<size_t>(nHit));
+            return true;
+        }
+    }
+    return BaseClass::ButtonDown(msg);
+}
+
+bool Stepper::ButtonUp(const EventArgs& msg)
+{
+    if (m_nPressedStep >= 0) {
+        m_nPressedStep = -1;
+        Invalidate();
+    }
+    return BaseClass::ButtonUp(msg);
+}
+
+bool Stepper::MouseMove(const EventArgs& msg)
+{
+    if (msg.eventType == kEventMouseMove) {
+        // Update the hovered step (only interactive steps participate, used to show the hovered state image)
+        int32_t nHit = -1;
+        if (IsEnabled() && IsMouseEnabled() && m_bClickToJump && !m_steps.empty()) {
+            UiRect rc = GetRect();
+            rc.Deflate(GetControlPadding());
+            nHit = HitTestStep(rc, m_steps.size(), msg.ptMouse);
+            if ((nHit >= 0) && (GetStepStatus(static_cast<size_t>(nHit)) == StepStatus::kDisabled)) {
+                nHit = -1;
+            }
+        }
+        if (nHit != m_nHoverStep) {
+            m_nHoverStep = nHit;
+            Invalidate();
+        }
+    }
+    return BaseClass::MouseMove(msg);
+}
+
+bool Stepper::MouseLeave(const EventArgs& msg)
+{
+    if ((m_nHoverStep >= 0) || (m_nPressedStep >= 0)) {
+        m_nHoverStep = -1;
+        m_nPressedStep = -1;
+        Invalidate();
+    }
+    return BaseClass::MouseLeave(msg);
+}
+
+void Stepper::PaintStateImages(IRender* pRender)
+{
+    BaseClass::PaintStateImages(pRender);
+    if (pRender == nullptr) {
+        return;
+    }
+    UiRect rc = GetRect();
+    rc.Deflate(GetControlPadding());
+    if ((rc.Width() <= 0) || (rc.Height() <= 0) || m_steps.empty()) {
+        return;
+    }
+
+    std::unique_ptr<AutoClip> spClip = CreateRectClip(pRender, rc, true);
+    if (m_bHorizontal) {
+        PaintHorizontal(pRender, rc);
+    }
+    else {
+        PaintVertical(pRender, rc);
+    }
+    spClip.reset();
+}
+
+void Stepper::PaintHorizontal(IRender* pRender, const UiRect& rc)
+{
+    const size_t nCount = m_steps.size();
+    const int32_t nRadius = Dpi().GetScaleInt(m_nNodeSize) / 2;
+    const int32_t nEdge = Dpi().GetScaleInt(2);
+    const int32_t nGap = Dpi().GetScaleInt(6);
+    const double slotW = static_cast<double>(rc.Width()) / static_cast<double>(nCount);
+    const int32_t nNodeCenterY = rc.top + nRadius + nGap;
+
+    // Connector line (drawn first, the nodes are painted on top of it)
+    UiColor connColor = GetUiColor(m_strConnectorColor);
+    if (connColor.IsEmpty()) {
+        connColor = UiColor(0xFFD0D0D0);
+    }
+    UiColor connActive = GetUiColor(m_strConnectorActiveColor);
+    if (connActive.IsEmpty()) {
+        connActive = connColor;
+    }
+    const float fLineWidth = static_cast<float>(std::max(1, Dpi().GetScaleInt(2)));
+    const size_t nCurrent = GetCurrentIndex();
+    for (size_t i = 0; i + 1 < nCount; ++i) {
+        const int32_t x1 = rc.left + static_cast<int32_t>(slotW * (static_cast<double>(i) + 0.5)) + nRadius + nEdge;
+        const int32_t x2 = rc.left + static_cast<int32_t>(slotW * (static_cast<double>(i) + 1.5)) - nRadius - nEdge;
+        if (x2 <= x1) {
+            continue;
+        }
+        const UiColor color = (i < nCurrent) ? connActive : connColor;
+        pRender->DrawLine(UiPointF(static_cast<float>(x1), static_cast<float>(nNodeCenterY)),
+                          UiPointF(static_cast<float>(x2), static_cast<float>(nNodeCenterY)),
+                          color, fLineWidth);
+    }
+
+    // Node and text
+    const int32_t nTextTop = nNodeCenterY + nRadius + nGap;
+    for (size_t i = 0; i < nCount; ++i) {
+        const int32_t cx = rc.left + static_cast<int32_t>(slotW * (static_cast<double>(i) + 0.5));
+        const StepStatus status = GetStepStatus(i);
+        PaintNodeStateIcon(pRender, UiPoint(cx, nNodeCenterY), nRadius, status, i);
+        PaintNode(pRender, UiPoint(cx, nNodeCenterY), nRadius, status, i, status == StepStatus::kDisabled);
+
+        const int32_t slotLeft = rc.left + static_cast<int32_t>(slotW * static_cast<double>(i));
+        const int32_t slotRight = rc.left + static_cast<int32_t>(slotW * static_cast<double>(i + 1));
+        UiRect rcText(slotLeft + nGap, nTextTop, slotRight - nGap, rc.bottom);
+        if (rcText.Width() <= 0) {
+            continue;
+        }
+
+        const Step& step = m_steps[i];
+        int32_t y = nTextTop;
+        if (!step.title.empty()) {
+            const int32_t nTitleH = MeasureTextHeight(pRender, step.title, rcText.Width(), m_strTitleFont);
+            UiRect rcTitle(rcText.left, y, rcText.right, y + nTitleH);
+            DrawStepperText(pRender, step.title, rcTitle, TEXT_HCENTER | TEXT_SINGLELINE | TEXT_TOP,
+                            GetUiColor(GetTitleColor(status)), m_strTitleFont);
+            y += nTitleH + nEdge;
+        }
+        if (!step.description.empty()) {
+            UiRect rcDesc(rcText.left, y, rcText.right, rc.bottom);
+            DrawStepperText(pRender, step.description, rcDesc, TEXT_HCENTER | TEXT_TOP,
+                            GetUiColor(m_strDescColor), m_strDescFont);
+        }
+    }
+}
+
+void Stepper::PaintVertical(IRender* pRender, const UiRect& rc)
+{
+    const size_t nCount = m_steps.size();
+    const int32_t nRadius = Dpi().GetScaleInt(m_nNodeSize) / 2;
+    const int32_t nEdge = Dpi().GetScaleInt(2);
+    const int32_t nGap = Dpi().GetScaleInt(8);
+    const double slotH = static_cast<double>(rc.Height()) / static_cast<double>(nCount);
+    const int32_t nNodeCenterX = rc.left + nRadius + nGap;
+
+    // Connector line
+    UiColor connColor = GetUiColor(m_strConnectorColor);
+    if (connColor.IsEmpty()) {
+        connColor = UiColor(0xFFD0D0D0);
+    }
+    UiColor connActive = GetUiColor(m_strConnectorActiveColor);
+    if (connActive.IsEmpty()) {
+        connActive = connColor;
+    }
+    const float fLineWidth = static_cast<float>(std::max(1, Dpi().GetScaleInt(2)));
+    const size_t nCurrent = GetCurrentIndex();
+    for (size_t i = 0; i + 1 < nCount; ++i) {
+        const int32_t y1 = rc.top + static_cast<int32_t>(slotH * (static_cast<double>(i) + 0.5)) + nRadius + nEdge;
+        const int32_t y2 = rc.top + static_cast<int32_t>(slotH * (static_cast<double>(i) + 1.5)) - nRadius - nEdge;
+        if (y2 <= y1) {
+            continue;
+        }
+        const UiColor color = (i < nCurrent) ? connActive : connColor;
+        pRender->DrawLine(UiPointF(static_cast<float>(nNodeCenterX), static_cast<float>(y1)),
+                          UiPointF(static_cast<float>(nNodeCenterX), static_cast<float>(y2)),
+                          color, fLineWidth);
+    }
+
+    // Node and text
+    const int32_t nTextLeft = nNodeCenterX + nRadius + nGap;
+    for (size_t i = 0; i < nCount; ++i) {
+        const int32_t cy = rc.top + static_cast<int32_t>(slotH * (static_cast<double>(i) + 0.5));
+        const StepStatus status = GetStepStatus(i);
+        PaintNodeStateIcon(pRender, UiPoint(nNodeCenterX, cy), nRadius, status, i);
+        PaintNode(pRender, UiPoint(nNodeCenterX, cy), nRadius, status, i, status == StepStatus::kDisabled);
+
+        UiRect rcText(nTextLeft, rc.top, rc.right, rc.bottom);
+        if (rcText.Width() <= 0) {
+            continue;
+        }
+
+        const Step& step = m_steps[i];
+        // The title and description are vertically centered on the node row
+        int32_t nTitleH = 0;
+        if (!step.title.empty()) {
+            nTitleH = MeasureTextHeight(pRender, step.title, rcText.Width(), m_strTitleFont);
+        }
+        int32_t nDescH = 0;
+        if (!step.description.empty()) {
+            nDescH = MeasureTextHeight(pRender, step.description, rcText.Width(), m_strDescFont);
+        }
+        int32_t nTotalH = nTitleH + ((nTitleH > 0 && nDescH > 0) ? nEdge : 0) + nDescH;
+        int32_t y = cy - nTotalH / 2;
+        if ((y < rc.top) || (nTotalH >= rc.Height())) {
+            y = cy - nTotalH / 2;
+        }
+        if (!step.title.empty()) {
+            UiRect rcTitle(rcText.left, y, rcText.right, y + nTitleH);
+            DrawStepperText(pRender, step.title, rcTitle, TEXT_LEFT | TEXT_SINGLELINE | TEXT_VCENTER,
+                            GetUiColor(GetTitleColor(status)), m_strTitleFont);
+            y += nTitleH + nEdge;
+        }
+        if (!step.description.empty()) {
+            UiRect rcDesc(rcText.left, y, rcText.right, y + nDescH);
+            DrawStepperText(pRender, step.description, rcDesc, TEXT_LEFT | TEXT_VCENTER,
+                            GetUiColor(m_strDescColor), m_strDescFont);
+        }
+    }
+}
+
+void Stepper::PaintNodeStateIcon(IRender* pRender, const UiPoint& ptCenter, int32_t nRadius,
+                                 StepStatus status, size_t index)
+{
+    // Only interactive steps draw the hovered/pushed state image
+    if ((pRender == nullptr) || !IsEnabled() || !IsMouseEnabled() || !m_bClickToJump) {
+        return;
+    }
+    if ((status == StepStatus::kDisabled) || IsStepDisabled(index)) {
+        return;
+    }
+    if (!m_nodeStateImage.HasImage()) {
+        return;
+    }
+
+    ControlStateType stateType = kControlStateNormal;
+    if (m_nPressedStep == static_cast<int32_t>(index)) {
+        stateType = kControlStatePushed;
+    }
+    else if (m_nHoverStep == static_cast<int32_t>(index)) {
+        stateType = kControlStateHot;
+    }
+    else {
+        return;
+    }
+
+    Image* pImage = m_nodeStateImage.GetStateImage(stateType);
+    if ((pImage == nullptr) && (stateType == kControlStatePushed)) {
+        // When no image is configured for the pushed state, fall back to the hovered state image
+        pImage = m_nodeStateImage.GetStateImage(kControlStateHot);
+    }
+    if (pImage == nullptr) {
+        return;
+    }
+
+    // The icon is centered on the node center and is slightly larger than the node (forming an outer glow/stroke); the target area is in control-relative coordinates
+    const int32_t nIconSize = nRadius * 2 + Dpi().GetScaleInt(10);
+    const UiRect rcCtrl = GetRect();
+    const int32_t nLeft = (ptCenter.x - nIconSize / 2) - rcCtrl.left;
+    const int32_t nTop = (ptCenter.y - nIconSize / 2) - rcCtrl.top;
+    const std::string strModify = StringUtil::Printf("destscale='false' dest='%d,%d,%d,%d'",
+                                                 nLeft, nTop, nLeft + nIconSize, nTop + nIconSize);
+    PaintImage(pRender, pImage, strModify);
+}
+
+void Stepper::PaintNode(IRender* pRender, const UiPoint& ptCenter, int32_t nRadius, StepStatus status,
+                        size_t index, bool bDimmed)
+{
+    UiColor nodeColor = GetUiColor(m_stateColors[static_cast<int>(status)]);
+    if (nodeColor.IsEmpty()) {
+        nodeColor = UiColor(0xFF999999);
+    }
+    uint8_t uAlpha = bDimmed ? static_cast<uint8_t>(GetAlpha() * 3 / 5) : GetAlpha();
+    const UiPointF centerPt(static_cast<float>(ptCenter.x), static_cast<float>(ptCenter.y));
+    pRender->FillCircle(centerPt, static_cast<float>(nRadius), nodeColor, uAlpha);
+
+    if (status == StepStatus::kCompleted) {
+        // Completed: draw a check mark inside the node
+        const UiColor markColor(0xFFFFFFFF);
+        const float fWidth = static_cast<float>(std::max(1, Dpi().GetScaleInt(2)));
+        const float cx = static_cast<float>(ptCenter.x);
+        const float cy = static_cast<float>(ptCenter.y);
+        const float r = static_cast<float>(nRadius);
+        pRender->DrawLine(UiPointF(cx - r * 0.45f, cy + r * 0.05f),
+                          UiPointF(cx - r * 0.10f, cy + r * 0.40f),
+                          markColor, fWidth);
+        pRender->DrawLine(UiPointF(cx - r * 0.10f, cy + r * 0.40f),
+                          UiPointF(cx + r * 0.50f, cy - r * 0.38f),
+                          markColor, fWidth);
+    }
+    else {
+        // Pending / in progress / disabled: draw the step number inside the node
+        const std::string strNum = StringUtil::Printf("%d", static_cast<int>(index + 1));
+        UiRect rcText(ptCenter.x - nRadius, ptCenter.y - nRadius, ptCenter.x + nRadius, ptCenter.y + nRadius);
+        DrawStepperText(pRender, strNum, rcText, TEXT_HCENTER | TEXT_VCENTER | TEXT_SINGLELINE,
+                        UiColor(0xFFFFFFFF), "system_bold_12");
+    }
+}
+
+void Stepper::DrawStepperText(IRender* pRender, const std::string& strText, const UiRect& rc, uint32_t uFormat,
+                              UiColor textColor, const std::string& strFontId)
+{
+    if ((pRender == nullptr) || strText.empty()) {
+        return;
+    }
+    if (textColor.IsEmpty()) {
+        textColor = UiColor(0xFF000000);
+    }
+    DrawStringParam param;
+    param.textRect = rc;
+    param.dwTextColor = textColor;
+    param.pFont = GetIFontById(strFontId);
+    param.uFormat = uFormat;
+    pRender->DrawString(strText, param);
+}
+
+int32_t Stepper::MeasureTextHeight(IRender* pRender, const std::string& strText, int32_t nWidth, const std::string& strFontId)
+{
+    if ((pRender == nullptr) || strText.empty() || (nWidth <= 0)) {
+        return 0;
+    }
+    MeasureStringParam param;
+    param.pFont = GetIFontById(strFontId);
+    param.rectSize = nWidth;
+    UiRect rc = pRender->MeasureString(strText, param);
+    return rc.Height();
+}
+
+} // namespace ui

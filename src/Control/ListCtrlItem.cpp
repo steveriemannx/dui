@@ -85,10 +85,10 @@ size_t ListCtrlItem::GetSubItemCount() const
     return GetItemCount();
 }
 
-ListCtrlSubItem* ListCtrlItem::GetSubItem(size_t columnIndex) const
+ListCtrlSubItem* ListCtrlItem::GetSubItem(size_t nSubItemIndex) const
 {
-    ASSERT(columnIndex < GetSubItemCount());
-    ListCtrlSubItem* pSubItem = dynamic_cast<ListCtrlSubItem*>(GetItemAt(columnIndex));
+    ASSERT(nSubItemIndex < GetSubItemCount());
+    ListCtrlSubItem* pSubItem = dynamic_cast<ListCtrlSubItem*>(GetItemAt(nSubItemIndex));
     ASSERT(pSubItem != nullptr);
     return pSubItem;
 }
@@ -151,6 +151,54 @@ bool ListCtrlItem::ButtonUp(const EventArgs& msg)
     else {
         return BaseClass::ButtonUp(msg);
     }
+}
+
+UiPoint ListCtrlItem::GetCheckBoxMousePos(const UiPoint& ptMouse) const
+{
+    UiPoint pt(ptMouse);
+    pt.Offset(GetScrollOffsetInScrollBox());
+    //The CheckBox and icon at the beginning of the row are always displayed at the far left of the row, inside the frozen column area (they do not move with horizontal scrolling):
+    //when there are frozen columns, the horizontal scroll offset is counted as 0, so hit testing stays consistent with the displayed position of the frozen columns
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetFrozenColumnCount() > 0) && IsShowCheckBox()) {
+        pt.x = ptMouse.x;
+    }
+    return pt;
+}
+
+bool ListCtrlItem::ButtonDown(const EventArgs& msg)
+{
+    if ((m_pListCtrl != nullptr) &&
+        (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        //In cell selection mode, skip the row selection logic (SelectItem) to avoid conflicting with cell selection
+        return HBox::ButtonDown(msg);
+    }
+    else {
+        return BaseClass::ButtonDown(msg);
+    }
+}
+
+bool ListCtrlItem::MouseEnter(const EventArgs& msg)
+{
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        //In cell selection mode, the row-level hover highlight (including the hovered fade-out/fade-in animation) is visual feedback exclusive to row selection mode:
+        //the base class logic is not executed here (do not set the Hovered state, do not start the hover animation), but false is still returned so the event keeps bubbling to the parent view,
+        //guaranteeing that the view (ScrollBox) receives MouseEnter and fades in the auto-hidden scroll bars
+        return false;
+    }
+    return BaseClass::MouseEnter(msg);
+}
+
+bool ListCtrlItem::MouseLeave(const EventArgs& msg)
+{
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        //In cell selection mode, the base class logic is not executed (otherwise the hovered fade-out animation starts and the row hover color "flashes" once);
+        //only the row-level hover state possibly left over from SetFocus() is cleared (Control::OnSetFocus sets the state to Hovered)
+        if (GetState() == kControlStateHot) {
+            SetState(kControlStateNormal);
+        }
+        return false;
+    }
+    return BaseClass::MouseLeave(msg);
 }
 
 bool ListCtrlItem::SupportCheckMode() const
@@ -253,6 +301,18 @@ void ListCtrlItem::Paint(IRender* pRender, const UiRect& rcPaint)
         VAlignRect(rc, TEXT_VCENTER, imageSize.cy);
         PaintImage(pRender, pItemImage.get(), "", -1, nullptr, &rc, nullptr);
     }
+}
+
+void ListCtrlItem::PaintStateColors(IRender* pRender)
+{
+    //In cell selection mode, the highlight background produced by row-level hover (Enter)/pressed (Pressed) is visual feedback exclusive to row selection mode, so it is skipped here;
+    //the other states (normal, selected, disabled, etc.) and the behaviour in row selection mode remain unchanged
+    if ((m_pListCtrl != nullptr) &&
+        (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell) &&
+        ((GetState() == kControlStateHot) || (GetState() == kControlStatePushed))) {
+        return;
+    }
+    BaseClass::PaintStateColors(pRender);
 }
 
 ImagePtr ListCtrlItem::LoadItemImage() const

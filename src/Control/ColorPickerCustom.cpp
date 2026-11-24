@@ -370,7 +370,7 @@ void ColorPickerCustom::UpdateRGB(const ColorUI& colorUI, const UiColor& color, 
         colorUI.m_pColorEdit->SetTextNoEvent(text);
     }
     if (colorUI.m_pColorSlider != nullptr) {
-        colorUI.m_pColorSlider->SetValue(colorValue);
+        colorUI.m_pColorSlider->SetValueNoEvent(colorValue);
         if (flag == 0) {
             //A
             colorUI.m_pColorSlider->SetColorInfo(color, ColorAdjustMode::kMode_ARGB_A);
@@ -427,7 +427,7 @@ void ColorPickerCustom::UpdateHSV(const ColorUI& colorUIH, const ColorUI& colorU
             colorUIH.m_pColorEdit->SetTextNoEvent(text);
         }
         if (colorUIH.m_pColorSlider != nullptr) {
-            colorUIH.m_pColorSlider->SetValue((int32_t)hue);
+            colorUIH.m_pColorSlider->SetValueNoEvent((int32_t)hue);
         }
     }
 
@@ -437,7 +437,7 @@ void ColorPickerCustom::UpdateHSV(const ColorUI& colorUIH, const ColorUI& colorU
             colorUIS.m_pColorEdit->SetTextNoEvent(text);
         }
         if (colorUIS.m_pColorSlider != nullptr) {
-            colorUIS.m_pColorSlider->SetValue((int32_t)(sat * 100));
+            colorUIS.m_pColorSlider->SetValueNoEvent((int32_t)(sat * 100));
         }
     }
 
@@ -447,7 +447,7 @@ void ColorPickerCustom::UpdateHSV(const ColorUI& colorUIH, const ColorUI& colorU
             colorUIV.m_pColorEdit->SetTextNoEvent(text);
         }
         if (colorUIV.m_pColorSlider != nullptr) {
-            colorUIV.m_pColorSlider->SetValue((int32_t)(value * 100));
+            colorUIV.m_pColorSlider->SetValueNoEvent((int32_t)(value * 100));
         }
     }
 
@@ -505,7 +505,7 @@ void ColorPickerCustom::UpdateHSL(const ColorUI& colorUIH, const ColorUI& colorU
             colorUIH.m_pColorEdit->SetTextNoEvent(text);
         }
         if (colorUIH.m_pColorSlider != nullptr) {
-            colorUIH.m_pColorSlider->SetValue((int32_t)hue);
+            colorUIH.m_pColorSlider->SetValueNoEvent((int32_t)hue);
         }
     }
 
@@ -515,7 +515,7 @@ void ColorPickerCustom::UpdateHSL(const ColorUI& colorUIH, const ColorUI& colorU
             colorUIS.m_pColorEdit->SetTextNoEvent(text);
         }
         if (colorUIS.m_pColorSlider != nullptr) {
-            colorUIS.m_pColorSlider->SetValue((int32_t)(sat * 100));
+            colorUIS.m_pColorSlider->SetValueNoEvent((int32_t)(sat * 100));
         }
     }
 
@@ -525,7 +525,7 @@ void ColorPickerCustom::UpdateHSL(const ColorUI& colorUIH, const ColorUI& colorU
             colorUIL.m_pColorEdit->SetTextNoEvent(text);
         }
         if (colorUIL.m_pColorSlider != nullptr) {
-            colorUIL.m_pColorSlider->SetValue((int32_t)(lightness * 100));
+            colorUIL.m_pColorSlider->SetValueNoEvent((int32_t)(lightness * 100));
         }
     }
 

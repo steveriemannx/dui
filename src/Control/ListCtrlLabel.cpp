@@ -142,10 +142,13 @@ void ListCtrlLabel::SetTextRect(const UiRect& rect)
 UiRect ListCtrlLabel::GetTextRect() const
 {
     UiRect rect = m_textRect;
-    if (rect.IsZero()) {
+    if (rect.IsEmpty()) {
+        //Fallback (P5): when the text rectangle has not been computed yet (the control has not been painted / laid out) or it is empty, fall back to the control rectangle,
+        //so that features relying on the "text rectangle" (such as the in-place edit box) are not affected by paint side effects and call timing.
         rect = GetRect();
         rect.Deflate(GetControlPadding());
         rect.Deflate(GetTextPadding());
+        rect.Validate();
     }
     return rect;
 }

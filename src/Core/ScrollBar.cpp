@@ -47,7 +47,6 @@ ScrollBar::ScrollBar(Window* pWindow) :
     m_bkStateImage->SetControl(this);
     m_thumbStateImage->SetControl(this);
 
-    //TODO: DPI adaptive parameters, need to be confirmed
     SetFixedWidth(UiFixedInt(DEFAULT_SCROLLBAR_SIZE), false, false);
     SetFixedHeight(UiFixedInt(0), true, false);
     m_ptLastMouse.x = 0;

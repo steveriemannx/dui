@@ -171,7 +171,7 @@ private:
     static ContextMenuObserver& GetMenuObserver();
 
     //Disconnect the association with the parent menu object
-    void DetachOwner();        //add by djj 20200506
+    void DetachOwner();
 
 private:
     // Resize the menu

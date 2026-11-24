@@ -9,7 +9,7 @@ namespace ui
 void ReparentNSView(NSView* targetView, NSView* newParent) 
 {
     @autoreleasepool {
-        // 确保操作在主线程执行
+        // Ensure the operation runs on the main thread
         if (![NSThread isMainThread]) {
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [targetView removeFromSuperview];
@@ -42,7 +42,7 @@ void SetNSViewFrame(NSView* view, CGFloat x, CGFloat y, CGFloat w, CGFloat h)
         if (![NSThread isMainThread]) {
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [view setFrame:newFrame];
-                [view.superview setNeedsDisplay:YES]; // 触发重绘
+                [view.superview setNeedsDisplay:YES]; // Trigger a repaint
             });
         } else {
             [view setFrame:newFrame];
@@ -132,7 +132,7 @@ bool CaptureCefWindowBitmap(CefWindowHandle cefWindow, std::vector<uint8_t>& bit
     if (!IsValidNSView(pCefNSView)) {
         return false;
     }
-    // 获取视图的边界和尺寸
+    // Get the view's bounds and size
     NSRect viewBounds = [pCefNSView bounds];
     width = static_cast<int32_t>(NSWidth(viewBounds));
     height = static_cast<int32_t>(NSHeight(viewBounds));
@@ -141,7 +141,7 @@ bool CaptureCefWindowBitmap(CefWindowHandle cefWindow, std::vector<uint8_t>& bit
         return false;
     }
     
-    // 创建位图图像表示
+    // Create a bitmap image representation
     NSBitmapImageRep* bitmapRep = [[NSBitmapImageRep alloc] 
         initWithBitmapDataPlanes:NULL
                       pixelsWide:width
@@ -158,7 +158,7 @@ bool CaptureCefWindowBitmap(CefWindowHandle cefWindow, std::vector<uint8_t>& bit
         return false;
     }
     
-    // 创建图形上下文并绘制视图
+    // Create a graphics context and draw the view
     NSGraphicsContext* context = [NSGraphicsContext graphicsContextWithBitmapImageRep:bitmapRep];
     if (!context) {
         [bitmapRep release];
@@ -168,12 +168,12 @@ bool CaptureCefWindowBitmap(CefWindowHandle cefWindow, std::vector<uint8_t>& bit
     [NSGraphicsContext saveGraphicsState];
     [NSGraphicsContext setCurrentContext:context];
     
-    // 绘制视图内容（使用现代方法替代lockFocus/unlockFocus）
+    // Draw the view content (modern API instead of lockFocus/unlockFocus)
     [pCefNSView displayRectIgnoringOpacity:viewBounds inContext:context];
     
     [NSGraphicsContext restoreGraphicsState];
     
-    // 获取位图数据
+    // Get the bitmap data
     unsigned char* bitmapData = [bitmapRep bitmapData];
     if (bitmapData) {
         size_t dataSize = width * height * 4;
@@ -190,25 +190,25 @@ bool CaptureCefWindowBitmap(CefWindowHandle cefWindow, std::vector<uint8_t>& bit
 
 void SetCefWindowCursor(CefWindowHandle cefWindow, CefCursorHandle cursor)
 {
-    // 该函数暂时用不到，注释掉了
+    // Currently unused; kept commented out
     // if ((cefWindow == nullptr) || (cursor == nullptr)) {
     //     return;
     // }
     
-    // // 将 CEF 窗口句柄转换为 NSView*
+    // // Convert a CEF window handle into NSView*
     // NSView* cefView = static_cast<NSView*>(cefWindow);
-    // // 将 CEF 光标句柄转换为 NSCursor*
+    // // Convert a CEF cursor handle into NSCursor*
     // NSCursor* nsCursor = static_cast<NSCursor*>(cursor);
     
-    // // 获取视图所在的窗口
+    // // Get the window that holds the view
     // NSWindow* window = [cefView window];
     // if (!window) {
     //     return;
     // }
     
-    // // 确保在主线程操作 UI 元素
+    // // Ensure UI elements are handled on the main thread
     // auto setCursorBlock = ^{        
-    //     // 对于视图范围的光标，可以使用 NSCursor 的 set 方法
+    //     // For view-scoped cursors, NSCursor's set method can be used
     //      [nsCursor set];
     // };
     
@@ -221,7 +221,7 @@ void SetCefWindowCursor(CefWindowHandle cefWindow, CefCursorHandle cursor)
 
 void RemoveCefWindowFromParent(CefWindowHandle /*cefWindow*/)
 {
-    //无需实现：如果用代码实现从父View中移除，则CEF在退出时有错误，导致进程无法正常退出
+    //Not needed: removing it from the parent view in code makes CEF report an error on exit and the process cannot terminate cleanly
     return;
 }
 

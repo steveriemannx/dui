@@ -7,7 +7,8 @@
 
 namespace ui {
 
-//TODO: Centralized management of static objects
+//Menu Observer object: a function-local static object, unique within the process,
+//managed for the lifetime of the process
 ContextMenuObserver& Menu::GetMenuObserver()
 {
     static ContextMenuObserver s_context_menu_observer;

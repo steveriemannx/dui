@@ -13,7 +13,7 @@
 #include "tools/window/RasterWindowContext.h"
 
 #ifndef SK_GL
-    #error 请检查宏定义：SK_GL与Skia库的编译选项保持一致
+    #error "Check the macro definitions: SK_GL must be consistent with the Skia build options"
 #endif
 
 #include "SkiaHeaderEnd.h"

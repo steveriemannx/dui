@@ -16,6 +16,7 @@
 #include "dui/Utils/StringUtil.h"
 #include "dui/Utils/AttributeUtil.h"
 #include "dui/Utils/PerformanceUtil.h"
+#include "dui/Control/Menu.h"
 
 #if defined (DUI_BUILD_FOR_WIN)
     #include "dui/Core/ControlDropTargetImpl_Windows.h"
@@ -857,7 +858,7 @@ bool Control::OnApplyAttributeList(const std::string& strReceiver, const std::st
                 return true;
             }
         }
-        ASSERT(!"Control::OnApplyAttributeList error：Receiver Control not found!");
+        ASSERT(!"Control::OnApplyAttributeList error: receiver Control not found!");
         return false;
     }
 }
@@ -1395,6 +1396,14 @@ UiSize Control::GetStateImageSize(StateImageType imageType, ControlStateType sta
         }
     }
     return imageSize;
+}
+
+Image* Control::GetStateImageData(StateImageType imageType, ControlStateType stateType) const
+{
+    if (m_pImageMap != nullptr) {
+        return m_pImageMap->GetStateImage(imageType, stateType);
+    }
+    return nullptr;
 }
 
 void Control::ClearStateImages()
@@ -1940,6 +1949,110 @@ int32_t Control::GetToolTipWidth(void) const
 void Control::SetContextMenuUsed(bool bMenuUsed)
 {
     m_bContextMenuUsed = bMenuUsed;
+}
+
+constexpr EventCallbackID kPopupMenuEventCallbackID = 0xFFFFFFFF;
+
+bool Control::AttachPopupMenu(const std::string& menuXml,
+                              const ContextMenuActionEvent& actionCallback,
+                              const ContextMenuCreatingEvent& creatingCallback)
+{
+    if (menuXml.empty()) {
+        return false;
+    }
+    //If it is already registered, unregister it first: the last registration wins (it overwrites)
+    if (HasEventByID(kPopupMenuEventCallbackID)) {
+        DetachPopupMenu();
+    }
+
+    //Save the menu binding configuration (calling again simply overwrites the previous configuration)
+    if (m_pOtherData == nullptr) {
+        m_pOtherData = std::make_unique<TOtherData>();
+    }
+    if (m_pOtherData->m_pContextMenuData == nullptr) {
+        m_pOtherData->m_pContextMenuData = std::make_unique<TContextMenuData>();
+    }
+    TContextMenuData& contextMenuData = *m_pOtherData->m_pContextMenuData;
+    contextMenuData.m_menuXml = menuXml;
+    contextMenuData.m_actionCallback = actionCallback;
+    contextMenuData.m_creatingCallback = creatingCallback;
+
+    //Register the context menu event handler (idempotent: do not register twice, to avoid duplicates)
+    if (!HasEventByID(kPopupMenuEventCallbackID)) {
+        AttachEvent(kEventContextMenu, [this](const EventArgs& args) {
+            return OnContextMenuEvent(args);
+            }, kPopupMenuEventCallbackID);
+    }
+    return true;
+}
+
+void Control::DetachPopupMenu()
+{
+    //Release the menu binding configuration
+    if (m_pOtherData != nullptr) {
+        m_pOtherData->m_pContextMenuData.reset();
+    }
+    //Unregister the context menu event handler registered by this interface (callbacks registered
+    //through AttachContextMenu are not affected)
+    DetachEventByID(kEventContextMenu, kPopupMenuEventCallbackID);
+
+    //If no context menu event callback is left, clear the flag so that right clicks are no longer
+    //dispatched as events to this control
+    if (!HasEvent(kEventContextMenu) && !HasEvent(kEventAll)) {
+        SetContextMenuUsed(false);
+    }
+}
+
+bool Control::OnContextMenuEvent(const EventArgs& args)
+{
+    if ((m_pOtherData == nullptr) || (m_pOtherData->m_pContextMenuData == nullptr)) {
+        return true;
+    }
+    TContextMenuData& contextMenuData = *m_pOtherData->m_pContextMenuData;
+    Window* pWindow = GetWindow();
+    if ((pWindow == nullptr) || !pWindow->IsWindow()) {
+        return true;
+    }
+
+    //Compute the screen coordinate where the menu is popped up
+    UiPoint point = args.ptMouse;
+    if ((point.x == -1) && (point.y == -1)) {
+        //When Shift+F10 produces the context menu, there is no mouse click coordinate, so the
+        //bottom-right corner of the control is used instead
+        UiRect rc = GetRect();
+        point.x = rc.left;
+        point.y = rc.bottom;
+    }
+    ClientToScreen(point);
+
+    //Create the menu and relate it to the current control (the control stays pushed while the menu is shown)
+    Menu* pMenu = new Menu(pWindow, this);
+    //The menu resource uses the same resource path as the window
+    pMenu->SetSkinFolder(pWindow->GetResourcePath().ToString());
+
+    //The callback after a menu item is activated (the application is notified after the menu is closed)
+    if (contextMenuData.m_actionCallback != nullptr) {
+        std::weak_ptr<WeakFlag> weakFlag = GetWeakFlag();
+        ContextMenuActionEvent actionCallback = contextMenuData.m_actionCallback;
+        pMenu->AttachMenuItemActivated([weakFlag, actionCallback](const std::string& /*menuName*/, int32_t /*nMenuLevel*/,
+                                                                  const std::string& itemName, size_t nItemIndex) {
+            if (!weakFlag.expired() && (actionCallback != nullptr)) {
+                actionCallback(itemName, nItemIndex);
+            }
+        });
+    }
+
+    //Pop up the menu
+    pMenu->ShowMenu(contextMenuData.m_menuXml.c_str(), point);
+
+    //The callback after the menu is popped up, used to adjust the menu content dynamically
+    if (contextMenuData.m_creatingCallback != nullptr) {
+        std::weak_ptr<WeakFlag> weakFlag = GetWeakFlag();
+        if (!weakFlag.expired()) {
+            contextMenuData.m_creatingCallback(pMenu, this);
+        }
+    }
+    return true;
 }
 
 std::string Control::GetDataID() const

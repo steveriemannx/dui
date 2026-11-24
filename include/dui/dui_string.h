@@ -2,7 +2,7 @@
 #define DUI_STRING_H_
 
 #ifndef DUI_CONFIG_H_
-    #error "需要先包含dui_config.h头文件"
+    #error "dui_config.h must be included first"
 #endif
 
 //String class
@@ -40,7 +40,7 @@
         #define WCHAR_T_IS_UTF32
     #endif
 #else
-    #error "不支持的平台，请添加对您的编译器的支持"
+    #error "Unsupported platform: add support for your compiler"
 #endif
 
 typedef char DUTF8Char;

@@ -740,8 +740,9 @@ UiPoint PlaceHolder::GetScrollOffsetInScrollBox() const
                 // The current control is floating and the parent control is a ScrollBox; it is not counted in the statistics
             }
             else {
-                scrollPos.x += pScrollBox->GetScrollOffset().cx;
-                scrollPos.y += pScrollBox->GetScrollOffset().cy;
+                const UiSize childScrollOffset = pScrollBox->GetScrollOffsetForChild(this);
+                scrollPos.x += childScrollOffset.cx;
+                scrollPos.y += childScrollOffset.cy;
             }
         }
         parent = parent->GetParent();

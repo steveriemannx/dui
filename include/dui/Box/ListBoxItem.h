@@ -44,6 +44,11 @@ public:
     */
     virtual bool OnListBoxItemMouseEvent(const EventArgs& msg) = 0;
 
+    /** The child item of a list item receives a keyboard event
+    * @return true means the message was intercepted and the child item will not process it; false means the child item continues to process the message
+    */
+    virtual bool OnListBoxItemKeyEvent(const EventArgs& /*msg*/) { return false; }
+
     /** The child item of a list item receives the window lost focus event
     */
     virtual void OnListBoxItemWindowKillFocus() = 0;
@@ -409,6 +414,13 @@ void ListBoxItemTemplate<InheritType>::HandleEvent(const EventArgs& msg)
     else if (msg.eventType == kEventWindowKillFocus) {
         if (m_pOwner != nullptr) {
             m_pOwner->OnListBoxItemWindowKillFocus();
+        }
+    }
+    else if ((msg.eventType > kEventKeyBegin) && (msg.eventType < kEventKeyEnd)) {
+        //Forward keyboard-related messages to the parent container for priority processing
+        //(for example, when the drop-down candidate popup is open, the Return key must be consumed by the parent container first, otherwise it would be intercepted by the kEventReturn branch below)
+        if ((m_pOwner != nullptr) && m_pOwner->OnListBoxItemKeyEvent(msg)) {
+            return;
         }
     }
 

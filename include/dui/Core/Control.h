@@ -25,8 +25,25 @@ namespace ui
     class ControlDropTarget_Windows;
     class ControlDropTarget_Wayland;
     class ControlDropTargetImpl_Windows;
+    class Menu;
 
     typedef Control* (* FINDCONTROLPROC)(Control*, void*);
+
+/** The callback prototype for a context menu item being activated (used by the
+*  convenience binding interface Control::AttachPopupMenu)
+* @param [in] itemName The name of the menu item (the "name" attribute in the menu XML, acting as the command ID)
+* @param [in] nItemIndex The index of the menu item (a zero-based index)
+*/
+typedef std::function<void (const std::string& itemName, size_t nItemIndex)> ContextMenuActionEvent;
+
+/** The callback prototype invoked after the context menu has been created (used by the
+*  convenience binding interface Control::AttachPopupMenu)
+*  It is called after the menu has been loaded and popped up, and is used to dynamically add or
+*  remove menu items, to set the checked/disabled state of menu items, and so on
+* @param [in] pMenu The menu interface (valid only during the callback, do not store it)
+* @param [in] pSender The control that triggered the menu (the control that called Control::AttachPopupMenu)
+*/
+typedef std::function<void (Menu* pMenu, Control* pSender)> ContextMenuCreatingEvent;
 
 /** Control base class (equivalent to Widget)
 */
@@ -990,6 +1007,34 @@ public:
      */
     void AttachContextMenu(const EventCallback& callback, EventCallbackID callbackID = 0) { AttachEvent(kEventContextMenu, callback, callbackID); }
 
+    /** Convenience binding of the right-click context menu: when this control is right-clicked,
+    *   the menu specified by menuXml is popped up automatically;
+    *   after a menu item is activated (by mouse click or keyboard Enter), actionCallback is called.
+    *   A single line of code performs the binding: no manual Menu object creation and no
+    *   coordinate conversion are needed.
+    *   Note: the menu XML resource file name is relative to the window's resource path
+    *         (Window::GetResourcePath()), for example "menu/settings_menu.xml", which uses the
+    *         same lookup rules as the window's own XML resource.
+    *         Calling this function again overwrites the previous binding (both the menu and the
+    *         callbacks are taken from the last call);
+    *         to remove the binding, call DetachPopupMenu().
+    * @param [in] menuXml The menu XML resource file name
+    * @param [in] actionCallback The callback after a menu item is activated; may be empty (no callback when empty)
+    * @param [in] creatingCallback The callback after the menu is popped up, used to adjust the menu content dynamically; may be empty
+    * @return Returns true on success, false otherwise (menuXml is empty)
+    */
+    bool AttachPopupMenu(const std::string& menuXml,
+                         const ContextMenuActionEvent& actionCallback = nullptr,
+                         const ContextMenuCreatingEvent& creatingCallback = nullptr);
+
+    /** Removes the right-click context menu bound by AttachPopupMenu (used together with AttachPopupMenu)
+    *   After the call, this control no longer responds to the right-click context menu; calling it
+    *   when nothing is bound has no side effects.
+    *   Note: event callbacks for kEventContextMenu registered separately through AttachContextMenu
+    *         are not affected by this function.
+    */
+    void DetachPopupMenu();
+
     /** Listen for the control position change event
      * @param [in] callback The event handling callback function, please refer to the EventCallback declaration
      * @param [in] callbackID The ID corresponding to the callback function (used to remove the callback function)
@@ -1531,6 +1576,13 @@ public:
     */
     UiSize GetStateImageSize(StateImageType imageType, ControlStateType stateType);
 
+    /** Get the image object pointer of the specified type and state (the caller does not need to
+    *  release it; it may return nullptr)
+    *  Used by scenarios that draw a state image into a rectangle of their own choice
+    *  (for example the expand/collapse arrow of a Panel)
+    */
+    Image* GetStateImageData(StateImageType imageType, ControlStateType stateType) const;
+
     /** Set the cursor
     * @param [in] cursorType The cursor type
     */
@@ -1625,6 +1677,10 @@ private:
     */
     EventMap& GetXmlBubbledEventMap();
     bool HasXmlBubbledEventMap() const;
+
+    /** The handler of the context menu event (kEventContextMenu), used internally by AttachPopupMenu
+    */
+    bool OnContextMenuEvent(const EventArgs& args);
 
 private:
     /** Get the playback interface of the Hot animation
@@ -1761,6 +1817,19 @@ private:
         UiPoint m_renderOffset;
     };
 
+    //The data of the convenience context menu binding
+    struct TContextMenuData
+    {
+        //The menu XML resource file name (relative to the window's resource path)
+        UiString m_menuXml;
+
+        //The callback after a menu item is activated
+        ContextMenuActionEvent m_actionCallback;
+
+        //The callback after the menu is popped up (used to adjust the menu content dynamically)
+        ContextMenuCreatingEvent m_creatingCallback;
+    };
+
     /** Infrequently used feature data
     */
     struct TOtherData
@@ -1776,6 +1845,10 @@ private:
         /** Tooltip data
         */
         std::unique_ptr<TTooltipData> m_pTooltip;
+
+        /** The data of the convenience context menu binding (the AttachPopupMenu interface)
+        */
+        std::unique_ptr<TContextMenuData> m_pContextMenuData;
     };
 
 private:

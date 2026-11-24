@@ -35,6 +35,15 @@ public:
      */
     virtual UiSize EstimateText(UiSize szAvailable) override;
 
+    /** Calculate the size of the text area (width and height) using the specified text
+     *  (for subclasses that provide a sample text when their own text is empty, so that
+     *  an "auto" sized control does not collapse)
+     *  @param [in] textValue The text content used for the estimation
+     *  @param [in] szAvailable The available size, excluding padding and margins
+     *  @return The estimated text size of the control, including padding (Box), excluding margins
+     */
+    UiSize EstimateTextWith(const std::string& textValue, UiSize szAvailable);
+
 public:
     /** Get the text content
     */
@@ -518,6 +527,12 @@ template<typename T>
 UiSize LabelTemplate<T>::EstimateText(UiSize szAvailable)
 {
     return m_impl->OnEstimateText(szAvailable);
+}
+
+template<typename T>
+UiSize LabelTemplate<T>::EstimateTextWith(const std::string& textValue, UiSize szAvailable)
+{
+    return m_impl->OnEstimateTextWith(textValue, szAvailable);
 }
 
 template<typename T>

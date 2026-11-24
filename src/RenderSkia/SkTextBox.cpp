@@ -341,7 +341,7 @@ SkScalar SkTextBox::visit(Visitor& visitor) const {
             y = 0;
             break;
         case kCenter_SpacingAlign:
-            y = SkScalarHalf(height - textHeight);
+            y = (height - textHeight) * 0.5f;
             if (y < 0) {
                 //If the drawing area for center alignment is insufficient, center-align according to the displayable text
                 y = static_cast<SkScalar>((((int)height - (int)fontHeight) / 2)) ;
@@ -376,7 +376,7 @@ SkScalar SkTextBox::visit(Visitor& visitor) const {
                                                       &paint);
                 if (textAlign == kCenter_Align) {
                     //Horizontal: center-aligned
-                    x = boxRect.fLeft + (marginWidth / 2) - textWidth / 2;
+                    x = boxRect.fLeft + (marginWidth - textWidth) * 0.5f;
                     if (x < boxRect.fLeft) {
                         x = boxRect.fLeft;
                     }

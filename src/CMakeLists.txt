@@ -42,8 +42,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")  # macOS
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")  # Linux
     set(CEF_LIB_DIR "cef_binary")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")  # Windows
-    # 头文件目录与 Mac/Linux 一致取自 cef_binary（下载的发行包，含 include/）；
-    # CEF 109 分支继续使用随仓库内建的 libcef_win_109（libcef_win 已删除）
+    # The header directory comes from cef_binary on Mac/Linux as well (the downloaded
+    # distribution package, which contains include/); the CEF 109 branch keeps using the
+    # libcef_win_109 bundled with the repository (libcef_win has been removed)
     if(DUI_CEF_109)
         set(CEF_LIB_DIR "libcef_win_109")
     else()
@@ -154,7 +155,12 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Layout/VirtualVLayout.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Layout/VirtualVTileLayout.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/AddressBar.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/AutoComplete.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Badge.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/BitmapControl.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Calendar.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/CalendarFlyout.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Chart.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/CheckCombo.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ChildWindow.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ChildWindowImpl.cpp"
@@ -170,19 +176,20 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Control/Combo.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ComboButton.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/DateTime.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/DateTimeWnd_MacOS.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/DateTimeWnd_Native.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Control/DateTimeWnd_Windows.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/DateTimeWnd.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTree.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTreeImpl_Linux.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTreeImpl_MacOS.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/DirectoryTreeImpl_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/FilterCombo.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Flyout.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/HotKey.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/IPAddress.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/IconControl.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/LabelImpl.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/Line.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Marquee.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Mask.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ListCtrl.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ListCtrlData.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/ListCtrlHeader.cpp"
@@ -198,7 +205,9 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Control/MacTrafficLights.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/Menu.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/MenuBar.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/NavigationView.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/Progress.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/RangeSlider.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/PropertyGrid.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/RichEditData.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/RichEditHost_Windows.cpp"
@@ -206,9 +215,17 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Control/RichEdit_Native.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/RichEdit_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/RichTextImpl.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/SearchBox.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/SpinBox.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/StatusBar.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Stepper.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Switch.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/Slider.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/TabCtrl.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/TagInput.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/TextDrawer.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/Timeline.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Control/ToolBar.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Control/TreeView.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/Box.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Core/BoxShadow.cpp"
@@ -328,6 +345,7 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Utils/FileUtil.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/InlineHook_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/LogUtil.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/MessageBoxWnd.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/MonitorUtil_Windows.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/PerformanceUtil.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/ProcessSingleton.cpp"
@@ -339,6 +357,7 @@ set(DUI_SRC_COMMON
     "${CMAKE_CURRENT_LIST_DIR}/Utils/StringConvert.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/StringUtil.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/SystemUtil_Windows.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Utils/ToastWnd.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon_MacOS.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Utils/TrayIcon_Windows.cpp"

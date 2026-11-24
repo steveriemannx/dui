@@ -439,10 +439,10 @@ void ListCtrlHeader::OnHeaderColumnCheckStateChanged(ListCtrlHeaderItem* pHeader
     }
 }
 
-void ListCtrlHeader::OnHeaderColumnVisibleChanged()
+void ListCtrlHeader::OnHeaderColumnVisibleChanged(size_t nColumnId)
 {
     if (m_pListCtrl != nullptr) {
-        m_pListCtrl->OnHeaderColumnVisibleChanged();
+        m_pListCtrl->OnHeaderColumnVisibleChanged(nColumnId);
     }
 }
 
@@ -456,6 +456,18 @@ void ListCtrlHeader::OnHeaderColumnSplitDoubleClick(ListCtrlHeaderItem* pHeaderI
 bool ListCtrlHeader::SupportCheckMode() const
 {
     return true;
+}
+
+UiPoint ListCtrlHeader::GetCheckBoxMousePos(const UiPoint& ptMouse) const
+{
+    UiPoint pt(ptMouse);
+    pt.Offset(GetScrollOffsetInScrollBox());
+    //The CheckBox at the left of the header is always displayed at the far left, inside the frozen column area (it does not move with horizontal scrolling):
+    //when there are frozen columns, the horizontal scroll offset is counted as 0, so hit testing stays consistent with the displayed position of the frozen columns
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetFrozenColumnCount() > 0) && IsShowCheckBox()) {
+        pt.x = ptMouse.x;
+    }
+    return pt;
 }
 
 void ListCtrlHeader::OnPrivateSetChecked()

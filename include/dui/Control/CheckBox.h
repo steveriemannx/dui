@@ -243,6 +243,18 @@ public:
     */
     bool IsCheckBoxImageClicked() const;
 
+    /** Whether the mouse point (in window client coordinates) is on the CheckBox icon
+    *   This can be used to decide, before the event is dispatched, whether the CheckBox toggle
+    *   operation should be allowed through.
+    *   (For example, ListCtrl consumes the mouse messages of an Item in cell selection mode, so it
+    *   must first check whether the mouse point is on the row-level or header-level CheckBox icon.)
+    *   Note: this can only return true when the check mode is supported (SupportCheckMode() is true)
+    *   and a CheckBox icon is actually painted.
+    * @param [in] ptMouse The mouse point (in window client coordinates)
+    * @return Returns true when the mouse point is on the CheckBox icon, otherwise false
+    */
+    bool IsMouseOnCheckBoxIcon(const UiPoint& ptMouse) const;
+
     /** Set whether the check mode is supported
     */
     void SetSupportCheckMode(bool bSupport) { m_bSupportCheckMode = bSupport; }
@@ -279,6 +291,18 @@ protected:
     /** Mouse button up event, used to determine whether the click is on the CheckBox image (implements the check functionality)
     */
     virtual bool ButtonUp(const EventArgs& msg) override;
+
+    /** Convert the mouse point (in window client coordinates) into the control coordinate space
+    *   used for the CheckBox icon hit test.
+    *   Default implementation: ptMouse + GetScrollOffsetInScrollBox() (the common framework convention).
+    *   Subclasses may override it to match a special coordinate convention (for example, the frozen
+    *   columns area of ListCtrl is always displayed at a fixed position and does not move when
+    *   scrolling horizontally, so the click test of the row-leading CheckBox must be converted with a
+    *   horizontal offset of 0; otherwise the CheckBox cannot be toggled after scrolling horizontally).
+    * @param [in] ptMouse The mouse point (in window client coordinates)
+    * @return Returns the point converted into the control coordinate space
+    */
+    virtual UiPoint GetCheckBoxMousePos(const UiPoint& ptMouse) const;
 
 protected:
     /** Get the actually rendered text color of the specified state used when selected
@@ -578,8 +602,7 @@ bool CheckBoxTemplate<InheritType>::ButtonUp(const EventArgs& msg)
     if (bCheckedMode && (m_pCheckBoxImageRect != nullptr)) {
         if (this->IsEnabled()) {
             UiRect pos = this->GetPos();
-            UiPoint pt(msg.ptMouse);
-            pt.Offset(this->GetScrollOffsetInScrollBox());
+            const UiPoint pt = this->GetCheckBoxMousePos(msg.ptMouse);
             if (pos.ContainsPt(pt) && m_pCheckBoxImageRect->ContainsPt(pt)) {
                 //Confirm that the click is on the CheckBox icon, change the check state (toggle attribute)
                 SetChecked(!IsChecked(), true);
@@ -600,6 +623,24 @@ bool CheckBoxTemplate<InheritType>::ButtonUp(const EventArgs& msg)
         m_bCheckBoxImageClicked = false;
     }
     return bRet;
+}
+
+template<typename InheritType>
+UiPoint CheckBoxTemplate<InheritType>::GetCheckBoxMousePos(const UiPoint& ptMouse) const
+{
+    UiPoint pt(ptMouse);
+    pt.Offset(this->GetScrollOffsetInScrollBox());
+    return pt;
+}
+
+template<typename InheritType>
+bool CheckBoxTemplate<InheritType>::IsMouseOnCheckBoxIcon(const UiPoint& ptMouse) const
+{
+    if (!SupportCheckMode() || (m_pCheckBoxImageRect == nullptr) || m_pCheckBoxImageRect->IsEmpty()) {
+        return false;
+    }
+    const UiPoint pt = GetCheckBoxMousePos(ptMouse);
+    return this->GetPos().ContainsPt(pt) && m_pCheckBoxImageRect->ContainsPt(pt);
 }
 
 template<typename InheritType>

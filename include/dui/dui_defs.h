@@ -69,6 +69,14 @@ namespace ui
     #define  DUI_CTR_GROUP_HBOX                      ("GroupHBox")
     #define  DUI_CTR_GROUP_VBOX                      ("GroupVBox")
 
+    #define  DUI_CTR_PANEL                           ("Panel")
+    #define  DUI_CTR_PANEL_HBOX                      ("PanelHBox")
+    #define  DUI_CTR_PANEL_VBOX                      ("PanelVBox")
+
+    #define  DUI_CTR_STATUS_BAR                      ("StatusBar")
+
+    #define  DUI_CTR_TOOL_BAR                        ("ToolBar")
+
     #define  DUI_CTR_SCROLLBOX                       ("ScrollBox")
     #define  DUI_CTR_HSCROLLBOX                      ("HScrollBox")
     #define  DUI_CTR_VSCROLLBOX                      ("VScrollBox")
@@ -100,11 +108,19 @@ namespace ui
     #define  DUI_CTR_DIRECTORY_TREE                  ("DirectoryTree")
 
     #define  DUI_CTR_RICHEDIT                        ("RichEdit")
+    #define  DUI_CTR_SPIN_BOX                        ("SpinBox")
+    #define  DUI_CTR_SEARCH_BOX                      ("SearchBox")
+    #define  DUI_CTR_SWITCH                          ("Switch")
+    #define  DUI_CTR_BADGE                           ("Badge")
+    #define  DUI_CTR_TAG_INPUT                       ("TagInput")
+    #define  DUI_CTR_AUTO_COMPLETE                   ("AutoComplete")
+    #define  DUI_CTR_MASK                            ("Mask")
     #define  DUI_CTR_COMBO                           ("Combo")
     #define  DUI_CTR_COMBO_BUTTON                    ("ComboButton")
     #define  DUI_CTR_FILTER_COMBO                    ("FilterCombo")
     #define  DUI_CTR_CHECK_COMBO                     ("CheckCombo")
     #define  DUI_CTR_SLIDER                          ("Slider")
+    #define  DUI_CTR_RANGE_SLIDER                    ("RangeSlider")
     #define  DUI_CTR_PROGRESS                        ("Progress")
     #define  DUI_CTR_CIRCLEPROGRESS                  ("CircleProgress")
     #define  DUI_CTR_SCROLLBAR                       ("ScrollBar")
@@ -116,6 +132,14 @@ namespace ui
     #define  DUI_CTR_MENU_BAR                        ("MenuBar")
 
     #define  DUI_CTR_DATETIME                        ("DateTime")
+    #define  DUI_CTR_CALENDAR                        ("Calendar")
+    #define  DUI_CTR_CALENDAR_FLYOUT                 ("CalendarFlyout")
+    #define  DUI_CTR_NAVIGATIONVIEW                  ("NavigationView")
+    #define  DUI_CTR_NAVIGATION_VIEW_ITEM            ("NavigationViewItem")
+    #define  DUI_CTR_CHART                           ("Chart")
+    #define  DUI_CTR_MARQUEE                         ("Marquee")
+    #define  DUI_CTR_TIMELINE                        ("Timeline")
+    #define  DUI_CTR_STEPPER                         ("Stepper")
     #define  DUI_CTR_CEF                             ("CefControl")
     #define  DUI_CTR_WEBVIEW2                        ("WebView2Control")
 
@@ -174,6 +198,8 @@ namespace ui
         kStateImageSelectedFore     = 3,    //Foreground image for the selected state (used by CheckBox)
         kStateImagePartSelectedBk   = 4,    //Background image for the partial selection state (used by CheckBox)
         kStateImagePartSelectedFore = 5,    //Foreground image for the partial selection state (used by CheckBox)
+        kStateImagePanelArrowExpanded   = 6,    //Arrow image for the expanded state (used by Panel)
+        kStateImagePanelArrowCollapsed  = 7,    //Arrow image for the collapsed state (used by Panel)
     };
 
     //Control state
@@ -395,6 +421,27 @@ namespace ui
         kEventExpand,               //TreeNode: triggered when a tree node expands
         kEventCollapse,             //TreeNode: triggered when a tree node collapses
 
+        //Before a Panel collapses/expands (cancelable: return false from the callback to cancel this toggle)
+        kEventPanelCollapsing,      //Panel: triggered when the panel is about to collapse; return false to cancel
+        kEventPanelExpanding,       //Panel: triggered when the panel is about to expand; return false to cancel
+
+        //NavigationView side navigation
+        kEventNavigationItemClick,          //NavigationView: triggered when a selectable navigation item is clicked (clicking the already-selected item also triggers); WPARAM is the item index
+        kEventNavigationSelectionChanged,   //NavigationView: triggered when the selected item changes; WPARAM is the new index, LPARAM is the old index (Box::InvalidIndex when nothing is selected)
+        kEventNavigationPaneToggling,       //NavigationView: triggered when the pane is about to collapse/expand; WPARAM is the target state (1 = collapsed, 0 = expanded); return false to cancel this toggle
+        kEventNavigationPaneToggled,        //NavigationView: triggered when the pane has finished collapsing/expanding; WPARAM is the current state (1 = collapsed, 0 = expanded)
+
+        //Timeline
+        kEventTimelineItemClick,            //Timeline: triggered when a timeline node is clicked; WPARAM is the node index (starting from 0)
+
+        //TagInput tag input box
+        kEventTagAdded,                     //TagInput: triggered after a tag is added; WPARAM is the new tag index (starting from 0)
+        kEventTagRemoved,                   //TagInput: triggered before a tag is removed; WPARAM is the removed tag index (the tag text can still be read in the callback)
+        kEventTagClick,                     //TagInput: triggered when the body of a tag is clicked; WPARAM is the tag index (starting from 0)
+
+        //AutoComplete input box
+        kEventAutoCompleteSelect,           //AutoComplete: triggered after a suggestion is selected; WPARAM is the suggestion index in the current candidate list (starting from 0)
+
         kEventZoom,                 //RichEdit: triggered when the zoom level changes; wParam is the zoom percentage, e.g. 200 means 200%
         kEventTextChanged,          //RichEdit: triggered when the text content changes
         kEventSelChanged,           //ListCtrl: the selection changed; RichEdit: triggered when the text selection changes
@@ -405,6 +452,7 @@ namespace ui
 
         kEventScrollPosChanged,     //ScrollBox: triggered when the scrollbar position changes
         kEventValueChanged,         //DateTime and Slider: triggered when the value changes. For Slider, WPARAM is the new value and LPARAM is the old value
+        kEventProgressCompleted,    //Progress: triggered when the progress value reaches the completion end point (max when increasing, min when decreasing)
         kEventPosChanged,           //Control: triggered when the control position changes
         kEventSizeChanged,          //Control: triggered when the control size changes
         kEventVisibleChanged,       //Control: triggered when the Visible property changes. WPARAM is the new state (1 visible, 0 hidden)
@@ -419,17 +467,29 @@ namespace ui
         kEventLeaveEdit,                //ListCtrl: leaving edit state; wParam is an interface: ListCtrlEditParam*
         kEventDataItemCountChanged,     //ListCtrl: the number of data items changed; wParam is the new count (size_t), lParam is the old count (size_t)
 
+        kEventColumnWidthChanged,       //ListCtrl: the width of a column changed; wParam is the column ID (size_t), lParam is the associated other column ID (size_t, may be Box::InvalidIndex)
+        kEventColumnOrderChanged,       //ListCtrl: the display order of the columns changed (dragging the list header to reorder the columns)
+        kEventColumnVisibleChanged,     //ListCtrl: the visible/hidden state of a column changed; wParam is the column ID (size_t), lParam is the new state (1 = visible, 0 = hidden)
+        kEventColumnSorted,             //ListCtrl: the sort state of a column changed; wParam is the column ID (size_t), lParam is the new state (1 = ascending, 0 = descending)
+
+        kEventCurrentCellChanged,       //ListCtrl: the current cell changed (cell selection mode); wParam is the row display index (size_t), lParam is the column ID (size_t)
+        kEventCellSelectionChanged,     //ListCtrl: the selected cell area changed; wParam is the number of selected areas (size_t), lParam is 0,
+                                        //            pEventData points to std::vector<ui::ListCtrlCellRange> (the merged selected area list)
+
         kEventItemMouseEnter,           //ListCtrl/VirtualListBox: mouse enter event on a ListCtrlItem/ListCtrlListViewItem/ListCtrlIconViewItem/ListBoxItem control
         kEventItemMouseLeave,           //ListCtrl/VirtualListBox: mouse leave event from a ListCtrlItem/ListCtrlListViewItem/ListCtrlIconViewItem/ListBoxItem control
         kEventSubItemMouseEnter,        //ListCtrl: Report view, mouse enter on a ListCtrlSubItem control
         kEventSubItemMouseLeave,        //ListCtrl: Report view, mouse leave from a ListCtrlSubItem control
         kEventReportViewItemFilled,     //ListCtrl: UI element fill event for view data items (virtual list), data of a specific row
-        kEventReportViewSubItemFilled,  //ListCtrl: UI element fill event for view data items (virtual list), data of a specific row and column
+        kEventReportViewSubItemFilled,  //ListCtrl: retained for source compatibility; the upstream update folds per-cell fills into kEventReportViewItemFilled (args.pExtraData is the ListCtrlSubItem*)
         kEventListViewItemFilled,       //ListCtrl: UI element fill event for view data items (virtual list)
         kEventIconViewItemFilled,       //ListCtrl: UI element fill event for view data items (virtual list)
         kEventViewTypeChanged,          //ListCtrl: triggered when the view type changes; wParam is the current view type, lParam is the previous view type (see listCtrlType enum), pEventData is the view pointer
         kEventViewPosChanged,           //ListCtrl: triggered when the position of the view control changes; see listCtrlType for the view type
         kEventViewSizeChanged,          //ListCtrl: triggered when the size of the view control changes; see listCtrlType for the view type
+
+        kEventViewModeChanged,          //Calendar: triggered when the calendar view mode (month/year/decade) changes; wParam is the new view mode (0 = month, 1 = year, 2 = decade), lParam is the old view mode
+        kEventDisplayDateChanged,       //Calendar: triggered when the displayed period (the month in month view, the year in year/decade view) changes, so the caption bar can refresh; wParam/lParam are currently unused
 
         kEventPathChanged,          //AddressBar: triggered when the path mode changes
         kEventPathClick,            //AddressBar: triggered when the user clicks a path button

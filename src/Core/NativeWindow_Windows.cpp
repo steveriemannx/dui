@@ -13,6 +13,7 @@
 #include <CommCtrl.h>
 #include <Olectl.h>
 #include <VersionHelpers.h>
+#include <set>
 #include <dwmapi.h>
 
 //Fallbacks for SDKs that predate the Win11 DWM attribute/values (e.g. the
@@ -60,12 +61,47 @@ static bool UiIsWindows11OrGreater()
 //Timer ID for delayed display of the system menu
 #define UI_SYS_MEMU_TIMER_ID 711
 
-
 /** Side of the diagonal (corner) resize grip, DPI scaled.
 * It is intentionally larger than the border thickness reported by the window's
 * "size_box" attribute, which is what the corner zones used to be limited to.
 */
 static constexpr int32_t kResizeCornerGrip = 10;
+
+/** The set of modal window handles registered to pass the Enter key through
+*   IsDialogMessageDui checks this set: VK_RETURN is passed through only for the
+*   windows in the set, so the default behaviour of other modal dialogs ("close on Enter")
+*   is not affected.
+*/
+static std::set<HWND> s_enterKeyPassthroughHwnds;
+
+/** Determine whether the Enter key passthrough is registered for the window
+*/
+static bool HasEnterKeyPassthrough(HWND hWnd)
+{
+    try {
+        if (!s_enterKeyPassthroughHwnds.empty()) {
+            if (s_enterKeyPassthroughHwnds.find(hWnd) != s_enterKeyPassthroughHwnds.end()) {
+                return true;
+            }
+        }
+    }
+    catch (...) {
+    }
+    return false;
+}
+
+void NativeWindow_Windows::SetEnterKeyPassthrough(HWND hWnd, bool bPassthrough)
+{
+    if (hWnd == nullptr) {
+        return;
+    }
+    if (bPassthrough) {
+        s_enterKeyPassthroughHwnds.insert(hWnd);
+    }
+    else {
+        s_enterKeyPassthroughHwnds.erase(hWnd);
+    }
+}
 
 NativeWindow_Windows::NativeWindow_Windows(INativeWindow* pOwner):
     m_pOwner(pOwner),
@@ -359,6 +395,27 @@ static BOOL WINAPI IsDialogMessageDui(_In_ HWND hDlg, _In_ LPMSG lpMsg)
     if ((lpMsg != nullptr) && (lpMsg->message == WM_CHAR)) {
         //Do not treat WM_CHAR as a dialog message
         return bRet;
+    }
+    if ((lpMsg != nullptr) && (lpMsg->message == WM_KEYDOWN) && (lpMsg->wParam == VK_TAB)) {
+        //Do not treat the TAB key as a dialog message: the message loop of a modal window
+        //(DialogBoxIndirectParam) calls IsDialogMessage first, which swallows the TAB key
+        //(it is used to switch focus between native child controls), so the window procedure
+        //never receives WM_KEYDOWN and TAB focus switching between owner-drawn controls stops
+        //working. Returning false lets the message reach the window procedure, and dui performs
+        //the focus switching between owner-drawn controls
+        //(see Window::OnKeyDownMsg -> Window::SetNextTabControl).
+        return bRet;
+    }
+    if ((lpMsg != nullptr) && (lpMsg->message == WM_KEYDOWN) && (lpMsg->wParam == VK_RETURN)) {
+        //Do not treat the Enter key as a dialog message: IsDialogMessage converts Enter into
+        //WM_COMMAND IDOK, so the window procedure never receives WM_KEYDOWN and the focused
+        //button cannot respond to Enter.
+        //The passthrough is limited to the windows that need the focused button to respond to
+        //Enter (such as MessageBoxWnd), so the "close on Enter" behaviour of other modal
+        //dialogs is not affected.
+        if (HasEnterKeyPassthrough(hDlg)) {
+            return bRet;
+        }
     }
     auto original = HookIsDialogMessage::Instance().GetTrampoline<PfnIsDialogMessage>();
     if (original) {
@@ -1210,10 +1267,10 @@ void NativeWindow_Windows::SetWindowAlwaysOnTop(bool bOnTop)
         return;
     }
     if (bOnTop) {
-        ::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        ::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
     }
     else {
-        ::SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        ::SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
     }
 }
 
@@ -1453,7 +1510,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
         ASSERT(hIcon != nullptr);
     }    
     if (hIcon != nullptr) {
-        ::SendMessage(m_hWnd, WM_SETICON, (WPARAM)TRUE, (LPARAM)hIcon);
+        ::PostMessage(m_hWnd, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hIcon);
     }
     else {
         return false;
@@ -1467,7 +1524,7 @@ bool NativeWindow_Windows::SetWindowIconByIcoFile(const FilePath& iconFilePath)
         ASSERT(hIcon != nullptr);
     }
     if (hIcon != nullptr) {
-        ::SendMessage(m_hWnd, WM_SETICON, (WPARAM)FALSE, (LPARAM)hIcon);
+        ::PostMessage(m_hWnd, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
     }
     else {
         return false;
@@ -1481,8 +1538,8 @@ bool NativeWindow_Windows::SetWindowIcon(const std::vector<uint8_t>& iconFileDat
     HICON hSmallIcon = nullptr;
     HICON hBigIcon = nullptr;
     if (CreateIconsFromData(iconFileData, iconFileName, uDpiScaleFactor, &hSmallIcon, &hBigIcon)) {
-        ::SendMessage(m_hWnd, WM_SETICON, (WPARAM)TRUE, (LPARAM)hBigIcon);
-        ::SendMessage(m_hWnd, WM_SETICON, (WPARAM)FALSE, (LPARAM)hSmallIcon);
+        ::PostMessage(m_hWnd, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)hBigIcon);
+        ::PostMessage(m_hWnd, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hSmallIcon);
         return true;
     }
     return false;
@@ -1882,6 +1939,15 @@ bool NativeWindow_Windows::GetModifiers(UINT message, WPARAM wParam, LPARAM lPar
         }
         if (lParam & (1 << 29)) {
             modifierKey |= ModifierKey::kAlt;
+        }
+        //Shift / Control are not reliably encoded in the lParam of WM_KEYDOWN,
+        //so GetKeyState must be used to query the live key state; otherwise the modifier bits of
+        //combinations such as Shift+Arrow or Ctrl+Arrow would always be 0.
+        if (::GetKeyState(VK_SHIFT) & 0x8000) {
+            modifierKey |= ModifierKey::kShift;
+        }
+        if (::GetKeyState(VK_CONTROL) & 0x8000) {
+            modifierKey |= ModifierKey::kControl;
         }
         break;
     case WM_KEYUP:

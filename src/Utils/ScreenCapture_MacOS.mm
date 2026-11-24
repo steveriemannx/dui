@@ -10,28 +10,28 @@
 namespace ui
 {
 
-// 捕获指定窗口所在屏幕的图像（返回RGBA格式带Alpha通道）
-// 参数:
-//   targetWindow - 目标窗口的NSWindow指针（若为nullptr则捕获当前屏幕）
-//   bitmap       - 输出的RGBA图像数据（每个像素4字节：R, G, B, A）
-//   width        - 输出图像的宽度
-//   height       - 输出图像的高度
-// 返回值:
-//   成功返回true，失败返回false
+// Capture the screen image containing the given window (returns RGBA data with an alpha channel)
+// Parameters:
+//   targetWindow - NSWindow pointer of the target window (nullptr captures the current screen)
+//   bitmap       - output RGBA image data (4 bytes per pixel: R, G, B, A)
+//   width        - width of the output image
+//   height       - height of the output image
+// Return value:
+//   true on success, false on failure
 bool CaptureScreenBitmap_MacOS(void* targetWindow, std::vector<uint8_t>& bitmap, int32_t& width, int32_t& height) 
 {
     return false;
-    /** CGDisplayCreateImage在macOS 15.0 以后不可用, 报错提示需要使用ScreenCaptureKit. #239
+    /** CGDisplayCreateImage is unavailable from macOS 15.0 on; the error asks for ScreenCaptureKit. #239
     @autoreleasepool {
-        // 1. 检查屏幕录制权限
+        // 1. Check the screen-recording permission
         if (@available(macOS 10.15, *)) {
             if (!CGPreflightScreenCaptureAccess()) {
-                NSLog(@"请在系统设置 > 安全性与隐私 > 屏幕录制中勾选本程序");
+                NSLog(@"Please tick this application in System Settings > Security & Privacy > Screen Recording");
                 return false;
             }
         }
 
-        // 2. 确定目标窗口所在屏幕
+        // 2. Determine the screen holding the target window
         NSScreen* targetScreen = nil;
         NSWindow* window = static_cast<NSWindow*>(targetWindow);
         if (window) {
@@ -41,26 +41,26 @@ bool CaptureScreenBitmap_MacOS(void* targetWindow, std::vector<uint8_t>& bitmap,
             targetScreen = [NSScreen mainScreen];
         }
 
-        // 3. 获取完整屏幕区域（替换visibleFrame为frame）
-        NSRect screenRect = targetScreen.frame;  // 完整屏幕区域（含菜单栏）
+        // 3. Get the full screen area (frame instead of visibleFrame)
+        NSRect screenRect = targetScreen.frame;  // Full screen area (including the menu bar)
         CGRect cgRect = NSRectToCGRect(screenRect);
 
-        // 4. 获取屏幕ID并捕获完整屏幕
+        // 4. Get the display ID and capture the full screen
         CGDirectDisplayID displayID = [[targetScreen deviceDescription][@"NSScreenNumber"] unsignedIntValue];
-        CGImageRef screenImage = CGDisplayCreateImage(displayID);  // 捕获整个屏幕
+        CGImageRef screenImage = CGDisplayCreateImage(displayID);  // Capture the whole screen
         if (!screenImage) {
-            NSLog(@"无法捕获屏幕图像，权限可能未生效");
+            NSLog(@"Unable to capture the screen image; the permission may not have taken effect");
             return false;
         }
 
-        // 5. 裁剪到目标区域（若需要）
+        // 5. Crop to the target area (when needed)
         CGImageRef croppedImage = CGImageCreateWithImageInRect(screenImage, cgRect);
         CGImageRelease(screenImage);
         if (!croppedImage) {
             return false;
         }
 
-        // 6. 获取图像尺寸
+        // 6. Get the image dimensions
         width = static_cast<int32_t>(CGImageGetWidth(croppedImage));
         height = static_cast<int32_t>(CGImageGetHeight(croppedImage));
         if (width <= 0 || height <= 0) {
@@ -68,7 +68,7 @@ bool CaptureScreenBitmap_MacOS(void* targetWindow, std::vector<uint8_t>& bitmap,
             return false;
         }
 
-        // 7. 创建RGBA上下文并绘制
+        // 7. Create an RGBA context and draw
         CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
         if (!colorSpace) {
             CGImageRelease(croppedImage);
@@ -92,7 +92,7 @@ bool CaptureScreenBitmap_MacOS(void* targetWindow, std::vector<uint8_t>& bitmap,
         CGContextRelease(context);
         CGImageRelease(croppedImage);
 
-        // 8. 输出结果
+        // 8. Output the result
         bitmap.swap(tempBuffer);
         return true;
     }

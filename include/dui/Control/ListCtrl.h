@@ -12,6 +12,7 @@
 namespace ui
 {
 class RichEdit;
+class DateTime;
 
 class ListCtrlData;
 class ListCtrlReportView;
@@ -23,6 +24,7 @@ class ListCtrlItem;
 class ListCtrlSubItem;
 class ListCtrlIconViewItem;
 class ListCtrlListViewItem;
+class ListCtrlComboFlyout;
 
 /** ListCtrl control
 */
@@ -140,6 +142,23 @@ public:
     bool SetColumnWidthAuto(size_t columnIndex);
     bool SetColumnWidthAutoById(size_t columnId);
 
+    /** Show/hide a column
+    * @param [in] columnIndex The column index: [0, GetColumnCount())
+    * @param [in] columnId The column ID, obtained through ListCtrlHeaderItem::GetColumnId()
+    * @param [in] bColumnVisible true means show the column, false means hide the column
+    * @return Returns true if the operation succeeded, false if the parameters are invalid
+    */
+    bool SetColumnVisible(size_t columnIndex, bool bColumnVisible);
+    bool SetColumnVisibleById(size_t columnId, bool bColumnVisible);
+
+    /** Determine whether a column is visible
+    * @param [in] columnIndex The column index: [0, GetColumnCount())
+    * @param [in] columnId The column ID, obtained through ListCtrlHeaderItem::GetColumnId()
+    * @return Returns true if the column is visible, false if the column is hidden (or the parameters are invalid)
+    */
+    bool IsColumnVisible(size_t columnIndex) const;
+    bool IsColumnVisibleById(size_t columnId) const;
+
     /** Set the widths of all columns according to the given width values
     * @param [in] columnWidthList The index of the container corresponds to the column index, and the value of the container represents the expected width of each column
     *             The column width supports three types: fixed value, auto-fit, and stretch.
@@ -162,6 +181,15 @@ public:
     /** Whether dragging the header can change the order of the columns
     */
     bool IsEnableHeaderDragOrder() const;
+
+    /** Set the number of frozen columns (the first N columns at the left of the list are fixed and do not move with horizontal scrolling)
+    * @param [in] nCount The number of frozen columns; 0 means no column is frozen
+    */
+    void SetFrozenColumnCount(size_t nCount);
+
+    /** Get the number of frozen columns
+    */
+    size_t GetFrozenColumnCount() const;
 
     /** Set whether to show the header control
     */
@@ -231,9 +259,21 @@ public:
     */
     bool DeleteAllDataItems();
 
+    /** Delete the data items of the specified rows in batch (K rows)
+    * @param [in] itemIndexs The list of indexes of the data items to delete, valid range: [0, GetDataItemCount());
+    *                        duplicate indexes and out-of-range indexes are ignored
+    * @return Returns the number of rows actually deleted
+    */
+    size_t DeleteDataItems(const std::vector<size_t>& itemIndexs);
+
+    /** Compact the data storage: reorganize the row identities and the storage page layout, and reclaim the memory occupied by deleted rows
+        Note: this is an explicit whole-table maintenance operation, which may only be called while no filling/painting is in progress; after the call, the raw cell pointers already handed out internally become invalid
+    */
+    void CompactStorage();
+
     /** Set the default height of data items (row height)
     * @param [in] nItemHeight The height value
-    * @param [in] bNeedDpiScale If true, the width needs DPI adaptation
+    * @param [in] bNeedDpiScale If true, DPI adaptation is performed on the width
     */
     void SetDataItemHeight(int32_t nItemHeight, bool bNeedDpiScale);
 
@@ -454,6 +494,27 @@ public:
     int32_t GetSubItemTextFormat(size_t itemIndex, size_t columnIndex) const;
     int32_t GetSubItemTextFormatById(size_t itemIndex, size_t columnId) const;
 
+    /** Set whether the text of the specified data item is displayed on a single line (Report view only)
+        Note: the Report view is a virtual list and its cell controls are reused while scrolling, so this attribute is stored in the data model
+              and the framework applies it to the reused control when the cell data is filled; after it is set to multi-line (false), the text is wrapped
+              automatically according to the cell width, and in that case the row height must be adjusted by the caller through SetDataItemHeight, otherwise the overflow is clipped
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @param [in] columnId The column ID
+    * @param [in] bSingleLine true means single-line display (clipped with an ellipsis when overflowing), false means multi-line display (wrapped automatically)
+    */
+    bool SetSubItemSingleLine(size_t itemIndex, size_t columnIndex, bool bSingleLine);
+    bool SetSubItemSingleLineById(size_t itemIndex, size_t columnId, bool bSingleLine);
+
+    /** Get whether the text of the specified data item is displayed on a single line (Report view only)
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @param [in] columnId The column ID
+    * @return true means single-line display, false means multi-line display (wrapped automatically)
+    */
+    bool IsSubItemSingleLine(size_t itemIndex, size_t columnIndex) const;
+    bool IsSubItemSingleLineById(size_t itemIndex, size_t columnId) const;
+
     /** Set the background color of the specified data item
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
     * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
@@ -539,14 +600,51 @@ public:
     bool IsSubItemEditable(size_t itemIndex, size_t columnIndex) const;
     bool IsSubItemEditableById(size_t itemIndex, size_t columnId) const;
 
+    /** Set the column to be displayed as a progress bar
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @param [in] columnId The column ID
+    * @param [in] nProgress The progress value, valid range [0, 100]; -1 means the progress bar is not displayed (the text is displayed as normal text)
+    */
+    bool SetSubItemProgress(size_t itemIndex, size_t columnIndex, int32_t nProgress);
+    bool SetSubItemProgressById(size_t itemIndex, size_t columnId, int32_t nProgress);
+
+    /** Get the progress value of the column
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @param [in] columnId The column ID
+    * @return Returns the progress value, valid range [0, 100]; -1 means the progress bar is not displayed (the text is displayed as normal text)
+    */
+    int32_t GetSubItemProgress(size_t itemIndex, size_t columnIndex) const;
+    int32_t GetSubItemProgressById(size_t itemIndex, size_t columnId) const;
+
+    /** Set whether the text of the column is rendered as rich text (HTML-like format)
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @param [in] columnId The column ID
+    * @param [in] bRichText true means render as rich text, false means render as normal text
+    */
+    bool SetSubItemRichText(size_t itemIndex, size_t columnIndex, bool bRichText);
+    bool SetSubItemRichTextById(size_t itemIndex, size_t columnId, bool bRichText);
+
+    /** Get whether the text of the column is rendered as rich text (HTML-like format)
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @param [in] columnId The column ID
+    */
+    bool IsSubItemRichText(size_t itemIndex, size_t columnIndex) const;
+    bool IsSubItemRichTextById(size_t itemIndex, size_t columnId) const;
+
 public:
     /** Sort the data
     * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
     * @param [in] columnId The column ID
     * @param [in] bSortedUp true means ascending, false means descending
-    * @param [in] nSortFlag The sort method flag, see the ListCtrlSubItemSortFlag enum values
+    * @param [in] nSortFlag The sort method flag, see the enum values of ListCtrlSubItemSortFlag
     * @param [in] pfnCompareFunc The custom compare function; if nullptr, the default compare function is used
-    * @param [in] pUserData User custom data, passed back to the compare function through the parameter when it is called
+    * @param [in] pUserData User-defined data, passed back to the compare function through the parameter when the comparison function is called
+    * Note: the sort is stable (std::stable_sort); elements whose comparison result is equal (same value) keep their original relative order,
+    *       so rows in the same group (e.g. folders/files) or with the same value are not reordered or interleaved by sorting; this holds for both ascending and descending order.
     */
     bool SortDataItems(size_t columnIndex, bool bSortedUp, uint8_t nSortFlag = ListCtrlSubItemSortFlag::kDefault,
                        ListCtrlDataCompareFunc pfnCompareFunc = nullptr,
@@ -570,24 +668,92 @@ public:
     */
     void SetMultiSelect(bool bMultiSelect);
 
-    /** Set selected data items in batch
+    /** Set selected data items in batch (row selection only)
+        Note: only effective in row selection mode (kRow); in cell selection mode (kCell), the row selection is not modified at all (no-op)
     * @param [in] selectedIndexs The indexes of the data items to be selected, valid range: [0, GetDataItemCount())
     * @param [in] bClearOthers If true, clear the selection of other already-selected items, keeping only the ones set this time
     */
     void SetSelectedDataItems(const std::vector<size_t>& selectedIndexs, bool bClearOthers);
 
-    /** Get the list of selected data items
+    /** Get the list of selected data items (row selection only)
+        Note: only returns a result in row selection mode (kRow); in cell selection mode (kCell) an empty list is returned
     * @param [in] itemIndexs Returns the indexes of the currently selected data items, valid range: [0, GetDataItemCount())
     */
     void GetSelectedDataItems(std::vector<size_t>& itemIndexs) const;
 
-    /** Select all
+    /** Select all (dispatched according to the current selection mode: row selection mode selects all rows, cell selection mode selects all cells)
     */
     void SetSelectAll();
 
-    /** Cancel all selections
+    /** Cancel all selections (dispatched according to the current selection mode: row selection mode clears the row selection, cell selection mode clears the cell selection)
     */
     void SetSelectNone();
+
+public:
+    /** Get the selection mode (row selection mode / cell selection mode)
+    */
+    ListCtrlSelectionMode GetSelectionMode() const;
+
+    /** Set the selection mode (the default is row selection mode)
+        Note: switching to cell selection mode automatically clears the current row selection; switching back to row selection mode automatically clears the cell selection
+    * @param [in] mode The selection mode
+    */
+    void SetSelectionMode(ListCtrlSelectionMode mode);
+
+    /** Get the current cell (only valid in cell selection mode; when invalid, ListCtrlCellId::IsValid() of the returned value is false)
+    */
+    ListCtrlCellId GetCurrentCell() const;
+
+    /** Set the current cell (only valid in cell selection mode; cannot be used in row selection mode)
+    * @param [in] nRowIndex The display index of the row, valid range: [0, GetDataItemCount())
+    * @param [in] nColumnId The column ID
+    * @return Returns whether the operation succeeded (returns false if the row index or the column ID is invalid, or the current mode is not cell selection mode)
+    */
+    bool SetCurrentCell(size_t nRowIndex, size_t nColumnId);
+
+    /** Set the selection area of cells (anchor + focus, forming a normalized rectangle)
+    * @param [in] anchorCell The anchor cell
+    * @param [in] focusCell The focus cell (when invalid, only the anchor cell is set and the selection set is not changed)
+    * @param [in] bAdditive true = append this rectangular area to the existing selection (without clearing it); false = clear the existing cell selection first and then set it
+    * @return Returns whether the operation succeeded (returns false if the anchor is invalid or the current mode is not cell selection mode)
+    */
+    bool SetCellSelection(const ListCtrlCellId& anchorCell, const ListCtrlCellId& focusCell, bool bAdditive);
+
+    /** Clear the selection area of cells
+        The UI is refreshed and the kEventCellSelectionChanged event is dispatched only when a selection state really exists (there are selected cells or a current cell)
+    */
+    void ClearCellSelection();
+
+    /** Get the selection area of cells (anchor + focus, not normalized)
+    */
+    void GetCellSelection(ListCtrlCellId& anchorCell, ListCtrlCellId& focusCell) const;
+
+    /** Set selected cells in batch (the cell-selection equivalent API, corresponding to SetSelectedDataItems for row selection)
+        Note: only effective in cell selection mode (kCell); in row selection mode (kRow) nothing is modified (no-op)
+    * @param [in] cellList The list of cells to set as selected
+    * @param [in] bClearOthers If true, clear the other selected cells first, keeping only the ones set this time
+    */
+    void SetSelectedCells(const std::vector<ListCtrlCellId>& cellList, bool bClearOthers);
+
+    /** Get the list of selected cells (the cells expanded inside the normalized area, in row-major order)
+    * @param [in] cellList Returns the list of selected cells
+    * @return Returns the number of selected cells
+    * Note: all selected cells are returned; cell merging (spanning rows/columns) was decided not to be implemented after review
+    *       (it would require an overall upgrade of the layout model of the header and the rows, which is too large a change), so there is no "cell covered by a merge".
+    */
+    size_t GetSelectedCells(std::vector<ListCtrlCellId>& cellList) const;
+
+    /** Determine whether a cell is inside the selected area
+    * @param [in] nRowIndex The display index of the row, valid range: [0, GetDataItemCount())
+    * @param [in] nColumnId The column ID
+    */
+    bool IsCellSelected(size_t nRowIndex, size_t nColumnId) const;
+
+    /** Determine whether a cell is the current cell
+    * @param [in] nRowIndex The display index of the row, valid range: [0, GetDataItemCount())
+    * @param [in] nColumnId The column ID
+    */
+    bool IsCellCurrent(size_t nRowIndex, size_t nColumnId) const;
 
 public:
     /** Get the list of currently displayed data items, in order from top to bottom
@@ -621,9 +787,26 @@ public:
     */
     void RefreshDataItems(const std::vector<size_t>& dataItemIndexs);
 
-    /** Set whether refreshing the UI is allowed
-    * @param [in] bEnable If true, refreshing the UI via the Refresh() function is allowed
-    * @return Returns the old IsEnableRefresh() state
+    /** Refresh the specified cell (a single-cell refresh, valid for the Report view only; used for local updates of progress/state columns so that the whole row need not be refreshed)
+    * @param [in] dataItemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @return Returns true if the update succeeded (the cell is currently in the visible range and has been refreshed);
+    *         returning false means the parameters are invalid, or the cell is currently not in the visible range (the data itself has been updated, and the latest data is shown once the cell is scrolled into view)
+    */
+    bool RefreshSubItem(size_t dataItemIndex, size_t columnIndex);
+
+    /** Refresh the specified cell (a single-cell refresh, valid for the Report view only; used for local updates of progress/state columns so that the whole row need not be refreshed)
+    * @param [in] dataItemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnId The column ID, obtained through ListCtrlHeaderItem::GetColumnId()
+    * @return Returns true if the update succeeded (the cell is currently in the visible range and has been refreshed);
+    *         returning false means the parameters are invalid, or the cell is currently not in the visible range (the data itself has been updated, and the latest data is shown once the cell is scrolled into view)
+    */
+    bool RefreshSubItemById(size_t dataItemIndex, size_t columnId);
+
+    /** Whether refreshing the UI is allowed
+    * @param [in] bEnable If true, refreshing the UI through the Refresh family of functions is allowed; if false, refreshing the UI through the Refresh family of functions is disabled,
+                          and the UI is not refreshed automatically when the data changes either
+    * @return Returns the previous IsEnableRefresh() state
     */
     bool SetEnableRefresh(bool bEnable);
 
@@ -695,6 +878,107 @@ public:
     */
     bool IsEnableItemEdit() const;
 
+    /** Set whether copying the selected content to the clipboard is supported (Ctrl+C, TSV format; default true)
+    */
+    void SetEnableCopy(bool bEnableCopy);
+
+    /** Determine whether copying the selected content to the clipboard is supported
+    */
+    bool IsEnableCopy() const;
+
+    /** Set whether CSV export is supported (Ctrl+Shift+C copies as CSV, and ExportToCsvFile; default true)
+    */
+    void SetEnableCsvExport(bool bEnableCsvExport);
+
+    /** Determine whether CSV export is supported
+    */
+    bool IsEnableCsvExport() const;
+
+    /** Copy the currently selected content to the clipboard
+    * @param [in] bCsvFormat true means the CSV format (controlled by the enable_csv_export switch),
+    *                       false means the TSV format (controlled by the enable_copy switch)
+    * @return Returns true if copying succeeded; returns false when the switch is off, there is no selected content, or writing to the clipboard fails
+    */
+    bool CopySelectionToClipboard(bool bCsvFormat = false);
+
+    /** Export to a CSV file (UTF-8 with BOM encoding, so that Excel can open it directly)
+    * @param [in] strFilePath The CSV file path (provided by the application, an absolute path)
+    * @param [in] bSelectedOnly true means export only the currently selected content, false means export the whole table
+    * @return Returns true if the export succeeded; returns false when the enable_csv_export switch is off, there is no data, or writing the file fails
+    */
+    bool ExportToCsvFile(const std::string& strFilePath, bool bSelectedOnly = true);
+
+public:
+    /** @name Cell editing (kCell mode; Report view only)
+    * @{ */
+
+    /** Set the editor type by column index (applies to all cells of that column)
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @param [in] editorType The editor type (text/number/date)
+    */
+    void SetColumnEditorType(size_t columnIndex, ListCtrlEditorType editorType);
+
+    /** Set the editor type by column ID (recommended: the column ID is stable while the column order may change)
+    * @param [in] columnId The column ID
+    * @param [in] editorType The editor type
+    */
+    void SetColumnEditorTypeById(size_t columnId, ListCtrlEditorType editorType);
+
+    /** Get the editor type of a column index (kEditText when it has not been set)
+    */
+    ListCtrlEditorType GetColumnEditorType(size_t columnIndex) const;
+
+    /** Get the editor type of a column ID (kEditText when it has not been set)
+    */
+    ListCtrlEditorType GetColumnEditorTypeById(size_t columnId) const;
+
+    /** Set the list of candidate values by column index (used by the kEditCombo editor)
+    * @param [in] columnIndex The column index, valid range: [0, GetColumnCount())
+    * @param [in] candidates The list of candidate values (plain text, displayed in the order they are passed in); passing an empty list clears the candidates
+    */
+    void SetColumnCandidates(size_t columnIndex, const std::vector<std::string>& candidates);
+
+    /** Set the list of candidate values by column ID (recommended: the column ID is stable while the column order may change)
+    * @param [in] columnId The column ID
+    * @param [in] candidates The list of candidate values (plain text, displayed in the order they are passed in); passing an empty list clears the candidates
+    */
+    void SetColumnCandidatesById(size_t columnId, const std::vector<std::string>& candidates);
+
+    /** Get the list of candidate values of a column index (an empty list when it has not been set)
+    */
+    std::vector<std::string> GetColumnCandidates(size_t columnIndex) const;
+
+    /** Get the list of candidate values of a column ID (an empty list when it has not been set)
+    */
+    std::vector<std::string> GetColumnCandidatesById(size_t columnId) const;
+
+    /** Enter the edit state of the specified cell (equivalent to pressing F2 on the current cell)
+    * Preconditions: enable_item_edit is true, kCell mode, Report view, the cell is "editable" and its row is selectable;
+    *           if the row is not in the visible area, it is scrolled into the visible area first
+    * @param [in] nRowIndex The display index of the row, valid range: [0, GetDataItemCount())
+    * @param [in] nColumnId The column ID
+    * @return Returns true if the edit state has been entered (or is already being edited)
+    */
+    bool EnterCellEdit(size_t nRowIndex, size_t nColumnId);
+
+    /** Enter the edit state of the "current cell" (the implementation entry point of F2)
+    * @return Returns true if the edit state has been entered
+    */
+    bool EnterCurrentCellEdit();
+
+    /** Determine whether the control is currently in the cell edit state (kCell mode)
+    */
+    bool IsCellEditing() const;
+
+    /** Get the cell currently being edited
+    * @param [out] cell Returns the cell location (nRowIndex / nColumnId are Box::InvalidIndex when there is no edit state)
+    * @return Returns whether the cell edit state is active
+    */
+    bool GetEditingCell(ListCtrlCellId& cell) const;
+
+    /** @} */
+
+public:
     /** Get the interface of the edit control (it has a value only after an edit operation is performed)
     */
     RichEdit* GetRichEdit() const;
@@ -964,26 +1248,17 @@ public:
      */
     void AttachDataItemCountChanged(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventDataItemCountChanged, callback, callbackID); }
 
-    /** Listen to the event of filling the UI elements of a Report view data item (virtual list, filling the data of a row)
+    /** Listen to the event of filling the UI elements of a Report view data item (virtual list)
+     *  Triggered: once when a whole row is filled; it is also triggered once when RefreshSubItem refreshes a single cell
      * @param [in] callback The callback function to bind
      * @param [in] callbackID The ID corresponding to this callback function (used to remove the callback function)
      * Parameter description:
      *   wParam: The index of the associated UI container child item, valid range: [0, GetItemCount()); if the value is Box::InvalidIndex, it is not associated with any child item
      *   lParam: The index of the data item corresponding to the UI container child item index, valid range: [0, GetDataItemCount()); if the value is Box::InvalidIndex, there is no associated data item
      *   pEventData: The pointer to the UI control interface of the associated UI container child item; type: ListCtrlItem* pointer, the data is filled row by row
+     *   pExtraData: The pointer to the associated cell, type: ListCtrlSubItem* pointer; nullptr means all cells of this row were filled, non-nullptr means only that cell was filled (single-cell refresh)
      */
     void AttachReportViewItemFilled(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventReportViewItemFilled, callback, callbackID); }
-
-    /** Listen to the event of filling the UI elements of a Report view data item (virtual list, filling the data of a row and column)
-     * @param [in] callback The callback function to bind
-     * @param [in] callbackID The ID corresponding to this callback function (used to remove the callback function)
-     * Parameter description:
-     *   wParam: The index of the associated UI container child item, valid range: [0, GetItemCount()); if the value is Box::InvalidIndex, it is not associated with any child item
-     *   lParam: The index of the data item corresponding to the UI container child item index, valid range: [0, GetDataItemCount()); if the value is Box::InvalidIndex, there is no associated data item
-     *   pEventData: The pointer to the UI control interface of the associated UI container child item; type: ListCtrlSubItem* pointer, representing the UI element control of the data of a row and a column
-     *               Through this interface, the data item index and which column the data belongs to can be obtained
-     */
-    void AttachReportViewSubItemFilled(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventReportViewSubItemFilled, callback, callbackID); }
 
     /** Listen to the event of filling the UI elements of a List view data item (virtual list)
      * @param [in] callback The callback function to bind
@@ -1032,6 +1307,60 @@ public:
      *   pEventData: The pointer to the current list view: ListCtrlReportView*, ListCtrlIconView*, ListCtrlListView*
      */
     void AttachViewSizeChanged(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventViewSizeChanged, callback, callbackID); }
+
+    /** Listen to the column width changed event (triggered when the column width is adjusted by dragging the header, or when functions such as SetColumnWidth are called)
+     * @param [in] callback The callback function to bind
+     * @param [in] callbackID The ID corresponding to this callback function (used to remove the callback function)
+     * Parameter description:
+     *   wParam: The column ID (size_t)
+     *   lParam: The other associated column ID (size_t); when the width is adjusted by dragging it may be the adjacent column; Box::InvalidIndex means there is no associated column
+     */
+    void AttachColumnWidthChanged(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventColumnWidthChanged, callback, callbackID); }
+
+    /** Listen to the column order changed event (triggered when the column order is adjusted by dragging the header)
+     * @param [in] callback The callback function to bind
+     * @param [in] callbackID The ID corresponding to this callback function (used to remove the callback function)
+     * Parameter description:
+     *   wParam/lParam: Not used; the latest column order can be obtained through functions such as GetColumnId
+     */
+    void AttachColumnOrderChanged(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventColumnOrderChanged, callback, callbackID); }
+
+    /** Listen to the column show/hide state changed event
+     * @param [in] callback The callback function to bind
+     * @param [in] callbackID The ID corresponding to this callback function (used to remove the callback function)
+     * Parameter description:
+     *   wParam: The column ID (size_t)
+     *   lParam: The new state (1 means visible, 0 means hidden)
+     */
+    void AttachColumnVisibleChanged(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventColumnVisibleChanged, callback, callbackID); }
+
+    /** Listen to the column sorting changed event (triggered when sorting by clicking the header, or when functions such as SortDataItems are called)
+     * @param [in] callback The callback function to bind
+     * @param [in] callbackID The ID corresponding to this callback function (used to remove the callback function)
+     * Parameter description:
+     *   wParam: The column ID (size_t)
+     *   lParam: The new state (1 means ascending, 0 means descending)
+     */
+    void AttachColumnSorted(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventColumnSorted, callback, callbackID); }
+
+    /** Bind the event of the current cell changing (cell selection mode)
+    * @param [in] callback The callback function to bind
+    * @param [in] callbackID The ID corresponding to this callback function (used to remove the callback function)
+    * Parameter description:
+    *   wParam: The display index of the row (size_t)
+    *   lParam: The column ID (size_t)
+    */
+    void AttachCurrentCellChanged(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventCurrentCellChanged, callback, callbackID); }
+
+    /** Bind the event of the cell selection area changing (cell selection mode)
+    * @param [in] callback The callback function to bind
+    * @param [in] callbackID The ID corresponding to this callback function (used to remove the callback function)
+    * Parameter description:
+    *   wParam: The number of selected areas (size_t); 0 means there is currently no selection
+    *   lParam: 0 (reserved)
+    *   pEventData: Points to std::vector<ui::ListCtrlCellRange>* (the list of selected areas, possibly several items; nullptr when there is no selection)
+    */
+    void AttachCellSelectionChanged(const EventCallback& callback, EventCallbackID callbackID = 0) { this->AttachEvent(kEventCellSelectionChanged, callback, callbackID); }
 
 protected:
     /** Control initialization
@@ -1134,6 +1463,11 @@ protected:
     void SetRichEditClass(const std::string& richEditClass);
     std::string GetRichEditClass() const;
 
+    /** The Class attribute of the date edit box (the DateTime control used by the kEditDate editor)
+    */
+    void SetDateTimeClass(const std::string& dateTimeClass);
+    std::string GetDateTimeClass() const;
+
 protected:
     /** Add a column
     * @param [in] nColumnId The column ID
@@ -1173,8 +1507,9 @@ protected:
     void OnHeaderCheckStateChanged(bool bChecked);
 
     /** The display attribute of a header column has changed
+    * @param [in] nColumnId The column ID
     */
-    void OnHeaderColumnVisibleChanged();
+    void OnHeaderColumnVisibleChanged(size_t nColumnId);
 
     /** Double-click event of the header column splitter
     * @param [in] pHeaderItem The header control interface
@@ -1224,9 +1559,54 @@ private:
     */
     void UpdateRichEditSize(ListCtrlLabel* pSubItem);
 
-    /** Sub-item edit event
+    /** Update the position and size of the DateTime control (kEditDate editor)
     */
-    void OnItemEdited(const ListCtrlEditParam& editParam, const std::string& newItemText);
+    void UpdateDateTimeSize(ListCtrlLabel* pSubItem);
+
+    /** Sub-item edit event
+    * @return Returns true if the data has been written back (the user did not cancel and the input passed the editor type validation)
+    */
+    bool OnItemEdited(const ListCtrlEditParam& editParam, const std::string& newItemText);
+
+    /** Get the data row control corresponding to the specified display index (Report view; only the "currently visible" rows, which cannot be cached because they are reused after scrolling)
+    * @param [in] nItemIndex The display index of the row
+    * @return Returns the data row control (returns nullptr when it is not visible)
+    */
+    ListCtrlItem* GetDisplayItemByIndex(size_t nItemIndex) const;
+
+    /** Determine whether the text entered in the editor conforms to the editor type declared for the column (an empty string is always considered valid and means clearing the cell)
+    */
+    static bool IsValidCellEditText(const std::string& strNewText, ListCtrlEditorType editorType);
+
+    /** Enter the combo candidate edit state (kEditCombo editor): pop up a candidate popup below the cell
+    * @param [in] editParam The edit parameters (created when the edit starts)
+    * @param [in] pSubItem The text control of the hit cell (used as the anchor of the popup)
+    */
+    void EnterComboEditMode(const ListCtrlEditParam& editParam, ListCtrlLabel* pSubItem);
+
+    /** Enter the date edit state (kEditDate editor): float a DateTime control over the cell and pop up a month calendar once it has focus
+    * @param [in] editParam The edit parameters (created when the edit starts)
+    * @param [in] pSubItem The text control of the hit cell
+    */
+    void EnterDateEditMode(const ListCtrlEditParam& editParam, ListCtrlLabel* pSubItem);
+
+    /** Combo candidate editing: commit after a candidate item is selected (by mouse click or keyboard Return)
+    * @param [in] nIndex The candidate item index
+    * @return Returns true if it has been committed and written back
+    */
+    bool OnComboCandidateSelected(size_t nIndex);
+
+    /** Close the combo candidate popup (no-op when it is not open)
+    */
+    void CloseComboFlyout();
+
+    /** Determine whether the combo candidate popup is open
+    */
+    bool IsComboEditOpened() const;
+
+    /** After a successful commit, move the current cell down by one row (kCell mode; nothing happens when it is already the last row)
+    */
+    void MoveCurrentCellToNextRow();
 
     /** The view received a mouse message
     */
@@ -1249,6 +1629,85 @@ private:
     * @param [in] bInit true means it is called during the initialization phase
     */
     void DoSetListCtrlType(ListCtrlType type, bool bInit);
+
+    /** Cell selection mode: collect the list of currently selected cell areas (possibly several items, used for event reporting)
+        Merging rule: within the same display row, areas whose "column indexes are consecutive" are merged into a horizontal segment, and the same segments of vertically adjacent rows are merged into a rectangle
+    * @param [out] rangeList Returns the list of selected areas (empty when there is no selection)
+    */
+    void GetSelectedCellRanges(std::vector<ListCtrlCellRange>& rangeList) const;
+
+    /** Generate the text of the selected content (or of the whole table)
+    * @param [in] bCsvFormat true means the CSV format (conforming to RFC4180), false means the TSV format (tab separated)
+    * @param [in] bSelectedOnly true means export only the currently selected content, false means export the whole table (used by the CSV export path only)
+    * @return Returns the generated text (an empty string when there is no content)
+    */
+    std::string BuildSelectionText(bool bCsvFormat, bool bSelectedOnly) const;
+
+    /** Escape the content of a single field
+    * @param [in] strText The raw field text
+    * @param [in] bCsvFormat true means the CSV format (double quotes are added when needed, and the inner double quotes are doubled);
+    *                         false means the TSV format (tabs/returns/newlines are replaced with spaces)
+    * @return Returns the escaped text
+    */
+    static std::string EscapeText(const std::string& strText, bool bCsvFormat);
+
+    /** Cell selection mode: dispatch the "current cell changed" event
+    */
+    void NotifyCurrentCellChanged(const ListCtrlCellId& cell);
+
+    /** Cell selection mode: dispatch the "selection area changed" event
+    */
+    void NotifyCellSelectionChanged();
+
+    /** Cell selection mode: refresh the view display (repaint the cell highlight and the focus frame of the current cell)
+    */
+    void RefreshCellSelectionView();
+
+    /** Cell selection mode: update the cell the mouse is hovering over (used to paint the cell hover highlight)
+    * @param [in] nRowIndex The display index of the row (Box::InvalidIndex when no cell is hit)
+    * @param [in] nColumnId The column ID (Box::InvalidIndex when no cell is hit)
+    */
+    void UpdateHoverCell(size_t nRowIndex, size_t nColumnId);
+
+    /** Cell selection mode: clear the cell the mouse is hovering over (called when the mouse leaves the control, to avoid a leftover hover highlight)
+    */
+    void ClearHoverCell();
+
+    /** Cell selection mode: determine whether the specified cell is the cell the mouse is hovering over
+    * @param [in] nRowIndex The display index of the row
+    * @param [in] nColumnId The column ID
+    */
+    bool IsCellHovered(size_t nRowIndex, size_t nColumnId) const;
+
+    /** Cell selection mode: handle the mouse events coming from ListCtrlItem (set/extend the cell selection)
+    * @param [in] msg The mouse event message
+    * @param [in] nRowIndex The display index of the row
+    * @param [in] nColumnId The column ID (Box::InvalidIndex when no cell is hit)
+    * @return Returns whether it has been handled (true means it has been handled as a cell selection and the caller should not perform row selection)
+    */
+    bool OnCellMouseEvent(const EventArgs& msg, size_t nRowIndex, size_t nColumnId);
+
+    /** Cell selection mode: start a drag selection when the mouse button is pressed (shared by the left and right buttons)
+        A plain click selects the cell (clearing the others); Shift extends to the clicked cell; Ctrl toggles the selection; Ctrl+Shift extends additively;
+        when no cell is hit (blank area) the cell selection is cleared; afterwards the drag-selection state is set (the rubber-band rectangle drives the subsequent selection)
+    * @param [in] msg The mouse button down event message
+    * @param [in] nRowIndex The display index of the row (Box::InvalidIndex when no cell is hit)
+    * @param [in] nColumnId The column ID (Box::InvalidIndex when no cell is hit)
+    */
+    void BeginCellDrag(const EventArgs& msg, size_t nRowIndex, size_t nColumnId);
+
+    /** Cell selection mode: handle keyboard events (the arrow keys move the current cell, Shift extends the area, Ctrl+A selects all, etc.)
+    * @param [in] msg The keyboard event message
+    * @return Returns whether it has been handled
+    */
+    bool OnCellKeyDown(const EventArgs& msg);
+
+    /** Handle the keyboard events of the combo candidate popup (shared by row selection mode and cell selection mode)
+    *  When the popup is open: the up/down arrow keys move the candidate item, Return commits, Esc cancels (all of these keys are consumed)
+    * @param [in] msg The keyboard event message
+    * @return Returns whether it has been handled (returns false when the popup is not open, and the key continues through the normal flow)
+    */
+    bool OnComboKeyDown(const EventArgs& msg);
 
 private:
     /** The header control
@@ -1339,13 +1798,27 @@ private:
     */
     UiString m_listCtrlRichEditClass;
 
-    /** Image lists
+    /** The Class attribute of the date edit box of ListCtrl (kEditDate editor)
+    */
+    UiString m_listCtrlDateTimeClass;
+
+    /** The character whitelist (limit_chars) declared in the rich text edit box class
+    *  Note: the edit box control is reused, and the number editor temporarily rewrites the whitelist when it enters the edit state;
+    *  to avoid erasing the whitelist configured on the control class, this value is recorded when the edit box is created for the first time and restored when switching back to a non-number editor.
+    */
+    std::string m_richEditLimitChars;
+
+    /** Image list
     */
     ImageListPtr m_imageList[3];
 
     /** The edit control
     */
     RichEdit* m_pRichEdit;
+
+    /** Date edit box control (kEditDate editor)
+    */
+    DateTime* m_pDateTime;
 
     /** The height of the header
     */
@@ -1375,6 +1848,10 @@ private:
     */
     bool m_bEnableHeaderDragOrder;
 
+    /** The number of frozen columns (the first N columns at the left of the list are fixed and do not move with horizontal scrolling)
+    */
+    size_t m_nFrozenColumnCount;
+
     /** Whether the header control is shown
     */
     bool m_bShowHeaderCtrl;
@@ -1386,6 +1863,40 @@ private:
     /** Whether multi-select is supported (single-select by default)
     */
     bool m_bMultiSelect;
+
+    /** The selection mode (the default is row selection mode)
+    */
+    ListCtrlSelectionMode m_selectionMode;
+
+    /** Whether the selection area is currently being extended by mouse dragging in cell selection mode
+    */
+    bool m_bCellDragSelecting;
+
+    /** Whether this drag is in "additive" mode in cell selection mode (Ctrl+drag: append the rectangular area without clearing the existing selection)
+    */
+    bool m_bCellDragAdditive;
+
+    /** Internal identifier of the cell hover state: stored by row identity (RowId) and decoupled from the display order
+        (after sorting/adding/removing rows the hover highlight still follows the original data row, and together with the column ID it locates a unique cell)
+    */
+    struct HoverCellId
+    {
+        ListCtrlData::RowId nRowId;     //Row identity (ListCtrlData::kInvalidRowId when invalid)
+        size_t nColumnId;               //Column ID (Box::InvalidIndex when invalid)
+
+        HoverCellId() : nRowId(ListCtrlData::kInvalidRowId), nColumnId(Box::InvalidIndex) {}
+
+        /** Whether this is a valid cell
+        */
+        bool IsValid() const { return (nRowId != ListCtrlData::kInvalidRowId) && (nColumnId != Box::InvalidIndex); }
+
+        bool operator==(const HoverCellId& r) const { return (nRowId == r.nRowId) && (nColumnId == r.nColumnId); }
+        bool operator!=(const HoverCellId& r) const { return !(*this == r); }
+    };
+
+    /** The cell the mouse is hovering over in cell selection mode (used to paint the cell hover highlight)
+    */
+    HoverCellId m_hoverCell;
 
     /** Whether double-clicking the Header's splitter automatically adjusts the column width
     */
@@ -1403,9 +1914,33 @@ private:
     */
     bool m_bDataItemShowCheckBox;
 
+    /** Whether copying the selected content to the clipboard is supported (default true)
+    */
+    bool m_bEnableCopy;
+
+    /** Whether CSV export is supported (default true)
+    */
+    bool m_bEnableCsvExport;
+
     /** Whether sub-item editing is supported
     */
     bool m_bEnableItemEdit;
+
+    /** Column ID -> editor type (stored by column ID, unaffected by column order changes)
+    */
+    std::map<size_t, ListCtrlEditorType> m_columnEditorTypes;
+
+    /** The cell currently being edited (only valid in kCell mode; an invalid value when not editing)
+    */
+    ListCtrlCellId m_editingCell;
+
+    /** Column ID -> candidate value list (stored by column ID, used by the kEditCombo editor)
+    */
+    std::map<size_t, std::vector<std::string>> m_columnCandidates;
+
+    /** The current candidate popup (kEditCombo editor; destroyed automatically by the framework after it is closed, and the pointer is set to null at the same time)
+    */
+    ListCtrlComboFlyout* m_pComboFlyout;
 };
 
 }//namespace ui

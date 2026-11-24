@@ -3,6 +3,7 @@
 
 #include "dui/Control/Label.h"
 #include "dui/Box/HBox.h"
+#include <dui/Core/ControlPtrT.h>
 #include <ctime>
 
 namespace ui
@@ -10,6 +11,7 @@ namespace ui
 /** Date time selection control
 */
 class DateTimeWnd;
+class CalendarFlyout;
 class DUI_API DateTime : public LabelTemplate<HBox>
 {
     typedef LabelTemplate<HBox> BaseClass;
@@ -28,6 +30,20 @@ public:
     /** Clear the date time value
     */
     void ClearTime();
+
+    /** Reset the "suppress reopen" state of the calendar flyout
+    *  Note: after the calendar flyout closes, the DateTime control sets an internal suppress flag so that the flyout is not reopened immediately when focus returns to the control;
+    *  when the control is reused as an editor (for example the date cell editor of ListCtrl), this function must be called before entering edit mode to clear that state,
+    *  so the flyout can open normally when the control regains focus.
+    */
+    void ResetCalendarFlyoutState();
+
+    /** Close the open calendar flyout (a no-op when it is not open)
+    *  Note: when the control is reused as an editor (for example the date cell editor of ListCtrl),
+    *  hiding the control while the flyout is open would leave the flyout as a dangling topmost window because its anchor is invisible;
+    *  call this function before leaving edit mode to close the flyout first.
+    */
+    void CloseCalendarFlyout();
 
     /** Get the date time value
     */
@@ -142,7 +158,13 @@ public:
     virtual void SetAttribute(const std::string& strName, const std::string& strValue) override;
     virtual void HandleEvent(const EventArgs& msg) override;
 
-    //Used to initialize xml attributes
+    /** Calculate the size of the text area (width and height)
+     *  When no date is set (the display text is empty), estimate with a sample string as wide as the date format,
+     *  so that a width/height of auto is not estimated as 0 and the control does not collapse.
+     */
+    virtual UiSize EstimateText(UiSize szAvailable) override;
+
+    //Used to initialize the xml attributes
     virtual void OnInit() override;
 
     /** Dispatch the message to the message handler
@@ -154,6 +176,18 @@ private:
     /** Compare whether two times are the same
     */
     bool IsEqual(const struct tm& a, const struct tm& b) const;
+
+    /** Generate a sample date string as wide as the current date format; used only for the auto-size estimate
+     *  (a fixed date 2000-01-01 00:00:00 is used, whose width matches a real date)
+     */
+    std::string GetSampleDateTimeString() const;
+
+    /** Calculate the width occupied by the spin-button container (used for the auto-size estimate)
+     *  spin_class format: "spin container class, up button class, down button class"; the width of the first segment (the container) is used;
+     *  only a fixed pixel width is supported: auto / percentage / stretch cannot be determined statically while estimating, so 0 is returned.
+     *  @return the DPI-scaled spin width in pixels; 0 when invalid
+     */
+    int32_t GetSpinBoxWidth(const std::string& spinClass) const;
 
     /** End the editing
     */
@@ -178,7 +212,15 @@ private:
 
     /** The window interface of the date control
     */
-    DateTimeWnd* m_pDateWindow;
+    ControlPtrT<DateTimeWnd> m_pDateWindow;
+
+    /** The calendar flyout (used only by the date_calendar edit format)
+    */
+    ControlPtrT<CalendarFlyout> m_pCalendarFlyout;
+
+    /** Flag: the calendar flyout just closed because of a selection/today/clear action; suppress the subsequent focus event that would reopen it
+    */
+    bool m_bSuppressCalendarReopen;
 
     /** The Class name of the Spin feature
     */

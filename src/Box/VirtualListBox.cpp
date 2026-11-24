@@ -52,6 +52,7 @@ VirtualListBox::VirtualListBox(Window* pWindow, Layout* pLayout)
     , m_pVirtualLayout(nullptr)
     , m_nLastNoShiftIndex(0)
     , m_bEnableUpdateProvider(true)
+    , m_bEnableRefresh(true)
 {
     // Keep the virtual layout when callers provide a specific layout variant.
     VirtualLayout* pVirtualLayout = dynamic_cast<VirtualLayout*>(GetLayout());
@@ -408,23 +409,68 @@ void VirtualListBox::SetSelectNoneExclude(const std::vector<size_t>& excludeInde
     }
 }
 
+bool VirtualListBox::SetEnableRefresh(bool bEnable)
+{
+    bool bOldEnable = m_bEnableRefresh;
+    m_bEnableRefresh = bEnable;
+    return bOldEnable;
+}
+
+bool VirtualListBox::IsEnableRefresh() const
+{
+    return m_bEnableRefresh;
+}
+
 void VirtualListBox::RefreshElements(size_t nStartElementIndex, size_t nEndElementIndex)
 {
+    //Whether refreshing is allowed is decided in one place in the OnModelDataChanged function
     OnModelDataChanged(nStartElementIndex, nEndElementIndex);
 }
 
 void VirtualListBox::RefreshElements(const std::vector<size_t>& elementIndexs)
 {
+    if (!IsEnableRefresh()) {
+        return;//Refreshing the UI is disabled
+    }
     if (elementIndexs.empty()) {
         return;
     }
-    std::set<size_t> indexSet;
-    for (size_t nElementIndex : elementIndexs) {
-        indexSet.insert(nElementIndex);
+    //Sort + deduplicate, then use binary search to determine whether an element needs to be refreshed (instead of std::set, to avoid a heap allocation per node)
+    std::vector<size_t> sortedIndexs = elementIndexs;
+    std::sort(sortedIndexs.begin(), sortedIndexs.end());
+    sortedIndexs.erase(std::unique(sortedIndexs.begin(), sortedIndexs.end()), sortedIndexs.end());
+    RefreshVisibleElements([&sortedIndexs](size_t nElementIndex) {
+        return std::binary_search(sortedIndexs.begin(), sortedIndexs.end(), nElementIndex);
+        }, sortedIndexs.size());
+}
+
+void VirtualListBox::OnModelDataChanged(size_t nStartElementIndex, size_t nEndElementIndex)
+{
+    if (!IsEnableRefresh()) {
+        return;//Refreshing the UI is disabled
     }
+    if (nEndElementIndex < nStartElementIndex) {
+        return;
+    }
+    //The number of elements that need to be refreshed: each element is bound to only one UI control, so the scan can end early once enough elements have been found
+    //(this also holds when the range length is greater than 1)
+    const size_t nTargetCount = nEndElementIndex - nStartElementIndex + 1;
+    RefreshVisibleElements([nStartElementIndex, nEndElementIndex](size_t nElementIndex) {
+        return (nElementIndex >= nStartElementIndex) && (nElementIndex <= nEndElementIndex);
+        }, nTargetCount);
+}
+
+void VirtualListBox::RefreshVisibleElements(const std::function<bool(size_t)>& isElementNeedRefresh,
+                                            size_t nTargetCount)
+{
+    ASSERT(isElementNeedRefresh != nullptr);
+
     VirtualListBox::RefreshDataList refreshDataList;
     VirtualListBox::RefreshData refreshData;
     const size_t nItemCount = m_items.size();
+    refreshDataList.reserve(nItemCount);
+
+    size_t nFilledCount = 0;
     for (size_t nItemIndex = 0; nItemIndex < nItemCount; ++nItemIndex) {
         Control* pControl = m_items[nItemIndex];
         if ((pControl == nullptr) || !pControl->IsVisible()) {
@@ -434,48 +480,26 @@ void VirtualListBox::RefreshElements(const std::vector<size_t>& elementIndexs)
         if (pListBoxItem == nullptr) {
             continue;
         }
-        size_t nElementIndex = pListBoxItem->GetElementIndex();
-        if (nElementIndex != Box::InvalidIndex) {
-            if (indexSet.find(nElementIndex) != indexSet.end()) {                
-                FillElementData(pControl, nElementIndex);
-                pControl->Invalidate();
-
-                refreshData.nItemIndex = nItemIndex;
-                refreshData.pControl = pControl;
-                refreshData.nElementIndex = nElementIndex;
-                refreshDataList.push_back(refreshData);
-            }
-        }
-    }
-    if (!refreshDataList.empty()) {
-        OnRefreshElements(refreshDataList);
-        OnFilledElements(refreshDataList);
-    }
-}
-
-void VirtualListBox::OnModelDataChanged(size_t nStartElementIndex, size_t nEndElementIndex)
-{
-    VirtualListBox::RefreshDataList refreshDataList;
-    VirtualListBox::RefreshData refreshData;
-    size_t nItemCount = m_items.size();
-    for (size_t nItemIndex = 0; nItemIndex < nItemCount; ++nItemIndex) {
-        Control* pControl = m_items[nItemIndex];
-        if ((pControl == nullptr) || !pControl->IsVisible()) {
+        const size_t nElementIndex = pListBoxItem->GetElementIndex();
+        if (nElementIndex == Box::InvalidIndex) {
+            //This control is currently not bound to a data element, so there is no need to refresh it
             continue;
         }
-        IListBoxItem* pListBoxItem = dynamic_cast<IListBoxItem*>(pControl);
-        if (pListBoxItem != nullptr) {
-            size_t nElementIndex = pListBoxItem->GetElementIndex();
-            if ((nElementIndex >= nStartElementIndex) &&
-                (nElementIndex <= nEndElementIndex)) {
-                FillElementData(pControl, nElementIndex);
-                pControl->Invalidate();
+        if (!isElementNeedRefresh(nElementIndex)) {
+            continue;
+        }
+        FillElementData(pControl, nElementIndex);
+        pControl->Invalidate();
 
-                refreshData.nItemIndex = nItemIndex;
-                refreshData.pControl = pControl;
-                refreshData.nElementIndex = nElementIndex;
-                refreshDataList.push_back(refreshData);
-            }
+        refreshData.nItemIndex = nItemIndex;
+        refreshData.pControl = pControl;
+        refreshData.nElementIndex = nElementIndex;
+        refreshDataList.push_back(refreshData);
+
+        ++nFilledCount;
+        if ((nTargetCount != 0) && (nFilledCount >= nTargetCount)) {
+            //All elements that need refreshing have been covered, so the scan ends early
+            break;
         }
     }
     if (!refreshDataList.empty()) {
@@ -508,6 +532,7 @@ void VirtualListBox::OnFilledElements(const RefreshDataList& refreshDataList)
 void VirtualListBox::OnModelCountChanged()
 {
     //The number of elements has changed (items were added or removed)
+    //Whether refreshing is allowed is decided in one place in the Refresh function
     Refresh();
 }
 
@@ -518,6 +543,9 @@ bool VirtualListBox::IsEnableUpdateProvider() const
 
 void VirtualListBox::Refresh(bool bSync)
 {
+    if (!IsEnableRefresh()) {
+        return;//Refreshing the UI is disabled
+    }
     if (!HasDataProvider()) {
         return;
     }

@@ -434,6 +434,18 @@ UiSize64 HLayout::EstimateLayoutSize(const std::vector<Control*>& items, UiSize 
     UiSize64 totalSize(0, 0);  // 64-bit calculation to avoid overflow
     int32_t validCount = 0;    // Count the valid controls participating in the spacing calculation (those with width or margins)
 
+    // Only after subtracting the container padding is what remains the available area for the child
+    // controls: it must use the same basis as the real layout (DeflatePadding in ArrangeChildren),
+    // otherwise auto-wrapping child controls estimate their height from an oversized width, which
+    // makes the container height too small and clips the content
+    UiPadding rcPadding;
+    if (GetOwner() != nullptr) {
+        rcPadding = GetOwner()->GetPadding();
+    }
+    szAvailable.cx -= (rcPadding.left + rcPadding.right);
+    szAvailable.cy -= (rcPadding.top + rcPadding.bottom);
+    szAvailable.Validate();
+
     for (Control* pControl : items) {
         if ((pControl == nullptr) || !pControl->IsVisible() || pControl->IsFloat()) {
             continue;
@@ -489,11 +501,7 @@ UiSize64 HLayout::EstimateLayoutSize(const std::vector<Control*>& items, UiSize 
         totalSize.cx += (int64_t)(validCount - 1) * GetChildMarginX();
     }
 
-    // Accumulate the container padding (counted unconditionally)
-    UiPadding rcPadding;
-    if (GetOwner() != nullptr) {
-        rcPadding = GetOwner()->GetPadding();
-    }
+    // Accumulate the container padding (always counted; rcPadding was computed at the start of the function)
     totalSize.cx += rcPadding.left + rcPadding.right;
     totalSize.cy += rcPadding.top + rcPadding.bottom;
 

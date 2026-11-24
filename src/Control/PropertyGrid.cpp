@@ -224,6 +224,7 @@ void PropertyGrid::PaintGridLines(IRender* pRender)
     }
     if ((nRowLineWidth > 0) && !rowLineColor.IsEmpty()) {
         //Draw horizontal grid lines
+        UiPoint treeScrollBoxOffset = m_pTreeView->GetScrollOffsetInScrollBox();
         UiRect viewRect = m_pTreeView->GetRect();
         UiPoint viewScrollPos = m_pTreeView->GetScrollOffsetInScrollBox();
         viewRect.Offset(-viewScrollPos.x, -viewScrollPos.y);
@@ -234,9 +235,9 @@ void PropertyGrid::PaintGridLines(IRender* pRender)
                 continue;
             }
             //The y-coordinate position is placed at the bottom of each child item control (no line is drawn at the bottom of the Header control)
-            UiRect rcItemRect = pItem->GetRect();
             UiPoint scrollBoxOffset = pItem->GetScrollOffsetInScrollBox();
-            rcItemRect.Offset(-scrollBoxOffset.x, -scrollBoxOffset.y);
+            UiRect rcItemRect = pItem->GetRect();
+            rcItemRect.Offset(-(scrollBoxOffset.x - treeScrollBoxOffset.x), -(scrollBoxOffset.y - treeScrollBoxOffset.y));
             int32_t yPos = rcItemRect.bottom;
 
             int32_t nChildMarginY = 0;
@@ -1206,7 +1207,7 @@ void PropertyGridTextProperty::SetPasswordMode(bool bPasswordMode)
     }
 }
 
-void PropertyGridTextProperty::SetEnableSpin(bool bEnable, int32_t nMin, int32_t nMax)
+void PropertyGridTextProperty::SetEnableSpin(bool bEnable, int64_t nMin, int64_t nMax)
 {
     RichEdit* pRichEdit = GetRichEdit();
     if (IsEnabled()) {

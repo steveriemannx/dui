@@ -346,19 +346,19 @@ public:
 
     /** Set the maximum allowed number (only valid when IsNumberOnly() is true)
     */
-    void SetMaxNumber(int32_t maxNumber);
+    void SetMaxNumber(int64_t maxNumber);
 
     /** Get the maximum allowed number
     */
-    int32_t GetMaxNumber() const;
+    int64_t GetMaxNumber() const;
 
     /** Set the minimum allowed number (only valid when IsNumberOnly() is true)
     */
-    void SetMinNumber(int32_t minNumber);
+    void SetMinNumber(int64_t minNumber);
 
     /** Get the minimum allowed number
     */
-    int32_t GetMinNumber() const;
+    int64_t GetMinNumber() const;
 
     /** Get the number format (the format of a 64-bit signed integer, e.g. "%I64d")
     */
@@ -429,7 +429,7 @@ public:
     * @param [in] nMin Sets the minimum value of the number
     * @param [in] nMax Sets the maximum value of the number; if both nMin and nMax are 0, the minimum and maximum values of the number are not set
     */
-    bool SetEnableSpin(bool bEnable, const std::string& spinClass, int32_t nMin = 0, int32_t nMax = 0);
+    bool SetEnableSpin(bool bEnable, const std::string& spinClass, int64_t nMin = 0, int64_t nMax = 0);
 
     /** Set the text horizontal alignment
     */
@@ -938,6 +938,16 @@ private:
     */
     void StopAutoAdjustTextNumber();
 
+public:
+    /** Set the step size adjusted each time by the Spin buttons (and the arrow keys in number mode)
+    * @param [in] nStep The step value; it must be greater than 0, the default value is 1
+    */
+    void SetSpinStep(int32_t nStep);
+
+    /** Get the step size adjusted each time by the Spin buttons
+    */
+    int32_t GetSpinStep() const;
+
 private:
     /** Set the Class name of the clear button function
     */
@@ -1185,11 +1195,11 @@ private:
 
     /** The maximum allowed number (only valid when IsNumberOnly() is true)
     */
-    int32_t m_maxNumber;
+    int64_t m_maxNumber;
 
     /** The minimum allowed number (only valid when IsNumberOnly() is true)
     */
-    int32_t m_minNumber;
+    int64_t m_minNumber;
 
     /** The list of allowed characters
     */
@@ -1202,6 +1212,10 @@ private:
     /** Spin function container
     */
     VBox* m_pSpinBox;
+
+    /** The step size adjusted each time by the Spin buttons (and the arrow keys in number mode)
+    */
+    int32_t m_nSpinStep;
 
     /** Lifetime management of the timer for automatically adjusting the text number value
     */

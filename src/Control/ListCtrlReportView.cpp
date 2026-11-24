@@ -12,7 +12,8 @@ ListCtrlReportView::ListCtrlReportView(Window* pWindow) :
     m_pData(nullptr),
     m_nTopElementIndex(0),
     m_nRowGridLineWidth(0),
-    m_nColumnGridLineWidth(0)
+    m_nColumnGridLineWidth(0),
+    m_bFrozenHitTestPass(false)
 {
     ListCtrlReportLayout* pDataLayout = dynamic_cast<ListCtrlReportLayout*>(GetLayout());
     ASSERT(pDataLayout != nullptr);
@@ -34,6 +35,22 @@ ListCtrlReportView::~ListCtrlReportView()
 
 void ListCtrlReportView::HandleEvent(const EventArgs& msg)
 {
+    if ((msg.eventType == kEventKeyDown) && (m_pListCtrl != nullptr)) {
+        //While the drop-down candidate flyout is open (common to row-selection mode and cell-selection mode): keyboard events are consumed by the flyout first
+        if (m_pListCtrl->OnComboKeyDown(msg)) {
+            return;
+        }
+        //In cell-selection mode, keyboard events are used first to move the current cell / extend the selection
+        if ((m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell) &&
+            m_pListCtrl->OnCellKeyDown(msg)) {
+            return;
+        }
+    }
+    //Clear the cell hover highlight when the mouse leaves the control, so no stale highlight remains
+    if ((msg.eventType == kEventMouseLeave) && (m_pListCtrl != nullptr) &&
+        (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        m_pListCtrl->ClearHoverCell();
+    }
     BaseClass::HandleEvent(msg);
     if (m_pListCtrl != nullptr) {
         if ((msg.eventType > kEventKeyBegin) && (msg.eventType < kEventKeyEnd)) {
@@ -43,6 +60,242 @@ void ListCtrlReportView::HandleEvent(const EventArgs& msg)
             m_pListCtrl->OnViewMouseEvents(msg);
         }
     }
+}
+
+bool ListCtrlReportView::OnListBoxItemMouseEvent(const EventArgs& msg)
+{
+    //In cell-selection mode, mouse events are intercepted for cell selection and range extension
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        //Row enter/leave events are not consumed and must keep bubbling to the parent control (the view ScrollBox):
+        //only when the view receives MouseEnter/MouseLeave does it enter/leave the Hovered state and then trigger the fade-in/fade-out of the auto-hidden scroll bars;
+        //row-level Hover/Pressed highlights are a visual exclusive to row-selection mode and are suppressed by ListCtrlItem's overridden MouseEnter/MouseLeave
+        //(it does not enter the Hovered state or start the hover fade animation under kCell), with PaintStateColors
+        if (msg.eventType == kEventMouseLeave) {
+            //The mouse left this row (for example it moved to a blank area of the view): clear the cell hover state, so the hover highlight does not remain on the last cell the mouse passed over
+            m_pListCtrl->ClearHoverCell();
+        }
+        if ((msg.eventType == kEventMouseEnter) || (msg.eventType == kEventMouseLeave)) {
+            return BaseClass::OnListBoxItemMouseEvent(msg);
+        }
+        const bool bLButton = (msg.eventType == kEventMouseButtonDown) || (msg.eventType == kEventMouseButtonUp);
+        const bool bRButton = (msg.eventType == kEventMouseRButtonDown) || (msg.eventType == kEventMouseRButtonUp);
+        if (bLButton || bRButton || (msg.eventType == kEventMouseMove) || (msg.eventType == kEventMouseHover)) {
+            //Forward the mouse event to the base class first: ListBoxHelper uses it to track the drag-selection state and paint the drag-selection overlay (the same implementation as row-selection mode)
+            BaseClass::OnListBoxItemMouseEvent(msg);
+            //When the mouse is on the CheckBox icon of a "data row/header" itself, do not consume this event (return false and let the item handle it):
+            //if the event were consumed in cell-selection mode, ListBoxItemTemplate::HandleEvent would return early,
+            //the item would not run its own ButtonDown/ButtonUp, the CheckBox check logic inside would not take effect,
+            //and the row-level and header CheckBox would not respond to clicks; when let through, the item completes the check/uncheck itself,
+            //and the whole-row selection logic is already skipped by ListCtrlItem::ButtonDown in cell-selection mode, so a whole-row selection is not triggered by mistake
+            if (bLButton && IsMouseOnItemCheckBox(msg.GetSender(), msg.ptMouse)) {
+                return false;
+            }
+            //Because the event is consumed below (preventing the item from triggering row selection and the row-level Hover/Pressed visuals), the item does not run Control::ButtonDown
+            //and therefore does not set the "mouse focused" state automatically, so maintain it explicitly here to satisfy ListBoxHelper::OnMouseMove's requirement on pSender->IsMouseFocused()
+            Control* pSender = msg.GetSender();
+            if (pSender != nullptr) {
+                if ((msg.eventType == kEventMouseButtonDown) || (msg.eventType == kEventMouseRButtonDown)) {
+                    pSender->SetMouseFocused(true);
+                }
+                else if ((msg.eventType == kEventMouseButtonUp) || (msg.eventType == kEventMouseRButtonUp)) {
+                    pSender->SetMouseFocused(false);
+                }
+            }
+            //When the mouse is inside the "header/pinned-to-top row" area, do not perform cell selection or hover handling (button-up is excluded, since it is only used to end the dragging state):
+            //this avoids "passing through" and selecting the cells covered below when a pinned-to-top row is clicked, and also avoids clearing the existing cell selection by mistake
+            const bool bButtonUp = (msg.eventType == kEventMouseButtonUp) || (msg.eventType == kEventMouseRButtonUp);
+            if (!bButtonUp && IsPointOnAtTopItem(msg.ptMouse)) {
+                if ((msg.eventType == kEventMouseMove) || (msg.eventType == kEventMouseHover)) {
+                    //Clear the cell hover state, so the hover highlight does not remain below the pinned-to-top row
+                    m_pListCtrl->UpdateHoverCell(Box::InvalidIndex, Box::InvalidIndex);
+                }
+                else if ((msg.eventType == kEventMouseButtonDown) || (msg.eventType == kEventMouseRButtonDown)) {
+                    //A cell CheckBox inside a pinned-to-top row (a non-selectable row) likewise requires "the current list item is the focused control" before it can be checked
+                    //(see the focus precondition of ListCtrlLabel::OnMouseEvent), so, as with normal rows, set the hit pinned-to-top row as the focused control on button-down
+                    ListCtrlItem* pTopItem = HitTestTopItem(msg.ptMouse);
+                    if (pTopItem != nullptr) {
+                        pTopItem->SetFocus();
+                    }
+                }
+                return true;
+            }
+            //Then handle the hit and the selection with cell semantics
+            size_t nRowIndex = Box::InvalidIndex;
+            size_t nColumnId = Box::InvalidIndex;
+            ListCtrlItem* pHitItem = nullptr;
+            HitTestCell(msg.ptMouse, nRowIndex, nColumnId, &pHitItem);
+            if ((pHitItem != nullptr) &&
+                ((msg.eventType == kEventMouseButtonDown) || (msg.eventType == kEventMouseRButtonDown))) {
+                //Explicitly set the hit list item as the keyboard focus control:
+                //1) before checking/unchecking, a CheckBox inside a cell (ListCtrlLabel) requires "the current list item is the focused control";
+                //2) the focused control is the entry point for keyboard events; the arrow keys/Ctrl+A can only bubble to the view and be handled by OnCellKeyDown after reaching the focused control first.
+                //(in row-selection mode ListBox::SelectItemSingle performs the same focus setup)
+                //Note: SetFocus() sets the row control state to Hovered through Control::OnSetFocus;
+                //because the row-level Hovered visual is already suppressed by ListCtrlItem::PaintStateColors in cell-selection mode, no state restoration is needed here.
+                pHitItem->SetFocus();
+            }
+            m_pListCtrl->OnCellMouseEvent(msg, nRowIndex, nColumnId);
+            //Consume this event: do not trigger the row selection logic
+            return true;
+        }
+        if (msg.eventType == kEventMouseRDoubleClick) {
+            return true;
+        }
+    }
+    return BaseClass::OnListBoxItemMouseEvent(msg);
+}
+
+bool ListCtrlReportView::OnListBoxItemKeyEvent(const EventArgs& msg)
+{
+    if (m_pListCtrl == nullptr) {
+        return false;
+    }
+    //While the drop-down candidate flyout is open, keyboard events are consumed by the flyout first (Up/Down to move the candidate, Enter to submit, ESC to cancel):
+    //if they are not intercepted at the sub-item level, Enter is consumed by ListBoxItem and converted into kEventReturn, so the flyout never receives Enter and cannot submit
+    return m_pListCtrl->OnComboKeyDown(msg);
+}
+
+bool ListCtrlReportView::HitTestCell(const UiPoint& ptMouse, size_t& nRowIndex, size_t& nColumnId, ListCtrlItem** ppItem) const
+{
+    nRowIndex = Box::InvalidIndex;
+    nColumnId = Box::InvalidIndex;
+    if (ppItem != nullptr) {
+        *ppItem = nullptr;
+    }
+    const size_t nItemCount = GetItemCount();
+    //The first row is the header, so iterate the data rows starting from index 1
+    for (size_t index = 1; index < nItemCount; ++index) {
+        ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(GetItemAt(index));
+        if ((pItem == nullptr) || !pItem->IsVisible()) {
+            continue;
+        }
+        if (!pItem->IsSelectableType()) {
+            //Pinned-to-top rows and other non-selectable rows do not participate in cell hit testing
+            continue;
+        }
+        //Convert the mouse point to sub-item control coordinates (with frozen columns, the horizontal part follows the frozen-area convention)
+        const UiPoint pt = MouseToCellSpace(ptMouse, pItem->GetScrollOffsetInScrollBox());
+        //Find the cell containing this point among the sub-items: ListCtrlItem::GetSubItem cannot be reused here,
+        //because it converts with a single uniform scroll amount, and when the mouse is inside the frozen area the hit column would be misaligned with the painting
+        ListCtrlSubItem* pSubItem = nullptr;
+        const size_t nSubItemCount = pItem->GetItemCount();
+        for (size_t nSubItemIndex = 0; nSubItemIndex < nSubItemCount; ++nSubItemIndex) {
+            ListCtrlSubItem* pSubItemTemp = dynamic_cast<ListCtrlSubItem*>(pItem->GetItemAt(nSubItemIndex));
+            if ((pSubItemTemp != nullptr) && pSubItemTemp->IsVisible() && pSubItemTemp->GetRect().ContainsPt(pt)) {
+                pSubItem = pSubItemTemp;
+                break;
+            }
+        }
+        if (pSubItem != nullptr) {
+            nRowIndex = pItem->GetDataItemIndex();
+            nColumnId = pSubItem->GetDataColumnId();
+            if (ppItem != nullptr) {
+                *ppItem = pItem;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+UiPoint ListCtrlReportView::MouseToCellSpace(const UiPoint& ptMouse, const UiPoint& scrollOffsetInBox) const
+{
+    int32_t nScrollX = scrollOffsetInBox.x;
+    if ((nScrollX != 0) && (m_pListCtrl != nullptr)) {
+        const ListCtrlCellGeometry cellGeometry = BuildCellGeometry();
+        if (cellGeometry.bHasFrozen) {
+            //When the mouse is inside the frozen area, the horizontal scroll amount counts as 0: frozen columns do not move with horizontal scrolling
+            //(the horizontal window-origin offset is 0 while painting, so hit testing must use the same convention as painting)
+            if (cellGeometry.IsFrozenX(ptMouse.x)) {
+                nScrollX = 0;
+            }
+        }
+    }
+    UiPoint pt(ptMouse);
+    pt.Offset(nScrollX, scrollOffsetInBox.y);
+    return pt;
+}
+
+bool ListCtrlReportView::IsPointOnAtTopItem(const UiPoint& ptMouse) const
+{
+    const size_t nItemCount = GetItemCount();
+    //The first row is the header, so iterate the data rows starting from index 1
+    for (size_t index = 1; index < nItemCount; ++index) {
+        ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(GetItemAt(index));
+        if ((pItem == nullptr) || !pItem->IsVisible() || pItem->IsSelectableType()) {
+            continue;
+        }
+        //Pinned-to-top row (a non-selectable row): test whether the mouse point is inside the row
+        //(uses the same coordinate convention as GetSubItem, so scrolling cannot cause a wrong result; with frozen columns the horizontal part follows the frozen-area convention)
+        const UiPoint pt = MouseToCellSpace(ptMouse, pItem->GetScrollOffsetInScrollBox());
+        if (pItem->GetRect().ContainsPt(pt)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+ListCtrlItem* ListCtrlReportView::HitTestTopItem(const UiPoint& ptMouse) const
+{
+    const size_t nItemCount = GetItemCount();
+    //The first row is the header, so iterate the data rows starting from index 1
+    for (size_t index = 1; index < nItemCount; ++index) {
+        ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(GetItemAt(index));
+        if ((pItem == nullptr) || !pItem->IsVisible() || pItem->IsSelectableType()) {
+            continue;
+        }
+        //Pinned-to-top row (a non-selectable row): test whether the mouse point is inside the row (same coordinate convention as GetSubItem)
+        const UiPoint pt = MouseToCellSpace(ptMouse, pItem->GetScrollOffsetInScrollBox());
+        if (pItem->GetRect().ContainsPt(pt)) {
+            return pItem;
+        }
+    }
+    return nullptr;
+}
+
+bool ListCtrlReportView::IsMouseOnItemCheckBox(const Control* pSender, const UiPoint& ptMouse) const
+{
+    if (pSender == nullptr) {
+        return false;
+    }
+    //The data row's (ListCtrlItem's) own CheckBox
+    const ListCtrlItem* pListItem = dynamic_cast<const ListCtrlItem*>(pSender);
+    if (pListItem != nullptr) {
+        return pListItem->IsShowCheckBox() && pListItem->IsMouseOnCheckBoxIcon(ptMouse);
+    }
+    //The header's (ListCtrlHeader's) own CheckBox
+    const ListCtrlHeader* pListHeader = dynamic_cast<const ListCtrlHeader*>(pSender);
+    if (pListHeader != nullptr) {
+        return pListHeader->IsShowCheckBox() && pListHeader->IsMouseOnCheckBoxIcon(ptMouse);
+    }
+    return false;
+}
+
+bool ListCtrlReportView::GetTopFixedItemsRect(UiRect& rcTopFixed) const
+{
+    bool bHasTopFixed = false;
+    const size_t nItemCount = GetItemCount();
+    for (size_t index = 0; index < nItemCount; ++index) {
+        Control* pControl = GetItemAt(index);
+        if ((pControl == nullptr) || !pControl->IsVisible()) {
+            continue;
+        }
+        if (index > 0) {
+            //Index 0 is the header; among the remaining elements, only pinned-to-top (non-selectable) rows are fixed at the top
+            ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(pControl);
+            if ((pItem == nullptr) || pItem->IsSelectableType()) {
+                continue;
+            }
+        }
+        if (!bHasTopFixed) {
+            rcTopFixed = pControl->GetRect();
+            bHasTopFixed = true;
+        }
+        else {
+            rcTopFixed.Union(pControl->GetRect());
+        }
+    }
+    return bHasTopFixed;
 }
 
 void ListCtrlReportView::SetListCtrl(ListCtrl* pListCtrl)
@@ -62,6 +315,22 @@ void ListCtrlReportView::SetDataProvider(VirtualListBoxElement* pProvider)
     }
 }
 
+void ListCtrlReportView::InvalidateRowElementIndexes()
+{
+    //Sub-item 0 is the header control; start from sub-item 1 (the data row controls)
+    const size_t nItemCount = GetItemCount();
+    for (size_t nItemIndex = 1; nItemIndex < nItemCount; ++nItemIndex) {
+        Control* pControl = GetItemAt(nItemIndex);
+        if (pControl == nullptr) {
+            continue;
+        }
+        IListBoxItem* pListBoxItem = dynamic_cast<IListBoxItem*>(pControl);
+        if (pListBoxItem != nullptr) {
+            pListBoxItem->SetElementIndex(Box::InvalidIndex);
+        }
+    }
+}
+
 void ListCtrlReportView::Refresh(bool bSync)
 {
     if ((m_pListCtrl != nullptr) && !m_pListCtrl->IsEnableRefresh()) {
@@ -77,6 +346,10 @@ void ListCtrlReportView::Refresh(bool bSync)
     //Adjust the number of UI controls to meet the display requirements
     AjustItemCount();
 
+    //After a structural refresh (sorting, row insertion/removal, row height, pinned rows, hidden rows, ...) the binding between data elements and UI controls may be stale,
+    //so clear the element-index binding of every row: the following relayout then refills data on demand (rows whose binding is still valid are not filled twice)
+    InvalidateRowElementIndexes();
+
     //Refresh the display content of the UI controls
     if (GetElementCount() > 0) {
         ReArrangeChild(true);
@@ -86,6 +359,24 @@ void ListCtrlReportView::Refresh(bool bSync)
         //Re-layout immediately
         SetPos(GetPos());
     }
+}
+
+void ListCtrlReportView::OnModelDataChanged(size_t nStartElementIndex, size_t nEndElementIndex)
+{
+    if ((m_pListCtrl != nullptr) && !m_pListCtrl->IsEnableRefresh()) {
+        //Refreshing is currently disabled
+        return;
+    }
+    BaseClass::OnModelDataChanged(nStartElementIndex, nEndElementIndex);
+}
+
+void ListCtrlReportView::OnModelCountChanged()
+{
+    if ((m_pListCtrl != nullptr) && !m_pListCtrl->IsEnableRefresh()) {
+        //Refreshing is currently disabled
+        return;
+    }
+    BaseClass::OnModelCountChanged();
 }
 
 void ListCtrlReportView::AjustItemCount()
@@ -212,12 +503,15 @@ size_t ListCtrlReportView::GetTopDataItemIndex(int64_t nScrollPosY) const
     if (pDataProvider == nullptr) {
         return itemIndex;
     }
-    const ListCtrlData::RowDataList& itemDataList = pDataProvider->GetItemDataList();
     int64_t totalItemHeight = 0;
     int32_t nItemHeight = 0;
-    const size_t dataItemCount = itemDataList.size();
+    const size_t dataItemCount = pDataProvider->GetDataItemCount();
     for (size_t index = 0; index < dataItemCount; ++index) {
-        const ListCtrlItemData& rowData = itemDataList[index];
+        const ListCtrlItemData* pRowData = pDataProvider->GetDisplayItemData(index);
+        if (pRowData == nullptr) {
+            continue;
+        }
+        const ListCtrlItemData& rowData = *pRowData;
         nItemHeight = rowData.nItemHeight;
         if (nItemHeight < 0) {
             //Use the default row height
@@ -247,12 +541,10 @@ int32_t ListCtrlReportView::GetDataItemHeight(size_t itemIndex) const
     if (pDataProvider == nullptr) {
         return 0;
     }
-    const ListCtrlData::RowDataList& itemDataList = pDataProvider->GetItemDataList();
-    ASSERT(itemIndex < itemDataList.size());
-    if (itemIndex < itemDataList.size()) {
-        if (itemDataList[itemIndex].nItemHeight >= 0) {
-            nItemHeight = itemDataList[itemIndex].nItemHeight;
-        }        
+    const ListCtrlItemData* pRowData = pDataProvider->GetDisplayItemData(itemIndex);
+    ASSERT(pRowData != nullptr);
+    if ((pRowData != nullptr) && (pRowData->nItemHeight >= 0)) {
+        nItemHeight = pRowData->nItemHeight;
     }
     return nItemHeight;
 }
@@ -291,12 +583,15 @@ void ListCtrlReportView::GetDataItemsToShow(int64_t nScrollPosY, size_t maxCount
     };
     std::vector<AlwaysAtTopData> alwaysAtTopItemList;
     
-    const ListCtrlData::RowDataList& itemDataList = pDataProvider->GetItemDataList();
     int64_t totalItemHeight = 0;
     int32_t nItemHeight = 0;
-    const size_t dataItemCount = itemDataList.size();
+    const size_t dataItemCount = pDataProvider->GetDataItemCount();
     for (size_t index = 0; index < dataItemCount; ++index) {
-        const ListCtrlItemData& rowData = itemDataList[index];
+        const ListCtrlItemData* pRowData = pDataProvider->GetDisplayItemData(index);
+        if (pRowData == nullptr) {
+            continue;
+        }
+        const ListCtrlItemData& rowData = *pRowData;
         nItemHeight = (rowData.nItemHeight < 0) ? nDefaultItemHeight : rowData.nItemHeight;
         if (!rowData.bVisible || (nItemHeight == 0)) {
             //Not visible, skip
@@ -382,12 +677,15 @@ int32_t ListCtrlReportView::GetMaxDataItemsToShow(int64_t nScrollPosY, int32_t n
     std::vector<AlwaysAtTopData> alwaysAtTopItemList;
     std::vector<size_t> itemIndexList;
 
-    const ListCtrlData::RowDataList& itemDataList = pDataProvider->GetItemDataList();
     int64_t totalItemHeight = 0;
     int32_t nItemHeight = 0;
-    const size_t dataItemCount = itemDataList.size();
+    const size_t dataItemCount = pDataProvider->GetDataItemCount();
     for (size_t index = 0; index < dataItemCount; ++index) {
-        const ListCtrlItemData& rowData = itemDataList[index];
+        const ListCtrlItemData* pRowData = pDataProvider->GetDisplayItemData(index);
+        if (pRowData == nullptr) {
+            continue;
+        }
+        const ListCtrlItemData& rowData = *pRowData;
         nItemHeight = (rowData.nItemHeight < 0) ? nDefaultItemHeight : rowData.nItemHeight;
         if (!rowData.bVisible || (nItemHeight == 0)) {
             //Not visible, skip
@@ -437,8 +735,11 @@ int32_t ListCtrlReportView::GetMaxDataItemsToShow(int64_t nScrollPosY, int32_t n
         if (index >= dataItemCount) {
             continue;
         }
-        const ListCtrlItemData& rowData = itemDataList[index];
-        nItemHeight = rowData.nItemHeight;
+        const ListCtrlItemData* pRowData = pDataProvider->GetDisplayItemData(index);
+        if (pRowData == nullptr) {
+            continue;
+        }
+        nItemHeight = pRowData->nItemHeight;
         if (nItemHeight < 0) {
             //Use the default row height
             nItemHeight = nDefaultItemHeight;
@@ -474,12 +775,15 @@ int64_t ListCtrlReportView::GetDataItemTotalHeights(size_t itemIndex, bool bIncl
         return 0;
     }
     const int32_t nDefaultItemHeight = m_pListCtrl->GetDataItemHeight(); //Default row height
-    const ListCtrlData::RowDataList& itemDataList = pDataProvider->GetItemDataList();
     int64_t totalItemHeight = 0;
     int32_t nItemHeight = 0;
-    const size_t dataItemCount = itemDataList.size();
+    const size_t dataItemCount = pDataProvider->GetDataItemCount();
     for (size_t index = 0; index < dataItemCount; ++index) {
-        const ListCtrlItemData& rowData = itemDataList[index];
+        const ListCtrlItemData* pRowData = pDataProvider->GetDisplayItemData(index);
+        if (pRowData == nullptr) {
+            continue;
+        }
+        const ListCtrlItemData& rowData = *pRowData;
         nItemHeight = (rowData.nItemHeight < 0) ? nDefaultItemHeight : rowData.nItemHeight;
         if (!rowData.bVisible || (nItemHeight == 0)) {
             //Not visible, skip
@@ -552,6 +856,7 @@ void ListCtrlReportView::MoveTopItemsToLast(std::vector<Control*>& items, std::v
     ASSERT(items.size() == m_items.size());
 }
 
+
 void ListCtrlReportView::PaintChild(IRender* pRender, const UiRect& rcPaint)
 {
     //Override the VirtualListBox::PaintChild / ScrollBox::PaintChild functions to ensure the Header is drawn correctly
@@ -597,23 +902,41 @@ void ListCtrlReportView::PaintChild(IRender* pRender, const UiRect& rcPaint)
     }
 
     //Draw the list item child controls
-    for (Control* pControl : items) {
-        if (pControl == nullptr) {
-            continue;
-        }
-        if (!pControl->IsVisible()) {
-            continue;
-        }
+    //Frozen columns: they are always displayed on the left side of the list and do not move with horizontal scrolling
+    //Painting, hit testing and grid lines all reuse the same cell geometry layer (BuildCellGeometry)
+    const ListCtrlCellGeometry cellGeometry = BuildCellGeometry();
 
-        UiSize scrollPos = GetScrollOffset();
-        UiRect rcNewPaint = GetPosWithoutPadding();
-        AutoClip alphaClip(pRender, rcNewPaint, IsClip());
-        rcNewPaint.Offset(scrollPos.cx, scrollPos.cy);
+    //Cell-selection mode: paint the selection highlight first (before the data-item controls, so the cell text is not covered)
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        if (cellGeometry.bHasFrozen) {
+            PaintCellSelection(pRender, cellGeometry, false);
+            PaintCellSelection(pRender, cellGeometry, true);
+        }
+        else {
+            PaintCellSelection(pRender, cellGeometry, false);
+        }
+    }
+
+    //Paint a single control (bFrozenPass: whether the frozen-column part is being painted)
+    auto paintControl = [&](Control* pControl, bool bFrozenPass) {
+        if ((pControl == nullptr) || !pControl->IsVisible()) {
+            return;
+        }
+        //The clip rectangle (screen coordinates), the paint rectangle (screen coordinates) and the window-origin offset are all derived from the coordinate transform
+        UiRect rcClip;
+        UiRect rcNewPaint;
+        UiPoint ptOffset;
+        cellGeometry.GetPaintPass(bFrozenPass, rcClip, rcNewPaint, ptOffset);
+        if (cellGeometry.bHasFrozen && (rcClip.left >= rcClip.right)) {
+            return;
+        }
+        AutoClip alphaClip(pRender, rcClip, IsClip());
+
         rcNewPaint.Offset(GetRenderOffset().x, GetRenderOffset().y);
 
         bool bHasClip = false;
         if (!atTopItems.empty() &&
-            (std::find(atTopItems.begin(), atTopItems.end(), pControl) == atTopItems.end())) {            
+            (std::find(atTopItems.begin(), atTopItems.end(), pControl) == atTopItems.end())) {
             UiRect rcControlRect = pControl->GetRect();
             UiRect rUnion;
             if (UiRect::Intersect(rUnion, rcTopControls, rcControlRect)) {
@@ -623,12 +946,27 @@ void ListCtrlReportView::PaintChild(IRender* pRender, const UiRect& rcPaint)
             }
         }
 
-        UiPoint ptOffset(scrollPos.cx, scrollPos.cy);
         UiPoint ptOldOrg = pRender->OffsetWindowOrg(ptOffset);
         pControl->AlphaPaint(pRender, rcNewPaint);
         pRender->SetWindowOrg(ptOldOrg);
         if (bHasClip) {
             pRender->ClearClip();
+        }
+    };
+
+    for (Control* pControl : items) {
+        if (pControl == nullptr) {
+            continue;
+        }
+        if (cellGeometry.bHasFrozen) {
+            //Paint the scrollable area (non-frozen columns) first
+            paintControl(pControl, false);
+            //Then paint the frozen columns (they cover the top layer)
+            paintControl(pControl, true);
+        }
+        else {
+            //No frozen columns: paint in a single pass as before
+            paintControl(pControl, false);
         }
     }
 
@@ -648,6 +986,72 @@ void ListCtrlReportView::PaintChild(IRender* pRender, const UiRect& rcPaint)
 
     //Drawing of the frame selection box for the mouse frame selection feature
     PaintFrameSelection(pRender);
+}
+
+ListCtrlReportView::ListCtrlColumnLayout ListCtrlReportView::BuildColumnLayout(int32_t nViewLeft) const
+{
+    ListCtrlColumnLayout columnLayout;
+    const size_t nItemCount = GetItemCount();
+    //Derive the X interval of each column from the first visible data row when possible (the geometry aligns with the column boundaries and includes the row-leading CheckBox/padding placeholder widths)
+    for (size_t index = 1; index < nItemCount; ++index) {
+        ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(GetItemAt(index));
+        if ((pItem == nullptr) || !pItem->IsVisible() || (pItem->GetWidth() <= 0)) {
+            continue;
+        }
+        const size_t nSubItemCount = pItem->GetItemCount();
+        for (size_t nSubItem = 0; nSubItem < nSubItemCount; ++nSubItem) {
+            ListCtrlSubItem* pSubItem = dynamic_cast<ListCtrlSubItem*>(pItem->GetItemAt(nSubItem));
+            if ((pSubItem == nullptr) || !pSubItem->IsVisible()) {
+                continue;
+            }
+            ListCtrlColumnLayout::Column column;
+            column.nColumnId = pSubItem->GetDataColumnId();
+            column.nColumnIndex = columnLayout.m_columns.size();
+            column.nXBegin = pSubItem->GetRect().left - nViewLeft;
+            column.nXEnd = pSubItem->GetRect().right - nViewLeft;
+            columnLayout.m_columns.push_back(column);
+        }
+        //Only the first visible data row is used
+        break;
+    }
+    if (!columnLayout.m_columns.empty()) {
+        return columnLayout;
+    }
+
+    //When no data row is visible, derive the column X intervals from the header
+    ListCtrlHeader* pHeaderCtrl = dynamic_cast<ListCtrlHeader*>(GetItemAt(0));
+    if (pHeaderCtrl != nullptr) {
+        const size_t nHeaderItemCount = pHeaderCtrl->GetItemCount();
+        for (size_t i = 0; i < nHeaderItemCount; ++i) {
+            ListCtrlHeaderItem* pHeaderItem = dynamic_cast<ListCtrlHeaderItem*>(pHeaderCtrl->GetItemAt(i));
+            if (pHeaderItem == nullptr) {
+                continue;
+            }
+            ListCtrlColumnLayout::Column column;
+            column.nColumnId = pHeaderItem->GetColumnId();
+            column.nColumnIndex = columnLayout.m_columns.size();
+            column.nXBegin = pHeaderItem->GetRect().left - nViewLeft;
+            column.nXEnd = pHeaderItem->GetRect().right - nViewLeft;
+            columnLayout.m_columns.push_back(column);
+        }
+    }
+    return columnLayout;
+}
+
+ListCtrlReportView::ListCtrlCellGeometry ListCtrlReportView::BuildCellGeometry() const
+{
+    ListCtrlCellGeometry cellGeometry;
+    cellGeometry.rcViewport = GetPosWithoutPadding();
+    cellGeometry.scrollPos = GetScrollOffset();
+    cellGeometry.columnLayout = BuildColumnLayout(cellGeometry.rcViewport.left);
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetFrozenColumnCount() > 0)) {
+        cellGeometry.nFrozenCount = m_pListCtrl->GetFrozenColumnCount();
+        //Frozen width = total width of the first N columns (including the row-leading CheckBox/padding placeholder widths, so the frozen-area boundary aligns with the column boundary)
+        cellGeometry.nFrozenWidth = cellGeometry.columnLayout.GetColumnsWidth(cellGeometry.nFrozenCount);
+        //A frozen width of 0 means there are no frozen columns (keeps the previous behavior)
+        cellGeometry.bHasFrozen = cellGeometry.nFrozenWidth > 0;
+    }
+    return cellGeometry;
 }
 
 void ListCtrlReportView::PaintGridLines(IRender* pRender)
@@ -722,12 +1126,39 @@ void ListCtrlReportView::PaintGridLines(IRender* pRender)
             break;
         }
 
-        for (int32_t xPos : xPosList) {
+        //Vertical grid lines of the frozen columns: frozen columns do not move with horizontal scrolling
+        //Reuse the same coordinate transform as painting (viewRect uses the same convention as the viewport rectangle of the coordinate transform)
+        const ListCtrlCellGeometry cellGeometry = BuildCellGeometry();
+        const int32_t nFrozenRight = cellGeometry.FrozenRight();
+
+        for (size_t i = 0; i < xPosList.size(); ++i) {
+            int32_t xPos = xPosList[i];
+            bool bHasClip = false;
+            if (cellGeometry.bHasFrozen) {
+                UiRect rcClip = viewRect;
+                if (i < cellGeometry.nFrozenCount) {
+                    //Frozen column: restore the screen position that does not move with horizontal scrolling
+                    xPos = cellGeometry.GridLineScreenX(xPos, true);
+                    rcClip.right = nFrozenRight;
+                }
+                else {
+                    //Non-frozen column: exclude the frozen-column area from the paint region
+                    rcClip.left = nFrozenRight;
+                }
+                if (rcClip.left >= rcClip.right) {
+                    continue;
+                }
+                pRender->SetClip(rcClip, true);
+                bHasClip = true;
+            }
             //Place the horizontal coordinate at the right side of each sub-item control
-            float fXPos = (float)xPos - (float)nColumnLineWidth/2;
+            float fXPos = (float)xPos - (float)nColumnLineWidth / 2;
             UiPointF pt1(fXPos, (float)yTop);
             UiPointF pt2(fXPos, (float)viewRect.bottom);
             pRender->DrawLine(pt1, pt2, columnLineColor, (float)nColumnLineWidth);
+            if (bHasClip) {
+                pRender->ClearClip();
+            }
         }
     }
     if ((nRowLineWidth > 0) && !rowLineColor.IsEmpty()) {
@@ -754,19 +1185,109 @@ void ListCtrlReportView::PaintGridLines(IRender* pRender)
     }
 }
 
+void ListCtrlReportView::PaintCellSelection(IRender* pRender, const ListCtrlCellGeometry& cellGeometry, bool bFrozenPass)
+{
+    if ((pRender == nullptr) || (m_pListCtrl == nullptr) || (m_pData == nullptr)) {
+        return;
+    }
+    if (m_pListCtrl->GetSelectionMode() != ListCtrlSelectionMode::kCell) {
+        return;
+    }
+
+    //Reuse the same coordinate transform as painting the data-item controls (clip rectangle / paint rectangle / window-origin offset)
+    UiRect rcClip;
+    UiRect rcNewPaint;
+    UiPoint ptOffset;
+    cellGeometry.GetPaintPass(bFrozenPass, rcClip, rcNewPaint, ptOffset);
+    if (cellGeometry.bHasFrozen && (rcClip.left >= rcClip.right)) {
+        return;
+    }
+    AutoClip alphaClip(pRender, rcClip, IsClip());
+    UiPoint ptOldOrg = pRender->OffsetWindowOrg(ptOffset);
+
+    const UiColor fillColor = GetUiColor("#66AACCEE");
+    const UiColor focusColor = GetUiColor("#FF0078D7");
+    const UiColor hoverColor = GetUiColor("#33AACCEE");
+
+    //The current cell, determined cell by cell
+    const ListCtrlCellId currentCell = m_pListCtrl->GetCurrentCell();
+
+    //The header and pinned-to-top rows are fixed at the top: the areas they cover do not get a cell highlight, so the highlight does not cover the pinned-row content
+    UiRect rcTopFixed;
+    const bool bHasTopFixed = GetTopFixedItemsRect(rcTopFixed);
+
+    const size_t nItemCount = GetItemCount();
+    //The first row is the header, so iterate the data rows starting from index 1
+    for (size_t index = 1; index < nItemCount; ++index) {
+        ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(GetItemAt(index));
+        if ((pItem == nullptr) || !pItem->IsVisible() || (pItem->GetWidth() <= 0)) {
+            continue;
+        }
+        if (!pItem->IsSelectableType()) {
+            //Pinned-to-top rows and other non-selectable rows do not participate in cell selection highlighting
+            continue;
+        }
+        const size_t nRowIndex = pItem->GetDataItemIndex();
+        const size_t nSubItemCount = pItem->GetItemCount();
+        for (size_t nSubItem = 0; nSubItem < nSubItemCount; ++nSubItem) {
+            ListCtrlSubItem* pSubItem = dynamic_cast<ListCtrlSubItem*>(pItem->GetItemAt(nSubItem));
+            if ((pSubItem == nullptr) || !pSubItem->IsVisible() || (pSubItem->GetWidth() <= 0)) {
+                continue;
+            }
+            const size_t nColumnId = pSubItem->GetDataColumnId();
+            const size_t nColumnIndex = m_pListCtrl->GetColumnIndex(nColumnId);
+            if (nColumnIndex == Box::InvalidIndex) {
+                continue;
+            }
+            const bool bFrozenColumn = cellGeometry.bHasFrozen && (nColumnIndex < cellGeometry.nFrozenCount);
+            if (bFrozenColumn != bFrozenPass) {
+                continue;
+            }
+            UiRect rcCell = pSubItem->GetRect();
+            if (bHasTopFixed && (rcCell.top < rcTopFixed.bottom)) {
+                //The cell is covered by the header/pinned row: paint only its visible part, so the highlight does not cover the pinned-row content
+                rcCell.top = rcTopFixed.bottom;
+                if (rcCell.bottom <= rcCell.top) {
+                    continue;
+                }
+            }
+
+            //Decide whether the cell is selected by row identity (O(1), independent of the display order)
+            const bool bSelected = m_pData->IsCellSelected(nRowIndex, nColumnId);
+            const bool bCurrent = currentCell.IsValid() &&
+                                  (currentCell.nRowIndex == nRowIndex) &&
+                                  (currentCell.nColumnId == nColumnId);
+            const bool bHovered = m_pListCtrl->IsCellHovered(nRowIndex, nColumnId);
+            if (!bSelected && !bCurrent && !bHovered) {
+                continue;
+            }
+            if (bSelected) {
+                pRender->FillRect(UiRectF::MakeFromRect(rcCell), fillColor);
+            }
+            else if (bHovered) {
+                //Hovered cell: a light fill hint
+                pRender->FillRect(UiRectF::MakeFromRect(rcCell), hoverColor);
+            }
+            if (bCurrent) {
+                pRender->DrawRect(UiRectF::MakeFromRect(rcCell), focusColor, 1.0f, false);
+            }
+        }
+    }
+    pRender->SetWindowOrg(ptOldOrg);
+}
+
 Control* ListCtrlReportView::FindControl(FINDCONTROLPROC Proc, void* pProcData,
                                          uint32_t uFlags, const UiPoint& ptMouse,
                                          const UiPoint& scrollPos)
 {
-    //Override the ScrollBox::FindControl function so that the Header/pinned-to-top Items are found first; only handle the case where the UIFIND_TOP_FIRST flag is present
-    if ((uFlags & UIFIND_TOP_FIRST) == 0) {
-        return BaseClass::FindControl(Proc, pProcData, uFlags, ptMouse, scrollPos);
-    }
-
+    //Override ScrollBox::FindControl so that the header/pinned-to-top items are found first
+    //Frozen columns are handled too: when the mouse is inside the frozen area, hit testing must use the "does not move with horizontal scrolling" coordinates
     std::vector<Control*> newItems = m_items;
-    //Move the Header and pinned-to-top elements to the end
-    std::vector<Control*> atTopItems;
-    MoveTopItemsToLast(newItems, atTopItems);
+    if ((uFlags & UIFIND_TOP_FIRST) != 0) {
+        //Move the header and pinned-to-top elements to the end
+        std::vector<Control*> atTopItems;
+        MoveTopItemsToLast(newItems, atTopItems);
+    }
 
     // Check if this guy is valid
     if ((uFlags & UIFIND_VISIBLE) != 0 && !IsVisible()) {
@@ -818,7 +1339,78 @@ Control* ListCtrlReportView::FindControl(FINDCONTROLPROC Proc, void* pProcData,
 
     UiSize boxScrollOffset = GetScrollOffset();
     UiPoint boxScrollPos(boxScrollOffset.cx, boxScrollOffset.cy);
-    return FindControlInItems(newItems, Proc, pProcData, uFlags, boxPt, boxScrollPos);
+    bool bFrozenHitTestPass = false;
+    if ((boxScrollPos.x != 0) && (m_pListCtrl != nullptr) && (m_pListCtrl->GetFrozenColumnCount() > 0)) {
+        //Frozen columns exist and the view is scrolled horizontally: test whether the mouse is inside the frozen area
+        const ListCtrlCellGeometry cellGeometry = BuildCellGeometry();
+        if (cellGeometry.IsFrozenX(boxPt.x)) {
+            //The mouse is inside the frozen area: frozen columns do not move with horizontal scrolling, so the horizontal scroll amount is 0 during the hit-test traversal
+            //(1) the scroll amount passed to the children is (0, scrollY), which matches the coordinate space of the frozen columns;
+            //(2) at the same time the horizontal component of the children's GetScrollOffsetInScrollBox() is 0,
+            //    which keeps the framework's coordinate convention (custom data + control scroll amount == passed-in coordinate) valid and removes the Debug assertion;
+            //(3) the find function decides the hit as "custom data + control scroll amount", so once the two above agree,
+            //    the hit result matches the frozen columns' display position (cell tooltips and context menus benefit as well)
+            boxScrollPos.x = 0;
+            bFrozenHitTestPass = true;
+        }
+    }
+    m_bFrozenHitTestPass = bFrozenHitTestPass;
+    pResult = FindControlInItems(newItems, Proc, pProcData, uFlags, boxPt, boxScrollPos);
+    m_bFrozenHitTestPass = false;
+    return pResult;
+}
+
+UiSize ListCtrlReportView::GetScrollOffset() const
+{
+    UiSize scrollOffset = BaseClass::GetScrollOffset();
+    if (m_bFrozenHitTestPass) {
+        //Frozen-column hit-test traversal: the horizontal scroll amount counts as 0, so the children's coordinate system matches the frozen columns' display position
+        scrollOffset.cx = 0;
+    }
+    return scrollOffset;
+}
+
+UiSize ListCtrlReportView::GetScrollOffsetForChild(const PlaceHolder* pChild) const
+{
+    UiSize scrollOffset = BaseClass::GetScrollOffsetForChild(pChild);
+    //Children inside the frozen area are fixed at the left side of the viewport and do not move with horizontal scrolling: the horizontal offset counts as 0
+    if ((scrollOffset.cx != 0) && IsChildInFrozenColumn(pChild)) {
+        scrollOffset.cx = 0;
+    }
+    return scrollOffset;
+}
+
+bool ListCtrlReportView::IsChildInFrozenColumn(const PlaceHolder* pChild) const
+{
+    if ((pChild == nullptr) || (m_pListCtrl == nullptr)) {
+        return false;
+    }
+    const size_t nFrozenCount = m_pListCtrl->GetFrozenColumnCount();
+    if (nFrozenCount == 0) {
+        return false;
+    }
+    //Look upwards for the cell that owns this control (data-row cells are ListCtrlSubItem, header cells are ListCtrlHeaderItem)
+    size_t nColumnId = Box::InvalidIndex;
+    const PlaceHolder* pControl = pChild;
+    while ((pControl != nullptr) && (pControl != this)) {
+        const ListCtrlSubItem* pSubItem = dynamic_cast<const ListCtrlSubItem*>(pControl);
+        if (pSubItem != nullptr) {
+            nColumnId = pSubItem->GetDataColumnId();
+            break;
+        }
+        const ListCtrlHeaderItem* pHeaderItem = dynamic_cast<const ListCtrlHeaderItem*>(pControl);
+        if (pHeaderItem != nullptr) {
+            nColumnId = pHeaderItem->GetColumnId();
+            break;
+        }
+        pControl = pControl->GetParent();
+    }
+    if (nColumnId == Box::InvalidIndex) {
+        //No owning cell was found (for example the row-wide ListCtrlItem): handle it with the default convention
+        return false;
+    }
+    const size_t nColumnIndex = m_pListCtrl->GetColumnIndex(nColumnId);
+    return (nColumnIndex != Box::InvalidIndex) && (nColumnIndex < nFrozenCount);
 }
 
 Control* ListCtrlReportView::CreateDataItem()
@@ -884,10 +1476,16 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
 
     // For detailed structure description, see: ListCtrlItem.h
 
-    std::map<size_t, ListCtrlSubItemData2Ptr> subItemDataMap;
-    for (const ListCtrlSubItemData2Pair& dataPair : subItemList) {
-        subItemDataMap[dataPair.nColumnId] = dataPair.pSubItemData;
-    }
+    //Find the cell data of this row by column ID: the number of columns is usually small (N <= ~10), so a linear search is cheaper than building a std::map per row,
+    //and it makes no heap allocation (subItemList is already a small contiguous container)
+    auto findSubItemData = [&subItemList](size_t nColumnId) -> const ListCtrlSubItemData2* {
+        for (const ListCtrlSubItemData2Pair& dataPair : subItemList) {
+            if (dataPair.nColumnId == nColumnId) {
+                return dataPair.pSubItemData;
+            }
+        }
+        return nullptr;
+        };
 
     //Get the attributes of each column to be displayed
     struct ElementData
@@ -895,10 +1493,11 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
         size_t nColumnIndex = Box::InvalidIndex;
         size_t nColumnId = Box::InvalidIndex;
         int32_t nColumnWidth = 0;
-        ListCtrlSubItemData2Ptr pStorage;
+        const ListCtrlSubItemData2* pStorage = nullptr;
     };
     std::vector<ElementData> elementDataList;
     const size_t nColumnCount = pHeaderCtrl->GetColumnCount();
+    elementDataList.reserve(nColumnCount);
     for (size_t nColumnIndex = 0; nColumnIndex < nColumnCount; ++nColumnIndex) {
         ListCtrlHeaderItem* pHeaderItem = pHeaderCtrl->GetColumn(nColumnIndex);
         if ((pHeaderItem == nullptr) || !pHeaderItem->IsColumnVisible()) {
@@ -911,7 +1510,7 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
         ElementData data;
         data.nColumnIndex = nColumnIndex;
         data.nColumnId = pHeaderCtrl->GetColumnId(nColumnIndex);        
-        data.pStorage = subItemDataMap[data.nColumnId];
+        data.pStorage = findSubItemData(data.nColumnId);
         if (nColumnIndex == 0) {
             //Column 1: ensure the header and the data item are aligned on the right side
             data.nColumnWidth = nColumnWidth + rcHeaderPadding.left - nPaddingLeft;
@@ -925,7 +1524,8 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
         }
         elementDataList.push_back(data);
     }
-    
+
+    ASSERT(!elementDataList.empty());
     if (elementDataList.empty()) {
         return false;
     }
@@ -943,13 +1543,18 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
     std::string defaultSubItemClass = m_pListCtrl->GetDataSubItemClass();
     ListCtrlSubItem defaultSubItem(m_pListCtrl->GetWindow());
     defaultSubItem.SetClass(defaultSubItemClass);
+    //Cache the row's default state text colors for reuse by every cell of the row, avoiding repeated lookups per cell
+    std::string defaultTextColors[kControlStateCount];
+    for (int32_t nState = kControlStateNormal; nState < kControlStateCount; ++nState) {
+        defaultTextColors[nState] = defaultSubItem.GetStateTextColor((ControlStateType)nState);
+    }
 
-    std::vector<ControlPtrT<ListCtrlSubItem>> subItemPtrList;
     for (size_t nColumn = 0; nColumn < showColumnCount; ++nColumn) {
         const ElementData& elementData = elementDataList[nColumn];
         ListCtrlSubItem* pSubItem = nullptr;
         if (nColumn < pItem->GetItemCount()) {
-            pSubItem = dynamic_cast<ListCtrlSubItem*>(pItem->GetItemAt(nColumn));
+            pSubItem = static_cast<ListCtrlSubItem*>(pItem->GetItemAt(nColumn));
+            ASSERT(pSubItem != nullptr);
             if (pSubItem == nullptr) {
                 return false;
             }
@@ -989,7 +1594,6 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
                 return true;
                 });
         }
-        subItemPtrList.push_back(ControlPtrT<ListCtrlSubItem>(pSubItem));
         //Set to not get focus
         pSubItem->SetNoFocus();
 
@@ -1017,90 +1621,198 @@ bool ListCtrlReportView::FillDataItem(Control* pControl,
 
         //Fill data and set attributes        
         pSubItem->SetFixedWidth(UiFixedInt(elementData.nColumnWidth), true, false);
-        const ListCtrlSubItemData2Ptr& pStorage = elementData.pStorage;
-        if (pStorage != nullptr) {
-            pSubItem->SetText(pStorage->text.c_str());
-            if (pStorage->nTextFormat != 0) {
-                pSubItem->SetTextStyle(pStorage->nTextFormat, false);
-            }
-            else {
-                pSubItem->SetTextStyle(defaultSubItem.GetTextStyle(), false);
-            }
-            pSubItem->SetTextPadding(defaultSubItem.GetTextPadding(), false);
-            for (int32_t nState = kControlStateNormal; nState < kControlStateCount; ++nState) {
-                ControlStateType stateType = (ControlStateType)nState;
-                pSubItem->SetStateTextColor(stateType, defaultSubItem.GetStateTextColor(stateType));
-            }
-            if (!pStorage->textColor.IsEmpty()) {
-                pSubItem->SetStateTextColor(kControlStateNormal, pSubItem->GetColorString(pStorage->textColor));
-            }
-            else {
-                pSubItem->SetStateTextColor(kControlStateNormal, defaultSubItem.GetStateTextColor(kControlStateNormal));
-            }
-            if (!pStorage->bkColor.IsEmpty()) {
-                pSubItem->SetBkColor(pStorage->bkColor);
-            }
-            else {
-                pSubItem->SetBkColor(defaultSubItem.GetBkColor());
-            }
-            if (pStorage->bShowCheckBox) {
-                //Add a CheckBox
-                pSubItem->SetShowCheckBox(true);
-                //Attach the CheckBox event handling
-                pSubItem->DetachEvent(kEventCheck);
-                pSubItem->DetachEvent(kEventUnCheck);
-                pSubItem->SetChecked(pStorage->bChecked, false);
-                pSubItem->AttachCheck([this, nColumnId, nElementIndex](const EventArgs& /*args*/) {
-                    OnSubItemColumnChecked(nElementIndex, nColumnId, true);
-                    return true;
-                    });
-                pSubItem->AttachUnCheck([this, nColumnId, nElementIndex](const EventArgs& /*args*/) {
-                    OnSubItemColumnChecked(nElementIndex, nColumnId, false);
-                    return true;
-                    });
-            }
-            else {
-                pSubItem->SetShowCheckBox(false);
-                pSubItem->DetachEvent(kEventCheck);
-                pSubItem->DetachEvent(kEventUnCheck);
-                pSubItem->SetChecked(false, false);
-            }
-            pSubItem->SetImageId(pStorage->nImageId);
-        }
-        else {
-            pSubItem->SetTextStyle(defaultSubItem.GetTextStyle(), false);
-            pSubItem->SetText(defaultSubItem.GetText());
-            pSubItem->SetTextPadding(defaultSubItem.GetTextPadding(), false);
-            for (int32_t nState = kControlStateNormal; nState < kControlStateCount; ++nState) {
-                ControlStateType stateType = (ControlStateType)nState;
-                pSubItem->SetStateTextColor(stateType, defaultSubItem.GetStateTextColor(stateType));
-            }
-            pSubItem->SetBkColor(defaultSubItem.GetBkColor());
-            pSubItem->SetShowCheckBox(false);
-            pSubItem->DetachEvent(kEventCheck);
-            pSubItem->DetachEvent(kEventUnCheck);
-            pSubItem->SetChecked(false, false);
-            pSubItem->SetImageId(-1);
-        }
+        FillSubItemData(pSubItem, elementData.pStorage, defaultSubItem, defaultTextColors, nColumnId, nElementIndex);
     }
-    auto viewFlag = GetWeakFlag();
-    //First fire the data fill callbacks for each column
-    for (size_t nIndex = 0; nIndex < subItemPtrList.size(); ++nIndex) {
-        const ControlPtrT<ListCtrlSubItem>& pSubItem = subItemPtrList[nIndex];
-        if (viewFlag.expired() || pSubItem.expired()) {
-            break;
-        }
-        SendEvent(kEventReportViewSubItemFilled, (WPARAM)pItem->GetListBoxIndex(), (LPARAM)pItem->GetDataItemIndex(), pSubItem.get());
-    }
-
-    //Fire the data fill callback for the current row
-    if (!viewFlag.expired()) {
-        SendEvent(kEventReportViewItemFilled, (WPARAM)pItem->GetListBoxIndex(), (LPARAM)pItem->GetDataItemIndex(), pItem);
-    }
+    //Deliver the data-fill callback of the current row
+    SendEventReportViewItemFilled(pItem->GetListBoxIndex(), pItem->GetDataItemIndex(), pItem, nullptr);
     return true;
 }
 
-int32_t ListCtrlReportView::GetMaxDataItemWidth(const std::vector<ListCtrlSubItemData2Ptr>& subItemList)
+void ListCtrlReportView::FillSubItemData(ListCtrlSubItem* pSubItem,
+                                         const ListCtrlSubItemData2* pStorage,
+                                         const ListCtrlSubItem& defaultSubItem,
+                                         const std::string* pDefaultTextColors,
+                                         size_t nColumnId,
+                                         size_t nElementIndex)
+{
+    ASSERT(pSubItem != nullptr);
+    if (pSubItem == nullptr) {
+        return;
+    }
+    ASSERT(pDefaultTextColors != nullptr);
+    if (pDefaultTextColors == nullptr) {
+        return;
+    }
+    if (pStorage != nullptr) {
+        //Set the rich-text property before the text content: the text must be parsed as rich text
+        pSubItem->SetRichText(pStorage->bRichText);
+        pSubItem->SetText(pStorage->text.c_str());
+        if (pStorage->nTextFormat != 0) {
+            pSubItem->SetTextStyle(pStorage->nTextFormat, false);
+        }
+        else {
+            pSubItem->SetTextStyle(defaultSubItem.GetTextStyle(), false);
+        }
+        pSubItem->SetTextPadding(defaultSubItem.GetTextPadding(), false);
+        for (int32_t nState = kControlStateNormal; nState < kControlStateCount; ++nState) {
+            ControlStateType stateType = (ControlStateType)nState;
+            pSubItem->SetStateTextColor(stateType, pDefaultTextColors[nState]);
+        }
+        if (!pStorage->textColor.IsEmpty()) {
+            pSubItem->SetStateTextColor(kControlStateNormal, pSubItem->GetColorString(pStorage->textColor));
+        }
+        if (!pStorage->bkColor.IsEmpty()) {
+            pSubItem->SetBkColor(pStorage->bkColor);
+        }
+        else {
+            pSubItem->SetBkColor(defaultSubItem.GetBkColor());
+        }
+        if (pStorage->bShowCheckBox) {
+            //The data declares a CheckBox
+            AddSubItemCheckBox(pSubItem, nColumnId, nElementIndex, pStorage->bChecked);
+        }
+        else {
+            RemoveSubItemCheckBox(pSubItem);
+        }
+        pSubItem->SetImageId(pStorage->nImageId);
+        pSubItem->SetProgress(pStorage->nProgress);
+    }
+    else {
+        pSubItem->SetRichText(false);
+        pSubItem->SetTextStyle(defaultSubItem.GetTextStyle(), false);
+        pSubItem->SetText(defaultSubItem.GetText());
+        pSubItem->SetTextPadding(defaultSubItem.GetTextPadding(), false);
+        for (int32_t nState = kControlStateNormal; nState < kControlStateCount; ++nState) {
+            ControlStateType stateType = (ControlStateType)nState;
+            pSubItem->SetStateTextColor(stateType, pDefaultTextColors[nState]);
+        }
+        pSubItem->SetBkColor(defaultSubItem.GetBkColor());
+        RemoveSubItemCheckBox(pSubItem);
+        pSubItem->SetImageId(-1);
+        pSubItem->SetProgress(-1);
+    }
+}
+
+void ListCtrlReportView::SendEventReportViewItemFilled(size_t nListBoxIndex, size_t nElementIndex,
+                                                       ListCtrlItem* pItem, ListCtrlSubItem* pSubItem)
+{
+    EventArgs msg;
+    msg.SetSender(this);
+    msg.eventType = kEventReportViewItemFilled;
+    msg.vkCode = VirtualKeyCode::kVK_None;
+    msg.wParam = (WPARAM)nListBoxIndex;
+    msg.lParam = (LPARAM)nElementIndex;
+    Window* pWindow = GetWindow();
+    if (pWindow != nullptr) {
+        msg.ptMouse = pWindow->GetLastMousePos();
+    }
+    msg.modifierKey = 0;
+    msg.eventData = 0;
+    msg.pEventData = pItem;
+    msg.pExtraData = pSubItem;
+    msg.listCtrlType = (int32_t)ListCtrlType::Report;
+
+    //Dispatch the event
+    SendEventMsg(msg);
+}
+
+void ListCtrlReportView::AddSubItemCheckBox(ListCtrlSubItem* pSubItem, size_t nColumnId, size_t nElementIndex, bool bChecked)
+{
+    ASSERT(pSubItem != nullptr);
+    if (pSubItem == nullptr) {
+        return;
+    }
+    //Add a CheckBox
+    pSubItem->SetShowCheckBox(true);
+    //Attach the CheckBox event handlers (detach first, so nothing is attached twice)
+    pSubItem->DetachEvent(kEventCheck);
+    pSubItem->DetachEvent(kEventUnCheck);
+    pSubItem->SetChecked(bChecked, false);
+    pSubItem->AttachCheck([this, nColumnId, nElementIndex](const EventArgs& /*args*/) {
+        OnSubItemColumnChecked(nElementIndex, nColumnId, true);
+        return true;
+        });
+    pSubItem->AttachUnCheck([this, nColumnId, nElementIndex](const EventArgs& /*args*/) {
+        OnSubItemColumnChecked(nElementIndex, nColumnId, false);
+        return true;
+        });
+}
+
+void ListCtrlReportView::RemoveSubItemCheckBox(ListCtrlSubItem* pSubItem)
+{
+    ASSERT(pSubItem != nullptr);
+    if (pSubItem == nullptr) {
+        return;
+    }
+    if (!pSubItem->IsShowCheckBox()) {
+        //No CheckBox is currently shown, so nothing needs removing (avoids a pointless ClearStateImages and event detach)
+        return;
+    }
+    pSubItem->SetShowCheckBox(false);
+    pSubItem->DetachEvent(kEventCheck);
+    pSubItem->DetachEvent(kEventUnCheck);
+    pSubItem->SetChecked(false, false);
+}
+
+bool ListCtrlReportView::RefreshSubItemData(size_t nElementIndex, size_t nColumnId)
+{
+    if ((m_pListCtrl == nullptr) || (m_pData == nullptr)) {
+        return false;
+    }
+    if (!Box::IsValidItemIndex(nElementIndex) || (nElementIndex >= m_pData->GetDataItemCount())) {
+        return false;
+    }
+    if (!m_pData->IsValidDataColumnId(nColumnId)) {
+        return false;
+    }
+    //Get the data of this cell
+    const ListCtrlData::Storage* pStorage = m_pData->GetSubItemStorage(nElementIndex, nColumnId);
+
+    //Get the UI control currently bound to this data element
+    size_t nItemIndex = GetDisplayItemIndex(nElementIndex);
+    if (!Box::IsValidItemIndex(nItemIndex)) {
+        //The data element is not in the visible range, so the UI needs no update (the data itself is already updated)
+        return false;
+    }
+    ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(GetItemAt(nItemIndex));
+    if (pItem == nullptr) {
+        return false;
+    }
+
+    //Find the sub-item control of this column
+    ListCtrlSubItem* pSubItem = nullptr;
+    const size_t nSubItemCount = pItem->GetItemCount();
+    for (size_t nIndex = 0; nIndex < nSubItemCount; ++nIndex) {
+        ListCtrlSubItem* pItemSubItem = dynamic_cast<ListCtrlSubItem*>(pItem->GetItemAt(nIndex));
+        if ((pItemSubItem != nullptr) && (pItemSubItem->GetDataColumnId() == nColumnId)) {
+            pSubItem = pItemSubItem;
+            break;
+        }
+    }
+    if (pSubItem == nullptr) {
+        //The control of this column does not exist (for example the column is hidden), or the cell is not in the visible range
+        return false;
+    }
+
+    //Default attributes
+    std::string defaultSubItemClass = m_pListCtrl->GetDataSubItemClass();
+    ListCtrlSubItem defaultSubItem(m_pListCtrl->GetWindow());
+    defaultSubItem.SetClass(defaultSubItemClass);
+    //Cache the default state text colors for reuse by this cell
+    std::string defaultTextColors[kControlStateCount];
+    for (int32_t nState = kControlStateNormal; nState < kControlStateCount; ++nState) {
+        defaultTextColors[nState] = defaultSubItem.GetStateTextColor((ControlStateType)nState);
+    }
+
+    //Update only this cell's data, without changing its width or event handlers
+    FillSubItemData(pSubItem, pStorage, defaultSubItem, defaultTextColors, nColumnId, nElementIndex);
+    pSubItem->Invalidate();
+    //Deliver the cell's data-fill callback (consistent with the whole-row fill, so applications can customize the cell content dynamically)
+    SendEventReportViewItemFilled(pItem->GetListBoxIndex(), nElementIndex, pItem, pSubItem);
+    return true;
+}
+
+int32_t ListCtrlReportView::GetMaxDataItemWidth(const std::vector<const ListCtrlSubItemData2*>& subItemList)
 {
     int32_t nMaxWidth = -1;
     if (m_pListCtrl == nullptr) {
@@ -1121,7 +1833,7 @@ int32_t ListCtrlReportView::GetMaxDataItemWidth(const std::vector<ListCtrlSubIte
     subItem.SetClass(defaultSubItemClass);
     subItem.SetListCtrlItem(&defaultItem);
 
-    for (const ListCtrlSubItemData2Ptr& pStorage : subItemList) {
+    for (const ListCtrlSubItemData2* pStorage : subItemList) {
         if (pStorage == nullptr) {
             continue;
         }
@@ -1274,8 +1986,42 @@ void ListCtrlReportView::GetScrollDeltaValue(int32_t& nHScrollValue, int32_t& nV
     }
 }
 
-bool ListCtrlReportView::OnFrameSelection(int64_t left, int64_t /*right*/, int64_t top, int64_t bottom)
+bool ListCtrlReportView::CanPaintSelectedColors(bool bHasStateImages) const
 {
+    //The row-selected background color is a visual exclusive to row-selection mode; it is suppressed in cell-selection mode,
+    //so the row selection state (whichever entry point changed it: mouse/keyboard/API) is never shown, and the row's selectable state is not visible
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        return false;
+    }
+    return BaseClass::CanPaintSelectedColors(bHasStateImages);
+}
+
+bool ListCtrlReportView::OnLButtonClickedBlank()
+{
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        //Cell-selection mode: clicking a blank area clears the cell selection (row selection is not involved, so return false to avoid a spurious row-selection-changed event)
+        m_pListCtrl->ClearCellSelection();
+        return false;
+    }
+    return BaseClass::OnLButtonClickedBlank();
+}
+
+bool ListCtrlReportView::OnRButtonClickedBlank()
+{
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        //Cell-selection mode: clicking a blank area clears the cell selection (row selection is not involved, so return false to avoid a spurious row-selection-changed event)
+        m_pListCtrl->ClearCellSelection();
+        return false;
+    }
+    return BaseClass::OnRButtonClickedBlank();
+}
+
+bool ListCtrlReportView::OnFrameSelection(int64_t left, int64_t right, int64_t top, int64_t bottom)
+{
+    if ((m_pListCtrl != nullptr) && (m_pListCtrl->GetSelectionMode() == ListCtrlSelectionMode::kCell)) {
+        //Cell-selection mode: hit cells with the drag-selection rectangle
+        return OnFrameSelectionForCells(left, right, top, bottom);
+    }
     if (left > GetListCtrlWidth()) {
         //In the blank area, no frame selection is performed; just clear all selections
         bool bRet = SetSelectNone();
@@ -1295,8 +2041,7 @@ bool ListCtrlReportView::OnFrameSelection(int64_t left, int64_t /*right*/, int64
     if (pDataProvider == nullptr) {
         return false;
     }
-    const ListCtrlData::RowDataList& itemDataList = pDataProvider->GetItemDataList();
-    const size_t dataItemCount = itemDataList.size();
+    const size_t dataItemCount = pDataProvider->GetDataItemCount();
     if (dataItemCount == 0) {
         return false;
     }
@@ -1309,7 +2054,11 @@ bool ListCtrlReportView::OnFrameSelection(int64_t left, int64_t /*right*/, int64
     int64_t totalItemHeight = 0;
     int32_t nItemHeight = 0;    
     for (size_t index = 0; index < dataItemCount; ++index) {
-        const ListCtrlItemData& rowData = itemDataList[index];
+        const ListCtrlItemData* pRowData = pDataProvider->GetDisplayItemData(index);
+        if (pRowData == nullptr) {
+            continue;
+        }
+        const ListCtrlItemData& rowData = *pRowData;
         nItemHeight = (rowData.nItemHeight < 0) ? nDefaultItemHeight : rowData.nItemHeight;
         if (!rowData.bVisible || (nItemHeight == 0)) {
             //Not visible, skip
@@ -1332,7 +2081,11 @@ bool ListCtrlReportView::OnFrameSelection(int64_t left, int64_t /*right*/, int64
         bottom = 0;
     }
     for (size_t index = 0; index < dataItemCount; ++index) {
-        const ListCtrlItemData& rowData = itemDataList[index];
+        const ListCtrlItemData* pRowData = pDataProvider->GetDisplayItemData(index);
+        if (pRowData == nullptr) {
+            continue;
+        }
+        const ListCtrlItemData& rowData = *pRowData;
         nItemHeight = (rowData.nItemHeight < 0) ? nDefaultItemHeight : rowData.nItemHeight;
         if (!rowData.bVisible || (nItemHeight == 0)) {
             //Not visible, skip
@@ -1360,6 +2113,120 @@ bool ListCtrlReportView::OnFrameSelection(int64_t left, int64_t /*right*/, int64
         OnSelectStatusChanged();
     }    
     return bRet;
+}
+
+bool ListCtrlReportView::OnFrameSelectionForCells(int64_t left, int64_t right, int64_t top, int64_t bottom)
+{
+    if ((m_pListCtrl == nullptr) || (m_pData == nullptr)) {
+        return false;
+    }
+    if (left > right) {
+        const int64_t nTemp = left;
+        left = right;
+        right = nTemp;
+    }
+    if (top > bottom) {
+        const int64_t nTemp = top;
+        top = bottom;
+        bottom = nTemp;
+    }
+    //Convert the drag-selection rectangle into the same coordinate system as the sub-item control rectangles:
+    //the coordinates passed in by ListBoxHelper are "content coordinates" (including the ListBox's own scroll amount), while the cell sub-item rectangles are in "control coordinates".
+    //vertically the layout is a virtual scroll layout (reused controls are placed at visible positions), so a control's rectangle position is its screen position and does not move with vertical scrolling;
+    //the vertical scroll amount must therefore be subtracted before hit testing, otherwise after scrolling the actual drag-selection position differs from the mouse position by one scroll amount.
+    //(horizontally this is the real scrollbar offset: painting shifts by -offset and hit testing restores by +offset, so both conventions agree)
+    const UiRect rcView = GetRect();
+    const int64_t nScrollPosY = GetScrollPos().cy;
+    const int64_t frameLeft = left + (int64_t)rcView.left;
+    const int64_t frameRight = right + (int64_t)rcView.left;
+    const int64_t frameTop = top + (int64_t)rcView.top - nScrollPosY;
+    const int64_t frameBottom = bottom + (int64_t)rcView.top - nScrollPosY;
+
+    //Horizontal convention fix for frozen columns: the horizontal coordinates given by ListBoxHelper are always "window coordinate + horizontal scroll amount"
+    //but the frozen columns (the first N columns) are painted with a horizontal window-origin offset of 0 (that is, content coordinate == window coordinate) and do not move with horizontal scrolling.
+    //So for the frozen columns the drag-selection rectangle must be shifted left by one scroll amount; each of the two areas is clipped to its own range,
+    //so a drag-selection region crossing the frozen boundary does not hit columns on the other side (without frozen columns both equal frameLeft/frameRight)
+    const ListCtrlCellGeometry cellGeometry = BuildCellGeometry();
+    int64_t frozenFrameLeft = frameLeft;
+    int64_t frozenFrameRight = frameRight;
+    int64_t scrollFrameLeft = frameLeft;
+    int64_t scrollFrameRight = frameRight;
+    if (cellGeometry.bHasFrozen) {
+        const int64_t nScrollX = cellGeometry.scrollPos.cx;
+        const int64_t nFrozenLeft = cellGeometry.rcViewport.left;
+        const int64_t nFrozenRight = cellGeometry.FrozenRight();
+        //Frozen column: shift the rectangle left by the scroll amount and clip it to the horizontal content range of the frozen area
+        frozenFrameLeft = std::max<int64_t>(frameLeft - nScrollX, nFrozenLeft);
+        frozenFrameRight = std::min<int64_t>(frameRight - nScrollX, nFrozenRight);
+        //Non-frozen column: clip the rectangle to the horizontal range to the right of "frozen-area right edge + scroll amount"
+        scrollFrameLeft = std::max<int64_t>(frameLeft, nFrozenRight + nScrollX);
+        scrollFrameRight = frameRight;
+    }
+
+    //The header and pinned-to-top rows are fixed at the top and cover the normal rows scrolling below: those areas do not participate in cell drag-selection
+    UiRect rcTopFixed;
+    const bool bHasTopFixed = GetTopFixedItemsRect(rcTopFixed);
+    if (bHasTopFixed &&
+        (frameBottom <= (int64_t)rcTopFixed.bottom) &&
+        (frameLeft < (int64_t)rcTopFixed.right) && (frameRight > (int64_t)rcTopFixed.left)) {
+        //The drag-selection rectangle lies entirely inside the header/pinned-row area: no cell selection state is changed
+        return false;
+    }
+
+    //Ctrl+drag: add only (hits become selected, non-hits keep their state); normal drag: replace (hits become selected, visible non-hits are deselected)
+    const bool bAdditive = m_pListCtrl->m_bCellDragAdditive;
+    bool bChanged = false;
+    const size_t nItemCount = GetItemCount();
+    //The first row is the header, so iterate the data rows starting from index 1
+    for (size_t index = 1; index < nItemCount; ++index) {
+        ListCtrlItem* pItem = dynamic_cast<ListCtrlItem*>(GetItemAt(index));
+        if ((pItem == nullptr) || !pItem->IsVisible()) {
+            continue;
+        }
+        if (!pItem->IsSelectableType()) {
+            //Pinned-to-top rows and other non-selectable rows do not participate in cell drag-selection
+            continue;
+        }
+        const size_t nRowIndex = pItem->GetDataItemIndex();
+        const size_t nSubItemCount = pItem->GetItemCount();
+        for (size_t nSubItem = 0; nSubItem < nSubItemCount; ++nSubItem) {
+            ListCtrlSubItem* pSubItem = dynamic_cast<ListCtrlSubItem*>(pItem->GetItemAt(nSubItem));
+            if ((pSubItem == nullptr) || !pSubItem->IsVisible() || (pSubItem->GetWidth() <= 0)) {
+                continue;
+            }
+            const size_t nColumnId = pSubItem->GetDataColumnId();
+            const size_t nColumnIndex = m_pListCtrl->GetColumnIndex(nColumnId);
+            if (nColumnIndex == Box::InvalidIndex) {
+                continue;
+            }
+            UiRect rcCell = pSubItem->GetRect();
+            if (bHasTopFixed && (rcCell.top < rcTopFixed.bottom)) {
+                //The part of a cell covered by the header/pinned row does not participate in hit testing, so the covered area below a pinned row is not selected
+                rcCell.top = rcTopFixed.bottom;
+                if (rcCell.bottom <= rcCell.top) {
+                    continue;
+                }
+            }
+            //Choose the horizontal hit range of the corresponding area depending on whether the column is frozen (both are the same without frozen columns)
+            const bool bFrozenColumn = cellGeometry.bHasFrozen && (nColumnIndex < cellGeometry.nFrozenCount);
+            const int64_t nCellFrameLeft = bFrozenColumn ? frozenFrameLeft : scrollFrameLeft;
+            const int64_t nCellFrameRight = bFrozenColumn ? frozenFrameRight : scrollFrameRight;
+            const bool bHit = (rcCell.right > nCellFrameLeft) && (rcCell.left < nCellFrameRight) &&
+                              (rcCell.bottom > frameTop) && (rcCell.top < frameBottom);
+            if (bAdditive && !bHit) {
+                //Add semantics: cells that are not hit keep their selection state
+                continue;
+            }
+            if (m_pData->SetCellSelected(nRowIndex, nColumnId, bHit)) {
+                bChanged = true;
+            }
+        }
+    }
+    if (bChanged) {
+        m_pListCtrl->NotifyCellSelectionChanged();
+        m_pListCtrl->RefreshCellSelectionView();
+    }
+    return bChanged;
 }
 
 void ListCtrlReportView::OnItemSelectedChanged(size_t iIndex, IListBoxItem* pListBoxItem)
@@ -1610,6 +2477,7 @@ void ListCtrlReportLayout::LazyArrangeChild(UiRect rc) const
 
     //Record the list of visible element indices
     std::vector<size_t> diplayItemIndexList;
+    diplayItemIndexList.reserve(nItemCount);
 
     //Y coordinate position of the scroll bar
     int64_t nScrollPosY = pDataView->GetScrollPos().cy;
@@ -1704,6 +2572,7 @@ void ListCtrlReportLayout::LazyArrangeChild(UiRect rc) const
         int32_t yOffset;        //Y-axis offset
     };
     std::vector<ShowItemIndex> itemIndexList;
+    itemIndexList.reserve(atTopItemIndexList.size() + showItemIndexList.size());
     for (const auto& info : atTopItemIndexList) {
         itemIndexList.push_back({ info.nItemIndex, info.nItemHeight, true, 0});
     }
@@ -1719,12 +2588,14 @@ void ListCtrlReportLayout::LazyArrangeChild(UiRect rc) const
     ui::UiPoint ptTile(rc.left, rc.top);
 
     VirtualListBox::RefreshDataList refreshDataList;
+    refreshDataList.reserve(nItemCount);
     VirtualListBox::RefreshData refreshData;
 
     UiSize szItem;
     size_t iCount = 0;
     std::vector<size_t> atTopUiItemIndexList;
-    //The first element is the header control; skip filling data, so start from 1
+    atTopUiItemIndexList.reserve(nItemCount);
+    //The first element is the header control, whose data is not filled, so start from 1
     for (size_t index = 1; index < nItemCount; ++index) {
         Control* pControl = pDataView->GetItemAt(index);
         if (pControl == nullptr) {
@@ -1767,17 +2638,21 @@ void ListCtrlReportLayout::LazyArrangeChild(UiRect rc) const
             if (!pControl->IsVisible()) {
                 pControl->SetVisible(true);
             }
-            // Fill data
-            //TODO: Optimize the code to avoid filling on every refresh
-            pDataView->FillElementData(pControl, nElementIndex);
+            //Fill data on demand: if the control is already bound to the same data element, there is no need to fill its data again
+            //(this avoids a "whole-table refill" of unchanged rows while scrolling, for skeleton screens, theme refreshes or repeated layouts)
+            //ListCtrlItem also implements IListBoxItem, so cast once here instead of repeating dynamic_cast for every row
+            ListCtrlItem* pListCtrlItem = dynamic_cast<ListCtrlItem*>(pControl);
+            const bool bNeedFillData = (pListCtrlItem == nullptr) || (pListCtrlItem->GetElementIndex() != nElementIndex);
+            if (bNeedFillData) {
+                pDataView->FillElementData(pControl, nElementIndex);
+
+                refreshData.nItemIndex = index;
+                refreshData.pControl = pControl;
+                refreshData.nElementIndex = nElementIndex;
+                refreshDataList.push_back(refreshData);
+            }
             diplayItemIndexList.push_back(nElementIndex);
 
-            refreshData.nItemIndex = index;
-            refreshData.pControl = pControl;
-            refreshData.nElementIndex = nElementIndex;
-            refreshDataList.push_back(refreshData);
-
-            ListCtrlItem* pListCtrlItem = dynamic_cast<ListCtrlItem*>(pControl);
             if (pListCtrlItem != nullptr) {
                 //Pinned-to-top items are not selectable
                 pListCtrlItem->SetSelectableType(bAlwaysAtTop ? false : true);
@@ -1859,6 +2734,7 @@ void ListCtrlReportLayout::LazyArrangeChildNormal(UiRect rc) const
 
     //Record the list of visible element indices
     std::vector<size_t> diplayItemIndexList;
+    diplayItemIndexList.reserve(nItemCount);
 
     // Index of the top element
     const size_t nTopElementIndex = GetTopElementIndex(orgRect);
@@ -1880,6 +2756,7 @@ void ListCtrlReportLayout::LazyArrangeChildNormal(UiRect rc) const
     ui::UiPoint ptTile(rc.left, rc.top - yOffset);
 
     VirtualListBox::RefreshDataList refreshDataList;
+    refreshDataList.reserve(nItemCount);
     VirtualListBox::RefreshData refreshData;
 
     size_t iCount = 0;
@@ -1901,13 +2778,20 @@ void ListCtrlReportLayout::LazyArrangeChildNormal(UiRect rc) const
             if (!pControl->IsVisible()) {
                 pControl->SetVisible(true);
             }
-            pDataView->FillElementData(pControl, nElementIndex);
-            diplayItemIndexList.push_back(nElementIndex);
+            //Fill data on demand: if the control is already bound to the same data element, there is no need to fill its data again
+            //(avoids a "whole-table refill" of unchanged rows on repeated layouts, theme refreshes, and so on)
+            //ListCtrlItem also implements IListBoxItem, so cast once here instead of repeating dynamic_cast for every row
+            ListCtrlItem* pListCtrlItem = dynamic_cast<ListCtrlItem*>(pControl);
+            const bool bNeedFillData = (pListCtrlItem == nullptr) || (pListCtrlItem->GetElementIndex() != nElementIndex);
+            if (bNeedFillData) {
+                pDataView->FillElementData(pControl, nElementIndex);
 
-            refreshData.nItemIndex = index;
-            refreshData.pControl = pControl;
-            refreshData.nElementIndex = nElementIndex;
-            refreshDataList.push_back(refreshData);
+                refreshData.nItemIndex = index;
+                refreshData.pControl = pControl;
+                refreshData.nElementIndex = nElementIndex;
+                refreshDataList.push_back(refreshData);
+            }
+            diplayItemIndexList.push_back(nElementIndex);
         }
         else {
             if (pControl->IsVisible()) {

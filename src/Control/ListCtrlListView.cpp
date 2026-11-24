@@ -179,6 +179,24 @@ void ListCtrlListView::Refresh(bool bSync)
     BaseClass::Refresh(bSync);
 }
 
+void ListCtrlListView::OnModelDataChanged(size_t nStartElementIndex, size_t nEndElementIndex)
+{
+    if ((m_pListCtrl != nullptr) && !m_pListCtrl->IsEnableRefresh()) {
+        //Refresh has been disabled
+        return;
+    }
+    BaseClass::OnModelDataChanged(nStartElementIndex, nEndElementIndex);
+}
+
+void ListCtrlListView::OnModelCountChanged()
+{
+    if ((m_pListCtrl != nullptr) && !m_pListCtrl->IsEnableRefresh()) {
+        //Refresh has been disabled
+        return;
+    }
+    BaseClass::OnModelCountChanged();
+}
+
 Control* ListCtrlListView::CreateDataItem()
 {
     if (m_pListCtrl == nullptr) {
@@ -205,7 +223,7 @@ bool ListCtrlListView::FillDataItem(Control* pControl,
     if ((pControl == nullptr) || (m_pListCtrl == nullptr)) {
         return false;
     }
-    ListCtrlSubItemData2Ptr pSubItemData;
+    const ListCtrlSubItemData2* pSubItemData = nullptr;
     int32_t nImageId = -1;
     size_t nColumnId = m_pListCtrl->GetColumnId(0); //Get the ID of the first column
     for (const ListCtrlSubItemData2Pair& pair : subItemList) {
@@ -294,7 +312,7 @@ bool ListCtrlListView::FillDataItem(Control* pControl,
     return true;
 }
 
-int32_t ListCtrlListView::GetMaxDataItemWidth(const std::vector<ListCtrlSubItemData2Ptr>& /*subItemList*/)
+int32_t ListCtrlListView::GetMaxDataItemWidth(const std::vector<const ListCtrlSubItemData2*>& /*subItemList*/)
 {
     //Not needed to implement
     return -1;

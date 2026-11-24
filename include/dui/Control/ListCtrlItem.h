@@ -76,10 +76,10 @@ public:
     */
     size_t GetSubItemCount() const;
 
-    /** Get the child control at columnIndex
-    * @param [in] columnIndex The column index: [0, GetSubItemCount())
+    /** Get the nSubItemIndex-th sub-control
+    * @param [in] nSubItemIndex The column index: [0, GetSubItemCount())
     */
-    ListCtrlSubItem* GetSubItem(size_t columnIndex) const;
+    ListCtrlSubItem* GetSubItem(size_t nSubItemIndex) const;
 
     /** Get the child control at the mouse position
     * @param [in] ptMouse The mouse position, a point in screen coordinates
@@ -148,6 +148,18 @@ protected:
     */
     virtual bool ButtonUp(const EventArgs& msg) override;
 
+    /** Mouse left button down event (in cell selection mode the row selection logic is skipped)
+    */
+    virtual bool ButtonDown(const EventArgs& msg) override;
+
+    /** Mouse enter event (in cell selection mode the row-level hover state is not entered, to avoid the row-level highlight and the hover fade animation)
+    */
+    virtual bool MouseEnter(const EventArgs& msg) override;
+
+    /** Mouse leave event (in cell selection mode the hover fade animation is not started, only the row-level hover state left over from focus is cleared)
+    */
+    virtual bool MouseLeave(const EventArgs& msg) override;
+
     /** Whether the check mode is supported (currently used by TreeView/ListCtrl)
         The check mode means:
         (1) Only when clicking on the CheckBox image is the check box image in the selected state (in non-check mode, clicking anywhere within the control rect selects it)
@@ -155,9 +167,22 @@ protected:
     */
     virtual bool SupportCheckMode() const override;
 
+    /** Convert the mouse point (window client coordinates) into the control coordinate space used for hit-testing the CheckBox icon
+    *   The CheckBox and icon at the beginning of the row are always displayed at the far left of the row, inside the frozen column area (they do not move with horizontal scrolling),
+    *   so when there are frozen columns the horizontal scroll offset must be counted as 0, to keep hit testing consistent with the displayed position of the frozen columns
+    * @param [in] ptMouse The mouse point (window client coordinates)
+    * @return Returns the converted point in the control coordinate space
+    */
+    virtual UiPoint GetCheckBoxMousePos(const UiPoint& ptMouse) const override;
+
     /** Draw function
     */
     virtual void Paint(IRender* pRender, const UiRect& rcPaint) override;
+
+    /** Paint the state colors of the control
+    *   In cell selection mode, the row-level hover/pressed state colors are suppressed (the row-level highlight is visual feedback exclusive to row selection mode)
+    */
+    virtual void PaintStateColors(IRender* pRender) override;
 
 private:
     /** Whether it can be selected (affects switching the selection with arrow keys)

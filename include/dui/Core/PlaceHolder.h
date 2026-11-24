@@ -400,8 +400,11 @@ public:
     bool IsClip() const { return m_bClip; }
 
     /** Get the outer scroll offset
+     *  Note: subclasses may override this function to adapt to a special coordinate space (for
+     *        example the frozen-column area of ListCtrl is always displayed and does not move with
+     *        horizontal scrolling, so the horizontal offset of its inner controls counts as 0)
      */
-    UiPoint GetScrollOffsetInScrollBox() const;
+    virtual UiPoint GetScrollOffsetInScrollBox() const;
 
     /** Determine whether two controls are equal or have a parent-child or descendant relationship
      * @param [in] pAncestor A control at the ancestor level

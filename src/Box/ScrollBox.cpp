@@ -1122,6 +1122,12 @@ void ScrollBox::ClearImageCache()
     }
 }
 
+UiSize ScrollBox::GetScrollOffsetForChild(const PlaceHolder* /*pChild*/) const
+{
+    //Default: the coordinate space of every child control is converted with the scroll amount of this container
+    return GetScrollOffset();
+}
+
 UiSize ScrollBox::GetScrollOffset() const
 {
     //The virtual scroll bar position is introduced to solve the problem that UiRect with 32-bit integer values cannot support extremely large virtual tables (tens of millions of data items or more)

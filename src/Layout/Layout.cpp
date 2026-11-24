@@ -356,10 +356,10 @@ void Layout::CheckConfig(const std::vector<Control*>& items)
         ++childCount;
     }
     if ((childCount > 0) && m_pOwner->GetFixedWidth().IsAuto() && isAllWidthStretch) {
-        ASSERT(!"配置错误：当前容器的宽是auto，子控件的宽都是stretch，估算宽度为零！");
+        ASSERT(!"configuration error: the container width is auto while all child widths are stretch, so the estimated width is zero!");
     }
     if ((childCount > 0) && m_pOwner->GetFixedHeight().IsAuto() && isAllHeightStretch) {
-        ASSERT(!"配置错误：当前容器的高是auto，子控件的高都是stretch，估算高度为零！");
+        ASSERT(!"configuration error: the container height is auto while all child heights are stretch, so the estimated height is zero!");
     }
 }
 

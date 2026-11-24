@@ -760,7 +760,7 @@ public:
     * @param [in] nMin Sets the minimum value of the number
     * @param [in] nMax Sets the maximum value of the number; if both nMin and nMax are 0, the minimum and maximum values of the number are not set
     */
-    void SetEnableSpin(bool bEnable, int32_t nMin = 0, int32_t nMax = 0);
+    void SetEnableSpin(bool bEnable, int64_t nMin = 0, int64_t nMax = 0);
 
 protected:
     /** Set whether an edit control is allowed to exist

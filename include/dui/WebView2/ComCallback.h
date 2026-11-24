@@ -353,11 +353,11 @@ namespace ui
     ComPtr<TInterface> ComCallback(TCallback&& callback) {
         // Verify that the interface must contain an Invoke method
         static_assert(InvokeTraits<TInterface>::HasInvoke,
-            "接口必须定义 STDMETHODCALLTYPE 调用约定的 Invoke 方法");
+            "The interface must define an Invoke method with the STDMETHODCALLTYPE calling convention");
 
         // Verify that the argument count does not exceed 6
         static_assert(InvokeTraits<TInterface>::ArgCount <= 6,
-            "Invoke 方法最多支持 6 个参数");
+            "The Invoke method supports at most 6 parameters");
 
         // Instantiate the implementation class for the corresponding argument count
         using Impl = ComCallbackImpl<

@@ -16,6 +16,59 @@ enum class ListCtrlType: int8_t
     List   = 2  //List type
 };
 
+/** Selection mode of the list
+*/
+enum class ListCtrlSelectionMode : int8_t
+{
+    kRow  = 0,  //Row selection mode (default)
+    kCell = 1   //Cell selection mode
+};
+
+/** Editor type of a cell (declared per column)
+*/
+enum class ListCtrlEditorType : int8_t
+{
+    kEditText   = 0, //Text editor (default)
+    kEditNumber = 1, //Number editor (validated on commit: empty is allowed, or a valid decimal number)
+    kEditDate   = 2, //Date editor (validated on commit: empty is allowed, or yyyy-mm-dd / yyyy/mm/dd)
+    kEditCombo  = 3  //Combo candidate editor (candidates are configured per column, see ListCtrl::SetColumnCandidatesById)
+};
+
+/** Location identifier of a cell in the table (CellId)
+    Rows use the "display order index"; columns use the "column ID" (consistent with the existing organization by columnId for column width/order/visibility/sorting: the column order can change, the column ID is stable)
+*/
+struct ListCtrlCellId
+{
+    size_t nRowIndex = Box::InvalidIndex;   //Display index of the row, valid range: [0, GetDataItemCount())
+    size_t nColumnId = Box::InvalidIndex;   //ID of the column
+
+    /** Whether this is a valid cell
+    */
+    bool IsValid() const { return (nRowIndex != Box::InvalidIndex) && (nColumnId != Box::InvalidIndex); }
+
+    bool operator==(const ListCtrlCellId& r) const { return (nRowIndex == r.nRowIndex) && (nColumnId == r.nColumnId); }
+    bool operator!=(const ListCtrlCellId& r) const { return !(*this == r); }
+};
+
+/** Selection area of cells (a normalized rectangular area: row range + column range)
+    Rows use the display order index, columns use the column ID (normalized by the current column order: the column of nColumnIdBegin comes first)
+*/
+struct ListCtrlCellRange
+{
+    size_t nRowBegin = Box::InvalidIndex;      //Start row index (display order, nRowBegin <= nRowEnd)
+    size_t nRowEnd = Box::InvalidIndex;        //End row index (display order)
+    size_t nColumnIdBegin = Box::InvalidIndex; //Start column ID (comes first in the current column order)
+    size_t nColumnIdEnd = Box::InvalidIndex;   //End column ID (comes later in the current column order)
+
+    /** Whether this is a valid area
+    */
+    bool IsValid() const
+    {
+        return (nRowBegin != Box::InvalidIndex) && (nRowEnd != Box::InvalidIndex) &&
+               (nColumnIdBegin != Box::InvalidIndex) && (nColumnIdEnd != Box::InvalidIndex);
+    }
+};
+
 /** Basic information of a column (used to add a column)
 */
 struct ListCtrlColumn
@@ -30,6 +83,7 @@ struct ListCtrlColumn
     bool bResizeable = true;        //Whether the column width can be adjusted by dragging
     bool bShowCheckBox = false;     //Whether to show the CheckBox (supports showing the CheckBox in the header and data columns)
     bool bNeedDpiScale = true;      //Whether to perform DPI adaptation on the value
+    ListCtrlEditorType nEditorType = ListCtrlEditorType::kEditText; //Cell editor type (used for input validation when committing)
 };
 
 /** Attribute data structure of a row (row data, one data item per row, data storage)
@@ -60,6 +114,8 @@ struct ListCtrlSubItemData
     bool bShowCheckBox = false;     //Whether to show the CheckBox
     bool bChecked = false;          //Whether it is in the checked state (CheckBox checked state)
     bool bEditable = false;         //Whether it is editable
+    int32_t nProgress = -1;         //Progress value (progress-bar cell), valid range [0, 100]; -1 means the progress bar is not displayed
+    bool bRichText = false;         //Whether to render text as rich text (HTML-like format)
 };
 
 /** Data structure for internal storage of list data items (column data, one data item per <row, column>, data storage)
@@ -77,10 +133,10 @@ struct ListCtrlSubItemData2
     UiString userDataS;             //User-defined data (string type)
     int32_t nSortGroup = 0;         //The group it belongs to (e.g., folders and files can be divided into two groups; after sorting, folders and files are separated)
     bool bEditable = false;         //Whether it is editable
+    int8_t nProgress = -1;          //Progress value (progress-bar cell), valid range [0, 100]; -1 means the progress bar is not displayed
+                                    //(Internally stored with the smallest width type to avoid wasting memory when there is one data item per <row, column>; the public interface is still int32_t)
+    bool bRichText = false;         //Whether to render text as rich text (HTML-like format)
 };
-
-//Smart pointer of column data
-typedef std::shared_ptr<ListCtrlSubItemData2> ListCtrlSubItemData2Ptr;
 
 /** Data sorting flags in the list (bitwise AND operation)
 */
@@ -92,12 +148,15 @@ enum ListCtrlSubItemSortFlag : uint8_t
     kSortByText         = 4,    //Sort by the ListCtrlSubItemData2.text field (default)
     kSortByUserDataN    = 8,    //Sort by the ListCtrlSubItemData2.userDataN field
     kSortByUserDataS    = 16,    //Sort by the ListCtrlSubItemData2.userDataS field
+    kSortByProgress     = 32,   //Sort by the ListCtrlSubItemData2.nProgress field (explicitly declared, replacing the earlier behaviour that inferred it from the cell progress)
+    kSortByTextAsNumber = 64,   //Compare text as numbers for sorting (e.g. "10" > "9") instead of string lexicographic order
+    kSortByTextAsDate   = 128,  //Compare text as date/time for sorting (e.g. "2024-3-7" < "2024-10-1") instead of string lexicographic order
 };
 
 struct ListCtrlSubItemData2Pair
 {
     size_t nColumnId = 0; //Column ID
-    ListCtrlSubItemData2Ptr pSubItemData; //Data of the column
+    const ListCtrlSubItemData2* pSubItemData = nullptr; //Data of the column
 };
 
 /** Additional information for comparing data
@@ -146,7 +205,7 @@ public:
     * @param [in] subItemList The data sub-items (representing the data of each column)
     * @return Returns the maximum width of this column, which is the value after DPI adaptive processing; returns -1 on failure
     */
-    virtual int32_t GetMaxDataItemWidth(const std::vector<ListCtrlSubItemData2Ptr>& subItemList) = 0;
+    virtual int32_t GetMaxDataItemWidth(const std::vector<const ListCtrlSubItemData2*>& subItemList) = 0;
 };
 
 /** Input parameters of the edit state

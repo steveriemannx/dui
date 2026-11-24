@@ -146,6 +146,12 @@ private:
     */
     void ParseGlobalAttributes(const pugi::xml_node& root);
 
+    /** Parse an Include node in the global resources: reference an XML file in the same
+    *   directory and register the global resources (Font/Class/TextColor/Include) declared in it
+    * @param [in] node The Include node in the global resources
+    */
+    void ParseGlobalIncludeXmlNode(const pugi::xml_node& node);
+
     /** Parse the child nodes of an XML node
     * @param [in] xmlNode The xml node
     * @param [in] pParent The parent control, which may be a normal control (the parameter is only passed in and not used) or a container (converted to a container when used)

@@ -48,8 +48,24 @@ public:
     *   If ScrollVirtualOffset is set, this function subtracts the virtual offset from the scroll bar position;
     *   If ScrollVirtualOffset is not set, this function returns the same result as UiSize64 GetScrollPos(), but checks whether it is out of bounds;
     *   This function exists to support virtual tables (VirtualScrollBox) with large amounts of data, avoiding UiRect out-of-bounds issues.
+    *   This function is virtual: a subclass may adjust the returned value for a special hit-test
+    *   rule (for example the horizontal scroll amount counts as 0 when hit-testing frozen columns).
     */
-    UiSize GetScrollOffset() const;
+    virtual UiSize GetScrollOffset() const;
+
+    /** Get the scroll offset of the coordinate space that a child control (or one of its
+    *   descendants) belongs to
+    *   Default implementation: returns GetScrollOffset(), i.e. the child control's coordinates are
+    *   converted with the scroll amount of this container;
+    *   a subclass may override it to return a different offset for specific child controls (for
+    *   example the frozen-column area of ListCtrl is always displayed and does not move with
+    *   horizontal scrolling, so the horizontal offset of its inner controls counts as 0; otherwise
+    *   hit-testing is misaligned after horizontal scrolling)
+    * @param [in] pChild The child control whose coordinates are converted (may be a descendant,
+    *             not necessarily a direct child)
+    * @return Returns the scroll offset of the coordinate space that the child control belongs to
+    */
+    virtual UiSize GetScrollOffsetForChild(const PlaceHolder* pChild) const;
 
     /** Notification interface for ScrollOffset value changes
     * @param [in] oldScrollOffset The old value

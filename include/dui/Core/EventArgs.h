@@ -51,6 +51,10 @@ public:
     */
     void* pEventData;
 
+    /** The pointer data associated with the message (an additional data pointer)
+    */
+    void* pExtraData;
+
     /** Data dedicated to the ListCtrl control, used to indicate the view type corresponding to the event
     */
     int32_t listCtrlType;

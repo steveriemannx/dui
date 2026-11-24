@@ -49,6 +49,17 @@ public:
                     bool bCloseByEsc = true,
                     bool bCloseByEnter = false);
 
+    /** Set whether a modal window passes the Enter key through to its window procedure
+    *   (only for windows whose focused button must respond to Enter, such as MessageBoxWnd).
+    *   By default IsDialogMessage converts Enter into WM_COMMAND IDOK, so the window procedure
+    *   never receives WM_KEYDOWN. After the window is registered through this interface,
+    *   IsDialogMessageDui passes VK_RETURN through for it and the window procedure handles it.
+    * @param [in] hWnd The window handle, which must be valid
+    * @param [in] bPassthrough true = pass the Enter key through, false = restore the default
+    *             behaviour (the window is removed from the set)
+    */
+    static void SetEnterKeyPassthrough(HWND hWnd, bool bPassthrough);
+
     /** Create a child window (a non-popup child window)
     * @param [in] pParentWindow The parent window
     * @param [in] nX The X coordinate of the child window (relative to the parent window)

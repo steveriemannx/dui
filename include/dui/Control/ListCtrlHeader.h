@@ -209,8 +209,9 @@ protected:
     void OnHeaderColumnCheckStateChanged(ListCtrlHeaderItem* pHeaderItem, bool bChecked);
 
     /** The display properties of the header columns have changed
+    * @param [in] nColumnId The ID of the column
     */
-    void OnHeaderColumnVisibleChanged();
+    void OnHeaderColumnVisibleChanged(size_t nColumnId);
 
     /** Double-click event on the splitter of a header column
     * @param [in] pHeaderItem The control interface of the header
@@ -223,6 +224,14 @@ protected:
         (2) The checked state and the selected state are separated, two different states
     */
     virtual bool SupportCheckMode() const override;
+
+    /** Convert the mouse point (window client coordinates) into the control coordinate space used for hit-testing the CheckBox icon
+    *   The CheckBox at the left of the header is always displayed at the far left, inside the frozen column area (it does not move with horizontal scrolling),
+    *   so when there are frozen columns the horizontal scroll offset must be counted as 0, to keep hit testing consistent with the displayed position of the frozen columns
+    * @param [in] ptMouse The mouse point (window client coordinates)
+    * @return Returns the converted point in the control coordinate space
+    */
+    virtual UiPoint GetCheckBoxMousePos(const UiPoint& ptMouse) const override;
 
     /** Check state change event (the m_bChecked variable has changed)
     */

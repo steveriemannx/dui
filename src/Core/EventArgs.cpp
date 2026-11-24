@@ -14,6 +14,7 @@ EventArgs::EventArgs() :
     modifierKey(0),
     eventData(0),
     pEventData(nullptr),
+    pExtraData(nullptr),
     listCtrlType(-1)
 {
     ptMouse.x = 0;
@@ -115,6 +116,17 @@ static void InitEventStringMap(std::unordered_map<EventType, std::string>* typeM
         {kEventTabSelect, "kEventTabSelect", "TabSelect", "tab_select"},
         {kEventExpand, "kEventExpand", "Expand", "expand"},
         {kEventCollapse, "kEventCollapse", "Collapse", "collapse"},
+        {kEventPanelCollapsing, "kEventPanelCollapsing", "PanelCollapsing", "panel_collapsing"},
+        {kEventPanelExpanding, "kEventPanelExpanding", "PanelExpanding", "panel_expanding"},
+        {kEventNavigationItemClick, "kEventNavigationItemClick", "NavigationItemClick", "navigation_item_click"},
+        {kEventNavigationSelectionChanged, "kEventNavigationSelectionChanged", "NavigationSelectionChanged", "navigation_selection_changed"},
+        {kEventNavigationPaneToggling, "kEventNavigationPaneToggling", "NavigationPaneToggling", "navigation_pane_toggling"},
+        {kEventNavigationPaneToggled, "kEventNavigationPaneToggled", "NavigationPaneToggled", "navigation_pane_toggled"},
+        {kEventTimelineItemClick, "kEventTimelineItemClick", "TimelineItemClick", "timeline_item_click"},
+        {kEventTagAdded, "kEventTagAdded", "TagAdded", "tag_added"},
+        {kEventTagRemoved, "kEventTagRemoved", "TagRemoved", "tag_removed"},
+        {kEventTagClick, "kEventTagClick", "TagClick", "tag_click"},
+        {kEventAutoCompleteSelect, "kEventAutoCompleteSelect", "AutoCompleteSelect", "auto_complete_select"},
         {kEventZoom, "kEventZoom", "Zoom", "zoom"},
         {kEventTextChanged, "kEventTextChanged", "TextChanged", "text_changed"},
         {kEventSelChanged, "kEventSelChanged", "SelChanged", "sel_changed"},
@@ -124,6 +136,7 @@ static void InitEventStringMap(std::unordered_map<EventType, std::string>* typeM
         {kEventLinkClick, "kEventLinkClick", "LinkClick", "link_click"},
         {kEventScrollPosChanged, "kEventScrollPosChanged", "ScrollPosChanged", "scroll_pos_changed"},
         {kEventValueChanged, "kEventValueChanged", "ValueChanged", "value_changed"},
+        {kEventProgressCompleted, "kEventProgressCompleted", "ProgressCompleted", "progress_completed"},
         {kEventPosChanged, "kEventPosChanged", "PosChanged", "pos_changed"},
         {kEventSizeChanged, "kEventSizeChanged", "SizeChanged", "size_changed"},
         {kEventVisibleChanged, "kEventVisibleChanged", "VisibleChanged", "visible_changed"},
@@ -145,6 +158,12 @@ static void InitEventStringMap(std::unordered_map<EventType, std::string>* typeM
         {kEventViewTypeChanged, "kEventViewTypeChanged", "ViewTypeChanged", "view_type_changed"},
         {kEventViewPosChanged, "kEventViewPosChanged", "ViewPosChanged", "view_pos_changed"},
         {kEventViewSizeChanged, "kEventViewSizeChanged", "ViewSizeChanged", "view_size_changed"},
+        {kEventColumnWidthChanged, "kEventColumnWidthChanged", "ColumnWidthChanged", "column_width_changed"},
+        {kEventColumnOrderChanged, "kEventColumnOrderChanged", "ColumnOrderChanged", "column_order_changed"},
+        {kEventColumnVisibleChanged, "kEventColumnVisibleChanged", "ColumnVisibleChanged", "column_visible_changed"},
+        {kEventColumnSorted, "kEventColumnSorted", "ColumnSorted", "column_sorted"},
+        {kEventCurrentCellChanged, "kEventCurrentCellChanged", "CurrentCellChanged", "current_cell_changed"},
+        {kEventCellSelectionChanged, "kEventCellSelectionChanged", "CellSelectionChanged", "cell_selection_changed"},
         {kEventPathChanged, "kEventPathChanged", "PathChanged", "path_changed"},
         {kEventPathClick, "kEventPathClick", "PathClick", "path_click"},
         {kEventDropEnter, "kEventDropEnter", "DropEnter", "drop_enter"},
@@ -158,7 +177,9 @@ static void InitEventStringMap(std::unordered_map<EventType, std::string>* typeM
         {kEventLoading, "kEventLoading", "Loading", "loading"},
         {kEventLoadingStop, "kEventLoadingStop", "LoadingStop", "loading_stop"},
         {kEventImageLoad, "kEventImageLoad", "ImageLoad", "image_load"},
-        {kEventImageDecode, "kEventImageDecode", "ImageDecode", "image_decode"}
+        {kEventImageDecode, "kEventImageDecode", "ImageDecode", "image_decode"},
+        {kEventViewModeChanged, "kEventViewModeChanged", "ViewModeChanged", "view_mode_changed"},
+        {kEventDisplayDateChanged, "kEventDisplayDateChanged", "DisplayDateChanged", "display_date_changed"}
     };
 
     for (const EventTypeString& typeString : eventTypeStringList) {

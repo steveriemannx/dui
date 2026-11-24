@@ -1,12 +1,10 @@
-#include "dui/Control/DateTimeWnd_MacOS.h"
+#include "dui/Control/DateTimeWnd.h"
 #include "dui/Control/DateTime.h"
 #include "dui/Control/RichEdit.h"
 #include "dui/Control/Label.h"
 #include "dui/Control/Button.h"
 #include "dui/Box/VBox.h"
 #include "dui/Core/GlobalManager.h"
-
-#if defined(DUI_BUILD_FOR_MACOS)
 
 namespace ui
 {
@@ -337,7 +335,7 @@ RichEdit* DateTimeWnd::CreateEditYear() const
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());    
     pRichEdit->SetAttribute("limit_text", "4");
     pRichEdit->SetAttribute("number_format", "%04I64d");
-    pRichEdit->SetText(L"2024");
+    pRichEdit->SetText("2024");
     pRichEdit->SetMinNumber(1900);
     return pRichEdit;
 }
@@ -347,7 +345,7 @@ RichEdit* DateTimeWnd::CreateEditMon() const
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
     pRichEdit->SetAttribute("limit_text", "2");
     pRichEdit->SetAttribute("number_format", "%02I64d");
-    pRichEdit->SetText(L"01");
+    pRichEdit->SetText("01");
     pRichEdit->SetMinNumber(1);
     pRichEdit->SetMaxNumber(12);
     return pRichEdit;
@@ -358,7 +356,7 @@ RichEdit* DateTimeWnd::CreateEditMDay() const
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
     pRichEdit->SetAttribute("limit_text", "2");
     pRichEdit->SetAttribute("number_format", "%02I64d");
-    pRichEdit->SetText(L"01");
+    pRichEdit->SetText("01");
     pRichEdit->SetMinNumber(1);
     pRichEdit->SetMaxNumber(31);
     return pRichEdit;
@@ -369,7 +367,7 @@ RichEdit* DateTimeWnd::CreateEditHour() const
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
     pRichEdit->SetAttribute("limit_text", "2");
     pRichEdit->SetAttribute("number_format", "%02I64d");
-    pRichEdit->SetText(L"00");
+    pRichEdit->SetText("00");
     pRichEdit->SetMinNumber(0);
     pRichEdit->SetMaxNumber(23);
     return pRichEdit;
@@ -380,7 +378,7 @@ RichEdit* DateTimeWnd::CreateEditMin() const
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
     pRichEdit->SetAttribute("limit_text", "2");
     pRichEdit->SetAttribute("number_format", "%02I64d");
-    pRichEdit->SetText(L"00");
+    pRichEdit->SetText("00");
     pRichEdit->SetMinNumber(0);
     pRichEdit->SetMaxNumber(59);
     return pRichEdit;
@@ -391,7 +389,7 @@ RichEdit* DateTimeWnd::CreateEditSec() const
     RichEdit* pRichEdit = new RichEdit(m_pOwner->GetWindow());
     pRichEdit->SetAttribute("limit_text", "2");
     pRichEdit->SetAttribute("number_format", "%02I64d");
-    pRichEdit->SetText(L"00");
+    pRichEdit->SetText("00");
     pRichEdit->SetMinNumber(0);
     pRichEdit->SetMaxNumber(59);
     return pRichEdit;
@@ -451,10 +449,10 @@ void DateTimeWnd::UpdateDayRange()
 
         int32_t nDay = StringUtil::StringToInt32(m_editList[EditType::MDAY]->GetText());
         if (nDay < m_editList[EditType::MDAY]->GetMinNumber()) {
-            m_editList[EditType::MDAY]->SetText(StringUtil::Printf("%02d", m_editList[EditType::MDAY]->GetMinNumber()));
+            m_editList[EditType::MDAY]->SetText(StringUtil::Printf("%02d", static_cast<int32_t>(m_editList[EditType::MDAY]->GetMinNumber())));
         }
         if (nDay > m_editList[EditType::MDAY]->GetMaxNumber()) {
-            m_editList[EditType::MDAY]->SetText(StringUtil::Printf("%02d", m_editList[EditType::MDAY]->GetMaxNumber()));
+            m_editList[EditType::MDAY]->SetText(StringUtil::Printf("%02d", static_cast<int32_t>(m_editList[EditType::MDAY]->GetMaxNumber())));
         }
     }
 }
@@ -483,6 +481,7 @@ void DateTimeWnd::Clear()
 
 bool DateTimeWnd::SetSpinClass(const std::string& spinClass)
 {
+    ASSERT(m_pOwner != nullptr);
     if (m_pOwner == nullptr) {
         return false;
     }
@@ -517,6 +516,7 @@ bool DateTimeWnd::SetSpinClass(const std::string& spinClass)
             pDownButton = dynamic_cast<Button*>(m_pSpinBox->GetItemAt(1));
         }
 
+        ASSERT((pUpButton != nullptr) && (pDownButton != nullptr));
         if ((pUpButton == nullptr) || (pDownButton == nullptr)) {
             m_pOwner->RemoveItem(m_pSpinBox);
             m_pSpinBox = nullptr;
@@ -624,6 +624,3 @@ void DateTimeWnd::AdjustTextNumber(int32_t nDelta)
 }
 
 } //namespace ui
-
-#endif // DUI_BUILD_FOR_MACOS
-

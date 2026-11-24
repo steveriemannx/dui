@@ -67,46 +67,46 @@ bool ClickThrough::ClickThroughWindow(Window* pWindow, const UiPoint& ptMouse)
         return false;
     }
     
-    // 获取原生窗口句柄
+    // Get the native window handle
     NSWindow* pNSWindow = (NSWindow*)pWindow->NativeWnd()->GetNSWindow();
     if (pNSWindow == nullptr) {
         return false;
     }
     
-    // 坐标转换为窗口客户端坐标
+    // Convert the coordinates into window client coordinates
     UiPoint pt = ptMouse;
     pWindow->ScreenToClient(pt);
 
-    // 当前处理的窗口
+    // The window being processed
     NSWindow* currentWindow = pNSWindow;
     
-    // 保存窗口原始状态以便恢复
+    // Save the window's original state so it can be restored
     NSWindowLevel originalLevel = [currentWindow level];
     NSWindowCollectionBehavior originalBehavior = [currentWindow collectionBehavior];
     BOOL originalIgnoresMouseEvents = [currentWindow ignoresMouseEvents];
     
-    // 临时配置窗口为可穿透状态
+    // Temporarily make the window click-through
     [currentWindow setLevel:NSFloatingWindowLevel];
     [currentWindow setCollectionBehavior:NSWindowCollectionBehaviorCanJoinAllSpaces |
                                      NSWindowCollectionBehaviorIgnoresCycle |
                                      NSWindowCollectionBehaviorStationary];
     [currentWindow setIgnoresMouseEvents:YES];
     
-    // 坐标转换: 窗口坐标 -> 屏幕坐标
+    // Coordinate conversion: window coordinates -> screen coordinates
     NSView* contentView = [currentWindow contentView];
     NSPoint windowPoint = NSMakePoint(pt.x, pt.y);
     NSPoint screenPoint = [contentView convertPoint:windowPoint toView:nil];
     
-    // 获取鼠标点击位置下的窗口编号
+    // Get the number of the window under the mouse click
     NSInteger windowNumber = [NSWindow windowNumberAtPoint:screenPoint
                                 belowWindowWithWindowNumber:0];
     
-    // 恢复窗口原始状态
+    // Restore the window's original state
     [currentWindow setIgnoresMouseEvents:originalIgnoresMouseEvents];
     [currentWindow setLevel:originalLevel];
     [currentWindow setCollectionBehavior:originalBehavior];
 
-    // 如果点击到其他窗口，则激活该窗口
+    // If another window was clicked, activate that window
     if (windowNumber != 0 && windowNumber != [currentWindow windowNumber]) {
         MacOS_ActivateWindowByNumber(windowNumber);
     }

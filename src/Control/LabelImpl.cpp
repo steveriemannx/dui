@@ -381,7 +381,10 @@ void LabelImpl::SetRichText(bool bRichText)
 {
     if (m_bRichText != bRichText) {
         m_bRichText = bRichText;
-        m_pOwner->Invalidate();
+        //Plain text and rich text are parsed and measured differently, so the paint cache
+        //must be invalidated and the layout recalculated
+        m_pTextDrawer->SetTextChanged();
+        m_pOwner->RelayoutOrRedraw();
     }
 }
 
@@ -635,8 +638,12 @@ bool LabelImpl::HasHotColorState()
 
 UiSize LabelImpl::OnEstimateText(UiSize szAvailable)
 {
+    return OnEstimateTextWith(GetOwnerText(), szAvailable);
+}
+
+UiSize LabelImpl::OnEstimateTextWith(const std::string& textValue, UiSize szAvailable)
+{
     UiSize fixedSize;
-    const std::string textValue = GetOwnerText();
     if (textValue.empty()) {
         //When the text is empty, the estimated width and height are both 0
         return fixedSize;
@@ -869,6 +876,13 @@ std::string LabelImpl::GetStateTextColor(ControlStateType stateType) const
 
 void LabelImpl::SetStateTextColor(ControlStateType stateType, const std::string& dwTextColor)
 {
+    if (m_pTextColorMap != nullptr) {
+        if (m_pTextColorMap->GetStateColor(stateType) == dwTextColor) {
+            //The color has not changed: no need to set it again (this avoids repeatedly writing the
+            //color and triggering a redraw when a list/table refills its items while scrolling)
+            return;
+        }
+    }
     if (stateType == kControlStateHot) {
         m_pOwner->SetFadeHot(true);
     }

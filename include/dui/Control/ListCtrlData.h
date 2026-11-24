@@ -4,22 +4,53 @@
 #include "dui/Box/VirtualListBox.h"
 #include "dui/Control/ListCtrlDefs.h"
 #include <unordered_map>
+#include <array>
+#include <memory>
 
 namespace ui
 {
 /** Data manager of list items
 */
 class ListCtrl;
+class ListCtrlReportView;
 struct ListCtrlSubItemData;
 class DUI_API ListCtrlData : public ui::VirtualListBoxElement
 {
+    friend class ListCtrlReportView; //List data display UI control (Report view): needs access to the cell data storage to support per-cell refresh
+    friend class ListCtrl;           //ListCtrl control: needs to map display indexes to row identities (RowId), decoupling cell hover state from display order
 public:
     //Data structure used for storage
     typedef ListCtrlSubItemData2 Storage;
-    typedef std::shared_ptr<Storage> StoragePtr;
-    typedef std::vector<StoragePtr> StoragePtrList;
-    typedef std::unordered_map<size_t, StoragePtrList> StorageMap;
-    typedef std::vector<ListCtrlItemData> RowDataList;
+    typedef std::vector<ListCtrlItemData> RowDataList;      //Row attribute pool: indexed by row identity (RowId)
+
+    /** Row identity: the unique identifier of a row; monotonically increasing, never reused after deletion.
+        Used to decouple "the identity of a row" from "the physical position of a row": insert/delete/update only reorder the display order list, the data itself is not moved
+    */
+    typedef uint32_t RowId;
+
+    /** Invalid row identity
+    */
+    static constexpr RowId kInvalidRowId = static_cast<RowId>(0xFFFFFFFF);
+
+    /** Number of cells per page (paged contiguous storage)
+        Page index = RowId / kPageCells, offset within the page = RowId % kPageCells
+    */
+    static constexpr size_t kPageCells = 64;
+
+    /** Storage page: the cells within a page are stored contiguously, with a "written" marker
+        Advantages: the array within a page is contiguous (cache-friendly for drawing/sorting scans, no shared_ptr pointer chasing);
+              pages are lazily allocated (created on the first write to a page), so sparse or purely virtual table scenarios do not bloat memory
+    */
+    struct StoragePage
+    {
+        std::array<Storage, kPageCells> cells;  //Cells within the page (contiguous)
+        uint8_t usedMask[kPageCells] = {};      //Whether each cell has been written (1 means written)
+    };
+
+    /** Storage page list of each column (stored by page index; pages are lazily allocated, so null pointers are allowed in the list)
+    */
+    typedef std::vector<std::unique_ptr<StoragePage>> StoragePageList;
+    typedef std::unordered_map<size_t, StoragePageList> StorageMap;
 
 public:
     ListCtrlData();
@@ -149,6 +180,23 @@ public:
     * @return If data was deleted, returns true; otherwise returns false
     */
     bool DeleteAllDataItems();
+
+    /** Delete the data items of the specified rows in batch and refresh the UI display
+        Implementation: first de-duplicate by row identity and mark tombstones, then compact the
+        display order list in a single pass, avoiding the O(K*N) move cost of deleting row by row
+    * @param [in] displayIndexs The display indexes of the data items to delete, valid range: [0, GetDataItemCount());
+    *                            duplicate indexes are ignored; out-of-range indexes are ignored
+    * @return Returns the number of rows actually deleted
+    */
+    size_t DeleteDataItems(const std::vector<size_t>& displayIndexs);
+
+    /** Compact the data storage: tidy up the row identities and the storage page layout, and
+        reclaim the memory occupied by deleted rows
+        Note: this is an explicit whole-table maintenance operation (renumbering + full compaction);
+              call it only while no filling/drawing is in progress. After the call, all internal
+              cell pointers (raw pointers) handed out earlier become invalid
+    */
+    void CompactStorage();
 
     /** Set the row attribute data of a data item and refresh the UI display
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
@@ -388,6 +436,22 @@ public:
     */
     int32_t GetSubItemTextFormat(size_t itemIndex, size_t columnId) const;
 
+    /** Set whether the text of the specified data item is displayed on a single line and refresh the UI display
+        Note: when set to multi-line (false), the text wraps automatically when it exceeds the cell width;
+              the row height must be adjusted by the caller through SetDataItemHeight, otherwise the overflow is clipped
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnId The column ID
+    * @param [in] bSingleLine true means single-line display (clipped with an ellipsis when it overflows), false means multi-line display (automatic wrapping)
+    */
+    bool SetSubItemSingleLine(size_t itemIndex, size_t columnId, bool bSingleLine);
+
+    /** Get whether the text of the specified data item is displayed on a single line
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnId The column ID
+    * @return true means single-line display, false means multi-line display (automatic wrapping)
+    */
+    bool IsSubItemSingleLine(size_t itemIndex, size_t columnId) const;
+
     /** Set the background color of the specified data item and refresh the UI display
     * @param [in] itemIndex The index of the data item
     * @param [in] columnId The column ID
@@ -463,6 +527,33 @@ public:
     */
     bool IsSubItemEditable(size_t itemIndex, size_t columnId) const;
 
+    /** Set the column to be displayed as a progress bar and refresh the UI display
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnId The column ID
+    * @param [in] nProgress The progress value, valid range [0, 100]; -1 means no progress bar is shown (displayed as normal text)
+    */
+    bool SetSubItemProgress(size_t itemIndex, size_t columnId, int32_t nProgress);
+
+    /** Get the progress value of the column
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnId The column ID
+    * @return Returns the progress value, valid range [0, 100]; -1 means no progress bar is shown (displayed as normal text)
+    */
+    int32_t GetSubItemProgress(size_t itemIndex, size_t columnId) const;
+
+    /** Set whether the text of the column is rendered as rich text (HTML-like format) and refresh the UI display
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnId The column ID
+    * @param [in] bRichText true means render as rich text, false means render as normal text
+    */
+    bool SetSubItemRichText(size_t itemIndex, size_t columnId, bool bRichText);
+
+    /** Get whether the text of the column is rendered as rich text (HTML-like format)
+    * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
+    * @param [in] columnId The column ID
+    */
+    bool IsSubItemRichText(size_t itemIndex, size_t columnId) const;
+
     /** Sort the data and refresh the UI display
     * @param [in] columnId The column ID
     * @param [in] nColumnIndex The ordinal number of the column
@@ -470,6 +561,7 @@ public:
     * @param [in] nSortFlag The sort method flag, see the enum values of ListCtrlSubItemSortFlag
     * @param [in] pfnCompareFunc The data compare function
     * @param [in] pUserData User custom data, passed back to the compare function through the parameter when it is called
+    * Note: stable sort (equal elements keep their original relative order), for both ascending and descending order
     */
     bool SortDataItems(size_t nColumnId, size_t nColumnIndex,
                        bool bSortedUp, uint8_t nSortFlag,
@@ -539,16 +631,29 @@ private:
     /** Get the data of the specified data item, for reading
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
     * @param [in] columnId The column ID
-    * @return Returns nullptr on failure
+    * @return Returns nullptr on failure, or when the cell has no data
     */
-    StoragePtr GetSubItemStorage(size_t itemIndex, size_t nColumnId) const;
+    const Storage* GetSubItemStorage(size_t itemIndex, size_t nColumnId) const;
 
-    /** Get the data of the specified data item, for writing
+    /** Get the data of the specified data item, for writing (allocates a storage page when necessary)
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
     * @param [in] columnId The column ID
     * @return Returns nullptr on failure
     */
-    StoragePtr GetSubItemStorageForWrite(size_t itemIndex, size_t nColumnId);
+    Storage* GetSubItemStorageForWrite(size_t itemIndex, size_t nColumnId);
+
+    /** Read the cell of a column by row identity (read-only); returns nullptr when the cell has not been written
+    */
+    static const Storage* GetStorageAt(const StoragePageList& pageList, RowId rowId);
+
+    /** Get a writable cell of a column by row identity; allocates a storage page when necessary and marks it as written
+    */
+    static Storage* GetStorageAtForWrite(StoragePageList& pageList, RowId rowId);
+
+    /** Reset the cell of a given row identity in a column to a tombstone (clear the data and mark it as not written); does not allocate a storage page,
+        and releases the whole page once all of its cells are tombstones (page recycling)
+    */
+    static void ResetStorageAt(StoragePageList& pageList, RowId rowId);
 
     /** Get the data of each column for UI display
     * @param [in] itemIndex The index of the data item, valid range: [0, GetDataItemCount())
@@ -556,22 +661,117 @@ private:
     */
     bool GetSubItemStorageList(size_t itemIndex, std::vector<ListCtrlSubItemData2Pair>& subItemList) const;
 
-public:
-    /** Get the row attribute data
+    /** Display index -> row identity; returns kInvalidRowId when the index is invalid
     */
-    const RowDataList& GetItemDataList() const;
+    RowId GetRowIdByDisplayIndex(size_t itemIndex) const;
+
+    /** Row identity -> display index; returns Box::InvalidIndex when not found
+    */
+    size_t GetDisplayIndexByRowId(RowId rowId) const;
+
+    /** Allocate a new row identity and grow the column data pools and the row attribute pool up to that position
+    * @return Returns the newly allocated row identity
+    */
+    RowId AllocRowId();
+
+    /** Release the data associated with a row identity (column pools become tombstones, row attributes are reset) and fix the counters and the single-selection state
+    */
+    void FreeRowId(RowId rowId);
+
+    /** Cell selection: find the selection bitmap of a column (returns nullptr when it does not exist)
+    */
+    const std::vector<uint8_t>* FindCellBitmap(size_t nColumnId) const;
+
+    /** Cell selection: find (creating if necessary) the selection bitmap of a column and make sure its capacity can hold rowId
+    */
+    std::vector<uint8_t>& GetCellBitmapForWrite(size_t nColumnId, RowId rowId);
+
+    /** Cell selection: set the selection state of a single cell by row identity
+    */
+    void SetCellSelectedByRowId(RowId rowId, size_t nColumnId, bool bSelected);
+
+    /** Cell selection: determine whether a single cell is selected by row identity
+    */
+    bool IsCellSelectedByRowId(RowId rowId, size_t nColumnId) const;
+
+    /** Check the consistency of the internal data (assertion checks only in Debug builds)
+    */
+    void AssertDataConsistency() const;
+
+public:
+    /** Get the row attribute data of the data item at the specified display position (accessed in display order)
+    * @param [in] itemIndex The display index of the data item, valid range: [0, GetDataItemCount())
+    * @return Returns the pointer to the row attribute data, or nullptr when the index is invalid; the pointer is valid until the next data change
+    */
+    const ListCtrlItemData* GetDisplayItemData(size_t itemIndex) const;
 
     /** Whether it is the normal mode (all row heights are the default row height, no hidden rows, no always-on-top rows)
     */
     bool IsNormalMode() const;
+
+public:
+    /** Get the current cell (the current cell in cell-selection mode; returns an invalid value when not set)
+        The returned row index is the current display index (stored internally by row identity, so it follows the data row after sorting/insert/delete)
+    */
+    ListCtrlCellId GetCurrentCell() const;
+
+    /** Get the anchor cell (the start point of a range selection; returns an invalid value when not set)
+    */
+    ListCtrlCellId GetAnchorCell() const;
+
+    /** Set the current cell (updates the current cell only, does not change the selected set)
+    * @param [in] cell The cell identity (row display index + column ID)
+    * @return Returns whether it was set successfully (returns false without any change when the row index or column ID is invalid)
+    */
+    bool SetCurrentCell(const ListCtrlCellId& cell);
+
+    /** Set the anchor cell (updates the anchor only, does not change the selected set)
+    * @param [in] cell The cell identity (row display index + column ID)
+    * @return Returns whether it was set successfully (returns false without any change when the row index or column ID is invalid)
+    */
+    bool SetAnchorCell(const ListCtrlCellId& cell);
+
+    /** Get the selection range of cells (anchor + current cell, not normalized; used for queries and event reporting)
+    */
+    void GetCellSelection(ListCtrlCellId& anchorCell, ListCtrlCellId& focusCell) const;
+
+    /** Determine whether a single cell is selected (O(1), decided by row identity, decoupled from display order)
+    * @param [in] nRowIndex The display index of the row
+    * @param [in] nColumnId The column ID
+    */
+    bool IsCellSelected(size_t nRowIndex, size_t nColumnId) const;
+
+    /** Set the selection state of a single cell (does not clear other selected cells)
+    * @return Returns whether the selection state changed (returns false when the row is invalid/not selectable or the state is unchanged)
+    */
+    bool SetCellSelected(size_t nRowIndex, size_t nColumnId, bool bSelected);
+
+    /** Select the region "display row range x specified column set"
+    * @param [in] nRowBegin/nRowEnd The display index range (already normalized, begin<=end); an invalid value means the rows are not changed
+    * @param [in] columnIdList The list of column IDs participating in the selection (order does not matter)
+    * @param [in] bAdditive true = append to the existing selection; false = clear all cell selection first and then set
+    */
+    void SetCellSelectionRect(size_t nRowBegin, size_t nRowEnd,
+                              const std::vector<size_t>& columnIdList, bool bAdditive);
+
+    /** Select all cells
+    * @param [in] columnIdList The list of column IDs participating in the selection
+    */
+    void SelectAllCells(const std::vector<size_t>& columnIdList);
+
+    /** Clear all cell selection (the selected set, the anchor and the current cell are cleared together)
+    * @return Whether an actual selection state existed before clearing (there were selected cells or a current cell);
+    *         returning false means there was no selection at all, so the caller does not need to refresh the UI or dispatch selection change events
+    */
+    bool ClearCellSelection();
 
 private:
     /** Sort data
     */
     struct StorageData
     {
-        size_t index;       //The original data index
-        StoragePtr pStorage;
+        size_t index;             //The original data index
+        const Storage* pStorage;  //The cell of this row in the sort column (may be nullptr)
     };
 
     /** Sort the data
@@ -582,6 +782,9 @@ private:
     * @param [in] nSortFlag The sort method flag, see the enum values of ListCtrlSubItemSortFlag
     * @param [in] pfnCompareFunc The data compare function
     * @param [in] pUserData User custom data, passed back to the compare function through the parameter when it is called
+    * Note: stable sort (equal elements keep their original relative order); descending order is implemented
+    *       by transposing the comparison, not by "sort ascending then reverse the whole list" (which
+    *       would reverse the relative order of equal elements)
     */
     bool SortStorageData(std::vector<StorageData>& dataList, size_t nColumnId, size_t nColumnIndex,
                          bool bSortedUp, uint8_t nSortFlag,
@@ -608,13 +811,33 @@ private:
     */
     bool m_bAutoCheckSelect;
 
-    /** Data, saved by column, one array per column
+    /** The data, saved by column; each column has one paged contiguous storage
+        Stored by page index (page = RowId / kPageCells), indexed inside a page by the row identity offset;
+        pages are lazily allocated; deleting a row only marks that cell as not written (tombstone), so the
+        data itself is not moved; the whole page is released when all of its cells become tombstones (page
+        recycling); after long periods of frequent insertion/deletion, CompactStorage can be called for a
+        full compaction
     */
     StorageMap m_dataMap;
 
-    /** Row attribute data
+    /** Row attribute data, indexed by row identity (RowId); when a row is deleted its slot is reset to the default value (tombstone)
     */
     RowDataList m_rowDataList;
+
+    /** Display order list: m_displayOrder[i] is the row identity of the i-th current display position.
+        It is the only structure that changes on insert/delete/update/sort (4 bytes per element),
+        and the data itself is not moved with it
+    */
+    std::vector<RowId> m_displayOrder;
+
+    /** The next row identity to allocate (monotonically increasing, never reused after deletion)
+    */
+    RowId m_nextRowId;
+
+    /** A reusable buffer for filling elements, so that each row fill does not reallocate a temporary container
+        (only used during the synchronous FillElement call; no state is held across calls)
+    */
+    std::vector<ListCtrlSubItemData2Pair> m_subItemListBuffer;
 
     /** The sort function set externally
     */
@@ -640,9 +863,9 @@ private:
     */
     bool m_bMultiSelect;
 
-    /** The index of the selected element in single-select mode
+    /** The row identity of the selected element in single-select mode (kInvalidRowId when none is selected)
     */
-    size_t m_nSelectedIndex;
+    RowId m_nSelectedRowId;
 
     /** The current default text attributes
     */
@@ -651,6 +874,30 @@ private:
     /** The current default row height
     */
     int32_t m_nDefaultItemHeight;
+
+    /** Cell identity: row identity (RowId) + column ID
+        Decoupled from the display order, so it still points to the same data row after rows are sorted/inserted/deleted
+    */
+    struct CellIdentity
+    {
+        RowId nRowId = kInvalidRowId;
+        size_t nColumnId = Box::InvalidIndex;
+        bool IsValid() const { return (nRowId != kInvalidRowId) && (nColumnId != Box::InvalidIndex); }
+    };
+
+    /** The anchor cell in cell-selection mode (the start point of dragging/range selection)
+    */
+    CellIdentity m_anchorCell;
+
+    /** The current cell in cell-selection mode (the range focus)
+    */
+    CellIdentity m_currentCell;
+
+    /** Cell selection set: one bitmap per column (key = column ID, value = bitmap indexed by row identity RowId, 1 means selected)
+        Independent of the paged lazily allocated cell storage: selecting all / selecting rows not yet materialized does not force cell entities to be allocated;
+        memory usage is "column count x row count / 8 bytes"; indexed by row identity, so the selection follows the original data row after sorting/insert/delete
+    */
+    std::unordered_map<size_t, std::vector<uint8_t>> m_cellSelected;
 };
 
 }//namespace ui

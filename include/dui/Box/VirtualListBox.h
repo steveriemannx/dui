@@ -226,7 +226,18 @@ public:
     */
     void EnsureVisible(size_t nElementIndex, bool bToTop);
 
-    /** Refresh the data in the specified range, keeping the data and UI display in sync, data range: [nStartElementIndex, nEndElementIndex]
+    /** Whether refreshing the UI is allowed
+    * @param [in] bEnable If true, refreshing the UI through the Refresh family of functions is allowed; if false, refreshing the UI through the Refresh family of functions is disabled,
+                          and the UI is not refreshed automatically when the data changes either
+    * @return Returns the previous IsEnableRefresh() state
+    */
+    bool SetEnableRefresh(bool bEnable);
+
+    /** Determine whether refreshing the UI is allowed
+    */
+    bool IsEnableRefresh() const;
+
+    /** Refresh the data in the specified range, keeping the data and the UI display in sync, data range: [nStartElementIndex, nEndElementIndex]
     * @param [in] nStartElementIndex The start index of the data
     * @param [in] nEndElementIndex The end index of the data
     */
@@ -477,6 +488,15 @@ public:
     virtual void OnFilledElements(const RefreshDataList& refreshDataList);
 
 protected:
+    /** The data content has changed; the displayed data needs to be reloaded in the event. Subclasses can override this function to intercept the automatic refresh of the UI
+    */
+    virtual void OnModelDataChanged(size_t nStartElementIndex, size_t nEndElementIndex);
+
+    /** The number of data items has changed; the displayed data needs to be reloaded in the event. Subclasses can override this function to intercept the automatic refresh of the UI
+    */
+    virtual void OnModelCountChanged();
+
+protected:
     /** Create a child item
     * @return Returns the pointer to the created child item
     */
@@ -493,13 +513,11 @@ protected:
     */
     void ReArrangeChild(bool bForce);
 
-    /** The data content has changed; the displayed data needs to be reloaded in the event
+    /** Refresh the data elements that satisfy the condition within the visible area (the common scanning logic of OnModelDataChanged and RefreshElements)
+    * @param [in] isElementNeedRefresh Callback that determines whether a data element needs to be refreshed
+    * @param [in] nTargetCount The number of elements that need to be refreshed; 0 means no limit (the scan ends early once enough elements have been found)
     */
-    void OnModelDataChanged(size_t nStartElementIndex, size_t nEndElementIndex);
-
-    /** The number of data items has changed; the displayed data needs to be reloaded in the event
-    */
-    void OnModelCountChanged();
+    void RefreshVisibleElements(const std::function<bool(size_t)>& isElementNeedRefresh, size_t nTargetCount);
 
     /** Whether syncing from the UI state to the stored state is allowed
     */
@@ -576,6 +594,10 @@ private:
     /** Whether syncing from the UI state to the stored state is allowed
     */
     bool m_bEnableUpdateProvider;
+
+    /** Whether refreshing the UI is allowed
+    */
+    bool m_bEnableRefresh;
 };
 
 /** A virtual ListBox with horizontal layout

@@ -1,10 +1,8 @@
-#ifndef _UI_CONTROL_DATETIME_WND_MACOS_H_
-#define _UI_CONTROL_DATETIME_WND_MACOS_H_
+#ifndef _UI_CONTROL_DATETIME_WND_H_
+#define _UI_CONTROL_DATETIME_WND_H_
 
 #include "dui/Core/UiTypes.h"
 #include "dui/Core/Callback.h"
-
-#if defined(DUI_BUILD_FOR_MACOS)
 
 namespace ui
 {
@@ -13,7 +11,7 @@ class RichEdit;
 class Control;
 class VBox;
 
-/** The implementation of the date time selection control (macOS native)
+/** The implementation of the date time selection control (a unified cross-platform implementation)
 */
 class DateTimeWnd : public virtual SupportWeakCallback
 {
@@ -122,6 +120,4 @@ private:
 
 } //namespace ui
 
-#endif // DUI_BUILD_FOR_MACOS
-
-#endif // _UI_CONTROL_DATETIME_WND_MACOS_H_
+#endif // _UI_CONTROL_DATETIME_WND_H_

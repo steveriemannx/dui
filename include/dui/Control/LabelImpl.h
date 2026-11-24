@@ -67,6 +67,16 @@ public:
      */
     UiSize OnEstimateText(UiSize szAvailable);
 
+    /** Calculate the size of the text area (width and height) using the specified text
+     *  instead of the control's current text. Used by subclasses when their text is empty:
+     *  they pass in a sample text as wide as the displayed content, so that an "auto"
+     *  sized control does not collapse.
+     *  @param [in] textValue The text content used for the estimation
+     *  @param [in] szAvailable The available size, excluding padding and margins
+     *  @return The estimated text size of the control, including padding (Box), excluding margins
+     */
+    UiSize OnEstimateTextWith(const std::string& textValue, UiSize szAvailable);
+
 public:
     /** Get the text content
     */

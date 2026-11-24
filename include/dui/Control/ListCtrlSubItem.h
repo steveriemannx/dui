@@ -92,10 +92,41 @@ public:
     */
     int32_t GetIconSpacing() const;
 
+    /** Set the progress bar display value
+    * @param [in] nProgress The progress value, valid range [0, 100]; -1 means the progress bar is not displayed (the text is displayed as normal text)
+    */
+    void SetProgress(int32_t nProgress);
+
+    /** Get the progress bar display value
+    * @return Returns the progress value, valid range [0, 100]; -1 means the progress bar is not displayed (the text is displayed as normal text)
+    */
+    int32_t GetProgress() const;
+
+    /** Get the progress bar foreground color (a semantic color name)
+    */
+    const std::string& GetProgressColor() const;
+
+    /** Get the progress bar background color (a semantic color name)
+    */
+    const std::string& GetProgressBkColor() const;
+
+    /** Set the position of the text on the progress bar
+    * @param [in] textPos Position mode, valid values: "center" (default, centered in the cell) / "left" (left aligned in the cell) / "right" (right aligned in the cell) / "outside" (displayed outside, to the right of the progress bar)
+    */
+    void SetProgressTextPos(const std::string& textPos);
+
+    /** Get the position of the text on the progress bar
+    */
+    const std::string& GetProgressTextPos() const;
+
 protected:
     /** Draw text
     */
     virtual void PaintText(IRender* pRender) override;
+
+    /** Paint the progress bar
+    */
+    void PaintProgress(IRender* pRender);
 
     /** Calculate the text area size (width and height)
      *  @param [in] szAvailable The available size, not including padding, not including margin
@@ -135,6 +166,22 @@ private:
     /** The associated column ID
     */
     size_t m_nColumnId;
+
+    /** Progress bar display value; -1 means the progress bar is not displayed (the text is displayed as normal text)
+    */
+    int32_t m_nProgress;
+
+    /** Progress bar foreground color (a semantic color name)
+    */
+    std::string m_sProgressColor;
+
+    /** Progress bar background color (a semantic color name)
+    */
+    std::string m_sProgressBkColor;
+
+    /** Position of the text on the progress bar ("center"/"right"/"outside")
+    */
+    std::string m_sProgressTextPos;
 };
 
 }//namespace ui

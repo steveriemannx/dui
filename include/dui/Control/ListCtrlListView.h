@@ -101,7 +101,15 @@ protected:
     * @param [in] subItemList data sub-items (representing the data of each column)
     * @return the maximum width of the column, which is the value after DPI adaptation; returns -1 on failure
     */
-    virtual int32_t GetMaxDataItemWidth(const std::vector<ListCtrlSubItemData2Ptr>& subItemList) override;
+    virtual int32_t GetMaxDataItemWidth(const std::vector<const ListCtrlSubItemData2*>& subItemList) override;
+
+    /** The data content has changed; the event handler needs to reload the displayed data. Subclasses can override this function to intercept the automatic refresh of the UI
+    */
+    virtual void OnModelDataChanged(size_t nStartElementIndex, size_t nEndElementIndex) override;
+
+    /** The data item count has changed; the event handler needs to reload the displayed data. Subclasses can override this function to intercept the automatic refresh of the UI
+    */
+    virtual void OnModelCountChanged() override;
 
 private:
     /** ListCtrl control interface
