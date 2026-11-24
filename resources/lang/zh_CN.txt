@@ -37,3 +37,10 @@ MULTI_LANG_SELECT_WINDOW_MIN        =    最小化
 MULTI_LANG_SELECT_WINDOW_CLOSE      =    关闭
 MULTI_LANG_LABEL_TEXT               =    这是一个支持多语言的程序。
 MULTI_LANG_RICH_TEXT                =    <font color="#8B0000">这是</font>一个<bgcolor color="#6495ED">支持多语言</bgcolor>的<b>程序</b>。
+
+;风格化消息框按钮（public/messagebox/messagebox.xml）
+STRID_MSGBOX_OK      = 确定
+STRID_MSGBOX_CANCEL  = 取消
+STRID_MSGBOX_YES     = 是
+STRID_MSGBOX_NO      = 否
+STRID_MSGBOX_RETRY   = 重试

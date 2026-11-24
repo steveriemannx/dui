@@ -37,23 +37,23 @@
                 </VBox>
                 <VBox name="native backend" height="auto" visible="true" width="100%" valign="center" padding="20,0,0,0" margin="0,4,0,0">
                     <HBox height="auto" >
-                        <Label text="Native_GetWindowSize：" width="300" text_align="right,vcenter"/>
+                        <Label text="Native_GetWindowSize:" width="300" text_align="right,vcenter"/>
                         <Label name="Native_GetWindowSize" text="W:0,H:0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                     <HBox height="auto" >
-                        <Label text="Native_GetWindowSizeInPixels：" width="300" text_align="right,vcenter"/>
+                        <Label text="Native_GetWindowSizeInPixels:" width="300" text_align="right,vcenter"/>
                         <Label name="Native_GetWindowSizeInPixels" text="W:0,H:0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                     <HBox height="auto" >
-                        <Label text="Native_GetDisplayContentScale：" width="300" text_align="right,vcenter"/>
+                        <Label text="Native_GetDisplayContentScale:" width="300" text_align="right,vcenter"/>
                         <Label name="Native_GetDisplayContentScale" text="0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                     <HBox height="auto" >
-                        <Label text="Native_GetWindowDisplayScale：" width="300" text_align="right,vcenter"/>
+                        <Label text="Native_GetWindowDisplayScale:" width="300" text_align="right,vcenter"/>
                         <Label name="Native_GetWindowDisplayScale" text="0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                     <HBox height="auto" >
-                        <Label text="Native_GetWindowPixelDensity：" width="300" text_align="right,vcenter"/>
+                        <Label text="Native_GetWindowPixelDensity:" width="300" text_align="right,vcenter"/>
                         <Label name="Native_GetWindowPixelDensity" text="0" width="auto" text_align="left,vcenter"/>
                     </HBox>
                 </VBox>

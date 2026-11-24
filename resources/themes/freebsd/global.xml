@@ -58,6 +58,19 @@
     <Font id="arial_bold_20" name="arial" size="20" bold="true"/>
     <Font id="arial_bold_22" name="arial" size="22" bold="true"/>
     
+    <!-- Fonts added with the upstream update -->
+    <Font id="system_13" name="system" size="13"/>
+    <Font id="system_15" name="system" size="15"/>
+    <Font id="system_bold_13" name="system" size="13" bold="true"/>
+    <Font id="system_bold_15" name="system" size="15" bold="true"/>
+    <Font id="system_underline_13" name="system" size="13" underline="true"/>
+    <Font id="system_underline_15" name="system" size="15" underline="true"/>
+    <Font id="system_italic_13" name="system" size="13" italic="true"/>
+    <Font id="system_italic_15" name="system" size="15" italic="true"/>
+    <Font id="system_strikeout_13" name="system" size="13" strikeout="true"/>
+    <Font id="system_strikeout_15" name="system" size="15" strikeout="true"/>
+    <Font id="system_fullstyle_13" name="system" size="13" italic="true" strikeout="true" underline="true" bold="true"/>
+    <Font id="system_fullstyle_15" name="system" size="15" italic="true" strikeout="true" underline="true" bold="true"/>
     <!-- Font files (placed in the fonts directory at the resource root) are loaded at program startup; after loading, they can be used in the same way as system fonts -->
     <!-- Note: the RobotoMono font can only display English letters; it does not support Chinese characters -->
     <FontFile file="RobotoMono-Regular.ttf" desc="Font: Roboto Mono, Regular"/>
@@ -110,6 +123,46 @@
     <TextColor name="richedit_hot_border_color" value="CornflowerBlue"/>
     <TextColor name="richedit_focus_border_color" value="#FF8591A2"/>
     <TextColor name="richedit_focus_bottom_border_color" value="#FF1D6978"/>
+    <!--Semantic palette used by the controls ported from upstream nim_duilib (light theme values)-->
+    <TextColor name="bg_btn_hovered" value="#FFE5E5E5"/>
+    <TextColor name="bg_list_item_disabled" value="#B3FFFFFF"/>
+    <TextColor name="bg_list_item_hovered" value="#FFEAEAEA"/>
+    <TextColor name="bg_list_item_pressed" value="#FFE0E0E0"/>
+    <TextColor name="bg_list_item_selected" value="#FFE2E2E2"/>
+    <TextColor name="bg_overlay" value="#80E5E5E5"/>
+    <TextColor name="bg_progress" value="#FF00B42A"/>
+    <TextColor name="bg_progress_track" value="#FFE5E5E5"/>
+    <TextColor name="bg_richedit" value="#FFFCFCFC"/>
+    <TextColor name="bg_richedit_btn_disabled" value="#B3FFFFFF"/>
+    <TextColor name="bg_richedit_btn_hovered" value="#FFE5E5E5"/>
+    <TextColor name="bg_richedit_btn_normal" value="#FFF4F4F4"/>
+    <TextColor name="bg_richedit_btn_pressed" value="#FFDBDBDB"/>
+    <TextColor name="bg_richedit_caret" value="#FF171717"/>
+    <TextColor name="bg_switch_thumb_off" value="#FF8A8886"/>
+    <TextColor name="bg_switch_track_on" value="#FF0078D4"/>
+    <TextColor name="bg_tag" value="#FFF1F2F5"/>
+    <TextColor name="bg_tag_close_hover" value="#FFC0C4CC"/>
+    <TextColor name="bg_tag_close_pressed" value="#FFA8ABB3"/>
+    <TextColor name="bg_tag_hover" value="#FFE2E4EA"/>
+    <TextColor name="bg_titlebar" value="#FFEAEAEA"/>
+    <TextColor name="bg_tooltip" value="#FFE6E6E6"/>
+    <TextColor name="bg_window_card" value="#FFFAFAFA"/>
+    <TextColor name="bg_window_main" value="#FFF4F4F4"/>
+    <TextColor name="border_focus_ring" value="#FFB4B4B4"/>
+    <TextColor name="border_richedit_hovered" value="#FFCCCCCC"/>
+    <TextColor name="border_richedit_normal" value="#FFDBDBDB"/>
+    <TextColor name="border_svg_image" value="#D91F1F1F"/>
+    <TextColor name="border_window" value="#FFD5D5D5"/>
+    <TextColor name="color_accent" value="#FF0078D4"/>
+    <TextColor name="color_gray" value="#FF808080"/>
+    <TextColor name="text_badge" value="#FFFFFFFF"/>
+    <TextColor name="text_default" value="#FF1A1A1A"/>
+    <TextColor name="text_disabled" value="#B3343434"/>
+    <TextColor name="text_muted" value="#FF1A1A1A"/>
+    <TextColor name="text_primary_btn_normal" value="#FF1A1A1A"/>
+    <TextColor name="text_richedit_prompt" value="#994D4D4D"/>
+    <TextColor name="text_tooltip" value="#FF1A1A1A"/>
+
     <!--Scroll bar: minimalist style, the default scroll bar style, do not delete-->
     <Class name="vscrollbar" width="12" fade_alpha="true" 
                              thumb_normal_image="file='public/scrollbar01/vscrollbar/thumb_normal.svg' width='12' corner='0,8,0,8'" 
@@ -334,12 +387,16 @@
                                           progress_bar_padding="0,6,0,6" 
                                           progress_color="bk_progress_progress" 
                                           bkimage="file='public/slider/slider_hor_bk.png' valign='center' height='3' width='1200'" 
-                                          thumb_normal_image="file='public/slider/slider_thumb.svg' width='14' height='14'"/>
+                                          thumb_normal_image="file='public/slider/slider_thumb.svg' width='14' height='14'"
+                                          thumb_hovered_image="file='public/slider/slider_thumb_hovered.svg' width='14' height='14'"
+                                          thumb_pressed_image="file='public/slider/slider_thumb_pressed.svg' width='14' height='14'"/>
     <Class name="slider_vertical_green"   width="stretch" height="14" margin="4,0,0,0" valign="center" thumb_size="14,14" min="0" max="255" 
                                           progress_bar_padding="0,6,0,6" 
                                           progress_color="bk_progress_progress" 
                                           bkimage="file='public/slider/slider_ver_bk.png' halign='center' width='3' height='1200'" 
-                                          thumb_normal_image="file='public/slider/slider_thumb.svg' width='14' height='14'"/>
+                                          thumb_normal_image="file='public/slider/slider_thumb.svg' width='14' height='14'"
+                                          thumb_hovered_image="file='public/slider/slider_thumb_hovered.svg' width='14' height='14'"
+                                          thumb_pressed_image="file='public/slider/slider_thumb_pressed.svg' width='14' height='14'"/>
     <!--Menu common style-->
     <Class name="menu" width="auto" height="auto" bkcolor="white"/>
     <Class name="menu_element" height="32" padding="20,0,20,0" margin="1,1,1,1" 
@@ -545,4 +602,155 @@
                                             bkimage="file='public/address_bar/folder-root.svg' width='22' height='22' halign='center' valign='center'"/>
     <Class name="address_bar_path_separator" width="auto" height="100%" margin="0,0,0,0"
                                              bkimage="file='public/address_bar/filename-slash.svg' width='22' height='22' halign='center' valign='center'"/>
+<!-- Slider switch (Switch): three default skins; the track semantic colors and the images both support light and dark themes -->
+<!-- iOS style: 51x31, a large white thumb with a soft shadow, the track color follows the theme accent color -->
+<Class name="switch" height="31" width="51" valign="center" cursor_type="hand"
+                                    thumb_off_image="file='public/switch/switch_ios_thumb.svg'"
+                                    thumb_on_image="file='public/switch/switch_ios_thumb.svg'"/>
+<Class name="switch_ios" height="31" width="51" valign="center" cursor_type="hand"
+                                    thumb_off_image="file='public/switch/switch_ios_thumb.svg'"
+                                    thumb_on_image="file='public/switch/switch_ios_thumb.svg'"/>
+<!-- Fluent (Windows 11) style: 48x24, a small outlined track plus a 14px thumb -->
+<Class name="switch_fluent" height="24" width="48" padding="2,2,2,2" valign="center" cursor_type="hand"
+                                    track_off_image="file='public/switch/switch_fluent_track_off.svg' svg_replace_colors='#E9E9EA|bg_switch_track_off;#8A8886|bg_switch_thumb_off'"
+                                    track_on_image="file='public/switch/switch_fluent_track_on.svg' svg_replace_colors='#0078D4|bg_switch_track_on'"
+                                    thumb_off_image="file='public/switch/switch_fluent_thumb_off.svg' svg_replace_colors='#8A8886|bg_switch_thumb_off'"
+                                    thumb_on_image="file='public/switch/switch_fluent_thumb_on.svg'"/>
+<!-- Material Design 3 style: 52x32, an outlined track, a small thumb when off and a large checked thumb when on -->
+<Class name="switch_material" height="32" width="52" valign="center" cursor_type="hand"
+                                    track_off_image="file='public/switch/switch_material_track_off.svg' svg_replace_colors='#79747E|bg_switch_thumb_off'"
+                                    track_on_image="file='public/switch/switch_material_track_on.svg' svg_replace_colors='#6750A4|color_accent'"
+                                    thumb_off_image="file='public/switch/switch_material_thumb_off.svg' svg_replace_colors='#49454F|bg_switch_thumb_off'"
+                                    thumb_on_image="file='public/switch/switch_material_thumb_on.svg' svg_replace_colors='#6750A4|color_accent'"/>
+<!-- Badge: an unread-count badge or a small dot; hidden when count <= 0; use float="true" + margin for floating placement -->
+<Class name="badge" width="auto" height="18" valign="center" font="system_12"
+                                    normal_text_color="text_badge" text_padding="5,0,5,0" text_align="center" mouse_enabled="false"/>
+<Class name="badge_dot" width="8" height="8" dot="true" valign="center" mouse_enabled="false"/>
+<!-- Mask overlay: a translucent layer that fills the parent container and blocks mouse input by default; use highlight_control to cut out and highlight a control -->
+<Class name="mask" float="true" width="stretch" height="stretch" mask_color="bg_overlay"/>
+<!-- Dual-thumb range selection control -->
+<Class name="range_slider_horizontal" horizontal="true" width="stretch" height="20" margin="4,0,0,0" valign="center" 
+                                          thumb_size="14,14" min="0" max="100" 
+                                          range_color="bg_progress" bkcolor="bg_progress_track" range_radius="2"
+                                          thumb_normal_image="file='public/slider/range_slider_thumb_normal.svg' width='14' height='14'"
+                                          thumb_hovered_image="file='public/slider/range_slider_thumb_hovered.svg' width='14' height='14'"
+                                          thumb_pressed_image="file='public/slider/range_slider_thumb_pressed.svg' width='14' height='14'"/>
+<Class name="range_slider_vertical" horizontal="false" width="20" height="stretch" margin="0,4,0,0" halign="center" 
+                                        thumb_size="14,14" min="0" max="100" 
+                                        range_color="bg_progress" bkcolor="bg_progress_track" range_radius="2"
+                                        thumb_normal_image="file='public/slider/range_slider_thumb_normal.svg' width='14' height='14'"
+                                        thumb_hovered_image="file='public/slider/range_slider_thumb_hovered.svg' width='14' height='14'"
+                                        thumb_pressed_image="file='public/slider/range_slider_thumb_pressed.svg' width='14' height='14'"/>
+<!-- Stepper: hovered/pressed halo-ring node images (the color follows the theme accent color) -->
+<Class name="stepper_node" 
+           node_hovered_image="file='public/stepper/stepper_node_hovered.svg' width='48' height='48' svg_replace_colors='#0078D4|color_accent'"
+           node_pressed_image="file='public/stepper/stepper_node_pressed.svg' width='48' height='48' svg_replace_colors='#0078D4|color_accent'"/>
+<!-- Base class of the edit controls -->
+<Class name="richedit_base" bkcolor="bg_richedit" caret_color="bg_richedit_caret" multi_line="false" auto_hscroll="true" rich_text="false"
+                                want_return="false" want_ctrl_return="false" want_tab="false" 
+                                text_align="left,vcenter" normal_text_color="text_default" disabled_text_color="text_disabled"/>
+<!-- Search box control (SearchBox) -->
+<Class name="search_box" width="220" height="32" padding="1,1,1,1" bkcolor="bg_richedit" border_size="1" border_round="4,4"
+                                border_color="border_richedit_normal"
+                                hovered_border_color="border_richedit_hovered"/>
+<Class name="search_box_icon" width="16" height="16" margin="8,0,6,0" valign="center" halign="left"
+                                   bkimage="file='public/searchbox/search.svg' width='16' height='16' valign='center' halign='center' svg_replace_colors='#333333|border_svg_image'"/>
+<Class name="search_box_edit" class="richedit_base" width="stretch" text_align="vcenter" text_padding="0,0,2,0" margin="0,0,2,0"
+                                  prompt_mode="true" prompt_color="text_richedit_prompt"/>
+<Class name="search_box_clear_btn" height="22" width="24" border_round="4,4" margin="0,0,2,0" halign="right" valign="center"
+                                             normal_image="file='public/button/window-close.svg' width='16' height='16' valign='center' halign='center' svg_replace_colors='#333333|border_svg_image'"
+                                             normal_color="bg_richedit_btn_normal"
+                                             hovered_color="bg_richedit_btn_hovered"
+                                             pressed_color="bg_richedit_btn_pressed"
+                                             disabled_color="bg_richedit_btn_disabled"/>
+<!-- Tag input control (TagInput) -->
+<Class name="tag_input" width="260" height="auto" min_height="34" padding="4,4,4,4" child_margin="4"
+                             bkcolor="bg_richedit" border_size="1" border_round="4,4"
+                             border_color="border_richedit_normal"
+                             hovered_border_color="border_richedit_hovered"/>
+<Class name="tag_input_tag" width="auto" height="24" border_round="3,3" valign="center"
+                              bkcolor="bg_tag" normal_color="bg_tag" hovered_color="bg_tag_hover"
+                              pressed_color="bg_tag_hover"/>
+<Class name="tag_input_tag_text" width="auto" height="auto" margin="8,0,2,0"
+                                   font="system_12" text_color="text_default" text_align="vcenter"/>
+<Class name="tag_input_tag_close" width="16" height="16" margin="3,0,3,0" valign="center" no_focus="true"
+                                      border_round="8,8" cursor_type="hand"
+                                      normal_image="file='public/button/btn_close.svg' width='12' height='12' valign='center' halign='center' svg_replace_colors='#333333|border_svg_image'"
+                                      hovered_color="bg_tag_close_hover"
+                                      hovered_image="file='public/button/btn_close.svg' width='12' height='12' valign='center' halign='center' svg_replace_colors='#333333|white'"
+                                      pressed_color="bg_tag_close_pressed"
+                                      pressed_image="file='public/button/btn_close.svg' width='12' height='12' valign='center' halign='center' svg_replace_colors='#333333|white'"/>
+<Class name="tag_input_edit" class="richedit_base" width="stretch" height="24" min_width="80" margin="2,0,2,0"
+                                   valign="center" prompt_mode="true" prompt_color="text_richedit_prompt"/>
+<!-- Auto-complete input control (AutoComplete) -->
+<Class name="auto_complete" width="260" height="32" padding="3,3,3,3"
+                               bkcolor="bg_richedit" border_size="1" border_round="4,4"
+                               border_color="border_richedit_normal"
+                               hovered_border_color="border_richedit_hovered"/>
+<Class name="auto_complete_edit" class="richedit_base" width="stretch" height="stretch"
+                                    text_padding="4,0,4,0" prompt_mode="true" prompt_color="text_richedit_prompt"/>
+<Class name="auto_complete_flyout" width="260" height="auto" bkcolor="bg_window_card"
+                                      border_size="1" border_color="border_window" border_round="6,6"
+                                      padding="1,1,1,1"/>
+<Class name="auto_complete_list" bkcolor="bg_window_card" vscrollbar="true" paint_selected_colors="true"/>
+<Class name="auto_complete_item" text_padding="10,0,10,0" fade_hovered="false"
+                                    hovered_color="bg_list_item_hovered"
+                                    pressed_color="bg_list_item_pressed"
+                                    disabled_color="bg_list_item_disabled"
+                                    selected_normal_color="bg_list_item_selected"/>
+<!-- ListCtrl cell drop-down candidate flyout (used by the kEditCombo editor) -->
+<Class name="list_ctrl_combo_flyout" width="260" height="auto" bkcolor="bg_window_card"
+                                          border_size="1" border_color="border_window" border_round="6,6"
+                                          padding="1,1,1,1"/>
+<Class name="list_ctrl_combo_list" bkcolor="bg_window_card" vscrollbar="true" paint_selected_colors="true"/>
+<Class name="list_ctrl_combo_item" text_padding="10,0,10,0" fade_hovered="false"
+                                        hovered_color="bg_list_item_hovered"
+                                        pressed_color="bg_list_item_pressed"
+                                        disabled_color="bg_list_item_disabled"
+                                        selected_normal_color="bg_list_item_selected"/>
+<!-- ListCtrl date editor (DateTime control) -->
+<Class name="list_ctrl_datetime" class="simple_border"
+                                     text_align="left,vcenter" height="28" border_size="1"
+                                     text_padding="2,0,2,0" padding="1,1,1,1"
+                                     bkcolor="bg_richedit"/>
+<Class name="tab_ctrl_item_badge" height="16" valign="center" margin="0,0,8,0" font="system_12"
+                                      normal_text_color="text_badge" text_padding="4,0,4,0" text_align="center" mouse_enabled="false"/>
+<Class name="tab_ctrl_item_badge_dot" width="8" height="8" dot="true" valign="center" margin="0,0,10,0" mouse_enabled="false"/>
+<!-- Flyout container: the content root of a flyout window (the window shadow is configured by shadow_attached="true" on the XML root node) -->
+<Class name="flyout" width="240" height="auto" bkcolor="bg_window_card"
+                            border_size="1" border_color="border_window" border_round="8,8"
+                            padding="12,12,12,12"/>
+<!-- Flyout title text -->
+<Class name="flyout_title" width="stretch" height="auto" font="system_bold_14"
+                                   normal_text_color="text_default" text_align="hleft,vcenter"
+                                   mouse_enabled="false" tab_stop="false"/>
+<!-- Flyout auxiliary description text -->
+<Class name="flyout_desc" width="stretch" height="auto" font="system_12"
+                                  normal_text_color="text_muted" multi_line="true"
+                                  text_align="hleft,vcenter" mouse_enabled="false" tab_stop="false"/>
+<!-- Calendar panel: the outer container -->
+<Class name="calendar" width="280" height="240" bkcolor="bg_window_card"/>
+<!-- Calendar weekday header -->
+<Class name="calendar_weekday" width="stretch" height="24" font="system_12"
+                                  normal_text_color="text_muted" text_align="hcenter,vcenter"
+                                  mouse_enabled="false" tab_stop="false"/>
+<!-- Calendar day cell (current month) -->
+<Class name="calendar_day" width="stretch" height="stretch" font="system_14"
+                                  normal_text_color="text_default" text_align="hcenter,vcenter"/>
+<!-- Calendar day cell (previous/next month, muted) -->
+<Class name="calendar_day_muted" width="stretch" height="stretch" font="system_14"
+                                  normal_text_color="text_muted" text_align="hcenter,vcenter"/>
+<!-- Calendar day cell (today, theme accent border) -->
+<Class name="calendar_day_today" width="stretch" height="stretch" font="system_14"
+                                  normal_text_color="color_accent" text_align="hcenter,vcenter"/>
+<!-- Calendar day cell (selected, theme accent background) -->
+<Class name="calendar_day_selected" width="stretch" height="stretch" font="system_14"
+                                  normal_text_color="text_primary_btn_normal" text_align="hcenter,vcenter"/>
+<!-- Calendar day cell (inside the selected range, light background) -->
+<Class name="calendar_day_range" width="stretch" height="stretch" font="system_14"
+                                  normal_text_color="text_default" text_align="hcenter,vcenter"/>
+<!-- Calendar day cell (hovered) -->
+<Class name="calendar_day_hovered" width="stretch" height="stretch" font="system_14"
+                                  normal_text_color="text_default" text_align="hcenter,vcenter"/>
+
 </Global>

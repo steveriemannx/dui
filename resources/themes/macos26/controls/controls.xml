@@ -149,8 +149,8 @@
                     <HBox child_margin="10">
                         <HBox child_margin="10">
                             <RichText class="rich_text" name="rich_text_demo" width="300" height="60" row_spacing_mul="1.2">
-                                RichText:　<a href="www.baidu.com">Click to visit Baidu</a><br/>
-                                RichText:　<a href="www.sohu.com">Click to visit Sohu</a>
+                                RichText: <a href="www.baidu.com">Click to visit Baidu</a><br/>
+                                RichText: <a href="www.sohu.com">Click to visit Sohu</a>
                             </RichText>
                             <VBox width="80">
                                 <HyperLink class="hyper_link" name="hyper_link1" text="Baidu Homepage" url="www.baidu.com" tooltip_text="This is a HyperLink control"/>

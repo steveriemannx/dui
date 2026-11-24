@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Toast notification layout: a fixed width of 360; the height follows the text. The root container is the inner edge of the
+     window shadow, and the padding is injected automatically by the framework shadow -->
+<Window size="360,80" caption="0,0,0,0" use_system_caption="false"
+        shadow_type="default" shadow_attached="true"
+        layered_window="true" size_box="0,0,0,0"
+        icon="public/caption/logo.ico">
+    <!-- Rounded notification bar: click/hover events are handled by the root container, so every non-interactive control
+         inside it uses mouse_enabled="false" -->
+    <HBox width="360" height="auto" max_height="320" bkcolor="bg_tooltip" border_round="8,8">
+        <VBox width="stretch" height="auto" padding="16,12,16,12" mouse_enabled="false" tab_stop="false">
+            <HBox width="stretch" height="auto" mouse_enabled="false">
+                <Control name="toast_icon" width="20" height="20" valign="center" margin="0,0,12,0"
+                         mouse_enabled="false" tab_stop="false"/>
+                <!-- The text width must be the fixed value 296 (= 360 outer width - 16*2 horizontal padding - 20 icon - 12 icon margin):
+                     the layout estimate already subtracts the container padding (VLayout/HLayout estimate and the real layout agree),
+                     but it does not subtract the width taken by fixed-width siblings, so a multi-line stretch label wraps at 328
+                     instead of 296. English line breaking then under-counts the lines, and the window ends up too short with the
+                     last line clipped. A fixed width keeps the estimate and the real layout in agreement -->
+                <Label name="toast_text" width="296" height="auto" min_height="20"
+                       mouse_enabled="false" tab_stop="false" auto_tooltip="true"
+                       multi_line="true" font="system_14"
+                       normal_text_color="text_tooltip" text_align="hleft,vcenter"/>
+            </HBox>
+            <!-- Action button area: hidden by default; MessageBoxWnd creates the buttons dynamically and shows them only when
+                 Show() receives actions. The buttons have mouse_enabled=true, can be clicked, and do not bubble to the root
+                 container (the root container's "click anywhere to dismiss" only applies to non-interactive areas). The
+                 leading stretch placeholder pushes the buttons to the right (Win32 notification style). -->
+            <HBox name="toast_actions" width="stretch" height="auto" visible="false" margin="0,8,0,0"
+                  mouse_enabled="true" tab_stop="false">
+                <Control width="stretch" mouse_enabled="false" tab_stop="false"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</Window>
