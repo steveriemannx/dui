@@ -4,12 +4,12 @@
 // found in the LICENSE file.
 
 #if defined(__APPLE__) || defined(macintosh) || defined(Macintosh)
-#include <TargetConditionals.h>  // macOS 平台检测头文件
-#if TARGET_OS_MAC               // 明确排除iOS等其他Apple平台
+#include <TargetConditionals.h>  // macOS platform detection header
+#if TARGET_OS_MAC               // Explicitly exclude other Apple platforms such as iOS
 
-#include "dui/dui_config_macos.h"  // macOS专用配置头文件
+#include "dui/dui_config_macos.h"  // macOS-specific configuration header
 #include "App.h"
-#include <CoreFoundation/CoreFoundation.h>  // macOS核心服务头文件
+#include <CoreFoundation/CoreFoundation.h>  // macOS core services header
 
 #include "include/cef_application_mac.h"
 #include "include/cef_command_line.h"
@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // macOS特有的初始化（例如：激活多线程GCD）
+    // macOS-specific initialization (for example enabling multi-threaded GCD)
     CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, false);
 
   @autoreleasepool {

@@ -16,13 +16,13 @@ void ListBoxForm::OnInitWindow()
 
     if (bVTileListBox) {
         //VTileListBox: set to fixed 2 columns, auto-calculate the Item width
-        //m_pListBox->SetAttribute("item_size", "200，80");
+        //m_pListBox->SetAttribute("item_size", "200,80");
         m_pListBox->SetAttribute("columns", "2");
         m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }
     else if (bHTileListBox) {
         //HTileListBox: set to fixed 2 rows, auto-calculate the Item height
-        //m_pListBox->SetAttribute("item_size", "200，80");
+        //m_pListBox->SetAttribute("item_size", "200,80");
         m_pListBox->SetAttribute("rows", "2");
         m_pListBox->SetAttribute("auto_calc_item_size", "true");
     }

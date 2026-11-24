@@ -128,11 +128,11 @@ void MainForm::BuildUI()
 
     struct NativeRow { std::string name; std::string label; std::string init; };
     const NativeRow nativeRows[] = {
-        { "Native_GetWindowSize", "Native_GetWindowSize：", "W:0,H:0" },
-        { "Native_GetWindowSizeInPixels", "Native_GetWindowSizeInPixels：", "W:0,H:0" },
-        { "Native_GetDisplayContentScale", "Native_GetDisplayContentScale：", "0" },
-        { "Native_GetWindowDisplayScale", "Native_GetWindowDisplayScale：", "0" },
-        { "Native_GetWindowPixelDensity", "Native_GetWindowPixelDensity：", "0" },
+        { "Native_GetWindowSize", "Native_GetWindowSize:", "W:0,H:0" },
+        { "Native_GetWindowSizeInPixels", "Native_GetWindowSizeInPixels:", "W:0,H:0" },
+        { "Native_GetDisplayContentScale", "Native_GetDisplayContentScale:", "0" },
+        { "Native_GetWindowDisplayScale", "Native_GetWindowDisplayScale:", "0" },
+        { "Native_GetWindowPixelDensity", "Native_GetWindowPixelDensity:", "0" },
     };
     for (const auto& row : nativeRows) {
     auto* pNativeRow = ui::Create<ui::HBox>(this, {{"height", "auto"}});

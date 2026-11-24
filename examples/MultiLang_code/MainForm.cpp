@@ -129,7 +129,7 @@ void MainForm::ShowPopupMenu(const ui::UiPoint& point)
     // Pure code menu: no XML template; all menu items are added by code
     menu->ShowMenu("", point);
 
-    // Match the XML lang_menu.xml header row: "选择语言" plus a separator,
+    // Match the XML lang_menu.xml header row: the language label plus a separator,
     // before the dynamically added language items.
     {
         ui::HBox* pHeader = new ui::HBox(this);

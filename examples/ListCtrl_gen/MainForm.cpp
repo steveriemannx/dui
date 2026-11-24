@@ -1217,11 +1217,9 @@ void MainForm::TestListCtrlEvents(ui::ListCtrl* pListCtrl)
         OnListCtrlItemFilledEvent(args);
         return true;
         });
-    pListCtrl->AttachReportViewSubItemFilled([this, OnListCtrlItemFilledEvent](const ui::EventArgs& args) {
-        OnListCtrlItemFilledEvent(args);
-        OnReportViewSubItemFilled(args);
-        return true;
-        });
+    // The per-cell fill event was removed in the upstream update: per-cell notifications are now
+    // delivered through AttachReportViewItemFilled with args.pExtraData pointing at the ListCtrlSubItem
+    // (nullptr means the whole row was filled).
     pListCtrl->AttachListViewItemFilled([this, OnListCtrlItemFilledEvent](const ui::EventArgs& args) {
         OnListCtrlItemFilledEvent(args);
         return true;
